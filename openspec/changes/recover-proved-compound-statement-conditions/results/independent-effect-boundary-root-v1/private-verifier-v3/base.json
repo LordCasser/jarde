@@ -1,0 +1,11 @@
+{
+  "execution": "/private/tmp/jarde-compound-negative-comparison-root-v1/execution.json",
+  "execution_sha256": "fcf4e25bf99bef201fdaa741383ded486e02c248cabdc585e8aa47c73f4d9cff",
+  "digest_oracle_execution": "/private/tmp/jarde-compound-negative-digest-root-v1/execution.json",
+  "digest_oracle_execution_sha256": "9b11eede25e8d8f166f35025d33e9292779749dbc8400f4f7b9f7555d13db3cd",
+  "digest_oracle_stdout_sha256": "1ba866afc34bff0e8aab1593f86824152662501ace0eb181e604f0f232e7ad03",
+  "previous_verifier_sha256": "b6a9f33a0fdd93bdc3b7cc7f554a4b66c30c799c8b20a18fba6a12cb908c0d11",
+  "verifier_path": "/private/tmp/jarde-compound-negative-verifier-luna-v3/verify.py",
+  "verifier_sha256": "41041fdd4341ea5f378c9f5f5786fd0997e1817c2d85d818ab683240d1e0eb53",
+  "validation": "Python AST parse only; verifier not executed"
+}

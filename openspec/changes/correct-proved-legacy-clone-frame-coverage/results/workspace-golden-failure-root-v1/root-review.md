@@ -1,0 +1,1 @@
+实际全workspace前20批通过，第21批（index22）p2_golden两fail，原始full report diff保留。historical-v45-finally仅IrItems540→552、AnalysisSteps154→186；shared-subroutine-two-call-sites仅IrItems195→205、AnalysisSteps98→125。root将先测全9历史replay（八版本+共享子程序）实际API，再逐字段限制diff，只允许新增coverage工作/槽收费的两个数值和对应expect，所有非usage field必须恒同。不放宽预算/Stop/报告契约，不跳过失败，修正后从全workspace头部重跑。cargo clean成功且target不存在。

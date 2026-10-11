@@ -1,0 +1,32 @@
+{
+  "source_minor": 0,
+  "source_major": 52,
+  "target_major": 49,
+  "method": "test",
+  "descriptor": "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;",
+  "max_stack": 1,
+  "max_locals": 6,
+  "code_length": 37,
+  "code_hex": "a80008a8000501b03a051a99000a1b990011a7000b1c99000a1d990006a70006a70003a905",
+  "subroutine_entry_bci": 8,
+  "jsr_call_sites": [
+    0,
+    3
+  ],
+  "caller_join_bci": 3,
+  "comparison_branch_bcis": [
+    11,
+    15,
+    22,
+    26
+  ],
+  "ret_bcis": [
+    35
+  ],
+  "code_exception_table_entries": 0,
+  "code_nested_attributes": 0,
+  "source_path": "/private/tmp/jarde-compound-clone-path-luna-v2/original.class",
+  "source_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "output_path": "/private/tmp/jarde-compound-clone-path-luna-v2/CompoundStatementConditions.class",
+  "output_sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525"
+}

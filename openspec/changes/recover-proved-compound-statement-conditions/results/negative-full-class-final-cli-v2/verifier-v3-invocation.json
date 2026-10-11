@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/private/tmp/jarde-compound-negative-render-luna-v3/verify.py",
+    "--cli",
+    "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+    "--sha256",
+    "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+    "--build",
+    "/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json",
+    "--out",
+    "/private/tmp/jarde-compound-negative-render-final-cli-v2"
+  ],
+  "exit_code": 0,
+  "verifier_sha256": "d583e9b402272c3ab66004b12b8982ca0a47addfa7a0b757784307376d21cb12",
+  "execution_sha256_before": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd",
+  "execution_sha256_after": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+}

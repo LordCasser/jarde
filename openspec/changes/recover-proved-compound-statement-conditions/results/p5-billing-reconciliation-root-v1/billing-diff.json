@@ -1,0 +1,249 @@
+{
+  "scope": "actual billing constants, no product budgets or assertion weakening",
+  "changes": [
+    {
+      "constant": "FLAT_MIXED",
+      "before": {
+        "archive_entries": 8,
+        "entry_bytes": 1813,
+        "class_bytes": 1813,
+        "class_headers": 0,
+        "method_bodies": 17,
+        "ir_items": 2497,
+        "analysis_steps": 1517,
+        "result_items": 37,
+        "output_bytes": 3657
+      },
+      "observed": {
+        "archive_entries": 8,
+        "entry_bytes": 1813,
+        "class_bytes": 1813,
+        "class_headers": 0,
+        "method_bodies": 17,
+        "ir_items": 2497,
+        "analysis_steps": 1540,
+        "result_items": 37,
+        "output_bytes": 3657
+      },
+      "changes": {
+        "analysis_steps": [
+          1517,
+          1540
+        ]
+      }
+    },
+    {
+      "constant": "NESTED_MIXED",
+      "before": {
+        "archive_entries": 25,
+        "entry_bytes": 8061,
+        "class_bytes": 2381,
+        "class_headers": 0,
+        "method_bodies": 26,
+        "ir_items": 4322,
+        "analysis_steps": 2341,
+        "result_items": 64,
+        "output_bytes": 5628
+      },
+      "observed": {
+        "archive_entries": 25,
+        "entry_bytes": 8061,
+        "class_bytes": 2381,
+        "class_headers": 0,
+        "method_bodies": 26,
+        "ir_items": 4322,
+        "analysis_steps": 2364,
+        "result_items": 64,
+        "output_bytes": 5628
+      },
+      "changes": {
+        "analysis_steps": [
+          2341,
+          2364
+        ]
+      }
+    },
+    {
+      "constant": "TWO_ORIGINS",
+      "before": {
+        "archive_entries": 43,
+        "entry_bytes": 7522,
+        "class_bytes": 2686,
+        "class_headers": 4,
+        "method_bodies": 12,
+        "ir_items": 2082,
+        "analysis_steps": 1258,
+        "result_items": 43,
+        "output_bytes": 2638
+      },
+      "observed": {
+        "archive_entries": 43,
+        "entry_bytes": 7522,
+        "class_bytes": 2686,
+        "class_headers": 4,
+        "method_bodies": 12,
+        "ir_items": 2082,
+        "analysis_steps": 1281,
+        "result_items": 43,
+        "output_bytes": 2638
+      },
+      "changes": {
+        "analysis_steps": [
+          1258,
+          1281
+        ]
+      }
+    },
+    {
+      "constant": "MANY_METHOD_CLASS",
+      "before": {
+        "archive_entries": 6,
+        "entry_bytes": 7683,
+        "class_bytes": 7683,
+        "class_headers": 0,
+        "method_bodies": 107,
+        "ir_items": 21384,
+        "analysis_steps": 11827,
+        "result_items": 122,
+        "output_bytes": 23333
+      },
+      "observed": {
+        "archive_entries": 6,
+        "entry_bytes": 7683,
+        "class_bytes": 7683,
+        "class_headers": 0,
+        "method_bodies": 107,
+        "ir_items": 21384,
+        "analysis_steps": 11850,
+        "result_items": 122,
+        "output_bytes": 23333
+      },
+      "changes": {
+        "analysis_steps": [
+          11827,
+          11850
+        ]
+      }
+    },
+    {
+      "constant": "DAMAGED_TAIL",
+      "before": {
+        "archive_entries": 17,
+        "entry_bytes": 1881,
+        "class_bytes": 1019,
+        "class_headers": 0,
+        "method_bodies": 12,
+        "ir_items": 2082,
+        "analysis_steps": 1258,
+        "result_items": 35,
+        "output_bytes": 2638
+      },
+      "observed": {
+        "archive_entries": 17,
+        "entry_bytes": 1881,
+        "class_bytes": 1019,
+        "class_headers": 0,
+        "method_bodies": 12,
+        "ir_items": 2082,
+        "analysis_steps": 1281,
+        "result_items": 35,
+        "output_bytes": 2638
+      },
+      "changes": {
+        "analysis_steps": [
+          1258,
+          1281
+        ]
+      }
+    },
+    {
+      "constant": "DEEP_EXPRESSION",
+      "before": {
+        "archive_entries": 4,
+        "entry_bytes": 753,
+        "class_bytes": 753,
+        "class_headers": 0,
+        "method_bodies": 7,
+        "ir_items": 3213,
+        "analysis_steps": 1369,
+        "result_items": 18,
+        "output_bytes": 1723
+      },
+      "observed": {
+        "archive_entries": 4,
+        "entry_bytes": 753,
+        "class_bytes": 753,
+        "class_headers": 0,
+        "method_bodies": 7,
+        "ir_items": 3213,
+        "analysis_steps": 1369,
+        "result_items": 18,
+        "output_bytes": 1723
+      },
+      "changes": {}
+    },
+    {
+      "constant": "DIRECT_ARM",
+      "before": {
+        "archive_entries": 1915,
+        "entry_bytes": 365912,
+        "class_bytes": 327895,
+        "class_headers": 191,
+        "method_bodies": 181,
+        "ir_items": 35580,
+        "analysis_steps": 19570,
+        "result_items": 1378,
+        "output_bytes": 39617
+      },
+      "observed": {
+        "archive_entries": 1915,
+        "entry_bytes": 365912,
+        "class_bytes": 327895,
+        "result_items": 1378,
+        "output_bytes": 39617,
+        "class_headers": 191,
+        "method_bodies": 181,
+        "ir_items": 35580,
+        "analysis_steps": 19685
+      },
+      "changes": {
+        "analysis_steps": [
+          19570,
+          19685
+        ]
+      }
+    },
+    {
+      "constant": "SHARED_ARM",
+      "before": {
+        "archive_entries": 57,
+        "entry_bytes": 18680,
+        "class_bytes": 10817,
+        "class_headers": 191,
+        "method_bodies": 181,
+        "ir_items": 35580,
+        "analysis_steps": 19570,
+        "result_items": 26,
+        "output_bytes": 39617
+      },
+      "observed": {
+        "archive_entries": 57,
+        "entry_bytes": 18680,
+        "class_bytes": 10817,
+        "result_items": 26,
+        "output_bytes": 39617,
+        "class_headers": 191,
+        "method_bodies": 181,
+        "ir_items": 35580,
+        "analysis_steps": 19685
+      },
+      "changes": {
+        "analysis_steps": [
+          19570,
+          19685
+        ]
+      }
+    }
+  ],
+  "changed_numeric_positions": 7
+}

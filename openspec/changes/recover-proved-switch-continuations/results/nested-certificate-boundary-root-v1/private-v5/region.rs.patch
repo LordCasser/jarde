@@ -1,0 +1,70 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -17476,6 +17476,67 @@
+     }
+ 
+     #[test]
++    fn real_nested_switch_target_refuses_candidate_certificate_without_partial_result() {
++        use crate::facts::Operation;
++
++        const CLASS: &[u8] = include_bytes!(
++            "../../../tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class"
++        );
++        assert_eq!(CLASS.len(), 1494);
++        assert_eq!(
++            blake3::hash(CLASS).to_hex().to_string(),
++            "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"
++        );
++        with_real_conditional_switch(
++            CLASS,
++            "innerSwitchBreak",
++            "(II)Ljava/lang/String;",
++            9,
++            80,
++            &[0, 36, 56, 66, 73, 80, 90, 97],
++            &[
++                (0, 36),
++                (0, 80),
++                (0, 90),
++                (36, 56),
++                (36, 66),
++                (56, 73),
++                (66, 73),
++                (73, 80),
++                (80, 97),
++                (90, 97),
++            ],
++            &[36, 90],
++            |input| {
++                assert_eq!(input.last_ssa_instruction_bci(36), Some(37));
++                assert!(matches!(
++                    input.operations.get(37),
++                    Some(Operation::Switch { .. })
++                ));
++                assert!(input.view_has_edge(36, 56));
++                assert!(input.view_has_edge(36, 66));
++                assert!(input.view_has_edge(73, 80));
++
++                let rows_before = input
++                    .full_rows
++                    .iter()
++                    .map(|(from, kind, to)| (from.clone(), *kind, to.clone()))
++                    .collect::<Vec<_>>();
++                assert_eq!(input.prove_candidate(), None);
++                let rows_after = input
++                    .full_rows
++                    .iter()
++                    .map(|(from, kind, to)| (from.clone(), *kind, to.clone()))
++                    .collect::<Vec<_>>();
++                assert_eq!(
++                    rows_after, rows_before,
++                    "a refused certificate returns no partial result and does not alter Reader rows"
++                );
++            },
++        );
++    }
++
++    #[test]
+     fn real_switch2_direct_target_join_proves_candidate_witnesses() {
+         const CLASS: &[u8] = include_bytes!(
+             "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"

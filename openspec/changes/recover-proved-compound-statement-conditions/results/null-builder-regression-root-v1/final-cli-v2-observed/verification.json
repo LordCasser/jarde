@@ -1,0 +1,70 @@
+{
+  "schema": "null-then-builder-final-cli-v2-independent-verification-v1",
+  "state": "accepted",
+  "execution": "/private/tmp/jarde-null-builder-final-cli-v2-replay/execution.json",
+  "execution_sha256": "281bda30357977e3020d07c321b887e17b3a1677615125f408ce1e90cb6b62db",
+  "candidate_build": {
+    "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json",
+    "sha256": "5a77262910c4771206af4cd968077dba2478128de8666a531ef51491e50c3bde",
+    "cli": {
+      "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+      "bytes": 60819568,
+      "sha256": "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+      "mode": 365
+    },
+    "product_source_pin_count": 124,
+    "successful_command_count": 5,
+    "test_summaries": {
+      "compound-filtered-lib-tests": [
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 346
+        }
+      ],
+      "public-integration-tests": [
+        {
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ]
+    },
+    "target_absent_after_clean": true
+  },
+  "command_count": 19,
+  "runtime_leg_count": 8,
+  "source_change": {
+    "baseline_text_sha256": "9ca570d3dfbb2266f8dc5f45be3ed274734a7197b3fe2bd8d84cc569ef35074d",
+    "expected_text_sha256": "4be8d1e7b07c3145070bb0e6e72f008f32839857bf753fedfb6356bfd29f7a5c",
+    "changed_construct": "nested if (arg0) / if (local2 == null) folded to if (arg0 && local2 == null)",
+    "whole_class_members": [
+      [
+        "<init>",
+        "()V"
+      ],
+      [
+        "run",
+        "(Z)Ljava/lang/Object;"
+      ],
+      [
+        "main",
+        "([Ljava/lang/String;)V"
+      ]
+    ]
+  },
+  "runtime_stdout": "true=7\nfalse=6\n",
+  "original_source_available": false,
+  "checks": [
+    "v5 build/source pins and CLI",
+    "all 19 argv/raw streams/guard statuses",
+    "full-class default/all source and method maps",
+    "exact one-block source transformation",
+    "JADX and both frozen JDK toolchains",
+    "all eight runtime legs"
+  ]
+}

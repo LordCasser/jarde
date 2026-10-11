@@ -1,0 +1,24 @@
+{
+  "status": "accepted_focused_validation_pending_final_parent_delivery",
+  "execution_sha256": "1f8c5aeff9fef07d65427a5241b39abc4045f4a9669d084d949908c3085a2eb9",
+  "summaries": {
+    "jvm": [
+      243,
+      0,
+      0
+    ],
+    "java": [
+      350,
+      0,
+      0
+    ]
+  },
+  "actual_real_clone_test": "real_legacy_clone_compound_root_refuses_uncloned_join_path_without_state_leaks",
+  "reader_stages": "all six completed",
+  "verification": "NotPerformed",
+  "independent_jvm_verification": "six original class verification commands already recorded; not Jarde verifier",
+  "new_coverage_negative_and_stop_tests": "actual nine canonical unit tests passed",
+  "no_guard_stop": true,
+  "pins_unchanged": true,
+  "target_absent_after_clean": true
+}

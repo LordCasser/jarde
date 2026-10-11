@@ -1,0 +1,538 @@
+Classfile /private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/CompoundStatementConditions.class
+  Last modified 2026年10月11日; size 2849 bytes
+  SHA-256 checksum 8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b
+  Compiled from "CompoundStatementConditions.java"
+public final class CompoundStatementConditions
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #48                         // CompoundStatementConditions
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 8, attributes: 1
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = String             #8            // test:
+    #8 = Utf8               test:
+    #9 = Methodref          #10.#11       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #10 = Class              #12           // java/lang/StringBuilder
+   #11 = NameAndType        #13:#14       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #12 = Utf8               java/lang/StringBuilder
+   #13 = Utf8               append
+   #14 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #15 = Methodref          #10.#16       // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+   #16 = NameAndType        #13:#17       // append:(C)Ljava/lang/StringBuilder;
+   #17 = Utf8               (C)Ljava/lang/StringBuilder;
+   #18 = Methodref          #10.#19       // java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+   #19 = NameAndType        #13:#20       // append:(Z)Ljava/lang/StringBuilder;
+   #20 = Utf8               (Z)Ljava/lang/StringBuilder;
+   #21 = Methodref          #22.#23       // java/lang/String.equals:(Ljava/lang/Object;)Z
+   #22 = Class              #24           // java/lang/String
+   #23 = NameAndType        #25:#26       // equals:(Ljava/lang/Object;)Z
+   #24 = Utf8               java/lang/String
+   #25 = Utf8               equals
+   #26 = Utf8               (Ljava/lang/Object;)Z
+   #27 = Class              #28           // java/lang/IllegalStateException
+   #28 = Utf8               java/lang/IllegalStateException
+   #29 = Methodref          #10.#3        // java/lang/StringBuilder."<init>":()V
+   #30 = String             #31           // probe-
+   #31 = Utf8               probe-
+   #32 = Methodref          #10.#33       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #33 = NameAndType        #34:#35       // toString:()Ljava/lang/String;
+   #34 = Utf8               toString
+   #35 = Utf8               ()Ljava/lang/String;
+   #36 = Methodref          #27.#37       // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+   #37 = NameAndType        #5:#38        // "<init>":(Ljava/lang/String;)V
+   #38 = Utf8               (Ljava/lang/String;)V
+   #39 = String             #40           // emit:
+   #40 = Utf8               emit:
+   #41 = Methodref          #10.#42       // java/lang/StringBuilder.length:()I
+   #42 = NameAndType        #43:#44       // length:()I
+   #43 = Utf8               length
+   #44 = Utf8               ()I
+   #45 = String             #46           // prefix
+   #46 = Utf8               prefix
+   #47 = Methodref          #48.#49       // CompoundStatementConditions.appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+   #48 = Class              #50           // CompoundStatementConditions
+   #49 = NameAndType        #51:#52       // appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+   #50 = Utf8               CompoundStatementConditions
+   #51 = Utf8               appendLabel
+   #52 = Utf8               (Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+   #53 = String             #54           // a
+   #54 = Utf8               a
+   #55 = Methodref          #48.#56       // CompoundStatementConditions.probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+   #56 = NameAndType        #57:#58       // probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+   #57 = Utf8               probe
+   #58 = Utf8               (Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+   #59 = String             #60           // b
+   #60 = Utf8               b
+   #61 = String             #62           // c
+   #62 = Utf8               c
+   #63 = String             #64           // d
+   #64 = Utf8               d
+   #65 = String             #66           // hit
+   #66 = Utf8               hit
+   #67 = String             #68           // miss
+   #68 = Utf8               miss
+   #69 = String             #70           // suffix
+   #70 = Utf8               suffix
+   #71 = String             #72           // mixed-hit
+   #72 = Utf8               mixed-hit
+   #73 = String             #74           // mixed-miss
+   #74 = Utf8               mixed-miss
+   #75 = Methodref          #48.#76       // CompoundStatementConditions.probeOrThrow:(Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+   #76 = NameAndType        #77:#78       // probeOrThrow:(Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+   #77 = Utf8               probeOrThrow
+   #78 = Utf8               (Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+   #79 = Float              -10.0f
+   #80 = String             #81           // not-negative-or-below-minus-ten
+   #81 = Utf8               not-negative-or-below-minus-ten
+   #82 = String             #83           // negative-in-range
+   #83 = Utf8               negative-in-range
+   #84 = Utf8               Code
+   #85 = Utf8               LineNumberTable
+   #86 = Utf8               LocalVariableTable
+   #87 = Utf8               this
+   #88 = Utf8               LCompoundStatementConditions;
+   #89 = Utf8               trace
+   #90 = Utf8               Ljava/lang/StringBuilder;
+   #91 = Utf8               label
+   #92 = Utf8               Ljava/lang/String;
+   #93 = Utf8               value
+   #94 = Utf8               Z
+   #95 = Utf8               throwAt
+   #96 = Utf8               StackMapTable
+   #97 = Utf8               payload
+   #98 = Utf8               test
+   #99 = Utf8               (ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;
+  #100 = Utf8               testMixed
+  #101 = Utf8               testThrowing
+  #102 = Utf8               (ZZZZLjava/lang/String;Ljava/lang/StringBuilder;)Ljava/lang/String;
+  #103 = Utf8               testFloat
+  #104 = Utf8               (FLjava/lang/StringBuilder;)Ljava/lang/String;
+  #105 = Utf8               F
+  #106 = Utf8               SourceFile
+  #107 = Utf8               CompoundStatementConditions.java
+{
+  private CompoundStatementConditions();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 2: 0
+        line 3: 4
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LCompoundStatementConditions;
+
+  private static boolean probe(java.lang.StringBuilder, java.lang.String, boolean);
+    descriptor: (Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: ldc           #7                  // String test:
+         3: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         6: aload_1
+         7: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        10: bipush        61
+        12: invokevirtual #15                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        15: iload_2
+        16: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        19: bipush        59
+        21: invokevirtual #15                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        24: pop
+        25: iload_2
+        26: ireturn
+      LineNumberTable:
+        line 6: 0
+        line 7: 25
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      27     0 trace   Ljava/lang/StringBuilder;
+            0      27     1 label   Ljava/lang/String;
+            0      27     2 value   Z
+
+  private static boolean probeOrThrow(java.lang.StringBuilder, java.lang.String, boolean, java.lang.String);
+    descriptor: (Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: ldc           #7                  // String test:
+         3: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         6: aload_1
+         7: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        10: bipush        61
+        12: invokevirtual #15                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        15: iload_2
+        16: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        19: bipush        59
+        21: invokevirtual #15                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        24: pop
+        25: aload_1
+        26: aload_3
+        27: invokevirtual #21                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        30: ifeq          60
+        33: new           #27                 // class java/lang/IllegalStateException
+        36: dup
+        37: new           #10                 // class java/lang/StringBuilder
+        40: dup
+        41: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+        44: ldc           #30                 // String probe-
+        46: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        49: aload_1
+        50: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        53: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        56: invokespecial #36                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        59: athrow
+        60: iload_2
+        61: ireturn
+      LineNumberTable:
+        line 15: 0
+        line 16: 25
+        line 17: 33
+        line 19: 60
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      62     0 trace   Ljava/lang/StringBuilder;
+            0      62     1 label   Ljava/lang/String;
+            0      62     2 value   Z
+            0      62     3 throwAt   Ljava/lang/String;
+      StackMapTable: number_of_entries = 1
+        frame_type = 60 /* same */
+
+  private static void appendLabel(java.lang.StringBuilder, java.lang.StringBuilder, java.lang.String);
+    descriptor: (Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: ldc           #39                 // String emit:
+         3: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         6: aload_2
+         7: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        10: bipush        59
+        12: invokevirtual #15                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        15: pop
+        16: aload_1
+        17: invokevirtual #41                 // Method java/lang/StringBuilder.length:()I
+        20: ifeq          30
+        23: aload_1
+        24: bipush        62
+        26: invokevirtual #15                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        29: pop
+        30: aload_1
+        31: aload_2
+        32: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: pop
+        36: return
+      LineNumberTable:
+        line 23: 0
+        line 24: 16
+        line 25: 23
+        line 27: 30
+        line 28: 36
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      37     0 trace   Ljava/lang/StringBuilder;
+            0      37     1 payload   Ljava/lang/StringBuilder;
+            0      37     2 label   Ljava/lang/String;
+      StackMapTable: number_of_entries = 1
+        frame_type = 30 /* same */
+
+  public static java.lang.String test(boolean, boolean, boolean, boolean, java.lang.StringBuilder);
+    descriptor: (ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=6, args_size=5
+         0: new           #10                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+         7: astore        5
+         9: aload         4
+        11: aload         5
+        13: ldc           #45                 // String prefix
+        15: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        18: aload         4
+        20: ldc           #53                 // String a
+        22: iload_0
+        23: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        26: ifeq          51
+        29: aload         4
+        31: ldc           #59                 // String b
+        33: iload_1
+        34: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        37: ifne          62
+        40: aload         4
+        42: ldc           #61                 // String c
+        44: iload_2
+        45: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        48: ifeq          74
+        51: aload         4
+        53: ldc           #63                 // String d
+        55: iload_3
+        56: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        59: ifeq          74
+        62: aload         4
+        64: aload         5
+        66: ldc           #65                 // String hit
+        68: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        71: goto          83
+        74: aload         4
+        76: aload         5
+        78: ldc           #67                 // String miss
+        80: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        83: aload         4
+        85: aload         5
+        87: ldc           #69                 // String suffix
+        89: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        92: aload         5
+        94: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        97: areturn
+      LineNumberTable:
+        line 31: 0
+        line 32: 9
+        line 33: 18
+        line 34: 45
+        line 35: 62
+        line 37: 74
+        line 39: 83
+        line 40: 92
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      98     0     a   Z
+            0      98     1     b   Z
+            0      98     2     c   Z
+            0      98     3     d   Z
+            0      98     4 trace   Ljava/lang/StringBuilder;
+            9      89     5 payload   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 40
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 10 /* same */
+        frame_type = 10 /* same */
+        frame_type = 11 /* same */
+        frame_type = 8 /* same */
+
+  public static java.lang.String testMixed(boolean, boolean, boolean, boolean, java.lang.StringBuilder);
+    descriptor: (ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=6, args_size=5
+         0: new           #10                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+         7: astore        5
+         9: aload         4
+        11: aload         5
+        13: ldc           #45                 // String prefix
+        15: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        18: aload         4
+        20: ldc           #53                 // String a
+        22: iload_0
+        23: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        26: ifeq          40
+        29: aload         4
+        31: ldc           #59                 // String b
+        33: iload_1
+        34: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        37: ifeq          74
+        40: aload         4
+        42: ldc           #61                 // String c
+        44: iload_2
+        45: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        48: ifne          62
+        51: aload         4
+        53: ldc           #63                 // String d
+        55: iload_3
+        56: invokestatic  #55                 // Method probe:(Ljava/lang/StringBuilder;Ljava/lang/String;Z)Z
+        59: ifne          74
+        62: aload         4
+        64: aload         5
+        66: ldc           #71                 // String mixed-hit
+        68: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        71: goto          83
+        74: aload         4
+        76: aload         5
+        78: ldc           #73                 // String mixed-miss
+        80: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        83: aload         4
+        85: aload         5
+        87: ldc           #69                 // String suffix
+        89: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        92: aload         5
+        94: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        97: areturn
+      LineNumberTable:
+        line 44: 0
+        line 45: 9
+        line 46: 18
+        line 47: 45
+        line 48: 62
+        line 50: 74
+        line 52: 83
+        line 53: 92
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      98     0     a   Z
+            0      98     1     b   Z
+            0      98     2     c   Z
+            0      98     3     d   Z
+            0      98     4 trace   Ljava/lang/StringBuilder;
+            9      89     5 payload   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 40
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 21 /* same */
+        frame_type = 11 /* same */
+        frame_type = 8 /* same */
+
+  public static java.lang.String testThrowing(boolean, boolean, boolean, boolean, java.lang.String, java.lang.StringBuilder);
+    descriptor: (ZZZZLjava/lang/String;Ljava/lang/StringBuilder;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=7, args_size=6
+         0: new           #10                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+         7: astore        6
+         9: aload         5
+        11: aload         6
+        13: ldc           #45                 // String prefix
+        15: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        18: aload         5
+        20: ldc           #53                 // String a
+        22: iload_0
+        23: aload         4
+        25: invokestatic  #75                 // Method probeOrThrow:(Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+        28: ifeq          44
+        31: aload         5
+        33: ldc           #59                 // String b
+        35: iload_1
+        36: aload         4
+        38: invokestatic  #75                 // Method probeOrThrow:(Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+        41: ifne          70
+        44: aload         5
+        46: ldc           #61                 // String c
+        48: iload_2
+        49: aload         4
+        51: invokestatic  #75                 // Method probeOrThrow:(Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+        54: ifeq          82
+        57: aload         5
+        59: ldc           #63                 // String d
+        61: iload_3
+        62: aload         4
+        64: invokestatic  #75                 // Method probeOrThrow:(Ljava/lang/StringBuilder;Ljava/lang/String;ZLjava/lang/String;)Z
+        67: ifeq          82
+        70: aload         5
+        72: aload         6
+        74: ldc           #65                 // String hit
+        76: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        79: goto          91
+        82: aload         5
+        84: aload         6
+        86: ldc           #67                 // String miss
+        88: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        91: aload         5
+        93: aload         6
+        95: ldc           #69                 // String suffix
+        97: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+       100: aload         6
+       102: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       105: areturn
+      LineNumberTable:
+        line 63: 0
+        line 64: 9
+        line 65: 18
+        line 66: 51
+        line 67: 64
+        line 68: 70
+        line 70: 82
+        line 72: 91
+        line 73: 100
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0     106     0     a   Z
+            0     106     1     b   Z
+            0     106     2     c   Z
+            0     106     3     d   Z
+            0     106     4 throwAt   Ljava/lang/String;
+            0     106     5 trace   Ljava/lang/StringBuilder;
+            9      97     6 payload   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 44
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 25 /* same */
+        frame_type = 11 /* same */
+        frame_type = 8 /* same */
+
+  public static java.lang.String testFloat(float, java.lang.StringBuilder);
+    descriptor: (FLjava/lang/StringBuilder;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: new           #10                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+         7: astore_2
+         8: aload_1
+         9: aload_2
+        10: ldc           #45                 // String prefix
+        12: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        15: fload_0
+        16: fconst_0
+        17: fcmpg
+        18: ifge          28
+        21: fload_0
+        22: ldc           #79                 // float -10.0f
+        24: fcmpg
+        25: ifge          38
+        28: aload_1
+        29: aload_2
+        30: ldc           #80                 // String not-negative-or-below-minus-ten
+        32: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        35: goto          45
+        38: aload_1
+        39: aload_2
+        40: ldc           #82                 // String negative-in-range
+        42: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        45: aload_1
+        46: aload_2
+        47: ldc           #69                 // String suffix
+        49: invokestatic  #47                 // Method appendLabel:(Ljava/lang/StringBuilder;Ljava/lang/StringBuilder;Ljava/lang/String;)V
+        52: aload_2
+        53: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        56: areturn
+      LineNumberTable:
+        line 77: 0
+        line 78: 8
+        line 79: 15
+        line 80: 28
+        line 82: 38
+        line 84: 45
+        line 85: 52
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      57     0 value   F
+            0      57     1 trace   Ljava/lang/StringBuilder;
+            8      49     2 payload   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 28
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+}
+SourceFile: "CompoundStatementConditions.java"

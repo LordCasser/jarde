@@ -1,0 +1,21 @@
+{
+  "source": "/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/original-bytecode/CompoundStatementConditions.class",
+  "source_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "source_bytes": 2848,
+  "patched_sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78",
+  "patched_bytes": 2848,
+  "method": "test",
+  "descriptor": "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;",
+  "branch_bci": 59,
+  "opcode": "ifeq",
+  "old_signed_delta": 15,
+  "old_target_bci": 74,
+  "new_signed_delta": -19,
+  "new_target_bci": 40,
+  "changed_class_offsets": [
+    1978,
+    1979
+  ],
+  "target_has_existing_stackmap_frame": true,
+  "purpose": "reader-produced normal-flow cycle refusal; never invoke this method"
+}

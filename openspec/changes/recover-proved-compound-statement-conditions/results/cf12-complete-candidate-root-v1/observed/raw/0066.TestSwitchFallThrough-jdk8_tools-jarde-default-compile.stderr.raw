@@ -1,0 +1,7 @@
+/private/tmp/jarde-cf12-compound-candidate-replay-root-v1/TestSwitchFallThrough/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java:49: 错误: 无法访问JadxAssertions
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat(this.testWrap(1)).isEqualTo(2000);
+                                    ^
+  错误的类文件: /private/tmp/jarde-cf12-compound-candidate-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxAssertions.class
+    类文件具有错误的版本 55.0, 应为 52.0
+    请删除该文件或确保该文件位于正确的类路径子目录中。
+1 个错误

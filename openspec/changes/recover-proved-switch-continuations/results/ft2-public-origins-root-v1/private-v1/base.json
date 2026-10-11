@@ -1,0 +1,11 @@
+{
+  "schema": "ft2-public-origins-test-candidate-luna-v1",
+  "workspace_modified": false,
+  "product_region_base_sha256": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c",
+  "test_file_base_sha256": "fc809a7921d1366c12b5472a3f211c3d4526c4c7bbf7f4eaf52e8e68c32aeb99",
+  "candidate_sha256": "f71d7900bd219290d0a1911a397c9f03ea10371c6f119f30b71a0d28f1a68239",
+  "patch_sha256": "e92b108ad88b0045d5cf4197a0d504bfa3417d4044ee58f99f15072eea817866",
+  "frozen_class_sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b",
+  "frozen_class_blake3": "3b3fcb2925d1cf2d6ef1a69bfa451434711be9701602683032a53acf98656d03",
+  "validation": "Not compiled or run; root owns applying and validating this private patch."
+}

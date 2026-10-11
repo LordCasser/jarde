@@ -1,0 +1,20 @@
+{
+  "schema": "compound-clone-reader-proof-test-private-v3",
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "base_sha256": "38c1515a73049331539754825310ece9eeb45166a1ccc26cbb4b1311579eac2c",
+  "candidate_path": "/private/tmp/jarde-compound-region-clone-test-luna-v3/region.rs.candidate",
+  "candidate_sha256": "690e9f174db35fb1478fc4d968a6a8efc49968fc0e2d73cf495dfb77bf284a4d",
+  "patch_sha256": "46ff65e70a15007c51781882519243aad91ac7bc442201bd9e28026fe508af0e",
+  "fixture_repo_path": "openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class",
+  "fixture_sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525",
+  "fixture_blake3": "af3b18f31c433684f1c685c62a6ce11b540e8304f158e576b8776bc5d76a5a4b",
+  "fixture_bytes": 2662,
+  "validation": [
+    "base SHA matched requested formatted live source before editing",
+    "single code.instructions projection changed from methods to public fields",
+    "SSAInstruction method calls remain unchanged",
+    "fixture pins preserved",
+    "no Cargo/JDK/Git/formatter executed",
+    "not compiled or executed"
+  ]
+}

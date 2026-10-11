@@ -1,0 +1,29 @@
+{
+  "schema": "compound-negative-render-private-candidate-manifest-v2",
+  "files": {
+    "collect.py": {
+      "bytes": 18343,
+      "sha256": "da4f96f0c0f5d5569cfd458ddb8832959c2c629ce345f1ecf43a5ad4dbb64d6e"
+    },
+    "verify.py": {
+      "bytes": 26090,
+      "sha256": "a43735d8ebc46c97c4b162c1be9f640a7696a4cdead2c28135e760064f3024da"
+    },
+    "plan.json": {
+      "bytes": 1113,
+      "sha256": "21c6543c833b09ecdd93d9645f43fce8db94c6f292969d7f8d4f6ee6ead1a93c"
+    },
+    "README.md": {
+      "bytes": 1771,
+      "sha256": "3f817d2de3019f5e360247b7a85d7e8c631ab2dad51405a13fdbf511e94b4df8"
+    },
+    "development-dryrun-v2.json": {
+      "bytes": 2587,
+      "sha256": "1ce6023b1f382fe6221be557521c88104b4efd988e080f44d084f272447c9b90"
+    },
+    "v1-to-v2.patch": {
+      "bytes": 25139,
+      "sha256": "4eb9f5629bdf18438d313be2c56db7785f7aec91c80e9e273e2f182b6ef503cd"
+    }
+  }
+}

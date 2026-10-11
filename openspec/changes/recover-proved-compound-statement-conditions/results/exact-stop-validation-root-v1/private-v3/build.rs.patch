@@ -1,0 +1,14 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -37297,9 +37297,8 @@
+                 let stop = cancelled
+                     .region(&compound, &compound_path)
+                     .expect_err("the real emitter polls the cancelled request");
+-                assert!(
+-                    matches!(stop, StopReason::Cancelled { at: Some(at) } if owned.contains(&at))
+-                );
++                assert_eq!(stop, StopReason::Cancelled { at: Some(0) });
++                assert_eq!(cancelled.budget.usage().analysis_steps, 52);
+                 assert_eq!(compound_trial_state(&cancelled), before);
+             },
+         );

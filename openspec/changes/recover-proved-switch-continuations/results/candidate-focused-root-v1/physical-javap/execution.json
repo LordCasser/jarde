@@ -1,0 +1,60 @@
+{
+  "tool": {
+    "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+    "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+  },
+  "commands": [
+    {
+      "fixture": "TestSwitch2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "bytes": 1123,
+        "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+      },
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/private/tmp/jarde-switch-continuation-physical-javap-root-v1/TestSwitch2.stdout.raw",
+        "bytes": 9065,
+        "sha256": "0f8cc3cef20de14e09fce38d947513e62a5a6baaf0406ac5fd4cdeb652d09562"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-switch-continuation-physical-javap-root-v1/TestSwitch2.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "fixture": "TestSwitchWithFallThroughCase2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "bytes": 1654,
+        "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+      },
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/private/tmp/jarde-switch-continuation-physical-javap-root-v1/TestSwitchWithFallThroughCase2.stdout.raw",
+        "bytes": 16487,
+        "sha256": "0d0323d2f8eb982f018a5421f420ef55ac3698022af66f920758980b05c7ad16"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-switch-continuation-physical-javap-root-v1/TestSwitchWithFallThroughCase2.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

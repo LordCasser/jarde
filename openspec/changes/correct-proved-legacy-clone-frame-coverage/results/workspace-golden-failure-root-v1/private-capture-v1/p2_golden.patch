@@ -1,0 +1,27 @@
+--- a/tests/p2_golden.rs
++++ b/tests/p2_golden.rs
+@@ -2162,3 +2162,24 @@
+         other => panic!("the golden fixture {other:?} has no recorded source"),
+     }
+ }
++
++#[test]
++fn root_capture_legacy_coverage_usage() {
++    let mut captured = 0;
++    for replay in replay_list().iter().filter(|replay| {
++        replay.file == "historical.json" || replay.file == "legacy-clone.json"
++    }) {
++        let opened = open(replay.fixture, replay.method);
++        let (_, report) = run_replay(&opened, replay);
++        let usage = usage_of(&report);
++        let mut actual = serde_json::to_value(&report).expect("the report serializes");
++        normalize(&mut actual);
++        let expect = published_planes(&report, &usage);
++        println!(
++            "ROOT_LEGACY_JSON {}",
++            json!({"name": replay.name, "actual": actual, "expect": expect})
++        );
++        captured += 1;
++    }
++    assert_eq!(captured, 9, "capture all eight historical entries and the shared-subroutine entry");
++}

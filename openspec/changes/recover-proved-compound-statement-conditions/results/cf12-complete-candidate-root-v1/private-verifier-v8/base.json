@@ -1,0 +1,19 @@
+{
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/independent-verifier-root-v7.py",
+  "base_bytes": 55190,
+  "base_sha256": "8ad48834b8744f03d1c2c918fa0515433dfe82b3bf4246d845e60d25f9c7d591",
+  "candidate_path": "/private/tmp/jarde-cf12-compound-verifier-luna-v8/independent-verifier-luna-v8.py",
+  "candidate_bytes": 62058,
+  "candidate_sha256": "4bf0328b16e5e0f279b6f95ecf407ff6de73949f59e0600df472bf57009b1e90",
+  "patch_path": "/private/tmp/jarde-cf12-compound-verifier-luna-v8/independent-verifier-luna-v8.patch",
+  "patch_sha256": "753ffc9671457e4789f262a57384974d48662445e09f73bb54a92fbe8d05faa3",
+  "candidate_build_execution": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/execution.json",
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+    "bytes": 60735600,
+    "sha256": "465282ec5c11111eb5a76fde3dfc052f058441a3c9776864c8706cf2f5d2cf87",
+    "mode": 365
+  },
+  "class_digest_manifest": "openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/cli-build-passed/execution.json",
+  "validation": "static AST parse only; no verifier, CLI, JDK, Cargo, or Git execution"
+}

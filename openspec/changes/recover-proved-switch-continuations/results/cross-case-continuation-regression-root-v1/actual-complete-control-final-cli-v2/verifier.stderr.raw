@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-candidate-continuation-replay-root-v4/verify.py", line 228, in <module>
+    if __name__=='__main__': main()
+                             ~~~~^^
+  File "/private/tmp/jarde-candidate-continuation-replay-root-v4/verify.py", line 176, in main
+    require(raw['stderr']==b'','stderr was not empty at '+str(i))
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-candidate-continuation-replay-root-v4/verify.py", line 30, in require
+    if not ok: raise AssertionError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: stderr was not empty at 11

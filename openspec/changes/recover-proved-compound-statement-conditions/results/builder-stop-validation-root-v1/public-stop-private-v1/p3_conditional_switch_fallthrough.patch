@@ -1,0 +1,144 @@
+--- /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
++++ /private/tmp/jarde-compound-public-stop-tests-luna-v1/p3_conditional_switch_fallthrough.rs.candidate
+@@ -126,6 +126,7 @@
+     report: jarde_java::RecoveryReport,
+     method: PhysicalMethodId,
+     ordinal: jarde_reader::prepared::MethodOrdinal,
++    analysis_steps: u64,
+ }
+ 
+ fn recover_target(evidence: RecoveryEvidenceRequest) -> Run {
+@@ -279,9 +280,15 @@
+     let request = RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
+         .with_evidence(evidence)
+         .with_subject(subject);
+-    let report = match recovery_budget {
+-        Some(mut recovery_budget) => recover(&request, &mut recovery_budget),
+-        None => recover(&request, &mut budget),
++    let (report, analysis_steps) = match recovery_budget {
++        Some(mut recovery_budget) => {
++            let report = recover(&request, &mut recovery_budget);
++            (report, recovery_budget.usage().analysis_steps)
++        }
++        None => {
++            let report = recover(&request, &mut budget);
++            (report, budget.usage().analysis_steps)
++        }
+     };
+     if report.produced() {
+         let binding = report
+@@ -299,6 +306,7 @@
+         report,
+         method,
+         ordinal,
++        analysis_steps,
+     }
+ }
+ 
+@@ -780,6 +788,15 @@
+ const COMPOUND_OWNER: &str = "CompoundStatementConditions";
+ 
+ fn recover_compound_target(name: &str, descriptor: &str, evidence: RecoveryEvidenceRequest) -> Run {
++    recover_compound_target_with_budget(name, descriptor, evidence, None)
++}
++
++fn recover_compound_target_with_budget(
++    name: &str,
++    descriptor: &str,
++    evidence: RecoveryEvidenceRequest,
++    recovery_budget: Option<Budget>,
++) -> Run {
+     recover_bytes_target_with_recovery_budget(
+         COMPOUND_CLASS,
+         COMPOUND_OWNER,
+@@ -787,7 +804,7 @@
+         descriptor,
+         COMPOUND_CLASS_BLAKE3,
+         evidence,
+-        None,
++        recovery_budget,
+     )
+ }
+ 
+@@ -973,3 +990,81 @@
+     }
+     assert_physical_coverage(COMPOUND_CLASS, NAME, DESCRIPTOR, &all.report, &all.method);
+ }
++
++#[test]
++fn compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact() {
++    use jarde_java::{RecoveryContent, StopReason};
++    use jarde_reader::budget::CountedBudgetDimension;
++
++    const NAME: &str = "test";
++    const DESCRIPTOR: &str = "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;";
++    // The fixture has already prepared/analyzed this real method before the public `recover` call.
++    // Its stop BCI identifies the physical node only; it does not attribute a private stage.
++    let evidence = RecoveryEvidenceRequest::all();
++    let success = recover_compound_target_with_budget(
++        NAME,
++        DESCRIPTOR,
++        evidence.clone(),
++        Some(Budget::new(limits())),
++    );
++    assert!(success.report.produced(), "{:?}", success.report.outcome);
++    assert!(success.analysis_steps > 0);
++
++    let limit = success.analysis_steps - 1;
++    let mut bounded_limits = limits();
++    bounded_limits.analysis_steps = limit;
++    let stopped = recover_compound_target_with_budget(
++        NAME,
++        DESCRIPTOR,
++        evidence,
++        Some(Budget::new(bounded_limits)),
++    );
++    let at = match stopped.report.stop() {
++        Some(StopReason::Budget {
++            dimension: CountedBudgetDimension::AnalysisSteps,
++            written: 0,
++            limit: observed_limit,
++            at: Some(at),
++        }) => {
++            assert_eq!(*observed_limit, limit);
++            *at
++        }
++        other => panic!("expected atomic AnalysisSteps stop at limit {limit}, got {other:?}"),
++    };
++    assert!(stopped.analysis_steps <= limit);
++    let physical = physical_instructions(COMPOUND_CLASS, NAME, DESCRIPTOR);
++    assert!(
++        physical.iter().any(|instruction| instruction.bci == at),
++        "reported stop BCI {at} is not a physical instruction"
++    );
++    assert_eq!(stopped.report.content, RecoveryContent::NotProduced);
++    assert!(!stopped.report.produced());
++    assert!(stopped.report.artifact.binding().is_none());
++    assert!(stopped.report.text.is_empty());
++    assert!(stopped.report.source_map.is_empty());
++    eprintln!("compound whole-recovery AnalysisSteps stop: limit={limit}, at={at}");
++}
++
++#[test]
++fn compound_pre_cancelled_public_recovery_publishes_no_partial_artifact() {
++    use jarde_java::{RecoveryContent, StopReason};
++    use jarde_reader::budget::CancellationToken;
++
++    const NAME: &str = "test";
++    const DESCRIPTOR: &str = "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;";
++    // This verifies pre-cancellation from the start, not a late stop boundary.
++    let token = CancellationToken::new();
++    token.cancel();
++    let stopped = recover_compound_target_with_budget(
++        NAME,
++        DESCRIPTOR,
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::with_cancellation_token(limits(), token)),
++    );
++    assert!(stopped.report.stop().is_some_and(StopReason::is_cancelled));
++    assert_eq!(stopped.report.content, RecoveryContent::NotProduced);
++    assert!(!stopped.report.produced());
++    assert!(stopped.report.artifact.binding().is_none());
++    assert!(stopped.report.text.is_empty());
++    assert!(stopped.report.source_map.is_empty());
++}

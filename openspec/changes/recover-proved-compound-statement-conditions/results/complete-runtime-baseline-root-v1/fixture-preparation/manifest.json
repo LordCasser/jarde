@@ -1,0 +1,18 @@
+{
+  "schema": "compound-condition-runtime-fixtures-luna-v2",
+  "workspace_modified": false,
+  "sources": {
+    "CompoundStatementConditions.java": "6103506957bee489c09cb0fe191fc7b0eb208f2c592f7be8e24b39e1e1774d43",
+    "Runner.java": "2ed3005970f32e76f0a1c039dbb799200664b5e0f965c19fadeb42f921cd1e35"
+  },
+  "input_matrix_sha256": "187cf3e6df200f332c7177119533fcfcfcd2ee3356bb135bbab83d4d5f3319c8",
+  "readme_sha256": "2fccd2bd82ed8fd0bc43e8050c9d9bcde92eaada4626349528121aff30b0fc15",
+  "expected_rows": {
+    "normal_plain_mixed_throwing": 48,
+    "reachable_throw_points": 4,
+    "skipped_throw_controls": 4,
+    "float_values": 9,
+    "total": 65
+  },
+  "validation": "Expected source-level matrix recorded; compilation and execution not performed."
+}

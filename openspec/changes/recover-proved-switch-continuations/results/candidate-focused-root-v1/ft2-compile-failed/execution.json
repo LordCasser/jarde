@@ -1,0 +1,92 @@
+{
+  "schema": "switch-continuation-focused-root-v1",
+  "runner_sha256": "f36705b045c04512190f54cfe8d29d3c4521f892dcf561571a2d3f34c07f3b9a",
+  "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+  "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+  "region_sha256_before": "9b43e41fab3c91e37ec8d416798033a17ad5b0e16ad392b07a9e2278961c778b",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "region::tests::cf12_ft2_switch_join_stays_outside_cases_and_straight_tail_is_claimed_once",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:15:04.830654+00:00",
+      "duration_seconds": 22.257750624994515,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 118302800,
+      "free_bytes_after": 40659005440,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-ft2-continuation-focused-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-ft2-continuation-focused-root-v1/0.stderr.raw",
+          "bytes": 2361,
+          "sha256": "3c6aea88226d269a883e300cedf0237915643f3f714ae2426aa5a54b6446a179"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:15:27.091866+00:00",
+      "duration_seconds": 1.0149930419865996,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 118302800,
+      "free_bytes_after": 40764088320,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-ft2-continuation-focused-root-v1/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-ft2-continuation-focused-root-v1/1.stderr.raw",
+          "bytes": 52,
+          "sha256": "8921877f60f032e9d99619f143abb05652684c4351a4360922ec256ca3821ce2"
+        }
+      }
+    }
+  ],
+  "status": "failed",
+  "actual_summaries": [],
+  "error": "",
+  "target_absent_after_clean": true,
+  "region_sha256_after": "9b43e41fab3c91e37ec8d416798033a17ad5b0e16ad392b07a9e2278961c778b"
+}

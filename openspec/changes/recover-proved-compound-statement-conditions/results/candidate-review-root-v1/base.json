@@ -1,0 +1,31 @@
+{
+  "revision": "v2",
+  "change": "recover-proved-compound-statement-conditions",
+  "workspace": "/Users/lordcasser/workspace/projects/jarde",
+  "source": {
+    "crates/jarde-java/src/region.rs": {
+      "base_sha256": "34dcf89ccee47c33e0b6e08089ae53567b30ce0f73b50e76b13aec1ddf040025",
+      "candidate_sha256": "32ff44a16e70a90f9c3503c9754289ac88e98d9b79d96ed2f1298b17577f8bad",
+      "base_bytes": 719162,
+      "candidate_bytes": 769845
+    },
+    "crates/jarde-java/src/build.rs": {
+      "base_sha256": "768735cd1cf5d7694d2a1d7b28030475b0bc0864e1d18d9a6350e12c999b1de1",
+      "candidate_sha256": "cf6fffaca9ae1eb24b3ba45e5e5fd034c886e84644722a5cff3ba5b3bb266670",
+      "base_bytes": 1689885,
+      "candidate_bytes": 1699154
+    }
+  },
+  "fixture": {
+    "path": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+    "bytes": 1123,
+    "blake3": "3ec50697523d585c5a23797922f0289334f6e76e9e83f92596d46fdce4cf0b44"
+  },
+  "patch": {
+    "region_patch_bytes": 56713,
+    "build_patch_bytes": 13794,
+    "combined_bytes": 70507,
+    "combined_sha256": "870e855af60bf26a1fad090acdada715eb2d9ded0896bc82fbaa76273c916110"
+  },
+  "toolchain": "not run"
+}

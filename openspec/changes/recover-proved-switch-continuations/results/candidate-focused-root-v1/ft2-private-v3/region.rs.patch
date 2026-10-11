@@ -1,0 +1,654 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -3513,6 +3513,21 @@
+                                     &branch,
+                                     &arm_frame,
+                                     &arm_before,
++                                )?;
++                            }
++                            if !continued {
++                                let empty_case_entries = BTreeSet::new();
++                                let case_entries = arm_frame
++                                    .case_entries
++                                    .as_ref()
++                                    .unwrap_or(&empty_case_entries);
++                                continued = self.continue_switch_arm(
++                                    &mut arm_run,
++                                    next,
++                                    walk,
++                                    &arm_frame,
++                                    case_entries,
++                                    true,
+                                 )?;
+                             }
+                             if !continued {
+@@ -12965,6 +12980,7 @@
+                     &start,
+                     &case_frame,
+                     &case_entries,
++                    false,
+                 )?
+             {
+                 // A child switch left a continuation that this arm cannot own. Refuse the
+@@ -13147,9 +13163,9 @@
+         }))
+     }
+ 
+-    /// Keep one child switch's proved join inside its enclosing case. This is the single
+-    /// hash-dispatch → final-dispatch continuation used by nested javac String switches; the
+-    /// ordinary sequence projection still decides whether the pair is a String switch.
++    /// Consume a child switch's proved join with its enclosing continuation. Existing switch-arm
++    /// callers retain the hash-dispatch → final-dispatch path; one-arm `if` callers may also opt
++    /// into a separately proved straight tail to their exact frame boundary.
+     fn continue_switch_arm(
+         &mut self,
+         run: &mut Vec<Region>,
+@@ -13157,14 +13173,13 @@
+         start: &CanonicalBlockId,
+         frame: &Frame,
+         case_entries: &BTreeSet<usize>,
++        allow_straight_tail: bool,
+     ) -> Result<bool, StopReason> {
+-        let [
+-            Region::Switch {
+-                branch,
+-                join: Some(join),
+-                ..
+-            },
+-        ] = run.as_slice()
++        let [Region::Switch {
++            branch,
++            join: Some(join),
++            ..
++        }] = run.as_slice()
+         else {
+             return Ok(false);
+         };
+@@ -13203,51 +13218,208 @@
+             return Ok(false);
+         }
+ 
+-        let before = self.visited.clone();
+-        let (tail, tail_next) = self.region_at(next, frame)?;
+-        let [Region::Switch { .. }] = tail.as_slice() else {
++        if !allow_straight_tail {
++            // Preserve the existing hash-dispatch → final-dispatch continuation as-is.
++            let before = self.visited.clone();
++            let (tail, tail_next) = self.region_at(next, frame)?;
++            let [Region::Switch { .. }] = tail.as_slice() else {
++                return Ok(false);
++            };
++            if tail_next.is_some() || !tail[0].is_structured() {
++                return Ok(false);
++            }
++            let tail_owned: BTreeSet<_> = tail[0].blocks().into_iter().cloned().collect();
++            let newly_visited: BTreeSet<_> = self
++                .visited
++                .difference(&before)
++                .filter_map(|node| self.view.id_of(*node).cloned())
++                .collect();
++            if tail_owned != newly_visited
++                || tail_owned.is_empty()
++                || !tail_owned.is_disjoint(&first_owned)
++                || tail_owned.iter().any(|block| {
++                    block.path() != start.path()
++                        || self.excluded_edge_nodes.contains(block)
++                        || self.view.index_of(block).is_none_or(|node| {
++                            !self.view.dominates(start_node, node)
++                                || case_entries.contains(&node)
++                                || frame.stops_at(node)
++                                || self.view.is_loop_header(node)
++                        })
++                })
++            {
++                return Ok(false);
++            }
++            poll(self.budget, Some(next.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
++                Some(next.bci()),
++            )?;
++            if self.canonical.edges().iter().any(|edge| {
++                (tail_owned.contains(edge.to())
++                    && (edge.kind() != CanonicalEdgeKind::Normal
++                        || !(first_owned.contains(edge.from()) || tail_owned.contains(edge.from()))))
++                    || (tail_owned.contains(edge.from())
++                        && edge.kind() == CanonicalEdgeKind::Normal
++                        && !tail_owned.contains(edge.to()))
++            }) {
++                return Ok(false);
++            }
++            run.extend(tail);
++            return Ok(true);
++        }
++
++        // Prove the straight physical route before `region_at` can claim any tail block.
++        let Some(boundary_node) = frame.boundary else {
+             return Ok(false);
+         };
+-        if tail_next.is_some() || !tail[0].is_structured() {
++        let Some(boundary) = self.view.id_of(boundary_node).cloned() else {
+             return Ok(false);
++        };
++        if boundary == *next || boundary.path() != next.path() {
++            return Ok(false);
+         }
+-        let tail_owned: BTreeSet<_> = tail[0].blocks().into_iter().cloned().collect();
+-        let newly_visited: BTreeSet<_> = self
+-            .visited
+-            .difference(&before)
+-            .filter_map(|node| self.view.id_of(*node).cloned())
+-            .collect();
+-        if tail_owned != newly_visited
+-            || tail_owned.is_empty()
+-            || !tail_owned.is_disjoint(&first_owned)
+-            || tail_owned.iter().any(|block| {
+-                block.path() != start.path()
+-                    || self.excluded_edge_nodes.contains(block)
+-                    || self.view.index_of(block).is_none_or(|node| {
+-                        !self.view.dominates(start_node, node)
+-                            || case_entries.contains(&node)
+-                            || frame.stops_at(node)
+-                            || self.view.is_loop_header(node)
+-                    })
+-            })
+-        {
++        let mut tail_blocks = Vec::new();
++        let mut tail_positions = BTreeMap::new();
++        let mut current = next.clone();
++        loop {
++            if current == boundary {
++                break;
++            }
++            let Some(node) = self.view.index_of(&current) else {
++                return Ok(false);
++            };
++            poll(self.budget, Some(current.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(current.bci()),
++            )?;
++            if current.path() != start.path()
++                || tail_positions
++                    .insert(current.clone(), tail_blocks.len())
++                    .is_some()
++                || frame.stops_at(node)
++                || case_entries.contains(&node)
++                || self.visited.contains(&node)
++                || self.excluded_edge_nodes.contains(&current)
++                || self.view.is_loop_header(node)
++                || !self.view.dominates(start_node, node)
++            {
++                return Ok(false);
++            }
++            let Some(terminal_bci) = self.terminal_bci(&current) else {
++                return Ok(false);
++            };
++            if self.operations.get(terminal_bci).is_some_and(|operation| {
++                operation.comparison().is_some() || operation.switch().is_some()
++            }) {
++                return Ok(false);
++            }
++            poll(self.budget, Some(current.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(current.bci()),
++            )?;
++            let successors = self.view.successor_ids(&current);
++            let [successor] = successors.as_slice() else {
++                return Ok(false);
++            };
++            let Some(successor_node) = self.view.index_of(successor) else {
++                return Ok(false);
++            };
++            if successor.path() != current.path() {
++                return Ok(false);
++            }
++            tail_blocks.push(current.clone());
++            current = successor.clone();
++            if successor_node == boundary_node {
++                break;
++            }
++        }
++        if tail_blocks.is_empty() || current != boundary {
+             return Ok(false);
+         }
+-        poll(self.budget, Some(next.bci()))?;
++
++        // Compare every canonical row touching the route. The first tail block may have several
++        // predecessors, all from the switch owner; later blocks have only their prior block.
+         charge(
+             self.budget,
+             CountedBudgetDimension::AnalysisSteps,
+             u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+             Some(next.bci()),
+         )?;
+-        if self.canonical.edges().iter().any(|edge| {
+-            (tail_owned.contains(edge.to())
+-                && (edge.kind() != CanonicalEdgeKind::Normal
+-                    || !(first_owned.contains(edge.from()) || tail_owned.contains(edge.from()))))
+-                || (tail_owned.contains(edge.from())
+-                    && edge.kind() == CanonicalEdgeKind::Normal
+-                    && !tail_owned.contains(edge.to()))
+-        }) {
++        let mut incoming_counts = vec![0usize; tail_blocks.len()];
++        let mut outgoing_counts = vec![0usize; tail_blocks.len()];
++        let mut first_sources = BTreeSet::new();
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(next.bci()))?;
++            let from = tail_positions.get(edge.from()).copied();
++            let to = tail_positions.get(edge.to()).copied();
++            if from.is_none() && to.is_none() {
++                continue;
++            }
++            if edge.kind() != CanonicalEdgeKind::Normal {
++                return Ok(false);
++            }
++            if let Some(index) = to {
++                let valid_source = if index == 0 {
++                    first_owned.contains(edge.from()) && first_sources.insert(edge.from().clone())
++                } else {
++                    from == Some(index - 1)
++                };
++                if !valid_source {
++                    return Ok(false);
++                }
++                incoming_counts[index] += 1;
++            }
++            if let Some(index) = from {
++                let expected = tail_blocks.get(index + 1).unwrap_or(&boundary);
++                if edge.to() != expected {
++                    return Ok(false);
++                }
++                outgoing_counts[index] += 1;
++            }
++        }
++        if first_sources.is_empty()
++            || incoming_counts.iter().skip(1).any(|count| *count != 1)
++            || outgoing_counts.iter().any(|count| *count != 1)
++        {
++            return Ok(false);
++        }
++
++        // Only after the canonical proof succeeds do we let the ordinary region walk claim the
++        // route. Its physical owners must equal the proof, and the boundary stays outside it.
++        let before = self.visited.clone();
++        let (tail, tail_next) = match self.region_at(next, frame) {
++            Ok(result) => result,
++            Err(reason) => {
++                self.visited = before;
++                return Err(reason);
++            }
++        };
++        let expected: BTreeSet<_> = tail_blocks.iter().cloned().collect();
++        let owned: BTreeSet<_> = tail
++            .iter()
++            .flat_map(Region::blocks)
++            .cloned()
++            .collect();
++        let newly_visited: BTreeSet<_> = self
++            .visited
++            .difference(&before)
++            .filter_map(|node| self.view.id_of(*node).cloned())
++            .collect();
++        if tail_next.is_some()
++            || !matches!(tail.as_slice(), [Region::Straight { blocks }] if blocks == &tail_blocks)
++            || owned != expected
++            || newly_visited != expected
++        {
++            self.visited = before;
+             return Ok(false);
+         }
+         run.extend(tail);
+@@ -14277,8 +14449,320 @@
+             reason.message().contains("[44, 45]"),
+             "{}",
+             reason.message()
++        );
++    }
++    #[test]
++    fn cf12_ft2_switch_join_stays_outside_cases_and_straight_tail_is_claimed_once() {
++        const CLASS: &[u8] = include_bytes!(
++            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class"
++        );
++
++        fn find_outer_if(region: &Region) -> Option<&Region> {
++            match region {
++                Region::If { branch_bci: 5, .. } => Some(region),
++                Region::Sequence { regions } => regions.iter().find_map(find_outer_if),
++                _ => None,
++            }
++        }
++
++        fn find_switch(region: &Region) -> Option<&Region> {
++            match region {
++                Region::Switch { branch_bci: 11, .. } => Some(region),
++                Region::Sequence { regions } => regions.iter().find_map(find_switch),
++                Region::If { then_arm, else_arm, .. } => {
++                    find_switch(then_arm).or_else(|| find_switch(else_arm))
++                }
++                _ => None,
++            }
++        }
++
++        fn count_block(region: &Region, bci: u32) -> usize {
++            region.blocks().iter().filter(|block| block.bci() == bci).count()
++        }
++
++        fn remove_block(region: &mut Region, bci: u32) -> bool {
++            match region {
++                Region::Straight { blocks } => {
++                    let before = blocks.len();
++                    blocks.retain(|block| block.bci() != bci);
++                    blocks.len() != before
++                }
++                Region::Sequence { regions } => {
++                    regions.iter_mut().any(|part| remove_block(part, bci))
++                }
++                Region::If { then_arm, else_arm, .. } => {
++                    remove_block(then_arm, bci) || remove_block(else_arm, bci)
++                }
++                Region::Switch { groups, .. } => groups
++                    .iter_mut()
++                    .any(|group| remove_block(&mut group.arm, bci)),
++                _ => false,
++            }
++        }
++
++        fn switch_breaks(region: &Region, out: &mut Vec<(u32, u32, u32)>) {
++            match region {
++                Region::SwitchBreak {
++                    source_bci,
++                    switch_bci,
++                    join,
++                } => {
++                    out.push((*source_bci, *switch_bci, join.bci()));
++                }
++                Region::Sequence { regions } => {
++                    for child in regions {
++                        switch_breaks(child, out);
++                    }
++                }
++                Region::If { then_arm, else_arm, .. } => {
++                    switch_breaks(then_arm, out);
++                    switch_breaks(else_arm, out);
++                }
++                Region::Switch { groups, .. } => {
++                    for group in groups { switch_breaks(&group.arm, out); }
++                }
++                _ => {}
++            }
++        }
++
++        with_real_conditional_switch(
++            CLASS,
++            "test",
++            "(IZZ)Ljava/lang/String;",
++            11,
++            175,
++            &[0, 8, 36, 63, 67, 71, 96, 121, 125, 150, 153, 175, 197, 201, 205, 227],
++            &[
++                (0, 8), (0, 197), (8, 36), (8, 121), (8, 150), (8, 153),
++                (36, 63), (36, 121), (63, 67), (63, 121), (67, 71), (67, 96),
++                (71, 175), (96, 175), (121, 125), (121, 175), (125, 175),
++                (150, 175), (153, 175), (175, 197), (197, 201), (197, 227),
++                (201, 205), (201, 227), (205, 227),
++            ],
++            &[36, 121, 150, 153],
++            |input| {
++                let canonical = input.canonical;
++                let ssa = input.ssa;
++                let code = input.code;
++                let pool = input.pool;
++                let operations = input.operations;
++                let view = input.view;
++                let mut budget = Budget::new(jarde_reader::budget::Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Default::default()
++                });
++                let chains = crate::concat::plan_four_conditional_strings(
++                    ssa,
++                    canonical,
++                    operations,
++                    &crate::build::FieldCopies::default(),
++                    &mut budget,
++                )
++                .expect("string concat planning succeeds");
++                let recovered = recover(
++                    canonical,
++                    view,
++                    ssa,
++                    operations,
++                    pool,
++                    &chains,
++                    &crate::init::Sites::empty(),
++                    code,
++                    Some(false),
++                    false,
++                    &crate::pass::JAVA_8,
++                    &mut budget,
++                )
++                .expect("FT2 region recovery completes");
++
++                assert!(recovered.is_structured(), "{:?}", recovered.fallbacks());
++                assert_eq!(recovered.blocks, 16);
++                assert_eq!(recovered.claimed.len(), 16);
++                let outer = recovered.regions.iter().find_map(find_outer_if)
++                    .expect("outer conditional at terminal BCI 5 is a structured if");
++                let Region::If { branch, branch_bci, join: Some(join), then_arm, .. } = outer else { unreachable!() };
++                assert_eq!(branch.bci(), 0, "outer if's physical block starts at BCI 0");
++                assert_eq!(*branch_bci, 5, "outer if's branch instruction is at BCI 5");
++                assert_eq!(input.last_ssa_instruction_bci(branch.bci()), Some(5));
++                assert_eq!(join.bci(), 197);
++                let switch = find_switch(then_arm).expect("the outer if arm contains the switch with terminal BCI 11");
++                let Region::Switch { branch, branch_bci, join: Some(switch_join), groups, .. } = switch else { unreachable!() };
++                assert_eq!(branch.bci(), 8, "switch's physical block starts at BCI 8");
++                assert_eq!(*branch_bci, 11, "switch instruction is at BCI 11");
++                assert_eq!(input.last_ssa_instruction_bci(branch.bci()), Some(11));
++                assert_eq!(switch_join.bci(), 175);
++                let switch_owners: BTreeSet<_> = switch.blocks().iter().map(|block| block.bci()).collect();
++                assert_eq!(
++                    switch_owners,
++                    BTreeSet::from([8, 36, 63, 67, 71, 96, 121, 125, 150, 153]),
++                    "switch and its case arms own the ten diagnosed blocks"
++                );
++                assert!(groups.iter().all(|group| {
++                    group.arm.blocks().iter().all(|block| block.bci() != 175)
++                }), "switch join remains outside every case");
++                assert_eq!(count_block(then_arm, 175), 1, "the outer straight tail owns join 175 once");
++
++                // Exercise the consumer's own continuation Stop contract against the same real method.
++                // The warm walk proves the switch arm first; a zero-step consumer budget must stop at its
++                // actual `next` (175) without changing those already-proved owners.
++                let mut warm_budget = Budget::new(jarde_reader::budget::Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Default::default()
++                });
++                let sites = crate::init::Sites::empty();
++                let switch_start = canonical.blocks().iter().map(|block| block.id())
++                    .find(|id| id.bci() == 8).expect("switch dispatch block exists").clone();
++                let boundary_node = view.index_of(join).expect("outer if boundary is in the view");
++                let outer_frame = Frame {
++                    boundary: Some(boundary_node),
++                    transfer_source_bci: Some(5),
++                    ..Frame::default()
++                };
++                let mut warm_walker = Walker {
++                    canonical,
++                    view,
++                    ssa,
++                    operations,
++                    pool: pool,
++                    chains: &chains,
++                    sites: &sites,
++                    code,
++                    method_synchronized: Some(false),
++                    has_reachable_explicit_monitor: false,
++                    return_is_boolean: false,
++                    handlers: &code.exception_handlers,
++                    profile: &crate::pass::JAVA_8,
++                    budget: &mut warm_budget,
++                    catch_joins: BTreeSet::new(),
++                    fragmented: None,
++                    excluded_edge_nodes: BTreeSet::new(),
++                    visited: BTreeSet::new(),
++                    unclosed_tail_at: None,
++                    own_monitor: None,
++                    depth: 0,
++                };
++                let (mut arm_run, next) = warm_walker.region_at(&switch_start, &outer_frame)
++                    .expect("real switch arm walk reaches its proved join");
++                let next = next.expect("switch arm returns the join as its continuation");
++                assert_eq!(next.bci(), 175);
++                let prior_owners = warm_walker.visited.clone();
++
++                // A real canonical predecessor becomes external when the offered switch owner set omits
++                // its source block. The production consumer must reject before walking or claiming the tail.
++                let mut missing_owner_run = arm_run.clone();
++                assert!(remove_block(&mut missing_owner_run[0], 96));
++                let mut reject_budget = Budget::new(jarde_reader::budget::Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Default::default()
++                });
++                let mut reject_walker = Walker {
++                    canonical,
++                    view,
++                    ssa,
++                    operations,
++                    pool: pool,
++                    chains: &chains,
++                    sites: &sites,
++                    code,
++                    method_synchronized: Some(false),
++                    has_reachable_explicit_monitor: false,
++                    return_is_boolean: false,
++                    handlers: &code.exception_handlers,
++                    profile: &crate::pass::JAVA_8,
++                    budget: &mut reject_budget,
++                    catch_joins: BTreeSet::new(),
++                    fragmented: None,
++                    excluded_edge_nodes: BTreeSet::new(),
++                    visited: prior_owners.clone(),
++                    unclosed_tail_at: None,
++                    own_monitor: None,
++                    depth: 0,
++                };
++                assert!(!reject_walker.continue_switch_arm(
++                    &mut missing_owner_run,
++                    &next,
++                    &switch_start,
++                    &outer_frame,
++                    &BTreeSet::new(),
++                    true,
++                ).expect("the real outside predecessor is an ordinary shape rejection"));
++                assert_eq!(reject_walker.visited, prior_owners);
++
++                let mut stop_budget = Budget::new(jarde_reader::budget::Limits {
++                    analysis_steps: 0,
++                    elapsed_millis: u64::MAX,
++                    ..Default::default()
++                });
++                let mut stop_walker = Walker {
++                    canonical,
++                    view,
++                    ssa,
++                    operations,
++                    pool: pool,
++                    chains: &chains,
++                    sites: &sites,
++                    code,
++                    method_synchronized: Some(false),
++                    has_reachable_explicit_monitor: false,
++                    return_is_boolean: false,
++                    handlers: &code.exception_handlers,
++                    profile: &crate::pass::JAVA_8,
++                    budget: &mut stop_budget,
++                    catch_joins: BTreeSet::new(),
++                    fragmented: None,
++                    excluded_edge_nodes: BTreeSet::new(),
++                    visited: prior_owners.clone(),
++                    unclosed_tail_at: None,
++                    own_monitor: None,
++                    depth: 0,
++                };
++                let stop = stop_walker.continue_switch_arm(
++                    &mut arm_run,
++                    &next,
++                    &switch_start,
++                    &outer_frame,
++                    &BTreeSet::new(),
++                    true,
++                ).expect_err("continuation budget stops before consuming the tail");
++                assert!(matches!(stop, StopReason::Budget {
++                    dimension: CountedBudgetDimension::AnalysisSteps,
++                    at: Some(175),
++                    ..
++                }));
++                assert_eq!(stop_walker.budget.usage().analysis_steps, 0);
++                assert_eq!(stop_walker.visited, prior_owners);
++
++                let mut origins = Vec::new();
++                switch_breaks(switch, &mut origins);
++                assert!(!origins.is_empty(), "the existing switch-break consumers retain origins");
++                for (source, switch_bci, join_bci) in origins {
++                    assert_eq!(switch_bci, 11);
++                    assert_eq!(join_bci, 175);
++                    let source_block = ssa.blocks().iter()
++                        .find(|block| block.instructions().last().is_some_and(|instruction| instruction.bci() == source))
++                        .expect("switch-break source is a physical terminal instruction");
++                    assert!(canonical.edges().iter().any(|edge| {
++                        edge.from() == source_block.block()
++                            && edge.to().bci() == join_bci
++                            && edge.kind() == CanonicalEdgeKind::Normal
++                    }), "switch-break instruction {source} names its actual normal edge to {join_bci}");
++                }
++
++                let mut owners = BTreeMap::new();
++                for region in &recovered.regions {
++                    for block in region.blocks() {
++                        *owners.entry(block.bci()).or_insert(0usize) += 1;
++                    }
++                }
++                assert_eq!(owners.len(), 16);
++                assert!(owners.values().all(|count| *count == 1));
++            },
+         );
+     }
++
+     #[test]
+     fn cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir() {
+         use jarde_jvm::engine::analyze_method_ir;
+@@ -14661,7 +15145,23 @@
+                 .find(|id| id.bci() == bci && id.path().is_empty())
+                 .expect("observer-established CF12 block exists")
+         };
+-        let dispatch = block(0);
++        let dispatch = ssa
++            .blocks()
++            .iter()
++            .find(|block| {
++                block
++                    .instructions()
++                    .last()
++                    .is_some_and(|instruction| instruction.bci() == switch_bci)
++            })
++            .map(|block| block.block())
++            .expect("switch terminal instruction belongs to one SSA block");
++        let dispatch = canonical
++            .blocks()
++            .iter()
++            .map(|block| block.id())
++            .find(|id| *id == dispatch)
++            .expect("switch dispatch has a canonical block");
+         let dispatch_node = view.index_of(dispatch).expect("switch dispatch node");
+         let switch_bci = 7;
+         let (cases, default) = operations

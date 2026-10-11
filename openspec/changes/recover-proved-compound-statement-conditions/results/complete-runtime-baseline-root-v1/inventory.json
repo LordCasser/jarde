@@ -1,0 +1,714 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1822,
+      "sha256": "aa2e6ffa8ac118969ed9701a73d8c0bf823bf54ef7c81e7e71955f5a2b2d290b"
+    },
+    {
+      "path": "fixture-preparation/CompoundStatementConditions.java",
+      "bytes": 3240,
+      "sha256": "6103506957bee489c09cb0fe191fc7b0eb208f2c592f7be8e24b39e1e1774d43"
+    },
+    {
+      "path": "fixture-preparation/README.md",
+      "bytes": 1286,
+      "sha256": "2fccd2bd82ed8fd0bc43e8050c9d9bcde92eaada4626349528121aff30b0fc15"
+    },
+    {
+      "path": "fixture-preparation/Runner.java",
+      "bytes": 3243,
+      "sha256": "2ed3005970f32e76f0a1c039dbb799200664b5e0f965c19fadeb42f921cd1e35"
+    },
+    {
+      "path": "fixture-preparation/input-matrix.json",
+      "bytes": 24645,
+      "sha256": "187cf3e6df200f332c7177119533fcfcfcd2ee3356bb135bbab83d4d5f3319c8"
+    },
+    {
+      "path": "fixture-preparation/manifest.json",
+      "bytes": 756,
+      "sha256": "2104a1ef6f5b84381379dede5aa55030508f45dd4aad31fda0cfca8d3ca34775"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-runtime-root-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-runtime-root-v1.stdout.raw",
+      "bytes": 147,
+      "sha256": "0020b1b3830d67ccabf97770a88dcdc57872126fc91c3c6a02be0cbab1d146d5"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-runtime-root-v2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-runtime-root-v2.stdout.raw",
+      "bytes": 147,
+      "sha256": "d54d526e348704c431220545ceaae2018b38cbfebbcd7c7d38fa0c3392254974"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v1.json",
+      "bytes": 81044,
+      "sha256": "8548e3a1cc4a0252034d4922fc3aee8afb376ac5979dd9e2a558f523713e2d1c"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v1.stdout.raw",
+      "bytes": 302,
+      "sha256": "8b8d2c3e64a81d8bf682d69fb0727a68ca1376772da0655b427ea8321944b688"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v2.json",
+      "bytes": 80703,
+      "sha256": "c3b3ab8296f52df2c7897a12c0cf3f0b6d20e5cc6c42be8e280a89bddd24773c"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v2.py",
+      "bytes": 28610,
+      "sha256": "13ce4360fd9f258a84922b05cf7687626bc4745869642f435f1e5cd7d8917da5"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v2.stdout.raw",
+      "bytes": 186,
+      "sha256": "69f366560e951ba24c5a2b7dfa81997618d6cc7242cf59e93b596c0da8a68d93"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v3.json",
+      "bytes": 80680,
+      "sha256": "afd92960e6735690a4a1e17b7210ffccd3465decb288c65ce7d94a6ff85fb692"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v3.py",
+      "bytes": 28574,
+      "sha256": "15e4c6939b3dbfa89c89bd73cdc485b4a9d585a471b94fd9218613aba13dadf8"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-compound-condition-old-candidate-verifier-root-v3.stdout.raw",
+      "bytes": 164,
+      "sha256": "202c9eb2fa15adba0215fa9267be71b5bc9ec1803554c4f6a26b627b99d3ff22"
+    },
+    {
+      "path": "jarde-compound-condition-physical-javap-runner-root-v1.py",
+      "bytes": 1071,
+      "sha256": "11ac1a132929b135c1fe0da2533eed6f172de96cab514395aea90c58c6217ba2"
+    },
+    {
+      "path": "jarde-compound-condition-runtime-compare-luna-v1.py",
+      "bytes": 22424,
+      "sha256": "a2e2b960c6a8a9f9f97c7ef8db970f3c5df197a641ddea777d14f8b0acae3c6f"
+    },
+    {
+      "path": "jarde-compound-condition-runtime-compare-root-v2.py",
+      "bytes": 22864,
+      "sha256": "b0ff08b110805ca4ba6fd910825aee95ef2191445194a1f7fe2553c859e8b8a1"
+    },
+    {
+      "path": "jarde-compound-condition-runtime-compare-root-v3.py",
+      "bytes": 23576,
+      "sha256": "97768f361087f720df68df68ee84d1c26728d7562642c02bf495cb6f5a1340cc"
+    },
+    {
+      "path": "observed/execution.json",
+      "bytes": 145694,
+      "sha256": "758a19e9882d97f47658620de676c6f31e787c821bd872a6ef96299c3d1f0872"
+    },
+    {
+      "path": "observed/inputs/CompoundStatementConditions.java",
+      "bytes": 3240,
+      "sha256": "6103506957bee489c09cb0fe191fc7b0eb208f2c592f7be8e24b39e1e1774d43"
+    },
+    {
+      "path": "observed/inputs/Runner.java",
+      "bytes": 3243,
+      "sha256": "2ed3005970f32e76f0a1c039dbb799200664b5e0f965c19fadeb42f921cd1e35"
+    },
+    {
+      "path": "observed/jadx/output/sources/defpackage/CompoundStatementConditions.java",
+      "bytes": 3129,
+      "sha256": "10c6e500f305b050e504ddda358e771d8695e8956f9e18e2074a8fa7d210b35f"
+    },
+    {
+      "path": "observed/jarde-all/sources/CompoundStatementConditions.java",
+      "bytes": 5865,
+      "sha256": "f8c2a50f310446c01c7f2db1ae43eaeeac3b68626b615c3c19c4fe35a7342b71"
+    },
+    {
+      "path": "observed/jarde-all/sources/class-source.api.json",
+      "bytes": 890820,
+      "sha256": "d501cf40c51684a596b14a5f3fe459c9a7caef8ba3fd08c138924b0510eae671"
+    },
+    {
+      "path": "observed/jarde-all/sources/source-map-quality.json",
+      "bytes": 684863,
+      "sha256": "4c75d4f7bd3bcffa81074360604f03dc98b67680836ffa4fdf3b52b63d5ef330"
+    },
+    {
+      "path": "observed/jarde-default/sources/CompoundStatementConditions.java",
+      "bytes": 5865,
+      "sha256": "f8c2a50f310446c01c7f2db1ae43eaeeac3b68626b615c3c19c4fe35a7342b71"
+    },
+    {
+      "path": "observed/jarde-default/sources/class-source.api.json",
+      "bytes": 876613,
+      "sha256": "1eed9f41fca7afcb4a51a29007e9f02991687d4ffd88be7eb393ae525e9a45e1"
+    },
+    {
+      "path": "observed/jarde-default/sources/source-map-quality.json",
+      "bytes": 681755,
+      "sha256": "7d3bc234e509255991adc870ac30e808c11e1a46f14295c0f2ab830cdd2cb4c6"
+    },
+    {
+      "path": "observed/jdk23_tools/jadx/Runner.java",
+      "bytes": 3290,
+      "sha256": "93794be9cfd1e82a214b6ecb6689a1716074cee50cad35110ab9e96ccb3bbb6d"
+    },
+    {
+      "path": "observed/jdk23_tools/jadx/runner-classes/Runner.class",
+      "bytes": 3580,
+      "sha256": "b45fac02734742fdc46ef4806076e49e86ecc6247c543443fbd6e9456119f3b2"
+    },
+    {
+      "path": "observed/jdk23_tools/jadx/target-classes/defpackage/CompoundStatementConditions.class",
+      "bytes": 2854,
+      "sha256": "606c725f4bb33f9e55aba60f8c57c454352f842945d6b5c8990d8648f7176720"
+    },
+    {
+      "path": "observed/jdk23_tools/original/runner-classes/Runner.class",
+      "bytes": 3569,
+      "sha256": "fc123748653de2d7f947dd39f62e39acd59124b176e20090b07eaf4f6e607bf2"
+    },
+    {
+      "path": "observed/jdk23_tools/original/target-classes/CompoundStatementConditions.class",
+      "bytes": 2848,
+      "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa"
+    },
+    {
+      "path": "observed/jdk8_tools/jadx/Runner.java",
+      "bytes": 3290,
+      "sha256": "93794be9cfd1e82a214b6ecb6689a1716074cee50cad35110ab9e96ccb3bbb6d"
+    },
+    {
+      "path": "observed/jdk8_tools/jadx/runner-classes/Runner.class",
+      "bytes": 3573,
+      "sha256": "ef8fe56004037d370baf052c19858096e8cefb8fec5eef7dc0aef31c5b1997cb"
+    },
+    {
+      "path": "observed/jdk8_tools/jadx/target-classes/defpackage/CompoundStatementConditions.class",
+      "bytes": 2857,
+      "sha256": "63b30fb457eb32972c33bdbeb2a3317b2948d1ffbd5dfaea70c49011e6a780d5"
+    },
+    {
+      "path": "observed/jdk8_tools/original/runner-classes/Runner.class",
+      "bytes": 3562,
+      "sha256": "6c6bdf5ca6e604b4cde35b24d4883abd5ade48f6f9068319e1db52053bb47deb"
+    },
+    {
+      "path": "observed/jdk8_tools/original/target-classes/CompoundStatementConditions.class",
+      "bytes": 2851,
+      "sha256": "195d04bf137649951ee184df485cd1d00e8bfb5bf80d497a58d9836247905acd"
+    },
+    {
+      "path": "observed/original-bytecode/CompoundStatementConditions.class",
+      "bytes": 2848,
+      "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa"
+    },
+    {
+      "path": "observed/raw/0001.original-jdk23-compile-for-jadx.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observed/raw/0001.original-jdk23-compile-for-jadx.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0002.jadx-full-class.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0002.jadx-full-class.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "observed/raw/0003.class-source-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0003.class-source-default.stdout.raw",
+      "bytes": 213236,
+      "sha256": "7d47e8580ec2679910ee98fe65e3e43fb8b232e960eef6ee0fb21ab6ef850621"
+    },
+    {
+      "path": "observed/raw/0004.class-source-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0004.class-source-all.stdout.raw",
+      "bytes": 220117,
+      "sha256": "ec0f1f16ffc4f7183490d8a13b1aa6d7f02317749393d3e1a8aff42b84504791"
+    },
+    {
+      "path": "observed/raw/0005.original-class-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0005.original-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0006.original-runner-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0006.original-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0007.original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0007.original-runtime.stdout.raw",
+      "bytes": 8953,
+      "sha256": "32520a9823b30b9642a6cac0eb0519007cd377b8f6bf40b1e1f43f65d2d9b957"
+    },
+    {
+      "path": "observed/raw/0008.jadx-class-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0008.jadx-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0009.jadx-runner-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0009.jadx-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0010.jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0010.jadx-runtime.stdout.raw",
+      "bytes": 8925,
+      "sha256": "f89410324036d31783782eefd9edb3a9274b900574d330ed1578bcbc334fd133"
+    },
+    {
+      "path": "observed/raw/0011.jarde-default-class-compile.stderr.raw",
+      "bytes": 676,
+      "sha256": "efa8b004f52c67eb30a43c3484351aa30e12e8b6b68f4910b598124c38b2aee6"
+    },
+    {
+      "path": "observed/raw/0011.jarde-default-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0012.jarde-all-class-compile.stderr.raw",
+      "bytes": 660,
+      "sha256": "ee18901dcbf1a792e607a39dfc32c1310cfd377d8d810861ad7fea6e262350c6"
+    },
+    {
+      "path": "observed/raw/0012.jarde-all-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0013.original-class-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observed/raw/0013.original-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0014.original-runner-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observed/raw/0014.original-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0015.original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0015.original-runtime.stdout.raw",
+      "bytes": 8953,
+      "sha256": "32520a9823b30b9642a6cac0eb0519007cd377b8f6bf40b1e1f43f65d2d9b957"
+    },
+    {
+      "path": "observed/raw/0016.jadx-class-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observed/raw/0016.jadx-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0017.jadx-runner-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observed/raw/0017.jadx-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0018.jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0018.jadx-runtime.stdout.raw",
+      "bytes": 8925,
+      "sha256": "f89410324036d31783782eefd9edb3a9274b900574d330ed1578bcbc334fd133"
+    },
+    {
+      "path": "observed/raw/0019.jarde-default-class-compile.stderr.raw",
+      "bytes": 1159,
+      "sha256": "1e6b3690d711d6a2df42184b1f35a9cd1b227420835e0737f8453b0bbbb7c925"
+    },
+    {
+      "path": "observed/raw/0019.jarde-default-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observed/raw/0020.jarde-all-class-compile.stderr.raw",
+      "bytes": 1143,
+      "sha256": "082b7db8af07d13526fb9ce766eaf745892a743bb40caf286133b32972c05738"
+    },
+    {
+      "path": "observed/raw/0020.jarde-all-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/execution.json",
+      "bytes": 138062,
+      "sha256": "901eeba616ddc4ca2940f61520823854ec5ec87221c7cd6f014eacb6b079beaf"
+    },
+    {
+      "path": "observer-namespace-failed/inputs/CompoundStatementConditions.java",
+      "bytes": 3240,
+      "sha256": "6103506957bee489c09cb0fe191fc7b0eb208f2c592f7be8e24b39e1e1774d43"
+    },
+    {
+      "path": "observer-namespace-failed/inputs/Runner.java",
+      "bytes": 3243,
+      "sha256": "2ed3005970f32e76f0a1c039dbb799200664b5e0f965c19fadeb42f921cd1e35"
+    },
+    {
+      "path": "observer-namespace-failed/jadx/output/sources/defpackage/CompoundStatementConditions.java",
+      "bytes": 3129,
+      "sha256": "10c6e500f305b050e504ddda358e771d8695e8956f9e18e2074a8fa7d210b35f"
+    },
+    {
+      "path": "observer-namespace-failed/jarde-all/sources/CompoundStatementConditions.java",
+      "bytes": 5865,
+      "sha256": "f8c2a50f310446c01c7f2db1ae43eaeeac3b68626b615c3c19c4fe35a7342b71"
+    },
+    {
+      "path": "observer-namespace-failed/jarde-all/sources/class-source.api.json",
+      "bytes": 890823,
+      "sha256": "39a7663a66c94ff13f38d7325b46fb6528c1e894e611bad01bac8bd0f5f4025a"
+    },
+    {
+      "path": "observer-namespace-failed/jarde-all/sources/source-map-quality.json",
+      "bytes": 684863,
+      "sha256": "4c75d4f7bd3bcffa81074360604f03dc98b67680836ffa4fdf3b52b63d5ef330"
+    },
+    {
+      "path": "observer-namespace-failed/jarde-default/sources/CompoundStatementConditions.java",
+      "bytes": 5865,
+      "sha256": "f8c2a50f310446c01c7f2db1ae43eaeeac3b68626b615c3c19c4fe35a7342b71"
+    },
+    {
+      "path": "observer-namespace-failed/jarde-default/sources/class-source.api.json",
+      "bytes": 876615,
+      "sha256": "d6486035b16f0ea4a4e39359ba4d11535081e69c46287461619a580279e4b668"
+    },
+    {
+      "path": "observer-namespace-failed/jarde-default/sources/source-map-quality.json",
+      "bytes": 681755,
+      "sha256": "7d3bc234e509255991adc870ac30e808c11e1a46f14295c0f2ab830cdd2cb4c6"
+    },
+    {
+      "path": "observer-namespace-failed/jdk23_tools/jadx/target-classes/defpackage/CompoundStatementConditions.class",
+      "bytes": 2854,
+      "sha256": "606c725f4bb33f9e55aba60f8c57c454352f842945d6b5c8990d8648f7176720"
+    },
+    {
+      "path": "observer-namespace-failed/jdk23_tools/original/runner-classes/Runner.class",
+      "bytes": 3569,
+      "sha256": "fc123748653de2d7f947dd39f62e39acd59124b176e20090b07eaf4f6e607bf2"
+    },
+    {
+      "path": "observer-namespace-failed/jdk23_tools/original/target-classes/CompoundStatementConditions.class",
+      "bytes": 2848,
+      "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa"
+    },
+    {
+      "path": "observer-namespace-failed/jdk8_tools/jadx/target-classes/defpackage/CompoundStatementConditions.class",
+      "bytes": 2857,
+      "sha256": "63b30fb457eb32972c33bdbeb2a3317b2948d1ffbd5dfaea70c49011e6a780d5"
+    },
+    {
+      "path": "observer-namespace-failed/jdk8_tools/original/runner-classes/Runner.class",
+      "bytes": 3562,
+      "sha256": "6c6bdf5ca6e604b4cde35b24d4883abd5ade48f6f9068319e1db52053bb47deb"
+    },
+    {
+      "path": "observer-namespace-failed/jdk8_tools/original/target-classes/CompoundStatementConditions.class",
+      "bytes": 2851,
+      "sha256": "195d04bf137649951ee184df485cd1d00e8bfb5bf80d497a58d9836247905acd"
+    },
+    {
+      "path": "observer-namespace-failed/original-bytecode/CompoundStatementConditions.class",
+      "bytes": 2848,
+      "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0001.original-jdk23-compile-for-jadx.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0001.original-jdk23-compile-for-jadx.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0002.jadx-full-class.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0002.jadx-full-class.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0003.class-source-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0003.class-source-default.stdout.raw",
+      "bytes": 213238,
+      "sha256": "dbbe2c4816016bcb8e4564fa1af068883b1fa2dfd78edc51df282a842d240d19"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0004.class-source-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0004.class-source-all.stdout.raw",
+      "bytes": 220120,
+      "sha256": "4d622655806863e3143781c598a606022c2653028b8d5ba55d72f394115c5178"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0005.original-class-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0005.original-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0006.original-runner-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0006.original-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0007.original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0007.original-runtime.stdout.raw",
+      "bytes": 8953,
+      "sha256": "32520a9823b30b9642a6cac0eb0519007cd377b8f6bf40b1e1f43f65d2d9b957"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0008.jadx-class-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0008.jadx-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0009.jadx-runner-compile.stderr.raw",
+      "bytes": 1184,
+      "sha256": "7f0ae8d134513fb73219592dcaccd2860b4ee7a58858b10672c24d0abbc5809a"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0009.jadx-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0010.jarde-default-class-compile.stderr.raw",
+      "bytes": 676,
+      "sha256": "4cae2bd5834154bc2711fbe39f0cc8284d59e05f075bb766bba33d665fa4463b"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0010.jarde-default-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0011.jarde-all-class-compile.stderr.raw",
+      "bytes": 660,
+      "sha256": "14ffa404930cca3d76cd2e8c4fda7da39c60167479c92f4c50f613d7d32e378d"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0011.jarde-all-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0012.original-class-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0012.original-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0013.original-runner-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0013.original-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0014.original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0014.original-runtime.stdout.raw",
+      "bytes": 8953,
+      "sha256": "32520a9823b30b9642a6cac0eb0519007cd377b8f6bf40b1e1f43f65d2d9b957"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0015.jadx-class-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0015.jadx-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0016.jadx-runner-compile.stderr.raw",
+      "bytes": 1667,
+      "sha256": "09407d5f8e1659f7f259185cc003534d0cf8f6306843b9447a14aa982045f9df"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0016.jadx-runner-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0017.jarde-default-class-compile.stderr.raw",
+      "bytes": 1159,
+      "sha256": "071fed1c3618627c73faaafcb33af07bc8b9490495bf13decd0a48220ab52ef5"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0017.jarde-default-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0018.jarde-all-class-compile.stderr.raw",
+      "bytes": 1143,
+      "sha256": "2f608bfda46dd0451be7ed14d75c19bba3d9cc3bac99d6a846bb1178e83b3b7c"
+    },
+    {
+      "path": "observer-namespace-failed/raw/0018.jarde-all-class-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "physical-javap/execution.json",
+      "bytes": 2010,
+      "sha256": "a2e35752c4fd27efd894df6cedff144e29feb6a21273c1c1fde9890c24b39fa2"
+    },
+    {
+      "path": "physical-javap/raw/0001.physical-javap-v-p-c.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "physical-javap/raw/0001.physical-javap-v-p-c.stdout.raw",
+      "bytes": 26503,
+      "sha256": "1886af82cbcfe7cb683bcbeb58c47801c88fe370ad2cea8eab25a7b9e73b2d5a"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "private-compound-canonical-edge-negative-candidate-v1",
+  "workspace_modified": false,
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "base_sha256": "bab494a21724ed61213240fcc75362a68163e47370fbd60ccb07d3ab15f2c235",
+  "candidate_path": "/private/tmp/jarde-compound-edge-negative-luna-v1/region.rs.candidate",
+  "patch_path": "/private/tmp/jarde-compound-edge-negative-luna-v1/region.rs.patch",
+  "added_direct_validator_cases": [
+    "external predecessor enters real non-join payload",
+    "duplicate real predecessor row enters internal compound test",
+    "non-Normal edge is incident to real shared exit"
+  ],
+  "uncovered": [
+    "traversal gray-node cycle refusal",
+    "compound clone/path mismatch",
+    "real irreducible or non-reducible compound condition graph"
+  ],
+  "toolchain_executed": false,
+  "candidate_sha256": "97820bb5c710670d58715d1d336a151063c6f4eec6118c6d2f3538c199d5ba61",
+  "patch_sha256": "40c1a6f9a0eb9887154339070c909ec5a6ac3d3f6cd4187cc946f96b65ed947b"
+}

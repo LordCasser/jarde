@@ -1,0 +1,3 @@
+# public来源测试首轮：4/2/0
+
+实际fmt和compile通过，原CF12/FT2/public Stop四测试通过；两个新受控方法在default的report.regions为空处失败。default仅essential+SourceMap，并未请求Regions，不能将缺少可选证据算恢复失败或要求default增加请求。后续只修测试的profile门槛：default核produced/实际if正文/无bytecode/fullphysical map，all另外严格核所有region结构与if规则；全部physical身份和default/all正文/map恒同要求保留。未宣称新来源测试通过，也未执行新CLI65矩阵。cargo clean实际exit0，target不存在。

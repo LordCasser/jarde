@@ -1,0 +1,18 @@
+{
+  "previous_verifier": "/private/tmp/jarde-compound-negative-verifier-luna-v5/verify.py",
+  "previous_verifier_sha256": "22d0a8173411cbf7415ec4cc05dccd0bf6e6d446fc2ac0c110fdbefb5ca044a0",
+  "candidate": "/private/tmp/jarde-compound-negative-verifier-luna-v6/verify.py",
+  "candidate_sha256": "f9ac724fc561da4e2e7ff52c836cf6373117073d03d242ad6e8e35d40119cef3",
+  "patch": "/private/tmp/jarde-compound-negative-verifier-luna-v6/verify.patch",
+  "patch_sha256": "fad959a1f51d4d368761ad99bfa8438223177132d1a3c7afa13cec3a3ce24fa8",
+  "execution": "/private/tmp/jarde-compound-negative-comparison-root-v1/execution.json",
+  "execution_sha256": "fcf4e25bf99bef201fdaa741383ded486e02c248cabdc585e8aa47c73f4d9cff",
+  "development_dryrun": "/private/tmp/jarde-compound-negative-verifier-luna-v6/dryrun-execution.json",
+  "development_dryrun_sha256": "b71de20fa7c72817fcb725385bf2a6b9f44b523e6f3e5a8a203e06d07d9a2d2b",
+  "stdout": "/private/tmp/jarde-compound-negative-verifier-luna-v6/dryrun.stdout.raw",
+  "stdout_sha256": "5d9b5c6282fad28786b8f656025466d388c63768b7e4171be35b4344a56fc209",
+  "stderr": "/private/tmp/jarde-compound-negative-verifier-luna-v6/dryrun.stderr.raw",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "readme": "/private/tmp/jarde-compound-negative-verifier-luna-v6/README.md",
+  "readme_sha256": "eec910b88ecb9c8187b030d09cc920ae1c510fd2993890486b30a157dc025977"
+}

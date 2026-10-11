@@ -1,0 +1,26 @@
+{
+  "status": "accepted",
+  "commands": 19,
+  "runtime_legs": 8,
+  "inputs_per_leg": 9,
+  "members": 2,
+  "mixedExits_bcis": [
+    0,
+    1,
+    2,
+    3,
+    28,
+    30,
+    31,
+    34,
+    36,
+    37,
+    39,
+    40,
+    41
+  ],
+  "candidate_sha256": "9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238",
+  "candidate_blake3": "06d3b07c87615ef02a521748823e792acd7df229773a2cccb90cb517e61f76e2",
+  "original_runtime": "complete CandidateContinuation.class",
+  "large_Join": "read-only seven-member fallback-boundary evidence"
+}

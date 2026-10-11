@@ -1,0 +1,1 @@
+Clippy実测为 workspace/all-targets/all-features/locked，使用CI相同既有债务 allowlist，exit0且target已clean。源pin精确对应新增nested test之前；后续新增test-only guard将由完整workspace及自身CI验证，生产源码未改变。前端和Java真实库243/350全部通过的证据见独立legacy change。全workspace/最终CLI/自己的CI尚未通过，不借历史执行。

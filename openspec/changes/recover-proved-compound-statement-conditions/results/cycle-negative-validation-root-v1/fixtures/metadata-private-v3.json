@@ -1,0 +1,44 @@
+{
+  "schema": "private-compound-cycle-negative-candidate-v3",
+  "base_region_sha256": "ecb4b641bf33fcae42cd028d20193bcafc35b9849076cdc4e0c127eb85d247c8",
+  "region_candidate_sha256": "608188f4033ba2de400773ec8cba402cff1c70327a88671b458e7ca0703581fa",
+  "region_patch_sha256": "c7a264f4361ee53c632dc8b17d5f8ffa37048ac5ba09b7407522929c95ccd22a",
+  "source_class_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "cycle_class_sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78",
+  "irreducible_class_sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08",
+  "no_repeat_class_sha256": "8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b",
+  "fixture_include_area": "openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures",
+  "identity_facts": {
+    "canonical_root_block_bci": 0,
+    "physical_root_branch_bci": 26,
+    "root_normal_predecessors": 0,
+    "cycle_normal_edges": [
+      "51->40"
+    ],
+    "irreducible_normal_edges": [
+      "40->51",
+      "51->62",
+      "62->40",
+      "0->40",
+      "29->62"
+    ],
+    "no_repeat_normal_edges": [
+      "0->29",
+      "0->51",
+      "29->40",
+      "29->62",
+      "40->51",
+      "40->74",
+      "51->62",
+      "51->74"
+    ]
+  },
+  "not_claimed": [
+    "grey-node guard first refusal",
+    "compound clone/path mismatch",
+    "JDK verifier acceptance",
+    "specific first refusal for irreducible/no-repeat until root diagnostic"
+  ],
+  "workspace_modified": false,
+  "toolchain_executed": false
+}

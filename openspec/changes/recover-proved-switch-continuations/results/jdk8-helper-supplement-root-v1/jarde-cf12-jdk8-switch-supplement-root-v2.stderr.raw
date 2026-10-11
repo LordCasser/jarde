@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf12-jdk8-switch-supplement-root-v3.py", line 208, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/private/tmp/jarde-cf12-jdk8-switch-supplement-root-v3.py", line 76, in main
+    if overlay_doc.get('javac',{}).get('sha256')!=jdk23['sha256'] or overlay_doc['javac'].get('path')!=jdk23['path']:raise RuntimeError('overlay compiler pin differs from frozen JDK23 compiler')
+                                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: overlay compiler pin differs from frozen JDK23 compiler

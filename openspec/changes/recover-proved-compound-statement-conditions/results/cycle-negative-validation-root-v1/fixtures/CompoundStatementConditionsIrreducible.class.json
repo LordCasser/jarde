@@ -1,0 +1,30 @@
+{
+  "source": "/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/original-bytecode/CompoundStatementConditions.class",
+  "source_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "source_bytes": 2848,
+  "patched_sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08",
+  "patched_bytes": 2848,
+  "method": "test",
+  "descriptor": "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;",
+  "branch_bci": 71,
+  "opcode": "goto",
+  "old_signed_delta": 12,
+  "old_target_bci": 83,
+  "new_signed_delta": -31,
+  "new_target_bci": 40,
+  "changed_class_offsets": [
+    1990,
+    1991
+  ],
+  "target_has_existing_stackmap_frame": true,
+  "constructed_edges": [
+    "40 -> 51",
+    "51 -> 62",
+    "62 -> 40"
+  ],
+  "second_entry_edges": [
+    "26 -> 40",
+    "29 -> 62"
+  ],
+  "purpose": "reader-produced irreducible three-node SCC refusal; never invoke this method"
+}

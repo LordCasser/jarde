@@ -1,0 +1,179 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1749,
+      "sha256": "5b99673f63ec4f9854297d3b3ea625662c69f455e3a31c8a09fd247fc61afede"
+    },
+    {
+      "path": "ft2-compile-failed/0.stderr.raw",
+      "bytes": 2361,
+      "sha256": "3c6aea88226d269a883e300cedf0237915643f3f714ae2426aa5a54b6446a179"
+    },
+    {
+      "path": "ft2-compile-failed/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ft2-compile-failed/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "8921877f60f032e9d99619f143abb05652684c4351a4360922ec256ca3821ce2"
+    },
+    {
+      "path": "ft2-compile-failed/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ft2-compile-failed/execution.json",
+      "bytes": 3137,
+      "sha256": "fda6b2774e2081984dd773aeb23b94ac06973468fe0e44053292adbc77359795"
+    },
+    {
+      "path": "ft2-focused-passed/0.stderr.raw",
+      "bytes": 1940,
+      "sha256": "952ea845d34be7de6ef1e4721ac5e9be8152703c75dd768053e115c74cf347cb"
+    },
+    {
+      "path": "ft2-focused-passed/0.stdout.raw",
+      "bytes": 216,
+      "sha256": "1b37efcec75f06b1307d3d45b43461390a67b63d0e7469ae4b61b7e917dda086"
+    },
+    {
+      "path": "ft2-focused-passed/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "83e4cfdb4f7a6cdde8110116bd6d2f3dcfdb87ea78b16397a821186e13cfa208"
+    },
+    {
+      "path": "ft2-focused-passed/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ft2-focused-passed/execution.json",
+      "bytes": 3177,
+      "sha256": "9157b661bac666c2a0ad823e68467ceabb54c51762360f9aef84799cc4180a1b"
+    },
+    {
+      "path": "ft2-private-v3/README.md",
+      "bytes": 2993,
+      "sha256": "46330687579de0fbe2e6a3342e8c3ea11eefc2ae0288ea1c3999abf89ef266a4"
+    },
+    {
+      "path": "ft2-private-v3/base.json",
+      "bytes": 1714,
+      "sha256": "4ed6a5d287aa1bac638529b2951d9f9abc9855b27ff5819e26b8c8a8c39ef27e"
+    },
+    {
+      "path": "ft2-private-v3/region.rs.patch",
+      "bytes": 28995,
+      "sha256": "812603beedd88d992b1cc9f1cec4f4c668ea0e6dcbd540e10de15178882a88dc"
+    },
+    {
+      "path": "jarde-ft2-continuation-focused-runner-root-v1.py",
+      "bytes": 2947,
+      "sha256": "f36705b045c04512190f54cfe8d29d3c4521f892dcf561571a2d3f34c07f3b9a"
+    },
+    {
+      "path": "jarde-switch-continuation-focused-runner-root-v1.py",
+      "bytes": 2862,
+      "sha256": "d72bba5b74cfc049480f99fd00050ed968ad69b5490a7fb485dbe65a0ac89e93"
+    },
+    {
+      "path": "jarde-switch2-join-trace-runner-root-v1.py",
+      "bytes": 2960,
+      "sha256": "cbb1aca9ebcf23350d16c3192bf6544ac468ada9f23b7344d5dea38be0a10deb"
+    },
+    {
+      "path": "physical-javap/TestSwitch2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "physical-javap/TestSwitch2.stdout.raw",
+      "bytes": 9065,
+      "sha256": "0f8cc3cef20de14e09fce38d947513e62a5a6baaf0406ac5fd4cdeb652d09562"
+    },
+    {
+      "path": "physical-javap/TestSwitchWithFallThroughCase2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "physical-javap/TestSwitchWithFallThroughCase2.stdout.raw",
+      "bytes": 16487,
+      "sha256": "0d0323d2f8eb982f018a5421f420ef55ac3698022af66f920758980b05c7ad16"
+    },
+    {
+      "path": "physical-javap/execution.json",
+      "bytes": 2856,
+      "sha256": "a0d7dd3921e0e2ccc994a417a4956e78b53ec0979673ef701fe1cb67bcc4e9aa"
+    },
+    {
+      "path": "switch2-initial/0.stderr.raw",
+      "bytes": 4117,
+      "sha256": "ccf58dde43c0a4fca26e03aea6993a1783c3aadf41986b9a4576461a4838a898"
+    },
+    {
+      "path": "switch2-initial/0.stdout.raw",
+      "bytes": 1531,
+      "sha256": "f2e3175821c48ae5ab3f33837f971c5d43b91584ad99f12988c077244a94eee9"
+    },
+    {
+      "path": "switch2-initial/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "366c617b3cf465676efd94ab42334fe0ed0fc6017aea6b5352fa926eeef56ede"
+    },
+    {
+      "path": "switch2-initial/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "switch2-initial/execution.json",
+      "bytes": 3101,
+      "sha256": "9ae8ed29bf57d9e3adb58ca7ceabbe00727fb5321f43cf7972518fecc385fb33"
+    },
+    {
+      "path": "switch2-join-trace/0.stderr.raw",
+      "bytes": 4943,
+      "sha256": "1ca8545e14e1acbd5a03c7cf04f3c2392ae18cd1a15540c19d74abac802d71c3"
+    },
+    {
+      "path": "switch2-join-trace/0.stdout.raw",
+      "bytes": 308,
+      "sha256": "ef60cb0e653262b4a26d3246433f036f34d808a3b8985cbb824253cdc457ff57"
+    },
+    {
+      "path": "switch2-join-trace/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "366c617b3cf465676efd94ab42334fe0ed0fc6017aea6b5352fa926eeef56ede"
+    },
+    {
+      "path": "switch2-join-trace/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "switch2-join-trace/execution.json",
+      "bytes": 3140,
+      "sha256": "140a414a3574be02900fc07f6e97ba271cb89ac7f8705fd9e3a910a68a33f1dc"
+    },
+    {
+      "path": "switch2-private-v2/README.md",
+      "bytes": 2028,
+      "sha256": "d435eb152ed8dfc3ba86e2f91d115d145ea57e8a5f13a3520ced7c6f8c0625d7"
+    },
+    {
+      "path": "switch2-private-v2/base.json",
+      "bytes": 820,
+      "sha256": "f702ca78c77cbf230484dd7fea2fe98dc9cd19b5f36a17d2ca468815a6af0aa6"
+    },
+    {
+      "path": "switch2-private-v2/region.rs.patch",
+      "bytes": 28488,
+      "sha256": "5bdb6871fe3d89250b3f95f1eace5841a7db76f6780a9dd13356295a04698fb2"
+    }
+  ]
+}

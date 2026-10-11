@@ -1,0 +1,2799 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2647,
+      "sha256": "ccb6932d9653041265869bee5369a82a95e4f6f621ee8f7b1abc7ced205659a1"
+    },
+    {
+      "path": "acceptance.json",
+      "bytes": 2636,
+      "sha256": "90e209cb6f265b76aa47f11d0f5d9ee38f082914deda9c3eb8545354132bb455"
+    },
+    {
+      "path": "cli-build-failed/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-failed/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-failed/1.stderr.raw",
+      "bytes": 2768,
+      "sha256": "94911e68cfe7366b337249945ca0fb42b33140f7566a07087523dfd7efb77f8a"
+    },
+    {
+      "path": "cli-build-failed/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-failed/2.stderr.raw",
+      "bytes": 52,
+      "sha256": "d3d18d99e6f9e85fed3a4ea904caf38a8f874cf94b940c8746cbe98c925df8d7"
+    },
+    {
+      "path": "cli-build-failed/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-failed/execution.json",
+      "bytes": 6630,
+      "sha256": "bd2735c6681ad2bf010bfd3af4081bfbdee5757fc8c63d339313536d4d0ba147"
+    },
+    {
+      "path": "cli-build-passed/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/1.stderr.raw",
+      "bytes": 2768,
+      "sha256": "8b65849d826fa033c52ff7c73e361406bccc378b847b75915362d64e57cdc826"
+    },
+    {
+      "path": "cli-build-passed/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/3.stdout.raw",
+      "bytes": 2954,
+      "sha256": "1b264e578b8c35d0536a5c3e27288b35d802838c42e956600286b797e243b4fd"
+    },
+    {
+      "path": "cli-build-passed/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "d3d18d99e6f9e85fed3a4ea904caf38a8f874cf94b940c8746cbe98c925df8d7"
+    },
+    {
+      "path": "cli-build-passed/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-build-passed/execution.json",
+      "bytes": 16960,
+      "sha256": "8c0ca6f8232bf18ee055585d3bbf2dbd03ffb3afb0ad570f7d2684af9fc094a0"
+    },
+    {
+      "path": "independent-verifier-luna-v5.py",
+      "bytes": 54063,
+      "sha256": "eaec0892de399b945843082c80e73d24657ffb3e5a612f1a787dfc525bf5154b"
+    },
+    {
+      "path": "independent-verifier-root-v6.py",
+      "bytes": 55071,
+      "sha256": "65fa184255320e678832aa621eac9d0ef96f7316e115ebf65581b374b355a25e"
+    },
+    {
+      "path": "independent-verifier-root-v7.py",
+      "bytes": 55190,
+      "sha256": "8ad48834b8744f03d1c2c918fa0515433dfe82b3bf4246d845e60d25f9c7d591"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-replay-plan-luna-v1.json",
+      "bytes": 127204,
+      "sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-replay-runner-luna-v2.py",
+      "bytes": 25970,
+      "sha256": "d26ad08dd63aeb1982804aa5876ddd32d87a09f8518b9e0e898a0f1353732e39"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-replay-verifier-luna-v3.py",
+      "bytes": 44179,
+      "sha256": "075cbe269d68eb2180b0042c1dfa468d8505cc7c94b2d0f0e48f88c5b67e3d08"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-replay-verifier-luna-v4.py",
+      "bytes": 46666,
+      "sha256": "3757cb48068da88481ca49127f6545727756e11341f9578449c441057f2dc11f"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-verifier-root-v3.stderr.raw",
+      "bytes": 153,
+      "sha256": "8f59b412fd3e7f9d487cdd70e0f2b1464117e605160d7806ce603de48421b6d4"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-verifier-root-v3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-verifier-root-v4.stderr.raw",
+      "bytes": 52,
+      "sha256": "c69d51e73402965b82bbe58b402cd5a9b26ace7df39723cfd8a5060ca5ee1120"
+    },
+    {
+      "path": "jarde-cf12-ten-fixture-verifier-root-v4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-switch-continuation-class-digest-root-v1.rs",
+      "bytes": 222,
+      "sha256": "7a94091433b09e1e4767e7311fd124ce6df7690f93ead100b7a96eefe4e28203"
+    },
+    {
+      "path": "jarde-switch-continuation-cli-build-root-v1.py",
+      "bytes": 4725,
+      "sha256": "aede7db3e7b2fbfa249dc5a5a3715e44b858645d4a99503813417863d1c2b5c5"
+    },
+    {
+      "path": "jarde-switch-continuation-cli-build-root-v2.py",
+      "bytes": 4729,
+      "sha256": "48f82816958fb39efb16d80f9edc4083c70fd71020cd3a274afebc8fb10fe136"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1002,
+      "sha256": "da35e0994387021d304b8b2b0bc4b84a0a8bc2a5c7ce875ce002f108405f9671"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 756,
+      "sha256": "3bb9f72c9b6941b4ddf54c1d9eacc5f874eb98ef933e6adcca5727475394df18"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1007,
+      "sha256": "79fe9109767835b7a7c10d5d0111bbb497aacfca149a1774869d4a5ae7179243"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1745,
+      "sha256": "bbb29cfc009f5cfb8e7615b032c1119295d61c2c9eff5bec04b3ea70d0272e7d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1007,
+      "sha256": "79fe9109767835b7a7c10d5d0111bbb497aacfca149a1774869d4a5ae7179243"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1745,
+      "sha256": "bbb29cfc009f5cfb8e7615b032c1119295d61c2c9eff5bec04b3ea70d0272e7d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1005,
+      "sha256": "571fe883e086ac979dbd3a13a91f22a298a6fa771c8fd4ee7bf3f928cb96e567"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 756,
+      "sha256": "3bb9f72c9b6941b4ddf54c1d9eacc5f874eb98ef933e6adcca5727475394df18"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1010,
+      "sha256": "0f53be83952f6dabbe7ba430583f1d0e9c0db3604443fae1ddf84de8751589f8"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1745,
+      "sha256": "bbb29cfc009f5cfb8e7615b032c1119295d61c2c9eff5bec04b3ea70d0272e7d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1010,
+      "sha256": "0f53be83952f6dabbe7ba430583f1d0e9c0db3604443fae1ddf84de8751589f8"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1745,
+      "sha256": "bbb29cfc009f5cfb8e7615b032c1119295d61c2c9eff5bec04b3ea70d0272e7d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 1052,
+      "sha256": "3dcee6de468ad9b0fe13a034edf253b87ddb8e73b6d8aed9ce073723ce9f955b"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1677,
+      "sha256": "94a3cd1fb837d2605a924038ac81120e4959f9b523f556a394310e76af632af5"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1773,
+      "sha256": "803a964b1bd01ad82c718afcc8961b8518dac6e3c23c24801c320c7293319f6c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1773,
+      "sha256": "803a964b1bd01ad82c718afcc8961b8518dac6e3c23c24801c320c7293319f6c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 1123,
+      "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 1052,
+      "sha256": "b06b0843122e0513748c60874ac363e98ca863cdeaa8f47968d5880cf791244c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1677,
+      "sha256": "94a3cd1fb837d2605a924038ac81120e4959f9b523f556a394310e76af632af5"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1773,
+      "sha256": "803a964b1bd01ad82c718afcc8961b8518dac6e3c23c24801c320c7293319f6c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1773,
+      "sha256": "803a964b1bd01ad82c718afcc8961b8518dac6e3c23c24801c320c7293319f6c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch2/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 1123,
+      "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 960,
+      "sha256": "ef5274d8510cdf8f7a84bc96c8784842aad669931c98a023839e72f2ce9c44a6"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 928,
+      "sha256": "70bcd2ba08e5e8f06e25fd518263796aab383d8a8a5ffefbd64df5235ef20a15"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 959,
+      "sha256": "24609a21889ca22b7d3455cf811c1f8dcd82b8b69a4d4c6edafaa01de95dfd48"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 959,
+      "sha256": "24609a21889ca22b7d3455cf811c1f8dcd82b8b69a4d4c6edafaa01de95dfd48"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 1037,
+      "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 928,
+      "sha256": "70bcd2ba08e5e8f06e25fd518263796aab383d8a8a5ffefbd64df5235ef20a15"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch3/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 1037,
+      "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1036,
+      "sha256": "a539b36bb35777d3c053b5aee30ce888e3b57ef8d98c470855d06230ea5b6212"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 850,
+      "sha256": "5b9b3bcfb53faf6b8c3a18255d78b8ee601c77a58c739055951a139a97df97a3"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1010,
+      "sha256": "bf4534f9235519cec3ba411e0f918732fc682995ce70576745c79b293723665c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1010,
+      "sha256": "bf4534f9235519cec3ba411e0f918732fc682995ce70576745c79b293723665c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1088,
+      "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 850,
+      "sha256": "5b9b3bcfb53faf6b8c3a18255d78b8ee601c77a58c739055951a139a97df97a3"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitch4/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1088,
+      "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1439,
+      "sha256": "0f4fc6ba3bf5da0bb4981a4afa359c6faa2d13295bfabb6985d8151b2f4a2a4d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 906,
+      "sha256": "6404c52b5300d9bb6491675e3f11a7022297fad188fb37689121811976aa8659"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1443,
+      "sha256": "e22b6a94a9fce9751b956a901a289a91f0568c9a5ae001ebb96ad6e95fb89595"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1443,
+      "sha256": "e22b6a94a9fce9751b956a901a289a91f0568c9a5ae001ebb96ad6e95fb89595"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 906,
+      "sha256": "6404c52b5300d9bb6491675e3f11a7022297fad188fb37689121811976aa8659"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchFallThrough/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "ca4b07b06d47c4c67d95b81d79d818224f4b8d3edb7b4b9ae85068fbca46535f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "5f9fad0d18c28bafa397fd0b0ea07f37b5a463a7c2354a483122bd9aed0366fa"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "38216c4c2c8ff5ffb9e17f7531b13817c238a2cf9109d63ca771c9127913065b"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "ceea14b70de511cd474231a38bef564790f058c4cbd95c3957555c3ee0af2e94"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "8453dbfdf5ce75aa77ecc278cff0d84d33e21e8a24c0266c87b38c070ca7a925"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "338725d08b64977bfcea75e5c18396128f8a5af8888eb6d6110e1c3d66f8129e"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "8453dbfdf5ce75aa77ecc278cff0d84d33e21e8a24c0266c87b38c070ca7a925"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "338725d08b64977bfcea75e5c18396128f8a5af8888eb6d6110e1c3d66f8129e"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchLabels/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 809,
+      "sha256": "00a2489ee4a730f4c87f35aab8adcf879525f01657056439dd0d8e03b4b4cad1"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 545,
+      "sha256": "b07040f1c51941ad98b59a5c693534a273c3fdd2bd4015b1d5e3964248dccb9c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 813,
+      "sha256": "f8d7ca18f21dff94d30a567920b0a96117056bd89aae278e3d20571925e25898"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1492,
+      "sha256": "9c7f96d48311f2e3667d323e0d3a44093f109ed04187bb4e8a5883b674da999c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 813,
+      "sha256": "f8d7ca18f21dff94d30a567920b0a96117056bd89aae278e3d20571925e25898"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1492,
+      "sha256": "9c7f96d48311f2e3667d323e0d3a44093f109ed04187bb4e8a5883b674da999c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 899,
+      "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 809,
+      "sha256": "4a132658ac65a6d334c65084dc7e1364efd9cec29f302fc570c34d1b8f1cfbb1"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 545,
+      "sha256": "b07040f1c51941ad98b59a5c693534a273c3fdd2bd4015b1d5e3964248dccb9c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 813,
+      "sha256": "e5602e03ff213031b17fa4d9e72def5f209c11be7c75d74668514ed40b0cf83c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1492,
+      "sha256": "9c7f96d48311f2e3667d323e0d3a44093f109ed04187bb4e8a5883b674da999c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 813,
+      "sha256": "e5602e03ff213031b17fa4d9e72def5f209c11be7c75d74668514ed40b0cf83c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1492,
+      "sha256": "9c7f96d48311f2e3667d323e0d3a44093f109ed04187bb4e8a5883b674da999c"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchNoDefault/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 899,
+      "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 839,
+      "sha256": "2789d82738920ccd5d58497ded2239a978ab00fc43c1f4680927f6a0cb6b93fa"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 636,
+      "sha256": "7e414b2162cf2bc14b191582a1e65ed3411b2bfc6b7fe0dd097ddc77fc1fc27d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 843,
+      "sha256": "9535fc0f418dd29a9a2e09d7440b73269e2c7bb8add272d1a5e7659691717975"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 843,
+      "sha256": "9535fc0f418dd29a9a2e09d7440b73269e2c7bb8add272d1a5e7659691717975"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 926,
+      "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 839,
+      "sha256": "938ddd2211f1f841f7dd073959a26f8e769cdf94cdd9f6106fe8032e41a8dbb4"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 636,
+      "sha256": "7e414b2162cf2bc14b191582a1e65ed3411b2bfc6b7fe0dd097ddc77fc1fc27d"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 843,
+      "sha256": "3af978e11231e35cd98dc9d9a240d534adef7379e9a396f0bdf881555634cd93"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 843,
+      "sha256": "3af978e11231e35cd98dc9d9a240d534adef7379e9a396f0bdf881555634cd93"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchSimple/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 926,
+      "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1489,
+      "sha256": "72fc1a71b5867239d157ff940dfa4f455f77a9f30c6dc23806ffe973483e53b2"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 1337,
+      "sha256": "2ede155c84885e61612ed2e667610a242898ee84990f48874f9f564b2d907992"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1475,
+      "sha256": "b89db59094aa63cf7055f0d79f5e06e17f6f4f0a1a60f7b82f05f5ec46285141"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2721,
+      "sha256": "f4fff4276d4a2b1b6123aacfb0a1b63ee3d0b2c78184c3e54fd4f2ec64d07d68"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1475,
+      "sha256": "b89db59094aa63cf7055f0d79f5e06e17f6f4f0a1a60f7b82f05f5ec46285141"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2721,
+      "sha256": "f4fff4276d4a2b1b6123aacfb0a1b63ee3d0b2c78184c3e54fd4f2ec64d07d68"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1563,
+      "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1489,
+      "sha256": "4b27d6d33cdc9596abf9ed5c6a009dd11d264c1c7d2cb0e8ed57d0369b48fffd"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 1337,
+      "sha256": "2ede155c84885e61612ed2e667610a242898ee84990f48874f9f564b2d907992"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1475,
+      "sha256": "35e72dfd0069e5e7636ae54f2627e25dc6514b60db3e9231297d8c665e909ad6"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2721,
+      "sha256": "f4fff4276d4a2b1b6123aacfb0a1b63ee3d0b2c78184c3e54fd4f2ec64d07d68"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1475,
+      "sha256": "35e72dfd0069e5e7636ae54f2627e25dc6514b60db3e9231297d8c665e909ad6"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2721,
+      "sha256": "f4fff4276d4a2b1b6123aacfb0a1b63ee3d0b2c78184c3e54fd4f2ec64d07d68"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1563,
+      "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1587,
+      "sha256": "98c6e3050a3d87499c4c5a23c9a0e947efc8c5e2f3d256a40d32e1da0ea2f4be"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 1623,
+      "sha256": "4c9c547555b05a8047697421e65d6e0ec54d7aca3f21a98317acee40daff1a2e"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1569,
+      "sha256": "37c6c16ffedb52b3a4da49766fa44bcbee82a4c8ad5c138f2e632154487c5938"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 3075,
+      "sha256": "fa5b9bd9487cb83fda40279b7311913248c3a69f2439b7ed021c1cc02bdc5083"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1569,
+      "sha256": "37c6c16ffedb52b3a4da49766fa44bcbee82a4c8ad5c138f2e632154487c5938"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 3075,
+      "sha256": "fa5b9bd9487cb83fda40279b7311913248c3a69f2439b7ed021c1cc02bdc5083"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk23_tools/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1654,
+      "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/jadx/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1587,
+      "sha256": "3bcf94f7bb180d38e87f0d87e840d756f53bbb3a34da7af20e54aec2af03a5c3"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 1623,
+      "sha256": "4c9c547555b05a8047697421e65d6e0ec54d7aca3f21a98317acee40daff1a2e"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/jarde-all/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1569,
+      "sha256": "94b369ebf6e98abd2c33ca985fe6ce918ff6cd37ef029bbfb0153b79091aac26"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 3075,
+      "sha256": "fa5b9bd9487cb83fda40279b7311913248c3a69f2439b7ed021c1cc02bdc5083"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/jarde-default/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1569,
+      "sha256": "94b369ebf6e98abd2c33ca985fe6ce918ff6cd37ef029bbfb0153b79091aac26"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 3075,
+      "sha256": "fa5b9bd9487cb83fda40279b7311913248c3a69f2439b7ed021c1cc02bdc5083"
+    },
+    {
+      "path": "ten-fixture-replay/TestSwitchWithFallThroughCase2/jdk8_tools/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1654,
+      "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+    },
+    {
+      "path": "ten-fixture-replay/execution.json",
+      "bytes": 6465273,
+      "sha256": "7b69da98633d4029b1d675624494d4ca50eace3df468aa49a30466a983bc626e"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/NotYetImplemented.class",
+      "bytes": 467,
+      "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/NotYetImplementedExtension.class",
+      "bytes": 2379,
+      "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/api/JadxInternalAccess.class",
+      "bytes": 1041,
+      "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/IntegrationTest$1.class",
+      "bytes": 1361,
+      "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/IntegrationTest$2.class",
+      "bytes": 1409,
+      "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/IntegrationTest.class",
+      "bytes": 30020,
+      "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/ClassFileManager.class",
+      "bytes": 2187,
+      "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/CompilerOptions.class",
+      "bytes": 1569,
+      "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/DynamicClassLoader.class",
+      "bytes": 1874,
+      "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+      "bytes": 1111,
+      "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/JavaClassObject.class",
+      "bytes": 1528,
+      "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/JavaUtils.class",
+      "bytes": 1145,
+      "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/StringJavaFileObject.class",
+      "bytes": 1298,
+      "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/compiler/TestCompiler.class",
+      "bytes": 9527,
+      "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/TestFilesGetter.class",
+      "bytes": 817,
+      "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/TestUtils.class",
+      "bytes": 4786,
+      "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+      "bytes": 3982,
+      "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+      "bytes": 7050,
+      "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+      "bytes": 3636,
+      "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+    },
+    {
+      "path": "ten-fixture-replay/helpers/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+      "bytes": 1178,
+      "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk23_tools/original-five/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk23_tools/original-five/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk23_tools/remaining-five/Cf12RemainingRuntimeProbe.class",
+      "bytes": 8570,
+      "sha256": "c47a466345d00ecc7ce9179c344c1297383a647567141473641be9fa5b177149"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk23_tools/remaining-five/Cf12RemainingRuntimeProbe.java",
+      "bytes": 10381,
+      "sha256": "8c10f7119b997a73607ce1457db5b41328bb4c6cbd95399100b753d014dfff08"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk8_tools/original-five/Cf12RuntimeProbe.class",
+      "bytes": 4377,
+      "sha256": "ef4f000f803b6cc1a81b11e3e414c4a3eef15515eb0f946e5424baf188287ac2"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk8_tools/original-five/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk8_tools/remaining-five/Cf12RemainingRuntimeProbe.class",
+      "bytes": 8566,
+      "sha256": "c5f9d05806e4dd137f10a45198f790b27c467e2bb8de6bff7552da8492482869"
+    },
+    {
+      "path": "ten-fixture-replay/probes/jdk8_tools/remaining-five/Cf12RemainingRuntimeProbe.java",
+      "bytes": 10381,
+      "sha256": "8c10f7119b997a73607ce1457db5b41328bb4c6cbd95399100b753d014dfff08"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0001.jdk8_tools-original-five-probe-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0001.jdk8_tools-original-five-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0002.jdk8_tools-remaining-five-probe-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0002.jdk8_tools-remaining-five-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0003.jdk23_tools-original-five-probe-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0003.jdk23_tools-original-five-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0004.jdk23_tools-remaining-five-probe-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0004.jdk23_tools-remaining-five-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0005.TestSwitch-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0005.TestSwitch-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0006.TestSwitch-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0006.TestSwitch-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0007.TestSwitch-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0007.TestSwitch-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0008.TestSwitch-jdk8_tools-jarde-default-TestSwitch$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0008.TestSwitch-jdk8_tools-jarde-default-TestSwitch$TestCls-class-source.stdout.raw",
+      "bytes": 46790,
+      "sha256": "08e2eef85c8ca9199315023572799753557cd01be90e51cbbca3fe0c6b139b75"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0009.TestSwitch-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0009.TestSwitch-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0010.TestSwitch-jdk8_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0010.TestSwitch-jdk8_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0011.TestSwitch-jdk8_tools-jarde-all-TestSwitch$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0011.TestSwitch-jdk8_tools-jarde-all-TestSwitch$TestCls-class-source.stdout.raw",
+      "bytes": 48627,
+      "sha256": "09f46e89abcce6111cc5fc2d96ab1173bcf69fb0cedcc965814279dc1d29c022"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0012.TestSwitch-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0012.TestSwitch-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0013.TestSwitch-jdk8_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0013.TestSwitch-jdk8_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0014.TestSwitch-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0014.TestSwitch-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0015.TestSwitch-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0015.TestSwitch-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0016.TestSwitch-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0016.TestSwitch-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0017.TestSwitch-jdk23_tools-jarde-default-TestSwitch$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0017.TestSwitch-jdk23_tools-jarde-default-TestSwitch$TestCls-class-source.stdout.raw",
+      "bytes": 46788,
+      "sha256": "5fd40e305797a91b59beea379a8db6a4701a2626549541678d4c50feb5fe23bc"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0018.TestSwitch-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0018.TestSwitch-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0019.TestSwitch-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0019.TestSwitch-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0020.TestSwitch-jdk23_tools-jarde-all-TestSwitch$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0020.TestSwitch-jdk23_tools-jarde-all-TestSwitch$TestCls-class-source.stdout.raw",
+      "bytes": 48627,
+      "sha256": "09f46e89abcce6111cc5fc2d96ab1173bcf69fb0cedcc965814279dc1d29c022"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0021.TestSwitch-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0021.TestSwitch-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0022.TestSwitch-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0022.TestSwitch-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0023.TestSwitchNoDefault-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0023.TestSwitchNoDefault-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0024.TestSwitchNoDefault-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0024.TestSwitchNoDefault-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0025.TestSwitchNoDefault-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0025.TestSwitchNoDefault-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0026.TestSwitchNoDefault-jdk8_tools-jarde-default-TestSwitchNoDefault$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0026.TestSwitchNoDefault-jdk8_tools-jarde-default-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+      "bytes": 27432,
+      "sha256": "4bc31bd7623cc30fb51f3a81963dd0712ba9ec2fb8185cfa3342931e27a9ee98"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0027.TestSwitchNoDefault-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0027.TestSwitchNoDefault-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0028.TestSwitchNoDefault-jdk8_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0028.TestSwitchNoDefault-jdk8_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0029.TestSwitchNoDefault-jdk8_tools-jarde-all-TestSwitchNoDefault$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0029.TestSwitchNoDefault-jdk8_tools-jarde-all-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+      "bytes": 28767,
+      "sha256": "d7bfb16c24aa5cba1c15e11e5db5d89080387bf4b471afbb450481443d7d9f87"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0030.TestSwitchNoDefault-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0030.TestSwitchNoDefault-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0031.TestSwitchNoDefault-jdk8_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0031.TestSwitchNoDefault-jdk8_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0032.TestSwitchNoDefault-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0032.TestSwitchNoDefault-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0033.TestSwitchNoDefault-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0033.TestSwitchNoDefault-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0034.TestSwitchNoDefault-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0034.TestSwitchNoDefault-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0035.TestSwitchNoDefault-jdk23_tools-jarde-default-TestSwitchNoDefault$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0035.TestSwitchNoDefault-jdk23_tools-jarde-default-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+      "bytes": 27432,
+      "sha256": "4bc31bd7623cc30fb51f3a81963dd0712ba9ec2fb8185cfa3342931e27a9ee98"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0036.TestSwitchNoDefault-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0036.TestSwitchNoDefault-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0037.TestSwitchNoDefault-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0037.TestSwitchNoDefault-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0038.TestSwitchNoDefault-jdk23_tools-jarde-all-TestSwitchNoDefault$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0038.TestSwitchNoDefault-jdk23_tools-jarde-all-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+      "bytes": 28767,
+      "sha256": "d7bfb16c24aa5cba1c15e11e5db5d89080387bf4b471afbb450481443d7d9f87"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0039.TestSwitchNoDefault-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0039.TestSwitchNoDefault-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0040.TestSwitchNoDefault-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0040.TestSwitchNoDefault-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0041.TestSwitchLabels-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0041.TestSwitchLabels-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0042.TestSwitchLabels-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0042.TestSwitchLabels-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0043.TestSwitchLabels-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0043.TestSwitchLabels-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0044.TestSwitchLabels-jdk8_tools-jarde-default-TestSwitchLabels$TestCls$Inner-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0044.TestSwitchLabels-jdk8_tools-jarde-default-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+      "bytes": 20818,
+      "sha256": "82b07edd86fabf5df72e12b3c86f93e8cf3ae468e59c63a7e05ab2f6c4c76d57"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0045.TestSwitchLabels-jdk8_tools-jarde-default-TestSwitchLabels$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0045.TestSwitchLabels-jdk8_tools-jarde-default-TestSwitchLabels$TestCls-class-source.stdout.raw",
+      "bytes": 21419,
+      "sha256": "9f7ce2919b506353aeebc43166499036d22db9d121f33dcc422c80c094aaeb35"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0046.TestSwitchLabels-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0046.TestSwitchLabels-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0047.TestSwitchLabels-jdk8_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0047.TestSwitchLabels-jdk8_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0048.TestSwitchLabels-jdk8_tools-jarde-all-TestSwitchLabels$TestCls$Inner-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0048.TestSwitchLabels-jdk8_tools-jarde-all-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+      "bytes": 21826,
+      "sha256": "d439344eb50e7b470f884b7f620c2ff05369d571e7fc64b2998b73aaf2a3eb27"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0049.TestSwitchLabels-jdk8_tools-jarde-all-TestSwitchLabels$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0049.TestSwitchLabels-jdk8_tools-jarde-all-TestSwitchLabels$TestCls-class-source.stdout.raw",
+      "bytes": 22407,
+      "sha256": "cad1526f99ea72ee38e14af0a0ff30e7d10938788ee338dc8ea19ee7623a3b64"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0050.TestSwitchLabels-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0050.TestSwitchLabels-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0051.TestSwitchLabels-jdk8_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0051.TestSwitchLabels-jdk8_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0052.TestSwitchLabels-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0052.TestSwitchLabels-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0053.TestSwitchLabels-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0053.TestSwitchLabels-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0054.TestSwitchLabels-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0054.TestSwitchLabels-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0055.TestSwitchLabels-jdk23_tools-jarde-default-TestSwitchLabels$TestCls$Inner-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0055.TestSwitchLabels-jdk23_tools-jarde-default-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+      "bytes": 20818,
+      "sha256": "326228735e2fa7f918765fde6597f6ebca3cf076c53309f05134c0c7b2415b2b"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0056.TestSwitchLabels-jdk23_tools-jarde-default-TestSwitchLabels$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0056.TestSwitchLabels-jdk23_tools-jarde-default-TestSwitchLabels$TestCls-class-source.stdout.raw",
+      "bytes": 21419,
+      "sha256": "9f7ce2919b506353aeebc43166499036d22db9d121f33dcc422c80c094aaeb35"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0057.TestSwitchLabels-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0057.TestSwitchLabels-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0058.TestSwitchLabels-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0058.TestSwitchLabels-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0059.TestSwitchLabels-jdk23_tools-jarde-all-TestSwitchLabels$TestCls$Inner-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0059.TestSwitchLabels-jdk23_tools-jarde-all-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+      "bytes": 21826,
+      "sha256": "293ebc1c8fb723e16c7001695ccbaebd98fd4e9fa2a5f9ef1c7236b3835d64ab"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0060.TestSwitchLabels-jdk23_tools-jarde-all-TestSwitchLabels$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0060.TestSwitchLabels-jdk23_tools-jarde-all-TestSwitchLabels$TestCls-class-source.stdout.raw",
+      "bytes": 22407,
+      "sha256": "cad1526f99ea72ee38e14af0a0ff30e7d10938788ee338dc8ea19ee7623a3b64"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0061.TestSwitchLabels-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0061.TestSwitchLabels-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0062.TestSwitchLabels-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0062.TestSwitchLabels-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0063.TestSwitchFallThrough-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 1590,
+      "sha256": "cbf3c8173768e47615dbff522ab16dbe10eb7806f58ba4ccf4b8209323199db4"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0063.TestSwitchFallThrough-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 17,
+      "sha256": "3dff6ae05782c501252be8dc18b5b046bfe30501004038fe6bde4d250be68dd0"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0064.TestSwitchFallThrough-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 575,
+      "sha256": "2d3d31df2a7d8b210e1398eb42def8844830e774ec5910880800fdf67d7b929a"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0064.TestSwitchFallThrough-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0065.TestSwitchFallThrough-jdk8_tools-jarde-default-TestSwitchFallThrough$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0065.TestSwitchFallThrough-jdk8_tools-jarde-default-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+      "bytes": 64337,
+      "sha256": "ee645a91e8685bb25cc7970e4f70afc4944d7732b54ee607232225a61ced7f48"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0066.TestSwitchFallThrough-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 644,
+      "sha256": "7d6cfadd624dbdf11a418e098b7ef6fdbbcd70a61287f047e805bc72814bfbab"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0066.TestSwitchFallThrough-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0067.TestSwitchFallThrough-jdk8_tools-jarde-all-TestSwitchFallThrough$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0067.TestSwitchFallThrough-jdk8_tools-jarde-all-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+      "bytes": 68647,
+      "sha256": "51ee630ef7e79bceacca22a889b4362ab7f0ca01856c6956a5bca7986d563076"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0068.TestSwitchFallThrough-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 640,
+      "sha256": "ced0eb3e9f17c6f9bd9a71bfe6731028d3760fd374756ab1b092a35700cec173"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0068.TestSwitchFallThrough-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0069.TestSwitchFallThrough-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0069.TestSwitchFallThrough-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0070.TestSwitchFallThrough-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0070.TestSwitchFallThrough-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0071.TestSwitchFallThrough-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0071.TestSwitchFallThrough-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0072.TestSwitchFallThrough-jdk23_tools-jarde-default-TestSwitchFallThrough$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0072.TestSwitchFallThrough-jdk23_tools-jarde-default-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+      "bytes": 64337,
+      "sha256": "de681437a5a563e40f00510865fe7946b714afb1249b919b32341d20c78c6bf6"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0073.TestSwitchFallThrough-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0073.TestSwitchFallThrough-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0074.TestSwitchFallThrough-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0074.TestSwitchFallThrough-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0075.TestSwitchFallThrough-jdk23_tools-jarde-all-TestSwitchFallThrough$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0075.TestSwitchFallThrough-jdk23_tools-jarde-all-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+      "bytes": 68647,
+      "sha256": "51ee630ef7e79bceacca22a889b4362ab7f0ca01856c6956a5bca7986d563076"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0076.TestSwitchFallThrough-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0076.TestSwitchFallThrough-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0077.TestSwitchFallThrough-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0077.TestSwitchFallThrough-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0078.TestSwitchWithFallThroughCase-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0078.TestSwitchWithFallThroughCase-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0079.TestSwitchWithFallThroughCase-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0079.TestSwitchWithFallThroughCase-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0080.TestSwitchWithFallThroughCase-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0080.TestSwitchWithFallThroughCase-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0081.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-TestSwitchWithFallThroughCase$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0081.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+      "bytes": 96835,
+      "sha256": "7ce5610df09954230339cf64c9d59ed561c4ce717090cea00f58d16a3bc7da5d"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0082.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0082.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0083.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0083.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0084.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-TestSwitchWithFallThroughCase$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0084.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+      "bytes": 99626,
+      "sha256": "9a509e1b6544cc4a21d6e811c68dd8c2eed783cb9defc4e6e58ac47d2ef8bf4b"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0085.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0085.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0086.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0086.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0087.TestSwitchWithFallThroughCase-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0087.TestSwitchWithFallThroughCase-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0088.TestSwitchWithFallThroughCase-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0088.TestSwitchWithFallThroughCase-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0089.TestSwitchWithFallThroughCase-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0089.TestSwitchWithFallThroughCase-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0090.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-TestSwitchWithFallThroughCase$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0090.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+      "bytes": 96835,
+      "sha256": "c13469feed62bf9ac9243a850ac32bafb663eb678b5bb2bf78f4ebe45a12692d"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0091.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0091.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0092.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0092.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0093.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-TestSwitchWithFallThroughCase$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0093.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+      "bytes": 99626,
+      "sha256": "6dc2d2e38efe35c1dabfd9a794c7c3db55329c4cad991e5f5daf5a45309e8f6e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0094.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0094.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0095.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0095.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0096.TestSwitch2-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0096.TestSwitch2-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 123442,
+      "sha256": "86254e102c43503d8a080dc5771a57163aba53178705854aada011d9cc11ede7"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0097.TestSwitch2-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0097.TestSwitch2-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0098.TestSwitch2-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0098.TestSwitch2-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 123442,
+      "sha256": "86254e102c43503d8a080dc5771a57163aba53178705854aada011d9cc11ede7"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0099.TestSwitch2-jdk8_tools-jarde-default-TestSwitch2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0099.TestSwitch2-jdk8_tools-jarde-default-TestSwitch2$TestCls-class-source.stdout.raw",
+      "bytes": 55624,
+      "sha256": "34634706c917a6be5152c5fd3cf5083bb295b858ce998fbae28ce3d84298ef7b"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0100.TestSwitch2-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 317,
+      "sha256": "c4d325c475698f5430a3b1a407fff5791e3d0b7193d1a1382381fe5f58f562b1"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0100.TestSwitch2-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0101.TestSwitch2-jdk8_tools-jarde-all-TestSwitch2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0101.TestSwitch2-jdk8_tools-jarde-all-TestSwitch2$TestCls-class-source.stdout.raw",
+      "bytes": 63194,
+      "sha256": "6397ae6eaa0c7bd8a3fbfc42aa05e3d49510d222f2707bc2e0807bf446fae1b5"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0102.TestSwitch2-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 313,
+      "sha256": "a029948c5e172b188923db0e05dcfe9be2c5f655b18a2d6417928a53e1709e2a"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0102.TestSwitch2-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0103.TestSwitch2-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0103.TestSwitch2-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 123442,
+      "sha256": "86254e102c43503d8a080dc5771a57163aba53178705854aada011d9cc11ede7"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0104.TestSwitch2-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0104.TestSwitch2-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0105.TestSwitch2-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0105.TestSwitch2-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 123442,
+      "sha256": "86254e102c43503d8a080dc5771a57163aba53178705854aada011d9cc11ede7"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0106.TestSwitch2-jdk23_tools-jarde-default-TestSwitch2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0106.TestSwitch2-jdk23_tools-jarde-default-TestSwitch2$TestCls-class-source.stdout.raw",
+      "bytes": 55624,
+      "sha256": "0fcdfe3bf5ce2f1cfad440f113d47da83eaa03d605ccf87146d8fcc551b388be"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0107.TestSwitch2-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 801,
+      "sha256": "8e207f5562fe1e5c92c7ec20f94e9764b6aacd347573a5816287818519492896"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0107.TestSwitch2-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0108.TestSwitch2-jdk23_tools-jarde-all-TestSwitch2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0108.TestSwitch2-jdk23_tools-jarde-all-TestSwitch2$TestCls-class-source.stdout.raw",
+      "bytes": 63194,
+      "sha256": "8adba5c4c88241353d28f3bfed33dd45b678f0c92562db75d19e2791ebc256a8"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0109.TestSwitch2-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 797,
+      "sha256": "1e9e45aa1510242b3859f2c49c01482fc2943dfe34d783b0ba79add7f9d5c792"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0109.TestSwitch2-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0110.TestSwitch3-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 1685,
+      "sha256": "172635149f3c733fc7587ec5c6dccb1557fdb51a8ec3700fb6868072fe634f84"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0110.TestSwitch3-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0111.TestSwitch3-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 555,
+      "sha256": "b5b01e2990a1ede0894a093cd32a844018d1bfe24d425fa3a09fdc520f666fc0"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0111.TestSwitch3-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0112.TestSwitch3-jdk8_tools-jarde-default-TestSwitch3$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0112.TestSwitch3-jdk8_tools-jarde-default-TestSwitch3$TestCls-class-source.stdout.raw",
+      "bytes": 58153,
+      "sha256": "cd66395e33e91e7d02bcb5b6ee26bc3d2335d61d15f75e42bcedf0847eae6b34"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0113.TestSwitch3-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 611,
+      "sha256": "18303225628960cca1d5604f037240c8167179a7970436d3ba36415478505857"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0113.TestSwitch3-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0114.TestSwitch3-jdk8_tools-jarde-all-TestSwitch3$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0114.TestSwitch3-jdk8_tools-jarde-all-TestSwitch3$TestCls-class-source.stdout.raw",
+      "bytes": 61100,
+      "sha256": "8f02c399641cb8b0cb49414e44cbfe18a3b5a08acec75d6851fe2e9188f2f34e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0115.TestSwitch3-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 607,
+      "sha256": "b10e226869ff612b2c8ca5637591d4fb98a87347406a84528da9836013f2516e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0115.TestSwitch3-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0116.TestSwitch3-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0116.TestSwitch3-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0117.TestSwitch3-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0117.TestSwitch3-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0118.TestSwitch3-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0118.TestSwitch3-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0119.TestSwitch3-jdk23_tools-jarde-default-TestSwitch3$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0119.TestSwitch3-jdk23_tools-jarde-default-TestSwitch3$TestCls-class-source.stdout.raw",
+      "bytes": 58153,
+      "sha256": "cd66395e33e91e7d02bcb5b6ee26bc3d2335d61d15f75e42bcedf0847eae6b34"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0120.TestSwitch3-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0120.TestSwitch3-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0121.TestSwitch3-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0121.TestSwitch3-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0122.TestSwitch3-jdk23_tools-jarde-all-TestSwitch3$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0122.TestSwitch3-jdk23_tools-jarde-all-TestSwitch3$TestCls-class-source.stdout.raw",
+      "bytes": 61100,
+      "sha256": "0dc0ee90142e117aa69314d4d9341afd4b6e6bf62e0ab4e19f55296a935ba6e5"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0123.TestSwitch3-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0123.TestSwitch3-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0124.TestSwitch3-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0124.TestSwitch3-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0125.TestSwitch4-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 1686,
+      "sha256": "ef34cf9dc22e4989ba89a67585c8f885bb105bca84809c97c3fa3c6a86251a3c"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0125.TestSwitch4-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0126.TestSwitch4-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 555,
+      "sha256": "29b73f46d19e48247f8f558c00f807a64de4ebb7f3fc08ee8ac50b321b79d300"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0126.TestSwitch4-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0127.TestSwitch4-jdk8_tools-jarde-default-TestSwitch4$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0127.TestSwitch4-jdk8_tools-jarde-default-TestSwitch4$TestCls-class-source.stdout.raw",
+      "bytes": 57099,
+      "sha256": "cddcfc8f9885089111aeca2eb1914b733817482e2f866475fa31fe5f6abb7b40"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0128.TestSwitch4-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 648,
+      "sha256": "8105e5e1c63f17c074a2fdc38bb2b1d064c3702a8cb4e7743f99d8d20a648a8c"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0128.TestSwitch4-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0129.TestSwitch4-jdk8_tools-jarde-all-TestSwitch4$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0129.TestSwitch4-jdk8_tools-jarde-all-TestSwitch4$TestCls-class-source.stdout.raw",
+      "bytes": 58628,
+      "sha256": "05f27e2bb2c0a519478d77dd32e428436f2c72db396a038e7c2e3ea785516e75"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0130.TestSwitch4-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 644,
+      "sha256": "fc1913ffa596a548cb43a0d4cb13ebcf1032800a3f27ea2cd85e4d57e158759e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0130.TestSwitch4-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0131.TestSwitch4-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0131.TestSwitch4-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 246,
+      "sha256": "50d331c181ccfbe7e0dae88cc37fe77544729267918e9abb89b9b707a9593461"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0132.TestSwitch4-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0132.TestSwitch4-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0133.TestSwitch4-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 750,
+      "sha256": "b1552d3b973363565cc87d8836acd48fe5dfb091710cacc7ce666bca1817d763"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0133.TestSwitch4-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0134.TestSwitch4-jdk23_tools-jarde-default-TestSwitch4$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0134.TestSwitch4-jdk23_tools-jarde-default-TestSwitch4$TestCls-class-source.stdout.raw",
+      "bytes": 57099,
+      "sha256": "cddcfc8f9885089111aeca2eb1914b733817482e2f866475fa31fe5f6abb7b40"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0135.TestSwitch4-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0135.TestSwitch4-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0136.TestSwitch4-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0136.TestSwitch4-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 246,
+      "sha256": "50d331c181ccfbe7e0dae88cc37fe77544729267918e9abb89b9b707a9593461"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0137.TestSwitch4-jdk23_tools-jarde-all-TestSwitch4$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0137.TestSwitch4-jdk23_tools-jarde-all-TestSwitch4$TestCls-class-source.stdout.raw",
+      "bytes": 58628,
+      "sha256": "14ba5940020d64cb0a379fe90e21fa72d484c96ecc2f4c283a700e456ffaa666"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0138.TestSwitch4-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0138.TestSwitch4-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0139.TestSwitch4-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0139.TestSwitch4-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 246,
+      "sha256": "50d331c181ccfbe7e0dae88cc37fe77544729267918e9abb89b9b707a9593461"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0140.TestSwitchSimple-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0140.TestSwitchSimple-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0141.TestSwitchSimple-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0141.TestSwitchSimple-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0142.TestSwitchSimple-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0142.TestSwitchSimple-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0143.TestSwitchSimple-jdk8_tools-jarde-default-TestSwitchSimple$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0143.TestSwitchSimple-jdk8_tools-jarde-default-TestSwitchSimple$TestCls-class-source.stdout.raw",
+      "bytes": 31001,
+      "sha256": "f5458372da8cf1cc470cfaf5a890c7df045ae0c918257519d47631abfd4c84bc"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0144.TestSwitchSimple-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0144.TestSwitchSimple-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0145.TestSwitchSimple-jdk8_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0145.TestSwitchSimple-jdk8_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0146.TestSwitchSimple-jdk8_tools-jarde-all-TestSwitchSimple$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0146.TestSwitchSimple-jdk8_tools-jarde-all-TestSwitchSimple$TestCls-class-source.stdout.raw",
+      "bytes": 32483,
+      "sha256": "4ed0634f84c1eabf47f86b2b65b26027c41776ae547238904ed01602e9adba85"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0147.TestSwitchSimple-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0147.TestSwitchSimple-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0148.TestSwitchSimple-jdk8_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0148.TestSwitchSimple-jdk8_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0149.TestSwitchSimple-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0149.TestSwitchSimple-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0150.TestSwitchSimple-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0150.TestSwitchSimple-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0151.TestSwitchSimple-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0151.TestSwitchSimple-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0152.TestSwitchSimple-jdk23_tools-jarde-default-TestSwitchSimple$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0152.TestSwitchSimple-jdk23_tools-jarde-default-TestSwitchSimple$TestCls-class-source.stdout.raw",
+      "bytes": 31001,
+      "sha256": "ee708301977c83af8d325a1ad1d404783dc565c6c53ba201708eda73c0d6ac3e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0153.TestSwitchSimple-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0153.TestSwitchSimple-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0154.TestSwitchSimple-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0154.TestSwitchSimple-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0155.TestSwitchSimple-jdk23_tools-jarde-all-TestSwitchSimple$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0155.TestSwitchSimple-jdk23_tools-jarde-all-TestSwitchSimple$TestCls-class-source.stdout.raw",
+      "bytes": 32483,
+      "sha256": "527d90eaef9ba0dd2dde1f3fc7b61f25ce2bdaba08c58b2de455859862fb4403"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0156.TestSwitchSimple-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0156.TestSwitchSimple-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0157.TestSwitchSimple-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0157.TestSwitchSimple-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0158.TestSwitchWithFallThroughCase2-jdk8_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0158.TestSwitchWithFallThroughCase2-jdk8_tools-original-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0159.TestSwitchWithFallThroughCase2-jdk8_tools-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0159.TestSwitchWithFallThroughCase2-jdk8_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0160.TestSwitchWithFallThroughCase2-jdk8_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0160.TestSwitchWithFallThroughCase2-jdk8_tools-jadx-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0161.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-TestSwitchWithFallThroughCase2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0161.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+      "bytes": 114361,
+      "sha256": "27315630b9033a751af72a29b30458989c8d16c87020228f4e17d17da5b03b94"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0162.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0162.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0163.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0163.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0164.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-TestSwitchWithFallThroughCase2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0164.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+      "bytes": 117457,
+      "sha256": "f05fc864a69e1cf65ed852deea925c30ccd9c69fc1618403dfbb5a8621ee37f1"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0165.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0165.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0166.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0166.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0167.TestSwitchWithFallThroughCase2-jdk23_tools-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0167.TestSwitchWithFallThroughCase2-jdk23_tools-original-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0168.TestSwitchWithFallThroughCase2-jdk23_tools-jadx-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0168.TestSwitchWithFallThroughCase2-jdk23_tools-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0169.TestSwitchWithFallThroughCase2-jdk23_tools-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0169.TestSwitchWithFallThroughCase2-jdk23_tools-jadx-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0170.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-TestSwitchWithFallThroughCase2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0170.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+      "bytes": 114361,
+      "sha256": "adebf5d27c1e5d5861dad70fa396eff59caa891d8944d8985474225f180c1cfa"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0171.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0171.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0172.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0172.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0173.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-TestSwitchWithFallThroughCase2$TestCls-class-source.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0173.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+      "bytes": 117457,
+      "sha256": "86d6cb68f0c232b16b12fa5a65bb139826aaf56b11af81c535f49de003730a69"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0174.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0174.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0175.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ten-fixture-replay/raw/0175.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "verifier-root-v5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "verifier-root-v5.stdout.raw",
+      "bytes": 138111,
+      "sha256": "ddfa8e8e1e824b671a1ca16c3cdbf0b4f4b9113b3b99104e07dbe6953d664132"
+    },
+    {
+      "path": "verifier-root-v6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "verifier-root-v6.stdout.raw",
+      "bytes": 142952,
+      "sha256": "ff28ec7c246f2d055797e29c0040253c357fb4a89164375e8cb9906808105add"
+    },
+    {
+      "path": "verifier-root-v7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "verifier-root-v7.stdout.raw",
+      "bytes": 142952,
+      "sha256": "ff28ec7c246f2d055797e29c0040253c357fb4a89164375e8cb9906808105add"
+    }
+  ]
+}

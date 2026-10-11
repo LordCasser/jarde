@@ -1,0 +1,60 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class
+  Last modified 2026-10-11; size 255 bytes
+  MD5 checksum fbdfce2c120600f4a846a5f60be6454f
+public class CandidateContinuation
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#10         // java/lang/Object."<init>":()V
+   #2 = Class              #11            // CandidateContinuation
+   #3 = Class              #12            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               mixedExits
+   #8 = Utf8               (I)I
+   #9 = Utf8               StackMapTable
+  #10 = NameAndType        #4:#5          // "<init>":()V
+  #11 = Utf8               CandidateContinuation
+  #12 = Utf8               java/lang/Object
+{
+  public CandidateContinuation();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static int mixedExits(int);
+    descriptor: (I)I
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: iload_0
+         3: lookupswitch  { // 2
+                       1: 28
+                       2: 34
+                 default: 37
+            }
+        28: bipush        10
+        30: istore_1
+        31: goto          37
+        34: bipush        20
+        36: ireturn
+        37: bipush        30
+        39: istore_1
+        40: iload_1
+        41: ireturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 28
+          locals = [ int ]
+        frame_type = 5 /* same */
+        frame_type = 2 /* same */
+        frame_type = 2 /* same */
+}

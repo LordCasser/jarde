@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "tool_sha256": "e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7",
+  "class_sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525",
+  "command": {
+    "index": 0,
+    "argv": [
+      "/private/tmp/jarde-switch-continuation-class-digest-tool-root-v1",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-11T03:43:42.992375+00:00",
+    "duration_seconds": 1.0122948750213254,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 0,
+    "free_bytes_after": 30523256832,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": null,
+    "streams": {
+      "stdout": {
+        "path": "/private/tmp/jarde-compound-clone-digest-root-v1/0.stdout.raw",
+        "bytes": 260,
+        "sha256": "85e005163330cf111e0bda083f6d6482b532a7e8c7a96766c3dba1d9f4d34fbb"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-compound-clone-digest-root-v1/0.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+}

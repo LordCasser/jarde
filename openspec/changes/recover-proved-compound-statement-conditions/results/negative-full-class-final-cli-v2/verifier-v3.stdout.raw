@@ -1,0 +1,1 @@
+{"result": "verified_observation_record", "fixture_count": 4, "render_command_count": 8, "javap_command_count": 4, "source_outcome_policy": "recorded without requiring Structured or ExplanationOnly", "target_methods_invoked": false}

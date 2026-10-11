@@ -1,0 +1,71 @@
+{
+  "schema": "compound-negative-independent-observation-verifier-luna-v1",
+  "execution": "/private/tmp/jarde-compound-negative-comparison-root-v1/execution.json",
+  "execution_sha256": "fcf4e25bf99bef201fdaa741383ded486e02c248cabdc585e8aa47c73f4d9cff",
+  "status": "negative_observations_verified",
+  "raw_command_count": 21,
+  "frozen_input_pin_count": 74,
+  "jdk_profiles": [
+    "jdk8_tools",
+    "jdk23_tools"
+  ],
+  "original_runtime": "8/8 expected output lines per JDK",
+  "jadx_runtime": {
+    "state": "runs_but_semantically_wrong",
+    "correct_output_lines": "4/8 per JDK",
+    "stdout": "miss:3\nhit:1\nmiss:-1\nmiss:-1\nmiss:3\nhit:1\nmiss:-1\nmiss:-1\n"
+  },
+  "jarde_runtime": {
+    "state": "not_run_after_source_compile_failure",
+    "compile_failures": 4,
+    "diagnostic": "two missing-return errors per default/all compile"
+  },
+  "jarde_default_all": {
+    "whole_class_text_equal": true,
+    "method_text_and_source_maps_equal": true,
+    "target_methods": {
+      "prefixIncrement": {
+        "default": {
+          "physical_instruction_count": 36,
+          "quoted_bci_count": 36,
+          "mapped_bci_count": 36,
+          "overlap_bci": 32,
+          "recovery_state": "whole_method_explanation_only"
+        },
+        "all": {
+          "physical_instruction_count": 36,
+          "quoted_bci_count": 36,
+          "mapped_bci_count": 36,
+          "overlap_bci": 32,
+          "recovery_state": "whole_method_explanation_only"
+        }
+      },
+      "localAssignment": {
+        "default": {
+          "physical_instruction_count": 39,
+          "quoted_bci_count": 39,
+          "mapped_bci_count": 39,
+          "overlap_bci": 34,
+          "recovery_state": "whole_method_explanation_only"
+        },
+        "all": {
+          "physical_instruction_count": 39,
+          "quoted_bci_count": 39,
+          "mapped_bci_count": 39,
+          "overlap_bci": 34,
+          "recovery_state": "whole_method_explanation_only"
+        }
+      }
+    }
+  },
+  "physical_javap": {
+    "prefixIncrement_unique_bcis": 36,
+    "localAssignment_unique_bcis": 39,
+    "effects": {
+      "prefixIncrement": "iinc@16",
+      "localAssignment": "dup@20; istore@21"
+    },
+    "source_map_covers_complete_physical_instruction_sets": true
+  },
+  "recovery_classification": "Jarde explains and quotes both whole methods after ownership overlap at BCI 32/34; sources fail compilation and receive no runtime. This does not demonstrate entry into or success of a new CompoundIf Builder guard. Owner class BLAKE3 and snapshot are bound to the independently pinned digest-oracle executable, execution record, and raw stdout for the exact javap input class."
+}

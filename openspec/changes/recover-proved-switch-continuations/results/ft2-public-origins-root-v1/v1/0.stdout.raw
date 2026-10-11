@@ -1,0 +1,11 @@
+
+running 1 test
+test cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins ... FAILED
+
+failures:
+
+failures:
+    cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.01s
+

@@ -1,0 +1,45 @@
+--- private-v2.py
++++ root-v3.py
+@@ -53,6 +53,7 @@
+  for seg in sm['segments']:
+   a,b=seg.get('start'),seg.get('end')
+   require(isinstance(a,int) and isinstance(b,int) and 0<=a<=b<=text_bytes,'source-map byte span outside UTF-8 method text')
++  require(bool(text.encode('utf-8')[a:b].decode('utf-8')),'source-map range is empty or splits UTF-8')
+   origin=seg.get('origin',{})
+   origins=[]
+   if isinstance(origin.get('primary'),dict): origins.append(origin['primary'])
+@@ -176,10 +177,12 @@
+  for p,label in [('default','default'),('all','all')]:
+   meta=rec.get('apis',{}).get(p,{})
+   api=json.loads(Path(meta['api_json']['path']).read_text(encoding='utf-8'))
++  raw_api=json.loads(raw_for(out,rec['commands'][meta['command_index']],meta['command_index'])['stdout'])
++  require(api==raw_api,'saved API differs from actual CLI raw stdout')
++  require(Path(meta['source']['path']).read_text(encoding='utf-8')==api['text'],'saved full-class source differs from actual API')
+   require(pin_matches(meta['api_json']) and pin_matches(meta['source']),'saved API/source pin mismatch')
+   reports=api_methods(api,label)
+   require(meta.get('methods')==2,'collector method count mismatch')
+-  require(reports[('<init>','()V')].get('unreachable')==[],'constructor unreachable set changed')
+   ctor=map_origins(reports[('<init>','()V')],CLASS_BLAKE3,255,'<init>','()V')
+   require(ctor=={0,1,4},label+': constructor map BCI closure mismatch')
+   mixed=map_origins(reports[('mixedExits','(I)I')],CLASS_BLAKE3,255,'mixedExits','(I)I')
+@@ -187,6 +190,10 @@
+   if p=='default': default_api=api; default_source=Path(meta['source']['path']).read_bytes()
+   else:
+    require(Path(meta['source']['path']).read_bytes()==default_source,'default/all complete source differs')
++   for left,right in zip(default_api['methods'],api['methods']):
++    require(left['item']==right['item'],'default/all complete member identity differs')
++    for key in ('text','source_map','method','quality','representation','fallbacks','diagnostics'):
++     require(left['outcome']['report'][key]==right['outcome']['report'][key],'default/all '+key+' differs')
+  require(rec.get('full_class_methods_retained')==2,'whole class did not retain both members')
+  source_records={x['profile']:x for x in rec['legs'] if x['jdk']=='javac8'}
+  for jdk,profile in LEGS:
+@@ -201,6 +208,9 @@
+   require(Path(item['runner']['path']).is_file() and pin_matches(item['runner']),'Runner source pin mismatch')
+   runner=Path(item['runner']['path']).read_text(encoding='utf-8')
+   require(runner.count('new CandidateContinuation()')==1 and runner.count('mixedExits(')==9,'Runner must construct once and execute nine inputs')
++  entries=sorted(p.relative_to(Path(item['classes_dir'])).as_posix() for p in Path(item['classes_dir']).rglob('*.class'))
++  wanted=['defpackage/CandidateContinuation.class','defpackage/Runner.class'] if profile=='jadx' else ['CandidateContinuation.class','Runner.class']
++  require(entries==wanted,'full generated class inventory differs '+jdk+'/'+profile)
+   if profile=='original':
+    classfile=Path(item['classes_dir'])/'CandidateContinuation.class'
+    require(classfile.is_file() and sha(classfile)==FIXTURE_SHA,'original runtime class is not the complete pinned control')

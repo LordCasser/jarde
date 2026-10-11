@@ -1,0 +1,11 @@
+
+running 1 test
+test region::tests::real_switch2_direct_target_join_proves_candidate_witnesses ... FAILED
+
+failures:
+
+failures:
+    region::tests::real_switch2_direct_target_join_proves_candidate_witnesses
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 346 filtered out; finished in 0.01s
+

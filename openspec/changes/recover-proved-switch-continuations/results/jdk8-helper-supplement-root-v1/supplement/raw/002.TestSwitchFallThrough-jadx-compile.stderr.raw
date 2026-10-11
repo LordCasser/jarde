@@ -1,0 +1,7 @@
+/private/tmp/jarde-cf12-jdk8-switch-supplement-root-v4/TestSwitchFallThrough/jadx/sources/TestSwitchFallThrough$TestCls.java:32: 错误: 无法访问ICodeInfo
+        JadxAssertions.assertThat(testWrap(1)).isEqualTo(2000);
+                      ^
+  错误的类文件: /Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar(jadx/api/ICodeInfo.class)
+    类文件具有错误的版本 55.0, 应为 52.0
+    请删除该文件或确保该文件位于正确的类路径子目录中。
+1 个错误

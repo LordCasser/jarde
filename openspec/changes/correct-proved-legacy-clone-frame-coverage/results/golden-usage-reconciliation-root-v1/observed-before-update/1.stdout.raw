@@ -1,0 +1,20 @@
+
+running 9 tests
+test every_category_of_the_fixed_list_is_carried_by_a_named_entry ... ok
+test every_stopped_entry_across_the_goldens_explains_itself ... ok
+test the_exception_entries_complete_with_the_handler_inputs_settled ... ok
+test the_historical_corpus_replays_from_45_to_52 ... FAILED
+test the_input_side_premises_of_the_entries_hold ... ok
+test the_legacy_clone_entry_bills_two_call_sites ... FAILED
+test the_resource_boundary_entries_stop_where_their_budget_says ... ok
+test the_stopped_inputs_stay_published_and_explained ... ok
+test the_wide_and_switch_entry_completes ... ok
+
+failures:
+
+failures:
+    the_historical_corpus_replays_from_45_to_52
+    the_legacy_clone_entry_bills_two_call_sites
+
+test result: FAILED. 7 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+

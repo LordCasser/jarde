@@ -1,0 +1,34 @@
+--- a/tests/p3_reference_slot_lifetimes.rs
++++ b/tests/p3_reference_slot_lifetimes.rs
+@@ -336,13 +336,27 @@
+     }
+ }
+ 
+-/// Null followed by one exact constructor producer is now a proved reference local. Preserve the
+-/// historical baseline and require the entire class to differ only in that declaration's type.
++/// Preserve the frozen class baseline except for its exact local-type refinement and proved
++/// compound condition; whole-class identity, source maps, and all unrelated members stay fixed.
+ #[test]
+-fn null_first_exact_builder_writes_refine_only_the_local_type() {
++fn null_first_exact_builder_writes_refine_local_type_and_compound_condition() {
+     let (name, bytes, baseline) = negative_case!("unknown-null", NullThenBuilder);
+     assert_eq!(baseline.matches("Object local2;").count(), 1);
+-    let expected = baseline.replace("Object local2;", "java.lang.StringBuilder local2;");
++    let nested_if = concat!(
++        "        if (arg0) {\n",
++        "            if (local2 == null) {\n",
++        "                local1 = local1 + 1;\n",
++        "            }\n",
++        "        }"
++    );
++    let compound_if = concat!(
++        "        if (arg0 && local2 == null) {\n",
++        "            local1 = local1 + 1;\n",
++        "        }"
++    );
++    assert_eq!(baseline.matches(nested_if).count(), 1);
++    let typed_expected = baseline.replace("Object local2;", "java.lang.StringBuilder local2;");
++    let expected = typed_expected.replace(nested_if, compound_if);
+     let essential = recover(bytes, name, &RecoveryEvidenceRequest::essential());
+     let all = recover(bytes, name, &RecoveryEvidenceRequest::all());
+     assert_eq!(essential.text, expected);

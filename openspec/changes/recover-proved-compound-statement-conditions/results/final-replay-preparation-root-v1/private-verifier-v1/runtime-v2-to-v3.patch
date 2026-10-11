@@ -1,0 +1,61 @@
+--- accepted-runtime-verifier-v2.py
++++ runtime-verifier-v3.py
+@@ -10,12 +10,13 @@
+ import stat
+ import sys
+ from pathlib import Path
++from build_evidence import verify_build as verify_candidate_build
+ 
+ ROOT = Path('/Users/lordcasser/workspace/projects/jarde')
+ PLAN = ROOT / 'openspec/changes/recover-proved-switch-continuations/results/replay-planning-root-v1/plan-luna-v1.json'
+ PLAN_SHA256 = 'f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c'
+ FIXTURE_DIR = Path('/private/tmp/jarde-compound-condition-runtime-fixtures-luna-v2')
+-CLI_PATH = Path('/private/tmp/jarde-compound-condition-candidate-cli-root-v1')
++CLI_PATH = Path('/private/tmp/jarde-compound-condition-candidate-cli-root-v2')
+ EXPECTED_SOURCE_SHA256 = '6103506957bee489c09cb0fe191fc7b0eb208f2c592f7be8e24b39e1e1774d43'
+ EXPECTED_RUNNER_SHA256 = '2ed3005970f32e76f0a1c039dbb799200664b5e0f965c19fadeb42f921cd1e35'
+ EXPECTED_MATRIX_SHA256 = '187cf3e6df200f332c7177119533fcfcfcd2ee3356bb135bbab83d4d5f3319c8'
+@@ -24,7 +25,7 @@
+ EXPECTED_CLASS_BYTES = 2848
+ EXPECTED_CLASS_SHA256 = '2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa'
+ EXPECTED_SCHEMA = 'compound-condition-full-source-runtime-comparison-luna-v1'
+-VERIFICATION_SCHEMA = 'compound-condition-candidate-runtime-verification-luna-v2'
++VERIFICATION_SCHEMA = 'compound-condition-candidate-runtime-verification-luna-v3'
+ TARGET_METHODS = ('test', 'testMixed', 'testThrowing', 'testFloat')
+ PROFILES = ('jdk8_tools', 'jdk23_tools')
+ SIDES = ('original', 'jadx', 'jarde-default', 'jarde-all')
+@@ -144,6 +145,8 @@
+     parser.add_argument('--out', type=Path, required=True)
+     parser.add_argument('--cli-sha256', required=True,
+                         help='exact SHA-256 supplied from the fresh frozen candidate CLI')
++    parser.add_argument('--candidate-build', type=Path, required=True,
++                        help='actual v5 build execution.json to validate against the replay CLI')
+     args = parser.parse_args()
+     execution_path = args.execution.resolve()
+     output_path = args.out.resolve()
+@@ -157,6 +160,7 @@
+     record = json.loads(execution_path.read_text(encoding='utf-8'))
+     root = execution_path.parent
+     checks = []
++    candidate_build = verify_candidate_build(args.candidate_build, record.get('cli'), args.cli_sha256)
+ 
+     def check(name, ok, details=None):
+         checks.append({
+@@ -175,6 +179,9 @@
+             labels.append(side + '-runner-compile')
+             labels.append(side + '-runtime')
+     commands = record.get('commands', [])
++    check('actual_v5_candidate_build_and_dynamic_source_pins',
++          candidate_build.get('cli', {}).get('sha256') == args.cli_sha256
++          and candidate_build.get('target_absent_after_clean') is True, candidate_build)
+     check('execution_schema_and_complete_28_command_run',
+           record.get('schema') == EXPECTED_SCHEMA and len(commands) == 28,
+           {'schema': record.get('schema'), 'command_count': len(commands)})
+@@ -557,6 +564,7 @@
+         'state': 'independent_runtime_observations_accepted' if not failures else 'record_inconsistent',
+         'execution': {'path': str(execution_path), 'sha256': sha256(execution_path),
+                       'recorded_status': record.get('status'), 'command_count': len(commands)},
++        'candidate_build': candidate_build,
+         'checks': checks,
+         'observations': {
+             'matrix_rows': runtime_rows,

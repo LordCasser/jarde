@@ -1,0 +1,280 @@
+--- region.rs.base
++++ region.rs.candidate
+@@ -19362,5 +19362,277 @@
+             assert_eq!(walker.unclosed_tail_at, Some(181), "{name}: no tail leak");
+             assert!(walker.fragmented.is_none(), "{name}: no partial fragment");
+         }
++    }
++
++
++    #[test]
++    fn real_legacy_clone_compound_root_refuses_uncloned_join_path_without_state_leaks() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::budget::{Budget, Limits};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        const CLASS: &[u8] = include_bytes!(
++            "../../../openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class"
++        );
++        assert_eq!(CLASS.len(), 2662);
++        assert_eq!(
++            blake3::hash(CLASS).to_hex().to_string(),
++            "af3b18f31c433684f1c685c62a6ce11b540e8304f158e576b8776bc5d76a5a4b"
++        );
++
++        let mut analysis_budget = Budget::new(Limits {
++            input_bytes: 1 << 20,
++            archive_entries: 100,
++            entry_bytes: 1 << 20,
++            read_bytes: 1 << 20,
++            class_bytes: 1 << 20,
++            attribute_bytes: 1 << 20,
++            code_bytes: 1 << 20,
++            result_items: 1 << 20,
++            output_bytes: 1 << 20,
++            class_headers: 100,
++            method_bodies: 100,
++            ir_items: 1 << 20,
++            ir_edges: 1 << 20,
++            analysis_steps: 1 << 20,
++            normalization_clones: 1 << 20,
++            nested_depth: 32,
++            dependency_depth: 32,
++            elapsed_millis: u64::MAX,
++        });
++        let snapshot = ArtifactSnapshot::open(
++            ArtifactInput::bytes(CLASS.to_vec()),
++            &mut analysis_budget,
++        )
++        .expect("the verifier-accepted legacy clone fixture opens");
++        let definition = PhysicalDefinitionId {
++            location: PhysicalClassLocation::StandaloneRoot {
++                snapshot: snapshot.id().clone(),
++            },
++            class_bytes: ClassBytesId {
++                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
++                length: u64::try_from(CLASS.len()).expect("fixture length fits"),
++            },
++            variant: PhysicalVariant::Base,
++        };
++        let domain = LoadDomain {
++            loader: LoaderId("app".to_owned()),
++            parent_loader: None,
++            delegation: DelegationPolicy::ParentFirst,
++            roots: vec![LoadRoot::StandaloneClass {
++                snapshot: snapshot.id().clone(),
++            }],
++            module_mode: ModuleMode::ClassPath,
++            external_override: RuntimeUncertainty::None,
++            runtime_transformation: RuntimeUncertainty::None,
++        };
++        let analysis = analyze_method_ir(
++            &[snapshot.clone()],
++            &MethodAnalysisRequest {
++                environment: ResolutionEnvironment {
++                    runtime: RuntimeView {
++                        physical: PhysicalView {
++                            snapshot: snapshot.id().clone(),
++                            scope: PhysicalScope::SnapshotAll,
++                        },
++                        profile: RuntimeProfile {
++                            java_release: 8,
++                            multi_release: MultiReleasePolicy::Disabled,
++                            layout: LayoutMode::Generic,
++                        },
++                        load_domain: domain.clone(),
++                    },
++                    domains: vec![domain],
++                    providers: Vec::new(),
++                },
++                method: PhysicalMethodId {
++                    owner: definition,
++                    name: JvmBytes(b"test".to_vec()),
++                    descriptor: JvmBytes(
++                        b"(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;".to_vec(),
++                    ),
++                },
++                stages: AnalysisStage::ALL.to_vec(),
++            },
++            &mut analysis_budget,
++        )
++        .expect("Reader analyzes this exact method and its legacy subroutine");
++        let ir = analysis.ir();
++        let canonical = ir.canonical().expect("Reader publishes canonical CFG");
++        let ssa = ir.ssa().expect("Reader publishes SSA");
++        let code = ir.code().expect("Reader publishes decoded code");
++        let operations = Operations::of(code, ir.constant_pool());
++        let declaration = ir.declaration().expect("Reader publishes method declaration");
++        assert_eq!(declaration.name().0.as_slice(), b"test");
++        assert_eq!(
++            declaration.descriptor().0.as_slice(),
++            b"(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;"
++        );
++        assert_eq!(
++            code.instructions
++                .iter()
++                .map(|instruction| (instruction.bci(), instruction.opcode()))
++                .collect::<Vec<_>>(),
++            vec![
++                (0, 0xa8),
++                (3, 0xa8),
++                (6, 0x01),
++                (7, 0xb0),
++                (8, 0x3a),
++                (10, 0x1a),
++                (11, 0x99),
++                (14, 0x1b),
++                (15, 0x99),
++                (18, 0xa7),
++                (21, 0x1c),
++                (22, 0x99),
++                (25, 0x1d),
++                (26, 0x99),
++                (29, 0xa7),
++                (32, 0xa7),
++                (35, 0xa9),
++            ],
++            "the verifier-accepted fixture decodes the two calls, boolean branches, join and sole ret"
++        );
++
++        let view = NormalFlowView::build(canonical, &mut analysis_budget)
++            .expect("normal-flow view keeps the reader's clone identities");
++        let terminal_bci = |id: &CanonicalBlockId| {
++            ssa.block(id)
++                .and_then(|block| block.instructions().last())
++                .map(SsaInstruction::bci)
++        };
++        let root = canonical
++            .blocks()
++            .iter()
++            .map(|block| block.id())
++            .find(|id| id.path() == [0] && terminal_bci(id) == Some(11))
++            .expect("canonical member at jsr call path [0] owns comparison BCI 11");
++        let branch_instruction = |id: &CanonicalBlockId| {
++            ssa.block(id)
++                .and_then(|block| block.instructions().last())
++                .filter(|instruction| instruction.bci() == 11)
++                .expect("reader-produced clone block ends at the real comparison BCI 11")
++        };
++        assert_eq!(root.bci(), 8, "BCI 11 is the terminal comparison in canonical block 8");
++        assert_eq!(root.path(), &[0]);
++        assert!(root.is_clone());
++        assert_eq!(branch_instruction(root).opcode(), 0x99, "the root is `ifeq`");
++        let (root_op, root_target) = operations
++            .get(11)
++            .and_then(Operation::comparison)
++            .expect("the reader-decoded instruction at BCI 11 is a comparison");
++        assert_eq!(root_target, 21);
++
++        let second_clone = canonical
++            .blocks()
++            .iter()
++            .map(|block| block.id())
++            .find(|id| id.bci() == root.bci() && id.path() == [3])
++            .expect("the same real canonical block is cloned under call path [3]");
++        assert!(second_clone.is_clone());
++        assert_eq!(branch_instruction(second_clone).opcode(), 0x99);
++        let clone_paths = canonical
++            .blocks()
++            .iter()
++            .map(|block| block.id())
++            .filter(|id| id.bci() == root.bci() && id.is_clone())
++            .map(|id| id.path().to_vec())
++            .collect::<BTreeSet<_>>();
++        assert_eq!(clone_paths, BTreeSet::from([vec![0], vec![3]]));
++
++        let caller_join = canonical
++            .blocks()
++            .iter()
++            .map(|block| block.id())
++            .find(|id| id.bci() == 3 && id.path().is_empty())
++            .expect("the first jsr's actual caller continuation is an uncloned canonical block");
++        let return_to_caller = canonical
++            .edges()
++            .iter()
++            .filter(|edge| {
++                matches!(edge.kind(), CanonicalEdgeKind::Return { call_site: 0 })
++                    && edge.to() == caller_join
++                    && edge.from().path() == [0]
++            })
++            .collect::<Vec<_>>();
++        assert_eq!(return_to_caller.len(), 1, "reader records the real clone return to BCI 3");
++        assert_eq!(
++            ssa.block(return_to_caller[0].from())
++                .and_then(|block| block.instructions().last())
++                .map(|instruction| (instruction.bci(), instruction.opcode())),
++            Some((35, 0xa9)),
++            "the real return edge leaves the sole `ret` instruction"
++        );
++        let caller_node = view
++            .index_of(caller_join)
++            .expect("the uncloned caller join belongs to the reader's normal-flow view");
++        let root_node = view
++            .index_of(root)
++            .expect("the cloned comparison root belongs to the reader's normal-flow view");
++
++        let chains = crate::concat::Plan::empty();
++        let sites = crate::init::Sites::empty();
++        let initial_visited = BTreeSet::from([
++            view.index_of(second_clone)
++                .expect("the sibling clone belongs to the reader's normal-flow view"),
++        ]);
++        let initial_catch_joins = BTreeSet::from([(root_node, caller_node)]);
++        let initial_tail = Some(11);
++        let mut proof_budget = Budget::new(Limits {
++            analysis_steps: 1 << 20,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        let mut walker = Walker {
++            canonical,
++            view: &view,
++            ssa,
++            operations: &operations,
++            pool: ir.constant_pool(),
++            chains: &chains,
++            sites: &sites,
++            code,
++            method_synchronized: Some(false),
++            has_reachable_explicit_monitor: false,
++            return_is_boolean: false,
++            handlers: &code.exception_handlers,
++            profile: &crate::pass::JAVA_8,
++            budget: &mut proof_budget,
++            catch_joins: initial_catch_joins.clone(),
++            fragmented: None,
++            excluded_edge_nodes: BTreeSet::new(),
++            visited: initial_visited.clone(),
++            unclosed_tail_at: initial_tail,
++            own_monitor: None,
++            depth: 0,
++        };
++        let proof = walker
++            .compound_statement_condition(
++                root,
++                11,
++                root_op,
++                root_target,
++                &Frame::default(),
++                caller_node,
++            )
++            .expect("an ample proof budget reaches the path-boundary refusal");
++        assert!(proof.is_none(), "a clone-local test cannot close at a pathless caller join");
++        assert_eq!(walker.budget.usage().analysis_steps, 0, "path mismatch refuses before scanning");
++        assert_eq!(walker.visited, initial_visited, "clone ownership is unchanged");
++        assert_eq!(walker.catch_joins, initial_catch_joins, "catch join state is unchanged");
++        assert_eq!(walker.unclosed_tail_at, initial_tail, "tail state is unchanged");
++        assert!(walker.fragmented.is_none(), "no partial fragment is installed");
+     }
+ }

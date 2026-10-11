@@ -1,0 +1,544 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -36294,6 +36294,9 @@
+     const EXCEPTION_IF_JOIN_FIXTURE: &[u8] = include_bytes!(
+         "../../../openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class"
+     );
++    const COMPOUND_STATEMENT_CONDITIONS_FIXTURE: &[u8] = include_bytes!(
++        "../../../openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
++    );
+     /// Runs the real JVM IR and region producers, then asks only this proof about their output.
+     fn fixture_conditional_attempt(
+         class: &[u8],
+@@ -36367,7 +36370,7 @@
+             descriptor,
+             short_region,
+             mutate_region,
+-            |_, _, _, _, _| {},
++            |_, _, _, _, _, _, _, _, _, _, _, _| {},
+         )
+     }
+ 
+@@ -36382,6 +36385,13 @@
+             &CanonicalCfg,
+             &SsaTable,
+             &Operations,
++            &jarde_reader::classfile::MethodCodeFacts,
++            &[jarde_reader::classfile::CpEntryFacts],
++            &[jarde_reader::classfile::BootstrapMethodFacts],
++            Option<&jarde_reader::model::JvmBytes>,
++            &[jarde_reader::model::JvmString],
++            Option<&[jarde_reader::classfile::MemberHeader]>,
++            &crate::concat::Plan,
+             &mut Budget,
+         ),
+     ) -> (
+@@ -36510,7 +36520,20 @@
+             &mut budget,
+         )
+         .expect("the fixture region tree is bounded");
+-        inspect(&recovered, canonical, ssa, &operations, &mut budget);
++        inspect(
++            &recovered,
++            canonical,
++            ssa,
++            &operations,
++            code,
++            ir.constant_pool(),
++            ir.bootstrap_methods(),
++            ir.direct_super_class(),
++            ir.direct_interfaces(),
++            ir.class_methods(),
++            &chains,
++            &mut budget,
++        );
+         let candidate = recovered
+             .regions
+             .iter()
+@@ -36625,9 +36648,477 @@
+             tree_attempt,
+             intermediate_attempt,
+             stack_phi_uses,
++        )
++    }
++
++    fn compound_test_budget(analysis_steps: u64) -> Budget {
++        Budget::new(jarde_reader::budget::Limits {
++            analysis_steps,
++            ir_edges: 1 << 25,
++            ir_items: 1 << 25,
++            elapsed_millis: u64::MAX,
++            ..jarde_reader::budget::Limits::default()
++        })
++    }
++
++    #[allow(clippy::too_many_arguments)]
++    fn compound_test_builder<'a>(
++        canonical: &'a CanonicalCfg,
++        ssa: &'a SsaTable,
++        code: &'a jarde_reader::classfile::MethodCodeFacts,
++        operations: &'a Operations,
++        pool: &'a [jarde_reader::classfile::CpEntryFacts],
++        bootstrap: &'a [jarde_reader::classfile::BootstrapMethodFacts],
++        direct_super_class: Option<&'a jarde_reader::model::JvmBytes>,
++        direct_interfaces: &'a [jarde_reader::model::JvmString],
++        class_methods: Option<&'a [jarde_reader::classfile::MemberHeader]>,
++        chains: &'a crate::concat::Plan,
++        regions: &[Region],
++        names: &'a NameTable,
++        reuse: &'a reuse::Plan,
++        parameter_types: &'a BTreeMap<u16, Type>,
++        sites: &'a crate::init::Sites,
++        fields: &'a field::Plan,
++        field_copies: &'a FieldCopies,
++        prologues: &'a crate::init::Prologues,
++        enums: &'a crate::enumswitch::Plan,
++        setup_budget: &mut Budget,
++        budget: &'a mut Budget,
++    ) -> Builder<'a> {
++        let parameters = 5;
++        let return_type = Some(Type::Reference("java.lang.String".to_owned()));
++        let mut declarations = declarations(
++            regions,
++            canonical,
++            ssa,
++            operations,
++            names,
++            reuse,
++            parameters,
++            false,
++            Some("CompoundStatementConditions"),
++            parameter_types,
++            return_type.as_ref(),
++            fields,
++            &[],
++            code,
++            sites,
++            setup_budget,
++        )
++        .expect("the fixture declaration plan completes");
++        let local_assignments = prove_local_assignments(
++            regions,
++            ssa,
++            operations,
++            names,
++            reuse,
++            &mut declarations,
++            parameters,
++            parameter_types,
++            setup_budget,
++        )
++        .expect("the fixture local assignment plan completes");
++        let mut instructions = BTreeMap::new();
++        let mut block_of = BTreeMap::new();
++        for block in ssa.blocks() {
++            for instruction in block.instructions() {
++                instructions.insert(instruction.bci(), instruction);
++                block_of.insert(instruction.bci(), block.block().clone());
++            }
++        }
++        Builder {
++            canonical,
++            ssa,
++            code,
++            operations,
++            pool,
++            bootstrap,
++            profile: crate::pass::JAVA_8,
++            parameters,
++            has_receiver: false,
++            parameter_types,
++            return_type,
++            names,
++            reuse,
++            chains,
++            field_copies,
++            members: None,
++            member_inner_targets: &[],
++            typed_functional_target: None,
++            interface_super_calls: &[],
++            reference_overload_calls: &[],
++            snapshot_hierarchy_widenings: &[],
++            captured_outer_reads: &[],
++            outer_super_calls: &[],
++            nested_class_members: &[],
++            pool_spelled_members: false,
++            declaring_class: Some("CompoundStatementConditions"),
++            direct_super_class,
++            direct_interfaces,
++            class_methods,
++            bridge: None,
++            sites,
++            prologues,
++            fields,
++            enums,
++            allow_array_constructor_method_references: false,
++            compounds: CompoundAssignments::default(),
++            unit_field_updates: UnitFieldUpdates::default(),
++            long_assignment_result: None,
++            write_accessor_assignment: None,
++            assignment_result_refused: false,
++            postfix: PostfixUpdates::default(),
++            snapshot_quote: BTreeSet::new(),
++            snapshots_rendered: BTreeSet::new(),
++            array_initializers: ArrayInitializers::default(),
++            local_assignments,
++            assignment_presentations: BTreeMap::new(),
++            field_chain_refused: BTreeSet::new(),
++            instructions,
++            block_of,
++            budget,
++            declared: BTreeSet::new(),
++            chained_firsts: BTreeMap::new(),
++            undeclared: BTreeSet::new(),
++            stmts: Vec::new(),
++            statements: 0,
++            ragged: false,
++            lambdas: Vec::new(),
++            array_constructor_sites: Vec::new(),
++            lambda_params: BTreeSet::new(),
++            accessors: Vec::new(),
++            deferred: Vec::new(),
++            binding_plans: BTreeMap::new(),
++            guarded_return_exits: BTreeMap::new(),
++            binding_rejections: BTreeMap::new(),
++            bindings: BTreeMap::new(),
++            binding_refused: BTreeSet::new(),
++            synthetic_names: BTreeSet::new(),
++            declarations,
++            increments: OnceCell::new(),
++            pops: OnceCell::new(),
++            clause_parameters: BTreeSet::new(),
++            settled: BTreeSet::new(),
++            lambdas_presented: 0,
++            lambda_refusals: Vec::new(),
++            accessors_presented: 0,
++            accessor_refusals: Vec::new(),
++            conditional_values: BTreeMap::new(),
++            conditional_branches: BTreeMap::new(),
++            compound_condition_refusals: BTreeMap::new(),
++            compound_conditions_ready: BTreeSet::new(),
++            compound_refused_producers: BTreeSet::new(),
++            short_circuit_statements: BTreeMap::new(),
++            two_exit_returns: BTreeMap::new(),
++            short_circuit_operands: BTreeSet::new(),
++            loop_headers: Vec::new(),
++            labeled_loop_headers: BTreeSet::new(),
++            loop_labels: BTreeMap::new(),
++            switch_depth: 0,
++            switch_break_targets: Vec::new(),
++            body_span: None,
++            nested_pair: None,
++            finally_return: None,
++            multi_return_finally: None,
++            segmented_null_lead: None,
++            finally_catch_pop: None,
++            shared_finally: None,
++        }
++    }
++
++    fn compound_trial_state(builder: &Builder<'_>) -> String {
++        format!(
++            "stmts={:?}; statements={}; bindings={:?}; plans={:?}; rejections={:?}; deferred={:?}; presentations={:?}; snapshots={:?}; quote={:?}; synthetic={:?}; declared={:?}; field_refused={:?}; binding_refused={:?}; conditional_values={:?}; conditional_branches={:?}; compound_refusals={:?}; compound_ready={:?}; compound_refused={:?}; nested={:?}",
++            builder.stmts,
++            builder.statements,
++            builder.bindings,
++            builder.binding_plans,
++            builder.binding_rejections,
++            builder.deferred,
++            builder.assignment_presentations,
++            builder.snapshots_rendered,
++            builder.snapshot_quote,
++            builder.synthetic_names,
++            builder.declared,
++            builder.field_chain_refused,
++            builder.binding_refused,
++            builder.conditional_values,
++            builder.conditional_branches,
++            builder.compound_condition_refusals,
++            builder.compound_conditions_ready,
++            builder.compound_refused_producers,
++            builder.nested_pair.as_ref().map(|pair| pair.engaged_once),
+         )
+     }
+ 
++    fn seed_compound_trial(builder: &mut Builder<'_>, bci: u32, owned: &BTreeSet<u32>) {
++        builder.stmts.push(Stmt::new(
++            StmtKind::Expr(Expr::direct(ExprKind::Integer(777), bci)),
++            OriginSet::new(Origin::direct(bci)),
++        ));
++        builder.statements = 1;
++        builder.assignment_presentations.insert(u32::MAX, 3);
++        builder.snapshot_quote.insert(u32::MAX);
++        builder.synthetic_names.insert("compoundSentinel".to_owned());
++        let value = builder
++            .ssa
++            .values_with_ids()
++            .find(|(_, value)| {
++                !matches!(value.def(), Definition::Instruction { bci, .. } if owned.contains(bci))
++                    && value.uses().iter().all(|use_| {
++                        use_.bci().is_none_or(|at| !owned.contains(&at))
++                    })
++            })
++            .map(|(id, _)| id)
++            .or_else(|| builder.ssa.values_with_ids().next().map(|(id, _)| id))
++            .expect("fixture has an SSA value");
++        builder.bindings.insert(
++            value,
++            Binding {
++                name: "compoundSentinel".to_owned(),
++                ty: Type::Reference("java.lang.String".to_owned()),
++                anchor: bci,
++            },
++        );
++        builder.binding_plans.insert(
++            u32::MAX,
++            BindingPlan {
++                value,
++                anchor: bci,
++                producer: u32::MAX,
++                name: "compoundSentinel".to_owned(),
++            },
++        );
++        builder.deferred.push((value, u32::MAX));
++    }
++
++    fn assert_compound_budget_stop(stop: &StopReason, limit: u64, owned: &BTreeSet<u32>) {
++        match stop {
++            StopReason::Budget {
++                dimension: jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                written: 0,
++                limit: actual_limit,
++                at: Some(at),
++            } => {
++                assert_eq!(*actual_limit, limit);
++                assert!(owned.contains(at), "stop BCI {at} belongs to the real compound region");
++            }
++            other => panic!("expected the exact AnalysisSteps stop, got {other:?}"),
++        }
++    }
++
++    #[test]
++    fn compound_builder_proof_and_emission_stops_restore_the_trial() {
++        let descriptor = "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;";
++        let (_, _, _, _, _, _, _, _, _) = fixture_value_attempts_with_tree_observing(
++            COMPOUND_STATEMENT_CONDITIONS_FIXTURE,
++            "test",
++            descriptor,
++            None,
++            None,
++            |recovered,
++             canonical,
++             ssa,
++             operations,
++             code,
++             pool,
++             bootstrap,
++             direct_super_class,
++             direct_interfaces,
++             class_methods,
++             chains,
++             _| {
++                let mut compound = None;
++                for region in &recovered.regions {
++                    collect_guards(region, &mut |candidate| {
++                        if matches!(candidate, Region::CompoundIf { .. }) {
++                            assert!(compound.replace(candidate.clone()).is_none());
++                        }
++                    });
++                }
++                let compound = compound.expect("the real fixture recovers one CompoundIf");
++                let Region::CompoundIf {
++                    prefix,
++                    tests,
++                    condition,
++                    ..
++                } = &compound
++                else {
++                    unreachable!()
++                };
++                let root = tests.first().expect("the recovered condition has a root");
++                let owned: BTreeSet<u32> = compound
++                    .blocks()
++                    .into_iter()
++                    .filter_map(|block| ssa.block(block))
++                    .flat_map(|block| block.instructions().iter().map(SsaInstruction::bci))
++                    .collect();
++                assert!([26, 37, 48, 59].iter().all(|bci| owned.contains(bci)));
++
++                let method = crate::facts::MethodFacts::new("test", descriptor, 5)
++                    .with_access_flags(0x0009);
++                let parameter_types = method.parameter_types();
++                let fields = field::Plan::empty();
++                let field_copies = FieldCopies::default();
++                let array_context = crate::init::ArrayCompositionContext {
++                    chains,
++                    reserved: chains.owned(),
++                    java_release: 8,
++                    member_targets: &[],
++                    method: &method,
++                    code,
++                };
++                let mut setup_budget = compound_test_budget(1 << 25);
++                let mut arrays = ArrayInitializers::prove_with_composition(
++                    ssa,
++                    operations,
++                    &fields,
++                    Some(&array_context),
++                    &mut setup_budget,
++                )
++                .expect("fixture array plan completes");
++                let sites = crate::init::sites_after_array_composition(
++                    ssa,
++                    operations,
++                    chains,
++                    chains.owned(),
++                    &fields,
++                    &mut arrays,
++                    8,
++                    &[],
++                    &method,
++                    code,
++                    &mut setup_budget,
++                )
++                .expect("fixture construction sites complete");
++                let resources = resource_slots(&recovered.regions);
++                let reuse = crate::reuse::plan(
++                    ssa,
++                    canonical,
++                    operations,
++                    &recovered.regions,
++                    code.max_locals,
++                    5,
++                    &[],
++                    &resources,
++                    &mut setup_budget,
++                )
++                .expect("fixture reuse plan completes");
++                let names = NameTable::build(5, code.max_locals, reuse.evidence());
++                let prologues = crate::init::Prologues::none();
++                let enums = crate::enumswitch::Plan::empty();
++                let target_regions = vec![compound.clone()];
++
++                let mut high_budget = compound_test_budget(1 << 25);
++                let mut high_setup = compound_test_budget(1 << 25);
++                let mut high = compound_test_builder(
++                    canonical, ssa, code, operations, pool, bootstrap, direct_super_class,
++                    direct_interfaces, class_methods, chains, &target_regions, &names, &reuse,
++                    &parameter_types, &sites, &fields, &field_copies, &prologues, &enums,
++                    &mut high_setup, &mut high_budget,
++                );
++                seed_compound_trial(&mut high, root.branch_bci, &owned);
++                let before = compound_trial_state(&high);
++                high.prepare_compound_condition(prefix, tests, condition, root.branch_bci)
++                    .expect("the actual compound preflight succeeds at high budget");
++                let proof_usage = high.budget.usage().analysis_steps;
++                assert!(proof_usage > 1);
++                assert_eq!(compound_trial_state(&high), before, "successful prepare restores trial state");
++
++                let proof_limit = proof_usage - 1;
++                let mut proof_budget = compound_test_budget(proof_limit);
++                let mut proof_setup = compound_test_budget(1 << 25);
++                let mut proof_stop_builder = compound_test_builder(
++                    canonical, ssa, code, operations, pool, bootstrap, direct_super_class,
++                    direct_interfaces, class_methods, chains, &target_regions, &names, &reuse,
++                    &parameter_types, &sites, &fields, &field_copies, &prologues, &enums,
++                    &mut proof_setup, &mut proof_budget,
++                );
++                seed_compound_trial(&mut proof_stop_builder, root.branch_bci, &owned);
++                let before = compound_trial_state(&proof_stop_builder);
++                let stop = proof_stop_builder
++                    .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
++                    .expect_err("usage minus one stops inside the real preflight");
++                let stop = match stop {
++                    ValueRenderFailure::Stop(stop) => stop,
++                    ValueRenderFailure::Refusal(reason) => {
++                        panic!("preflight refused instead of stopping: {reason}")
++                    }
++                };
++                assert_compound_budget_stop(&stop, proof_limit, &owned);
++                assert_eq!(proof_stop_builder.budget.usage().analysis_steps, proof_limit);
++                assert_eq!(compound_trial_state(&proof_stop_builder), before);
++
++                let mut emission_budget = compound_test_budget(1 << 25);
++                let mut emission_setup = compound_test_budget(1 << 25);
++                let mut emission = compound_test_builder(
++                    canonical, ssa, code, operations, pool, bootstrap, direct_super_class,
++                    direct_interfaces, class_methods, chains, &target_regions, &names, &reuse,
++                    &parameter_types, &sites, &fields, &field_copies, &prologues, &enums,
++                    &mut emission_setup, &mut emission_budget,
++                );
++                seed_compound_trial(&mut emission, root.branch_bci, &owned);
++                emission
++                    .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
++                    .expect("emission preflight succeeds");
++                emission.compound_conditions_ready.insert(root.branch_bci);
++                let prepared_usage = emission.budget.usage().analysis_steps;
++                emission
++                    .region(&compound, &[])
++                    .expect("the actual compound emitter completes at high budget");
++                let total_usage = emission.budget.usage().analysis_steps;
++                assert!(total_usage > prepared_usage + 1, "the emitter consumes its own metered work");
++                let emission_limit = total_usage - 1;
++
++                let mut stopped_emission_budget = compound_test_budget(emission_limit);
++                let mut stopped_emission_setup = compound_test_budget(1 << 25);
++                let mut stopped_emission = compound_test_builder(
++                    canonical, ssa, code, operations, pool, bootstrap, direct_super_class,
++                    direct_interfaces, class_methods, chains, &target_regions, &names, &reuse,
++                    &parameter_types, &sites, &fields, &field_copies, &prologues, &enums,
++                    &mut stopped_emission_setup, &mut stopped_emission_budget,
++                );
++                seed_compound_trial(&mut stopped_emission, root.branch_bci, &owned);
++                stopped_emission
++                    .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
++                    .expect("emitter-stop trial completes its preflight first");
++                stopped_emission.compound_conditions_ready.insert(root.branch_bci);
++                let before = compound_trial_state(&stopped_emission);
++                let stop = stopped_emission
++                    .region(&compound, &[])
++                    .expect_err("usage minus one stops inside compound emission");
++                assert_compound_budget_stop(&stop, emission_limit, &owned);
++                assert_eq!(stopped_emission.budget.usage().analysis_steps, emission_limit);
++                assert_eq!(compound_trial_state(&stopped_emission), before);
++
++                // Deterministic cooperative-cancel coverage: preflight completes, then the real
++                // emitter is called after cancellation. This does not claim asynchronous
++                // cancellation while a charge loop is already running.
++                let mut cancel_budget = compound_test_budget(1 << 25);
++                let mut cancel_setup = compound_test_budget(1 << 25);
++                let mut cancelled = compound_test_builder(
++                    canonical, ssa, code, operations, pool, bootstrap, direct_super_class,
++                    direct_interfaces, class_methods, chains, &target_regions, &names, &reuse,
++                    &parameter_types, &sites, &fields, &field_copies, &prologues, &enums,
++                    &mut cancel_setup, &mut cancel_budget,
++                );
++                seed_compound_trial(&mut cancelled, root.branch_bci, &owned);
++                cancelled
++                    .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
++                    .expect("cancel trial preflight completes before cancellation");
++                cancelled.compound_conditions_ready.insert(root.branch_bci);
++                let before = compound_trial_state(&cancelled);
++                let token = cancelled.budget.cancellation_token();
++                token.cancel();
++                let stop = cancelled
++                    .region(&compound, &[])
++                    .expect_err("the real emitter polls the cancelled request");
++                assert!(matches!(stop, StopReason::Cancelled { at: Some(at) } if owned.contains(&at)));
++                assert_eq!(compound_trial_state(&cancelled), before);
++            },
++        );
++    }
++
+     #[test]
+     fn exception_if_join_transfer_rejects_a_canonical_exception_edge() {
+         use jarde_jvm::method_ir::CanonicalEdgeKind;
+@@ -36639,7 +37130,7 @@
+                 "(I)I",
+                 None,
+                 None,
+-                |recovered, canonical, ssa, operations, budget| {
++                |recovered, canonical, ssa, operations, _, _, _, _, _, _, _, budget| {
+                     eprintln!("ExceptionIfJoin recovered tree: {:#?}", recovered.regions);
+                     let mut matching_if = None;
+                     for root in &recovered.regions {

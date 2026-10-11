@@ -1,0 +1,1556 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -423,6 +423,35 @@
+     pub slot: u16,
+ }
+ 
++/// One decoded comparison in a bounded compound statement condition. The two successor identities
++/// are in Java `if` sense: `then` is fall-through and `else` is the decoded taken target.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct CompoundTest {
++    pub block: CanonicalBlockId,
++    pub branch_bci: u32,
++    pub then: CanonicalBlockId,
++    pub otherwise: CanonicalBlockId,
++}
++
++/// A condition assembled only after its complete normal-flow test closure was proved.
++/// Test indices refer to `CompoundIf.tests`; every index must occur exactly once.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub enum CompoundCondition {
++    Test(usize),
++    Constant(bool),
++    Not(Box<CompoundCondition>),
++    And(Box<CompoundCondition>, Box<CompoundCondition>),
++    Or(Box<CompoundCondition>, Box<CompoundCondition>),
++}
++
++#[derive(Clone, Debug)]
++struct CompoundProof {
++    tests: Vec<CompoundTest>,
++    condition: CompoundCondition,
++    payload: CanonicalBlockId,
++    join: CanonicalBlockId,
++}
++
+ /// What one region is.
+ #[derive(Clone, Debug, Eq, PartialEq)]
+ pub enum Region {
+@@ -439,6 +468,16 @@
+         prefix: Vec<CanonicalBlockId>,
+         branch: CanonicalBlockId,
+         branch_bci: u32,
++        then_arm: Box<Region>,
++        else_arm: Box<Region>,
++        join: Option<CanonicalBlockId>,
++    },
++    /// A bounded, exit-aligned short-circuit test graph around ordinary statement arms.
++    /// The test blocks belong to this condition once; the arms remain normal unique owners.
++    CompoundIf {
++        prefix: Vec<CanonicalBlockId>,
++        tests: Vec<CompoundTest>,
++        condition: CompoundCondition,
+         then_arm: Box<Region>,
+         else_arm: Box<Region>,
+         join: Option<CanonicalBlockId>,
+@@ -660,6 +699,12 @@
+                 then_arm.elided_cleanup_bcis(out);
+                 else_arm.elided_cleanup_bcis(out);
+             }
++            Self::CompoundIf {
++                then_arm, else_arm, ..
++            } => {
++                then_arm.elided_cleanup_bcis(out);
++                else_arm.elided_cleanup_bcis(out);
++            }
+             Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => {
+                 for group in groups {
+                     group.arm.elided_cleanup_bcis(out);
+@@ -731,6 +776,19 @@
+             } => {
+                 let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
+                 blocks.push(branch);
++                blocks.extend(then_arm.blocks());
++                blocks.extend(else_arm.blocks());
++                blocks
++            }
++            Self::CompoundIf {
++                prefix,
++                tests,
++                then_arm,
++                else_arm,
++                ..
++            } => {
++                let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
++                blocks.extend(tests.iter().map(|test| &test.block));
+                 blocks.extend(then_arm.blocks());
+                 blocks.extend(else_arm.blocks());
+                 blocks
+@@ -889,6 +947,9 @@
+             Self::If {
+                 then_arm, else_arm, ..
+             } => then_arm.is_structured() && else_arm.is_structured(),
++            Self::CompoundIf {
++                then_arm, else_arm, ..
++            } => then_arm.is_structured() && else_arm.is_structured(),
+             Self::ShortCircuitValue { reason, .. } => {
+                 !matches!(reason, FallbackReason::ExceptionEdge { .. })
+             }
+@@ -921,6 +982,13 @@
+             Self::Sequence { regions } => regions.iter().flat_map(Self::fallbacks).collect(),
+             Self::Straight { .. } => Vec::new(),
+             Self::If {
++                then_arm, else_arm, ..
++            } => {
++                let mut reasons = then_arm.fallbacks();
++                reasons.extend(else_arm.fallbacks());
++                reasons
++            }
++            Self::CompoundIf {
+                 then_arm, else_arm, ..
+             } => {
+                 let mut reasons = then_arm.fallbacks();
+@@ -964,6 +1032,7 @@
+             Self::Sequence { .. } => None,
+             Self::Straight { .. } => Some(crate::pass::STRAIGHT.rule()),
+             Self::If { .. } => Some(crate::pass::IF.rule()),
++            Self::CompoundIf { .. } => Some(crate::pass::IF.rule()),
+             Self::ShortCircuitValue { .. } => None,
+             Self::TwoExitReturn { .. } => None,
+             Self::SharedTailEarlyReturn { .. } => None,
+@@ -1047,6 +1116,12 @@
+                 project_sequence(regions, ir, budget)?;
+             }
+             Region::If {
++                then_arm, else_arm, ..
++            } => {
++                visit(then_arm, ir, budget)?;
++                visit(else_arm, ir, budget)?;
++            }
++            Region::CompoundIf {
+                 then_arm, else_arm, ..
+             } => {
+                 visit(then_arm, ir, budget)?;
+@@ -2430,6 +2505,9 @@
+         Region::If {
+             then_arm, else_arm, ..
+         } => monitor_body_supported(then_arm) && monitor_body_supported(else_arm),
++        Region::CompoundIf {
++            then_arm, else_arm, ..
++        } => monitor_body_supported(then_arm) && monitor_body_supported(else_arm),
+         Region::Loop { body, .. } => body.iter().all(monitor_body_supported),
+         _ => false,
+     }
+@@ -2447,6 +2525,12 @@
+             finally_body_supported(then_arm, nested_catch)
+                 && finally_body_supported(else_arm, nested_catch)
+         }
++        Region::CompoundIf {
++            then_arm, else_arm, ..
++        } => {
++            finally_body_supported(then_arm, nested_catch)
++                && finally_body_supported(else_arm, nested_catch)
++        }
+         Region::Try { body, catches, .. } if nested_catch => {
+             catches.len() == 1
+                 && finally_body_supported(body, false)
+@@ -2468,6 +2552,12 @@
+             .iter()
+             .all(|part| shared_join_body_supported(part, loop_allowed)),
+         Region::If {
++            then_arm, else_arm, ..
++        } => {
++            shared_join_body_supported(then_arm, loop_allowed)
++                && shared_join_body_supported(else_arm, loop_allowed)
++        }
++        Region::CompoundIf {
+             then_arm, else_arm, ..
+         } => {
+             shared_join_body_supported(then_arm, loop_allowed)
+@@ -3459,6 +3549,149 @@
+                                 .boundary
+                                 .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                         );
++                    }
++                    if let Some(candidate_join) = join_node
++                        && let Some(proof) = self.compound_statement_condition(
++                            &branch,
++                            branch_bci,
++                            op,
++                            target,
++                            frame,
++                            candidate_join,
++                        )?
++                    {
++                        let saved = self.visited.clone();
++                        let saved_unclosed_tail = self.unclosed_tail_at;
++                        let saved_catch_joins = self.catch_joins.clone();
++                        let saved_fragmented = self.fragmented.clone();
++                        let mut claims_ok = true;
++                        for test in &proof.tests {
++                            let Some(test_node) = self.view.index_of(&test.block) else {
++                                claims_ok = false;
++                                break;
++                            };
++                            if test_node != node && !self.visited.insert(test_node) {
++                                claims_ok = false;
++                                break;
++                            }
++                        }
++                        let payload_node = self.view.index_of(&proof.payload);
++                        let join_node = self.view.index_of(&proof.join);
++                        if claims_ok && payload_node.is_some() && join_node == Some(candidate_join) {
++                            let arm_frame = frame.arm(Some(candidate_join), Some(branch_bci));
++                            let (arm_run, arm_next) = self.region_at(&proof.payload, &arm_frame)?;
++                            if arm_next.as_ref() == Some(&proof.join) {
++                                let arm_region = sequence_region(arm_run);
++                                let arm_owned: BTreeSet<CanonicalBlockId> = arm_region
++                                    .blocks()
++                                    .into_iter()
++                                    .cloned()
++                                    .collect();
++                                let tests_owned: BTreeSet<CanonicalBlockId> = proof
++                                    .tests
++                                    .iter()
++                                    .map(|test| test.block.clone())
++                                    .collect();
++                                charge(
++                                    self.budget,
++                                    CountedBudgetDimension::AnalysisSteps,
++                                    u64::try_from(arm_owned.len())
++                                        .unwrap_or(u64::MAX)
++                                        .saturating_add(
++                                            u64::try_from(tests_owned.len())
++                                                .unwrap_or(u64::MAX),
++                                        )
++                                        .saturating_add(
++                                            u64::try_from(saved.len()).unwrap_or(u64::MAX),
++                                        ),
++                                    Some(branch_bci),
++                                )?;
++                                let mut allowed_join_sources = tests_owned.clone();
++                                allowed_join_sources.extend(arm_owned.iter().cloned());
++                                allowed_join_sources.extend(
++                                    saved
++                                        .iter()
++                                        .filter_map(|node| self.view.id_of(*node).cloned()),
++                                );
++                                let mut payload_sources = BTreeSet::new();
++                                let mut join_sources = BTreeSet::new();
++                                let mut arm_incoming = BTreeMap::<
++                                    CanonicalBlockId,
++                                    BTreeSet<CanonicalBlockId>,
++                                >::new();
++                                let mut closure_ok = true;
++                                charge(
++                                    self.budget,
++                                    CountedBudgetDimension::AnalysisSteps,
++                                    u64::try_from(self.canonical.edges().len())
++                                        .unwrap_or(u64::MAX),
++                                    Some(branch_bci),
++                                )?;
++                                for edge in self.canonical.edges() {
++                                    poll(self.budget, Some(edge.from().bci()))?;
++                                    if arm_owned.contains(edge.from()) {
++                                        if edge.kind() != CanonicalEdgeKind::Normal
++                                            || (!arm_owned.contains(edge.to())
++                                                && edge.to() != &proof.join)
++                                        {
++                                            closure_ok = false;
++                                        }
++                                    }
++                                    if arm_owned.contains(edge.to()) {
++                                        if edge.kind() != CanonicalEdgeKind::Normal
++                                            || (!arm_owned.contains(edge.from())
++                                                && !tests_owned.contains(edge.from()))
++                                            || !arm_incoming
++                                                .entry(edge.to().clone())
++                                                .or_default()
++                                                .insert(edge.from().clone())
++                                        {
++                                            closure_ok = false;
++                                        }
++                                    }
++                                    if edge.to() == &proof.payload {
++                                        if edge.kind() != CanonicalEdgeKind::Normal
++                                            || !tests_owned.contains(edge.from())
++                                            || !payload_sources.insert(edge.from().clone())
++                                        {
++                                            closure_ok = false;
++                                        }
++                                    }
++                                    if edge.to() == &proof.join {
++                                        if edge.kind() != CanonicalEdgeKind::Normal
++                                            || !allowed_join_sources.contains(edge.from())
++                                            || !join_sources.insert(edge.from().clone())
++                                        {
++                                            closure_ok = false;
++                                        }
++                                    }
++                                }
++                                closure_ok &= !payload_sources.is_empty() && !join_sources.is_empty();
++                                closure_ok &= arm_owned.iter().all(|block| {
++                                    arm_incoming
++                                        .get(block)
++                                        .is_some_and(|sources| !sources.is_empty())
++                                });
++                                if closure_ok {
++                                    let payload_arm = Box::new(arm_region);
++                                    let empty_join =
++                                        Box::new(Region::Straight { blocks: Vec::new() });
++                                    let region = Region::CompoundIf {
++                                        prefix,
++                                        tests: proof.tests,
++                                        condition: proof.condition,
++                                        then_arm: payload_arm,
++                                        else_arm: empty_join,
++                                        join: Some(proof.join.clone()),
++                                    };
++                                    return Ok(one(region, Some(proof.join)));
++                                }
++                            }
++                        }
++                        self.visited = saved;
++                        self.unclosed_tail_at = saved_unclosed_tail;
++                        self.catch_joins = saved_catch_joins;
++                        self.fragmented = saved_fragmented;
+                     }
+                     let one_armed = match join_node {
+                         Some(join_node)
+@@ -4185,6 +4418,12 @@
+                 Region::Straight { .. } => true,
+                 Region::Sequence { regions } => regions.iter().all(closed_body),
+                 Region::If {
++                    then_arm,
++                    else_arm,
++                    join: Some(_),
++                    ..
++                } => closed_body(then_arm) && closed_body(else_arm),
++                Region::CompoundIf {
+                     then_arm,
+                     else_arm,
+                     join: Some(_),
+@@ -7346,6 +7585,594 @@
+                 .last()
+                 .map(|instruction| instruction.bci())
+         })
++    }
++
++    /// Prove a small, acyclic comparison closure with exactly the ordinary-if join and one
++    /// statement exit. The caller has already entered `root`, so no mutation is made here.
++    fn compound_statement_condition(
++        &mut self,
++        root: &CanonicalBlockId,
++        root_bci: u32,
++        root_op: CompareOp,
++        root_target: u32,
++        frame: &Frame,
++        join_node: usize,
++    ) -> Result<Option<CompoundProof>, StopReason> {
++        let Some(root_node) = self.view.index_of(root) else {
++            return Ok(None);
++        };
++        let Some(join) = self.view.id_of(join_node).cloned() else {
++            return Ok(None);
++        };
++        if join == *root
++            || root.path() != join.path()
++            || frame.boundary == Some(root_node)
++            || frame.scope.as_ref().is_some_and(|scope| !scope.contains(&root_node))
++            || frame.case_entries.as_ref().is_some_and(|entries| entries.contains(&root_node))
++            || self.view.is_loop_header(root_node)
++            || frame
++                .scope
++                .as_ref()
++                .is_some_and(|scope| frame.boundary != Some(join_node) && !scope.contains(&join_node))
++            || frame.case_entries.as_ref().is_some_and(|entries| entries.contains(&join_node))
++            || frame.loop_exit == Some(join_node)
++            || frame.switch_join == Some(join_node)
++            || frame.loop_targets.iter().any(|target| {
++                target.break_target == Some(join_node) || target.continue_target == join_node
++            })
++        {
++            return Ok(None);
++        }
++
++        poll(self.budget, Some(root_bci))?;
++        let root_successors = self.view.successor_ids(root);
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(root_successors.len()).unwrap_or(u64::MAX),
++            Some(root_bci),
++        )?;
++        if self.split_arms(&root_successors, root_target).is_none() {
++            return Ok(None);
++        }
++        let root_instruction_count = self
++            .ssa
++            .block(root)
++            .map_or(0, |names| names.instructions().len());
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(root_instruction_count).unwrap_or(u64::MAX),
++            Some(root_bci),
++        )?;
++        if self.branch_arity_proved(root, root_bci, root_op).is_err() {
++            return Ok(None);
++        }
++        let mut discovered = BTreeMap::<usize, CompoundTest>::new();
++        let mut color = BTreeMap::<usize, u8>::new();
++        let mut stack = vec![(root_node, false)];
++        let mut exits = BTreeSet::<CanonicalBlockId>::new();
++        while let Some((node, leaving)) = stack.pop() {
++            let Some(block) = self.view.id_of(node).cloned() else {
++                return Ok(None);
++            };
++            if leaving {
++                color.insert(node, 2);
++                continue;
++            }
++            match color.get(&node).copied().unwrap_or(0) {
++                1 => return Ok(None),
++                2 => continue,
++                _ => {}
++            }
++            poll(self.budget, Some(block.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(block.bci()),
++            )?;
++            if block.path() != root.path()
++                || frame.boundary == Some(node)
++                || frame.scope.as_ref().is_some_and(|scope| !scope.contains(&node))
++                || frame.case_entries.as_ref().is_some_and(|entries| entries.contains(&node))
++                || self.view.is_loop_header(node)
++                || self.excluded_edge_nodes.contains(&block)
++                || (node != root_node && self.visited.contains(&node))
++            {
++                return Ok(None);
++            }
++            let (branch_bci, op, target) = if node == root_node {
++                (root_bci, root_op, root_target)
++            } else {
++                let Some(branch_bci) = self.terminal_bci(&block) else {
++                    exits.insert(block);
++                    continue;
++                };
++                let Some((op, target)) = self
++                    .operations
++                    .get(branch_bci)
++                    .and_then(Operation::comparison)
++                else {
++                    exits.insert(block);
++                    continue;
++                };
++                let instruction_count = self
++                    .ssa
++                    .block(&block)
++                    .map_or(0, |names| names.instructions().len());
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    u64::try_from(instruction_count).unwrap_or(u64::MAX),
++                    Some(block.bci()),
++                )?;
++                if self.branch_arity_proved(&block, branch_bci, op).is_err()
++                    || self.test_is_pure(&block, branch_bci, false).is_err()
++                {
++                    exits.insert(block);
++                    continue;
++                }
++                (branch_bci, op, target)
++            };
++            let successors = self.view.successor_ids(&block);
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(successors.len()).unwrap_or(u64::MAX),
++                Some(block.bci()),
++            )?;
++            let Some((then, otherwise)) = self.split_arms(&successors, target) else {
++                return Ok(None);
++            };
++            if successors.len() != 2 || then == otherwise {
++                return Ok(None);
++            }
++            if discovered.len() >= 24 {
++                return Ok(None);
++            }
++            discovered.insert(
++                node,
++                CompoundTest {
++                    block: block.clone(),
++                    branch_bci,
++                    then: then.clone(),
++                    otherwise: otherwise.clone(),
++                },
++            );
++            color.insert(node, 1);
++            stack.push((node, true));
++            for successor in [otherwise, then].into_iter().rev() {
++                let child = self.view.index_of(&successor);
++                if child == Some(root_node)
++                    || child.is_some_and(|child| {
++                        child != join_node && self.visited.contains(&child)
++                    })
++                {
++                    return Ok(None);
++                }
++                let is_test = child.is_some_and(|child| {
++                    child != join_node
++                        && !frame.boundary.is_some_and(|boundary| boundary == child)
++                        && !frame.scope.as_ref().is_some_and(|scope| !scope.contains(&child))
++                        && !frame.case_entries.as_ref().is_some_and(|entries| entries.contains(&child))
++                        && successor.path() == root.path()
++                        && !self.excluded_edge_nodes.contains(&successor)
++                        && !self.visited.contains(&child)
++                        && !self.view.is_loop_header(child)
++                        && self.terminal_bci(&successor).is_some_and(|bci| {
++                            self.operations.get(bci).and_then(Operation::comparison).is_some()
++                        })
++                });
++                if is_test {
++                    stack.push((child.expect("test node has a canonical index"), false));
++                } else {
++                    exits.insert(successor);
++                }
++            }
++        }
++        if discovered.len() < 2 || exits.len() != 2 || !exits.contains(&join) {
++            return Ok(None);
++        }
++        let Some(payload) = exits.iter().find(|exit| **exit != join).cloned() else {
++            return Ok(None);
++        };
++        let Some(payload_node) = self.view.index_of(&payload) else {
++            return Ok(None);
++        };
++        if payload.path() != root.path()
++            || frame.boundary == Some(payload_node)
++            || frame.scope.as_ref().is_some_and(|scope| !scope.contains(&payload_node))
++            || frame.case_entries.as_ref().is_some_and(|entries| entries.contains(&payload_node))
++            || self.visited.contains(&payload_node)
++        {
++            return Ok(None);
++        }
++
++        // Check every physical edge touching the test closure in one charged pass. This catches
++        // duplicate rows, exceptional/context edges, and canonical predecessors that the normal
++        // projection alone would hide.
++        let scan_cost = u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX);
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            scan_cost,
++            Some(root_bci),
++        )?;
++        let test_ids: BTreeSet<CanonicalBlockId> =
++            discovered.values().map(|test| test.block.clone()).collect();
++        let mut outgoing = BTreeMap::<CanonicalBlockId, Vec<CanonicalBlockId>>::new();
++        let mut incoming = BTreeMap::<CanonicalBlockId, Vec<CanonicalBlockId>>::new();
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(edge.from().bci()))?;
++            let from_test = test_ids.contains(edge.from());
++            let to_test = test_ids.contains(edge.to());
++            if from_test || to_test {
++                if edge.kind() != CanonicalEdgeKind::Normal {
++                    return Ok(None);
++                }
++                if from_test {
++                    outgoing
++                        .entry(edge.from().clone())
++                        .or_default()
++                        .push(edge.to().clone());
++                }
++                if to_test {
++                    incoming
++                        .entry(edge.to().clone())
++                        .or_default()
++                        .push(edge.from().clone());
++                }
++            }
++        }
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(discovered.len()).unwrap_or(u64::MAX),
++            Some(root_bci),
++        )?;
++        for test in discovered.values() {
++            let Some(rows) = outgoing.get(&test.block) else {
++                return Ok(None);
++            };
++            let expected = [test.then.clone(), test.otherwise.clone()];
++            if rows.len() != 2
++                || rows[0] == rows[1]
++                || !expected.iter().all(|target| rows.contains(target))
++            {
++                return Ok(None);
++            }
++            if test.block != *root {
++                let Some(sources) = incoming.get(&test.block) else {
++                    return Ok(None);
++                };
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    u64::try_from(sources.len())
++                        .unwrap_or(u64::MAX)
++                        .saturating_mul(2),
++                    Some(test.branch_bci),
++                )?;
++                let Some(test_node) = self.view.index_of(&test.block) else {
++                    return Ok(None);
++                };
++                let projected_sources = self.view.predecessors(test_node);
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    u64::try_from(projected_sources.len()).unwrap_or(u64::MAX),
++                    Some(test.branch_bci),
++                )?;
++                let projected: BTreeSet<CanonicalBlockId> = projected_sources
++                    .into_iter()
++                    .filter_map(|source| self.view.id_of(source).cloned())
++                    .collect();
++                let actual: BTreeSet<CanonicalBlockId> = sources.iter().cloned().collect();
++                if sources.len() != actual.len()
++                    || actual != projected
++                    || actual.is_empty()
++                    || actual.iter().any(|source| !test_ids.contains(source))
++                {
++                    return Ok(None);
++                }
++            } else {
++                let Some(sources) = incoming.get(&test.block) else {
++                    if self
++                        .canonical
++                        .blocks()
++                        .first()
++                        .is_some_and(|entry| entry.id() == root)
++                    {
++                        continue;
++                    }
++                    return Ok(None);
++                };
++                if sources.len() != 1 || sources[0] == *root {
++                    return Ok(None);
++                }
++                let source = &sources[0];
++                let source_was_walked = self
++                    .view
++                    .index_of(source)
++                    .is_some_and(|source_node| self.visited.contains(&source_node));
++                let source_is_frame_entry = frame
++                    .transfer_source_bci
++                    .is_some_and(|bci| bci == source.bci())
++                    || frame
++                        .switch_branch_bci
++                        .is_some_and(|bci| bci == source.bci());
++                if test_ids.contains(source) || (!source_was_walked && !source_is_frame_entry) {
++                    return Ok(None);
++                }
++            }
++        }
++
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(discovered.len())
++                .unwrap_or(u64::MAX)
++                .saturating_mul(3),
++            Some(root_bci),
++        )?;
++        let mut order = vec![root_node];
++        order.extend(discovered.keys().copied().filter(|node| *node != root_node));
++        let indexes: BTreeMap<usize, usize> = order
++            .iter()
++            .enumerate()
++            .map(|(index, node)| (*node, index))
++            .collect();
++        let by_id: BTreeMap<CanonicalBlockId, usize> = discovered
++            .iter()
++            .map(|(node, test)| (test.block.clone(), *node))
++            .collect();
++        fn size(
++            condition: &CompoundCondition,
++            budget: &mut Budget,
++            at: u32,
++        ) -> Result<usize, StopReason> {
++            poll(budget, Some(at))?;
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(at),
++            )?;
++            match condition {
++                CompoundCondition::Test(_) | CompoundCondition::Constant(_) => Ok(1),
++                CompoundCondition::Not(inner) => Ok(1 + size(inner, budget, at)?),
++                CompoundCondition::And(left, right) | CompoundCondition::Or(left, right) => {
++                    Ok(1 + size(left, budget, at)? + size(right, budget, at)?)
++                }
++            }
++        }
++        fn simplify(condition: CompoundCondition) -> CompoundCondition {
++            match condition {
++                CompoundCondition::Not(inner) => match simplify(*inner) {
++                    CompoundCondition::Constant(value) => CompoundCondition::Constant(!value),
++                    CompoundCondition::Not(inner) => *inner,
++                    inner => CompoundCondition::Not(Box::new(inner)),
++                },
++                CompoundCondition::And(left, right) => {
++                    let left = simplify(*left);
++                    let right = simplify(*right);
++                    match (&left, &right) {
++                        (CompoundCondition::Constant(false), _)
++                        | (_, CompoundCondition::Constant(false)) => {
++                            return CompoundCondition::Constant(false);
++                        }
++                        (CompoundCondition::Constant(true), _) => return right,
++                        (_, CompoundCondition::Constant(true)) => return left,
++                        _ => {}
++                    }
++                    CompoundCondition::And(Box::new(left), Box::new(right))
++                }
++                CompoundCondition::Or(left, right) => {
++                    let left = simplify(*left);
++                    let right = simplify(*right);
++                    if matches!(&left, CompoundCondition::Constant(true))
++                        || matches!(&right, CompoundCondition::Constant(true))
++                    {
++                        return CompoundCondition::Constant(true);
++                    }
++                    if matches!(&left, CompoundCondition::Constant(false)) {
++                        return right;
++                    }
++                    if matches!(&right, CompoundCondition::Constant(false)) {
++                        return left;
++                    }
++                    if let (
++                        CompoundCondition::And(left_test, suffix),
++                        CompoundCondition::Not(right_test),
++                    ) = (&left, &right)
++                        && left_test.as_ref() == right_test.as_ref()
++                    {
++                        return CompoundCondition::Or(
++                            Box::new(CompoundCondition::Not(Box::new((**right_test).clone()))),
++                            Box::new((**suffix).clone()),
++                        );
++                    }
++                    if let (
++                        CompoundCondition::And(left_test, left_tail),
++                        CompoundCondition::And(right_not, right_tail),
++                    ) = (&left, &right)
++                        && let CompoundCondition::Not(right_test) = right_not.as_ref()
++                        && left_test.as_ref() == right_test.as_ref()
++                        && left_tail.as_ref() == right_tail.as_ref()
++                    {
++                        return (**left_tail).clone();
++                    }
++                    // Exit alignment factors a common later subgraph without moving it ahead of
++                    // either test. This is the bounded pattern used by the four-test shared-tail
++                    // shape: `a && (!b || shared) || !a && shared`.
++                    if let (
++                        CompoundCondition::And(left_test, left_or),
++                        CompoundCondition::And(right_not, shared),
++                    ) = (&left, &right)
++                        && let CompoundCondition::Test(test) = left_test.as_ref()
++                        && let CompoundCondition::Not(right_test) = right_not.as_ref()
++                        && right_test.as_ref() == left_test.as_ref()
++                        && let CompoundCondition::Or(left_not, left_shared) = left_or.as_ref()
++                        && let CompoundCondition::Not(not_test) = left_not.as_ref()
++                        && let CompoundCondition::Test(not_index) = not_test.as_ref()
++                        && *not_index != *test
++                        && left_shared.as_ref() == shared.as_ref()
++                    {
++                        return CompoundCondition::Or(
++                            Box::new(CompoundCondition::And(
++                                Box::new(CompoundCondition::Test(*test)),
++                                Box::new((**left_not).clone()),
++                            )),
++                            Box::new((**shared).clone()),
++                        );
++                    }
++                    CompoundCondition::Or(Box::new(left), Box::new(right))
++                }
++                leaf => leaf,
++            }
++        }
++        fn reduce(
++            node: usize,
++            discovered: &BTreeMap<usize, CompoundTest>,
++            indexes: &BTreeMap<usize, usize>,
++            by_id: &BTreeMap<CanonicalBlockId, usize>,
++            join: &CanonicalBlockId,
++            payload: &CanonicalBlockId,
++            memo: &mut BTreeMap<usize, CompoundCondition>,
++            budget: &mut Budget,
++        ) -> Result<Option<CompoundCondition>, StopReason> {
++            if let Some(condition) = memo.get(&node) {
++                return Ok(Some(condition.clone()));
++            }
++            let Some(test) = discovered.get(&node) else {
++                return Ok(None);
++            };
++            poll(budget, Some(test.branch_bci))?;
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(test.branch_bci),
++            )?;
++            let mut edge = |target: &CanonicalBlockId| {
++                if target == join {
++                    Ok(Some(CompoundCondition::Constant(false)))
++                } else if target == payload {
++                    Ok(Some(CompoundCondition::Constant(true)))
++                } else {
++                    let Some(child) = by_id.get(target).copied() else {
++                        return Ok(None);
++                    };
++                    reduce(child, discovered, indexes, by_id, join, payload, memo, budget)
++                }
++            };
++            let Some(then) = edge(&test.then)? else {
++                return Ok(None);
++            };
++            let Some(otherwise) = edge(&test.otherwise)? else {
++                return Ok(None);
++            };
++            let Some(index) = indexes.get(&node).copied() else {
++                return Ok(None);
++            };
++            let formula_cost = 6usize
++                .saturating_add(size(&then, budget, test.branch_bci)?)
++                .saturating_add(size(&otherwise, budget, test.branch_bci)?);
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(formula_cost)
++                    .unwrap_or(u64::MAX)
++                    .saturating_mul(3),
++                Some(test.branch_bci),
++            )?;
++            if formula_cost > 96 {
++                return Ok(None);
++            }
++            let formula = CompoundCondition::Or(
++                Box::new(CompoundCondition::And(
++                    Box::new(CompoundCondition::Test(index)),
++                    Box::new(then),
++                )),
++                Box::new(CompoundCondition::And(
++                    Box::new(CompoundCondition::Not(Box::new(CompoundCondition::Test(index)))),
++                    Box::new(otherwise),
++                )),
++            );
++            let result = simplify(formula);
++            if size(&result, budget, test.branch_bci)? > 96 {
++                return Ok(None);
++            }
++            memo.insert(node, result.clone());
++            Ok(Some(result))
++        }
++        let mut memo = BTreeMap::new();
++        let Some(condition) = reduce(
++            root_node,
++            &discovered,
++            &indexes,
++            &by_id,
++            &join,
++            &payload,
++            &mut memo,
++            self.budget,
++        )?
++        else {
++            return Ok(None);
++        };
++        fn collect(condition: &CompoundCondition, counts: &mut [u8]) -> bool {
++            match condition {
++                CompoundCondition::Test(index) => {
++                    let Some(count) = counts.get_mut(*index) else {
++                        return false;
++                    };
++                    *count = count.saturating_add(1);
++                    true
++                }
++                CompoundCondition::Constant(_) => true,
++                CompoundCondition::Not(inner) => collect(inner, counts),
++                CompoundCondition::And(left, right) | CompoundCondition::Or(left, right) => {
++                    collect(left, counts) && collect(right, counts)
++                }
++            }
++        }
++        fn constants_absent(condition: &CompoundCondition) -> bool {
++            match condition {
++                CompoundCondition::Constant(_) => false,
++                CompoundCondition::Test(_) => true,
++                CompoundCondition::Not(inner) => constants_absent(inner),
++                CompoundCondition::And(left, right) | CompoundCondition::Or(left, right) => {
++                    constants_absent(left) && constants_absent(right)
++                }
++            }
++        }
++        let mut counts = vec![0u8; discovered.len()];
++        let condition_size = size(&condition, self.budget, root_bci)?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(condition_size)
++                .unwrap_or(u64::MAX)
++                .saturating_mul(2),
++            Some(root_bci),
++        )?;
++        if !collect(&condition, &mut counts)
++            || counts.iter().any(|count| *count != 1)
++            || !constants_absent(&condition)
++        {
++            return Ok(None);
++        }
++        let tests = order
++            .into_iter()
++            .filter_map(|node| discovered.get(&node).cloned())
++            .collect();
++        Ok(Some(CompoundProof {
++            tests,
++            condition,
++            payload,
++            join,
++        }))
+     }
+ 
+     /// Whether the branch at one BCI reads exactly the values its decoded sense needs.
+@@ -16226,8 +17053,211 @@
+                         .edges()
+                         .iter()
+                         .all(|edge| edge.from() != terminal153)
++                );
++
++                let root = input.block(98).clone();
++                let (root_op, root_target) = input
++                    .operations
++                    .get(98)
++                    .and_then(Operation::comparison)
++                    .expect("BCI 98 is the first decoded condition test");
++                let root_node = input.view.index_of(&root).expect("canonical test block");
++                let root_predecessor = input
++                    .view
++                    .index_of(input.block(78))
++                    .expect("the enclosing ordinary arm enters BCI 98 from BCI 78");
++                let join_node = input
++                    .view
++                    .index_of(input.block(136))
++                    .expect("canonical shared return block");
++                let compound_chains = crate::concat::Plan::empty();
++                let compound_sites = crate::init::Sites::empty();
++                macro_rules! compound_walker {
++                    ($budget:ident) => {
++                        Walker {
++                            canonical: input.canonical,
++                            view: input.view,
++                            ssa: input.ssa,
++                            operations: input.operations,
++                            pool: input.pool,
++                            chains: &compound_chains,
++                            sites: &compound_sites,
++                            code: input.code,
++                            method_synchronized: Some(false),
++                            has_reachable_explicit_monitor: false,
++                            return_is_boolean: false,
++                            handlers: &input.code.exception_handlers,
++                            profile: &crate::pass::JAVA_8,
++                            budget: &mut $budget,
++                            catch_joins: BTreeSet::new(),
++                            fragmented: None,
++                            excluded_edge_nodes: BTreeSet::new(),
++                            visited: BTreeSet::from([root_node, root_predecessor]),
++                            unclosed_tail_at: None,
++                            own_monitor: None,
++                            depth: 0,
++                        }
++                    };
++                }
++                let mut proof_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let proof = compound_walker!(proof_budget)
++                    .compound_statement_condition(
++                        &root,
++                        98,
++                        root_op,
++                        root_target,
++                        &Frame::default(),
++                        join_node,
++                    )
++                    .expect("the actual bounded proof completes")
++                    .expect("the four-test statement closure is proved");
++                let mut proof_bcis = proof
++                    .tests
++                    .iter()
++                    .map(|test| test.branch_bci)
++                    .collect::<Vec<_>>();
++                proof_bcis.sort_unstable();
++                assert_eq!(proof_bcis, [98, 111, 118, 124]);
++                assert_eq!(proof.payload.bci(), 131);
++                assert_eq!(proof.join.bci(), 136);
++                let complete_proof_steps = proof_budget.usage().analysis_steps;
++                let last_step_limit = complete_proof_steps.saturating_sub(1);
++                let mut late_stop_budget = Budget::new(Limits {
++                    analysis_steps: last_step_limit,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut late_stop_walker = compound_walker!(late_stop_budget);
++                let stop = late_stop_walker
++                    .compound_statement_condition(
++                        &root,
++                        98,
++                        root_op,
++                        root_target,
++                        &Frame::default(),
++                        join_node,
++                    )
++                    .expect_err("one fewer step refuses the fully scanned candidate atomically");
++                assert!(matches!(
++                    stop,
++                    StopReason::Budget {
++                        dimension: CountedBudgetDimension::AnalysisSteps,
++                        written,
++                        limit,
++                        ..
++                    } if written == limit && limit == last_step_limit
++                ));
++                assert_eq!(
++                    late_stop_walker.visited,
++                    BTreeSet::from([root_node, root_predecessor])
+                 );
+ 
++                let mut no_analysis = Budget::new(Limits {
++                    analysis_steps: 0,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut no_analysis_walker = compound_walker!(no_analysis);
++                let stop = no_analysis_walker
++                    .compound_statement_condition(
++                        &root,
++                        98,
++                        root_op,
++                        root_target,
++                        &Frame::default(),
++                        join_node,
++                    )
++                    .expect_err("the candidate proof charges before its first node scan");
++                assert_eq!(
++                    stop,
++                    StopReason::Budget {
++                        dimension: CountedBudgetDimension::AnalysisSteps,
++                        written: 0,
++                        limit: 0,
++                        at: Some(98),
++                    }
++                );
++                assert_eq!(no_analysis_walker.budget.usage().analysis_steps, 0);
++                assert_eq!(
++                    no_analysis_walker.visited,
++                    BTreeSet::from([root_node, root_predecessor])
++                );
++
++                let token = CancellationToken::new();
++                token.cancel();
++                let mut cancelled = Budget::with_cancellation_token(
++                    Limits {
++                        analysis_steps: u64::MAX,
++                        elapsed_millis: u64::MAX,
++                        ..Limits::default()
++                    },
++                    token,
++                );
++                let mut cancelled_walker = compound_walker!(cancelled);
++                let stop = cancelled_walker
++                    .compound_statement_condition(
++                        &root,
++                        98,
++                        root_op,
++                        root_target,
++                        &Frame::default(),
++                        join_node,
++                    )
++                    .expect_err("the candidate proof observes cancellation before scanning");
++                assert_eq!(stop, StopReason::Cancelled { at: Some(98) });
++                assert_eq!(cancelled_walker.budget.usage().analysis_steps, 0);
++                assert_eq!(
++                    cancelled_walker.visited,
++                    BTreeSet::from([root_node, root_predecessor])
++                );
++
++                let frame_boundary = input.view.index_of(input.block(111)).unwrap();
++                let mut bounded_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut boundary_walker = compound_walker!(bounded_budget);
++                assert!(boundary_walker
++                    .compound_statement_condition(
++                        &root,
++                        98,
++                        root_op,
++                        root_target,
++                        &Frame {
++                            boundary: Some(frame_boundary),
++                            ..Frame::default()
++                        },
++                        join_node,
++                    )
++                    .expect("frame-boundary refusal is not a stop")
++                    .is_none());
++                assert_eq!(
++                    boundary_walker.visited,
++                    BTreeSet::from([root_node, root_predecessor])
++                );
++                let wrong_join = input.view.index_of(input.block(164)).unwrap();
++                let mut wrong_join_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                assert!(compound_walker!(wrong_join_budget)
++                    .compound_statement_condition(
++                        &root,
++                        98,
++                        root_op,
++                        root_target,
++                        &Frame::default(),
++                        wrong_join,
++                    )
++                    .expect("a non-join candidate is a proof refusal")
++                    .is_none());
++
+                 let mut recovery_budget = Budget::new(Limits {
+                     analysis_steps: 1 << 20,
+                     elapsed_millis: u64::MAX,
+@@ -16251,6 +17281,88 @@
+                 assert!(recovered.is_structured(), "{:#?}", recovered.regions);
+                 assert!(recovered.fallbacks().is_empty(), "{:#?}", recovered.regions);
+                 assert_eq!(recovered.claimed.len(), input.canonical.blocks().len());
++                fn compound_at(region: &Region, branch_bci: u32) -> Option<&Region> {
++                    match region {
++                        Region::CompoundIf { tests, .. }
++                            if tests.iter().any(|test| test.branch_bci == branch_bci) =>
++                        {
++                            Some(region)
++                        }
++                        Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
++                            regions.iter().find_map(|region| compound_at(region, branch_bci))
++                        }
++                        Region::If { then_arm, else_arm, .. }
++                        | Region::CompoundIf { then_arm, else_arm, .. } => compound_at(
++                            then_arm,
++                            branch_bci,
++                        )
++                        .or_else(|| compound_at(else_arm, branch_bci)),
++                        Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
++                            groups
++                                .iter()
++                                .find_map(|group| compound_at(&group.arm, branch_bci))
++                        }
++                        Region::Try { body, catches, .. } => compound_at(body, branch_bci).or_else(
++                            || catches.iter().find_map(|clause| compound_at(clause.body(), branch_bci)),
++                        ),
++                        Region::Guard { body, finally_body, .. } => body
++                            .as_deref()
++                            .and_then(|body| compound_at(body, branch_bci))
++                            .or_else(|| {
++                                finally_body
++                                    .as_deref()
++                                    .and_then(|body| compound_at(body, branch_bci))
++                            }),
++                        Region::ShortCircuitValue { tail, .. } => {
++                            tail.iter().find_map(|region| compound_at(region, branch_bci))
++                        }
++                        _ => None,
++                    }
++                }
++                fn condition_text(condition: &CompoundCondition, tests: &[CompoundTest]) -> String {
++                    match condition {
++                        CompoundCondition::Test(index) => {
++                            tests[*index].branch_bci.to_string()
++                        }
++                        CompoundCondition::Constant(value) => value.to_string(),
++                        CompoundCondition::Not(inner) => {
++                            format!("!{}", condition_text(inner, tests))
++                        }
++                        CompoundCondition::And(left, right) => format!(
++                            "({}&&{})",
++                            condition_text(left, tests),
++                            condition_text(right, tests)
++                        ),
++                        CompoundCondition::Or(left, right) => format!(
++                            "({}||{})",
++                            condition_text(left, tests),
++                            condition_text(right, tests)
++                        ),
++                    }
++                }
++                let compound = recovered
++                    .regions
++                    .iter()
++                    .find_map(|region| compound_at(region, 98))
++                    .expect("the ordinary case owns the four-test compound condition");
++                let Region::CompoundIf {
++                    tests,
++                    condition,
++                    then_arm,
++                    else_arm,
++                    join,
++                    ..
++                } = compound
++                else {
++                    unreachable!()
++                };
++                let mut test_bcis = tests.iter().map(|test| test.branch_bci).collect::<Vec<_>>();
++                test_bcis.sort_unstable();
++                assert_eq!(test_bcis, [98, 111, 118, 124]);
++                assert_eq!(condition_text(condition, tests), "((98&&!111)||(118&&124))");
++                assert_eq!(join.as_ref().map(CanonicalBlockId::bci), Some(136));
++                assert_eq!(then_arm.blocks().iter().map(|block| block.bci()).collect::<Vec<_>>(), [131]);
++                assert!(else_arm.blocks().is_empty());
+                 let switch = recovered
+                     .regions
+                     .iter()
+@@ -16289,6 +17401,16 @@
+                     .filter(|bci| matches!(*bci, 136 | 153))
+                     .collect::<BTreeSet<_>>();
+                 assert_eq!(return_blocks, BTreeSet::from([136, 153]));
++                for (block_bci, return_bci) in [(136, 136), (153, 163)] {
++                    let physical_return = input
++                        .last_ssa_instruction_bci(block_bci)
++                        .expect("the recovered return block has one physical terminal");
++                    assert_eq!(physical_return, return_bci);
++                    assert!(matches!(
++                        input.operations.get(physical_return),
++                        Some(Operation::Return)
++                    ));
++                }
+ 
+                 let outsider = input.block(171);
+                 let join = input.block(164);
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -78,7 +78,8 @@
+ use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
+ use crate::refusal::Gap;
+ use crate::region::{
+-    CatchClause, Continuation, FallbackReason, ForHeader, LoopForm, Region, SwitchGroup,
++    CatchClause, CompoundCondition, CompoundTest, Continuation, FallbackReason, ForHeader,
++    LoopForm, Region, SwitchGroup,
+ };
+ use crate::reuse;
+ use crate::source_map::{Origin, OriginSet};
+@@ -2063,6 +2064,9 @@
+                     proved.insert(variable);
+                 }
+             }
++            Region::CompoundIf { then_arm, else_arm, .. } => {
++                pending.extend([then_arm.as_ref(), else_arm.as_ref()]);
++            }
+             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+                 pending.extend(groups.iter().map(|group| group.arm.as_ref()));
+             }
+@@ -3467,6 +3471,10 @@
+             collect_guards(then_arm, visit);
+             collect_guards(else_arm, visit);
+         }
++        Region::CompoundIf { then_arm, else_arm, .. } => {
++            collect_guards(then_arm, visit);
++            collect_guards(else_arm, visit);
++        }
+         Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+             for group in groups {
+                 collect_guards(&group.arm, visit);
+@@ -3586,6 +3594,10 @@
+             Region::If {
+                 then_arm, else_arm, ..
+             } => {
++                pending.push(else_arm);
++                pending.push(then_arm);
++            }
++            Region::CompoundIf { then_arm, else_arm, .. } => {
+                 pending.push(else_arm);
+                 pending.push(then_arm);
+             }
+@@ -4357,6 +4369,10 @@
+         Region::If {
+             then_arm, else_arm, ..
+         } => {
++            collect_paths(then_arm, &child(path, 0), out);
++            collect_paths(else_arm, &child(path, 1), out);
++        }
++        Region::CompoundIf { then_arm, else_arm, .. } => {
+             collect_paths(then_arm, &child(path, 0), out);
+             collect_paths(else_arm, &child(path, 1), out);
+         }
+@@ -4519,6 +4535,11 @@
+         Region::If { prefix, branch, .. } => {
+             let mut blocks = prefix.clone();
+             blocks.push(branch.clone());
++            blocks
++        }
++        Region::CompoundIf { prefix, tests, .. } => {
++            let mut blocks = prefix.clone();
++            blocks.extend(tests.iter().map(|test| test.block.clone()));
+             blocks
+         }
+         Region::Switch { prefix, branch, .. } => {
+@@ -4621,6 +4642,10 @@
+         Region::If {
+             then_arm, else_arm, ..
+         } => {
++            bcis.extend(unaccounted_region_bcis(then_arm));
++            bcis.extend(unaccounted_region_bcis(else_arm));
++        }
++        Region::CompoundIf { then_arm, else_arm, .. } => {
+             bcis.extend(unaccounted_region_bcis(then_arm));
+             bcis.extend(unaccounted_region_bcis(else_arm));
+         }
+@@ -7565,6 +7590,16 @@
+                 ));
+                 pending.extend([then_arm.as_ref(), else_arm.as_ref()]);
+             }
++            Region::CompoundIf { tests, then_arm, else_arm, .. } => {
++                condition_tests.extend(tests.iter().map(|test| {
++                    (
++                        test.block.clone(),
++                        test.branch_bci,
++                        LocalAssignmentTest::Structure,
++                    )
++                }));
++                pending.extend([then_arm.as_ref(), else_arm.as_ref()]);
++            }
+             // This proof enters no protected range or handler body. A loop's own test is visited:
+             // its dance may still be *eliminated* when the store target is unobservable, which is
+             // the reference form's whole shape (`while ((line = read()) != null)`). A live target
+@@ -8801,6 +8836,9 @@
+                 || has_early_return_tail(then_arm)
+                 || has_early_return_tail(else_arm)
+         }
++        Region::CompoundIf {
++            then_arm, else_arm, ..
++        } => has_early_return_tail(then_arm) || has_early_return_tail(else_arm),
+         Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+             regions.iter().any(has_early_return_tail)
+         }
+@@ -16304,6 +16342,12 @@
+                 self.prepare_conditional_region(then_arm, allowed_exception_row)?;
+                 self.prepare_conditional_region(else_arm, allowed_exception_row)?;
+             }
++            Region::CompoundIf {
++                then_arm, else_arm, ..
++            } => {
++                self.prepare_conditional_region(then_arm, allowed_exception_row)?;
++                self.prepare_conditional_region(else_arm, allowed_exception_row)?;
++            }
+             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+                 for group in groups {
+                     self.prepare_conditional_region(&group.arm, allowed_exception_row)?;
+@@ -17863,6 +17907,61 @@
+                     origin,
+                 ))
+             }
++            Region::CompoundIf {
++                prefix,
++                tests,
++                condition,
++                then_arm,
++                else_arm,
++                join,
++            } => {
++                for block in prefix {
++                    self.block(block)?;
++                }
++                let Some(root) = tests.first() else {
++                    let bcis = self.region_quote(region, 0);
++                    return self.fallback(bcis, "the compound condition has no root test", 0);
++                };
++                let cond = match self.compound_condition_expr(tests, condition, root.branch_bci) {
++                    Ok(condition) => condition,
++                    Err(ValueRenderFailure::Refusal(reason)) => {
++                        let bcis = self.region_quote(region, root.branch_bci);
++                        return self.fallback(bcis, &reason, root.branch_bci);
++                    }
++                    Err(ValueRenderFailure::Stop(stop)) => return Err(stop),
++                };
++                self.test_effects(&root.block, root.branch_bci)?;
++                let mut then_body = Vec::new();
++                self.arm(then_arm, &mut then_body, &child(path, 0))?;
++                let mut else_body = Vec::new();
++                self.arm(else_arm, &mut else_body, &child(path, 1))?;
++                let mut origin = OriginSet::new(Origin::direct(root.branch_bci));
++                for test in tests.iter().skip(1) {
++                    origin = origin.plus_derived(Origin::derived(test.branch_bci));
++                }
++                for (arm, statements) in [(then_arm, &then_body), (else_arm, &else_body)] {
++                    if !statements.is_empty()
++                        && let Some(bci) = nonempty_if_join_transfer(
++                            arm,
++                            join.as_ref(),
++                            self.canonical,
++                            self.ssa,
++                            self.operations,
++                            self.budget,
++                        )?
++                    {
++                        origin = origin.plus_derived(Origin::derived(bci));
++                    }
++                }
++                self.push(Stmt::new(
++                    StmtKind::If {
++                        cond,
++                        then_body,
++                        else_body,
++                    },
++                    origin,
++                ))
++            }
+             Region::StringSwitch {
+                 dispatch,
+                 proof,
+@@ -21950,6 +22049,106 @@
+         condition(op, &stack_operands(instruction), self, branch_bci, taken)
+     }
+ 
++    /// Render the already-proved compound statement condition without expanding shared CFG nodes.
++    /// A repeated or missing test index is a refusal even if the expression would be equivalent:
++    /// every physical branch must execute exactly once when its short-circuit path reaches it.
++    fn compound_condition_expr(
++        &mut self,
++        tests: &[CompoundTest],
++        condition: &CompoundCondition,
++        at: u32,
++    ) -> Result<Expr, ValueRenderFailure> {
++        if tests.is_empty() || tests.len() > 24 {
++            return Err("the compound condition exceeds the bounded test count".into());
++        }
++        poll(self.budget, Some(at))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(tests.len())
++                .unwrap_or(u64::MAX)
++                .saturating_mul(3),
++            Some(at),
++        )?;
++        fn count(condition: &CompoundCondition, counts: &mut [u8]) -> bool {
++            match condition {
++                CompoundCondition::Test(index) => {
++                    let Some(count) = counts.get_mut(*index) else {
++                        return false;
++                    };
++                    *count = count.saturating_add(1);
++                    true
++                }
++                CompoundCondition::Constant(_) => true,
++                CompoundCondition::Not(inner) => count(inner, counts),
++                CompoundCondition::And(left, right) | CompoundCondition::Or(left, right) => {
++                    count(left, counts) && count(right, counts)
++                }
++            }
++        }
++        let mut counts = vec![0u8; tests.len()];
++        if !count(condition, &mut counts)
++            || counts.iter().any(|count| *count != 1)
++        {
++            return Err("the compound condition does not use every proved branch exactly once".into());
++        }
++        fn build(
++            builder: &mut Builder<'_>,
++            tests: &[CompoundTest],
++            condition: &CompoundCondition,
++            at: u32,
++        ) -> Result<Expr, ValueRenderFailure> {
++            match condition {
++                CompoundCondition::Test(index) => {
++                    let test = tests.get(*index).ok_or_else(|| {
++                        ValueRenderFailure::from("the compound condition names no such branch")
++                    })?;
++                    poll(builder.budget, Some(test.branch_bci))?;
++                    charge(
++                        builder.budget,
++                        CountedBudgetDimension::AnalysisSteps,
++                        1,
++                        Some(test.branch_bci),
++                    )?;
++                    Ok(builder
++                        .test_expr(test.branch_bci, false)?
++                        .derived_from(test.branch_bci))
++                }
++                CompoundCondition::Constant(value) => Ok(Expr::new(
++                    ExprKind::Boolean(*value),
++                    OriginSet::new(Origin::direct(at)),
++                )),
++                CompoundCondition::Not(inner) => {
++                    let value = build(builder, tests, inner, at)?;
++                    let origin = value.origin.clone();
++                    Ok(short_circuit_not(value, origin))
++                }
++                CompoundCondition::And(_, _) | CompoundCondition::Or(_, _) => {
++                    let (op, left, right) = match condition {
++                        CompoundCondition::And(left, right) => (
++                            BinaryOp::LogicalAnd,
++                            build(builder, tests, left, at)?,
++                            build(builder, tests, right, at)?,
++                        ),
++                        CompoundCondition::Or(left, right) => (
++                            BinaryOp::LogicalOr,
++                            build(builder, tests, left, at)?,
++                            build(builder, tests, right, at)?,
++                        ),
++                        _ => unreachable!(),
++                    };
++                    let mut origin = left.origin.clone();
++                    origin = origin.plus_derived(right.origin.primary().clone());
++                    for derived in right.origin.derived() {
++                        origin = origin.plus_derived(derived.clone());
++                    }
++                    Ok(logical_expression(op, left, right, origin))
++                }
++            }
++        }
++        build(self, tests, condition, at)
++    }
++
+     /// Proves that one numeric comparison's result has exactly one same-block adjacent zero-branch
+     /// reader. The check is shared by the instruction walk and the condition composer so a value
+     /// cannot be silently dropped or composed from a different consumer.
+@@ -37814,6 +38013,10 @@
+                 then_arm, else_arm, ..
+             } => cf12_switch_break_mut(then_arm, source_bci)
+                 .or_else(|| cf12_switch_break_mut(else_arm, source_bci)),
++            Region::CompoundIf { then_arm, else_arm, .. } => {
++                cf12_switch_break_mut(then_arm, source_bci)
++                    .or_else(|| cf12_switch_break_mut(else_arm, source_bci))
++            }
+             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => groups
+                 .iter_mut()
+                 .find_map(|group| cf12_switch_break_mut(&mut group.arm, source_bci)),
+@@ -37962,6 +38165,12 @@
+                 wrap_cf12_switch_break(regions, source_bci, wrapper)
+             }
+             Region::If {
++                then_arm, else_arm, ..
++            } => {
++                wrap_cf12_switch_break_region(then_arm, source_bci, wrapper)
++                    || wrap_cf12_switch_break_region(else_arm, source_bci, wrapper)
++            }
++            Region::CompoundIf {
+                 then_arm, else_arm, ..
+             } => {
+                 wrap_cf12_switch_break_region(then_arm, source_bci, wrapper)

@@ -1,0 +1,17 @@
+in: 1, out: 2000
+in: 2, out: 20
+in: 0, out: -2
+in: -2147483648, out: -2
+fall:-2147483648:Integer:-2
+in: -1, out: -2
+fall:-1:Integer:-2
+in: 0, out: -2
+fall:0:Integer:-2
+in: 1, out: 2000
+fall:1:Integer:2000
+in: 2, out: 20
+fall:2:Integer:20
+in: 3, out: -2
+fall:3:Integer:-2
+in: 2147483647, out: -2
+fall:2147483647:Integer:-2

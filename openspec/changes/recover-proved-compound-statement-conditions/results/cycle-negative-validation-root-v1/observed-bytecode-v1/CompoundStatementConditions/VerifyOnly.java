@@ -1,0 +1,1 @@
+public final class VerifyOnly { public static void main(String[] args) throws Exception { Class<?> type = Class.forName("CompoundStatementConditions"); System.out.println("verified:" + type.getName() + ":methods=" + type.getDeclaredMethods().length); } }

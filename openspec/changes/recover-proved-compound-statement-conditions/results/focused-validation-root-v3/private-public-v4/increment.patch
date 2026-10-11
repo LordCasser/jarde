@@ -1,0 +1,11 @@
+--- a/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
++++ b/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
+@@ -791,7 +791,7 @@
+     )
+ }
+ 
+-fn assert_default_compound_if_source(run: &Run, branch_bcis: &[u16]) {
++fn assert_default_compound_if_source(run: &Run, branch_bcis: &[u32]) {
+     assert!(run.report.produced(), "{:?}", run.report.outcome);
+     assert!(
+         !run.report.text.contains("@bytecode"),

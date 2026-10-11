@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-compound-negative-render-luna-v2/verify.py", line 441, in <module>
+    main()
+    ~~~~^^
+  File "/private/tmp/jarde-compound-negative-render-luna-v2/verify.py", line 356, in main
+    fail(name + ': collector owner fact differs from frozen BLAKE3 oracle')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-compound-negative-render-luna-v2/verify.py", line 42, in fail
+    raise RuntimeError(message)
+RuntimeError: cycle: collector owner fact differs from frozen BLAKE3 oracle

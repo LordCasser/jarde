@@ -1,0 +1,160 @@
+{
+  "scope": "intermediate read-only inventory; root has uncommitted candidate and active cargo, not clean delivery",
+  "worktree_count": 15,
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "238c6aaf187c7727aae3b5a58542e1ad1d394535",
+      "branch": "refs/heads/main",
+      "detached": false,
+      "status": " M crates/jarde-java/src/build.rs\n M crates/jarde-java/src/region.rs\n M crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs\n M crates/jarde-jvm/src/canonical.rs\n M handoff.md\n M openspec/changes/recover-proved-switch-continuations/tasks.md\n M openspec/changes/recover-proved-switch-continuations/verification-root.md\n M tests/fixtures/p2-golden/historical.json\n M tests/fixtures/p2-golden/legacy-clone.json\n M tests/p3_reference_slot_lifetimes.rs\n?? openspec/changes/correct-proved-legacy-clone-frame-coverage/\n?? openspec/changes/recover-proved-compound-statement-conditions/\n?? openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/\n?? openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/\n?? openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/\n?? openspec/changes/recover-proved-switch-continuations/results/jdk8-helper-supplement-root-v1/\n?? openspec/changes/recover-proved-switch-continuations/results/nested-certificate-boundary-root-v1/\n",
+      "head_is_root_ancestor": true,
+      "target_exists": true,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status": "",
+      "head_is_root_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    }
+  ],
+  "local_branches": [
+    "main"
+  ],
+  "remote_heads_sha256": "d594aa410e0e4e9918ff4e81648775bc43babcc2afe8e935bf4641498a6daceb"
+}

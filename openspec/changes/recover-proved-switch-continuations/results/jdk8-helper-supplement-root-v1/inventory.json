@@ -1,0 +1,149 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1016,
+      "sha256": "e0dd4308fd3ff227a87a74b4ac8f5f39be76b1697e85db6e403e040cc4190624"
+    },
+    {
+      "path": "jarde-cf12-jdk8-assertions-overlay-luna-v1.py",
+      "bytes": 5647,
+      "sha256": "a722beb8d9204f652ce1666d585cb80810e0c723d014056e3421f542d7055f2d"
+    },
+    {
+      "path": "jarde-cf12-jdk8-assertions-overlay-luna-v2.py",
+      "bytes": 6474,
+      "sha256": "de8163dbc32433ba05e6890838c75d97536679dedfb648f7827d23a81c47ae68"
+    },
+    {
+      "path": "jarde-cf12-jdk8-overlay-supplement-verifier-root-v1.py",
+      "bytes": 2779,
+      "sha256": "e14cb16a43850a5632a7146f04d4e5e2945616332bef9e6421918a86c3eb85d3"
+    },
+    {
+      "path": "jarde-cf12-jdk8-overlay-supplement-verifier-root-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-jdk8-overlay-supplement-verifier-root-v1.stdout.raw",
+      "bytes": 883,
+      "sha256": "3ceab4ec9835e1887424dd29377e9734e664b490cf44203ecb8500f46b88175b"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-luna-v1.py",
+      "bytes": 12296,
+      "sha256": "9db92c91e5276d9a264d4fbc9d3d011010b138d83c037cda3e85887048398473"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-luna-v2.py",
+      "bytes": 15769,
+      "sha256": "33210a7f8d45165e96734498a9d94c622ed8a1132c93bba6ae53f9152f0d5d1f"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v2.stderr.raw",
+      "bytes": 740,
+      "sha256": "dd87e91b67db56acfff325bdbcd044c630dba03d465ff3083de7bf9f2eb07387"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v3.py",
+      "bytes": 16153,
+      "sha256": "06e508b790828cab5b8c0d7b1102a198f2fa08d92beff7cb1db41f8a68565736"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v3.stderr.raw",
+      "bytes": 579,
+      "sha256": "90a4ca6fbe86f0ce954389905602ee6b5de0c5defda21730a5985d54aa5b0aa4"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v4.py",
+      "bytes": 16181,
+      "sha256": "1ecfad306e3b1fffe59fc07fcfbe96accb5cfbbc1105c6e536825f457d64d274"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-jdk8-switch-supplement-root-v5.py",
+      "bytes": 16181,
+      "sha256": "7f26b6fa817c0a3fff58238bf12706b94fa1c70c3387420f3ad234bf04b9f16b"
+    },
+    {
+      "path": "overlay/classes/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "1620750b48e076f8bd3610ec40d1415ea7f3148f06c43dacf323d5885819ba78"
+    },
+    {
+      "path": "overlay/execution.json",
+      "bytes": 30860,
+      "sha256": "b4ff6201a73c817a3d6d175e27e62e2bf051a70cbcf031ebaa556a53d283e573"
+    },
+    {
+      "path": "overlay/raw/0001-overlay-compile.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "overlay/raw/0001-overlay-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "supplement/TestSwitchFallThrough/jadx/sources/TestSwitchFallThrough$TestCls.java",
+      "bytes": 906,
+      "sha256": "6404c52b5300d9bb6491675e3f11a7022297fad188fb37689121811976aa8659"
+    },
+    {
+      "path": "supplement/TestSwitchFallThrough/original/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "path": "supplement/acceptance.json",
+      "bytes": 955,
+      "sha256": "bf469e6cb60ea3e6fe5f95da542b2691ed379573aa161151cc6708d789b5760b"
+    },
+    {
+      "path": "supplement/execution.json",
+      "bytes": 218830,
+      "sha256": "b99399abcc4f96179656d11b49d365f8bd1e17ccdd685d84b087089be9ab23e8"
+    },
+    {
+      "path": "supplement/raw/001.TestSwitchFallThrough-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "supplement/raw/001.TestSwitchFallThrough-original-runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "supplement/raw/002.TestSwitchFallThrough-jadx-compile.stderr.raw",
+      "bytes": 532,
+      "sha256": "69df9268237547584491cd8dec20b12e9e313b61fe958d31f0b74e5498989dc6"
+    },
+    {
+      "path": "supplement/raw/002.TestSwitchFallThrough-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

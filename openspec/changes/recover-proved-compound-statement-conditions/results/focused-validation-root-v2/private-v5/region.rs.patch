@@ -1,0 +1,381 @@
+--- a/region.rs
++++ b/region.rs
+@@ -3609,7 +3609,12 @@
+                             && self.view.index_of(next) != Some(join_node)
+                         {
+                             let mut continued =
+-                                self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?;
++                                self.continue_early_return_arm(
++                                    &mut arm_run,
++                                    next,
++                                    &arm_frame,
++                                    frame,
++                                )?;
+                             if !continued {
+                                 continued = self.continue_prefixed_loop_arm(
+                                     &mut arm_run,
+@@ -4190,7 +4195,11 @@
+         run: &mut Vec<Region>,
+         next: &CanonicalBlockId,
+         frame: &Frame,
++        outer_frame: &Frame,
+     ) -> Result<bool, StopReason> {
++        if self.continue_compound_void_return_arm(run, next, frame, outer_frame)? {
++            return Ok(true);
++        }
+         let [
+             Region::If {
+                 branch,
+@@ -4272,6 +4281,204 @@
+         }
+         run.extend(tail);
+         Ok(true)
++    }
++
++    /// A one-armed guard can end its proved CompoundIf at the same fresh `return` block as the
++    /// guard itself. Keep this exception narrower than the boolean-return continuation above:
++    /// the returned shape is one outer If, whose nonempty arm is one CompoundIf, and both joins
++    /// are exactly the outer arm's next block. The compound proof already owns its tests and
++    /// payloads; this method proves only that their complete physical ownership is the return's
++    /// complete canonical predecessor set before the existing walker claims that one block.
++    fn continue_compound_void_return_arm(
++        &mut self,
++        run: &mut Vec<Region>,
++        next: &CanonicalBlockId,
++        frame: &Frame,
++        outer_frame: &Frame,
++    ) -> Result<bool, StopReason> {
++        let [Region::If {
++            branch,
++            then_arm,
++            else_arm,
++            join: Some(outer_join),
++            ..
++        }] = run.as_slice()
++        else {
++            return Ok(false);
++        };
++        let Region::CompoundIf {
++            then_arm: compound_then,
++            else_arm: compound_else,
++            join: Some(compound_join),
++            ..
++        } = then_arm.as_ref()
++        else {
++            return Ok(false);
++        };
++        if branch.path() != next.path()
++            || !matches!(else_arm.as_ref(), Region::Straight { blocks } if blocks.is_empty())
++            || outer_join != next
++            || compound_join != next
++        {
++            return Ok(false);
++        }
++
++        let Some(return_node) = self.view.index_of(next) else {
++            return Ok(false);
++        };
++        let compound_then_blocks = compound_then.blocks();
++        let compound_else_blocks = compound_else.blocks();
++        let owner_blocks = run[0].blocks();
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(compound_then_blocks.len())
++                .unwrap_or(u64::MAX)
++                .saturating_add(
++                    u64::try_from(compound_else_blocks.len()).unwrap_or(u64::MAX),
++                )
++                .saturating_add(u64::try_from(owner_blocks.len()).unwrap_or(u64::MAX)),
++            Some(next.bci()),
++        )?;
++        let mut compound_arm_owners = BTreeSet::new();
++        for block in compound_then_blocks.iter().chain(&compound_else_blocks) {
++            poll(self.budget, Some(block.bci()))?;
++            if !compound_arm_owners.insert((*block).clone()) {
++                return Ok(false);
++            }
++        }
++        if compound_arm_owners.is_empty()
++            || !compound_arm_owners
++                .iter()
++                .any(|block| block.path() == next.path())
++        {
++            return Ok(false);
++        }
++
++        let mut owners = BTreeSet::new();
++        if owner_blocks.is_empty() {
++            return Ok(false);
++        }
++        for block in owner_blocks {
++            poll(self.budget, Some(block.bci()))?;
++            let Some(node) = self.view.index_of(block) else {
++                return Ok(false);
++            };
++            if block == next
++                || block.path() != next.path()
++                || !owners.insert((*block).clone())
++                || !self.visited.contains(&node)
++                || frame
++                    .scope
++                    .as_ref()
++                    .is_some_and(|scope| !scope.contains(&node))
++                || frame
++                    .case_entries
++                    .as_ref()
++                    .is_some_and(|entries| entries.contains(&node))
++            {
++                return Ok(false);
++            }
++        }
++        if !compound_arm_owners.is_subset(&owners)
++            || owners.contains(next)
++            || frame.boundary != Some(return_node)
++            || frame.shared_tail == Some(return_node)
++            || frame.switch_join == Some(return_node)
++            || outer_frame.boundary == Some(return_node)
++            || outer_frame.shared_tail == Some(return_node)
++            || outer_frame.switch_join == Some(return_node)
++            || outer_frame
++                .scope
++                .as_ref()
++                .is_some_and(|scope| !scope.contains(&return_node))
++            || frame
++                .case_entries
++                .as_ref()
++                .is_some_and(|entries| entries.contains(&return_node))
++            || outer_frame
++                .case_entries
++                .as_ref()
++                .is_some_and(|entries| entries.contains(&return_node))
++            || self.visited.contains(&return_node)
++            || !self.view.successors(return_node).is_empty()
++            || !self.ssa.block(next).is_some_and(|block| {
++                block.instructions().last().is_some_and(|instruction| {
++                    instruction.opcode() == 0xb1
++                        && matches!(
++                            self.operations.get(instruction.bci()),
++                            Some(Operation::Return)
++                        )
++                })
++            })
++        {
++            return Ok(false);
++        }
++
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
++            Some(next.bci()),
++        )?;
++        let mut incoming_sources = BTreeSet::new();
++        let mut arm_source = false;
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(edge.from().bci()))?;
++            if edge.to() == next {
++                if edge.kind() != CanonicalEdgeKind::Normal
++                    || !owners.contains(edge.from())
++                    || !incoming_sources.insert(edge.from().clone())
++                {
++                    return Ok(false);
++                }
++                arm_source |= compound_arm_owners.contains(edge.from());
++            }
++            if edge.from() == next {
++                return Ok(false);
++            }
++        }
++        if incoming_sources.is_empty() || !arm_source {
++            return Ok(false);
++        }
++
++        let saved_visited = self.visited.clone();
++        let saved_unclosed_tail = self.unclosed_tail_at;
++        let saved_catch_joins = self.catch_joins.clone();
++        let saved_fragmented = self.fragmented.clone();
++        // `frame` ends the outer arm at this shared return. Walk the return in its parent's
++        // frame so `region_at` claims exactly the boundary block instead of stopping before it.
++        let mut tail_frame = frame.clone();
++        tail_frame.boundary = outer_frame.boundary;
++        let attempt = self.region_at(next, &tail_frame);
++        match attempt {
++            Ok((tail, tail_next)) => {
++                let newly_visited = self
++                    .visited
++                    .difference(&saved_visited)
++                    .filter_map(|node| self.view.id_of(*node).cloned())
++                    .collect::<BTreeSet<_>>();
++                if tail_next.is_some()
++                    || !matches!(tail.as_slice(), [Region::Straight { blocks }] if blocks == &[next.clone()])
++                    || !continuation_claims_are_exact(&[next.clone()], &newly_visited)
++                {
++                    self.visited = saved_visited;
++                    self.unclosed_tail_at = saved_unclosed_tail;
++                    self.catch_joins = saved_catch_joins;
++                    self.fragmented = saved_fragmented;
++                    return Ok(false);
++                }
++                run.extend(tail);
++                Ok(true)
++            }
++            Err(stop) => {
++                self.visited = saved_visited;
++                self.unclosed_tail_at = saved_unclosed_tail;
++                self.catch_joins = saved_catch_joins;
++                self.fragmented = saved_fragmented;
++                Err(stop)
++            }
++        }
+     }
+ 
+     /// The one physical edge by which a closed loop arm reaches its enclosing `If`'s join.
+@@ -17295,6 +17502,7 @@
+                     .compound_statement_region(&proof, &[], root_branch_bci, &Frame::default())
+                     .expect("both physical exits resolve before the compound is committed")
+                     .expect("the ordinary payload and shared join form one statement");
++                let integrated_for_continuation = integrated.clone();
+                 let Region::CompoundIf {
+                     then_arm,
+                     else_arm,
+@@ -17314,7 +17522,139 @@
+                     [131]
+                 );
+                 assert!(else_arm.blocks().is_empty());
++
++                let return_next = input.block(136).clone();
++                let switch_boundary = input.block(164).clone();
++                let make_continuation_run = || {
++                    vec![Region::If {
++                        prefix: Vec::new(),
++                        branch: input.block(78).clone(),
++                        branch_bci: input.last_ssa_instruction_bci(78).unwrap(),
++                        then_arm: Box::new(integrated_for_continuation.clone()),
++                        else_arm: Box::new(Region::Straight { blocks: Vec::new() }),
++                        join: Some(return_next.clone()),
++                    }]
++                };
++                let continuation_owners = make_continuation_run()[0]
++                    .blocks()
++                    .into_iter()
++                    .map(|block| input.view.index_of(block).unwrap())
++                    .collect::<BTreeSet<_>>();
++                macro_rules! continuation_walker {
++                    ($budget:ident) => {{
++                        let mut walker = compound_walker!($budget);
++                        walker.visited = continuation_owners.clone();
++                        walker
++                    }};
++                }
++                let arm_frame = Frame {
++                    boundary: input.view.index_of(&return_next),
++                    ..Frame::default()
++                };
++                let outer_frame = Frame {
++                    boundary: input.view.index_of(&switch_boundary),
++                    ..Frame::default()
++                };
++                let mut continuation_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut continuation_walker = continuation_walker!(continuation_budget);
++                let mut continuation_run = make_continuation_run();
++                assert!(continuation_walker
++                    .continue_early_return_arm(
++                        &mut continuation_run,
++                        &return_next,
++                        &arm_frame,
++                        &outer_frame,
++                    )
++                    .expect("owned normal predecessors admit the physical void return"));
++                assert!(continuation_run
++                    .iter()
++                    .flat_map(Region::blocks)
++                    .any(|block| block == &return_next));
++                assert_eq!(
++                    continuation_walker
++                        .visited
++                        .difference(&continuation_owners)
++                        .copied()
++                        .collect::<BTreeSet<_>>(),
++                    BTreeSet::from([input.view.index_of(&return_next).unwrap()])
++                );
++                let continuation_steps = continuation_walker.budget.usage().analysis_steps;
++                let late_continuation_limit = continuation_steps.saturating_sub(1);
++                let mut late_continuation_budget = Budget::new(Limits {
++                    analysis_steps: late_continuation_limit,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut late_continuation_walker = continuation_walker!(late_continuation_budget);
++                late_continuation_walker.unclosed_tail_at = Some(181);
++                late_continuation_walker.catch_joins.insert((root_node, join_node));
++                let before_visited = late_continuation_walker.visited.clone();
++                let before_unclosed = late_continuation_walker.unclosed_tail_at;
++                let before_catches = late_continuation_walker.catch_joins.clone();
++                let mut late_run = make_continuation_run();
++                let stop = late_continuation_walker
++                    .continue_early_return_arm(
++                        &mut late_run,
++                        &return_next,
++                        &arm_frame,
++                        &outer_frame,
++                    )
++                    .expect_err("the return continuation stops atomically one step short");
++                assert!(matches!(
++                    stop,
++                    StopReason::Budget {
++                        dimension: CountedBudgetDimension::AnalysisSteps,
++                        written: 0,
++                        limit,
++                        at: Some(_),
++                    } if limit == late_continuation_limit
++                ));
++                assert!(late_continuation_walker.budget.usage().analysis_steps > 0);
++                assert!(late_continuation_walker.budget.usage().analysis_steps
++                    <= late_continuation_limit);
++                assert_eq!(late_continuation_walker.visited, before_visited);
++                assert_eq!(late_continuation_walker.unclosed_tail_at, before_unclosed);
++                assert_eq!(late_continuation_walker.catch_joins, before_catches);
++                assert!(late_continuation_walker.fragmented.is_none());
++                assert_eq!(late_run, make_continuation_run());
+ 
++                let token = CancellationToken::new();
++                token.cancel();
++                let mut cancelled_continuation_budget = Budget::with_cancellation_token(
++                    Limits {
++                        analysis_steps: u64::MAX,
++                        elapsed_millis: u64::MAX,
++                        ..Limits::default()
++                    },
++                    token,
++                );
++                let mut cancelled_continuation_walker =
++                    continuation_walker!(cancelled_continuation_budget);
++                cancelled_continuation_walker.unclosed_tail_at = Some(181);
++                cancelled_continuation_walker.catch_joins.insert((root_node, join_node));
++                let before_visited = cancelled_continuation_walker.visited.clone();
++                let before_unclosed = cancelled_continuation_walker.unclosed_tail_at;
++                let before_catches = cancelled_continuation_walker.catch_joins.clone();
++                let mut cancelled_run = make_continuation_run();
++                assert!(matches!(
++                    cancelled_continuation_walker.continue_early_return_arm(
++                        &mut cancelled_run,
++                        &return_next,
++                        &arm_frame,
++                        &outer_frame,
++                    ),
++                    Err(StopReason::Cancelled { at: Some(_) })
++                ));
++                assert_eq!(cancelled_continuation_walker.visited, before_visited);
++                assert_eq!(cancelled_continuation_walker.unclosed_tail_at, before_unclosed);
++                assert_eq!(cancelled_continuation_walker.catch_joins, before_catches);
++                assert!(cancelled_continuation_walker.fragmented.is_none());
++                assert_eq!(cancelled_run, make_continuation_run());
++
+                 let mut completed_integration_budget = Budget::new(Limits {
+                     analysis_steps: 1 << 20,
+                     elapsed_millis: u64::MAX,

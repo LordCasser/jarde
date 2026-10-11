@@ -1,0 +1,4 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 10.87s
+[1m[92m     Running[0m tests/p3_conditional_switch_fallthrough.rs (target/debug/deps/p3_conditional_switch_fallthrough-dd543d447af64434)
+compound whole-recovery AnalysisSteps budget: success_usage=517, limit=516, stop_at=7, stop_usage=516, stop_written=633, observed_output_bytes=633

@@ -1,0 +1,519 @@
+{
+  "schema": "compound-condition-architecture-root-v1",
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_local_equals_git_object": true,
+  "jadx_source": {
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/IfRegionMaker.java",
+    "bytes": 23440,
+    "sha256": "3d3d4c2238a21368e5970db5d5cffb2e63a625e411e8cf64461bd6e604d74760"
+  },
+  "jadx_status": "?? .atlas/\n",
+  "hash_typo_correction": "earlier ...c37e was root typo; real frozen HEAD ends c37f",
+  "replay": {
+    "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/execution.json",
+    "bytes": 6465273,
+    "sha256": "7b69da98633d4029b1d675624494d4ca50eace3df468aa49a30466a983bc626e"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-switch-continuation-candidate-cli-root-v1",
+    "bytes": 60219120,
+    "sha256": "fd2d526f3e684d13179d344cf7394bbfeefb391d541ea55d01dafd81ab3d0054"
+  },
+  "switch2_actual_compile_failures": [
+    {
+      "jdk": "jdk8_tools",
+      "side": "jarde-default",
+      "compile": {
+        "index": 100,
+        "label": "TestSwitch2-jdk8_tools-jarde-default-compile",
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-encoding",
+          "UTF-8",
+          "-g",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-proc:none",
+          "-classpath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/helpers:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+          "-sourcepath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-default/empty-sourcepath",
+          "-d",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-default/classes",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java"
+        ],
+        "cwd": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-default",
+        "started_at": "2026-10-11T01:26:16.497951+00:00",
+        "guard_stop": null,
+        "exit_code": 1,
+        "duration_seconds": 1.0192580000148155,
+        "streams": {
+          "stdout": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0100.TestSwitch2-jdk8_tools-jarde-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0100.TestSwitch2-jdk8_tools-jarde-default-compile.stderr.raw",
+            "bytes": 317,
+            "sha256": "c4d325c475698f5430a3b1a407fff5791e3d0b7193d1a1382381fe5f58f562b1"
+          }
+        }
+      }
+    },
+    {
+      "jdk": "jdk8_tools",
+      "side": "jarde-all",
+      "compile": {
+        "index": 102,
+        "label": "TestSwitch2-jdk8_tools-jarde-all-compile",
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-encoding",
+          "UTF-8",
+          "-g",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-proc:none",
+          "-classpath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/helpers:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+          "-sourcepath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-all/empty-sourcepath",
+          "-d",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-all/classes",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java"
+        ],
+        "cwd": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk8_tools/jarde-all",
+        "started_at": "2026-10-11T01:26:18.565288+00:00",
+        "guard_stop": null,
+        "exit_code": 1,
+        "duration_seconds": 1.0240445419913158,
+        "streams": {
+          "stdout": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0102.TestSwitch2-jdk8_tools-jarde-all-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0102.TestSwitch2-jdk8_tools-jarde-all-compile.stderr.raw",
+            "bytes": 313,
+            "sha256": "a029948c5e172b188923db0e05dcfe9be2c5f655b18a2d6417928a53e1709e2a"
+          }
+        }
+      }
+    },
+    {
+      "jdk": "jdk23_tools",
+      "side": "jarde-default",
+      "compile": {
+        "index": 107,
+        "label": "TestSwitch2-jdk23_tools-jarde-default-compile",
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-encoding",
+          "UTF-8",
+          "-g",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-proc:none",
+          "-classpath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/helpers:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+          "-sourcepath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-default/empty-sourcepath",
+          "-d",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-default/classes",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-default/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java"
+        ],
+        "cwd": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-default",
+        "started_at": "2026-10-11T01:26:23.730009+00:00",
+        "guard_stop": null,
+        "exit_code": 1,
+        "duration_seconds": 1.026824917003978,
+        "streams": {
+          "stdout": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0107.TestSwitch2-jdk23_tools-jarde-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0107.TestSwitch2-jdk23_tools-jarde-default-compile.stderr.raw",
+            "bytes": 801,
+            "sha256": "8e207f5562fe1e5c92c7ec20f94e9764b6aacd347573a5816287818519492896"
+          }
+        }
+      }
+    },
+    {
+      "jdk": "jdk23_tools",
+      "side": "jarde-all",
+      "compile": {
+        "index": 109,
+        "label": "TestSwitch2-jdk23_tools-jarde-all-compile",
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-encoding",
+          "UTF-8",
+          "-g",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-proc:none",
+          "-classpath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/helpers:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+          "-sourcepath",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-all/empty-sourcepath",
+          "-d",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-all/classes",
+          "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-all/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java"
+        ],
+        "cwd": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/TestSwitch2/jdk23_tools/jarde-all",
+        "started_at": "2026-10-11T01:26:25.792822+00:00",
+        "guard_stop": null,
+        "exit_code": 1,
+        "duration_seconds": 1.0275775830086786,
+        "streams": {
+          "stdout": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0109.TestSwitch2-jdk23_tools-jarde-all-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-cf12-ten-fixture-candidate-replay-root-v1/raw/0109.TestSwitch2-jdk23_tools-jarde-all-compile.stderr.raw",
+            "bytes": 797,
+            "sha256": "1e9e45aa1510242b3859f2c49c01482fc2943dfe34d783b0ba79add7f9d5c792"
+          }
+        }
+      }
+    }
+  ],
+  "proof_simulation": [
+    {
+      "inputs": {
+        "98": false,
+        "111": false,
+        "118": false,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        118
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        118
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": false,
+        "118": false,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        118
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        118
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": false,
+        "118": true,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        118,
+        124
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        118,
+        124
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": false,
+        "118": true,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        118,
+        124
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        118,
+        124
+      ],
+      "formula_result": true
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": true,
+        "118": false,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        118
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        118
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": true,
+        "118": false,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        118
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        118
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": true,
+        "118": true,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        118,
+        124
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        118,
+        124
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": false,
+        "111": true,
+        "118": true,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        118,
+        124
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        118,
+        124
+      ],
+      "formula_result": true
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": false,
+        "118": false,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        111
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        111
+      ],
+      "formula_result": true
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": false,
+        "118": false,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        111
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        111
+      ],
+      "formula_result": true
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": false,
+        "118": true,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        111
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        111
+      ],
+      "formula_result": true
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": false,
+        "118": true,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        111
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        111
+      ],
+      "formula_result": true
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": true,
+        "118": false,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        111,
+        118
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        111,
+        118
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": true,
+        "118": false,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        111,
+        118
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        111,
+        118
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": true,
+        "118": true,
+        "124": false
+      },
+      "actual_tests": [
+        98,
+        111,
+        118,
+        124
+      ],
+      "actual_exit": 136,
+      "formula_tests": [
+        98,
+        111,
+        118,
+        124
+      ],
+      "formula_result": false
+    },
+    {
+      "inputs": {
+        "98": true,
+        "111": true,
+        "118": true,
+        "124": true
+      },
+      "actual_tests": [
+        98,
+        111,
+        118,
+        124
+      ],
+      "actual_exit": 131,
+      "formula_tests": [
+        98,
+        111,
+        118,
+        124
+      ],
+      "formula_result": true
+    }
+  ],
+  "scope": "decoded fallthrough=then; simulations verify fixed physical edge graph and formula order, not product recovery",
+  "pins": [
+    {
+      "path": "/private/tmp/jarde-switch-continuation-physical-javap-root-v1/execution.json",
+      "bytes": 2856,
+      "sha256": "a0d7dd3921e0e2ccc994a417a4956e78b53ec0979673ef701fe1cb67bcc4e9aa"
+    },
+    {
+      "path": "/private/tmp/jarde-switch2-join-trace-root-v1/execution.json",
+      "bytes": 3140,
+      "sha256": "140a414a3574be02900fc07f6e97ba271cb89ac7f8705fd9e3a910a68a33f1dc"
+    }
+  ]
+}

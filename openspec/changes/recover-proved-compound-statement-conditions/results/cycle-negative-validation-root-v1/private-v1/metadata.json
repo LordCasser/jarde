@@ -1,0 +1,23 @@
+{
+  "base_region_sha256": "ecb4b641bf33fcae42cd028d20193bcafc35b9849076cdc4e0c127eb85d247c8",
+  "cycle_source_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "cycle_output_sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78",
+  "irreducible_source_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "irreducible_output_sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08",
+  "coverage": [
+    "reader-produced single-entry cycle is refused without ownership state leak",
+    "reader-produced two-entry SCC with compound comparisons is refused without ownership state leak"
+  ],
+  "not_claimed": [
+    "compound gray-node branch is the first refusal point",
+    "compound clone/path mismatch",
+    "Java verifier acceptance or JDK execution"
+  ],
+  "workspace_modified": false,
+  "toolchain_executed": false,
+  "region_candidate_sha256": "37a86432d7ee0b2e22f39d5381c01c95f2a10cea6af88b117ea63cd4f117a053",
+  "region_patch_sha256": "cc0155a53831637be2f89d974c037fefc1a160e447d223cdaebeda79e0e78b11",
+  "cycle_patcher_sha256": "a9309b96e0d23f612ed8bf5daf810cee0321570d6d69ef837dc5859132af04f6",
+  "irreducible_patcher_sha256": "523f613ad0a66732a4a6bd5666cef5583c1374e1afecb4268acfe87ed812b849",
+  "README_sha256": "37288be7056293e40a9be38f10b27c62941c96d63578f5f2ddb1c0f5feb805f0"
+}

@@ -1,0 +1,13 @@
+{
+  "candidate": "switch2-join-impl-luna-v2",
+  "source_path": "crates/jarde-java/src/region.rs",
+  "base_sha256": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c",
+  "candidate_sha256": "b301d5c913263f88eebfabd50cd695f6a63dc72e2e141aac0c185a83e141362a",
+  "input_class": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+  "input_class_sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9",
+  "input_class_blake3": "3ec50697523d585c5a23797922f0289334f6e76e9e83f92596d46fdce4cf0b44",
+  "input_class_length": 1123,
+  "diagnostic": "/private/tmp/jarde-switch-continuation-diagnostic-execution-root-v2/0.stderr.raw",
+  "source_edit_performed": false,
+  "validation_performed": false
+}

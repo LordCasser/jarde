@@ -1,0 +1,7 @@
+# v3 root审查：尚未编译、未验收
+
+Builder v3的出口对齐接口已匹配region候选，prepare在deferred之前按真实lead上下文检查完整boolean条件。根审阅仍发现emitter checkpoint之后prefix、test_effects、arm、condition Stop及join transfer的若干`?`直接退出，未统一恢复表示状态。已要求v4将完整staging置于一个attempt中，并在所有错误路径恢复；budget usage保留。contains_fallback漏掉循环子体，active nested_pair还需明确保存或有界拒绝。未将此候选写入生产。
+
+region v3新增两普通payload class test误将SHA-256写为BLAKE3。root实际执行已冻结oracle（SHA-256 e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7），2848-byte类BLAKE3为bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a；SHA-256为2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa。region v4仅修正摘要断言。
+
+CanonicalCfg/CanonicalEdge提供不可变公开视图，jarde-java无法直接注入边变体。不会仅为测试新增生产edge override或独立helper。任务2.4仍未完成；先补实际case/frame拒绝，再用受控class变体验证副作用及异常边界。以上仅静态审阅和摘要事实，没有Rust测试通过主张。

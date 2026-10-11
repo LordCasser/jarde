@@ -1,0 +1,1 @@
+Root 读取实际 v5 完整 patch并验证原字节重建。沿真实canonical36的SSA末端37、Switch操作和两条普通边，candidate proof在nested comparison guard拒绝。删除安全Rust不可变 Reader rows的起止镜像比较，保留真实全图/SSA/操作事实及无partial certificate断言。无生产改动、无事实mutation；待实际workspace运行。多候选唯一性按完整 incoming owner、empty fallthrough和cycle拒绝论证；并未制造不可达多候选list mock，也不宣称调用最终list match。

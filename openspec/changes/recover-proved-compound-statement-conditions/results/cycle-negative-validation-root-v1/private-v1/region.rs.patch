@@ -1,0 +1,211 @@
+--- crates/jarde-java/src/region.rs
++++ crates/jarde-java/src/region.rs
+@@ -19011,6 +19011,208 @@
+             .expect("ample candidate proof completes"),
+             None,
+             "candidate mode rejects a real cloned target whose full CanonicalBlockId path differs from dispatch"
++        );
++    }
++
++    #[test]
++    fn real_compound_condition_cycles_refuse_without_walker_state_leaks() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::budget::{Budget, Limits};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        const CYCLE: &[u8] = include_bytes!(
++            "../../../tests/fixtures/p3-compound-condition-cycles/CompoundStatementConditionsCycle.class"
++        );
++        const IRREDUCIBLE: &[u8] = include_bytes!(
++            "../../../tests/fixtures/p3-compound-condition-cycles/CompoundStatementConditionsIrreducible.class"
+         );
++
++        for (class, name, cycle_from_bci, irreducible) in [
++            (CYCLE, "single-entry cycle", 51_u32, false),
++            (IRREDUCIBLE, "two-entry SCC", 62_u32, true),
++        ] {
++            assert_eq!(class.len(), 2848, "{name} preserves the frozen class size");
++            let mut budget = Budget::new(Limits {
++                input_bytes: 1 << 20,
++                archive_entries: 100,
++                entry_bytes: 1 << 20,
++                read_bytes: 1 << 20,
++                class_bytes: 1 << 20,
++                attribute_bytes: 1 << 20,
++                code_bytes: 1 << 20,
++                result_items: 1 << 20,
++                output_bytes: 1 << 20,
++                class_headers: 100,
++                method_bodies: 100,
++                ir_items: 1 << 20,
++                ir_edges: 1 << 20,
++                analysis_steps: 1 << 20,
++                normalization_clones: 1 << 20,
++                nested_depth: 32,
++                dependency_depth: 32,
++                elapsed_millis: u64::MAX,
++            });
++            let snapshot = ArtifactSnapshot::open(
++                ArtifactInput::bytes(class.to_vec()),
++                &mut budget,
++            )
++            .expect("the pinned classfile mutation remains readable");
++            let definition = PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot {
++                    snapshot: snapshot.id().clone(),
++                },
++                class_bytes: ClassBytesId {
++                    digest: Digest(blake3::hash(class).to_hex().to_string()),
++                    length: u64::try_from(class.len()).expect("fixture length fits"),
++                },
++                variant: PhysicalVariant::Base,
++            };
++            let domain = LoadDomain {
++                loader: LoaderId("app".to_owned()),
++                parent_loader: None,
++                delegation: DelegationPolicy::ParentFirst,
++                roots: vec![LoadRoot::StandaloneClass {
++                    snapshot: snapshot.id().clone(),
++                }],
++                module_mode: ModuleMode::ClassPath,
++                external_override: RuntimeUncertainty::None,
++                runtime_transformation: RuntimeUncertainty::None,
++            };
++            let analysis = analyze_method_ir(
++                &[snapshot.clone()],
++                &MethodAnalysisRequest {
++                    environment: ResolutionEnvironment {
++                        runtime: RuntimeView {
++                            physical: PhysicalView {
++                                snapshot: snapshot.id().clone(),
++                                scope: PhysicalScope::SnapshotAll,
++                            },
++                            profile: RuntimeProfile {
++                                java_release: 8,
++                                multi_release: MultiReleasePolicy::Disabled,
++                                layout: LayoutMode::Generic,
++                            },
++                            load_domain: domain.clone(),
++                        },
++                        domains: vec![domain],
++                        providers: Vec::new(),
++                    },
++                    method: PhysicalMethodId {
++                        owner: definition,
++                        name: JvmBytes(b"test".to_vec()),
++                        descriptor: JvmBytes(
++                            b"(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;".to_vec(),
++                        ),
++                    },
++                    stages: AnalysisStage::ALL.to_vec(),
++                },
++                &mut budget,
++            )
++            .expect("reader analyzes the mutated method from its real class bytes");
++            let ir = analysis.ir();
++            let canonical = ir.canonical().expect("reader publishes canonical CFG");
++            let ssa = ir.ssa().expect("reader publishes SSA");
++            let code = ir.code().expect("reader publishes decoded bytecode");
++            let operations = Operations::of(code, ir.constant_pool());
++            let view = NormalFlowView::build(canonical, &mut budget)
++                .expect("the real normal-flow graph is available");
++            let block = |bci| {
++                canonical
++                    .blocks()
++                    .iter()
++                    .map(|block| block.id())
++                    .find(|id| id.bci() == bci && id.path().is_empty())
++                    .expect("pinned pathless bytecode block is reader-produced")
++            };
++            let root = block(26);
++            let root_node = view.index_of(root).expect("root comparison is in the view");
++            let root_bci = ssa
++                .block(root)
++                .and_then(|names| names.instructions().last())
++                .map(|instruction| instruction.bci())
++                .expect("root has a terminal decoded branch");
++            assert_eq!(root_bci, 26);
++            let (root_op, root_target) = operations
++                .get(root_bci)
++                .and_then(Operation::comparison)
++                .expect("root is the frozen first boolean comparison");
++            let root_predecessors = view.predecessors(root_node);
++            assert_eq!(root_predecessors.len(), 1, "the test entry has one real source");
++            let predecessor = root_predecessors[0];
++            assert_eq!(view.id_of(predecessor).unwrap().bci(), 18);
++            let join_node = view.index_of(block(83)).expect("shared exit is in the view");
++
++            let has_normal_view_edge = |from_bci, to_bci| {
++                let from = view.index_of(block(from_bci)).unwrap();
++                let to = view.index_of(block(to_bci)).unwrap();
++                view.successors(from).contains(&to)
++            };
++            assert!(has_normal_view_edge(cycle_from_bci, 40), "{name}: cycle back edge");
++            if irreducible {
++                assert!(has_normal_view_edge(40, 51), "{name}: first SCC edge");
++                assert!(has_normal_view_edge(51, 62), "{name}: second SCC edge");
++                assert!(has_normal_view_edge(26, 40), "{name}: first SCC entry");
++                assert!(has_normal_view_edge(29, 62), "{name}: second SCC entry");
++            }
++
++            let chains = crate::concat::Plan::empty();
++            let sites = crate::init::Sites::empty();
++            let initial_visited = BTreeSet::from([root_node, predecessor]);
++            let initial_catch_joins = BTreeSet::from([(root_node, join_node)]);
++            let mut proof_budget = Budget::new(Limits {
++                analysis_steps: 1 << 20,
++                elapsed_millis: u64::MAX,
++                ..Limits::default()
++            });
++            let mut walker = Walker {
++                canonical,
++                view,
++                ssa,
++                operations: &operations,
++                pool: ir.constant_pool(),
++                chains: &chains,
++                sites: &sites,
++                code,
++                method_synchronized: Some(false),
++                has_reachable_explicit_monitor: false,
++                return_is_boolean: false,
++                handlers: &code.exception_handlers,
++                profile: &crate::pass::JAVA_8,
++                budget: &mut proof_budget,
++                catch_joins: initial_catch_joins.clone(),
++                fragmented: None,
++                excluded_edge_nodes: BTreeSet::new(),
++                visited: initial_visited.clone(),
++                unclosed_tail_at: Some(181),
++                own_monitor: None,
++                depth: 0,
++            };
++            let stop = walker
++                .compound_statement_condition(
++                    root,
++                    root_bci,
++                    root_op,
++                    root_target,
++                    &Frame::default(),
++                    join_node,
++                )
++                .expect("cycle refusal completes under an ample budget");
++            assert!(stop.is_none(), "{name} must not produce a compound proof");
++            assert_eq!(walker.visited, initial_visited, "{name}: no block ownership leak");
++            assert_eq!(walker.catch_joins, initial_catch_joins, "{name}: no catch leak");
++            assert_eq!(walker.unclosed_tail_at, Some(181), "{name}: no tail leak");
++            assert!(walker.fragmented.is_none(), "{name}: no partial fragment");
++        }
+     }
+ }

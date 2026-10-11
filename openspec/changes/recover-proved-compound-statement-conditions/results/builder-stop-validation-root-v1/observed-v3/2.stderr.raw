@@ -1,0 +1,8 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.37s
+[1m[92m     Running[0m tests/p3_conditional_switch_fallthrough.rs (target/debug/deps/p3_conditional_switch_fallthrough-dd543d447af64434)
+
+thread 'compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact' (25467113) panicked at crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs:1032:18:
+expected atomic AnalysisSteps stop at limit 516, got Some(Budget { dimension: AnalysisSteps, written: 633, limit: 516, at: Some(7) })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --test p3_conditional_switch_fallthrough`

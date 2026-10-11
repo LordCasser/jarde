@@ -1,0 +1,1 @@
+Actual root invocation failed before command0: AttributeError module candidate_replay_resource_guard has no attribute GUARD. Private v2 incorrectly used metadata constant of caller adapter as a property of the underlying guard. Root v4 uses runner_module.GUARD and computes its actual sha. No actual CLI/JDK/JADX command ran in this attempt.

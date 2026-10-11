@@ -1,0 +1,989 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 28.44s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+COMPOUND-PROBE root=CanonicalBlockId { bci: 0, path: [] } root_branch=26 join=CanonicalBlockId { bci: 83, path: [] }
+COMPOUND-PROBE internal=CanonicalBlockId { bci: 29, path: [] } branch=37 independent=false deps={29, 31, 33, 34} pure=Ok(()) SSA=SsaBlock {
+    block: CanonicalBlockId {
+        bci: 29,
+        path: [],
+    },
+    entry: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    exit: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    instructions: [
+        SsaInstruction {
+            bci: 29,
+            opcode: 25,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        4,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        56,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 31,
+            opcode: 18,
+            reads: [],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        57,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 33,
+            opcode: 27,
+            reads: [
+                (
+                    Local(
+                        1,
+                    ),
+                    ValueId(
+                        1,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        58,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 34,
+            opcode: 184,
+            reads: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        58,
+                    ),
+                ),
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        57,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        56,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        59,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 37,
+            opcode: 154,
+            reads: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        59,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+}
+COMPOUND-PROBE internal=CanonicalBlockId { bci: 40, path: [] } branch=48 independent=false deps={40, 42, 44, 45} pure=Ok(()) SSA=SsaBlock {
+    block: CanonicalBlockId {
+        bci: 40,
+        path: [],
+    },
+    entry: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    exit: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    instructions: [
+        SsaInstruction {
+            bci: 40,
+            opcode: 25,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        4,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        41,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 42,
+            opcode: 18,
+            reads: [],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        42,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 44,
+            opcode: 28,
+            reads: [
+                (
+                    Local(
+                        2,
+                    ),
+                    ValueId(
+                        2,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        43,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 45,
+            opcode: 184,
+            reads: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        43,
+                    ),
+                ),
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        42,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        41,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        44,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 48,
+            opcode: 153,
+            reads: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        44,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+}
+COMPOUND-PROBE internal=CanonicalBlockId { bci: 51, path: [] } branch=59 independent=false deps={51, 53, 55, 56} pure=Ok(()) SSA=SsaBlock {
+    block: CanonicalBlockId {
+        bci: 51,
+        path: [],
+    },
+    entry: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    exit: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    instructions: [
+        SsaInstruction {
+            bci: 51,
+            opcode: 25,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        4,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        60,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 53,
+            opcode: 18,
+            reads: [],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        61,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 55,
+            opcode: 29,
+            reads: [
+                (
+                    Local(
+                        3,
+                    ),
+                    ValueId(
+                        3,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        62,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 56,
+            opcode: 184,
+            reads: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        62,
+                    ),
+                ),
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        61,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        60,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        63,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 59,
+            opcode: 153,
+            reads: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        63,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+}
+COMPOUND-PROBE root=CanonicalBlockId { bci: 29, path: [] } root_branch=37 join=CanonicalBlockId { bci: 83, path: [] }
+COMPOUND-PROBE root=CanonicalBlockId { bci: 40, path: [] } root_branch=48 join=CanonicalBlockId { bci: 83, path: [] }
+COMPOUND-PROBE internal=CanonicalBlockId { bci: 51, path: [] } branch=59 independent=false deps={51, 53, 55, 56} pure=Ok(()) SSA=SsaBlock {
+    block: CanonicalBlockId {
+        bci: 51,
+        path: [],
+    },
+    entry: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    exit: [
+        (
+            Local(
+                0,
+            ),
+            ValueId(
+                0,
+            ),
+        ),
+        (
+            Local(
+                1,
+            ),
+            ValueId(
+                1,
+            ),
+        ),
+        (
+            Local(
+                2,
+            ),
+            ValueId(
+                2,
+            ),
+        ),
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                4,
+            ),
+        ),
+        (
+            Local(
+                5,
+            ),
+            ValueId(
+                33,
+            ),
+        ),
+    ],
+    instructions: [
+        SsaInstruction {
+            bci: 51,
+            opcode: 25,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        4,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        60,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 53,
+            opcode: 18,
+            reads: [],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        61,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 55,
+            opcode: 29,
+            reads: [
+                (
+                    Local(
+                        3,
+                    ),
+                    ValueId(
+                        3,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        62,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 56,
+            opcode: 184,
+            reads: [
+                (
+                    Stack(
+                        2,
+                    ),
+                    ValueId(
+                        62,
+                    ),
+                ),
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        61,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        60,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        63,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 59,
+            opcode: 153,
+            reads: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        63,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+}
+COMPOUND-PROBE root=CanonicalBlockId { bci: 51, path: [] } root_branch=59 join=CanonicalBlockId { bci: 83, path: [] }
+
+thread 'region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join' (25182124) panicked at crates/jarde-java/src/region.rs:17839:9:
+[
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 29,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 40,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 62,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 51,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 74,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 83,
+                path: [],
+            },
+        ],
+        reason: OwnershipOverlap {
+            block: CanonicalBlockId {
+                bci: 62,
+                path: [],
+            },
+        },
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --lib`

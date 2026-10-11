@@ -1,0 +1,12 @@
+Diff in /Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs:37175:
+                     "[compound-stop-test] emission_prepared_usage={prepared_usage} emission_total_usage={total_usage} root_bci={}",
+                     root.branch_bci
+                 );
+-                assert_eq!(prepared_usage, 52, "preflight cost matches its independent pin");
++                assert_eq!(
++                    prepared_usage, 52,
++                    "preflight cost matches its independent pin"
++                );
+                 assert_eq!(total_usage, 68, "pin the measured CompoundIf emission cost");
+                 let emitted = &emission.stmts[emitted_start..];
+                 assert!(

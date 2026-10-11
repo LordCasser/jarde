@@ -1,0 +1,3324 @@
+{
+  "schema": "compound-negative-full-source-runtime-luna-v1",
+  "status": "observations_collected_pending_root_review",
+  "fixture": "CompoundConditionNegative",
+  "runner": "Runner",
+  "plan": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/replay-planning-root-v1/plan-luna-v1.json",
+    "bytes": 127204,
+    "sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c",
+    "mode": 420
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+    "bytes": 60735600,
+    "sha256": "465282ec5c11111eb5a76fde3dfc052f058441a3c9776864c8706cf2f5d2cf87",
+    "mode": 365
+  },
+  "source": {
+    "path": "/private/tmp/jarde-compound-negative-fixtures-luna-v2/CompoundConditionNegative.java",
+    "bytes": 814,
+    "sha256": "574e1142e7442f09c741c0a3d958c96163ccbc62335b4834fdf6e24f88715988",
+    "mode": 420
+  },
+  "runner_source": {
+    "path": "/private/tmp/jarde-compound-negative-fixtures-luna-v2/Runner.java",
+    "bytes": 856,
+    "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+    "mode": 420
+  },
+  "jdk_tool_plan": {
+    "jdk8_tools": {
+      "javac": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "mode": 493
+      },
+      "java": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "mode": 493
+      },
+      "javap": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "bytes": 152128,
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+        "mode": 493
+      }
+    },
+    "jdk23_tools": {
+      "javac": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "mode": 493
+      },
+      "java": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "mode": 493
+      },
+      "javap": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "bytes": 69872,
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+        "mode": 493
+      }
+    }
+  },
+  "jadx_product_jars": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+      "bytes": 239543,
+      "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+      "bytes": 721157,
+      "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+      "bytes": 17536,
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+      "bytes": 445288,
+      "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+      "bytes": 1153819,
+      "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+      "bytes": 167761,
+      "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+      "bytes": 126151,
+      "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+      "bytes": 13371507,
+      "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+      "bytes": 208835,
+      "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+      "bytes": 609182,
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+      "bytes": 1039009,
+      "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+      "bytes": 25886,
+      "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+      "bytes": 2020,
+      "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+      "bytes": 20255,
+      "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+      "bytes": 4617,
+      "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+      "bytes": 313604,
+      "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+      "bytes": 2785359,
+      "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+      "bytes": 8781,
+      "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+      "bytes": 23547,
+      "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+      "bytes": 16590,
+      "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+      "bytes": 11946,
+      "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+      "bytes": 8282,
+      "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+      "bytes": 6769,
+      "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+      "bytes": 65020,
+      "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+      "bytes": 2400805,
+      "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+      "bytes": 107404,
+      "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+      "bytes": 54158,
+      "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+      "bytes": 19973,
+      "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+      "bytes": 115864,
+      "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+      "bytes": 56006,
+      "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+      "bytes": 33989,
+      "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+      "bytes": 43273,
+      "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+      "bytes": 25907,
+      "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+      "bytes": 10711,
+      "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+      "bytes": 10470,
+      "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+      "bytes": 27061,
+      "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+      "bytes": 2497,
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+      "bytes": 94038,
+      "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+      "bytes": 19936,
+      "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+      "bytes": 910795,
+      "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+      "bytes": 3750100,
+      "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+      "bytes": 1841933,
+      "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "bytes": 2199,
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+      "bytes": 293273,
+      "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+      "bytes": 650132,
+      "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+      "bytes": 262096,
+      "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+      "bytes": 1876598,
+      "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+      "bytes": 20603304,
+      "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+      "bytes": 32614,
+      "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+      "bytes": 43019,
+      "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+      "bytes": 69982,
+      "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+      "bytes": 313205,
+      "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+      "bytes": 132972,
+      "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+      "bytes": 1194123,
+      "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+      "bytes": 33331,
+      "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+      "bytes": 148627,
+      "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+      "bytes": 82498,
+      "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6",
+      "mode": 420
+    }
+  ],
+  "frozen_input_pins": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/replay-planning-root-v1/plan-luna-v1.json",
+      "bytes": 127204,
+      "sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c",
+      "mode": 420
+    },
+    {
+      "path": "/private/tmp/jarde-compound-negative-runner-luna-v1/run.py",
+      "bytes": 19664,
+      "sha256": "cc46c6c0dbe7d939ef88d3af175aa77941309fae96271df74cd14095b06169b4",
+      "mode": 420
+    },
+    {
+      "path": "/private/tmp/jarde-compound-negative-fixtures-luna-v2/CompoundConditionNegative.java",
+      "bytes": 814,
+      "sha256": "574e1142e7442f09c741c0a3d958c96163ccbc62335b4834fdf6e24f88715988",
+      "mode": 420
+    },
+    {
+      "path": "/private/tmp/jarde-compound-negative-fixtures-luna-v2/Runner.java",
+      "bytes": 856,
+      "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+      "mode": 420
+    },
+    {
+      "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+      "bytes": 60735600,
+      "sha256": "465282ec5c11111eb5a76fde3dfc052f058441a3c9776864c8706cf2f5d2cf87",
+      "mode": 365
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "mode": 493
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "mode": 493
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "mode": 493
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "mode": 493
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "mode": 493
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "mode": 493
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+      "bytes": 239543,
+      "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+      "bytes": 721157,
+      "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+      "bytes": 17536,
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+      "bytes": 445288,
+      "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+      "bytes": 1153819,
+      "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+      "bytes": 167761,
+      "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+      "bytes": 126151,
+      "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+      "bytes": 13371507,
+      "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+      "bytes": 208835,
+      "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+      "bytes": 609182,
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+      "bytes": 1039009,
+      "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+      "bytes": 25886,
+      "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+      "bytes": 2020,
+      "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+      "bytes": 20255,
+      "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+      "bytes": 4617,
+      "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+      "bytes": 313604,
+      "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+      "bytes": 2785359,
+      "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+      "bytes": 8781,
+      "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+      "bytes": 23547,
+      "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+      "bytes": 16590,
+      "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+      "bytes": 11946,
+      "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+      "bytes": 8282,
+      "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+      "bytes": 6769,
+      "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+      "bytes": 65020,
+      "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+      "bytes": 2400805,
+      "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+      "bytes": 107404,
+      "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+      "bytes": 54158,
+      "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+      "bytes": 19973,
+      "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+      "bytes": 115864,
+      "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+      "bytes": 56006,
+      "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+      "bytes": 33989,
+      "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+      "bytes": 43273,
+      "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+      "bytes": 25907,
+      "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+      "bytes": 10711,
+      "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+      "bytes": 10470,
+      "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+      "bytes": 27061,
+      "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+      "bytes": 2497,
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+      "bytes": 94038,
+      "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+      "bytes": 19936,
+      "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+      "bytes": 910795,
+      "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+      "bytes": 3750100,
+      "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+      "bytes": 1841933,
+      "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "bytes": 2199,
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+      "bytes": 293273,
+      "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+      "bytes": 650132,
+      "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+      "bytes": 262096,
+      "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+      "bytes": 1876598,
+      "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+      "bytes": 20603304,
+      "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+      "bytes": 32614,
+      "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+      "bytes": 43019,
+      "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+      "bytes": 69982,
+      "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+      "bytes": 313205,
+      "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+      "bytes": 132972,
+      "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+      "bytes": 1194123,
+      "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+      "bytes": 33331,
+      "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+      "bytes": 148627,
+      "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7",
+      "mode": 420
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+      "bytes": 82498,
+      "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6",
+      "mode": 420
+    }
+  ],
+  "expected_runner_stdout": "hit:3\nhit:1\nmiss:-1\nhit:-1\nhit:3\nhit:1\nmiss:-1\nhit:-1\n",
+  "commands": [
+    {
+      "index": 1,
+      "label": "original-source-jdk8-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode",
+      "started_at": "2026-10-11T03:03:46.026783+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0170790839765687,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0001.original-source-jdk8-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0001.original-source-jdk8-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javap-real-code",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode",
+      "started_at": "2026-10-11T03:03:47.045216+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0135374579986092,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0002.javap-real-code.stdout.raw",
+          "bytes": 9211,
+          "sha256": "536a37e37fee908efc69b6f914fa81f202bb36eb807106da2662fb4647aafbe9",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0002.javap-real-code.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "jadx-complete-class",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-cp",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+        "jadx.cli.JadxCLI",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx",
+      "started_at": "2026-10-11T03:03:48.059854+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0166190419986378,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0003.jadx-complete-class.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0003.jadx-complete-class.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "class-source-default",
+      "argv": [
+        "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class",
+        "--class",
+        "CompoundConditionNegative",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default",
+      "started_at": "2026-10-11T03:03:49.078698+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0150174169975799,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0004.class-source-default.stdout.raw",
+          "bytes": 63402,
+          "sha256": "d4326940e38b33210da0243fcb194ca30170268d877f4ae680a4981077b9cc9e",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0004.class-source-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "class-source-all",
+      "argv": [
+        "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class",
+        "--class",
+        "CompoundConditionNegative",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all",
+      "started_at": "2026-10-11T03:03:50.098335+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0136991660110652,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0005.class-source-all.stdout.raw",
+          "bytes": 67041,
+          "sha256": "b9577370f52f62d562e8e7efdb956876b9e6c0e77ba1b63292e78f16b7623d75",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0005.class-source-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "original-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original",
+      "started_at": "2026-10-11T03:03:51.115840+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.011085334001109,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0006.original-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0006.original-class-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "original-runner-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/runner-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original",
+      "started_at": "2026-10-11T03:03:52.128021+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.014778499986278,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0007.original-runner-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0007.original-runner-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "original-runtime",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/runner-classes",
+        "Runner"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original",
+      "started_at": "2026-10-11T03:03:53.146286+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0193756250082515,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0008.original-runtime.stdout.raw",
+          "bytes": 54,
+          "sha256": "09cb4a31b8e6a56c881a4617a6d540c2652b7cf02304b7c628a73bb85b4a7153",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0008.original-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "jadx-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx",
+      "started_at": "2026-10-11T03:03:54.169834+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0151123749965336,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0009.jadx-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0009.jadx-class-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "jadx-runner-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/runner-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/Runner.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx",
+      "started_at": "2026-10-11T03:03:55.188299+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0212954170128796,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0010.jadx-runner-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0010.jadx-runner-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "jadx-runtime",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/runner-classes",
+        "Runner"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx",
+      "started_at": "2026-10-11T03:03:56.212485+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0179942919930909,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0011.jadx-runtime.stdout.raw",
+          "bytes": 58,
+          "sha256": "d595ef623e943b363392a32043303e87cbc405f293cf3cb0f9de6b4ce1d7f20a",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0011.jadx-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "jarde-default-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default",
+      "started_at": "2026-10-11T03:03:57.234065+00:00",
+      "guard_stop": null,
+      "exit_code": 1,
+      "duration_seconds": 1.0154419589962345,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0012.jarde-default-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0012.jarde-default-class-compile.stderr.raw",
+          "bytes": 300,
+          "sha256": "0a9035ac25a7a435c8aaf28f45b99f044f746ea5794d741c3988c262dc6b5d83",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "jarde-all-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all",
+      "started_at": "2026-10-11T03:03:58.252356+00:00",
+      "guard_stop": null,
+      "exit_code": 1,
+      "duration_seconds": 1.0119975830020849,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0013.jarde-all-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0013.jarde-all-class-compile.stderr.raw",
+          "bytes": 292,
+          "sha256": "62cbbe85572de39b65046015799bd03c42aa16ccb27992ee3cd53cd3c55b324d",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "original-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original",
+      "started_at": "2026-10-11T03:03:59.266161+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0143312089785468,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0014.original-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0014.original-class-compile.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "original-runner-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/runner-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original",
+      "started_at": "2026-10-11T03:04:00.283525+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0153479579894338,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0015.original-runner-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0015.original-runner-compile.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "original-runtime",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/runner-classes",
+        "Runner"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original",
+      "started_at": "2026-10-11T03:04:01.300492+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0086854160181247,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0016.original-runtime.stdout.raw",
+          "bytes": 54,
+          "sha256": "09cb4a31b8e6a56c881a4617a6d540c2652b7cf02304b7c628a73bb85b4a7153",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0016.original-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "jadx-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx",
+      "started_at": "2026-10-11T03:04:02.310540+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0119662920187693,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0017.jadx-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0017.jadx-class-compile.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "jadx-runner-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/runner-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/Runner.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx",
+      "started_at": "2026-10-11T03:04:03.323696+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.014538082992658,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0018.jadx-runner-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0018.jadx-runner-compile.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "jadx-runtime",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/runner-classes",
+        "Runner"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx",
+      "started_at": "2026-10-11T03:04:04.339079+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0309372500050813,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0019.jadx-runtime.stdout.raw",
+          "bytes": 58,
+          "sha256": "d595ef623e943b363392a32043303e87cbc405f293cf3cb0f9de6b4ce1d7f20a",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0019.jadx-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "jarde-default-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default",
+      "started_at": "2026-10-11T03:04:05.371604+00:00",
+      "guard_stop": null,
+      "exit_code": 1,
+      "duration_seconds": 1.0270017909933813,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0020.jarde-default-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0020.jarde-default-class-compile.stderr.raw",
+          "bytes": 783,
+          "sha256": "7ea21ce9de19588d8712d50a86ced42bdf7293c7de07e05362a04e597ac67bc9",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "jarde-all-class-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all/target-classes",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all",
+      "started_at": "2026-10-11T03:04:06.402038+00:00",
+      "guard_stop": null,
+      "exit_code": 1,
+      "duration_seconds": 1.0204862079990562,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0021.jarde-all-class-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0021.jarde-all-class-compile.stderr.raw",
+          "bytes": 775,
+          "sha256": "b171f0e7f682ec9091b259ddd4b5567ede7c26609b540fc9e5393210bfbb18d1",
+          "mode": 420
+        }
+      }
+    }
+  ],
+  "profiles": {
+    "jdk8_tools": {
+      "jdk": {
+        "javac": {
+          "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "bytes": 152128,
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+          "mode": 493
+        },
+        "java": {
+          "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "bytes": 152096,
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+          "mode": 493
+        },
+        "javap": {
+          "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "bytes": 152128,
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+          "mode": 493
+        }
+      },
+      "variants": {
+        "original": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java",
+            "bytes": 814,
+            "sha256": "574e1142e7442f09c741c0a3d958c96163ccbc62335b4834fdf6e24f88715988",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 6,
+            "label": "original-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original",
+            "started_at": "2026-10-11T03:03:51.115840+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.011085334001109,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0006.original-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0006.original-class-compile.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [
+            "CompoundConditionNegative.class"
+          ],
+          "target_class_pins": [
+            {
+              "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes/CompoundConditionNegative.class",
+              "bytes": 1116,
+              "sha256": "fc64a0cfa55647e1efcc62e57fa72446f448972e80dbd09ae54b30e3249edb8c",
+              "mode": 420
+            }
+          ],
+          "runner_compile": {
+            "index": 7,
+            "label": "original-runner-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/runner-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original",
+            "started_at": "2026-10-11T03:03:52.128021+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.014778499986278,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0007.original-runner-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0007.original-runner-compile.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "runner_class_set": [
+            "Runner.class"
+          ],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+            "bytes": 856,
+            "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+            "mode": 420
+          },
+          "runtime": {
+            "index": 8,
+            "label": "original-runtime",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original/runner-classes",
+              "Runner"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/original",
+            "started_at": "2026-10-11T03:03:53.146286+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0193756250082515,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0008.original-runtime.stdout.raw",
+                "bytes": 54,
+                "sha256": "09cb4a31b8e6a56c881a4617a6d540c2652b7cf02304b7c628a73bb85b4a7153",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0008.original-runtime.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "runtime_skip_reason": null,
+          "runtime_exact_expected_stdout": true
+        },
+        "jadx": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java",
+            "bytes": 2119,
+            "sha256": "5bf6a4417846f080c7b4d45aabbaeb9df72e7111f16d734f50f4b2a8db392171",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 9,
+            "label": "jadx-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx",
+            "started_at": "2026-10-11T03:03:54.169834+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0151123749965336,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0009.jadx-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0009.jadx-class-compile.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [
+            "defpackage/CompoundConditionNegative.class"
+          ],
+          "target_class_pins": [
+            {
+              "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes/defpackage/CompoundConditionNegative.class",
+              "bytes": 1275,
+              "sha256": "1a9a044070122f4305df4037340493b459301ea78b11f40470eeb93caa2f785d",
+              "mode": 420
+            }
+          ],
+          "runner_compile": {
+            "index": 10,
+            "label": "jadx-runner-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/runner-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/Runner.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx",
+            "started_at": "2026-10-11T03:03:55.188299+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0212954170128796,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0010.jadx-runner-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0010.jadx-runner-compile.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "runner_class_set": [
+            "Runner.class"
+          ],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/Runner.java",
+            "bytes": 901,
+            "sha256": "976804500279ece7352a7908005e06577933e072bb6d0c351f66c80a5b845663",
+            "mode": 420
+          },
+          "runtime": {
+            "index": 11,
+            "label": "jadx-runtime",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/runner-classes",
+              "Runner"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx",
+            "started_at": "2026-10-11T03:03:56.212485+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0179942919930909,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0011.jadx-runtime.stdout.raw",
+                "bytes": 58,
+                "sha256": "d595ef623e943b363392a32043303e87cbc405f293cf3cb0f9de6b4ce1d7f20a",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0011.jadx-runtime.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "runtime_skip_reason": null,
+          "runtime_exact_expected_stdout": false
+        },
+        "jarde-default": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java",
+            "bytes": 2259,
+            "sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 12,
+            "label": "jarde-default-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-default",
+            "started_at": "2026-10-11T03:03:57.234065+00:00",
+            "guard_stop": null,
+            "exit_code": 1,
+            "duration_seconds": 1.0154419589962345,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0012.jarde-default-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0012.jarde-default-class-compile.stderr.raw",
+                "bytes": 300,
+                "sha256": "0a9035ac25a7a435c8aaf28f45b99f044f746ea5794d741c3988c262dc6b5d83",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [],
+          "target_class_pins": [],
+          "runner_compile": null,
+          "runner_class_set": [],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+            "bytes": 856,
+            "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+            "mode": 420
+          },
+          "runtime": null,
+          "runtime_skip_reason": [
+            "target_class_compile_failed_or_stopped"
+          ],
+          "runtime_exact_expected_stdout": null
+        },
+        "jarde-all": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java",
+            "bytes": 2259,
+            "sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 13,
+            "label": "jarde-all-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jarde-all",
+            "started_at": "2026-10-11T03:03:58.252356+00:00",
+            "guard_stop": null,
+            "exit_code": 1,
+            "duration_seconds": 1.0119975830020849,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0013.jarde-all-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0013.jarde-all-class-compile.stderr.raw",
+                "bytes": 292,
+                "sha256": "62cbbe85572de39b65046015799bd03c42aa16ccb27992ee3cd53cd3c55b324d",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [],
+          "target_class_pins": [],
+          "runner_compile": null,
+          "runner_class_set": [],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+            "bytes": 856,
+            "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+            "mode": 420
+          },
+          "runtime": null,
+          "runtime_skip_reason": [
+            "target_class_compile_failed_or_stopped"
+          ],
+          "runtime_exact_expected_stdout": null
+        }
+      }
+    },
+    "jdk23_tools": {
+      "jdk": {
+        "javac": {
+          "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "bytes": 69872,
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+          "mode": 493
+        },
+        "java": {
+          "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "bytes": 69952,
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+          "mode": 493
+        },
+        "javap": {
+          "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "bytes": 69872,
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+          "mode": 493
+        }
+      },
+      "variants": {
+        "original": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java",
+            "bytes": 814,
+            "sha256": "574e1142e7442f09c741c0a3d958c96163ccbc62335b4834fdf6e24f88715988",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 14,
+            "label": "original-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original",
+            "started_at": "2026-10-11T03:03:59.266161+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0143312089785468,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0014.original-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0014.original-class-compile.stderr.raw",
+                "bytes": 483,
+                "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [
+            "CompoundConditionNegative.class"
+          ],
+          "target_class_pins": [
+            {
+              "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes/CompoundConditionNegative.class",
+              "bytes": 1113,
+              "sha256": "e1694e04926980fb244f9235c408b9159f2568295db97356d8bdfa247a14f8e3",
+              "mode": 420
+            }
+          ],
+          "runner_compile": {
+            "index": 15,
+            "label": "original-runner-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/runner-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original",
+            "started_at": "2026-10-11T03:04:00.283525+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0153479579894338,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0015.original-runner-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0015.original-runner-compile.stderr.raw",
+                "bytes": 483,
+                "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+                "mode": 420
+              }
+            }
+          },
+          "runner_class_set": [
+            "Runner.class"
+          ],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+            "bytes": 856,
+            "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+            "mode": 420
+          },
+          "runtime": {
+            "index": 16,
+            "label": "original-runtime",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original/runner-classes",
+              "Runner"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/original",
+            "started_at": "2026-10-11T03:04:01.300492+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0086854160181247,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0016.original-runtime.stdout.raw",
+                "bytes": 54,
+                "sha256": "09cb4a31b8e6a56c881a4617a6d540c2652b7cf02304b7c628a73bb85b4a7153",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0016.original-runtime.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "runtime_skip_reason": null,
+          "runtime_exact_expected_stdout": true
+        },
+        "jadx": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java",
+            "bytes": 2119,
+            "sha256": "5bf6a4417846f080c7b4d45aabbaeb9df72e7111f16d734f50f4b2a8db392171",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 17,
+            "label": "jadx-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx",
+            "started_at": "2026-10-11T03:04:02.310540+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0119662920187693,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0017.jadx-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0017.jadx-class-compile.stderr.raw",
+                "bytes": 483,
+                "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [
+            "defpackage/CompoundConditionNegative.class"
+          ],
+          "target_class_pins": [
+            {
+              "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes/defpackage/CompoundConditionNegative.class",
+              "bytes": 1272,
+              "sha256": "c1a6b219fa33c57b21aa225bd8ab82e03197138e0740434b0504b21970b673e9",
+              "mode": 420
+            }
+          ],
+          "runner_compile": {
+            "index": 18,
+            "label": "jadx-runner-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/runner-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/Runner.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx",
+            "started_at": "2026-10-11T03:04:03.323696+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.014538082992658,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0018.jadx-runner-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0018.jadx-runner-compile.stderr.raw",
+                "bytes": 483,
+                "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670",
+                "mode": 420
+              }
+            }
+          },
+          "runner_class_set": [
+            "Runner.class"
+          ],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/Runner.java",
+            "bytes": 901,
+            "sha256": "976804500279ece7352a7908005e06577933e072bb6d0c351f66c80a5b845663",
+            "mode": 420
+          },
+          "runtime": {
+            "index": 19,
+            "label": "jadx-runtime",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/target-classes:/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/runner-classes",
+              "Runner"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx",
+            "started_at": "2026-10-11T03:04:04.339079+00:00",
+            "guard_stop": null,
+            "exit_code": 0,
+            "duration_seconds": 1.0309372500050813,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0019.jadx-runtime.stdout.raw",
+                "bytes": 58,
+                "sha256": "d595ef623e943b363392a32043303e87cbc405f293cf3cb0f9de6b4ce1d7f20a",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0019.jadx-runtime.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              }
+            }
+          },
+          "runtime_skip_reason": null,
+          "runtime_exact_expected_stdout": false
+        },
+        "jarde-default": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java",
+            "bytes": 2259,
+            "sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 20,
+            "label": "jarde-default-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-default",
+            "started_at": "2026-10-11T03:04:05.371604+00:00",
+            "guard_stop": null,
+            "exit_code": 1,
+            "duration_seconds": 1.0270017909933813,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0020.jarde-default-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0020.jarde-default-class-compile.stderr.raw",
+                "bytes": 783,
+                "sha256": "7ea21ce9de19588d8712d50a86ced42bdf7293c7de07e05362a04e597ac67bc9",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [],
+          "target_class_pins": [],
+          "runner_compile": null,
+          "runner_class_set": [],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+            "bytes": 856,
+            "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+            "mode": 420
+          },
+          "runtime": null,
+          "runtime_skip_reason": [
+            "target_class_compile_failed_or_stopped"
+          ],
+          "runtime_exact_expected_stdout": null
+        },
+        "jarde-all": {
+          "source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java",
+            "bytes": 2259,
+            "sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+            "mode": 420
+          },
+          "target_compile": {
+            "index": 21,
+            "label": "jarde-all-class-compile",
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-g",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all/empty-classpath",
+              "-sourcepath",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all/empty-sourcepath",
+              "-d",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all/target-classes",
+              "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java"
+            ],
+            "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jarde-all",
+            "started_at": "2026-10-11T03:04:06.402038+00:00",
+            "guard_stop": null,
+            "exit_code": 1,
+            "duration_seconds": 1.0204862079990562,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0021.jarde-all-class-compile.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 420
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0021.jarde-all-class-compile.stderr.raw",
+                "bytes": 775,
+                "sha256": "b171f0e7f682ec9091b259ddd4b5567ede7c26609b540fc9e5393210bfbb18d1",
+                "mode": 420
+              }
+            }
+          },
+          "target_class_set": [],
+          "target_class_pins": [],
+          "runner_compile": null,
+          "runner_class_set": [],
+          "runner_source": {
+            "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+            "bytes": 856,
+            "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+            "mode": 420
+          },
+          "runtime": null,
+          "runtime_skip_reason": [
+            "target_class_compile_failed_or_stopped"
+          ],
+          "runtime_exact_expected_stdout": null
+        }
+      }
+    }
+  },
+  "class_source_comparison": {
+    "default_all_full_text_equal": true,
+    "default_all_method_text_and_source_maps_equal": true,
+    "default_all_map_observation": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-source-maps.json",
+      "bytes": 312353,
+      "sha256": "82565d216456e11712df3d5e967c744c405f0263bda257ffb0e0c2b01347779a",
+      "mode": 420
+    },
+    "default_text_sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+    "all_text_sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f"
+  },
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "maximum_output_bytes": 1073741824,
+    "poll_seconds": 1,
+    "per_command_timeout_seconds": 60,
+    "termination": [
+      "SIGTERM",
+      "SIGKILL"
+    ]
+  },
+  "stripped_environment": [
+    "JAVA_HOME",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+    "CLASSPATH"
+  ],
+  "copied_inputs": {
+    "source": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java",
+      "bytes": 814,
+      "sha256": "574e1142e7442f09c741c0a3d958c96163ccbc62335b4834fdf6e24f88715988",
+      "mode": 420
+    },
+    "runner": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/Runner.java",
+      "bytes": 856,
+      "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+      "mode": 420
+    }
+  },
+  "initial_original_compile": {
+    "command": {
+      "index": 1,
+      "label": "original-source-jdk8-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/empty-classpath",
+        "-sourcepath",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/empty-sourcepath",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/inputs/CompoundConditionNegative.java"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode",
+      "started_at": "2026-10-11T03:03:46.026783+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0170790839765687,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0001.original-source-jdk8-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0001.original-source-jdk8-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    "class_set": [
+      "CompoundConditionNegative.class"
+    ],
+    "class_pin": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class",
+      "bytes": 1116,
+      "sha256": "fc64a0cfa55647e1efcc62e57fa72446f448972e80dbd09ae54b30e3249edb8c",
+      "mode": 420
+    },
+    "expected_single_class": true
+  },
+  "javap": {
+    "command": {
+      "index": 2,
+      "label": "javap-real-code",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode",
+      "started_at": "2026-10-11T03:03:47.045216+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0135374579986092,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0002.javap-real-code.stdout.raw",
+          "bytes": 9211,
+          "sha256": "536a37e37fee908efc69b6f914fa81f202bb36eb807106da2662fb4647aafbe9",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0002.javap-real-code.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    "class_pin": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class",
+      "bytes": 1116,
+      "sha256": "fc64a0cfa55647e1efcc62e57fa72446f448972e80dbd09ae54b30e3249edb8c",
+      "mode": 420
+    }
+  },
+  "jadx": {
+    "command": {
+      "index": 3,
+      "label": "jadx-complete-class",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-cp",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+        "jadx.cli.JadxCLI",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx",
+      "started_at": "2026-10-11T03:03:48.059854+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0166190419986378,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0003.jadx-complete-class.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0003.jadx-complete-class.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    "matching_sources": [
+      {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java",
+        "bytes": 2119,
+        "sha256": "5bf6a4417846f080c7b4d45aabbaeb9df72e7111f16d734f50f4b2a8db392171",
+        "mode": 420
+      }
+    ],
+    "source": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jadx/output/sources/defpackage/CompoundConditionNegative.java",
+      "bytes": 2119,
+      "sha256": "5bf6a4417846f080c7b4d45aabbaeb9df72e7111f16d734f50f4b2a8db392171",
+      "mode": 420
+    }
+  },
+  "jarde_default": {
+    "command": {
+      "index": 4,
+      "label": "class-source-default",
+      "argv": [
+        "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class",
+        "--class",
+        "CompoundConditionNegative",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default",
+      "started_at": "2026-10-11T03:03:49.078698+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0150174169975799,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0004.class-source-default.stdout.raw",
+          "bytes": 63402,
+          "sha256": "d4326940e38b33210da0243fcb194ca30170268d877f4ae680a4981077b9cc9e",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0004.class-source-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    "raw_json_stdout": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0004.class-source-default.stdout.raw",
+      "bytes": 63402,
+      "sha256": "d4326940e38b33210da0243fcb194ca30170268d877f4ae680a4981077b9cc9e",
+      "mode": 420
+    },
+    "state": {
+      "state": "json_parsed",
+      "outcome": "performed",
+      "api_json": {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/class-source.api.json",
+        "bytes": 215347,
+        "sha256": "069a3b289d91f416d1159e89831a90a8910083678195acd704348a2a92da4eb9",
+        "mode": 420
+      },
+      "source_sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+      "source_bytes": 2259,
+      "source": {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-default/CompoundConditionNegative.java",
+        "bytes": 2259,
+        "sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+        "mode": 420
+      }
+    }
+  },
+  "jarde_all": {
+    "command": {
+      "index": 5,
+      "label": "class-source-all",
+      "argv": [
+        "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class",
+        "--class",
+        "CompoundConditionNegative",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all",
+      "started_at": "2026-10-11T03:03:50.098335+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0136991660110652,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0005.class-source-all.stdout.raw",
+          "bytes": 67041,
+          "sha256": "b9577370f52f62d562e8e7efdb956876b9e6c0e77ba1b63292e78f16b7623d75",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0005.class-source-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    },
+    "raw_json_stdout": {
+      "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/raw/0005.class-source-all.stdout.raw",
+      "bytes": 67041,
+      "sha256": "b9577370f52f62d562e8e7efdb956876b9e6c0e77ba1b63292e78f16b7623d75",
+      "mode": 420
+    },
+    "state": {
+      "state": "json_parsed",
+      "outcome": "performed",
+      "api_json": {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/class-source.api.json",
+        "bytes": 222577,
+        "sha256": "d98b5bdeffd544ddb7fd6563e9d80843f8a4051bf8b506b884c62c37656f03a5",
+        "mode": 420
+      },
+      "source_sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+      "source_bytes": 2259,
+      "source": {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jarde-all/CompoundConditionNegative.java",
+        "bytes": 2259,
+        "sha256": "e458897e0e63383b0508fa10342efba84c874835037bee5f1fa4e53ce728120f",
+        "mode": 420
+      }
+    }
+  },
+  "observer_namespace_adaptations": [
+    {
+      "profile": "jdk8_tools",
+      "side": "jadx",
+      "runner": {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk8_tools/jadx/Runner.java",
+        "bytes": 901,
+        "sha256": "976804500279ece7352a7908005e06577933e072bb6d0c351f66c80a5b845663",
+        "mode": 420
+      },
+      "reason": "only Runner imports the full-class decompiler namespace"
+    },
+    {
+      "profile": "jdk23_tools",
+      "side": "jadx",
+      "runner": {
+        "path": "/private/tmp/jarde-compound-negative-comparison-root-v1/jdk23_tools/jadx/Runner.java",
+        "bytes": 901,
+        "sha256": "976804500279ece7352a7908005e06577933e072bb6d0c351f66c80a5b845663",
+        "mode": 420
+      },
+      "reason": "only Runner imports the full-class decompiler namespace"
+    }
+  ],
+  "post_run_pin_check": {
+    "status": "passed",
+    "pins": [
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/replay-planning-root-v1/plan-luna-v1.json",
+        "bytes": 127204,
+        "sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c",
+        "mode": 420
+      },
+      {
+        "path": "/private/tmp/jarde-compound-negative-runner-luna-v1/run.py",
+        "bytes": 19664,
+        "sha256": "cc46c6c0dbe7d939ef88d3af175aa77941309fae96271df74cd14095b06169b4",
+        "mode": 420
+      },
+      {
+        "path": "/private/tmp/jarde-compound-negative-fixtures-luna-v2/CompoundConditionNegative.java",
+        "bytes": 814,
+        "sha256": "574e1142e7442f09c741c0a3d958c96163ccbc62335b4834fdf6e24f88715988",
+        "mode": 420
+      },
+      {
+        "path": "/private/tmp/jarde-compound-negative-fixtures-luna-v2/Runner.java",
+        "bytes": 856,
+        "sha256": "a76793503e2e4f4b2f45df645894b5bef617275a3eb85c7b5835ab9709d8e325",
+        "mode": 420
+      },
+      {
+        "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+        "bytes": 60735600,
+        "sha256": "465282ec5c11111eb5a76fde3dfc052f058441a3c9776864c8706cf2f5d2cf87",
+        "mode": 365
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "mode": 493
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "mode": 493
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "bytes": 152128,
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "bytes": 152128,
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+        "mode": 493
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "mode": 493
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "mode": 493
+      },
+      {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "bytes": 69872,
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "bytes": 69872,
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+        "mode": 493
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+        "bytes": 239543,
+        "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+        "bytes": 721157,
+        "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+        "bytes": 17536,
+        "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+        "bytes": 445288,
+        "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+        "bytes": 1153819,
+        "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+        "bytes": 167761,
+        "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+        "bytes": 126151,
+        "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+        "bytes": 13371507,
+        "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+        "bytes": 208835,
+        "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+        "bytes": 609182,
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+        "bytes": 1039009,
+        "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+        "bytes": 25886,
+        "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+        "bytes": 2020,
+        "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+        "bytes": 20255,
+        "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+        "bytes": 4617,
+        "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+        "bytes": 313604,
+        "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+        "bytes": 2785359,
+        "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+        "bytes": 8781,
+        "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+        "bytes": 23547,
+        "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+        "bytes": 16590,
+        "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+        "bytes": 11946,
+        "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+        "bytes": 8282,
+        "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+        "bytes": 6769,
+        "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+        "bytes": 65020,
+        "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+        "bytes": 2400805,
+        "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+        "bytes": 107404,
+        "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+        "bytes": 54158,
+        "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+        "bytes": 19973,
+        "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+        "bytes": 115864,
+        "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+        "bytes": 56006,
+        "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+        "bytes": 33989,
+        "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+        "bytes": 43273,
+        "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+        "bytes": 25907,
+        "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+        "bytes": 10711,
+        "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+        "bytes": 10470,
+        "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+        "bytes": 27061,
+        "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+        "bytes": 2497,
+        "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+        "bytes": 94038,
+        "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+        "bytes": 19936,
+        "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+        "bytes": 910795,
+        "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+        "bytes": 3750100,
+        "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+        "bytes": 1841933,
+        "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "bytes": 2199,
+        "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+        "bytes": 293273,
+        "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+        "bytes": 650132,
+        "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+        "bytes": 262096,
+        "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+        "bytes": 1876598,
+        "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+        "bytes": 20603304,
+        "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+        "bytes": 32614,
+        "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+        "bytes": 43019,
+        "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+        "bytes": 69982,
+        "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+        "bytes": 313205,
+        "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+        "bytes": 132972,
+        "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+        "bytes": 1194123,
+        "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+        "bytes": 33331,
+        "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+        "bytes": 148627,
+        "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7",
+        "mode": 420
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+        "bytes": 82498,
+        "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6",
+        "mode": 420
+      }
+    ]
+  }
+}

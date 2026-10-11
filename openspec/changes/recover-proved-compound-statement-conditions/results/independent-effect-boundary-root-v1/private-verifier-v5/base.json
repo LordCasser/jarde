@@ -1,0 +1,13 @@
+{
+  "previous_verifier": "/private/tmp/jarde-compound-negative-verifier-luna-v4/verify.py",
+  "previous_verifier_sha256": "6fbae58d6f40af8511abfe09a0fe686fb1a76db6a887cd850f3ee237adcd2784",
+  "execution": "/private/tmp/jarde-compound-negative-comparison-root-v1/execution.json",
+  "execution_sha256": "fcf4e25bf99bef201fdaa741383ded486e02c248cabdc585e8aa47c73f4d9cff",
+  "candidate": "/private/tmp/jarde-compound-negative-verifier-luna-v5/verify.py",
+  "candidate_sha256": "22d0a8173411cbf7415ec4cc05dccd0bf6e6d446fc2ac0c110fdbefb5ca044a0",
+  "patch": "/private/tmp/jarde-compound-negative-verifier-luna-v5/verify.patch",
+  "patch_sha256": "461b7ad39a286431ca125e480bfdded94082c4dcc21b3657c21f443e8c7196e1",
+  "readme": "/private/tmp/jarde-compound-negative-verifier-luna-v5/README.md",
+  "readme_sha256": "0dac677b8f04e0b2b51246adc4c700709621ce3ca7b133eaa66ac1b2b71de9aa",
+  "validation": "Python AST parse and direct execution.json schema/data inspection; verifier not executed"
+}

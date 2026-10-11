@@ -1,0 +1,36 @@
+{
+  "schema": "compound-negative-render-v2-readonly-calibration",
+  "candidate_cli_ran": false,
+  "tools_ran": false,
+  "inputs": {
+    "historical_api": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/jarde-all/sources/class-source.api.json",
+      "bytes": 890820,
+      "sha256": "d501cf40c51684a596b14a5f3fe459c9a7caef8ba3fd08c138924b0510eae671"
+    },
+    "historical_javap": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/observed-bytecode-v1/0.stdout.raw",
+      "bytes": 26195,
+      "sha256": "d2040faa04e74069f87c43c85d95aadec922b4381652502b988bbabcad54ff8a",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/CompoundStatementConditions.class"
+      ]
+    }
+  },
+  "observed_historical_shapes": {
+    "api_members_including_constructor": 8,
+    "nonconstructors": 7,
+    "historical_report_text_utf8_spans_valid": true,
+    "target_map_origin_mentions": 44,
+    "separate_javap_target_physical_bcis": 44
+  },
+  "helper_checks": {
+    "missing_target_map_yields_incomplete_coverage": true,
+    "out_of_range_method_span_rejected": true
+  },
+  "caveat": "Historical API and javap files are distinct class snapshots; reported separately and not treated as paired fixture evidence."
+}

@@ -1,0 +1,343 @@
+--- /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v3/jarde-run-null-builder-runtime-root-v1.py
++++ /private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/collect.py
+@@ -1,55 +1,286 @@
++#!/usr/bin/env python3
++"""Guarded 19-command NullThenBuilder whole-class replay for the final CLI v2."""
++from __future__ import annotations
++import argparse
++import datetime
++import hashlib
++import importlib.util
++import json
++import os
+ from pathlib import Path
+-import datetime,hashlib,json,os,shutil,subprocess,sys,zipfile
+-root=Path('/Users/lordcasser/workspace/projects/jarde');out=Path('/private/tmp/jarde-null-builder-runtime-root-v1');out.mkdir(exist_ok=False)
+-sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+-cli=Path('/private/tmp/jarde-proved-local-source-types-cli-v1');assert sha(cli)=='e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403'
+-fixture=root/'tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class';assert sha(fixture)=='93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3'
+-manifest=root/'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json';assert sha(manifest)=='ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
+-jdk=json.loads(manifest.read_text())['legs'];tools={leg['leg']:{k:Path(v['path']).resolve() for k,v in leg['jdk_tools'].items()} for leg in jdk}
+-for leg in jdk:
+- for k,v in leg['jdk_tools'].items():assert sha(tools[leg['leg']][k])==v['sha256']
+-runner='public class Runner { public static void main(String[] args) { System.out.println("true="+NullThenBuilder.run(true)); System.out.println("false="+NullThenBuilder.run(false)); } }\n'
+-record={'schema':'meet-char-int-full-class-comparison-root-v1','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'fixture_sha256':sha(fixture),'cli_sha256':sha(cli),'original_source_available':False,'runner_sha256':hashlib.sha256(runner.encode()).hexdigest(),'commands':[],'legs':[],'status':'running'}
+-save=lambda:(out/'execution.json').write_text(json.dumps(record,indent=2)+'\n')
+-env=os.environ.copy()
+-for k in ('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH'):env.pop(k,None)
+-env.update(LC_ALL='C',TZ='UTC',JAVA_HOME=str(tools['javac23']['java'].parent.parent))
+-def run(argv):
+- index=len(record['commands']);start=datetime.datetime.now(datetime.timezone.utc);p=subprocess.run(list(map(str,argv)),cwd=root,env=env,capture_output=True,timeout=60)
+- row={'argv':list(map(str,argv)),'exit_code':p.returncode,'utc':start.isoformat(),'duration_seconds':(datetime.datetime.now(datetime.timezone.utc)-start).total_seconds()}
+- for key,data in [('stdout',p.stdout),('stderr',p.stderr)]:
+-  path=out/f'{index}.{key}.raw';path.write_bytes(data);row[key]={'path':str(path),'bytes':len(data),'sha256':sha(path)}
+- record['commands'].append(row);save();assert p.returncode==0,(argv,p.stderr.decode(errors='replace'));return p,row
+-save()
+-try:
+- reports={}
+- for profile in ('default','all'):
+-  argv=[cli,'class-source','--input',fixture,'--class','NullThenBuilder','--policy','single-class','--release','8','--format','json']
+-  if profile=='all':argv+=['--evidence','all']
+-  p,row=run(argv);report=json.loads(p.stdout);assert len(report['methods'])==3
+-  text=report['text'];assert 'java.lang.StringBuilder local2;' in text and 'local2 = null;' in text and 'local2 = new java.lang.StringBuilder("second");' in text
+-  reports[profile]=text
+- assert reports['default']==reports['all']
+- jar=out/'input.jar'
+- with zipfile.ZipFile(jar,'w') as z:z.write(fixture,'NullThenBuilder.class')
+- jadx=Path('/opt/homebrew/bin/jadx').resolve();assert sha(jadx)=='64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7'
+- run([jadx,'--no-res','--config','none','--threads-count','1','-d',out/'jadx-output',jar]);jadx_source=out/'jadx-output/sources/defpackage/NullThenBuilder.java';assert jadx_source.exists()
+- for leg,tool in tools.items():
+-  oracle=None
+-  for profile in ('original','default','all','jadx'):
+-   work=out/leg/profile;work.mkdir(parents=True);classes=work/'classes';classes.mkdir();empty=work/'empty';empty.mkdir()
+-   source=work/'NullThenBuilder.java';
+-   if profile=='original':shutil.copyfile(fixture,classes/'NullThenBuilder.class')
+-   else:source.write_bytes(jadx_source.read_bytes() if profile=='jadx' else reports[profile].encode())
+-   runnerpath=work/'Runner.java';runnerpath.write_text(('package defpackage;\n' if profile=='jadx' else '')+runner)
+-   flags=['-source','8','-target','8'] if leg=='javac8' else ['--release','8']
+-   run([tool['javac'],'-J-Duser.language=en','-J-Duser.country=US','-encoding','UTF-8',*flags,'-g:none','-proc:none','-classpath',classes if profile=='original' else empty,'-sourcepath',empty,'-d',classes,*([runnerpath] if profile=='original' else [source,runnerpath])])
+-   p,row=run([tool['java'],'-Xverify:all','-cp',classes,'defpackage.Runner' if profile=='jadx' else 'Runner']);triple=(p.returncode,p.stdout,p.stderr)
+-   assert p.stdout==b'true=7\nfalse=6\n' and p.stderr==b''
+-   if oracle is None:oracle=triple
+-   else:assert triple==oracle
+-   record['legs'].append({'jdk':leg,'profile':profile,'source_sha256':None if profile=='original' else sha(source),'runner_sha256':sha(runnerpath),'runtime':row})
+- record['status']='passed';record['full_class_methods_retained']=3
+-except BaseException as e:record.update(status='failed',error=f'{type(e).__name__}: {e}')
+-finally:assert sha(cli)==record['cli_sha256'] and sha(fixture)==record['fixture_sha256'];save();print(json.dumps({k:record.get(k) for k in ['status','error','full_class_methods_retained','characters_per_runtime_leg']}))
+-sys.exit(0 if record['status']=='passed' else 1)
++import shutil
++import stat
++import sys
++import zipfile
++
++HERE = Path(__file__).resolve().parent
++BUILD_EVIDENCE = Path('/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py')
++sys.path.insert(0, str(BUILD_EVIDENCE.parent))
++from build_evidence import verify_build  # noqa: E402
++
++ROOT = Path('/Users/lordcasser/workspace/projects/jarde').resolve()
++FIXTURE = ROOT / 'tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class'
++FIXTURE_SHA = '93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3'
++FIXTURE_BLAKE3 = 'f24b5b45eb94733793e5ee6d7f52f9cfe710d89bdbd65140930822d38f84a77b'
++FIXTURE_BYTES = 629
++JDK_MANIFEST = ROOT / 'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
++JDK_MANIFEST_SHA = 'ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
++JADX = Path('/opt/homebrew/bin/jadx').resolve()
++JADX_SHA = '64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7'
++BASELINE_EXECUTION = Path('/private/tmp/jarde-null-builder-runtime-root-v1/execution.json')
++BASELINE_EXECUTION_SHA = '9d4cbb606405c0928cc79b0820ad36db9bd100ad860e38a6ba9f06475e44052e'
++BASELINE_RAW = Path('/private/tmp/jarde-null-builder-runtime-root-v1/0.stdout.raw')
++BASELINE_RAW_SHA = '06819bf8c1f29bdf5eb2c9ecfbaeecd82a712b034b28fd79b40f5f8653fc4ab7'
++EXPECTED = b'true=7\nfalse=6\n'
++RUNNER = ('public class Runner { public static void main(String[] args) { '
++          'System.out.println("true="+NullThenBuilder.run(true)); '
++          'System.out.println("false="+NullThenBuilder.run(false)); } }\n')
++OLD_IF = ('        if (arg0) {\n'
++          '            if (local2 == null) {\n'
++          '                local1 = local1 + 1;\n'
++          '            }\n'
++          '        }')
++NEW_IF = ('        if (arg0 && local2 == null) {\n'
++          '            local1 = local1 + 1;\n'
++          '        }')
++STRIPPED_ENV = ('JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS', 'JDK_JAVA_OPTIONS', 'CLASSPATH')
++
++
++def sha(path: Path) -> str:
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def pin(path: Path) -> dict:
++    path = Path(path).resolve()
++    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path),
++            'mode': stat.S_IMODE(path.stat().st_mode)}
++
++
++def load_module(name: str, path: Path):
++    spec = importlib.util.spec_from_file_location(name, path)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def write_record():
++    tmp = OUT / '.execution.json.tmp'
++    tmp.write_text(json.dumps(RECORD, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
++    tmp.replace(OUT / 'execution.json')
++
++
++def read_stream(row: dict, name: str) -> bytes:
++    entry = row['streams'][name]
++    path = Path(entry['path'])
++    data = path.read_bytes()
++    if len(data) != entry['bytes'] or hashlib.sha256(data).hexdigest() != entry['sha256']:
++        raise RuntimeError(f"raw {name} stream pin mismatch: {path}")
++    return data
++
++
++def main() -> int:
++    global OUT, RECORD
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--cli', type=Path, required=True)
++    ap.add_argument('--cli-sha256', required=True)
++    ap.add_argument('--out', type=Path, required=True)
++    args = ap.parse_args()
++    OUT = args.out.resolve()
++    if OUT.exists():
++        ap.error(f'output already exists: {OUT}')
++    if len(args.cli_sha256) != 64 or any(c not in '0123456789abcdef' for c in args.cli_sha256):
++        ap.error('--cli-sha256 must be a lowercase 64-digit SHA-256')
++    if sha(FIXTURE) != FIXTURE_SHA:
++        raise RuntimeError('NullThenBuilder fixture SHA mismatch')
++    if sha(JDK_MANIFEST) != JDK_MANIFEST_SHA:
++        raise RuntimeError('JDK controls manifest SHA mismatch')
++    if sha(JADX) != JADX_SHA:
++        raise RuntimeError('JADX binary SHA mismatch')
++    baseline_pin = pin(BASELINE_RAW)
++    if sha(BASELINE_EXECUTION) != BASELINE_EXECUTION_SHA or baseline_pin['sha256'] != BASELINE_RAW_SHA:
++        raise RuntimeError('frozen pre-change whole-class baseline pin mismatch')
++    baseline_doc = json.loads(BASELINE_RAW.read_text(encoding='utf-8'))
++    baseline_text = baseline_doc.get('text')
++    if not isinstance(baseline_text, str) or baseline_text.count(OLD_IF) != 1:
++        raise RuntimeError('baseline does not contain the one frozen nested-if body')
++    expected_text = baseline_text.replace(OLD_IF, NEW_IF, 1)
++
++    manifest = json.loads(JDK_MANIFEST.read_text(encoding='utf-8'))
++    tools = {}
++    for leg in manifest['legs']:
++        name = leg['leg']
++        tools[name] = {}
++        for kind, fact in leg['jdk_tools'].items():
++            path = Path(fact['path']).resolve(strict=True)
++            if not path.is_file() or sha(path) != fact['sha256']:
++                raise RuntimeError(f'frozen JDK tool SHA mismatch: {name}/{kind}')
++            tools[name][kind] = path
++    if set(tools) != {'javac8', 'javac23'}:
++        raise RuntimeError('expected frozen javac8 and javac23 tool legs')
++
++    cli = args.cli.resolve(strict=True)
++    build_record_path = Path('/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json')
++    build = verify_build(build_record_path, pin(cli), args.cli_sha256)
++    cli = Path(build['cli']['path']).resolve(strict=True)
++
++    OUT.mkdir(parents=False)
++    (OUT / 'guard').mkdir()
++    # Load the already pinned v5 runner referenced by the build validator to reuse its exact v9 guard.
++    runner_module = load_module('final_cli_v5_runner_for_null_replay', Path('/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py'))
++    guard = runner_module.load_module('null_builder_build_guard_v9', runner_module.GUARD)
++    scanner = runner_module.load_module('null_builder_target_size_scanner', runner_module.SCAN)
++    guard.OUT = OUT / 'guard'
++    guard.target_bytes = lambda: scanner.target_bytes(ROOT)
++    guard.expected_test_summaries = lambda _index, _stdout: None
++    guard.command_stream = lambda path: {
++        'path': str(Path(path).resolve()), 'bytes': Path(path).stat().st_size, 'sha256': sha(path)
++    }
++
++    env = os.environ.copy()
++    for key in STRIPPED_ENV:
++        env.pop(key, None)
++    env.update(guard.ENV_VALUES)
++    env.update({'LC_ALL': 'C', 'TZ': 'UTC', 'JAVA_HOME': str(tools['javac23']['java'].parent.parent)})
++
++    RECORD = {
++        'schema': 'null-then-builder-final-cli-v2-runtime-replay-v1',
++        'status': 'observed_pending_independent_acceptance',
++        'original_source_available': False,
++        'fixture': pin(FIXTURE), 'fixture_class_blake3': FIXTURE_BLAKE3,
++        'cli': pin(cli), 'cli_mode': stat.S_IMODE(cli.stat().st_mode),
++        'candidate_build': build,
++        'build_evidence': {'path': str(build_record_path.resolve()), 'sha256': sha(build_record_path)},
++        'build_evidence_helper': pin(BUILD_EVIDENCE),
++        'v5_build_runner': pin(Path('/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py')),
++        'guard': {'path': str(runner_module.GUARD), 'sha256': runner_module.GUARD_SHA256,
++                  'poll_seconds': 1, 'minimum_free_bytes': guard.FREE_LIMIT,
++                  'maximum_target_bytes': guard.TARGET_LIMIT},
++        'jdk_manifest': pin(JDK_MANIFEST),
++        'jdk_tools': {leg: {kind: pin(path) for kind, path in row.items()} for leg, row in tools.items()},
++        'jadx': pin(JADX), 'baseline_execution': pin(BASELINE_EXECUTION),
++        'baseline_raw': baseline_pin, 'baseline_source_text_sha256': hashlib.sha256(baseline_text.encode()).hexdigest(),
++        'expected_source_text_sha256': hashlib.sha256(expected_text.encode()).hexdigest(),
++        'runner_source': {'text': RUNNER, 'sha256': hashlib.sha256(RUNNER.encode()).hexdigest()},
++        'environment_stripped': list(STRIPPED_ENV), 'commands': [], 'apis': {}, 'legs': [],
++        'expected_runtime_stdout': EXPECTED.decode(),
++    }
++    write_record()
++
++    def run(label: str, argv: list, work: Path | None = None) -> dict:
++        index = len(RECORD['commands'])
++        row = guard.run_command(index, list(map(str, argv)), env)
++        row['label'] = label
++        row['phase'] = label
++        RECORD['commands'].append(row)
++        write_record()
++        return row
++
++    try:
++        api_docs = {}
++        for profile in ('default', 'all'):
++            argv = [cli, 'class-source', '--input', FIXTURE, '--class', 'NullThenBuilder',
++                    '--policy', 'single-class', '--release', '8', '--format', 'json']
++            if profile == 'all':
++                argv.extend(['--evidence', 'all'])
++            row = run('class-source-' + profile, argv)
++            doc = None
++            if row['exit_code'] == 0 and row['guard_stop'] is None:
++                try:
++                    doc = json.loads(read_stream(row, 'stdout').decode('utf-8'))
++                except (UnicodeDecodeError, ValueError):
++                    pass
++            api_docs[profile] = doc
++            RECORD['apis'][profile] = {'command_index': row['index'], 'outcome': doc.get('outcome') if doc else None,
++                                       'methods': len(doc.get('methods', [])) if doc else None}
++            if doc and doc.get('outcome') == 'performed' and isinstance(doc.get('text'), str):
++                folder = OUT / 'class-source' / profile
++                folder.mkdir(parents=True, exist_ok=True)
++                api_path = folder / 'class-source.api.json'
++                api_path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
++                source_path = folder / 'NullThenBuilder.java'
++                source_path.write_text(doc['text'], encoding='utf-8')
++                RECORD['apis'][profile].update({'api_json': pin(api_path), 'source': pin(source_path)})
++            write_record()
++
++        jar_path = OUT / 'input.jar'
++        with zipfile.ZipFile(jar_path, 'w') as jar:
++            jar.write(FIXTURE, 'NullThenBuilder.class')
++        RECORD['jadx_input_jar'] = pin(jar_path)
++        jadx_output = OUT / 'jadx-output'
++        jadx_row = run('jadx-full-class', [JADX, '--no-res', '--config', 'none', '--threads-count', '1',
++                                           '-d', jadx_output, jar_path])
++        jadx_source = jadx_output / 'sources/defpackage/NullThenBuilder.java'
++        if jadx_source.is_file():
++            RECORD['jadx_source'] = pin(jadx_source)
++        else:
++            RECORD['jadx_source'] = None
++        write_record()
++
++        for leg in ('javac8', 'javac23'):
++            tool = tools[leg]
++            for profile in ('original', 'default', 'all', 'jadx'):
++                work = OUT / leg / profile
++                work.mkdir(parents=True)
++                classes = work / 'classes'
++                classes.mkdir()
++                empty = work / 'empty'
++                empty.mkdir()
++                source = work / 'NullThenBuilder.java'
++                if profile == 'original':
++                    shutil.copyfile(FIXTURE, classes / 'NullThenBuilder.class')
++                    source_args = [work / 'Runner.java']
++                    classpath = classes
++                else:
++                    if profile == 'jadx':
++                        source_input = jadx_source
++                    else:
++                        api = api_docs.get(profile)
++                        source_input = None
++                        if api and isinstance(api.get('text'), str):
++                            source_input = OUT / 'class-source' / profile / 'NullThenBuilder.java'
++                    if source_input and Path(source_input).is_file():
++                        shutil.copyfile(source_input, source)
++                    source_args = [source, work / 'Runner.java']
++                    classpath = empty
++                runnerpath = work / 'Runner.java'
++                runner_text = ('package defpackage;\n' if profile == 'jadx' else '') + RUNNER
++                runnerpath.write_text(runner_text, encoding='utf-8')
++                if profile != 'original':
++                    source_args = [source, runnerpath]
++                else:
++                    source_args = [runnerpath]
++                flags = ['-source', '8', '-target', '8'] if leg == 'javac8' else ['--release', '8']
++                compile_argv = [tool['javac'], '-J-Duser.language=en', '-J-Duser.country=US', '-encoding', 'UTF-8',
++                                *flags, '-g:none', '-proc:none', '-classpath', classpath,
++                                '-sourcepath', empty, '-d', classes, *source_args]
++                compile_row = run(f'{leg}-{profile}-compile', compile_argv)
++                main_class = 'defpackage.Runner' if profile == 'jadx' else 'Runner'
++                runtime_row = run(f'{leg}-{profile}-runtime',
++                                  [tool['java'], '-Xverify:all', '-cp', classes, main_class])
++                RECORD['legs'].append({
++                    'jdk': leg, 'profile': profile,
++                    'source': pin(source) if profile != 'original' and source.is_file() else None,
++                    'source_sha256': sha(source) if profile != 'original' and source.is_file() else None,
++                    'source_path': str(source) if profile != 'original' else None,
++                    'runner': pin(runnerpath), 'classes_dir': str(classes), 'empty_dir': str(empty),
++                    'compile_command_index': compile_row['index'], 'runtime_command_index': runtime_row['index'],
++                    'runtime': runtime_row,
++                })
++                write_record()
++        RECORD['full_class_methods_retained'] = (3 if all((RECORD['apis'].get(p) or {}).get('methods') == 3
++                                                            for p in ('default', 'all')) else None)
++        RECORD['status'] = 'all_19_commands_observed' if len(RECORD['commands']) == 19 else 'incomplete'
++    except BaseException as error:
++        RECORD['status'] = 'collector_failed'
++        RECORD['error'] = f'{type(error).__name__}: {error}'
++    finally:
++        RECORD['completed_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
++        write_record()
++    print(json.dumps({'status': RECORD['status'], 'out': str(OUT), 'commands': len(RECORD['commands'])}, ensure_ascii=False))
++    return 0 if RECORD['status'] == 'all_19_commands_observed' else 1
++
++
++if __name__ == '__main__':
++    OUT = Path('/private/tmp/not-used')
++    RECORD = {'commands': []}
++    raise SystemExit(main())

@@ -1,0 +1,140 @@
+{
+  "schema": "null-builder-final-cli-v2-replay-pins-v1",
+  "inputs": {
+    "prior_collector": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v3/jarde-run-null-builder-runtime-root-v1.py",
+      "bytes": 5252,
+      "sha256": "40263456056334bf6e273d6492efad90b935b19a7be30d72b5da6e2800265db9",
+      "mode": 420
+    },
+    "prior_required_null_verifier": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v3/jarde-verify-required-null-root-v2.py",
+      "bytes": 19710,
+      "sha256": "f446fdc426f1cdcedb1d1129f28295bb0ccac92b0dcd56acf82f6a835c8cc9e4",
+      "mode": 420
+    },
+    "frozen_build_evidence": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py",
+      "bytes": 8233,
+      "sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3",
+      "mode": 420
+    },
+    "frozen_v5_build_runner": {
+      "path": "/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py",
+      "bytes": 10982,
+      "sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93",
+      "mode": 420
+    },
+    "resource_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "mode": 420
+    },
+    "target_size_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "mode": 420
+    },
+    "fixture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class",
+      "bytes": 629,
+      "sha256": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3",
+      "mode": 420
+    },
+    "jdk_manifest": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "mode": 420
+    },
+    "baseline_execution": {
+      "path": "/private/tmp/jarde-null-builder-runtime-root-v1/execution.json",
+      "bytes": 29149,
+      "sha256": "9d4cbb606405c0928cc79b0820ad36db9bd100ad860e38a6ba9f06475e44052e",
+      "mode": 420
+    },
+    "baseline_raw": {
+      "path": "/private/tmp/jarde-null-builder-runtime-root-v1/0.stdout.raw",
+      "bytes": 42908,
+      "sha256": "06819bf8c1f29bdf5eb2c9ecfbaeecd82a712b034b28fd79b40f5f8653fc4ab7",
+      "mode": 420
+    },
+    "jadx": {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "mode": 365
+    },
+    "javac8_javac": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "mode": 493
+    },
+    "javac8_java": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "mode": 493
+    },
+    "javac8_javap": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "mode": 493
+    },
+    "javac23_javac": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "mode": 493
+    },
+    "javac23_java": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "mode": 493
+    },
+    "javac23_javap": {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "mode": 493
+    }
+  },
+  "artifacts": {
+    "collect.py": {
+      "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/collect.py",
+      "bytes": 14603,
+      "sha256": "f75dc046c0b6dd17980caf53af09fb47907d1603b51853d32f20bbcbc1818c40",
+      "mode": 420
+    },
+    "verify.py": {
+      "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/verify.py",
+      "bytes": 21420,
+      "sha256": "f8c2e5665a3417e05d044d1fb64af293cd205d69ba3365fdc2595decb96d2415",
+      "mode": 420
+    },
+    "collector.patch": {
+      "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/collector.patch",
+      "bytes": 20439,
+      "sha256": "41599a4a381ac5751b52873bb077ca023754721c908d126629a2deaa9e07237b",
+      "mode": 420
+    },
+    "verifier.patch": {
+      "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/verifier.patch",
+      "bytes": 41870,
+      "sha256": "97bb74d39f2e75a2e2a3da952546989088630f3f45a5b5dd2493ec27eafdb900",
+      "mode": 420
+    },
+    "FINAL.md": {
+      "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/FINAL.md",
+      "bytes": 2038,
+      "sha256": "3cf15106fec59ca383c3e868ff2857a12761e1ec50a90cc734cfe276e129cb1a",
+      "mode": 420
+    }
+  },
+  "future_runtime_cli_sha256": "argv-supplied-from-actual-build-evidence; not precomputed"
+}

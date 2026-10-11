@@ -1,0 +1,17 @@
+{
+  "schema": "compound-negative-verifier-development-dryrun-luna-v1",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/private/tmp/jarde-compound-negative-verifier-luna-v6/verify.py"
+  ],
+  "cwd": "/private/tmp/jarde-compound-negative-verifier-luna-v6",
+  "exit_code": 0,
+  "verifier_sha256": "f9ac724fc561da4e2e7ff52c836cf6373117073d03d242ad6e8e35d40119cef3",
+  "frozen_execution": "/private/tmp/jarde-compound-negative-comparison-root-v1/execution.json",
+  "frozen_execution_sha256": "fcf4e25bf99bef201fdaa741383ded486e02c248cabdc585e8aa47c73f4d9cff",
+  "stdout_path": "/private/tmp/jarde-compound-negative-verifier-luna-v6/dryrun.stdout.raw",
+  "stdout_sha256": "5d9b5c6282fad28786b8f656025466d388c63768b7e4171be35b4344a56fc209",
+  "stderr_path": "/private/tmp/jarde-compound-negative-verifier-luna-v6/dryrun.stderr.raw",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "note": "Python-only verifier development dry-run over frozen observations; no target program, JDK, Cargo, Git, or product CLI was run"
+}

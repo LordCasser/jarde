@@ -1,0 +1,105 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[91merror[E0369][0m[1m: binary operation `==` cannot be applied to type `std::option::Option<FragmentedCatch>`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:17335:17
+      [1m[94m|[0m
+[1m[94m17335[0m [1m[94m|[0m                 assert_eq!(late_integration_walker.fragmented, before_fragmented);
+      [1m[94m|[0m                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+      [1m[94m|[0m                 [1m[91m|[0m
+      [1m[94m|[0m                 [1m[91mstd::option::Option<FragmentedCatch>[0m
+      [1m[94m|[0m                 [1m[91mstd::option::Option<FragmentedCatch>[0m
+      [1m[94m|[0m
+[1m[92mnote[0m: an implementation of `PartialEq` might be missing for `FragmentedCatch`
+     [1m[94m--> [0mcrates/jarde-java/src/fragmented_catch.rs:16:1
+      [1m[94m|[0m
+[1m[94m   16[0m [1m[94m|[0m pub(crate) struct FragmentedCatch {
+      [1m[94m|[0m [1m[92m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[92mmust implement `PartialEq`[0m
+[1m[96mhelp[0m: consider annotating `FragmentedCatch` with `#[derive(PartialEq)]`
+     [1m[94m--> [0m  crates/jarde-java/src/fragmented_catch.rs:16:1
+      [1m[94m|[0m
+[1m[94m   16[0m [92m+ #[derive(PartialEq)][0m
+[1m[94m   17[0m [1m[94m|[0m pub(crate) struct FragmentedCatch {
+      [1m[94m|[0m
+
+[1m[91merror[E0308][0m[1m: mismatched types[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:17464:29
+      [1m[94m|[0m
+[1m[94m17464[0m [1m[94m|[0m                     .insert(input.view.index_of(input.block(153)).unwrap());
+      [1m[94m|[0m                      [1m[94m------[0m [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mexpected `(usize, usize)`, found `usize`[0m
+      [1m[94m|[0m                      [1m[94m|[0m
+      [1m[94m|[0m                      [1m[94marguments to this method are incorrect[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: expected tuple `[1m[35m(usize, usize)[0m`
+                  found type `[1m[35musize[0m`
+[1m[92mnote[0m: method defined here
+     [1m[94m--> [0m/opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/alloc/src/collections/btree/set.rs:900:12
+      [1m[94m|[0m
+[1m[94m  900[0m [1m[94m|[0m     pub fn insert(&mut self, value: T) -> bool
+      [1m[94m|[0m            [1m[92m^^^^^^[0m
+
+[1m[91merror[E0369][0m[1m: binary operation `==` cannot be applied to type `std::option::Option<FragmentedCatch>`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:17488:17
+      [1m[94m|[0m
+[1m[94m17488[0m [1m[94m|[0m                 assert_eq!(case_walker.fragmented, case_before_fragmented);
+      [1m[94m|[0m                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+      [1m[94m|[0m                 [1m[91m|[0m
+      [1m[94m|[0m                 [1m[91mstd::option::Option<FragmentedCatch>[0m
+      [1m[94m|[0m                 [1m[91mstd::option::Option<FragmentedCatch>[0m
+      [1m[94m|[0m
+[1m[92mnote[0m: an implementation of `PartialEq` might be missing for `FragmentedCatch`
+     [1m[94m--> [0mcrates/jarde-java/src/fragmented_catch.rs:16:1
+      [1m[94m|[0m
+[1m[94m   16[0m [1m[94m|[0m pub(crate) struct FragmentedCatch {
+      [1m[94m|[0m [1m[92m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[92mmust implement `PartialEq`[0m
+[1m[96mhelp[0m: consider annotating `FragmentedCatch` with `#[derive(PartialEq)]`
+     [1m[94m--> [0m  crates/jarde-java/src/fragmented_catch.rs:16:1
+      [1m[94m|[0m
+[1m[94m   16[0m [92m+ #[derive(PartialEq)][0m
+[1m[94m   17[0m [1m[94m|[0m pub(crate) struct FragmentedCatch {
+      [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unused variable: `op`[0m
+    [1m[94m--> [0mcrates/jarde-java/src/region.rs:7573:30
+     [1m[94m|[0m
+[1m[94m7573[0m [1m[94m|[0m             let (branch_bci, op, target) = if node == root_node {
+     [1m[94m|[0m                              [1m[33m^^[0m [1m[33mhelp: if this is intentional, prefix it with an underscore: `_op`[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+[1mSome errors have detailed explanations: E0308, E0369.[0m
+[1mFor more information about an error, try `rustc --explain E0308`.[0m
+[1m[33mwarning[0m: `jarde-java` (lib test) generated 1 warning
+[1m[91merror[0m: could not compile `jarde-java` (lib test) due to 3 previous errors; 1 warning emitted

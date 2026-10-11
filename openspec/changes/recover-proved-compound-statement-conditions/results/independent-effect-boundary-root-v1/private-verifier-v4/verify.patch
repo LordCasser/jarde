@@ -1,0 +1,92 @@
+--- a/verify.py
++++ b/verify.py
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python3
+ """Read-only independent verifier for the frozen compound negative-control replay."""
+ import argparse
++import collections
+ import hashlib
+ import json
+ import re
+@@ -16,6 +17,14 @@
+ EXPECTED_DIGEST_EXECUTION = Path('/private/tmp/jarde-compound-negative-digest-root-v1/execution.json').resolve()
+ EXPECTED_DIGEST_TOOL = Path('/private/tmp/jarde-switch-continuation-class-digest-tool-root-v1').resolve()
+ EXPECTED_BLAKE3 = 'fdbd3d61fdf62235a03924217a1b81d4e96454d5d927b209a0ab77dba5a4b34a'
++EXPECTED_JDK_TOOL_ALIAS_PAIRS = {
++    frozenset(('/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac', '/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac')),
++    frozenset(('/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java', '/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java')),
++    frozenset(('/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap', '/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap')),
++    frozenset(('/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac', '/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac')),
++    frozenset(('/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java', '/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java')),
++    frozenset(('/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap', '/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap')),
++}
+ JDKS = ('jdk8_tools', 'jdk23_tools')
+ SIDES = ('original', 'jadx', 'jarde-default', 'jarde-all')
+ TARGETS = {
+@@ -300,8 +309,26 @@
+     need(post.get('status') == 'passed' and post.get('pins') == frozen, 'post-run pin inventory is not symmetric')
+     for pin in frozen:
+         verify_pin(pin)
+-    frozen_paths = {str(Path(p['path']).resolve()): p for p in frozen}
+-    need(len(frozen_paths) == len(frozen), 'duplicate frozen input path')
++    literal_paths = [str(Path(p['path'])) for p in frozen]
++    need(len(set(literal_paths)) == len(frozen) == 74, 'frozen input inventory must contain 74 unique literal paths')
++    pins_by_resolved = collections.defaultdict(list)
++    for pin in frozen:
++        pins_by_resolved[str(Path(pin['path']).resolve())].append(pin)
++    observed_alias_pairs = set()
++    for resolved, rows in pins_by_resolved.items():
++        if len(rows) == 1:
++            continue
++        need(len(rows) == 2, f'unexpected repeated resolved pin path: {resolved}')
++        alias_pair = frozenset(str(Path(row['path'])) for row in rows)
++        need(alias_pair in EXPECTED_JDK_TOOL_ALIAS_PAIRS,
++             f'resolved duplicate is not one of the six frozen JDK tool aliases: {sorted(alias_pair)}')
++        signatures = {(row['bytes'], row['sha256'], row.get('mode')) for row in rows}
++        need(len(signatures) == 1, f'JDK tool alias pin metadata differs: {sorted(alias_pair)}')
++        observed_alias_pairs.add(alias_pair)
++    need(observed_alias_pairs == EXPECTED_JDK_TOOL_ALIAS_PAIRS,
++         'the exact six expected JDK tool path aliases are not present')
++    need(len(pins_by_resolved) == 68, 'expected exactly 68 unique resolved inputs after the six alias pairs')
++    frozen_paths = set(pins_by_resolved)
+ 
+     for field, expected in (('source', EXPECTED_SOURCE), ('runner_source', EXPECTED_RUNNER), ('cli', EXPECTED_CLI)):
+         pin = execution.get(field)
+@@ -312,8 +339,6 @@
+     verify_pin(plan_pin)
+     plan = json.loads(Path(plan_pin['path']).read_text())
+     need(plan.get('schema') == 'cf12-ten-fixture-replay-preparation-luna-v1', 'unexpected frozen replay plan schema')
+-    need(execution['runner_source'] == execution['copied_inputs']['runner'], 'top-level Runner copy pin mismatch')
+-    need(execution['source'] == execution['copied_inputs']['source'], 'top-level fixture source copy pin mismatch')
+ 
+     products = execution.get('jadx_product_jars')
+     need(isinstance(products, list) and len(products) == 57, 'expected exactly 57 pinned JADX product jars')
+@@ -328,10 +353,26 @@
+             verify_pin(pin)
+             need(str(Path(pin['path']).resolve()) in frozen_paths, f'{jdk}: tool missing from frozen inputs')
+ 
++    copied_inputs = execution.get('copied_inputs', {})
++    need(set(copied_inputs) == {'source', 'runner'}, 'copied input inventory differs from source and Runner')
++    for field, input_name, expected_source in (
++            ('source', 'CompoundConditionNegative.java', EXPECTED_SOURCE),
++            ('runner_source', 'Runner.java', EXPECTED_RUNNER)):
++        original_pin = execution[field]
++        copied_pin = copied_inputs['source' if field == 'source' else 'runner']
++        need(Path(original_pin['path']).resolve() == expected_source,
++             f'{field}: original fixture path differs from frozen fixture')
++        need(Path(copied_pin['path']).resolve() == (EXPECTED_OUTPUT / 'inputs' / input_name).resolve(),
++             f'{field}: copied input path differs from replay input directory')
++        original_bytes = verify_pin(original_pin)
++        copied_bytes = verify_pin(copied_pin)
++        need((original_pin['bytes'], original_pin['sha256'], original_pin.get('mode')) ==
++             (copied_pin['bytes'], copied_pin['sha256'], copied_pin.get('mode')),
++             f'{field}: original/copy pin metadata differs')
++        need(original_bytes == copied_bytes, f'{field}: original and copied input bytes differ')
++        need(copied_pin in frozen, f'{field}: copied input is absent from frozen input pins')
+     source_bytes = Path(execution['source']['path']).read_bytes()
+     runner_bytes = Path(execution['runner_source']['path']).read_bytes()
+-    need(source_bytes == Path(execution['copied_inputs']['source']['path']).read_bytes(), 'copied source differs')
+-    need(runner_bytes == Path(execution['copied_inputs']['runner']['path']).read_bytes(), 'copied Runner differs')
+ 
+     commands = execution.get('commands')
+     labels = [

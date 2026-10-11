@@ -1,0 +1,59 @@
+--- a/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
++++ b/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
+@@ -791,14 +791,33 @@
+     )
+ }
+ 
+-fn assert_structured_compound_result(run: &Run) {
++fn assert_default_compound_if_source(run: &Run, branch_bcis: &[u16]) {
+     assert!(run.report.produced(), "{:?}", run.report.outcome);
+     assert!(
+         !run.report.text.contains("@bytecode"),
+         "{}",
+         run.report.text
+     );
++    let conditions = branch_bcis
++        .iter()
++        .flat_map(|&bci| run.report.source_map.direct_of_bci(bci))
++        .filter_map(|segment| if_condition_text(segment.text(&run.report.text)))
++        .collect::<Vec<_>>();
+     assert!(
++        !conditions.is_empty(),
++        "default source map contains a structured if-condition span at the observed branch BCIs: {}",
++        run.report.text
++    );
++}
++
++fn assert_all_compound_regions_structured(run: &Run) {
++    assert!(run.report.produced(), "{:?}", run.report.outcome);
++    assert!(
++        !run.report.text.contains("@bytecode"),
++        "{}",
++        run.report.text
++    );
++    assert!(
+         run.report
+             .regions
+             .iter()
+@@ -854,8 +873,8 @@
+         RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+     );
+     let all = recover_compound_target(NAME, DESCRIPTOR, RecoveryEvidenceRequest::all());
+-    assert_structured_compound_result(&default);
+-    assert_structured_compound_result(&all);
++    assert_default_compound_if_source(&default, &[26, 37, 48, 59]);
++    assert_all_compound_regions_structured(&all);
+     assert_eq!(default.method, all.method);
+     assert_eq!(default.ordinal, all.ordinal);
+     assert_eq!(default.report.text, all.report.text);
+@@ -901,8 +920,8 @@
+         RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+     );
+     let all = recover_compound_target(NAME, DESCRIPTOR, RecoveryEvidenceRequest::all());
+-    assert_structured_compound_result(&default);
+-    assert_structured_compound_result(&all);
++    assert_default_compound_if_source(&default, &[18, 25]);
++    assert_all_compound_regions_structured(&all);
+     assert_eq!(default.method, all.method);
+     assert_eq!(default.ordinal, all.ordinal);
+     assert_eq!(default.report.text, all.report.text);

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.83s
+[1m[92m     Running[0m tests/p3_mixed_short_circuit_field.rs (target/debug/deps/p3_mixed_short_circuit_field-538fbf848bc741db)
+[1m[92m     Running[0m tests/p3_mixed_short_circuit_instance_field.rs (target/debug/deps/p3_mixed_short_circuit_instance_field-72a2ecaa4513a082)
+[1m[92m     Running[0m tests/p3_mixed_short_circuit_local.rs (target/debug/deps/p3_mixed_short_circuit_local-de9f4c71575ac188)
+[1m[92m     Running[0m tests/p3_mixed_short_circuit_return.rs (target/debug/deps/p3_mixed_short_circuit_return-fdc1bcfa31935d13)

@@ -1,0 +1,39 @@
+{
+  "source": "/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/original-bytecode/CompoundStatementConditions.class",
+  "source_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "source_bytes": 2848,
+  "patched_sha256": "8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b",
+  "patched_bytes": 2849,
+  "method": "test",
+  "descriptor": "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;",
+  "branch_bci": 26,
+  "opcode": "ifeq",
+  "old_target_bci": 40,
+  "new_target_bci": 51,
+  "classfile_changes": [
+    "test Code BCI 26 ifeq displacement: +14 -> +25 (target 40 -> 51)",
+    "StackMapTable frame count: 4 -> 5; same_frame(delta=10) added at 51",
+    "existing frame delta at 62: 21 -> 10",
+    "StackMapTable attribute_length and enclosing Code attribute_length each +1"
+  ],
+  "stackmap_offsets_before": [
+    40,
+    62,
+    74,
+    83
+  ],
+  "stackmap_offsets_after": [
+    40,
+    51,
+    62,
+    74,
+    83
+  ],
+  "expected_graph": [
+    "26 -> 29,51",
+    "29 -> 40,62",
+    "40 -> 51,74",
+    "51 -> 62,74"
+  ],
+  "purpose": "shared decision test requires read-once expression repetition; never invoke this method"
+}

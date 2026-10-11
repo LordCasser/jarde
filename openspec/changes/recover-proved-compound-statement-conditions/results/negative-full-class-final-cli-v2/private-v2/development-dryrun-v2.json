@@ -1,0 +1,63 @@
+{
+  "schema": "compound-negative-render-v2-development-dryrun",
+  "candidate_cli_executed": false,
+  "target_method_executed": false,
+  "owner_oracle_readonly_validation": {
+    "record": {
+      "path": "/private/tmp/jarde-compound-negative-class-digest-root-v1/execution.json",
+      "bytes": 3345,
+      "sha256": "61f6493fa4e81a1b261dfcabe610860692a5fbce4e61881eed6b35df87c2d7f6",
+      "mode": 420
+    },
+    "raw": {
+      "path": "/private/tmp/jarde-compound-negative-class-digest-root-v1/0.stdout.raw",
+      "bytes": 1064,
+      "sha256": "0da7876a1332ff012f013e15543ececeab8ecdd57f1c36b4eddc136a2f854a99",
+      "mode": 420
+    },
+    "tool": {
+      "path": "/private/tmp/jarde-switch-continuation-class-digest-tool-root-v1",
+      "bytes": 565264,
+      "sha256": "e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7",
+      "mode": 365
+    },
+    "tool_sha256": "e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7"
+  },
+  "historical_api_input": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/jarde-all/sources/class-source.api.json",
+    "bytes": 890820,
+    "sha256": "d501cf40c51684a596b14a5f3fe459c9a7caef8ba3fd08c138924b0510eae671",
+    "members_including_constructor": 8,
+    "nonconstructor_methods": 7,
+    "all_present_utf8_ranges_valid": true
+  },
+  "historical_javap_input": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/observed-bytecode-v1/0.stdout.raw",
+    "bytes": 26195,
+    "sha256": "d2040faa04e74069f87c43c85d95aadec922b4381652502b988bbabcad54ff8a",
+    "target_physical_bcis": 44,
+    "caveat": "separate cycle fixture raw calibrates parser shape and is not paired with the baseline API map"
+  },
+  "negative_helper_checks": {
+    "missing_target_map_is_recorded_incomplete": true,
+    "out_of_range_utf8_segment_is_rejected": true
+  },
+  "frozen_owner_facts": {
+    "cycle": {
+      "digest": "1a7f0759fe3e84baf0b12c436206dee9c0815cd23241b5ba22a5a28c82bf891a",
+      "length": 2848
+    },
+    "irreducible": {
+      "digest": "25369e1faa617fc283b89815e93df6c6a0e1db38511b9bad9057173af2399cc1",
+      "length": 2848
+    },
+    "no-repeat": {
+      "digest": "0324f058d2939d4c41f3498551c23b440308f26023f0dd539f643d1a265aeeee",
+      "length": 2849
+    },
+    "clone": {
+      "digest": "af3b18f31c433684f1c685c62a6ce11b540e8304f158e576b8776bc5d76a5a4b",
+      "length": 2662
+    }
+  }
+}

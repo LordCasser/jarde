@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/private/tmp/jarde-switch-continuation-class-digest-tool-root-v1",
+    "/private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class"
+  ],
+  "exit_code": 0,
+  "oracle_sha256": "e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7",
+  "class_sha256": "fc64a0cfa55647e1efcc62e57fa72446f448972e80dbd09ae54b30e3249edb8c",
+  "class_bytes": 1116,
+  "stdout_sha256": "1ba866afc34bff0e8aab1593f86824152662501ace0eb181e604f0f232e7ad03",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

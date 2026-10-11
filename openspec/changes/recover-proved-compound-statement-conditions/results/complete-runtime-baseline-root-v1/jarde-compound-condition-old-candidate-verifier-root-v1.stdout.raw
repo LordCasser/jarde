@@ -1,0 +1,1 @@
+{"state": "record_inconsistent", "out": "/private/tmp/jarde-compound-condition-old-candidate-verifier-root-v1.json", "checks": 30, "inconsistencies": ["pre_post_pin_inventory_matches", "all_compile_argv_match_isolated_source8_target8_contract", "compile_failures_never_followed_by_runner_or_runtime"]}

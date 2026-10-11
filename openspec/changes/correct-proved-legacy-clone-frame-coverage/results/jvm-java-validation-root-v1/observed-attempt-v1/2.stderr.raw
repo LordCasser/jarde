@@ -1,0 +1,25 @@
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[91merror[E0369][0m[1m: binary operation `==` cannot be applied to type `std::option::Option<FragmentedCatch>`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:16554:17
+      [1m[94m|[0m
+[1m[94m16554[0m [1m[94m|[0m                 assert_eq!(cancel_walker.fragmented, cancel_fragmented);
+      [1m[94m|[0m                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+      [1m[94m|[0m                 [1m[91m|[0m
+      [1m[94m|[0m                 [1m[91mstd::option::Option<FragmentedCatch>[0m
+      [1m[94m|[0m                 [1m[91mstd::option::Option<FragmentedCatch>[0m
+      [1m[94m|[0m
+[1m[92mnote[0m: an implementation of `PartialEq` might be missing for `FragmentedCatch`
+     [1m[94m--> [0mcrates/jarde-java/src/fragmented_catch.rs:16:1
+      [1m[94m|[0m
+[1m[94m   16[0m [1m[94m|[0m pub(crate) struct FragmentedCatch {
+      [1m[94m|[0m [1m[92m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[92mmust implement `PartialEq`[0m
+[1m[96mhelp[0m: consider annotating `FragmentedCatch` with `#[derive(PartialEq)]`
+     [1m[94m--> [0m  crates/jarde-java/src/fragmented_catch.rs:16:1
+      [1m[94m|[0m
+[1m[94m   16[0m [92m+ #[derive(PartialEq)][0m
+[1m[94m   17[0m [1m[94m|[0m pub(crate) struct FragmentedCatch {
+      [1m[94m|[0m
+
+[1mFor more information about this error, try `rustc --explain E0369`.[0m
+[1m[91merror[0m: could not compile `jarde-java` (lib test) due to 1 previous error

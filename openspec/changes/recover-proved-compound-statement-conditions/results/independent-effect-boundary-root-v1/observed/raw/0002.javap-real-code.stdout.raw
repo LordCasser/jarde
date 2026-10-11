@@ -1,0 +1,205 @@
+Classfile /private/tmp/jarde-compound-negative-comparison-root-v1/original-bytecode/CompoundConditionNegative.class
+  Last modified 2026-10-11; size 1116 bytes
+  MD5 checksum 978d91bf12fa9eb8de347b9ce69998ef
+  Compiled from "CompoundConditionNegative.java"
+public final class CompoundConditionNegative
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #11.#35        // java/lang/Object."<init>":()V
+   #2 = Class              #36            // java/lang/StringBuilder
+   #3 = Methodref          #2.#35         // java/lang/StringBuilder."<init>":()V
+   #4 = String             #37            // hit
+   #5 = Methodref          #2.#38         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #6 = String             #39            // miss
+   #7 = Methodref          #2.#40         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #8 = String             #41            // :
+   #9 = Methodref          #2.#42         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #10 = Class              #43            // CompoundConditionNegative
+  #11 = Class              #44            // java/lang/Object
+  #12 = Utf8               <init>
+  #13 = Utf8               ()V
+  #14 = Utf8               Code
+  #15 = Utf8               LineNumberTable
+  #16 = Utf8               LocalVariableTable
+  #17 = Utf8               this
+  #18 = Utf8               LCompoundConditionNegative;
+  #19 = Utf8               prefixIncrement
+  #20 = Utf8               (ZIZZ)Ljava/lang/String;
+  #21 = Utf8               a
+  #22 = Utf8               Z
+  #23 = Utf8               initial
+  #24 = Utf8               I
+  #25 = Utf8               c
+  #26 = Utf8               d
+  #27 = Utf8               x
+  #28 = Utf8               payload
+  #29 = Utf8               Ljava/lang/StringBuilder;
+  #30 = Utf8               StackMapTable
+  #31 = Class              #36            // java/lang/StringBuilder
+  #32 = Utf8               localAssignment
+  #33 = Utf8               SourceFile
+  #34 = Utf8               CompoundConditionNegative.java
+  #35 = NameAndType        #12:#13        // "<init>":()V
+  #36 = Utf8               java/lang/StringBuilder
+  #37 = Utf8               hit
+  #38 = NameAndType        #45:#46        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #39 = Utf8               miss
+  #40 = NameAndType        #47:#48        // toString:()Ljava/lang/String;
+  #41 = Utf8               :
+  #42 = NameAndType        #45:#49        // append:(I)Ljava/lang/StringBuilder;
+  #43 = Utf8               CompoundConditionNegative
+  #44 = Utf8               java/lang/Object
+  #45 = Utf8               append
+  #46 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #47 = Utf8               toString
+  #48 = Utf8               ()Ljava/lang/String;
+  #49 = Utf8               (I)Ljava/lang/StringBuilder;
+{
+  private CompoundConditionNegative();
+    descriptor: ()V
+    flags: ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LCompoundConditionNegative;
+
+  public static java.lang.String prefixIncrement(boolean, int, boolean, boolean);
+    descriptor: (ZIZZ)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=4
+         0: iload_1
+         1: istore        4
+         3: new           #2                  // class java/lang/StringBuilder
+         6: dup
+         7: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+        10: astore        5
+        12: iload_0
+        13: ifeq          24
+        16: iinc          4, 1
+        19: iload         4
+        21: ifgt          32
+        24: iload_2
+        25: ifeq          43
+        28: iload_3
+        29: ifeq          43
+        32: aload         5
+        34: ldc           #4                  // String hit
+        36: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        39: pop
+        40: goto          51
+        43: aload         5
+        45: ldc           #6                  // String miss
+        47: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        50: pop
+        51: new           #2                  // class java/lang/StringBuilder
+        54: dup
+        55: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+        58: aload         5
+        60: invokevirtual #7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        63: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        66: ldc           #8                  // String :
+        68: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        71: iload         4
+        73: invokevirtual #9                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        76: invokevirtual #7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        79: areturn
+      LineNumberTable:
+        line 5: 0
+        line 6: 3
+        line 7: 12
+        line 8: 32
+        line 10: 43
+        line 12: 51
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      80     0     a   Z
+            0      80     1 initial   I
+            0      80     2     c   Z
+            0      80     3     d   Z
+            3      77     4     x   I
+           12      68     5 payload   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 24
+          locals = [ int, class java/lang/StringBuilder ]
+        frame_type = 7 /* same */
+        frame_type = 10 /* same */
+        frame_type = 7 /* same */
+
+  public static java.lang.String localAssignment(boolean, int, boolean, boolean);
+    descriptor: (ZIZZ)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=4
+         0: iload_1
+         1: istore        4
+         3: new           #2                  // class java/lang/StringBuilder
+         6: dup
+         7: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+        10: astore        5
+        12: iload_0
+        13: ifeq          26
+        16: iload         4
+        18: iconst_1
+        19: iadd
+        20: dup
+        21: istore        4
+        23: ifgt          34
+        26: iload_2
+        27: ifeq          45
+        30: iload_3
+        31: ifeq          45
+        34: aload         5
+        36: ldc           #4                  // String hit
+        38: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        41: pop
+        42: goto          53
+        45: aload         5
+        47: ldc           #6                  // String miss
+        49: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: new           #2                  // class java/lang/StringBuilder
+        56: dup
+        57: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+        60: aload         5
+        62: invokevirtual #7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        65: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        68: ldc           #8                  // String :
+        70: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        73: iload         4
+        75: invokevirtual #9                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        78: invokevirtual #7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        81: areturn
+      LineNumberTable:
+        line 16: 0
+        line 17: 3
+        line 18: 12
+        line 19: 34
+        line 21: 45
+        line 23: 53
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      82     0     a   Z
+            0      82     1 initial   I
+            0      82     2     c   Z
+            0      82     3     d   Z
+            3      79     4     x   I
+           12      70     5 payload   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 26
+          locals = [ int, class java/lang/StringBuilder ]
+        frame_type = 7 /* same */
+        frame_type = 10 /* same */
+        frame_type = 7 /* same */
+}
+SourceFile: "CompoundConditionNegative.java"

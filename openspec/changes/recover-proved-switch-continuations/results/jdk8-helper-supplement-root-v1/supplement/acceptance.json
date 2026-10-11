@@ -1,0 +1,25 @@
+{
+  "schema": "cf12-jdk8-overlay-supplement-root-acceptance-v1",
+  "overlay_build": {
+    "path": "/private/tmp/jarde-cf12-jdk8-assertions-overlay-root-v1/execution.json",
+    "bytes": 30860,
+    "sha256": "b4ff6201a73c817a3d6d175e27e62e2bf051a70cbcf031ebaa556a53d283e573"
+  },
+  "supplement": {
+    "path": "/private/tmp/jarde-cf12-jdk8-switch-supplement-root-v4/execution.json",
+    "bytes": 218830,
+    "sha256": "b99399abcc4f96179656d11b49d365f8bd1e17ccdd685d84b087089be9ab23e8"
+  },
+  "verifier": {
+    "path": "/private/tmp/jarde-cf12-jdk8-overlay-supplement-verifier-root-v1.py",
+    "bytes": 2779,
+    "sha256": "e14cb16a43850a5632a7146f04d4e5e2945616332bef9e6421918a86c3eb85d3"
+  },
+  "accepted_observation": true,
+  "single_original_jdk8_runtime_passed": true,
+  "generated_jdk8_environment_unavailable": "ICodeInfo major55 overload signature",
+  "complete_milestone": false,
+  "cf12_complete": false,
+  "commands": 2,
+  "target_absent": true
+}

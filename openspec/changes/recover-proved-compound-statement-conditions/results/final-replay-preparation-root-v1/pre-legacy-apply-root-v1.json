@@ -1,0 +1,6 @@
+{
+  "canonical_live_sha256": "3770e6f0bb295c361d9855545c30a93f33986dcaed626506a97b584c4c26558e",
+  "region_live_sha256": "9cd7339c4e8834d74f9b8734ccdfd588e62b84e575d6ab330d5356ec55fb5b5e",
+  "new_region_assertions": "all six stages Completed; actual frames/SSA exist; verification NotPerformed",
+  "private_v2_status": "rejected test details; requested continuous dead seed and handler clone path fixes; production architecture reviewed but not yet applied"
+}

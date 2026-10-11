@@ -1,0 +1,72 @@
+--- a/p3_conditional_switch_fallthrough.rs.candidate
++++ b/p3_conditional_switch_fallthrough.rs.candidate
+@@ -127,6 +127,7 @@
+     method: PhysicalMethodId,
+     ordinal: jarde_reader::prepared::MethodOrdinal,
+     analysis_steps: u64,
++    output_bytes: u64,
+ }
+ 
+ fn recover_target(evidence: RecoveryEvidenceRequest) -> Run {
+@@ -280,14 +281,16 @@
+     let request = RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
+         .with_evidence(evidence)
+         .with_subject(subject);
+-    let (report, analysis_steps) = match recovery_budget {
++    let (report, analysis_steps, output_bytes) = match recovery_budget {
+         Some(mut recovery_budget) => {
+             let report = recover(&request, &mut recovery_budget);
+-            (report, recovery_budget.usage().analysis_steps)
++            let usage = recovery_budget.usage();
++            (report, usage.analysis_steps, usage.output_bytes)
+         }
+         None => {
+             let report = recover(&request, &mut budget);
+-            (report, budget.usage().analysis_steps)
++            let usage = budget.usage();
++            (report, usage.analysis_steps, usage.output_bytes)
+         }
+     };
+     if report.produced() {
+@@ -307,6 +310,7 @@
+         method,
+         ordinal,
+         analysis_steps,
++        output_bytes,
+     }
+ }
+ 
+@@ -1019,15 +1023,16 @@
+         evidence,
+         Some(Budget::new(bounded_limits)),
+     );
+-    let at = match stopped.report.stop() {
++    let (at, written) = match stopped.report.stop() {
+         Some(StopReason::Budget {
+             dimension: CountedBudgetDimension::AnalysisSteps,
+-            written: 0,
++            written: observed_written,
+             limit: observed_limit,
+             at: Some(at),
+         }) => {
+             assert_eq!(*observed_limit, limit);
+-            *at
++            assert_eq!(*observed_written, stopped.output_bytes);
++            (*at, *observed_written)
+         }
+         other => panic!("expected atomic AnalysisSteps stop at limit {limit}, got {other:?}"),
+     };
+@@ -1042,7 +1047,12 @@
+     assert!(stopped.report.artifact.binding().is_none());
+     assert!(stopped.report.text.is_empty());
+     assert!(stopped.report.source_map.is_empty());
+-    eprintln!("compound whole-recovery AnalysisSteps stop: limit={limit}, at={at}");
++    eprintln!(
++        "compound whole-recovery AnalysisSteps budget: success_usage={}, limit={limit}, stop_at={at}, stop_usage={}, stop_written={written}, observed_output_bytes={}",
++        success.analysis_steps,
++        stopped.analysis_steps,
++        stopped.output_bytes
++    );
+ }
+ 
+ #[test]

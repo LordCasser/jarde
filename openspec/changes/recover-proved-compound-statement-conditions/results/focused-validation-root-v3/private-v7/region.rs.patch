@@ -1,0 +1,33 @@
+--- a/region.rs
++++ b/region.rs
+@@ -4382,7 +4382,7 @@
+         }
+         if !compound_arm_owners.is_subset(&owners)
+             || owners.contains(next)
+-            || frame.boundary != Some(return_node)
++            || frame.boundary == Some(return_node)
+             || frame.shared_tail == Some(return_node)
+             || frame.switch_join == Some(return_node)
+             || frame
+@@ -4451,11 +4451,7 @@
+         let saved_unclosed_tail = self.unclosed_tail_at;
+         let saved_catch_joins = self.catch_joins.clone();
+         let saved_fragmented = self.fragmented.clone();
+-        // `frame` ends the outer arm at this shared return. Walk the return in its parent's
+-        // frame so `region_at` claims exactly the boundary block instead of stopping before it.
+-        let mut tail_frame = frame.clone();
+-        tail_frame.boundary = outer_frame.boundary;
+-        let attempt = self.region_at(next, &tail_frame);
++        let attempt = self.region_at(next, frame);
+         match attempt {
+             Ok((tail, tail_next)) => {
+                 let newly_visited = self
+@@ -17553,7 +17549,7 @@
+                     }};
+                 }
+                 let arm_frame = Frame {
+-                    boundary: input.view.index_of(&return_next),
++                    boundary: input.view.index_of(&switch_boundary),
+                     ..Frame::default()
+                 };
+                 let outer_frame = Frame {

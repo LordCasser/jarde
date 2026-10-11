@@ -1,0 +1,31 @@
+{
+  "schema": "ft2-continuation-private-candidate-v3",
+  "status": "private_candidate_unvalidated",
+  "change": "recover-proved-switch-continuations",
+  "tasks": ["2.1", "2.4"],
+  "source": {
+    "path": "crates/jarde-java/src/region.rs",
+    "sha256": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c",
+    "private_base_copy": "/private/tmp/jarde-ft2-continuation-impl-luna-v3/region.rs.base"
+  },
+  "fixture": {
+    "path": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+    "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+  },
+  "diagnosis": {
+    "path": "openspec/changes/recover-proved-switch-continuations/results/diagnostic-root-v1/acceptance.json",
+    "stderr": "/private/tmp/jarde-switch-continuation-diagnostic-execution-root-v2/0.stderr.raw",
+    "confirmed": "switch terminal BCI 11 joins at block 175; outer if terminal BCI 5 receives next 175 and has boundary 197; 175 to 197 is one Normal edge"
+  },
+  "private_files": {
+    "region.rs.candidate": "e1b61f5a8b02b0690390efa3961aa829b1b63a8b232f5526765172558fa92bcc",
+    "region.rs.patch": "812603beedd88d992b1cc9f1cec4f4c668ea0e6dcbd540e10de15178882a88dc",
+    "README.md": "46330687579de0fbe2e6a3342e8c3ea11eefc2ae0288ea1c3999abf89ef266a4",
+    "region.rs.base": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c"
+  },
+  "validation": {
+    "compiled": false,
+    "tests_run": false,
+    "reason": "root owns workspace integration and test validation; only private test scaffolding was simplified"
+  }
+}

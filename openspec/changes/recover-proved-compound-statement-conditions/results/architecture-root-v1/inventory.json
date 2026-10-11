@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "IfRegionMaker.java",
+      "bytes": 23440,
+      "sha256": "3d3d4c2238a21368e5970db5d5cffb2e63a625e411e8cf64461bd6e604d74760"
+    },
+    {
+      "path": "JADX-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "path": "JADX-NOTICE",
+      "bytes": 10658,
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    {
+      "path": "analysis.json",
+      "bytes": 38158,
+      "sha256": "849e5f5b473a4b720c63a05b14ef384b473ddd6cf5b234290fbaf22c24abe547"
+    },
+    {
+      "path": "private-architecture-v2.md",
+      "bytes": 7658,
+      "sha256": "ab50504093ebe1b7d7940a9a8378c9489d31f255809dd7b3e2c5e68f3f7dbf5e"
+    },
+    {
+      "path": "private-architecture-v3.md",
+      "bytes": 12198,
+      "sha256": "afc7db95c636b77eb61f5fbe89c58db6fbe4356a316f6f022546d1dad0b1e49d"
+    }
+  ]
+}

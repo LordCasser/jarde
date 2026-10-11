@@ -1,0 +1,131 @@
+{
+  "schema": "compound-condition-focused-root-v1",
+  "status": "failed",
+  "runner_sha256": "13272b4de163a9dff63a1050dcb6fa1833c077239beca960947e55e9ec16b74d",
+  "product_pins_before": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "c55ac016b402fb54ef4f6072dc54ee7d55809ea3d067e1d46c5eb30136afe392",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "c11b867ebc2111f87fd24d6f104c4ca0bde8cbff4fa8801afb71e0ba9ad2b03c",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "real_switch2_direct_target_join_proves_candidate_witnesses",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:37:06.508381+00:00",
+      "duration_seconds": 31.350363667006604,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 156901331,
+      "free_bytes_after": 30223355904,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-diagnostic-root-v4/0.stdout.raw",
+          "bytes": 308,
+          "sha256": "9d65d040ca73a14d6c595f31c6b0919e682214b13751752d9893f62d509e71cc"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-diagnostic-root-v4/0.stderr.raw",
+          "bytes": 4117,
+          "sha256": "7c33f8358d588a6b39db47dc18f182ad7fe8a49a345ca8effa5eeaee4bc5cb01"
+        }
+      },
+      "actual_test_summaries": [
+        [
+          0,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:37:37.862146+00:00",
+      "duration_seconds": 1.0140386249986477,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 154710176,
+      "free_bytes_after": 30374047744,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-diagnostic-root-v4/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-diagnostic-root-v4/1.stderr.raw",
+          "bytes": 52,
+          "sha256": "bb58c17f8af04df622473a63040b4e4dd8005b0ef17d89b31528ee1605d433e9"
+        }
+      }
+    }
+  ],
+  "error": "AssertionError()",
+  "target_absent_after_clean": true,
+  "product_pins_after": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "c55ac016b402fb54ef4f6072dc54ee7d55809ea3d067e1d46c5eb30136afe392",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "c11b867ebc2111f87fd24d6f104c4ca0bde8cbff4fa8801afb71e0ba9ad2b03c",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+  }
+}

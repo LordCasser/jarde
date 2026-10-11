@@ -1,0 +1,735 @@
+--- a/collect.py
++++ b/collect.py
+@@ -1,136 +1,129 @@
+-#!/usr/bin/env python3
+-"""Guarded 19-command CandidateContinuation full-class comparison collector."""
+-from __future__ import annotations
+-import argparse, datetime, hashlib, importlib.util, json, os, shutil, stat, sys, zipfile
+-from pathlib import Path
+-
+-ROOT=Path('/Users/lordcasser/workspace/projects/jarde').resolve()
+-DEFAULT_FIXTURE=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class'
+-DEFAULT_FIXTURE_SHA='9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238'
+-DEFAULT_ORACLE=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/fixtures/cross-case/Join.class'
+-DEFAULT_ORACLE_SHA='bec9b2bbbbb1b0ec2af20f125368bfd66b855efa4d188bac3d735d99cbfcf6c0'
+-JOIN_REPORT=Path('/private/tmp/jarde-cross-case-continuation-diagnosis-root-v1/1.stdout.raw')
+-JOIN_REPORT_SHA='c58ae7e7ab27ac53d2826e17c9e36a8c16f567ccb9c3790c25046cc831f1132a'
+-PHYSICAL_JAVAP=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/1.stdout.raw'
+-PHYSICAL_JAVAP_SHA='37f039fe831d63981da1bf9dee369582a86d87e0653001eb5803a5046545407a'
+-GENERATION=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/generation.json'
+-GENERATION_SHA='f956f5b2649201a1f61d1e49806c6afbf653868c3cbccb000316cfc1d9793a5f'
+-BUILD_EVIDENCE=Path('/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py')
+-JDK_MANIFEST=ROOT/'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
+-JDK_MANIFEST_SHA='ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
+-JADX=Path('/opt/homebrew/bin/jadx').resolve()
+-JADX_SHA='64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7'
+-STRIPPED=('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH')
+-EXPECTED='MIN=30\n-3=30\n-1=30\n0=30\n1=30\n2=20\n3=30\n4=30\nMAX=30\n'
+-
+-def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+-def pin(p):
+- p=Path(p).resolve()
+- return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p),'mode':stat.S_IMODE(p.stat().st_mode)}
+-def load_module(name,path):
+- spec=importlib.util.spec_from_file_location(name,path); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod
+-def main():
+- global OUT,REC
+- ap=argparse.ArgumentParser()
+- ap.add_argument('--fixture',type=Path,default=DEFAULT_FIXTURE); ap.add_argument('--fixture-sha256',default=DEFAULT_FIXTURE_SHA)
+- ap.add_argument('--class-name',default='CandidateContinuation')
+- ap.add_argument('--oracle-class',type=Path,default=DEFAULT_ORACLE); ap.add_argument('--oracle-sha256',default=DEFAULT_ORACLE_SHA)
+- ap.add_argument('--oracle-class-name',default='Join')
+- ap.add_argument('--cli',type=Path,required=True); ap.add_argument('--cli-sha256',required=True)
+- ap.add_argument('--candidate-build',type=Path,required=True); ap.add_argument('--out',type=Path,required=True)
+- a=ap.parse_args(); OUT=a.out.resolve()
+- if OUT.exists(): ap.error('output already exists: '+str(OUT))
+- fixture=a.fixture.resolve(strict=True); oracle=a.oracle_class.resolve(strict=True); cli=a.cli.resolve(strict=True); build_path=a.candidate_build.resolve(strict=True)
+- for label,value in [('fixture',a.fixture_sha256),('oracle',a.oracle_sha256),('CLI',a.cli_sha256)]:
+-  if len(value)!=64 or any(c not in '0123456789abcdef' for c in value): ap.error(label+' SHA must be lowercase SHA-256')
+- if sha(fixture)!=a.fixture_sha256: raise RuntimeError('candidate fixture SHA mismatch')
+- if sha(JOIN_REPORT)!=JOIN_REPORT_SHA or sha(PHYSICAL_JAVAP)!=PHYSICAL_JAVAP_SHA or sha(GENERATION)!=GENERATION_SHA: raise RuntimeError('pinned Join/physical/generation evidence mismatch')
+- if sha(oracle)!=a.oracle_sha256: raise RuntimeError('complete Join oracle SHA mismatch')
+- if sha(JDK_MANIFEST)!=JDK_MANIFEST_SHA or sha(JADX)!=JADX_SHA: raise RuntimeError('frozen JDK/JADX pin mismatch')
+- sys.path.insert(0,str(BUILD_EVIDENCE.parent)); from build_evidence import verify_build
+- build=verify_build(build_path,pin(cli),a.cli_sha256)
+- if sha(cli)!=a.cli_sha256: raise RuntimeError('actual CLI SHA mismatch')
+- manifest=json.loads(JDK_MANIFEST.read_text()); tools={}
+- for leg in manifest['legs']:
+-  tools[leg['leg']]={kind:Path(fact['path']).resolve(strict=True) for kind,fact in leg['jdk_tools'].items()}
+-  for kind,fact in leg['jdk_tools'].items():
+-   if sha(tools[leg['leg']][kind])!=fact['sha256']: raise RuntimeError('JDK tool SHA mismatch: '+leg['leg']+'/'+kind)
+- if set(tools)!={'javac8','javac23'}: raise RuntimeError('expected javac8 and javac23')
+- runner={}
+- for name,cls in [('candidate',a.class_name),('oracle',a.oracle_class_name)]:
+-  lines=[f'public class Runner {{ public static void main(String[] args) {{ {cls} instance = new {cls}();']
+-  for label,value in [('MIN','Integer.MIN_VALUE'),('-3','-3'),('-1','-1'),('0','0'),('1','1'),('2','2'),('3','3'),('4','4'),('MAX','Integer.MAX_VALUE')]:
+-   lines.append(f'System.out.println("{label}="+{cls}.mixedExits({value}));')
+-  lines.append('} }')
+-  runner[name]=' '.join(lines)+'\n'
+- import importlib.util
+- runner_module=load_module('candidate_replay_build_runner',Path('/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py'))
+- guard=load_module('candidate_replay_resource_guard',runner_module.GUARD)
+- scanner=load_module('candidate_replay_target_scanner',runner_module.SCAN)
+- OUT.mkdir(parents=False); (OUT/'guard').mkdir()
+- guard.OUT=OUT/'guard'; guard.target_bytes=lambda:scanner.target_bytes(ROOT)
+- guard.expected_test_summaries=lambda _i,_s:None
+- guard.command_stream=lambda path:{'path':str(Path(path).resolve()),'bytes':Path(path).stat().st_size,'sha256':sha(path)}
+- env=os.environ.copy()
+- for k in STRIPPED: env.pop(k,None)
+- env.update(guard.ENV_VALUES); env.update({'LC_ALL':'C','TZ':'UTC','JAVA_HOME':str(tools['javac23']['java'].parent.parent)})
+- REC={'schema':'candidate-continuation-full-class-replay-v1','status':'observed_pending_independent_acceptance','original_source_available':False,
+-  'fixture':pin(fixture),'class_name':a.class_name,'oracle_class':pin(oracle),'oracle_class_name':a.oracle_class_name,
+-  'cli':pin(cli),'candidate_build':build,'build_evidence':pin(build_path),'build_evidence_helper':pin(BUILD_EVIDENCE),
+-  'large_join_fallback_raw':pin(JOIN_REPORT),'physical_javap':pin(PHYSICAL_JAVAP),'generation':pin(GENERATION),'jdk_manifest':pin(JDK_MANIFEST),'jdk_tools':{leg:{k:pin(p) for k,p in row.items()} for leg,row in tools.items()},
+-  'jadx':pin(JADX),'runner_sources':{k:{'text':v,'sha256':hashlib.sha256(v.encode()).hexdigest()} for k,v in runner.items()},
+-  'guard':{'path':str(guard.GUARD.resolve()),'sha256':guard.GUARD_SHA256,'poll_seconds':1,'minimum_free_bytes':guard.FREE_LIMIT,'maximum_target_bytes':guard.TARGET_LIMIT},
+-  'expected_runtime':EXPECTED,'commands':[],'apis':{},'legs':[]}
+- def save():
+-  tmp=OUT/'.execution.json.tmp';tmp.write_text(json.dumps(REC,ensure_ascii=False,indent=2)+'\n');tmp.replace(OUT/'execution.json')
+- def run(label,argv):
+-  row=guard.run_command(len(REC['commands']),list(map(str,argv)),env); row.update(label=label,phase=label); REC['commands'].append(row); save(); return row
+- def read_stdout(row):
+-  e=row['streams']['stdout']; p=Path(e['path']); data=p.read_bytes()
+-  if len(data)!=e['bytes'] or sha(p)!=e['sha256']: raise RuntimeError('stdout raw pin mismatch')
+-  return data
+- save()
+- try:
+-  docs={}
+-  for profile in ('default','all'):
+-   argv=[cli,'class-source','--input',fixture,'--class',a.class_name,'--policy','single-class','--release','8','--format','json']
+-   if profile=='all': argv+=['--evidence','all']
+-   row=run('class-source-'+profile,argv); doc=json.loads(read_stdout(row).decode()) if row['exit_code']==0 and row['guard_stop'] is None else None; docs[profile]=doc
+-   REC['apis'][profile]={'command_index':row['index'],'methods':len(doc.get('methods',[])) if doc else None,'outcome':doc.get('outcome') if doc else None}
+-   if doc and isinstance(doc.get('text'),str):
+-    folder=OUT/'class-source'/profile;folder.mkdir(parents=True,exist_ok=True)
+-    jp=folder/'class-source.api.json';jp.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
+-    sp=folder/(a.class_name+'.java');sp.write_text(doc['text'])
+-    REC['apis'][profile].update(api_json=pin(jp),source=pin(sp))
+-   save()
+-  jar=OUT/'candidate.jar'
+-  with zipfile.ZipFile(jar,'w') as z:z.write(fixture,a.class_name+'.class')
+-  REC['jadx_input_jar']=pin(jar)
+-  jrow=run('jadx-full-class',[JADX,'--no-res','--config','none','--threads-count','1','-d',OUT/'jadx-output',jar])
+-  jsrc=OUT/'jadx-output/sources/defpackage'/(a.class_name+'.java')
+-  REC['jadx_source']=pin(jsrc) if jsrc.is_file() else None; save()
+-  for leg in ('javac8','javac23'):
+-   tool=tools[leg]
+-   for profile in ('original','default','all','jadx'):
+-    work=OUT/leg/profile;work.mkdir(parents=True);classes=work/'classes';classes.mkdir();empty=work/'empty';empty.mkdir()
+-    runpath=work/'Runner.java';runner_text=('package defpackage;\n' if profile=='jadx' else '')+runner['oracle' if profile=='original' else 'candidate'];runpath.write_text(runner_text)
+-    if profile=='original':
+-     shutil.copyfile(oracle,classes/(a.oracle_class_name+'.class')); source_args=[runpath]; cp=classes; main='Runner'
+-    else:
+-     src=jsrc if profile=='jadx' else OUT/'class-source'/profile/(a.class_name+'.java')
+-     dest=work/(a.class_name+'.java'); shutil.copyfile(src,dest); source_args=[dest,runpath];cp=empty; main='defpackage.Runner' if profile=='jadx' else 'Runner'
+-    flags=['-source','8','-target','8'] if leg=='javac8' else ['--release','8']
+-    c=run(f'{leg}-{profile}-compile',[tool['javac'],'-J-Duser.language=en','-J-Duser.country=US','-encoding','UTF-8',*flags,'-g:none','-proc:none','-classpath',cp,'-sourcepath',empty,'-d',classes,*source_args])
+-    r=run(f'{leg}-{profile}-runtime',[tool['java'],'-Xverify:all','-cp',classes,main])
+-    REC['legs'].append({'jdk':leg,'profile':profile,'source':pin(dest) if profile not in ('original',) else None,'runner':pin(runpath),'classes_dir':str(classes),'empty_dir':str(empty),'compile_index':c['index'],'runtime_index':r['index'],'runtime':r})
+-    save()
+-  REC['full_class_methods_retained']=2 if all((REC['apis'].get(p) or {}).get('methods')==2 for p in ('default','all')) else None
+-  REC['status']='all_19_commands_observed' if len(REC['commands'])==19 else 'incomplete'
+- except BaseException as e:
+-  REC['status']='collector_failed';REC['error']=f'{type(e).__name__}: {e}'
+- finally:
+-  REC['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();save()
+- print(json.dumps({'status':REC['status'],'commands':len(REC['commands']),'out':str(OUT)}))
+- return 0 if REC['status']=='all_19_commands_observed' else 1
+-if __name__=='__main__':
+- OUT=Path('/tmp/not-used');REC={'commands':[]};raise SystemExit(main())
++#!/usr/bin/env python3
++"""Collect a guarded 19-command, full-class CandidateContinuation replay."""
++from __future__ import annotations
++import argparse, datetime, hashlib, importlib.util, json, os, shutil, stat, sys, zipfile
++from pathlib import Path
++
++ROOT=Path('/Users/lordcasser/workspace/projects/jarde').resolve()
++FIXTURE=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class'
++FIXTURE_SHA='9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238'
++CLASS_BLAKE3='06d3b07c87615ef02a521748823e792acd7df229773a2cccb90cb517e61f76e2'
++JOIN_RAW=Path('/private/tmp/jarde-cross-case-continuation-diagnosis-root-v1/1.stdout.raw')
++JOIN_RAW_SHA='c58ae7e7ab27ac53d2826e17c9e36a8c16f567ccb9c3790c25046cc831f1132a'
++JAVAP=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/1.stdout.raw'
++JAVAP_SHA='37f039fe831d63981da1bf9dee369582a86d87e0653001eb5803a5046545407a'
++GENERATION=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/generation.json'
++GENERATION_SHA='f956f5b2649201a1f61d1e49806c6afbf653868c3cbccb000316cfc1d9793a5f'
++BUILD_EVIDENCE=Path('/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py')
++JDK_MANIFEST=ROOT/'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
++JDK_MANIFEST_SHA='ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
++JADX=Path('/opt/homebrew/bin/jadx').resolve()
++JADX_SHA='64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7'
++STRIPPED=('JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH')
++EXPECTED='MIN=30\n-3=30\n-1=30\n0=30\n1=30\n2=20\n3=30\n4=30\nMAX=30\n'
++def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
++def pin(p):
++ p=Path(p).resolve()
++ return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p),'mode':stat.S_IMODE(p.stat().st_mode)}
++def load_module(name,path):
++ spec=importlib.util.spec_from_file_location(name,path); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod
++def main():
++ global OUT,REC
++ ap=argparse.ArgumentParser()
++ ap.add_argument('--fixture',type=Path,default=FIXTURE); ap.add_argument('--fixture-sha256',default=FIXTURE_SHA)
++ ap.add_argument('--class-name',default='CandidateContinuation')
++ ap.add_argument('--cli',type=Path,required=True); ap.add_argument('--cli-sha256',required=True)
++ ap.add_argument('--candidate-build',type=Path,required=True); ap.add_argument('--out',type=Path,required=True)
++ a=ap.parse_args(); OUT=a.out.resolve()
++ if OUT.exists(): ap.error('output already exists: '+str(OUT))
++ fixture=a.fixture.resolve(strict=True); cli=a.cli.resolve(strict=True); build_path=a.candidate_build.resolve(strict=True)
++ if a.class_name!='CandidateContinuation': ap.error('this frozen fixture requires CandidateContinuation')
++ if sha(fixture)!=a.fixture_sha256 or a.fixture_sha256!=FIXTURE_SHA: raise RuntimeError('candidate fixture SHA mismatch')
++ for label,value in [('CLI',a.cli_sha256)]:
++  if len(value)!=64 or any(c not in '0123456789abcdef' for c in value): ap.error(label+' SHA must be lowercase SHA-256')
++ if sha(JOIN_RAW)!=JOIN_RAW_SHA or sha(JAVAP)!=JAVAP_SHA or sha(GENERATION)!=GENERATION_SHA: raise RuntimeError('pinned candidate evidence mismatch')
++ if sha(JDK_MANIFEST)!=JDK_MANIFEST_SHA or sha(JADX)!=JADX_SHA: raise RuntimeError('frozen JDK/JADX pin mismatch')
++ sys.path.insert(0,str(BUILD_EVIDENCE.parent)); from build_evidence import verify_build
++ build=verify_build(build_path,pin(cli),a.cli_sha256)
++ if sha(cli)!=a.cli_sha256: raise RuntimeError('actual CLI SHA mismatch')
++ manifest=json.loads(JDK_MANIFEST.read_text()); tools={}
++ for leg in manifest['legs']:
++  tools[leg['leg']]={kind:Path(fact['path']).resolve(strict=True) for kind,fact in leg['jdk_tools'].items()}
++  for kind,fact in leg['jdk_tools'].items():
++   if sha(tools[leg['leg']][kind])!=fact['sha256']: raise RuntimeError('JDK tool SHA mismatch: '+leg['leg']+'/'+kind)
++ if set(tools)!={'javac8','javac23'}: raise RuntimeError('expected javac8 and javac23')
++ runner='public class Runner { public static void main(String[] args) { CandidateContinuation instance = new CandidateContinuation(); System.out.println("MIN="+CandidateContinuation.mixedExits(Integer.MIN_VALUE)); System.out.println("-3="+CandidateContinuation.mixedExits(-3)); System.out.println("-1="+CandidateContinuation.mixedExits(-1)); System.out.println("0="+CandidateContinuation.mixedExits(0)); System.out.println("1="+CandidateContinuation.mixedExits(1)); System.out.println("2="+CandidateContinuation.mixedExits(2)); System.out.println("3="+CandidateContinuation.mixedExits(3)); System.out.println("4="+CandidateContinuation.mixedExits(4)); System.out.println("MAX="+CandidateContinuation.mixedExits(Integer.MAX_VALUE)); } }\n'
++ runner_module=load_module('candidate_replay_build_runner',Path('/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py'))
++ guard=load_module('candidate_replay_resource_guard',runner_module.GUARD)
++ scanner=load_module('candidate_replay_target_scanner',runner_module.SCAN)
++ OUT.mkdir(parents=False); (OUT/'guard').mkdir()
++ guard.OUT=OUT/'guard'; guard.target_bytes=lambda:scanner.target_bytes(ROOT)
++ guard.expected_test_summaries=lambda _i,_s:None
++ guard.command_stream=lambda path:{'path':str(Path(path).resolve()),'bytes':Path(path).stat().st_size,'sha256':sha(path)}
++ env=os.environ.copy()
++ for k in STRIPPED: env.pop(k,None)
++ env.update(guard.ENV_VALUES); env.update({'LC_ALL':'C','TZ':'UTC','JAVA_HOME':str(tools['javac23']['java'].parent.parent)})
++ REC={'schema':'candidate-continuation-full-class-replay-v2','status':'observed_pending_independent_acceptance',
++  'fixture':pin(fixture),'fixture_blake3':CLASS_BLAKE3,'class_name':a.class_name,
++  'canonical_original':pin(fixture),'cli':pin(cli),'candidate_build':build,'build_evidence':pin(build_path),
++  'build_evidence_helper':pin(BUILD_EVIDENCE),'large_join_fallback_raw':pin(JOIN_RAW),
++  'physical_javap':pin(JAVAP),'generation':pin(GENERATION),'jdk_manifest':pin(JDK_MANIFEST),
++  'jdk_tools':{leg:{k:pin(p) for k,p in row.items()} for leg,row in tools.items()},
++  'jadx':pin(JADX),'runner_source':{'text':runner,'sha256':hashlib.sha256(runner.encode()).hexdigest()},
++  'guard':{'path':str(guard.GUARD.resolve()),'sha256':guard.GUARD_SHA256,'poll_seconds':1,'minimum_free_bytes':guard.FREE_LIMIT,'maximum_target_bytes':guard.TARGET_LIMIT},
++  'expected_runtime':EXPECTED,'commands':[],'apis':{},'legs':[]}
++ def save():
++  tmp=OUT/'.execution.json.tmp'; tmp.write_text(json.dumps(REC,ensure_ascii=False,indent=2)+'\n'); tmp.replace(OUT/'execution.json')
++ def run(label,argv):
++  row=guard.run_command(len(REC['commands']),list(map(str,argv)),env); row.update(label=label,phase=label); REC['commands'].append(row); save(); return row
++ def read_stdout(row):
++  e=row['streams']['stdout']; p=Path(e['path']); data=p.read_bytes()
++  if len(data)!=e['bytes'] or sha(p)!=e['sha256']: raise RuntimeError('stdout raw pin mismatch')
++  return data
++ save()
++ try:
++  docs={}
++  for profile in ('default','all'):
++   argv=[cli,'class-source','--input',fixture,'--class',a.class_name,'--policy','single-class','--release','8','--format','json']
++   if profile=='all': argv+=['--evidence','all']
++   row=run('class-source-'+profile,argv)
++   doc=json.loads(read_stdout(row).decode()) if row['exit_code']==0 and row['guard_stop'] is None else None
++   docs[profile]=doc
++   REC['apis'][profile]={'command_index':row['index'],'methods':len(doc.get('methods',[])) if doc else None,'outcome':doc.get('outcome') if doc else None}
++   if doc and isinstance(doc.get('text'),str):
++    folder=OUT/'class-source'/profile; folder.mkdir(parents=True,exist_ok=True)
++    jp=folder/'class-source.api.json'; jp.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n')
++    sp=folder/(a.class_name+'.java'); sp.write_text(doc['text'])
++    REC['apis'][profile].update(api_json=pin(jp),source=pin(sp))
++   save()
++  jar=OUT/'candidate.jar'
++  with zipfile.ZipFile(jar,'w') as z: z.write(fixture,a.class_name+'.class')
++  REC['jadx_input_jar']=pin(jar)
++  jrow=run('jadx-full-class',[JADX,'--no-res','--config','none','--threads-count','1','-d',OUT/'jadx-output',jar])
++  jsrc=OUT/'jadx-output/sources/defpackage'/(a.class_name+'.java')
++  REC['jadx_source']=pin(jsrc) if jsrc.is_file() else None; save()
++  for leg in ('javac8','javac23'):
++   tool=tools[leg]
++   for profile in ('original','default','all','jadx'):
++    work=OUT/leg/profile; work.mkdir(parents=True); classes=work/'classes'; classes.mkdir(); empty=work/'empty'; empty.mkdir()
++    runpath=work/'Runner.java'; runner_text=('package defpackage;\n' if profile=='jadx' else '')+runner; runpath.write_text(runner_text)
++    if profile=='original':
++     shutil.copyfile(fixture,classes/(a.class_name+'.class')); source_args=[runpath]; cp=classes; main='Runner'
++    else:
++     src=jsrc if profile=='jadx' else OUT/'class-source'/profile/(a.class_name+'.java')
++     dest=work/(a.class_name+'.java'); shutil.copyfile(src,dest); source_args=[dest,runpath]; cp=empty; main='defpackage.Runner' if profile=='jadx' else 'Runner'
++    flags=['-source','8','-target','8'] if leg=='javac8' else ['--release','8']
++    c=run(leg+'-'+profile+'-compile',[tool['javac'],'-J-Duser.language=en','-J-Duser.country=US','-encoding','UTF-8',*flags,'-g:none','-proc:none','-classpath',cp,'-sourcepath',empty,'-d',classes,*source_args])
++    r=run(leg+'-'+profile+'-runtime',[tool['java'],'-Xverify:all','-cp',classes,main])
++    REC['legs'].append({'jdk':leg,'profile':profile,'source':pin(dest) if profile!='original' else None,'runner':pin(runpath),'classes_dir':str(classes),'empty_dir':str(empty),'compile_index':c['index'],'runtime_index':r['index'],'runtime':r})
++    save()
++  REC['full_class_methods_retained']=2 if all((REC['apis'].get(p) or {}).get('methods')==2 for p in ('default','all')) else None
++  REC['status']='all_19_commands_observed' if len(REC['commands'])==19 else 'incomplete'
++ except BaseException as e:
++  REC['status']='collector_failed'; REC['error']=type(e).__name__+': '+str(e)
++ finally:
++  REC['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat(); save()
++ print(json.dumps({'status':REC['status'],'commands':len(REC['commands']),'out':str(OUT)}))
++ return 0 if REC['status']=='all_19_commands_observed' else 1
++if __name__=='__main__':
++ OUT=Path('/tmp/not-used'); REC={'commands':[]}; raise SystemExit(main())
+--- a/verify.py
++++ b/verify.py
+@@ -1,246 +1,218 @@
+-#!/usr/bin/env python3
+-"""Independent acceptance of the controlled full-class CandidateContinuation replay."""
+-from __future__ import annotations
+-import argparse, hashlib, json, re, stat, sys
+-from pathlib import Path
+-
+-ROOT=Path('/Users/lordcasser/workspace/projects/jarde').resolve()
+-BUILD_EVIDENCE=Path('/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py')
+-BUILD_EVIDENCE_SHA='8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3'
+-GUARD=ROOT/'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+-GUARD_SHA='51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'
+-JDK_MANIFEST=ROOT/'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
+-JDK_MANIFEST_SHA='ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
+-JADX=Path('/opt/homebrew/bin/jadx').resolve()
+-JADX_SHA='64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7'
+-FIXTURE=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class'
+-FIXTURE_SHA='9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238'
+-ORACLE=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/fixtures/cross-case/Join.class'
+-ORACLE_SHA='bec9b2bbbbb1b0ec2af20f125368bfd66b855efa4d188bac3d735d99cbfcf6c0'
+-JOIN_RAW=Path('/private/tmp/jarde-cross-case-continuation-diagnosis-root-v1/1.stdout.raw')
+-JOIN_RAW_SHA='c58ae7e7ab27ac53d2826e17c9e36a8c16f567ccb9c3790c25046cc831f1132a'
+-JAVAP=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/1.stdout.raw'
+-JAVAP_SHA='37f039fe831d63981da1bf9dee369582a86d87e0653001eb5803a5046545407a'
+-GENERATION=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/generation.json'
+-GENERATION_SHA='f956f5b2649201a1f61d1e49806c6afbf653868c3cbccb000316cfc1d9793a5f'
+-EXPECTED=b'MIN=30\n-3=30\n-1=30\n0=30\n1=30\n2=20\n3=30\n4=30\nMAX=30\n'
+-TARGET_BCIS={0,1,2,3,28,30,31,34,36,37,39,40,41}
+-LEGS=tuple((jdk,profile) for jdk in ('javac8','javac23') for profile in ('original','default','all','jadx'))
+-LABELS=['class-source-default','class-source-all','jadx-full-class']+[f'{j}-{p}-{phase}' for j,p in LEGS for phase in ('compile','runtime')]
+-
+-def require(ok,msg):
+- if not ok: raise AssertionError(msg)
+-def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+-def pin_matches(entry):
+- p=Path(entry['path'])
+- return p.is_file() and p.stat().st_size==entry['bytes'] and sha(p)==entry['sha256']
+-def byte_text(value):
+- if isinstance(value,str): return value
+- return bytes(value).decode('utf-8')
+-def raw_for(out,row,index):
+- require(row.get('index')==index,f'command index drift {index}')
+- got={}
+- for key in ('stdout','stderr'):
+-  e=row.get('streams',{}).get(key); require(isinstance(e,dict) and pin_matches(e),f'raw stream pin {index}/{key}')
+-  p=Path(e['path']).resolve(); require(p==(out/'guard'/f'{index}.{key}.raw').resolve(),f'raw stream location {index}/{key}')
+-  got[key]=p.read_bytes()
+- return got
+-def parse_cp(text):
+- pool={}
+- in_pool=False
+- for line in text.splitlines():
+-  if line.strip()=='Constant pool:': in_pool=True; continue
+-  if in_pool and line.strip()=='{': break
+-  if not in_pool: continue
+-  m=re.match(r's*#(d+) = (S+)(?:s+(.*))?$',line)
+-  if not m: continue
+-  idx,tag,body=int(m.group(1)),m.group(2),m.group(3) or ''
+-  refs=[int(x) for x in re.findall(r'#(d+)',body)]
+-  utf8=None
+-  u=re.search(r'= Utf8s+(.*)$',line)
+-  if u: utf8=u.group(1)
+-  pool[idx]={'tag':tag,'refs':refs,'utf8':utf8}
+- require(bool(pool),'javap constant pool is absent')
+- for idx,row in pool.items():
+-  for ref in row['refs']: require(ref in pool,f'constant pool #{idx} references absent #{ref}')
+-  if row['tag']=='Class':
+-   require(len(row['refs'])==1 and pool[row['refs'][0]]['tag']=='Utf8',f'class #{idx} lacks UTF8 closure')
+-  elif row['tag']=='NameAndType':
+-   require(len(row['refs'])==2 and all(pool[x]['tag']=='Utf8' for x in row['refs']),f'name/type #{idx} lacks UTF8 closure')
+-  elif row['tag']=='Methodref':
+-   require(len(row['refs'])==2 and pool[row['refs'][0]]['tag']=='Class' and pool[row['refs'][1]]['tag']=='NameAndType',f'methodref #{idx} is not closed')
+-  else: require(row['tag']=='Utf8',f'unexpected constant-pool tag {row["tag"]}')
+- return pool
+-def map_origins(report,fixture_digest,fixture_len,method_name,descriptor):
+- sm=report.get('source_map'); require(isinstance(sm,dict) and isinstance(sm.get('segments'),list) and sm['segments'],'source map missing')
+- bcis=set(); text=report.get('text','')
+- for seg in sm['segments']:
+-  a,b=seg.get('start'),seg.get('end')
+-  require(isinstance(a,int) and isinstance(b,int) and 0<=a<=b<=len(text),'source-map span outside complete method text')
+-  origin=seg.get('origin',{}); origins=[]
+-  if isinstance(origin.get('primary'),dict): origins.append(origin['primary'])
+-  origins.extend(x for x in origin.get('derived',[]) if isinstance(x,dict))
+-  require(origins,'source-map segment has no physical owner')
+-  for o in origins:
+-   m=o.get('method',{}); owner=m.get('owner',{}).get('class_bytes',{})
+-   require(owner.get('digest')==fixture_digest and owner.get('length')==fixture_len,'source-map owner differs from candidate class')
+-   require(byte_text(m.get('name',[]))==method_name and byte_text(m.get('descriptor',[]))==descriptor,'source-map method owner mismatch')
+-   bci=o.get('bci'); require(isinstance(bci,int),'source-map BCI missing'); bcis.add(bci)
+-   cp=o.get('cp')
+-   require(cp is None or cp in CP_POOL,'source-map constant-pool link is unresolved')
+- return bcis
+-def api_methods(api,label,digest,length):
+- require(api.get('outcome')=='performed',f'{label}: whole-class API not performed')
+- cls=api.get('class',{}).get('class_bytes',{})
+- require(cls.get('digest')==digest and cls.get('length')==length,f'{label}: class identity does not match full candidate bytes')
+- require(api.get('fields')==[],f'{label}: unexpected fields')
+- methods=api.get('methods')
+- require(isinstance(methods,list) and len(methods)==2,f'{label}: expected exactly two retained methods')
+- rows=[]
+- reports={}
+- for i,item in enumerate(methods):
+-  mem=item.get('item',{}); name=mem.get('name',{}).get('escaped'); desc=mem.get('descriptor',{}).get('escaped')
+-  rows.append((name,desc)); require(mem.get('index')==i,f'{label}: method ordering/index mismatch')\n  require(item.get('markers')==[],f'{label}: unexpected method marker')\n  require(mem.get('access_flags')==(1 if i==0 else 8),f'{label}: constructor/static method flags changed')
+-  owner=mem.get('identity',{}).get('owner',{}).get('class_bytes',{})
+-  require(owner.get('digest')==digest and owner.get('length')==length,f'{label}: method identity owner mismatch')
+-  out=item.get('outcome',{}); rep=out.get('report',{})
+-  require(out.get('kind')=='recovered' and rep.get('outcome')=='produced',f'{label}: {name}{desc} not recovered')
+-  require(rep.get('quality')=='structured' and rep.get('representation')=='java' and rep.get('fallbacks')==[],f'{label}: {name}{desc} is not complete structured Java')
+-  reports[(name,desc)]=rep
+- require(rows==[('<init>','()V'),('mixedExits','(I)I')],f'{label}: wrong members retained {rows!r}')
+- return reports
+-def main():
+- global CP_POOL
+- ap=argparse.ArgumentParser()
+- ap.add_argument('--execution',type=Path,required=True); ap.add_argument('--candidate-build',type=Path,required=True)
+- ap.add_argument('--cli-sha256',required=True); ap.add_argument('--out',type=Path,required=True)
+- a=ap.parse_args(); ep=a.execution.resolve(strict=True); out=ep.parent; op=a.out.resolve()
+- require(not op.exists(),'verification output already exists')
+- rec=json.loads(ep.read_text(encoding='utf-8'))
+- require(rec.get('schema')=='candidate-continuation-full-class-replay-v1' and rec.get('original_source_available') is False,'execution schema/source boundary mismatch')
+- require(rec.get('fixture',{}).get('path')==str(FIXTURE) and sha(FIXTURE)==FIXTURE_SHA and rec['fixture'].get('sha256')==FIXTURE_SHA,'candidate fixture SHA/path mismatch')
+- require(rec.get('oracle_class',{}).get('path')==str(ORACLE) and sha(ORACLE)==ORACLE_SHA and rec['oracle_class'].get('sha256')==ORACLE_SHA,'full Join oracle class pin mismatch')
+- require(rec.get('class_name')=='CandidateContinuation' and rec.get('oracle_class_name')=='Join','class names mismatch')
+- require(sha(JOIN_RAW)==JOIN_RAW_SHA and pin_matches(rec['large_join_fallback_raw']),'complete Join fallback raw pin mismatch')
+- 
+- join=json.loads(JOIN_RAW.read_text(encoding='utf-8')); jmethods=join.get('methods',[])
+- require(join.get('class',{}).get('class_bytes')=={'digest':'f3f0c46b3b4933ff59edc09c38bc6af3c3721aade8a9f4e5a2eae6d191068718','length':726},'Join raw is not the complete frozen original class')
+- require(join.get('declaration',{}).get('name')=='Join' and len(jmethods)==7,'large Join baseline must retain all seven members')
+- outcomes={m.get('item',{}).get('name',{}).get('escaped'):m.get('outcome',{}).get('report',{}) for m in jmethods}
+- for name in ('deepCatch','pick'):
+-  rep=outcomes.get(name,{})
+-  require(rep.get('quality')=='fallback' and rep.get('fallbacks'),'large Join expected fallback missing: '+name)
+- require(sha(JAVAP)==JAVAP_SHA and pin_matches(rec['physical_javap']),'pinned physical javap rows mismatch')
+- require(sha(GENERATION)==GENERATION_SHA and pin_matches(rec['generation']),'candidate generation record mismatch')
+- gen=json.loads(GENERATION.read_text(encoding='utf-8'))
+- require(gen.get('control_class',{}).get('sha256')==FIXTURE_SHA and gen['control_class'].get('bytes')==255 and gen.get('member_count')==2 and gen.get('code_bytes')==42 and gen.get('code_sha256')=='d8428ee78a6b587fcba9f412f119e33302f903019ac6bb8486269b5087363736' and gen.get('same_target_code') is True and gen.get('old_variant_sha256')==ORACLE_SHA and gen.get('old_goto_offset')==9 and gen.get('new_goto_offset')==6,'generation metadata does not prove the bounded complete-class control')
+- physical=JAVAP.read_text(encoding='utf-8')
+- require('public class CandidateContinuation' in physical and 'major version: 52' in physical,'javap owner/version is not the controlled Java 8 candidate')
+- headers=[line.strip() for line in physical.splitlines() if line.strip() in ('public CandidateContinuation();','static int mixedExits(int);')]
+- require(headers==['public CandidateContinuation();','static int mixedExits(int);'],'candidate javap member inventory is not the exact two-member class')
+- CP_POOL=parse_cp(physical)
+- block=re.search(r'static int mixedExits(int);([\s\S]*?)(?:\n  }|\Z)',physical)
+- require(block is not None,'mixedExits javap block missing')
+- bcis=[int(x) for x in re.findall(r'^\s*(\d+):',block.group(1),re.M)]
+- require(len(bcis)==13 and len(set(bcis))==13 and set(bcis)==TARGET_BCIS,'mixedExits physical instruction BCI set mismatch')
+- for needle in ('lookupswitch  { // 2','1: 28','2: 34','default: 37','goto          37','40: iload_1','41: ireturn'):
+-  require(needle in block.group(1),'physical target shape missing: '+needle)
+- require(sha(BUILD_EVIDENCE)==BUILD_EVIDENCE_SHA,'build-evidence helper SHA mismatch')
+- sys.path.insert(0,str(BUILD_EVIDENCE.parent)); from build_evidence import verify_build
+- build_path=a.candidate_build.resolve(strict=True)
+- require(rec.get('build_evidence',{}).get('path')==str(build_path) and rec['build_evidence'].get('sha256')==sha(build_path),'candidate build record path/SHA mismatch')
+- build=verify_build(build_path,rec.get('cli'),a.cli_sha256)
+- cli=Path(build['cli']['path']).resolve(strict=True)
+- require(rec.get('candidate_build')==build and rec.get('cli',{}).get('sha256')==a.cli_sha256 and sha(cli)==a.cli_sha256,'actual v2 CLI/build pin mismatch')
+- require(stat.S_IMODE(cli.stat().st_mode)==0o555,'candidate CLI mode differs from accepted build')
+- build_helper=rec.get('build_evidence_helper',{})
+- require(pin_matches(build_helper) and build_helper['sha256']==BUILD_EVIDENCE_SHA,'build helper pin mismatch')
+- require(sha(GUARD)==GUARD_SHA and rec.get('guard',{}).get('path')==str(GUARD.resolve()) and rec['guard'].get('sha256')==GUARD_SHA,'resource guard pin mismatch')
+- require(rec['guard'].get('poll_seconds')==1 and rec['guard'].get('minimum_free_bytes')==5*1024**3 and rec['guard'].get('maximum_target_bytes')==1024**3,'5GiB/1GiB/1sec guard values mismatch')
+- require(sha(JDK_MANIFEST)==JDK_MANIFEST_SHA and pin_matches(rec['jdk_manifest']),'frozen JDK manifest mismatch')
+- manifest=json.loads(JDK_MANIFEST.read_text()); tool_rows={x['leg']:x['jdk_tools'] for x in manifest['legs']}
+- require(set(tool_rows)=={'javac8','javac23'},'expected both frozen JDK legs')
+- tools={}
+- for leg,rows in tool_rows.items():
+-  tools[leg]={}
+-  for kind,fact in rows.items():
+-   p=Path(fact['path']).resolve(strict=True); saved=rec['jdk_tools'][leg][kind]
+-   require(sha(p)==fact['sha256'] and pin_matches(saved) and Path(saved['path']).resolve()==p,'JDK pin mismatch '+leg+'/'+kind)
+-   tools[leg][kind]=p
+- require(sha(JADX)==JADX_SHA and pin_matches(rec['jadx']),'JADX pin mismatch')
+- commands=rec.get('commands')
+- require(isinstance(commands,list) and len(commands)==19 and rec.get('status')=='all_19_commands_observed','not all 19 commands recorded')
+- for i,row in enumerate(commands):
+-  require(row.get('label')==LABELS[i] and row.get('exit_code')==0 and row.get('guard_stop') is None,'command label/exit/guard mismatch '+str(i))
+-  require(Path(row.get('cwd','')).resolve()==ROOT and row.get('peak_target_bytes',0)<=1024**3 and row.get('free_bytes_after',0)>=5*1024**3,'command resource/cwd limits failed')
+-  raw_for(out,row,i)
+- require(rec.get('full_class_methods_retained')==2,'collector did not retain exactly two candidate methods')
+- cliargs=[str(cli),'class-source','--input',str(FIXTURE),'--class','CandidateContinuation','--policy','single-class','--release','8','--format','json']
+- require(commands[0]['argv']==cliargs and commands[1]['argv']==cliargs+['--evidence','all'],'class-source command args differ')\n require(commands[2]['argv']==[str(JADX),'--no-res','--config','none','--threads-count','1','-d',str(out/'jadx-output'),str(out/'candidate.jar')],'JADX full-class invocation differs')
+- api={}
+- reports={}
+- for profile,index in [('default',0),('all',1)]:
+-  raw=raw_for(out,commands[index],index)['stdout']; api[profile]=json.loads(raw.decode('utf-8'))
+-  saved=rec['apis'][profile]
+-  require(saved['methods']==2 and saved['outcome']=='performed','recorded full-class API lacks two methods')
+-  require(pin_matches(saved['api_json']) and json.loads(Path(saved['api_json']['path']).read_text())==api[profile],'saved API differs from raw')
+-  require(pin_matches(saved['source']) and Path(saved['source']['path']).read_text()==api[profile].get('text'),'saved source differs from raw API')
+-  digest=api[profile].get('class',{}).get('class_bytes',{}).get('digest'); length=api[profile].get('class',{}).get('class_bytes',{}).get('length')
+-  require(length==FIXTURE.stat().st_size,'API class length differs from fixture')
+-  reports[profile]=api_methods(api[profile],profile,digest,length)
+-  require('class CandidateContinuation' in api[profile].get('text','') and 'mixedExits' in api[profile]['text'],'full candidate source lacks expected members')
+- require(api['default']['text']==api['all']['text'],'default/all source differs')
+- for key in ('text','source_map','method','quality','representation','fallbacks','diagnostics'):
+-  require(reports['default'][('<init>','()V')].get(key)==reports['all'][('<init>','()V')].get(key) and reports['default'][('mixedExits','(I)I')].get(key)==reports['all'][('mixedExits','(I)I')].get(key),'default/all method '+key+' differs')
+- mixed=reports['default'][('mixedExits','(I)I')]
+- mapped=map_origins(mixed,api['default']['class']['class_bytes']['digest'],FIXTURE.stat().st_size,'mixedExits','(I)I')
+- require(mapped==TARGET_BCIS,'source map does not close over all 13 unique target BCIs')
+- constructor=reports['default'][('<init>','()V')]
+- ctor_mapped=map_origins(constructor,api['default']['class']['class_bytes']['digest'],FIXTURE.stat().st_size,'<init>','()V')
+- require(ctor_mapped=={0,1,4},'constructor source map does not cover its complete physical body')
+- jar=out/'candidate.jar'; require(pin_matches(rec['jadx_input_jar']),'JADX input jar pin mismatch')
+- import zipfile
+- with zipfile.ZipFile(jar) as z: require(z.namelist()==['CandidateContinuation.class'] and z.read('CandidateContinuation.class')==FIXTURE.read_bytes(),'JADX input is not the complete pinned candidate')
+- require(commands[2]['argv']==[str(JADX),'--no-res','--config','none','--threads-count','1','-d',str(out/'jadx-output'),str(jar)],'JADX full-class invocation differs')
+- jsrc=out/'jadx-output/sources/defpackage/CandidateContinuation.java'
+- require(jsrc.is_file() and pin_matches(rec['jadx_source']),'JADX whole-class source missing')
+- expected=EXPECTED
+- runtimes={}
+- for i,(leg,profile) in enumerate(LEGS):
+-  row=rec['legs'][i]; work=out/leg/profile; classes=work/'classes'; empty=work/'empty'
+-  require((row.get('jdk'),row.get('profile'))==(leg,profile),'runtime leg order mismatch')
+-  runner=work/'Runner.java'; expected_class='Join' if profile=='original' else 'CandidateContinuation'
+-  expected_runner=('package defpackage;\n' if profile=='jadx' else '')+' '.join(
+-   [f'public class Runner {{ public static void main(String[] args) {{ {expected_class} instance = new {expected_class}();']+
+-   [f'System.out.println("{label}="+{expected_class}.mixedExits({val}));' for label,val in [('MIN','Integer.MIN_VALUE'),('-3','-3'),('-1','-1'),('0','0'),('1','1'),('2','2'),('3','3'),('4','4'),('MAX','Integer.MAX_VALUE')]]+['} }'])+'\n'
+-  require(runner.read_text()==expected_runner and pin_matches(row['runner']),'Runner source mismatch '+leg+'/'+profile)
+-  idx=3+i*2; c,r=commands[idx],commands[idx+1]
+-  require(row.get('compile_index')==idx and row.get('runtime_index')==idx+1 and row.get('runtime')==r,'runtime command indices mismatch')
+-  cp=classes if profile=='original' else empty
+-  flags=['-source','8','-target','8'] if leg=='javac8' else ['--release','8']
+-  src=work/'CandidateContinuation.java'
+-  sourceargs=[runner] if profile=='original' else [src,runner]
+-  expected_compile=list(map(str,[tools[leg]['javac'],'-J-Duser.language=en','-J-Duser.country=US','-encoding','UTF-8',*flags,'-g:none','-proc:none','-classpath',cp,'-sourcepath',empty,'-d',classes,*sourceargs]))
+-  require(c['argv']==expected_compile,'javac args mismatch '+leg+'/'+profile)
+-  main='defpackage.Runner' if profile=='jadx' else 'Runner'
+-  require(r['argv']==list(map(str,[tools[leg]['java'],'-Xverify:all','-cp',classes,main])),'runtime args mismatch '+leg+'/'+profile)
+-  if profile=='original':
+-   require((classes/'Join.class').read_bytes()==ORACLE.read_bytes(),'original profile did not use full Join.class')
+-   require(not src.exists(),'original oracle profile must not compile extracted method source')
+-   entries=sorted(p.relative_to(classes).as_posix() for p in classes.rglob('*.class'))
+-   require(entries==['Join.class','Runner.class'],'original profile class inventory changed')
+-  else:
+-   source_path=jsrc if profile=='jadx' else Path(rec['apis'][profile]['source']['path'])
+-   require(src.read_bytes()==source_path.read_bytes(),'candidate source copy differs from full-class source')
+-   expected_entries=['defpackage/CandidateContinuation.class','defpackage/Runner.class'] if profile=='jadx' else ['CandidateContinuation.class','Runner.class']
+-   require(sorted(p.relative_to(classes).as_posix() for p in classes.rglob('*.class'))==expected_entries,'candidate whole-class member inventory mismatch')
+-  raw=raw_for(out,r,i*2+4)['stdout']
+-  require(raw==expected and raw_for(out,r,i*2+4)['stderr']==b'','runtime mismatch '+leg+'/'+profile)
+-  runtimes[(leg,profile)]=(r['exit_code'],raw)
+- for leg in ('javac8','javac23'):
+-  oracle=runtimes[(leg,'original')]
+-  require(all(runtimes[(leg,p)]==oracle for p in ('default','all','jadx')),leg+' CandidateContinuation differs from complete Join bytecode oracle')
+- result={'schema':'candidate-continuation-full-class-replay-acceptance-v1','state':'accepted','execution':str(ep),'execution_sha256':sha(ep),'candidate_build':build,'candidate_fixture':rec['fixture'],'complete_join_oracle':rec['oracle_class'],'large_join_fallback_raw':rec['large_join_fallback_raw'],'physical_target_bcis':sorted(TARGET_BCIS),'constant_pool_utf8_closure':'all references resolve through Class/NameAndType to Utf8','candidate_methods':[{'name':'<init>','descriptor':'()V'},{'name':'mixedExits','descriptor':'(I)I'}],'command_count':19,'runtime_legs':8,'runtime_stdout':expected.decode(),'checks':['actual v2 CLI and build evidence','pinned full seven-member Join report retains deepCatch/pick fallback','candidate class contains exactly two methods','physical mixedExits target has 13 unique BCIs and closed UTF8 pool','source-map owner and BCI closure','full-class default/all/JADX compile and -Xverify:all behavior against complete Join class']}
+- op.parent.mkdir(parents=True,exist_ok=True);op.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+- print(json.dumps({'state':'accepted','commands':19,'runtime_legs':8,'out':str(op)}));return 0
+-if __name__=='__main__': raise SystemExit(main())
++#!/usr/bin/env python3
++"""Independent acceptance for a complete two-member CandidateContinuation replay."""
++from __future__ import annotations
++import argparse, hashlib, json, re, stat, sys
++from pathlib import Path
++
++ROOT=Path('/Users/lordcasser/workspace/projects/jarde').resolve()
++BUILD_EVIDENCE=Path('/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py')
++BUILD_EVIDENCE_SHA='8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3'
++GUARD=ROOT/'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
++GUARD_SHA='51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'
++MANIFEST=ROOT/'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
++MANIFEST_SHA='ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
++JADX=Path('/opt/homebrew/bin/jadx').resolve()
++JADX_SHA='64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7'
++FIXTURE=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class'
++FIXTURE_SHA='9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238'
++CLASS_BLAKE3='06d3b07c87615ef02a521748823e792acd7df229773a2cccb90cb517e61f76e2'
++JOIN_RAW=Path('/private/tmp/jarde-cross-case-continuation-diagnosis-root-v1/1.stdout.raw')
++JOIN_RAW_SHA='c58ae7e7ab27ac53d2826e17c9e36a8c16f567ccb9c3790c25046cc831f1132a'
++JAVAP=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/1.stdout.raw'
++JAVAP_SHA='37f039fe831d63981da1bf9dee369582a86d87e0653001eb5803a5046545407a'
++GENERATION=ROOT/'openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/generation.json'
++GENERATION_SHA='f956f5b2649201a1f61d1e49806c6afbf653868c3cbccb000316cfc1d9793a5f'
++EXPECTED=b'MIN=30\n-3=30\n-1=30\n0=30\n1=30\n2=20\n3=30\n4=30\nMAX=30\n'
++TARGET_BCIS={0,1,2,3,28,30,31,34,36,37,39,40,41}
++LEGS=tuple((j,p) for j in ('javac8','javac23') for p in ('original','default','all','jadx'))
++LABELS=['class-source-default','class-source-all','jadx-full-class']+[j+'-'+p+'-'+phase for j,p in LEGS for phase in ('compile','runtime')]
++def require(ok,msg):
++ if not ok: raise AssertionError(msg)
++def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
++def pin_matches(entry):
++ p=Path(entry['path'])
++ return p.is_file() and p.stat().st_size==entry['bytes'] and sha(p)==entry['sha256']
++def byte_text(value):
++ if isinstance(value,str): return value
++ return bytes(value).decode('utf-8')
++def raw_for(out,row,index):
++ require(row.get('index')==index,'command index drift '+str(index))
++ got={}
++ for key in ('stdout','stderr'):
++  e=row.get('streams',{}).get(key)
++  require(isinstance(e,dict) and pin_matches(e),'raw stream pin '+str(index)+'/'+key)
++  require(Path(e['path']).resolve()==(out/'guard'/(str(index)+'.'+key+'.raw')).resolve(),'raw stream location drift')
++  got[key]=Path(e['path']).read_bytes()
++ return got
++def map_origins(report,digest,length,name,descriptor):
++ sm=report.get('source_map')
++ require(isinstance(sm,dict) and isinstance(sm.get('segments'),list) and sm['segments'],'source map missing')
++ bcis=set()
++ text=report.get('text','')
++ text_bytes=len(text.encode('utf-8'))
++ for seg in sm['segments']:
++  a,b=seg.get('start'),seg.get('end')
++  require(isinstance(a,int) and isinstance(b,int) and 0<=a<=b<=text_bytes,'source-map byte span outside UTF-8 method text')
++  origin=seg.get('origin',{})
++  origins=[]
++  if isinstance(origin.get('primary'),dict): origins.append(origin['primary'])
++  origins.extend(x for x in origin.get('derived',[]) if isinstance(x,dict))
++  require(bool(origins),'source-map segment has no physical owner')
++  for o in origins:
++   m=o.get('method',{})
++   owner=m.get('owner',{}).get('class_bytes',{})
++   require(owner.get('digest')==digest and owner.get('length')==length,'source-map owner differs from candidate class')
++   require(byte_text(m.get('name',[]))==name and byte_text(m.get('descriptor',[]))==descriptor,'source-map method owner mismatch')
++   bci=o.get('bci')
++   require(isinstance(bci,int),'source-map BCI missing')
++   bcis.add(bci)
++ return bcis
++def api_methods(api,label):
++ require(api.get('outcome')=='performed',label+': whole-class API not performed')
++ cls=api.get('class',{}).get('class_bytes',{})
++ require(cls.get('digest')==CLASS_BLAKE3 and cls.get('length')==255,label+': API class identity differs from frozen class BLAKE3/length')
++ require(api.get('fields')==[],label+': unexpected fields')
++ methods=api.get('methods')
++ require(isinstance(methods,list) and len(methods)==2,label+': expected exactly two retained methods')
++ rows=[]
++ reports={}
++ for i,item in enumerate(methods):
++  mem=item.get('item',{})
++  name=mem.get('name',{}).get('escaped')
++  desc=mem.get('descriptor',{}).get('escaped')
++  rows.append((name,desc))
++  require(mem.get('index')==i,label+': member ordering/index mismatch')
++  require(item.get('markers')==[],label+': unexpected method marker')
++  require(mem.get('access_flags')==(1 if i==0 else 8),label+': member access flags changed')
++  owner=mem.get('identity',{}).get('owner',{}).get('class_bytes',{})
++  require(owner.get('digest')==CLASS_BLAKE3 and owner.get('length')==255,label+': method owner identity mismatch')
++  outcome=item.get('outcome',{})
++  rep=outcome.get('report',{})
++  require(outcome.get('kind')=='recovered' and rep.get('outcome')=='produced',label+': method not recovered')
++  require(rep.get('quality')=='structured' and rep.get('representation')=='java' and rep.get('fallbacks')==[],label+': method output is incomplete/fallback')
++  reports[(name,desc)]=rep
++ require(rows==[('<init>','()V'),('mixedExits','(I)I')],label+': wrong retained members '+repr(rows))
++ return reports
++def main():
++ ap=argparse.ArgumentParser()
++ ap.add_argument('--execution',type=Path,required=True)
++ ap.add_argument('--candidate-build',type=Path,required=True)
++ ap.add_argument('--cli-sha256',required=True)
++ ap.add_argument('--out',type=Path,required=True)
++ a=ap.parse_args()
++ ep=a.execution.resolve(strict=True); out=ep.parent; op=a.out.resolve()
++ require(not op.exists(),'verification output already exists')
++ rec=json.loads(ep.read_text(encoding='utf-8'))
++ require(rec.get('schema')=='candidate-continuation-full-class-replay-v2','execution schema mismatch')
++ require(rec.get('fixture',{}).get('path')==str(FIXTURE) and sha(FIXTURE)==FIXTURE_SHA and rec['fixture'].get('sha256')==FIXTURE_SHA,'candidate fixture SHA/path mismatch')
++ require(rec.get('canonical_original',{}).get('path')==str(FIXTURE) and pin_matches(rec['canonical_original']),'canonical original must be the complete CandidateContinuation class')
++ require(rec.get('fixture_blake3')==CLASS_BLAKE3,'frozen independent class BLAKE3 mismatch')
++ require(pin_matches(rec.get('large_join_fallback_raw',{})) and sha(JOIN_RAW)==JOIN_RAW_SHA,'read-only large Join raw pin mismatch')
++ join=json.loads(JOIN_RAW.read_text(encoding='utf-8'))
++ require(join.get('declaration',{}).get('name')=='Join' and len(join.get('methods',[]))==7,'large Join record must retain its seven-member scope')
++ joined={m.get('item',{}).get('name',{}).get('escaped'):m.get('outcome',{}).get('report',{}) for m in join['methods']}
++ for name in ('deepCatch','pick'):
++  require(joined.get(name,{}).get('quality')=='fallback' and joined[name].get('fallbacks'),'large Join fallback boundary record missing '+name)
++ require(sha(JAVAP)==JAVAP_SHA and pin_matches(rec.get('physical_javap',{})),'physical javap evidence pin mismatch')
++ require(sha(GENERATION)==GENERATION_SHA and pin_matches(rec.get('generation',{})),'generation evidence pin mismatch')
++ gen=json.loads(GENERATION.read_text(encoding='utf-8'))
++ control=gen.get('control_class',{})
++ require(control.get('sha256')==FIXTURE_SHA and control.get('bytes')==255 and gen.get('member_count')==2 and gen.get('code_bytes')==42 and gen.get('code_sha256')=='d8428ee78a6b587fcba9f412f119e33302f903019ac6bb8486269b5087363736' and gen.get('same_target_code') is True and gen.get('old_goto_offset')==9 and gen.get('new_goto_offset')==6,'generation record does not bind the whole-class control')
++ physical=JAVAP.read_text(encoding='utf-8')
++ require('public class CandidateContinuation' in physical and 'major version: 52' in physical,'physical class/version mismatch')
++ require('public CandidateContinuation();' in physical and 'static int mixedExits(int);' in physical,'physical two-method inventory missing')
++ block=re.search(r'static int mixedExits\(int\);([\s\S]*?)(?:\n  }|\Z)',physical)
++ require(block is not None,'mixedExits physical block missing')
++ bcis=[int(x) for x in re.findall(r'^[ \t]*(\d+):[ \t]+(?:iconst(?:_\d+)?|istore(?:_\d+)?|iload(?:_\d+)?|lookupswitch|bipush|goto|ireturn)\b',block.group(1),re.M)]
++ require(len(bcis)==13 and len(set(bcis))==13 and set(bcis)==TARGET_BCIS,'physical BCI inventory mismatch')
++ for needle in ('lookupswitch  { // 2','1: 28','2: 34','default: 37','goto          37','40: iload_1','41: ireturn'):
++  require(needle in block.group(1),'physical target shape missing '+needle)
++ require(sha(BUILD_EVIDENCE)==BUILD_EVIDENCE_SHA,'build-evidence helper SHA mismatch')
++ sys.path.insert(0,str(BUILD_EVIDENCE.parent))
++ from build_evidence import verify_build
++ build_path=a.candidate_build.resolve(strict=True)
++ require(rec.get('build_evidence',{}).get('path')==str(build_path) and rec['build_evidence'].get('sha256')==sha(build_path),'build evidence path/SHA mismatch')
++ build=verify_build(build_path,rec.get('cli'),a.cli_sha256)
++ cli=Path(build['cli']['path']).resolve(strict=True)
++ require(rec.get('candidate_build')==build and rec.get('cli',{}).get('sha256')==a.cli_sha256 and sha(cli)==a.cli_sha256,'actual CLI/build pin mismatch')
++ require(stat.S_IMODE(cli.stat().st_mode)==0o555,'candidate CLI mode mismatch')
++ require(pin_matches(rec.get('build_evidence_helper',{})) and rec['build_evidence_helper']['sha256']==BUILD_EVIDENCE_SHA,'build helper pin mismatch')
++ require(sha(GUARD)==GUARD_SHA and rec.get('guard',{}).get('path')==str(GUARD.resolve()) and rec['guard'].get('sha256')==GUARD_SHA,'guard source pin mismatch')
++ require(rec['guard'].get('poll_seconds')==1 and rec['guard'].get('minimum_free_bytes')==5*1024**3 and rec['guard'].get('maximum_target_bytes')==1024**3,'guard limit mismatch')
++ require(sha(MANIFEST)==MANIFEST_SHA and pin_matches(rec.get('jdk_manifest',{})),'JDK manifest pin mismatch')
++ manifest=json.loads(MANIFEST.read_text(encoding='utf-8'))
++ tool_rows={x['leg']:x['jdk_tools'] for x in manifest['legs']}
++ require(set(tool_rows)=={'javac8','javac23'},'expected both frozen JDK legs')
++ for leg,rows in tool_rows.items():
++  for kind,fact in rows.items():
++   saved=rec['jdk_tools'][leg][kind]; p=Path(fact['path']).resolve(strict=True)
++   require(sha(p)==fact['sha256'] and pin_matches(saved) and Path(saved['path']).resolve()==p,'JDK pin mismatch '+leg+'/'+kind)
++ require(sha(JADX)==JADX_SHA and pin_matches(rec.get('jadx',{})),'JADX pin mismatch')
++ require(len(rec.get('commands',[]))==19,'expected exact 19-command replay')
++ require([x.get('label') for x in rec['commands']]==LABELS,'command order/argv labels mismatch')
++ cli_path=rec['cli']['path']
++ out_path=str(out)
++ api0=[cli_path,'class-source','--input',str(FIXTURE),'--class','CandidateContinuation','--policy','single-class','--release','8','--format','json']
++ api1=api0+['--evidence','all']
++ jar_path=str(out/'candidate.jar')
++ jadx_argv=[str(JADX),'--no-res','--config','none','--threads-count','1','-d',str(out/'jadx-output'),jar_path]
++ expected_argv=[api0,api1,jadx_argv]
++ for jdk,profile in LEGS:
++  item=next(x for x in rec['legs'] if x.get('jdk')==jdk and x.get('profile')==profile)
++  work=Path(item['runner']['path']).parent; classes=Path(item['classes_dir']); empty=Path(item['empty_dir']); runpath=Path(item['runner']['path'])
++  tool=rec['jdk_tools'][jdk]
++  flags=['-source','8','-target','8'] if jdk=='javac8' else ['--release','8']
++  src=[str(runpath)] if profile=='original' else [str(work/'CandidateContinuation.java'),str(runpath)]
++  cp=classes if profile=='original' else empty
++  compile_argv=[tool['javac']['path'],'-J-Duser.language=en','-J-Duser.country=US','-encoding','UTF-8',*flags,'-g:none','-proc:none','-classpath',str(cp),'-sourcepath',str(empty),'-d',str(classes),*src]
++  main='defpackage.Runner' if profile=='jadx' else 'Runner'
++  runtime_argv=[tool['java']['path'],'-Xverify:all','-cp',str(classes),main]
++  expected_argv.extend([compile_argv,runtime_argv])
++ require([x.get('argv') for x in rec['commands']]==expected_argv,'full command argv differs from the frozen 19-command matrix')
++ for i,row in enumerate(rec['commands']):
++  require(row.get('guard_stop') is None and row.get('exit_code')==0,'guard/command failure at '+str(i))
++  raw=raw_for(out,row,i)
++  require(raw['stderr']==b'','stderr was not empty at '+str(i))
++ for p,label in [('default','default'),('all','all')]:
++  meta=rec.get('apis',{}).get(p,{})
++  api=json.loads(Path(meta['api_json']['path']).read_text(encoding='utf-8'))
++  require(pin_matches(meta['api_json']) and pin_matches(meta['source']),'saved API/source pin mismatch')
++  reports=api_methods(api,label)
++  require(meta.get('methods')==2,'collector method count mismatch')
++  require(reports[('<init>','()V')].get('unreachable')==[],'constructor unreachable set changed')
++  ctor=map_origins(reports[('<init>','()V')],CLASS_BLAKE3,255,'<init>','()V')
++  require(ctor=={0,1,4},label+': constructor map BCI closure mismatch')
++  mixed=map_origins(reports[('mixedExits','(I)I')],CLASS_BLAKE3,255,'mixedExits','(I)I')
++  require(mixed==TARGET_BCIS,label+': mixedExits source map does not close over all 13 physical BCIs')
++  if p=='default': default_api=api; default_source=Path(meta['source']['path']).read_bytes()
++  else:
++   require(Path(meta['source']['path']).read_bytes()==default_source,'default/all complete source differs')
++ require(rec.get('full_class_methods_retained')==2,'whole class did not retain both members')
++ source_records={x['profile']:x for x in rec['legs'] if x['jdk']=='javac8'}
++ for jdk,profile in LEGS:
++  matches=[x for x in rec['legs'] if x.get('jdk')==jdk and x.get('profile')==profile]
++  require(len(matches)==1,'runtime leg missing/duplicated '+jdk+'/'+profile)
++  item=matches[0]; ri=item['runtime_index']; ci=item['compile_index']
++  compile_row=rec['commands'][ci]; runtime_row=rec['commands'][ri]
++  argv=compile_row['argv']; rargv=runtime_row['argv']
++  require(argv[0]==rec['jdk_tools'][jdk]['javac']['path'],'compile did not use pinned javac')
++  require(rargv[0]==rec['jdk_tools'][jdk]['java']['path'] and '-Xverify:all' in rargv,'runtime did not use pinned java with full verification')
++  require(raw_for(out,runtime_row,ri)['stdout']==EXPECTED,'runtime output mismatch '+jdk+'/'+profile)
++  require(Path(item['runner']['path']).is_file() and pin_matches(item['runner']),'Runner source pin mismatch')
++  runner=Path(item['runner']['path']).read_text(encoding='utf-8')
++  require(runner.count('new CandidateContinuation()')==1 and runner.count('mixedExits(')==9,'Runner must construct once and execute nine inputs')
++  if profile=='original':
++   classfile=Path(item['classes_dir'])/'CandidateContinuation.class'
++   require(classfile.is_file() and sha(classfile)==FIXTURE_SHA,'original runtime class is not the complete pinned control')
++  else:
++   source=Path(item['source']['path'])
++   require(pin_matches(item['source']),'compiled source pin mismatch')
++   if profile in ('default','all'):
++    require(source.read_bytes()==default_source,'whole-class compiler source differs from accepted API output')
++   else:
++    require(source.is_file() and 'class CandidateContinuation' in source.read_text(encoding='utf-8'),'JADX whole-class source missing candidate class')
++ require(len(rec['legs'])==8,'expected eight full runtime legs')
++ result={'status':'accepted','commands':19,'runtime_legs':8,'inputs_per_leg':9,'members':2,'mixedExits_bcis':sorted(TARGET_BCIS),'candidate_sha256':FIXTURE_SHA,'candidate_blake3':CLASS_BLAKE3,'original_runtime':'complete CandidateContinuation.class','large_Join':'read-only seven-member fallback-boundary evidence'}
++ op.write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
++ print(json.dumps(result,sort_keys=True))
++if __name__=='__main__': main()

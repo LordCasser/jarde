@@ -1,0 +1,9 @@
+# Complete runtime baseline before compound implementation
+
+root实际20cmd，未应用CompoundIf。冻结旧候选CLI fd2d526f3e684d13179d344cf7394bbfeefb391d541ea55d01dafd81ab3d0054；新受控原始完整class2848bytes SHA2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa。两个JDK原/source 65行均match；JADX完整类两个JDK重编及运行0，64/65相同，仅NaN错误（显式 !(value<0)被改为value>=0）。Jarde default/all四组完整类compile1缺return，四目标method报告owner overlap，不运行生成类。不可将这些baseline算作新机制成功。
+
+首轮18cmd，JADX编译0但observer因为生成defpackage别名找不到原默认包类。第二轮只为JADX Runner增加import（不改生成类、不修改算法），绑定生成唯一defpackage/CompoundStatementConditions.class，source/原始Runner/matrix不变；完整20cmd。原/生成class及Runner目录隔离，没有shadow原class。
+
+独立verifier第一轮3项不一致（可选mode字段pre/post、Jarde预期编译码误写0、原Runner路径误推断side而实际inputs）；rootv2修两项、v3修mode可选字段后实际exit0，接受30项有限观察。Luna verifier回报后继续补LF/列表处理，元数据先后bc8/f8b，第一轮实际script SHA不独立声称冻结，原失败输出仅作历史观察；接受的是root自有不再修改的v3及完整raw/pins。source-map正文/default-all和实际class目录核验通过；该verifier没有执行javap，明确不宣称其本身核了physical BCI。
+
+另有root实际javap -v -p -c exit0和pre/post tool/class pins，完整原始指令事实保留，供新机制验收使用。新CompoundIf v2架构审查被拒，v3尚未apply，tasks保持2/10。所有原绝对private路径保留，inventory提供仓库备份，不重复保存CLI60MB。

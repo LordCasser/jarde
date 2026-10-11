@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.VerifyError: (class: CompoundStatementConditions, method: test signature: (ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;) Multiple returns to single jsr
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:264)
+	at VerifyOnly.main(VerifyOnly.java:1)

@@ -1,0 +1,55 @@
+{
+  "schema": "compound-condition-physical-javap-root-v1",
+  "pre_pins": [
+    {
+      "path": "/private/tmp/jarde-compound-condition-runtime-compare-root-v3.py",
+      "bytes": 23576,
+      "sha256": "97768f361087f720df68df68ee84d1c26728d7562642c02bf495cb6f5a1340cc",
+      "mode": 420
+    },
+    {
+      "path": "/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/original-bytecode/CompoundStatementConditions.class",
+      "bytes": 2848,
+      "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+      "mode": 420
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    }
+  ],
+  "commands": [
+    {
+      "index": 1,
+      "label": "physical-javap-v-p-c",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/original-bytecode/CompoundStatementConditions.class"
+      ],
+      "cwd": "/private/tmp/jarde-compound-condition-physical-javap-root-v1",
+      "started_at": "2026-10-11T01:56:05.521002+00:00",
+      "guard_stop": null,
+      "exit_code": 0,
+      "duration_seconds": 1.0154734590032604,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-physical-javap-root-v1/raw/0001.physical-javap-v-p-c.stdout.raw",
+          "bytes": 26503,
+          "sha256": "1886af82cbcfe7cb683bcbeb58c47801c88fe370ad2cea8eab25a7b9e73b2d5a",
+          "mode": 420
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-physical-javap-root-v1/raw/0001.physical-javap-v-p-c.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mode": 420
+        }
+      }
+    }
+  ],
+  "post_pin_check": "passed"
+}

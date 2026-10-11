@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-candidate-continuation-replay-root-v4/verify.py",
+    "--execution",
+    "/private/tmp/jarde-candidate-continuation-final-cli-v2-attempt-v4/execution.json",
+    "--candidate-build",
+    "/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json",
+    "--cli-sha256",
+    "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+    "--out",
+    "/private/tmp/jarde-candidate-continuation-final-cli-v2-attempt-v4/acceptance.json"
+  ],
+  "exit_code": 1,
+  "verifier_sha256": "6395b0f857ebf38c56683938f25a623f7ef2bd4186ff1cf80e3601ccdcff6b74",
+  "execution_sha256": "d3754858fc1041690082fd47e77015595c961f87ba1a91824ce38f8cc8d949c0",
+  "observed_at": "2026-10-11T05:39:34.109483+00:00"
+}

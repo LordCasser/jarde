@@ -1,0 +1,109 @@
+--- a/verify.py
++++ b/verify.py
+@@ -92,11 +92,11 @@
+     return sorted(path.relative_to(root).as_posix() for path in root.rglob('*.class'))
+ 
+ 
+-def class_pin_map(pins):
++def class_pin_map(pins, class_root):
+     result = {}
+     for pin in pins:
+         verify_pin(pin)
+-        rel = str(Path(pin['path']).relative_to(EXPECTED_OUTPUT))
++        rel = str(Path(pin['path']).relative_to(class_root))
+         need(rel not in result, f'duplicate generated class pin: {rel}')
+         result[rel] = pin
+     return result
+@@ -216,16 +216,38 @@
+ def verify_negative_reports(default_doc, all_doc, physical, observation_map):
+     need(default_doc.get('outcome') == 'performed' and all_doc.get('outcome') == 'performed',
+          'Jarde default/all class-source did not perform')
+-    need(default_doc.get('class') == 'CompoundConditionNegative' and
+-         all_doc.get('class') == 'CompoundConditionNegative', 'class-source class identity mismatch')
++    expected_class_owner = {
++        'class_bytes': {'digest': physical['class_blake3'], 'length': physical['class_bytes']},
++        'location': {'kind': 'standalone_root', 'snapshot': physical['class_blake3']},
++        'variant': {'kind': 'base'},
++    }
++    need(default_doc.get('class') == expected_class_owner and all_doc.get('class') == expected_class_owner,
++         'class-source structured class owner identity differs from independent oracle')
++    need(default_doc.get('class') == all_doc.get('class'), 'default/all class owner identity differs')
++    for doc in (default_doc, all_doc):
++        declaration = doc.get('declaration', {})
++        need(declaration.get('name') == 'CompoundConditionNegative',
++             'class-source declaration name differs')
++        this_class = declaration.get('item', {}).get('declaration', {}).get('this_class', {})
++        raw_name = this_class.get('raw')
++        need(isinstance(raw_name, list) and bytes(raw_name).decode('utf-8', errors='strict') == 'CompoundConditionNegative',
++             'class-source physical this_class raw owner differs')
++        need(this_class.get('escaped') == 'CompoundConditionNegative',
++             'class-source escaped this_class differs')
+     need(default_doc.get('text') == all_doc.get('text'), 'default/all full class text differs')
+     need(len(default_doc.get('methods', [])) == len(all_doc.get('methods', [])) == 3,
+          'default/all full method inventory differs')
+ 
+-    map_rows = {'default': [], 'all': []}
++    need(set(observation_map) == {'default', 'all'}, 'source-map observation file has unexpected profile set')
++    need(canonical(observation_map['default']) == canonical(observation_map['all']),
++         'default/all class-source observation rows differ')
+     target_observations = {}
+     for profile_name, doc in (('default', default_doc), ('all', all_doc)):
+-        for method in doc['methods']:
++        observed_rows = observation_map[profile_name]
++        need(isinstance(observed_rows, list) and len(observed_rows) == len(doc['methods']) == 3,
++             f'{profile_name}: whole-class source-map observation row count differs')
++        previous_text_offset = -1
++        for method, observed_row in zip(doc['methods'], observed_rows):
+             name = method_name(method)
+             report = method.get('outcome', {}).get('report', {})
+             other = next(m for m in (all_doc if profile_name == 'default' else default_doc)['methods']
+@@ -236,8 +258,19 @@
+             need(report.get('text') == other_report.get('text'), f'{name}: default/all method text differs')
+             need(canonical(report.get('source_map')) == canonical(other_report.get('source_map')),
+                  f'{name}: default/all method source map differs')
+-            map_rows[profile_name].append({'identity': method['item'], 'method_text': report['text'],
+-                                           'source_map': report['source_map']})
++            need(set(observed_row) == {'identity', 'method_text', 'source_map'},
++                 f'{name}: malformed whole-class observation row')
++            need(canonical(observed_row['identity']) == canonical(method['item']),
++                 f'{name}: observed method identity differs from full-class API')
++            observed_method_text = observed_row.get('method_text')
++            need(isinstance(observed_method_text, str), f'{name}: observed whole-class method text missing')
++            text_offset = doc['text'].find(observed_method_text)
++            need(text_offset >= 0 and text_offset > previous_text_offset,
++                 f'{name}: observed method text is absent or out of order in full-class source')
++            previous_text_offset = text_offset
++            need(canonical(observed_row['source_map']) == canonical(report.get('source_map')) and
++                 canonical(observed_row['source_map']) == canonical(other_report.get('source_map')),
++                 f'{name}: observed source map differs from default/all method API maps')
+             if name not in TARGETS:
+                 continue
+             need(method.get('item', {}).get('descriptor', {}).get('escaped') == TARGETS[name],
+@@ -261,6 +294,10 @@
+             reason_bci = physical['overlap_bci'][name]
+             explanation = f'canonical block at BCI {reason_bci} on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted'
+             need(explanation in report.get('text', ''), f'{name}: expected whole-method overlap explanation missing')
++            need(explanation in observed_method_text, f'{name}: full-class method text lacks overlap explanation')
++            expected_quote = '// @bytecode ' + ' '.join(str(bci) for bci in sorted(physical['bcis'][name]))
++            need(expected_quote in observed_method_text,
++                 f'{name}: full-class method quote differs from physical javap BCIs')
+             need(report['text'].count('// @bytecode ') == 1, f'{name}: expected one whole-method bytecode quote')
+             need(report.get('syntax_status') == 'not_java', f'{name}: quote-only report must not claim Java syntax')
+             if profile_name == 'all':
+@@ -278,7 +315,6 @@
+                 'quoted_bci_count': quoted_count, 'mapped_bci_count': mapped_count,
+                 'overlap_bci': reason_bci, 'recovery_state': 'whole_method_explanation_only'}
+ 
+-    need(observation_map == map_rows, 'independent source-map observation file differs from default/all API docs')
+     return target_observations
+ 
+ 
+@@ -544,7 +580,7 @@
+                  f'{jdk}/{side}: target class set differs from complete on-disk output')
+             target_pins = variant.get('target_class_pins')
+             need(isinstance(target_pins, list), f'{jdk}/{side}: target class pins missing')
+-            pin_rows = class_pin_map(target_pins)
++            pin_rows = class_pin_map(target_pins, target_dir)
+             need(sorted(pin_rows) == target_set, f'{jdk}/{side}: class pins differ from exact class set')
+ 
+             if side in ('original', 'jadx'):

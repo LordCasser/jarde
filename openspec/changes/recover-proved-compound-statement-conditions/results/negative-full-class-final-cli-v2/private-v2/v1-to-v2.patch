@@ -1,0 +1,342 @@
+--- v1/collect.py
++++ v2/collect.py
+@@ -6,7 +6,18 @@
+ RESULTS=ROOT/'openspec/changes/recover-proved-compound-statement-conditions/results'
+ PLAN=ROOT/'openspec/changes/recover-proved-switch-continuations/results/replay-planning-root-v1/plan-luna-v1.json'
+ PLAN_SHA='f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c'
++OWNER_ORACLE=Path('/private/tmp/jarde-compound-negative-class-digest-root-v1/execution.json')
++OWNER_ORACLE_SHA='61f6493fa4e81a1b261dfcabe610860692a5fbce4e61881eed6b35df87c2d7f6'
++OWNER_ORACLE_RAW=Path('/private/tmp/jarde-compound-negative-class-digest-root-v1/0.stdout.raw')
++OWNER_ORACLE_RAW_SHA='0da7876a1332ff012f013e15543ececeab8ecdd57f1c36b4eddc136a2f854a99'
++OWNER_ORACLE_TOOL_SHA='e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7'
+ TEST_DESC='(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;'
++EXPECTED_OWNER={
++ 'cycle':{'digest':'1a7f0759fe3e84baf0b12c436206dee9c0815cd23241b5ba22a5a28c82bf891a','length':2848},
++ 'irreducible':{'digest':'25369e1faa617fc283b89815e93df6c6a0e1db38511b9bad9057173af2399cc1','length':2848},
++ 'no-repeat':{'digest':'0324f058d2939d4c41f3498551c23b440308f26023f0dd539f643d1a265aeeee','length':2849},
++ 'clone':{'digest':'af3b18f31c433684f1c685c62a6ce11b540e8304f158e576b8776bc5d76a5a4b','length':2662},
++}
+ MIN_FREE=5*1024**3; MAX_TARGET=1024**3; MAX_OUT=1024**3; TIMEOUT=60; POLL=1
+ STRIP=('JAVA_HOME','JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS','CLASSPATH')
+ FIXTURES=[
+@@ -75,6 +86,64 @@
+    out.append({'name':name,'descriptor':desc,'header':header,'instruction_bcis':bcis});i=j
+   else:i+=1
+  return out
++def utf8_span_check(text, source_map):
++ if source_map is None:return {'state':'absent','valid':True,'segments':[]}
++ if not isinstance(text,str) or not isinstance(source_map,dict) or not isinstance(source_map.get('segments'),list):
++  return {'state':'invalid_schema','valid':False,'segments':[]}
++ raw=text.encode('utf-8');rows=[];valid=True
++ for segment in source_map['segments']:
++  if not isinstance(segment,dict):
++   rows.append({'start':None,'end':None,'valid_utf8_text_slice':False,'slice_sha256':None});valid=False;continue
++  start=segment.get('start');end=segment.get('end');ok=isinstance(start,int) and isinstance(end,int) and 0<=start<=end<=len(raw)
++  slice_hash=None
++  if ok:
++   try:
++    raw[:start].decode('utf-8');raw[:end].decode('utf-8');piece=raw[start:end].decode('utf-8');slice_hash=hashlib.sha256(piece.encode('utf-8')).hexdigest()
++   except UnicodeDecodeError:ok=False
++  rows.append({'start':start,'end':end,'valid_utf8_text_slice':ok,'slice_sha256':slice_hash})
++  valid=valid and ok
++ return {'state':'checked','valid':valid,'text_utf8_bytes':len(raw),'segments':rows}
++def utf8_maps_check(doc):
++ class_check=utf8_span_check(doc.get('text'),doc.get('source_map'));methods=[]
++ for method in doc.get('methods',[]):
++  outcome=method.get('outcome');report=outcome.get('report') if isinstance(outcome,dict) else None
++  report=report if isinstance(report,dict) else {}
++  methods.append({'identity':method.get('item',{}).get('identity'),'check':utf8_span_check(report.get('text'),report.get('source_map'))})
++ return {'class':class_check,'methods':methods,'all_present_ranges_valid':class_check['valid'] and all(x['check']['valid'] for x in methods)}
++def physical_source_coverage(doc,physical):
++ expected=set(physical.get('instruction_bcis',[]));rows=[]
++ for method in doc.get('methods',[]):
++  ident=method.get('item',{}).get('identity',{})
++  if ident.get('name')!=[116,101,115,116] or ident.get('descriptor')!=list(TEST_DESC.encode('ascii')):continue
++  outcome=method.get('outcome');report=outcome.get('report') if isinstance(outcome,dict) else None
++  sm=report.get('source_map') if isinstance(report,dict) else None
++  rows.extend(mention.get('bci') for mention in all_origin_mentions(sm))
++ observed=set(rows);missing=sorted(expected-observed);extra=sorted(observed-expected)
++ return {'expected_physical_bcis':sorted(expected),'origin_mentions':len(rows),'observed_unique_bcis':sorted(observed),'missing_bcis':missing,'extra_bcis':extra,'complete':bool(rows) and not missing and not extra}
++def all_origin_mentions(node):
++ if isinstance(node,dict):
++  if isinstance(node.get('bci'),int) and isinstance(node.get('method'),dict):yield node
++  for value in node.values():yield from all_origin_mentions(value)
++ elif isinstance(node,list):
++  for value in node:yield from all_origin_mentions(value)
++def verify_owner_oracle():
++ record=json.loads(OWNER_ORACLE.read_text(encoding='utf-8'))
++ if sha(OWNER_ORACLE)!=OWNER_ORACLE_SHA or record.get('status')!='passed' or record.get('tool_sha256')!=OWNER_ORACLE_TOOL_SHA:raise RuntimeError('frozen owner BLAKE3 oracle record mismatch')
++ command=record.get('command',{})
++ if command.get('exit_code')!=0 or command.get('guard_stop') is not None or command.get('argv',[])!=[command.get('argv',[None])[0],*[str(x[2].resolve()) for x in FIXTURES]]:raise RuntimeError('owner oracle command identity/status mismatch')
++ tool=Path(command['argv'][0]).resolve(strict=True);raw=Path(command['streams']['stdout']['path']).resolve(strict=True)
++ if sha(tool)!=OWNER_ORACLE_TOOL_SHA or raw!=OWNER_ORACLE_RAW.resolve(strict=True) or sha(raw)!=OWNER_ORACLE_RAW_SHA:raise RuntimeError('owner oracle tool/raw pin mismatch')
++ declared=command['streams']['stdout']
++ if raw.stat().st_size!=declared['bytes'] or sha(raw)!=declared['sha256']:raise RuntimeError('owner oracle stdout stream differs from execution record')
++ parsed={}
++ for line in raw.read_text().splitlines():
++  digest,length,path=line.split('\t',2);parsed[path]={'digest':digest,'length':int(length)}
++ expected={str(item[2].resolve()):{'digest':EXPECTED_OWNER[item[0]]['digest'],'length':EXPECTED_OWNER[item[0]]['length']} for item in FIXTURES}
++ declared={path:{'digest':facts['sha256'],'length':facts['bytes']} for path,facts in record.get('classes',{}).items()}
++ expected_sha={str(item[2].resolve()):{'digest':item[4],'length':EXPECTED_OWNER[item[0]]['length']} for item in FIXTURES}
++ if parsed!=expected or declared!=expected_sha:raise RuntimeError('owner oracle BLAKE3/SHA rows differ from fixed fixture facts')
++ return {'record':pin(OWNER_ORACLE),'raw':pin(raw),'tool':pin(tool),'tool_sha256':OWNER_ORACLE_TOOL_SHA}
++
+ def validate_build(cli_path,expected_sha,build_path):
+  build=json.loads(build_path.read_text(encoding='utf-8'))
+  if not build.get('schema','').startswith('compound-condition-focused-and-cli-root-') or build.get('status')!='candidate-cli-built' or build.get('target_absent_after_clean') is not True:raise RuntimeError('final CLI build record is not a clean candidate build')
+@@ -98,10 +167,10 @@
+  out=a.out.resolve()
+  if out.exists():raise SystemExit('refusing to overwrite output '+str(out))
+  if sha(PLAN)!=PLAN_SHA:raise RuntimeError('shared plan digest mismatch')
+- cli=a.cli.resolve(strict=True);build_path=a.build.resolve(strict=True);build,cli_pin=validate_build(cli,a.sha256,build_path)
++ cli=a.cli.resolve(strict=True);build_path=a.build.resolve(strict=True);build,cli_pin=validate_build(cli,a.sha256,build_path);owner_oracle=verify_owner_oracle()
+  plan=json.loads(PLAN.read_text());jp=plan['shared_pins']['jdk8_tools']['javap'];javap=Path(jp['path']).resolve(strict=True)
+  if sha(javap)!=jp['sha256']:raise RuntimeError('pinned javap digest mismatch')
+- fixture_rows=[];inputs=[pin(PLAN),pin(build_path),cli_pin,pin(javap)]
++ fixture_rows=[];inputs=[pin(PLAN),pin(build_path),cli_pin,pin(javap),owner_oracle['record'],owner_oracle['raw'],owner_oracle['tool']]
+  for name,class_name,class_path,meta_path,expected in FIXTURES:
+   class_path=class_path.resolve(strict=True);meta_path=meta_path.resolve(strict=True);cp=pin(class_path);mp=pin(meta_path)
+   if cp['sha256']!=expected:raise RuntimeError('fixture class SHA mismatch: '+str(class_path))
+@@ -115,7 +184,7 @@
+  for k in STRIP:env.pop(k,None)
+  rec={'schema':'compound-negative-whole-class-render-luna-v1','status':'collecting','cli':cli_pin,
+   'cli_build':{'path':str(build_path),'bytes':build_path.stat().st_size,'sha256':sha(build_path),'schema':build.get('schema'),'status':build.get('status'),'product_paths':build.get('product_paths_before'),'product_pins':build.get('product_pins_before')},
+-  'plan':pin(PLAN),'javap':jp,'test_method':{'name':'test','descriptor':TEST_DESC},
++  'plan':pin(PLAN),'javap':jp,'owner_oracle':owner_oracle,'test_method':{'name':'test','descriptor':TEST_DESC},'expected_class_owners':EXPECTED_OWNER,
+   'runtime_scope':'CLI class-source rendering and javap inspection only; no Java target method is invoked',
+   'fixtures':[],'commands':[],'input_pins':inputs}
+  save(out,rec)
+@@ -140,9 +209,12 @@
+      text_path=d/'CompoundStatementConditions.java';text_path.write_text(doc['text'],encoding='utf-8');text_pin=pin(text_path)
+     methods=doc.get('methods',[]);maps={'class':doc.get('source_map'),'methods':[{'identity':m.get('item',{}).get('identity'),'outcome':m.get('outcome',{}).get('kind') if isinstance(m.get('outcome'),dict) else None,'source_map':m.get('outcome',{}).get('report',{}).get('source_map') if isinstance(m.get('outcome'),dict) else None} for m in methods]}
+     nonconstructors=sum(1 for m in methods if m.get('item',{}).get('identity',{}).get('name')!=[60,105,110,105,116,62])
+-    fr['profiles'][profile]={'command':row,'api_json':pin(api_path),'text':text_pin,'outcome':doc.get('outcome'),'method_count_including_constructor':len(methods),'nonconstructor_methods':nonconstructors,'maps':maps}
++    physical=fr.get('target_test_physical_method') or {'instruction_bcis':[]}
++    coverage=physical_source_coverage(doc,physical);span_checks=utf8_maps_check(doc)
++    fr['profiles'][profile]={'command':row,'api_json':pin(api_path),'text':text_pin,'outcome':doc.get('outcome'),'method_count_including_constructor':len(methods),'nonconstructor_methods':nonconstructors,'maps':maps,'physical_source_coverage':coverage,'utf8_span_checks':span_checks}
++    if not coverage['complete'] or not span_checks['all_present_ranges_valid']:failed=True
+    except (OSError,UnicodeDecodeError,ValueError) as e:
+-    fr['profiles'][profile]={'command':row,'api_json':None,'text':None,'parse_error':repr(e),'outcome':None,'method_count_including_constructor':None,'nonconstructor_methods':None,'maps':None};failed=True
++    fr['profiles'][profile]={'command':row,'api_json':None,'text':None,'parse_error':repr(e),'outcome':None,'method_count_including_constructor':None,'nonconstructor_methods':None,'maps':None,'physical_source_coverage':{'expected_physical_bcis':sorted((fr.get('target_test_physical_method') or {}).get('instruction_bcis',[])),'origin_mentions':0,'observed_unique_bcis':[],'missing_bcis':sorted((fr.get('target_test_physical_method') or {}).get('instruction_bcis',[])),'extra_bcis':[],'complete':False},'utf8_span_checks':{'all_present_ranges_valid':False}};failed=True
+    if row['exit_code']!=0 or row['guard_stop'] is not None:failed=True
+   save(out,rec)
+  rec['status']='observations_collected_with_failures' if failed else 'observations_collected';rec['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();save(out,rec)
+--- v1/verify.py
++++ v2/verify.py
+@@ -13,6 +13,23 @@
+ EXPECTED_PROFILES = {'default', 'all'}
+ ROOT = Path('/Users/lordcasser/workspace/projects/jarde')
+ PLAN_SHA256 = 'f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c'
++OWNER_ORACLE_PATH = Path('/private/tmp/jarde-compound-negative-class-digest-root-v1/execution.json')
++OWNER_ORACLE_SHA = '61f6493fa4e81a1b261dfcabe610860692a5fbce4e61881eed6b35df87c2d7f6'
++OWNER_ORACLE_RAW = Path('/private/tmp/jarde-compound-negative-class-digest-root-v1/0.stdout.raw')
++OWNER_ORACLE_RAW_SHA = '0da7876a1332ff012f013e15543ececeab8ecdd57f1c36b4eddc136a2f854a99'
++OWNER_ORACLE_TOOL_SHA = 'e994dba8124b0f5c6c782b163c0eeb0b5bdc284a66a766a4404310d266be5be7'
++EXPECTED_OWNER = {
++    'cycle': {'digest': '1a7f0759fe3e84baf0b12c436206dee9c0815cd23241b5ba22a5a28c82bf891a', 'length': 2848},
++    'irreducible': {'digest': '25369e1faa617fc283b89815e93df6c6a0e1db38511b9bad9057173af2399cc1', 'length': 2848},
++    'no-repeat': {'digest': '0324f058d2939d4c41f3498551c23b440308f26023f0dd539f643d1a265aeeee', 'length': 2849},
++    'clone': {'digest': 'af3b18f31c433684f1c685c62a6ce11b540e8304f158e576b8776bc5d76a5a4b', 'length': 2662},
++}
++EXPECTED_OWNER_ROWS = {
++    'openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class': EXPECTED_OWNER['cycle'],
++    'openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsIrreducible.class': EXPECTED_OWNER['irreducible'],
++    'openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsNoRepeat.class': EXPECTED_OWNER['no-repeat'],
++    'openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class': EXPECTED_OWNER['clone'],
++}
+ EXPECTED_CLASS_PINS = {
+     'cycle': ('openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class', 'ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78'),
+     'irreducible': ('openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsIrreducible.class', 'ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08'),
+@@ -110,17 +127,17 @@
+             yield from all_origin_mentions(value)
+ 
+ 
+-def check_class_method_owners(api, class_bytes):
++def check_class_method_owners(api, class_bytes, expected_owner):
+     owners = []
+     for row in api.get('methods', []):
+         identity = method_identity(row)
+         owner = identity.get('owner') if isinstance(identity, dict) else None
+         byte_identity = (owner or {}).get('class_bytes') or {}
+         location = (owner or {}).get('location') or {}
+-        if byte_identity.get('length') != class_bytes:
+-            fail('method identity owner does not match the pinned class byte length')
+-        if location.get('kind') != 'standalone_root' or location.get('snapshot') != byte_identity.get('digest'):
+-            fail('method identity is not anchored to its standalone class snapshot')
++        if byte_identity.get('length') != class_bytes or byte_identity.get('digest') != expected_owner['digest']:
++            fail('method identity owner does not match pinned class BLAKE3/length')
++        if location.get('kind') != 'standalone_root' or location.get('snapshot') != expected_owner['digest']:
++            fail('method identity snapshot does not match the frozen standalone class digest')
+         owners.append({'digest': byte_identity.get('digest'), 'length': byte_identity.get('length'),
+                        'location': location})
+     if len({(x['digest'], x['length'], x['location'].get('snapshot')) for x in owners}) != 1:
+@@ -128,7 +145,7 @@
+     return owners[0] if owners else None
+ 
+ 
+-def check_test_map(api, physical):
++def check_test_map(api, physical, expected_owner):
+     methods = api.get('methods')
+     if not isinstance(methods, list) or len(methods) != 8:
+         fail('whole-class API does not contain eight methods')
+@@ -146,6 +163,8 @@
+     owner_digest = (identity_owner or {}).get('class_bytes', {}).get('digest')
+     owner_length = (identity_owner or {}).get('class_bytes', {}).get('length')
+     owner_snapshot = (identity_owner or {}).get('location', {}).get('snapshot')
++    if owner_digest != expected_owner['digest'] or owner_length != expected_owner['length'] or owner_snapshot != expected_owner['digest']:
++        fail('target method identity owner differs from pinned BLAKE3 oracle')
+     checked = []
+     for mention in mentions:
+         method = mention['method']
+@@ -157,19 +176,97 @@
+         if (class_bytes.get('digest'), class_bytes.get('length'), location.get('snapshot')) != (
+                 owner_digest, owner_length, owner_snapshot):
+             fail('target source-map physical owner differs from method class identity')
+-        if mention['bci'] not in physical_bcis:
+-            fail('source-map BCI is absent from physical javap instructions')
+         checked.append({'bci': mention['bci'], 'provenance': mention.get('provenance')})
+     # Repeated anchors are retained as observations; uniqueness is intentionally not required.
++    unique=sorted({row['bci'] for row in checked})
++    missing=sorted(physical_bcis-set(unique));extra=sorted(set(unique)-physical_bcis)
++    coverage={'expected_physical_bcis':sorted(physical_bcis),'origin_mentions':len(checked),'observed_unique_bcis':unique,'missing_bcis':missing,'extra_bcis':extra,'complete':bool(checked) and not missing and not extra}
+     return {
+         'method_identity': identity,
+         'source_map_state': 'present' if source_map is not None else 'absent',
+         'origin_mentions': checked,
+-        'unique_origin_bcis': sorted({row['bci'] for row in checked}),
++        'unique_origin_bcis': unique,
++        'physical_source_coverage': coverage,
+         'duplicate_anchor_mentions_allowed': True,
+         'owner': {'class_digest': owner_digest, 'class_length': owner_length,
+                   'location_snapshot': owner_snapshot},
+     }
++
++
++def utf8_span_check(text, source_map):
++    if source_map is None:
++        return {'state': 'absent', 'valid': True, 'segments': []}
++    if not isinstance(text, str) or not isinstance(source_map, dict) or not isinstance(source_map.get('segments'), list):
++        return {'state': 'invalid_schema', 'valid': False, 'segments': []}
++    raw = text.encode('utf-8')
++    rows, valid = [], True
++    for segment in source_map['segments']:
++        if not isinstance(segment, dict):
++            rows.append({'start': None, 'end': None, 'valid_utf8_text_slice': False, 'slice_sha256': None})
++            valid = False
++            continue
++        start, end = segment.get('start'), segment.get('end')
++        ok = isinstance(start, int) and isinstance(end, int) and 0 <= start <= end <= len(raw)
++        digest = None
++        if ok:
++            try:
++                raw[:start].decode('utf-8')
++                raw[:end].decode('utf-8')
++                piece = raw[start:end].decode('utf-8')
++                digest = hashlib.sha256(piece.encode('utf-8')).hexdigest()
++            except UnicodeDecodeError:
++                ok = False
++        rows.append({'start': start, 'end': end, 'valid_utf8_text_slice': ok, 'slice_sha256': digest})
++        valid = valid and ok
++    return {'state': 'checked', 'valid': valid, 'text_utf8_bytes': len(raw), 'segments': rows}
++
++
++def utf8_maps_check(doc):
++    class_check = utf8_span_check(doc.get('text'), doc.get('source_map'))
++    methods = []
++    for method in doc.get('methods', []):
++        outcome = method.get('outcome')
++        report = outcome.get('report') if isinstance(outcome, dict) else None
++        report = report if isinstance(report, dict) else {}
++        methods.append({'identity': method.get('item', {}).get('identity'),
++                        'check': utf8_span_check(report.get('text'), report.get('source_map'))})
++    return {'class': class_check, 'methods': methods,
++            'all_present_ranges_valid': class_check['valid'] and all(row['check']['valid'] for row in methods)}
++
++
++def verify_owner_oracle(record):
++    oracle = json.loads(OWNER_ORACLE_PATH.read_text(encoding='utf-8'))
++    if sha256(OWNER_ORACLE_PATH) != OWNER_ORACLE_SHA or oracle.get('status') != 'passed' or oracle.get('tool_sha256') != OWNER_ORACLE_TOOL_SHA:
++        fail('frozen owner BLAKE3 oracle execution record mismatch')
++    command = oracle.get('command', {})
++    expected_paths = [str((ROOT / EXPECTED_CLASS_PINS[name][0]).resolve()) for name in ('cycle', 'irreducible', 'no-repeat', 'clone')]
++    if command.get('exit_code') != 0 or command.get('guard_stop') is not None or command.get('argv', [])[1:] != expected_paths:
++        fail('owner oracle did not hash the four exact class fixtures successfully')
++    tool = Path(command['argv'][0]).resolve(strict=True)
++    stdout_pin = command['streams']['stdout']
++    raw = Path(stdout_pin['path']).resolve(strict=True)
++    if (sha256(tool) != OWNER_ORACLE_TOOL_SHA or raw != OWNER_ORACLE_RAW.resolve(strict=True)
++            or sha256(raw) != OWNER_ORACLE_RAW_SHA or raw.stat().st_size != stdout_pin['bytes']
++            or stdout_pin['sha256'] != OWNER_ORACLE_RAW_SHA):
++        fail('owner oracle tool/raw digest pin mismatch')
++    parsed = {}
++    for line in raw.read_text(encoding='utf-8').splitlines():
++        digest, length, path = line.split('\t', 2)
++        parsed[path] = {'digest': digest, 'length': int(length)}
++    expected = {str((ROOT / path).resolve()): value for path, value in EXPECTED_OWNER_ROWS.items()}
++    declared = {path: {'digest': facts['sha256'], 'length': facts['bytes']}
++                for path, facts in oracle.get('classes', {}).items()}
++    expected_sha = {str((ROOT / path).resolve()): {'digest': digest, 'length': EXPECTED_OWNER[name]['length']}
++                    for name, (path, digest) in EXPECTED_CLASS_PINS.items()}
++    if parsed != expected or declared != expected_sha:
++        fail('owner oracle record/raw rows differ from frozen SHA-256/BLAKE3 facts')
++    observed = record.get('owner_oracle', {})
++    for key, path in [('record', OWNER_ORACLE_PATH), ('raw', raw), ('tool', tool)]:
++        actual = verify_pin(observed.get(key, {}))
++        if Path(actual['path']) != path.resolve():
++            fail('collection owner oracle pin points to a different file: ' + key)
++    if observed.get('tool_sha256') != OWNER_ORACLE_TOOL_SHA:
++        fail('collection owner oracle tool digest differs')
+ 
+ 
+ def main():
+@@ -230,6 +327,7 @@
+             verify_pin(stream)
+     for input_pin in record.get('input_pins', []):
+         verify_pin(input_pin)
++    verify_owner_oracle(record)
+     plan_pin = verify_pin(record['plan'])
+     if plan_pin['sha256'] != PLAN_SHA256:
+         fail('shared tool plan digest differs from the frozen plan')
+@@ -241,6 +339,8 @@
+         fail('pinned javap executable digest changed')
+     cli_path = args.cli.resolve(strict=True)
+     product_pin_set = build.get('product_pins_before', {})
++    if record.get('expected_class_owners') != EXPECTED_OWNER:
++        fail('collector BLAKE3 owner table differs from frozen oracle facts')
+     for fixture in record['fixtures']:
+         name = fixture['name']
+         class_pin = verify_pin(fixture['class'])
+@@ -251,6 +351,9 @@
+         if product_pin_set.get(class_relative) != class_pin['sha256']:
+             fail(name + ': class bytes are not included in final CLI build pins')
+         verify_pin(fixture['metadata'])
++        expected_owner = EXPECTED_OWNER[name]
++        if fixture.get('expected_owner') != expected_owner:
++            fail(name + ': collector owner fact differs from frozen BLAKE3 oracle')
+         physical = parse_javap(Path(fixture['javap']['streams']['stdout']['path']).read_bytes())
+         if physical != fixture.get('physical_methods'):
+             fail(name + ': physical method records differ from saved javap output')
+@@ -291,7 +394,7 @@
+             text = doc.get('text')
+             if not isinstance(text, str) or not text:
+                 fail(name + '/' + profile + ': full class text is absent')
+-            class_owner = check_class_method_owners(doc, fixture['class']['bytes'])
++            class_owner = check_class_method_owners(doc, fixture['class']['bytes'], expected_owner)
+             nonconstructors = sum(1 for method in doc.get('methods', [])
+                                   if method.get('item', {}).get('identity', {}).get('name') != [60, 105, 110, 105, 116, 62])
+             if (len(doc.get('methods', [])) != 8
+@@ -308,7 +411,13 @@
+                 for m in doc.get('methods', [])]}
+             if maps_value != observed.get('maps'):
+                 fail(name + '/' + profile + ': recorded source maps differ from API JSON')
+-            test_map_facts = check_test_map(doc, targets[0])
++            test_map_facts = check_test_map(doc, targets[0], expected_owner)
++            coverage = test_map_facts['physical_source_coverage']
++            if observed.get('physical_source_coverage') != coverage or not coverage['complete']:
++                fail(name + '/' + profile + ': target map does not cover every physical test BCI')
++            span_checks = utf8_maps_check(doc)
++            if observed.get('utf8_span_checks') != span_checks or not span_checks['all_present_ranges_valid']:
++                fail(name + '/' + profile + ': source-map range is out of bounds or not a UTF-8 text slice')
+             if test_map_facts['owner']['class_length'] != fixture['class']['bytes']:
+                 fail(name + '/' + profile + ': target physical origin owner length differs from class file')
+             test_map_facts['full_class_owner'] = class_owner

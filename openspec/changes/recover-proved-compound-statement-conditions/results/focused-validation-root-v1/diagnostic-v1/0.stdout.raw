@@ -1,0 +1,11 @@
+
+running 1 test
+test region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join ... FAILED
+
+failures:
+
+failures:
+    region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 346 filtered out; finished in 0.02s
+

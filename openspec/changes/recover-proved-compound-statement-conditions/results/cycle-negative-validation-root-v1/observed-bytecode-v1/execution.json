@@ -1,0 +1,1035 @@
+{
+  "schema": "compound-real-bytecode-jvm-verifier-root-v1",
+  "status": "failed",
+  "runner_sha256": "2f770e498ad4111358e24169727d49d13e9b1f1ae7639eacec2be9afcde599eb",
+  "plan_sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:46.398318+00:00",
+      "duration_seconds": 1.012330750003457,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16323993600,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/0.stdout.raw",
+          "bytes": 26195,
+          "sha256": "d2040faa04e74069f87c43c85d95aadec922b4381652502b988bbabcad54ff8a"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/jdk8_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:47.410901+00:00",
+      "duration_seconds": 1.005100666981889,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16326021120,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/jdk8_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:48.416122+00:00",
+      "duration_seconds": 1.0150456670089625,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16502788096,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/2.stdout.raw",
+          "bytes": 47,
+          "sha256": "199179052cd96b11cd88120569aa6110932df9010a6e54c762427a7ea62bcb95"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:49.432456+00:00",
+      "duration_seconds": 1.0068256669910625,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16455852032,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/3.stdout.raw",
+          "bytes": 26508,
+          "sha256": "a4f5e236ece1ca121958769e4744cd30338e325e6b7c061a88f53d9cdc7711c4"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/jdk23_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:50.439441+00:00",
+      "duration_seconds": 1.014838332979707,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16318570496,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/4.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/4.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/jdk23_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:51.454433+00:00",
+      "duration_seconds": 1.010117124998942,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314892288,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/5.stdout.raw",
+          "bytes": 47,
+          "sha256": "199179052cd96b11cd88120569aa6110932df9010a6e54c762427a7ea62bcb95"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:52.468712+00:00",
+      "duration_seconds": 1.013517250015866,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314855424,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/6.stdout.raw",
+          "bytes": 26201,
+          "sha256": "a3f0b991b0f78e7decba1837f27a63685ba21645dc9b561f47ac7518bdad65c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/jdk8_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:53.482632+00:00",
+      "duration_seconds": 1.0098383750009816,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314826752,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/7.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/jdk8_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:54.492833+00:00",
+      "duration_seconds": 1.0075342079799157,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314822656,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/8.stdout.raw",
+          "bytes": 47,
+          "sha256": "199179052cd96b11cd88120569aa6110932df9010a6e54c762427a7ea62bcb95"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:55.501115+00:00",
+      "duration_seconds": 1.0105991669988725,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314748928,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/9.stdout.raw",
+          "bytes": 26514,
+          "sha256": "7a0b7cc959ad94b006d12e7bbb81f49f441fbf1af2dc4fced0f2eb5542d750f2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/jdk23_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:56.512030+00:00",
+      "duration_seconds": 1.0057782079966273,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314630144,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/10.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/10.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/jdk23_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:57.517987+00:00",
+      "duration_seconds": 1.0101795000082348,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314621952,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/11.stdout.raw",
+          "bytes": 47,
+          "sha256": "199179052cd96b11cd88120569aa6110932df9010a6e54c762427a7ea62bcb95"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:58.533090+00:00",
+      "duration_seconds": 1.0149604589969385,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16309534720,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/12.stdout.raw",
+          "bytes": 26233,
+          "sha256": "3125820eb5a0753ca3c1dc02c71ef4f56f18f480319ddecd6472da11db315a26"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/jdk8_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:32:59.548545+00:00",
+      "duration_seconds": 1.012854625005275,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314408960,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/13.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/13.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/jdk8_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:00.562142+00:00",
+      "duration_seconds": 1.0164709590026177,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314372096,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/14.stdout.raw",
+          "bytes": 47,
+          "sha256": "199179052cd96b11cd88120569aa6110932df9010a6e54c762427a7ea62bcb95"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:01.579642+00:00",
+      "duration_seconds": 1.0106160840077791,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314687488,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/15.stdout.raw",
+          "bytes": 26546,
+          "sha256": "999398704209d938af193037914cc8abd985e345c52ed6d329b59df9ac31f6d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/jdk23_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:02.590823+00:00",
+      "duration_seconds": 1.0122993330005556,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314572800,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/16.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/16.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/jdk23_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:03.603866+00:00",
+      "duration_seconds": 1.0092375419917516,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314630144,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/17.stdout.raw",
+          "bytes": 47,
+          "sha256": "199179052cd96b11cd88120569aa6110932df9010a6e54c762427a7ea62bcb95"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions/CompoundStatementConditions.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:04.614990+00:00",
+      "duration_seconds": 1.0064171670237556,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314540032,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/18.stdout.raw",
+          "bytes": 23388,
+          "sha256": "042aca08677f065783c888afe32c749c999501eeeae22ee4242155df68775caa"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-proc:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions/jdk8_tools",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions/VerifyOnly.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:05.621739+00:00",
+      "duration_seconds": 1.013145875011105,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314445824,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/19.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions/jdk8_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions",
+        "VerifyOnly"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T03:33:06.635108+00:00",
+      "duration_seconds": 1.005154250015039,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 16314433536,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/20.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-bytecode-verification-root-v1/20.stderr.raw",
+          "bytes": 320,
+          "sha256": "43d64d0997c5dcef2b29abeebf01d3f63e084f1124ea04c0737b326cef802427"
+        }
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "source": "/private/tmp/jarde-compound-cycle-negative-luna-v3/CompoundStatementConditionsCycle.class",
+      "source_sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78",
+      "class_bytes": 2848,
+      "copied_class": "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/CompoundStatementConditions.class",
+      "copied_class_sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78",
+      "driver_sha256": "2da74ba4e12c863a6f220dcb3cb2ba4603018f87d9478ae8d99f16a72a536af1",
+      "jdk": [
+        {
+          "name": "jdk8_tools",
+          "verified": true,
+          "tools": {
+            "javac": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "bytes": 152128,
+              "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+            },
+            "java": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "bytes": 152096,
+              "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+            },
+            "javap": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "bytes": 152128,
+              "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+            }
+          },
+          "driver_classes": [
+            "VerifyOnly.class"
+          ]
+        },
+        {
+          "name": "jdk23_tools",
+          "verified": true,
+          "tools": {
+            "javac": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "bytes": 69872,
+              "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+            },
+            "java": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "bytes": 69952,
+              "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+            },
+            "javap": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "bytes": 69872,
+              "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+            }
+          },
+          "driver_classes": [
+            "VerifyOnly.class"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/private/tmp/jarde-compound-cycle-negative-luna-v3/CompoundStatementConditionsIrreducible.class",
+      "source_sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08",
+      "class_bytes": 2848,
+      "copied_class": "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsIrreducible/CompoundStatementConditions.class",
+      "copied_class_sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08",
+      "driver_sha256": "2da74ba4e12c863a6f220dcb3cb2ba4603018f87d9478ae8d99f16a72a536af1",
+      "jdk": [
+        {
+          "name": "jdk8_tools",
+          "verified": true,
+          "tools": {
+            "javac": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "bytes": 152128,
+              "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+            },
+            "java": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "bytes": 152096,
+              "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+            },
+            "javap": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "bytes": 152128,
+              "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+            }
+          },
+          "driver_classes": [
+            "VerifyOnly.class"
+          ]
+        },
+        {
+          "name": "jdk23_tools",
+          "verified": true,
+          "tools": {
+            "javac": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "bytes": 69872,
+              "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+            },
+            "java": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "bytes": 69952,
+              "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+            },
+            "javap": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "bytes": 69872,
+              "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+            }
+          },
+          "driver_classes": [
+            "VerifyOnly.class"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/private/tmp/jarde-compound-cycle-negative-luna-v3/CompoundStatementConditionsNoRepeat.class",
+      "source_sha256": "8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b",
+      "class_bytes": 2849,
+      "copied_class": "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsNoRepeat/CompoundStatementConditions.class",
+      "copied_class_sha256": "8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b",
+      "driver_sha256": "2da74ba4e12c863a6f220dcb3cb2ba4603018f87d9478ae8d99f16a72a536af1",
+      "jdk": [
+        {
+          "name": "jdk8_tools",
+          "verified": true,
+          "tools": {
+            "javac": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "bytes": 152128,
+              "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+            },
+            "java": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "bytes": 152096,
+              "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+            },
+            "javap": {
+              "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "bytes": 152128,
+              "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+            }
+          },
+          "driver_classes": [
+            "VerifyOnly.class"
+          ]
+        },
+        {
+          "name": "jdk23_tools",
+          "verified": true,
+          "tools": {
+            "javac": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "bytes": 69872,
+              "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+            },
+            "java": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "bytes": 69952,
+              "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+            },
+            "javap": {
+              "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "bytes": 69872,
+              "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+            }
+          },
+          "driver_classes": [
+            "VerifyOnly.class"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/private/tmp/jarde-compound-clone-path-luna-v1/CompoundStatementConditions.class",
+      "source_sha256": "ededf0b0ac57ca6259a31d83e5a30309d175cb8cdc2bfd2c839566df94407376",
+      "class_bytes": 2658,
+      "copied_class": "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions/CompoundStatementConditions.class",
+      "copied_class_sha256": "ededf0b0ac57ca6259a31d83e5a30309d175cb8cdc2bfd2c839566df94407376",
+      "driver_sha256": "2da74ba4e12c863a6f220dcb3cb2ba4603018f87d9478ae8d99f16a72a536af1",
+      "jdk": []
+    }
+  ],
+  "runtime_scope": "Class.forName + getDeclaredMethods under -Xverify:all; altered test is never invoked",
+  "error": "AssertionError(('jdk8_tools', 'CompoundStatementConditions', ['/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java', '-Xverify:all', '-cp', '/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions/jdk8_tools:/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditions', 'VerifyOnly'], 1))"
+}

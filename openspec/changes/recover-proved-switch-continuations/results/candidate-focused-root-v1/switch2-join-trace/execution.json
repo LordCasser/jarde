@@ -1,0 +1,98 @@
+{
+  "schema": "switch-continuation-focused-root-v1",
+  "runner_sha256": "cbb1aca9ebcf23350d16c3192bf6544ac468ada9f23b7344d5dea38be0a10deb",
+  "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+  "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+  "region_sha256_before": "cdbcdbf62b8262acfc39d91b869222b3dfeb390a59e6dc9ce637f777034ea7d0",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "region::tests::real_switch2_direct_target_join_proves_candidate_witnesses",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:11:08.681652+00:00",
+      "duration_seconds": 31.423852542007808,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 156319168,
+      "free_bytes_after": 43060449280,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch2-join-trace-root-v1/0.stdout.raw",
+          "bytes": 308,
+          "sha256": "ef60cb0e653262b4a26d3246433f036f34d808a3b8985cbb824253cdc457ff57"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch2-join-trace-root-v1/0.stderr.raw",
+          "bytes": 4943,
+          "sha256": "1ca8545e14e1acbd5a03c7cf04f3c2392ae18cd1a15540c19d74abac802d71c3"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:11:40.108821+00:00",
+      "duration_seconds": 1.0146620000014082,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 153899154,
+      "free_bytes_after": 43195498496,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch2-join-trace-root-v1/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch2-join-trace-root-v1/1.stderr.raw",
+          "bytes": 52,
+          "sha256": "366c617b3cf465676efd94ab42334fe0ed0fc6017aea6b5352fa926eeef56ede"
+        }
+      }
+    }
+  ],
+  "status": "failed",
+  "actual_summaries": [
+    [
+      0,
+      1,
+      0
+    ]
+  ],
+  "error": "",
+  "target_absent_after_clean": true,
+  "region_sha256_after": "cdbcdbf62b8262acfc39d91b869222b3dfeb390a59e6dc9ce637f777034ea7d0"
+}

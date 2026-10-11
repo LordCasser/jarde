@@ -1,0 +1,103 @@
+--- accepted-cf12-verifier-v8.py
++++ cf12-verifier-v9.py
+@@ -10,6 +10,7 @@
+ import sys
+ import zipfile
+ from pathlib import Path
++from build_evidence import verify_build as verify_v5_build
+ 
+ PLAN = Path('/private/tmp/jarde-cf12-ten-fixture-replay-plan-luna-v1.json')
+ JAVAP_EVIDENCE = Path('/private/tmp/jarde-switch-continuation-physical-javap-root-v1/execution.json')
+@@ -388,8 +389,6 @@
+     return manifest, by_path
+ 
+ 
+-COMPOUND_BUILD_SCHEMA = 'compound-condition-focused-and-cli-root-v2'
+-COMPOUND_BUILD_PATH = Path('/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/execution.json').resolve()
+ REPO_ROOT = Path('/Users/lordcasser/workspace/projects/jarde').resolve()
+ COMPOUND_SOURCE_PINS = {
+     'Cargo.lock', 'Cargo.toml',
+@@ -404,62 +403,8 @@
+ 
+ 
+ def verify_candidate_build(path, replay_cli):
+-    build_path = Path(path).resolve()
+-    need(build_path == COMPOUND_BUILD_PATH, 'candidate build record is not the frozen compound CLI build execution')
+-    build_sha = sha_bytes(build_path.read_bytes())
+-    build = json.loads(build_path.read_text())
+-    need(build.get('schema') == COMPOUND_BUILD_SCHEMA, 'unsupported compound candidate build schema')
+-    need(build.get('status') == 'candidate-cli-built', 'compound candidate CLI build did not complete')
+-    need(build.get('cli_is_unaccepted_candidate') is True, 'compound build does not identify its CLI as unaccepted')
+-    cli = build.get('cli')
+-    need(isinstance(cli, dict) and set(cli) == {'path', 'bytes', 'sha256', 'mode'},
+-         'compound candidate CLI pin malformed')
+-    verify_pin(cli)
+-    need(cli['mode'] == 0o555 and (Path(cli['path']).stat().st_mode & 0o777) == 0o555,
+-         'compound candidate CLI must be pinned executable mode 0555')
+-    need({k: replay_cli.get(k) for k in ('path', 'bytes', 'sha256')} ==
+-         {k: cli.get(k) for k in ('path', 'bytes', 'sha256')},
+-         'full-class replay CLI does not match the separately pinned compound candidate build')
+-
+-    before, after = build.get('product_pins_before'), build.get('product_pins_after')
+-    need(isinstance(before, dict) and isinstance(after, dict), 'compound product source pin maps missing')
+-    need(set(before) == COMPOUND_SOURCE_PINS and set(after) == COMPOUND_SOURCE_PINS and len(before) == 19,
+-         'compound candidate build must contain the exact 19-file product/source pin set')
+-    need(before == after, 'compound product/source pins changed during candidate build')
+-    for rel in sorted(COMPOUND_SOURCE_PINS):
+-        target = (REPO_ROOT / rel).resolve()
+-        need(target.is_relative_to(REPO_ROOT), f'compound source pin escapes repository: {rel}')
+-        actual = sha_bytes(target.read_bytes())
+-        need(actual == before[rel], f'compound source pin differs from live file: {rel}')
+-
+-    commands = build.get('commands')
+-    need(isinstance(commands, list) and len(commands) == 5, 'compound build command envelope must contain five commands')
+-    expected_argv = [
+-        ['cargo', 'fmt', '--all', '--', '--check'],
+-        ['cargo', 'test', '-p', 'jarde-java', '--lib', '--locked', 'region::tests::', '--', '--nocapture'],
+-        ['cargo', 'test', '-p', 'jarde-java', '--test', 'p3_conditional_switch_fallthrough', '--locked', '--', '--nocapture'],
+-        ['cargo', 'build', '-p', 'jarde-cli', '--locked'],
+-        ['cargo', 'clean'],
+-    ]
+-    for i, (cmd, argv) in enumerate(zip(commands, expected_argv)):
+-        need(cmd.get('index') == i and cmd.get('argv') == argv,
+-             f'compound build command {i} argv/index differs from frozen successful build')
+-        need(Path(cmd.get('cwd', '')).resolve() == REPO_ROOT, f'compound build command {i} cwd differs from repository')
+-        need(cmd.get('exit_code') == 0 and cmd.get('guard_stop') is None,
+-             f'compound build command {i} did not finish successfully without a guard stop')
+-        raw_for(cmd)
+-    need(build.get('target_absent_after_clean') is True,
+-         'compound candidate build did not record target absence after cargo clean')
+-    # Require the test counts from the pinned raw streams, not just runner summary fields.
+-    for index, count in ((1, 17), (2, 6)):
+-        raw = raw_for(commands[index])
+-        stdout = re.sub(r'\x1b\[[0-9;]*m', '', raw['stdout'].decode('utf-8', errors='strict'))
+-        summary = re.findall(r'^test result: ok\. (\d+) passed; 0 failed; 0 ignored; 0 measured; \d+ filtered out; finished in [^\n]+$',
+-                             stdout, flags=re.MULTILINE)
+-        need(summary == [str(count)], f'compound build command {index} raw test summary is not exactly {count}/0')
+-    return {'path': str(build_path), 'sha256': build_sha, 'cli': cli,
+-            'product_source_pin_count': 19, 'successful_command_count': 5,
+-            'region_test_count': 17, 'public_test_count': 6, 'target_absent_after_clean': True}
++    return verify_v5_build(path, replay_cli)
++
+ 
+ def baseline_rows():
+     pins = [
+@@ -836,7 +781,8 @@
+     labels=[r.get('label') for r in referenced]
+     need(None not in labels and len(labels)==len(set(labels)), 'duplicate or missing invocation reference in observation envelope')
+     commands=execution.get('commands',[])
+-    need(len(commands)==len(referenced) and len(idx)==len(commands), 'extra/missing/duplicate raw command row')
++    need(len(commands)==179 and len(commands)==len(referenced) and len(idx)==len(commands),
++         'CF12 replay must contain exactly 179 referenced raw commands with no extras or omissions')
+     need([r.get('index') for r in commands]==list(range(1,len(commands)+1)), 'command indices are not contiguous/ordered')
+     by_label={r['label']:r for r in commands}
+     for ref in referenced:
+@@ -928,7 +874,7 @@
+     need(sha_bytes(args.class_digests.read_bytes())==digest_manifest_sha,'class digest manifest changed during verification')
+     need(verify_candidate_build(args.candidate_build, execution['cli']) == candidate_build,
+          'compound candidate build/source pins changed during verification')
+-    report={'schema':'cf12-ten-fixture-compound-independent-verifier-luna-v8',
++    report={'schema':'cf12-ten-fixture-compound-independent-verifier-luna-v9',
+       'execution':str(execution_path),'execution_sha256':sha_bytes(execution_path.read_bytes()),
+       'status':'observed_pending_root_independent_acceptance','cf12_complete':False,
+       'complete_milestone':bool(ft2_positive and switch2_restored),

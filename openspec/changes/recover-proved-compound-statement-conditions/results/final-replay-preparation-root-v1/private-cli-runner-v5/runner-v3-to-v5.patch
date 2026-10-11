@@ -1,0 +1,44 @@
+--- focused-and-cli-runner-root-v3.py
++++ runner-v5.py
+@@ -26,6 +26,7 @@
+     'complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class'
+ )
+ INCLUDE_RE = re.compile(r'(?:include_bytes|include_str)!\s*\(\s*"([^"]+)"\s*,?\s*\)')
++FIXTURE_MACRO_RE = re.compile(r'crate::test_fixtures::fixture!\s*\(\s*"([^"]+)"\s*\)')
+ SUMMARY_RE = re.compile(
+     r'^test result: (?:ok|FAILED)\. (?P<passed>\d+) passed; (?P<failed>\d+) failed; '
+     r'(?P<ignored>\d+) ignored; (?P<measured>\d+) measured; (?P<filtered>\d+) filtered out;',
+@@ -50,12 +51,22 @@
+ 
+ def compound_paths(guard):
+     paths = set(guard.PRODUCT_PATHS)
+-    paths.update({PUBLIC_TEST, FROZEN_COMPOUND_CLASS})
+-    for source in (COMPOUND_TEST, PUBLIC_TEST):
++    paths.update({PUBLIC_TEST, FROZEN_COMPOUND_CLASS, 'crates/jarde-jvm/src/canonical.rs',
++                  'crates/jarde-jvm/src/test_fixtures.rs'})
++    fixture_root = (ROOT / 'crates/jarde-jvm/Cargo.toml').parent / '../../tests/fixtures'
++    selected_sources = sorted(path for path in paths if path.endswith('.rs'))
++    for source in selected_sources:
++        # This file defines concat!-based fixture expansion; fixture literals are resolved below.
++        if source == 'crates/jarde-jvm/src/test_fixtures.rs':
++            continue
+         text = (ROOT / source).read_text(encoding='utf-8')
+         for included in INCLUDE_RE.findall(text):
+             resolved = (ROOT / source).parent.joinpath(included).resolve(strict=True)
+             paths.add(resolved.relative_to(ROOT).as_posix())
++    canonical = ROOT / 'crates/jarde-jvm/src/canonical.rs'
++    for included in FIXTURE_MACRO_RE.findall(canonical.read_text(encoding='utf-8')):
++        resolved = fixture_root.joinpath(included).resolve(strict=True)
++        paths.add(resolved.relative_to(ROOT).as_posix())
+     return paths
+ 
+ 
+@@ -106,7 +117,7 @@
+             stripped.append(key)
+ 
+     record = {
+-        'schema': 'compound-condition-focused-and-cli-root-v3',
++        'schema': 'compound-condition-focused-and-cli-root-v5',
+         'status': 'running',
+         'runner_path': str(Path(__file__).resolve()),
+         'runner_sha256': sha256(__file__),

@@ -1,0 +1,70 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -19154,13 +19154,46 @@
+             let operations = Operations::of(code, ir.constant_pool());
+             let view = NormalFlowView::build(canonical, &mut budget)
+                 .expect("the real normal-flow graph is available");
++            let canonical_ids = || {
++                canonical
++                    .blocks()
++                    .iter()
++                    .map(|block| {
++                        (
++                            block.id().bci(),
++                            block.id().path(),
++                            block.blocks(),
++                        )
++                    })
++                    .collect::<Vec<_>>()
++            };
+             let block = |bci| {
+                 canonical
+                     .blocks()
+                     .iter()
+                     .map(|block| block.id())
+                     .find(|id| id.bci() == bci && id.path().is_empty())
+-                    .expect("pinned pathless bytecode block is reader-produced")
++                    .unwrap_or_else(|| {
++                        panic!(
++                            "{name}: expected pathless canonical block start at BCI {bci}; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
++                            canonical_ids(),
++                            canonical.unreachable(),
++                        )
++                    })
++            };
++            let block_covering = |bci| {
++                canonical
++                    .blocks()
++                    .iter()
++                    .find(|block| block.blocks().contains(&bci) && block.id().path().is_empty())
++                    .map(|block| block.id())
++                    .unwrap_or_else(|| {
++                        panic!(
++                            "{name}: expected pathless canonical coverage of physical block BCI {bci}; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
++                            canonical_ids(),
++                            canonical.unreachable(),
++                        )
++                    })
+             };
+             let root = block(0);
+             let root_node = view
+@@ -19183,9 +19216,16 @@
+                 view.predecessors(root_node).is_empty(),
+                 "canonical block 0 is the method entry; physical branch BCI 26 is not a block ID"
+             );
+-            let join_node = view
+-                .index_of(block(83))
+-                .expect("shared exit is in the view");
++            // Normalization may fuse the physical return block into its sole predecessor in
++            // the irreducible mutation. Locate the node by its represented original block, while
++            // requiring root and every branch block above/below to retain exact pathless IDs.
++            let join_node = view.index_of(block_covering(83)).unwrap_or_else(|| {
++                panic!(
++                    "{name}: physical shared-exit BCI 83 is represented canonically but absent from the normal-flow view; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
++                    canonical_ids(),
++                    canonical.unreachable(),
++                )
++            });
+ 
+             let has_normal_view_edge = |from_bci, to_bci| {
+                 let from = view.index_of(block(from_bci)).unwrap();

@@ -1,0 +1,12 @@
+Exception in thread "main" java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:118)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at Cf12RemainingRuntimeProbe.runCheck(Cf12RemainingRuntimeProbe.java:93)
+	at Cf12RemainingRuntimeProbe.testSwitch4(Cf12RemainingRuntimeProbe.java:112)
+	at Cf12RemainingRuntimeProbe.main(Cf12RemainingRuntimeProbe.java:58)
+Caused by: org.opentest4j.AssertionFailedError: 
+expected: 1234
+ but was: 2234
+	at jadx.tests.integration.switches.TestSwitch4$TestCls.check(TestSwitch4$TestCls.java:26)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	... 4 more

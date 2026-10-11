@@ -1,0 +1,120 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -36953,7 +36953,18 @@
+                     unreachable!()
+                 };
+                 let root = tests.first().expect("the recovered condition has a root");
+-                let test_path: RegionPath = Vec::new();
++                let actual_paths = region_paths(&recovered.regions);
++                let compound_path = actual_paths
++                    .paths
++                    .get(&root.block)
++                    .cloned()
++                    .expect("the root test block has its production lexical path");
++                assert_eq!(compound_path, vec![0], "the fixture's CompoundIf is top-level root[0]");
++                assert!(matches!(
++                    recovered.regions.first(),
++                    Some(Region::CompoundIf { tests, .. })
++                        if tests.first().is_some_and(|test| test.branch_bci == root.branch_bci)
++                ));
+                 let owned: BTreeSet<u32> = compound
+                     .blocks()
+                     .into_iter()
+@@ -37014,8 +37025,6 @@
+                 let names = NameTable::build(5, code.max_locals, reuse.evidence());
+                 let prologues = crate::init::Prologues::none();
+                 let enums = crate::enumswitch::Plan::empty();
+-                let target_regions = vec![compound.clone()];
+-
+                 let mut high_budget = compound_test_budget(1 << 25);
+                 let mut high_setup = compound_test_budget(1 << 25);
+                 let mut high = compound_test_builder(
+@@ -37029,7 +37038,7 @@
+                     direct_interfaces,
+                     class_methods,
+                     chains,
+-                    &target_regions,
++                    &recovered.regions,
+                     &names,
+                     &reuse,
+                     &parameter_types,
+@@ -37078,7 +37087,7 @@
+                     direct_interfaces,
+                     class_methods,
+                     chains,
+-                    &target_regions,
++                    &recovered.regions,
+                     &names,
+                     &reuse,
+                     &parameter_types,
+@@ -37125,7 +37134,7 @@
+                     direct_interfaces,
+                     class_methods,
+                     chains,
+-                    &target_regions,
++                    &recovered.regions,
+                     &names,
+                     &reuse,
+                     &parameter_types,
+@@ -37150,18 +37159,22 @@
+                     });
+                 emission.compound_conditions_ready.insert(root.branch_bci);
+                 let prepared_usage = emission.budget.usage().analysis_steps;
++                let emitted_start = emission.stmts.len();
+                 emission
+-                    .region(&compound, &test_path)
++                    .region(&compound, &compound_path)
+                     .expect("the actual compound emitter completes at high budget");
+                 let total_usage = emission.budget.usage().analysis_steps;
+                 eprintln!(
+                     "[compound-stop-test] emission_prepared_usage={prepared_usage} emission_total_usage={total_usage} root_bci={}",
+                     root.branch_bci
+                 );
++                assert!(total_usage > prepared_usage, "the emitter consumes analysis steps");
++                let emitted = &emission.stmts[emitted_start..];
+                 assert!(
+-                    total_usage > prepared_usage + 1,
+-                    "the emitter consumes its own metered work"
++                    emitted.iter().any(|statement| matches!(statement.kind, StmtKind::If { .. })),
++                    "high-budget emission must publish a structured If"
+                 );
++                assert!(!contains_fallback(emitted), "high-budget structured output has no fallback");
+                 let emission_limit = total_usage - 1;
+ 
+                 let mut stopped_emission_budget = compound_test_budget(emission_limit);
+@@ -37177,7 +37190,7 @@
+                     direct_interfaces,
+                     class_methods,
+                     chains,
+-                    &target_regions,
++                    &recovered.regions,
+                     &names,
+                     &reuse,
+                     &parameter_types,
+@@ -37205,7 +37218,7 @@
+                     .insert(root.branch_bci);
+                 let before = compound_trial_state(&stopped_emission);
+                 let stop = stopped_emission
+-                    .region(&compound, &test_path)
++                    .region(&compound, &compound_path)
+                     .expect_err("usage minus one stops inside compound emission");
+                 assert_compound_budget_stop(&stop, emission_limit, &owned);
+                 eprintln!(
+@@ -37234,7 +37247,7 @@
+                     direct_interfaces,
+                     class_methods,
+                     chains,
+-                    &target_regions,
++                    &recovered.regions,
+                     &names,
+                     &reuse,
+                     &parameter_types,
+@@ -37262,7 +37275,7 @@
+                 let token = cancelled.budget.cancellation_token();
+                 token.cancel();
+                 let stop = cancelled
+-                    .region(&compound, &test_path)
++                    .region(&compound, &compound_path)
+                     .expect_err("the real emitter polls the cancelled request");
+                 assert!(
+                     matches!(stop, StopReason::Cancelled { at: Some(at) } if owned.contains(&at))

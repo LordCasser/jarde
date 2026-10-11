@@ -1,0 +1,12 @@
+{
+  "status": "diagnosed_not_fixed",
+  "parent_goal_previous_turn": "progress",
+  "source": "/private/tmp/jarde-compound-java-lib-root-v9/1.stderr.raw",
+  "source_sha256": "2fefd3dc013f50942e68c2c091e60e34d43ec2e17f3fb86e3f12d979bc746b37",
+  "canonical_source_sha256": "3770e6f0bb295c361d9855545c30a93f33986dcaed626506a97b584c4c26558e",
+  "class_sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525",
+  "reason": "every internal clone block is incorrectly required to have direct matching Call/Return incoming edge",
+  "raw_diagnostic_found": true,
+  "fix_implemented": false,
+  "goal_active": true
+}

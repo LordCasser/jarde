@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-11T05:45:06.387064+00:00",
+  "initial_archive_error": "This worktree is protected by a pinned task or workspace.",
+  "temporary_unpin": true,
+  "archive_request_results": {
+    "enum-constant-bodies": "queued",
+    "inner-this-baseline": "queued",
+    "plain-enum-arities": "queued",
+    "dt29-branched-concat": "queued"
+  },
+  "restored_pinned_index": 2,
+  "physical_cleanup_verified": false,
+  "worktree_count_still_observed": 15,
+  "computer_use_observation_denied": "Computer Use is not allowed to use the app com.openai.codex for safety reasons.",
+  "scope": "No archive completion or physical space recovery claimed; no protected checkout removed through a bypass."
+}

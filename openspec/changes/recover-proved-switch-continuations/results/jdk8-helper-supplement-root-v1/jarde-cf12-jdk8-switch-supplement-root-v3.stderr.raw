@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf12-jdk8-switch-supplement-root-v4.py", line 208, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/private/tmp/jarde-cf12-jdk8-switch-supplement-root-v4.py", line 98, in main
+    pins=[pin(Path(__file__)),pin(PLAN),pin(OLD),pin(CLI),overlay_exec,pin(Path(a.overlay_execution)),*helpers,*jars,tools['javac'],tools['java'],*baseline_stream_pins,*overlay_pins]
+                                                     ^^^
+NameError: name 'CLI' is not defined. Did you mean: 'cli'?

@@ -28,6 +28,11 @@ const CLASS: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
 );
 const CLASS_BLAKE3: &str = "92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd";
+const FT2_CLASS: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class"
+);
+const FT2_CLASS_BLAKE3: &str = "3b3fcb2925d1cf2d6ef1a69bfa451434711be9701602683032a53acf98656d03";
+const FT2_OWNER: &str = "jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls";
 const OWNER: &str = "jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls";
 const NAME: &str = "test";
 const DESCRIPTOR: &str = "(IZZ)Ljava/lang/String;";
@@ -121,6 +126,8 @@ struct Run {
     report: jarde_java::RecoveryReport,
     method: PhysicalMethodId,
     ordinal: jarde_reader::prepared::MethodOrdinal,
+    analysis_steps: u64,
+    output_bytes: u64,
 }
 
 fn recover_target(evidence: RecoveryEvidenceRequest) -> Run {
@@ -131,16 +138,48 @@ fn recover_target_with_recovery_budget(
     evidence: RecoveryEvidenceRequest,
     recovery_budget: Option<Budget>,
 ) -> Run {
+    recover_bytes_target_with_recovery_budget(
+        CLASS,
+        OWNER,
+        NAME,
+        DESCRIPTOR,
+        CLASS_BLAKE3,
+        evidence,
+        recovery_budget,
+    )
+}
+
+fn recover_ft2_target(evidence: RecoveryEvidenceRequest) -> Run {
+    recover_bytes_target_with_recovery_budget(
+        FT2_CLASS,
+        FT2_OWNER,
+        NAME,
+        DESCRIPTOR,
+        FT2_CLASS_BLAKE3,
+        evidence,
+        None,
+    )
+}
+
+fn recover_bytes_target_with_recovery_budget(
+    class_bytes: &[u8],
+    expected_owner: &str,
+    name: &str,
+    descriptor: &str,
+    expected_class_blake3: &str,
+    evidence: RecoveryEvidenceRequest,
+    recovery_budget: Option<Budget>,
+) -> Run {
     let mut budget = Budget::new(limits());
-    let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
+    let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class_bytes.to_vec()), &mut budget)
         .expect("complete frozen class opens");
     let definition = PhysicalDefinitionId {
         location: PhysicalClassLocation::StandaloneRoot {
             snapshot: snapshot.id().clone(),
         },
         class_bytes: ClassBytesId {
-            digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
-            length: u64::try_from(CLASS.len()).expect("frozen class length fits u64"),
+            digest: Digest(blake3::hash(class_bytes).to_hex().to_string()),
+            length: u64::try_from(class_bytes.len()).expect("frozen class length fits u64"),
         },
         variant: PhysicalVariant::Base,
     };
@@ -157,8 +196,8 @@ fn recover_target_with_recovery_budget(
     };
     let method = PhysicalMethodId {
         owner: definition,
-        name: JvmBytes(NAME.as_bytes().to_vec()),
-        descriptor: JvmBytes(DESCRIPTOR.as_bytes().to_vec()),
+        name: JvmBytes(name.as_bytes().to_vec()),
+        descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
     };
     let analysis = analyze_method_ir(
         &[snapshot.clone()],
@@ -186,10 +225,10 @@ fn recover_target_with_recovery_budget(
     )
     .expect("full Java 8 method analysis succeeds");
     let method = analysis.report().method.clone();
-    assert_eq!(method.name.0.as_slice(), NAME.as_bytes());
-    assert_eq!(method.descriptor.0.as_slice(), DESCRIPTOR.as_bytes());
-    assert_eq!(method.owner.class_bytes.digest.0, CLASS_BLAKE3);
-    assert_eq!(method.owner.class_bytes.length, CLASS.len() as u64);
+    assert_eq!(method.name.0.as_slice(), name.as_bytes());
+    assert_eq!(method.descriptor.0.as_slice(), descriptor.as_bytes());
+    assert_eq!(method.owner.class_bytes.digest.0, expected_class_blake3);
+    assert_eq!(method.owner.class_bytes.length, class_bytes.len() as u64);
 
     // Establish the member ordinal by reading this exact class's method table, not by counting or
     // assuming selector order. This is the same subject contract used by the current real-class
@@ -199,7 +238,7 @@ fn recover_target_with_recovery_budget(
         .expect("same frozen root class prepares");
     let prepared = jarde_reader::prepared::PreparedClass::prepare(&prepared_read, &mut budget)
         .expect("same class method table reads completely");
-    let ordinals = prepared.locate_method(NAME.as_bytes(), DESCRIPTOR.as_bytes());
+    let ordinals = prepared.locate_method(name.as_bytes(), descriptor.as_bytes());
     assert_eq!(ordinals.len(), 1, "target declaration is unique");
     let ordinal = ordinals[0];
     let subject = ArtifactSubject::new(
@@ -212,9 +251,12 @@ fn recover_target_with_recovery_budget(
         .ir()
         .declaration()
         .expect("reader states declaration");
-    assert_eq!(declaration.class_name().0.as_slice(), OWNER.as_bytes());
-    assert_eq!(declaration.name().0.as_slice(), NAME.as_bytes());
-    assert_eq!(declaration.descriptor().0.as_slice(), DESCRIPTOR.as_bytes());
+    assert_eq!(
+        declaration.class_name().0.as_slice(),
+        expected_owner.as_bytes()
+    );
+    assert_eq!(declaration.name().0.as_slice(), name.as_bytes());
+    assert_eq!(declaration.descriptor().0.as_slice(), descriptor.as_bytes());
     let facts = RecoveryFacts::new(
         MethodFacts::new(
             String::from_utf8_lossy(&declaration.name().0).into_owned(),
@@ -239,9 +281,17 @@ fn recover_target_with_recovery_budget(
     let request = RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
         .with_evidence(evidence)
         .with_subject(subject);
-    let report = match recovery_budget {
-        Some(mut recovery_budget) => recover(&request, &mut recovery_budget),
-        None => recover(&request, &mut budget),
+    let (report, analysis_steps, output_bytes) = match recovery_budget {
+        Some(mut recovery_budget) => {
+            let report = recover(&request, &mut recovery_budget);
+            let usage = recovery_budget.usage();
+            (report, usage.analysis_steps, usage.output_bytes)
+        }
+        None => {
+            let report = recover(&request, &mut budget);
+            let usage = budget.usage();
+            (report, usage.analysis_steps, usage.output_bytes)
+        }
     };
     if report.produced() {
         let binding = report
@@ -259,15 +309,21 @@ fn recover_target_with_recovery_budget(
         report,
         method,
         ordinal,
+        analysis_steps,
+        output_bytes,
     }
 }
 
-fn physical_instructions() -> Vec<jarde_reader::classfile::InstructionFact> {
+fn physical_instructions(
+    class_bytes: &[u8],
+    name: &str,
+    descriptor: &str,
+) -> Vec<jarde_reader::classfile::InstructionFact> {
     let inspection = inspect_method_bytecode(
-        CLASS,
+        class_bytes,
         MethodSelector {
-            name: JvmBytes(NAME.as_bytes().to_vec()),
-            descriptor: JvmBytes(DESCRIPTOR.as_bytes().to_vec()),
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
         },
         &mut Budget::new(limits()),
     )
@@ -279,8 +335,14 @@ fn physical_instructions() -> Vec<jarde_reader::classfile::InstructionFact> {
     inspection.instructions
 }
 
-fn assert_physical_coverage(report: &jarde_java::RecoveryReport, method: &PhysicalMethodId) {
-    let instructions = physical_instructions();
+fn assert_physical_coverage(
+    class_bytes: &[u8],
+    name: &str,
+    descriptor: &str,
+    report: &jarde_java::RecoveryReport,
+    method: &PhysicalMethodId,
+) {
+    let instructions = physical_instructions(class_bytes, name, descriptor);
     for instruction in instructions {
         let segments = report.source_map.of_bci(instruction.bci);
         assert!(
@@ -459,7 +521,7 @@ fn cf12_conditional_switch_keeps_exact_case_and_exit_sources() {
 
     // The diagnostic established the only relevant physical targets. Check both are actual JVM
     // goto instructions before requiring their own complete break-statement source spans.
-    let physical = physical_instructions();
+    let physical = physical_instructions(CLASS, NAME, DESCRIPTOR);
     for bci in [89, 114] {
         let instruction = physical
             .iter()
@@ -485,7 +547,186 @@ fn cf12_conditional_switch_keeps_exact_case_and_exit_sources() {
         );
     }
 
-    assert_physical_coverage(&all.report, &all.method);
+    assert_physical_coverage(CLASS, NAME, DESCRIPTOR, &all.report, &all.method);
+}
+
+#[test]
+fn cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins() {
+    assert_eq!(FT2_CLASS.len(), 1654, "frozen FT2 class size changed");
+    assert_eq!(
+        blake3::hash(FT2_CLASS).to_hex().to_string(),
+        FT2_CLASS_BLAKE3
+    );
+
+    let default = recover_ft2_target(
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+    );
+    let all = recover_ft2_target(RecoveryEvidenceRequest::all());
+    assert!(
+        default.report.produced(),
+        "default: {:?}",
+        default.report.outcome
+    );
+    assert!(all.report.produced(), "all: {:?}", all.report.outcome);
+    assert_eq!(default.method, all.method);
+    assert_eq!(default.ordinal, all.ordinal);
+    assert_eq!(default.report.text, all.report.text);
+    assert_eq!(default.report.source_map, all.report.source_map);
+    assert!(
+        !all.report.text.contains("@bytecode"),
+        "{}",
+        all.report.text
+    );
+    assert!(
+        all.report
+            .regions
+            .iter()
+            .all(|region| region.code.is_none())
+    );
+    assert!(
+        all.report
+            .regions
+            .iter()
+            .all(|region| { !region.rule.is_some_and(|rule| rule.rule() == "loop") })
+    );
+
+    // The whole outer-if region keeps dispatch@8 and the independent join@175 under one owner.
+    // Region details are top-level, so case exclusion is checked against the complete switch span
+    // and the physical source locations for join/tail statements below.
+    let outer_regions = all
+        .report
+        .regions
+        .iter()
+        .filter(|region| {
+            region.rule.is_some_and(|rule| rule.rule() == "if")
+                && region.blocks.contains(&0)
+                && region.blocks.contains(&8)
+                && region.blocks.contains(&175)
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        outer_regions.len(),
+        1,
+        "outer if region: {:?}",
+        all.report.regions
+    );
+    for bci in [8, 175] {
+        let owner_count = all
+            .report
+            .regions
+            .iter()
+            .flat_map(|region| region.blocks.iter())
+            .filter(|&&owned| owned == bci)
+            .count();
+        assert_eq!(owner_count, 1, "block {bci} has one physical region owner");
+    }
+
+    let switch_nodes = all
+        .report
+        .source_map
+        .direct_of_bci(11)
+        .into_iter()
+        .filter(|segment| {
+            segment
+                .text(&all.report.text)
+                .trim_start()
+                .starts_with("switch (")
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        switch_nodes.len(),
+        1,
+        "switch@11 has one complete source span"
+    );
+    assert_eq!(switch_nodes[0].origin().primary().bci(), 11);
+    assert_eq!(
+        switch_nodes[0].origin().primary().method(),
+        Some(&all.method)
+    );
+    assert_eq!(
+        all.report.text.matches("switch (").count(),
+        1,
+        "{}",
+        all.report.text
+    );
+    let switch_end = matching_switch_brace_end(&all.report.text, switch_nodes[0]);
+
+    for bci in [175, 178, 179, 182, 184, 187, 189, 192, 195] {
+        let segments = all.report.source_map.of_bci(bci);
+        assert!(!segments.is_empty(), "continuation BCI {bci} has source");
+        assert!(
+            segments.iter().all(|segment| segment.start() >= switch_end),
+            "continuation BCI {bci} is outside switch@11: {:?}",
+            segments
+                .iter()
+                .map(|segment| (
+                    segment.start(),
+                    segment.end(),
+                    segment.text(&all.report.text)
+                ))
+                .collect::<Vec<_>>(),
+        );
+    }
+    let tail_statement = all
+        .report
+        .source_map
+        .direct_of_bci(195)
+        .into_iter()
+        .filter(|segment| segment.text(&all.report.text).trim() == "str = str + \"+\";")
+        .collect::<Vec<_>>();
+    assert_eq!(tail_statement.len(), 1, "tail@195 source is emitted once");
+    assert_eq!(tail_statement[0].origin().primary().bci(), 195);
+    assert_eq!(
+        tail_statement[0].origin().primary().method(),
+        Some(&all.method)
+    );
+    assert!(tail_statement[0].start() >= switch_end);
+    assert_eq!(all.report.text.matches("str = str + \"+\";").count(), 1);
+
+    // BCI 5 is the terminal outer conditional instruction, not its block start at 0.
+    let outer_if = all
+        .report
+        .source_map
+        .direct_of_bci(5)
+        .into_iter()
+        .filter(|segment| {
+            segment
+                .text(&all.report.text)
+                .trim_start()
+                .starts_with("if (a > 0) {")
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(outer_if.len(), 1, "outer branch@5 has one complete if span");
+    assert_eq!(outer_if[0].origin().primary().bci(), 5);
+    assert_eq!(outer_if[0].origin().primary().method(), Some(&all.method));
+    let outer_text = outer_if[0].text(&all.report.text);
+    assert!(outer_text.contains("switch (a % 4) {"));
+    assert_eq!(outer_text.matches("str = str + \"+\";").count(), 1);
+    assert_eq!(outer_text.trim_end().as_bytes().last(), Some(&b'}'));
+
+    // The two conditional exits have individual exact break spans. The other two physical goto
+    // instructions are represented by switch/if structural spans in this schema, so coverage is
+    // checked for them without claiming a direct break segment that the output does not provide.
+    let physical = physical_instructions(FT2_CLASS, NAME, DESCRIPTOR);
+    for bci in [93, 118, 147, 150] {
+        let instruction = physical
+            .iter()
+            .find(|instruction| instruction.bci == bci)
+            .expect("diagnosed transfer is a physical instruction");
+        assert!(
+            matches!(instruction.opcode, 0xa7 | 0xc8),
+            "goto@{bci}: {instruction:?}"
+        );
+    }
+    for bci in [93, 118] {
+        let mapped = all.report.source_map.direct_of_bci(bci);
+        assert_eq!(mapped.len(), 1, "goto@{bci} has one direct source span");
+        assert_eq!(mapped[0].origin().primary().bci(), bci);
+        assert_eq!(mapped[0].origin().primary().method(), Some(&all.method));
+        assert_eq!(mapped[0].text(&all.report.text).trim(), "break;");
+    }
+
+    assert_physical_coverage(FT2_CLASS, NAME, DESCRIPTOR, &all.report, &all.method);
 }
 
 #[test]
@@ -541,4 +782,297 @@ fn cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artif
         assert!(report.text.is_empty());
         assert!(report.source_map.is_empty());
     }
+}
+
+const COMPOUND_CLASS: &[u8] = include_bytes!(
+    "../../../openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
+);
+const COMPOUND_CLASS_BLAKE3: &str =
+    "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a";
+const COMPOUND_OWNER: &str = "CompoundStatementConditions";
+
+fn recover_compound_target(name: &str, descriptor: &str, evidence: RecoveryEvidenceRequest) -> Run {
+    recover_compound_target_with_budget(name, descriptor, evidence, None)
+}
+
+fn recover_compound_target_with_budget(
+    name: &str,
+    descriptor: &str,
+    evidence: RecoveryEvidenceRequest,
+    recovery_budget: Option<Budget>,
+) -> Run {
+    recover_bytes_target_with_recovery_budget(
+        COMPOUND_CLASS,
+        COMPOUND_OWNER,
+        name,
+        descriptor,
+        COMPOUND_CLASS_BLAKE3,
+        evidence,
+        recovery_budget,
+    )
+}
+
+fn assert_default_compound_if_source(run: &Run, branch_bcis: &[u32]) {
+    assert!(run.report.produced(), "{:?}", run.report.outcome);
+    assert!(
+        !run.report.text.contains("@bytecode"),
+        "{}",
+        run.report.text
+    );
+    let conditions = branch_bcis
+        .iter()
+        .flat_map(|&bci| run.report.source_map.direct_of_bci(bci))
+        .filter_map(|segment| if_condition_text(segment.text(&run.report.text)))
+        .collect::<Vec<_>>();
+    assert!(
+        !conditions.is_empty(),
+        "default source map contains a structured if-condition span at the observed branch BCIs: {}",
+        run.report.text
+    );
+}
+
+fn assert_all_compound_regions_structured(run: &Run) {
+    assert!(run.report.produced(), "{:?}", run.report.outcome);
+    assert!(
+        !run.report.text.contains("@bytecode"),
+        "{}",
+        run.report.text
+    );
+    assert!(
+        run.report
+            .regions
+            .iter()
+            .all(|region| region.code.is_none()),
+        "fallback region is not structured recovery: {:?}",
+        run.report.regions
+    );
+    assert!(
+        run.report
+            .regions
+            .iter()
+            .any(|region| { region.rule.is_some_and(|rule| rule.rule() == "if") }),
+        "the target's conditional is represented by a structured if: {:?}",
+        run.report.regions
+    );
+}
+
+fn if_condition_text(source: &str) -> Option<&str> {
+    let tail = source.trim_start().strip_prefix("if")?.trim_start();
+    if !tail.starts_with('(') {
+        return None;
+    }
+    let mut depth = 0usize;
+    for (index, byte) in tail.bytes().enumerate() {
+        match byte {
+            b'(' => depth += 1,
+            b')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(&tail[1..index]);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+#[test]
+fn compound_statement_conditions_have_exact_physical_origins() {
+    const NAME: &str = "test";
+    const DESCRIPTOR: &str = "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;";
+
+    assert_eq!(COMPOUND_CLASS.len(), 2848, "frozen class size changed");
+    assert_eq!(
+        blake3::hash(COMPOUND_CLASS).to_hex().to_string(),
+        COMPOUND_CLASS_BLAKE3
+    );
+
+    let default = recover_compound_target(
+        NAME,
+        DESCRIPTOR,
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+    );
+    let all = recover_compound_target(NAME, DESCRIPTOR, RecoveryEvidenceRequest::all());
+    assert_default_compound_if_source(&default, &[26, 37, 48, 59]);
+    assert_all_compound_regions_structured(&all);
+    assert_eq!(default.method, all.method);
+    assert_eq!(default.ordinal, all.ordinal);
+    assert_eq!(default.report.text, all.report.text);
+    assert_eq!(default.report.source_map, all.report.source_map);
+
+    // These are the four physical short-circuit tests, the two arm entries, and the common
+    // suffix join observed in javap for this exact frozen method. Check the test opcodes too, so
+    // a changed class cannot silently turn these anchors into unrelated instructions.
+    let physical = physical_instructions(COMPOUND_CLASS, NAME, DESCRIPTOR);
+    for (bci, opcode) in [(26, 0x99), (37, 0x9a), (48, 0x99), (59, 0x99)] {
+        assert_eq!(
+            physical
+                .iter()
+                .find(|instruction| instruction.bci == bci)
+                .map(|i| i.opcode),
+            Some(opcode),
+            "physical branch test at BCI {bci} changed"
+        );
+    }
+    for bci in [26, 37, 48, 59, 62, 74, 83] {
+        assert!(
+            !all.report.source_map.of_bci(bci).is_empty(),
+            "physical condition/arm/join BCI {bci} has a source origin: {}",
+            all.report.text
+        );
+    }
+    assert!(all.report.text.contains("\"hit\""), "{}", all.report.text);
+    assert!(all.report.text.contains("\"miss\""), "{}", all.report.text);
+    assert_eq!(all.report.text.matches("\"hit\"").count(), 1);
+    assert_eq!(all.report.text.matches("\"miss\"").count(), 1);
+    assert_eq!(all.report.text.matches("\"suffix\"").count(), 1);
+    assert_physical_coverage(COMPOUND_CLASS, NAME, DESCRIPTOR, &all.report, &all.method);
+}
+
+#[test]
+fn compound_float_condition_preserves_nan_sensitive_comparison_origins() {
+    const NAME: &str = "testFloat";
+    const DESCRIPTOR: &str = "(FLjava/lang/StringBuilder;)Ljava/lang/String;";
+
+    let default = recover_compound_target(
+        NAME,
+        DESCRIPTOR,
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+    );
+    let all = recover_compound_target(NAME, DESCRIPTOR, RecoveryEvidenceRequest::all());
+    assert_default_compound_if_source(&default, &[18, 25]);
+    assert_all_compound_regions_structured(&all);
+    assert_eq!(default.method, all.method);
+    assert_eq!(default.ordinal, all.ordinal);
+    assert_eq!(default.report.text, all.report.text);
+    assert_eq!(default.report.source_map, all.report.source_map);
+
+    // The equivalent if may be exit-aligned with the opposite condition and swapped arms.
+    // Require an explicit logical negation without pinning comparison direction or local names;
+    // direct >=/<= substitutions can change NaN behavior.
+    let conditions = [18, 25]
+        .into_iter()
+        .flat_map(|bci| all.report.source_map.direct_of_bci(bci))
+        .filter_map(|segment| if_condition_text(segment.text(&all.report.text)))
+        .map(|condition| condition.split_whitespace().collect::<String>())
+        .collect::<Vec<_>>();
+    assert!(
+        !conditions.is_empty(),
+        "physical float branches have structured if-condition spans: {}",
+        all.report.text
+    );
+    assert!(
+        conditions.iter().any(|condition| {
+            condition
+                .match_indices('!')
+                .any(|(index, _)| condition.as_bytes().get(index + 1) != Some(&b'='))
+        }),
+        "float condition retains an explicit logical Not: {conditions:?}"
+    );
+    assert!(
+        conditions
+            .iter()
+            .all(|condition| !condition.contains(">=") && !condition.contains("<=")),
+        "NaN-unsafe complementary comparisons are not substituted: {conditions:?}"
+    );
+    let physical = physical_instructions(COMPOUND_CLASS, NAME, DESCRIPTOR);
+    for bci in [18, 25] {
+        assert_eq!(
+            physical
+                .iter()
+                .find(|instruction| instruction.bci == bci)
+                .map(|i| i.opcode),
+            Some(0x9c),
+            "physical float branch at BCI {bci} changed"
+        );
+        assert!(
+            !all.report.source_map.of_bci(bci).is_empty(),
+            "float comparison BCI {bci} has a source origin: {}",
+            all.report.text
+        );
+    }
+    assert_physical_coverage(COMPOUND_CLASS, NAME, DESCRIPTOR, &all.report, &all.method);
+}
+
+#[test]
+fn compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact() {
+    use jarde_java::{RecoveryContent, StopReason};
+    use jarde_reader::budget::CountedBudgetDimension;
+
+    const NAME: &str = "test";
+    const DESCRIPTOR: &str = "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;";
+    // The fixture has already prepared/analyzed this real method before the public `recover` call.
+    // Its stop BCI identifies the physical node only; it does not attribute a private stage.
+    let evidence = RecoveryEvidenceRequest::all();
+    let success = recover_compound_target_with_budget(
+        NAME,
+        DESCRIPTOR,
+        evidence.clone(),
+        Some(Budget::new(limits())),
+    );
+    assert!(success.report.produced(), "{:?}", success.report.outcome);
+    assert!(success.analysis_steps > 0);
+
+    let limit = success.analysis_steps - 1;
+    let mut bounded_limits = limits();
+    bounded_limits.analysis_steps = limit;
+    let stopped = recover_compound_target_with_budget(
+        NAME,
+        DESCRIPTOR,
+        evidence,
+        Some(Budget::new(bounded_limits)),
+    );
+    let (at, written) = match stopped.report.stop() {
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            written: observed_written,
+            limit: observed_limit,
+            at: Some(at),
+        }) => {
+            assert_eq!(*observed_limit, limit);
+            assert_eq!(*observed_written, stopped.output_bytes);
+            (*at, *observed_written)
+        }
+        other => panic!("expected atomic AnalysisSteps stop at limit {limit}, got {other:?}"),
+    };
+    assert!(stopped.analysis_steps <= limit);
+    let physical = physical_instructions(COMPOUND_CLASS, NAME, DESCRIPTOR);
+    assert!(
+        physical.iter().any(|instruction| instruction.bci == at),
+        "reported stop BCI {at} is not a physical instruction"
+    );
+    assert_eq!(stopped.report.content, RecoveryContent::NotProduced);
+    assert!(!stopped.report.produced());
+    assert!(stopped.report.artifact.binding().is_none());
+    assert!(stopped.report.text.is_empty());
+    assert!(stopped.report.source_map.is_empty());
+    eprintln!(
+        "compound whole-recovery AnalysisSteps budget: success_usage={}, limit={limit}, stop_at={at}, stop_usage={}, stop_written={written}, observed_output_bytes={}",
+        success.analysis_steps, stopped.analysis_steps, stopped.output_bytes
+    );
+}
+
+#[test]
+fn compound_pre_cancelled_public_recovery_publishes_no_partial_artifact() {
+    use jarde_java::{RecoveryContent, StopReason};
+    use jarde_reader::budget::CancellationToken;
+
+    const NAME: &str = "test";
+    const DESCRIPTOR: &str = "(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;";
+    // This verifies pre-cancellation from the start, not a late stop boundary.
+    let token = CancellationToken::new();
+    token.cancel();
+    let stopped = recover_compound_target_with_budget(
+        NAME,
+        DESCRIPTOR,
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(stopped.report.stop().is_some_and(StopReason::is_cancelled));
+    assert_eq!(stopped.report.content, RecoveryContent::NotProduced);
+    assert!(!stopped.report.produced());
+    assert!(stopped.report.artifact.binding().is_none());
+    assert!(stopped.report.text.is_empty());
+    assert!(stopped.report.source_map.is_empty());
 }

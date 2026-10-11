@@ -1,0 +1,79 @@
+{
+  "schema": "candidate-continuation-private-replay-v2",
+  "collector": {
+    "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v2/collect.py",
+    "bytes": 10566,
+    "sha256": "1f62a0b76328ca4615e2c057899f03e1d1ee2202472126c29048c1c5b4798ea3"
+  },
+  "verifier": {
+    "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v2/verify.py",
+    "bytes": 16279,
+    "sha256": "c3484d34baaea5165def6707675421fc6d0e4b79726c02d6d864069331e567eb"
+  },
+  "candidateClass": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class",
+    "bytes": 255,
+    "sha256": "9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238",
+    "blake3": "06d3b07c87615ef02a521748823e792acd7df229773a2cccb90cb517e61f76e"
+  },
+  "generation": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/generation.json",
+    "bytes": 5729,
+    "sha256": "f956f5b2649201a1f61d1e49806c6afbf653868c3cbccb000316cfc1d9793a5f"
+  },
+  "javap": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/1.stdout.raw",
+    "bytes": 2014,
+    "sha256": "37f039fe831d63981da1bf9dee369582a86d87e0653001eb5803a5046545407a"
+  },
+  "joinBoundaryOnly": {
+    "path": "/private/tmp/jarde-cross-case-continuation-diagnosis-root-v1/1.stdout.raw",
+    "bytes": 78965,
+    "sha256": "c58ae7e7ab27ac53d2826e17c9e36a8c16f567ccb9c3790c25046cc831f1132a"
+  },
+  "buildEvidence": {
+    "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py",
+    "bytes": 8233,
+    "sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3"
+  },
+  "buildRunner": {
+    "path": "/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py",
+    "bytes": 10982,
+    "sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93"
+  },
+  "resourceGuard": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "bytes": 23507,
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "targetSizeScanner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "bytes": 471,
+    "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+  },
+  "jdkManifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "bytes": 23113,
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "jadx": {
+    "path": "/opt/homebrew/bin/jadx",
+    "bytes": 160,
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v2/v2.patch",
+    "bytes": 59903,
+    "sha256": "176e1664b3ff564b45de0f4d5a7acdfda57a4549b0a7f504513af69efe50c99f"
+  },
+  "readme": {
+    "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v2/README.md",
+    "bytes": 2331,
+    "sha256": "3ba7b91d98ad3d0afd307883666e3b17efe896b0f7af296d6225d0bcd98305ec"
+  },
+  "final": {
+    "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v2/FINAL.md",
+    "bytes": 399,
+    "sha256": "dabf3fa44d8d5220d01115af22655b5f89b8d3bb7617143a33deb99c20186ce9"
+  }
+}

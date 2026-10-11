@@ -1,0 +1,15 @@
+--- /private/tmp/jarde-compound-own-ci-verifier-luna-v2/verify-own-ci.py
++++ /private/tmp/jarde-compound-own-ci-verifier-luna-v3/verify-own-ci.py
+@@ -240,9 +240,11 @@
+     'crates/jarde-java/src/build.rs': (
+         'compound_builder_proof_and_emission_stops_restore_the_trial',
+     ),
+-    'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs': (
++    'tests/p3_switch_forward_join.rs': (
+         'cross_case_goto_target_owns_the_shared_forward_continuation',
+         'looping_arm_backedge_does_not_gain_a_forward_join',
++    ),
++    'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs': (
+         'cf12_conditional_switch_keeps_exact_case_and_exit_sources',
+         'cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins',
+         'cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact',

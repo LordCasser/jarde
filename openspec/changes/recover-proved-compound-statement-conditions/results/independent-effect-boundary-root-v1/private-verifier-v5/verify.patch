@@ -1,0 +1,11 @@
+--- a/verify.py
++++ b/verify.py
+@@ -370,7 +370,7 @@
+              (copied_pin['bytes'], copied_pin['sha256'], copied_pin.get('mode')),
+              f'{field}: original/copy pin metadata differs')
+         need(original_bytes == copied_bytes, f'{field}: original and copied input bytes differ')
+-        need(copied_pin in frozen, f'{field}: copied input is absent from frozen input pins')
++        need(original_pin in frozen, f'{field}: original fixture pin is absent from frozen input pins')
+     source_bytes = Path(execution['source']['path']).read_bytes()
+     runner_bytes = Path(execution['runner_source']['path']).read_bytes()
+ 

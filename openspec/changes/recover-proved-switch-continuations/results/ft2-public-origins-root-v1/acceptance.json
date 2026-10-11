@@ -1,0 +1,32 @@
+{
+  "schema": "ft2-public-origins-root-acceptance-v1",
+  "status": "accepted-finite-origins-test",
+  "scope": "continuation task2.4; no whole-change acceptance",
+  "execution": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/v2/execution.json",
+    "bytes": 3389,
+    "sha256": "b862b06144da3e4782c72739fd2f2592d65cde63f2b3ae7f675703bd7749b522"
+  },
+  "region": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+    "bytes": 719162,
+    "sha256": "34dcf89ccee47c33e0b6e08089ae53567b30ce0f73b50e76b13aec1ddf040025"
+  },
+  "test": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs",
+    "bytes": 27513,
+    "sha256": "6f548c6837bf5f96696e4bd44cc91f255481463f4bbe21c5e18580dfc15a5b91"
+  },
+  "actual_summaries": [
+    [
+      1,
+      0,
+      0
+    ]
+  ],
+  "private_metadata_correction": "private-v1 region required baseline b34 is stale; actual integrated tested product34dc verified by root",
+  "actual_source_fix": "outer if complete statement span ends with newline; root changed last-byte assertion to trim_end, no product change",
+  "physical_instructions": 90,
+  "default_all_text_map_equal": true,
+  "target_absent": true
+}

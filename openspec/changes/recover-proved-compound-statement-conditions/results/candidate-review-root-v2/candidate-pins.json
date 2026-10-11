@@ -1,0 +1,18 @@
+{
+  "/private/tmp/jarde-compound-condition-builder-luna-v3/build.rs.candidate": {
+    "bytes": 1712384,
+    "sha256": "e72b0930ee430d4d220636023226a5dd55e63f33ec74dc6011132deab0e733b3"
+  },
+  "/private/tmp/jarde-compound-condition-builder-luna-v3/build.patch": {
+    "bytes": 29170,
+    "sha256": "d4673a4f22e342153d39d157bd163a5d5ad8b723d0dd3766b4f6a1f35f6ed3bf"
+  },
+  "/private/tmp/jarde-compound-condition-impl-luna-v3/region.rs.candidate": {
+    "bytes": 783118,
+    "sha256": "c37e581844b24315fb1afad982589d565f5ba65a804ce41a0b4e2c42ec6ed3b0"
+  },
+  "/private/tmp/jarde-compound-condition-impl-luna-v4/region.rs.candidate": {
+    "bytes": 783118,
+    "sha256": "cdd60d3287a2dec126b6345e3914183e96f26c39dfb6265a7535acb8b68553dc"
+  }
+}

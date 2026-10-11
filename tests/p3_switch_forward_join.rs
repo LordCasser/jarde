@@ -6,6 +6,18 @@ use std::slice;
 const SAMPLE: &[u8] = include_bytes!("fixtures/p3-join-ownership/v8/Join.class");
 
 fn recover(bytes: &[u8], class_name: &str) -> ClassSourceReport {
+    recover_with_evidence(bytes, class_name, None)
+}
+
+fn recover_with_all_evidence(bytes: &[u8], class_name: &str) -> ClassSourceReport {
+    recover_with_evidence(bytes, class_name, Some(&RecoveryEvidenceRequest::all()))
+}
+
+fn recover_with_evidence(
+    bytes: &[u8],
+    class_name: &str,
+    evidence: Option<&RecoveryEvidenceRequest>,
+) -> ClassSourceReport {
     let engine = Engine::new();
     let mut budget = task_budget(&[]).expect("bounded default budget");
     let snapshot = engine
@@ -27,10 +39,17 @@ fn recover(bytes: &[u8], class_name: &str) -> ClassSourceReport {
             loader: LoaderId("app".to_owned()),
         },
     };
-    match engine
-        .class_source(slice::from_ref(&snapshot), &request, &mut budget)
-        .expect("class-source request succeeds")
-    {
+    let outcome = match evidence {
+        Some(evidence) => engine.class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            evidence,
+            &mut budget,
+        ),
+        None => engine.class_source(slice::from_ref(&snapshot), &request, &mut budget),
+    }
+    .expect("class-source request succeeds");
+    match outcome {
         OperationOutcome::Performed(report) => report,
         other => panic!("one fixture class answers the request: {other:?}"),
     }
@@ -106,22 +125,90 @@ fn with_switch_goto_target(offset: i16) -> Vec<u8> {
 }
 
 #[test]
-fn cross_case_goto_and_looping_arm_do_not_gain_a_forward_join() {
-    for (name, offset) in [("cross_case", 6), ("backedge", -3)] {
-        let bytes = with_switch_goto_target(offset);
-        let report = recover(&bytes, "Join");
-        let method = method(&report, "mixedExits");
+fn cross_case_goto_target_owns_the_shared_forward_continuation() {
+    let bytes = with_switch_goto_target(6);
+    let report = recover_with_all_evidence(&bytes, "Join");
+    let method = method(&report, "mixedExits");
+    assert_eq!(method.item.descriptor.raw().0, b"(I)I");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome else {
+        panic!(
+            "mixedExits must recover executable statements: {:?}\n{}",
+            method.outcome, method.text
+        );
+    };
+    assert_eq!(
+        body.content,
+        RecoveryContent::ContainsStatements,
+        "{:?}\n{}",
+        body.fallbacks,
+        method.text
+    );
+    assert!(
+        body.fallbacks.is_empty(),
+        "{:?}\n{}",
+        body.fallbacks,
+        method.text
+    );
+    let text = statements(&method.text);
+    assert_eq!(
+        text,
+        "int local1; local1 = 0; switch (arg0) { case 1: local1 = 10; break; case 2: return 20; } local1 = 30; return local1; }",
+        "the case-target switch owns a single post-switch continuation:\n{}",
+        method.text
+    );
+    assert_eq!(text.matches("local1 = 30;").count(), 1, "{text}");
+    assert_eq!(text.matches("return local1;").count(), 1, "{text}");
+    assert!(!text.contains("@bytecode"), "{text}");
+    assert_eq!(
+        body.evidence.state(RecoveryEvidenceKind::SourceMap),
+        EvidenceState::Complete
+    );
+    for bci in [0, 1, 2, 3, 28, 30, 31, 34, 36, 37, 39, 40, 41] {
+        let segments = body.source_map.of_bci(bci);
         assert!(
-            method.text.contains("@bytecode") && !method.text.contains("switch (arg0)"),
-            "{name} has no supported forward join and remains quoted:\n{}",
-            method.text
+            !segments.is_empty(),
+            "BCI {bci} has source-map evidence: {:?}",
+            segments
         );
         assert!(
-            !method.text.contains("return local1;"),
-            "a refused join is not separately emitted:\n{}",
-            method.text
+            segments.iter().any(|segment| {
+                segment.origin().primary().method() == Some(&method.item.identity)
+            }),
+            "BCI {bci} is owned by the real mixedExits member: {:?}",
+            segments
         );
     }
+    for (bci, statement) in [(37, "local1 = 30;"), (40, "return local1;")] {
+        let start = body
+            .text
+            .find(statement)
+            .expect("the tail statement exists");
+        let end = start + statement.len();
+        let segments = body.source_map.of_bci(bci);
+        assert!(
+            segments.iter().any(|segment| {
+                segment.start() >= start && segment.start() < segment.end() && segment.end() <= end
+            }),
+            "BCI {bci} maps inside the tail `{statement}` at {start}..{end}: {segments:?}"
+        );
+    }
+}
+
+#[test]
+fn looping_arm_backedge_does_not_gain_a_forward_join() {
+    let bytes = with_switch_goto_target(-3);
+    let report = recover(&bytes, "Join");
+    let method = method(&report, "mixedExits");
+    assert!(
+        method.text.contains("@bytecode") && !method.text.contains("switch (arg0)"),
+        "the looping arm remains quoted:\n{}",
+        method.text
+    );
+    assert!(
+        !method.text.contains("return local1;"),
+        "a refused join is not separately emitted:\n{}",
+        method.text
+    );
 }
 
 #[test]

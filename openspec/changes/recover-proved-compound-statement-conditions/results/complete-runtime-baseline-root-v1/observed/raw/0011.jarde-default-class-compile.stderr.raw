@@ -1,0 +1,13 @@
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/jarde-default/sources/CompoundStatementConditions.java:51: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/jarde-default/sources/CompoundStatementConditions.java:60: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/jarde-default/sources/CompoundStatementConditions.java:69: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v2/jarde-default/sources/CompoundStatementConditions.java:78: 错误: 缺少返回语句
+    }
+    ^
+4 个错误

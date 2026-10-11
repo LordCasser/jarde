@@ -1,0 +1,58 @@
+{
+  "schema": "cf12-candidate-observation-root-acceptance-v1",
+  "status": "accepted-observations-only",
+  "verifier": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/independent-verifier-root-v7.py",
+    "bytes": 55190,
+    "sha256": "8ad48834b8744f03d1c2c918fa0515433dfe82b3bf4246d845e60d25f9c7d591"
+  },
+  "verifier_stdout": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/verifier-root-v7.stdout.raw",
+    "bytes": 142952,
+    "sha256": "ff28ec7c246f2d055797e29c0040253c357fb4a89164375e8cb9906808105add"
+  },
+  "verifier_stderr": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/verifier-root-v7.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual_exit_code": 0,
+  "actual_command_count": 175,
+  "fixture_count": 10,
+  "jdk_profile_count": 20,
+  "target_results": {
+    "FT2_positive": true,
+    "Switch2_restored": false
+  },
+  "failure_counts": {
+    "compile_nonzero": 4,
+    "compile_environment_unavailable": 9,
+    "compile_guard_stopped": 0,
+    "compile_not_run": 0,
+    "api_nonperformed": 0,
+    "runtime_nonzero": 1,
+    "runtime_environment_unavailable": 3,
+    "runtime_guard_stopped": 0,
+    "runtime_skipped": 13,
+    "class_set_different": 13
+  },
+  "ft2_permanent_full_coverage": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/acceptance.json",
+    "bytes": 1340,
+    "sha256": "c31bad5047e84821a0b2881e70f5b73cc8699c06a9c4048402404768aa1bc4ab"
+  },
+  "cf12_complete": false,
+  "complete_milestone": false,
+  "root_changes_to_luna_v5": "class inventories independently re-read from dirs; copied original classes byte-equal inputs; exact Chinese javac major55 expected52 signature classified unavailable; v7 target maps equal exact complete physical instruction set for both methods",
+  "baseline_scope": "historical sourceSHA recorded-only; historical raw pins reverified; new complete sources physically rehashed",
+  "source_product_pin": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+    "bytes": 719162,
+    "sha256": "34dcf89ccee47c33e0b6e08089ae53567b30ce0f73b50e76b13aec1ddf040025"
+  },
+  "full_physical_origin_sets": {
+    "Switch2": 78,
+    "FT2": 90
+  },
+  "instruction_set_profiles": 8
+}

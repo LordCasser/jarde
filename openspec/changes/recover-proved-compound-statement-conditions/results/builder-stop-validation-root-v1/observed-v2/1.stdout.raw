@@ -1,0 +1,11 @@
+
+running 1 test
+test build::tests::compound_builder_proof_and_emission_stops_restore_the_trial ... FAILED
+
+failures:
+
+failures:
+    build::tests::compound_builder_proof_and_emission_stops_restore_the_trial
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 347 filtered out; finished in 0.01s
+

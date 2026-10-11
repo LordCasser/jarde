@@ -1,0 +1,1086 @@
+{
+  "schema": "compound-condition-runtime-input-matrix-luna-v2",
+  "purpose": "Expected source-level behavior only; this matrix does not claim that Jarde currently passes.",
+  "boolean_formula": "(a && b) || (c && d)",
+  "mixed_formula": "(!a || b) && (c || !d)",
+  "float_formula": "!(value < 0.0f) || value < -10.0f",
+  "normal_plain_mixed_throwing_rows": [
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0000",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0000",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;test:d=false;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0000",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0001",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0001",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;test:d=true;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0001",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0010",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0010",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0010",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0011",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0011",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0011",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0100",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0100",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;test:d=false;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0100",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": false,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0101",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0101",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;test:d=true;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0101",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0110",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0110",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0110",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": true,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "0111",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "0111",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "0111",
+      "inputs": {
+        "a": false,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1000",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1000",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1000",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": false,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1001",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1001",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1001",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1010",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=true;test:d=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1010",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1010",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": true,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=true;test:d=false;emit:miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1011",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1011",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1011",
+      "inputs": {
+        "a": true,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1100",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1100",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": false
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;test:c=false;test:d=false;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1100",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1101",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1101",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>mixed-miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;test:c=false;test:d=true;emit:mixed-miss;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1101",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1110",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1110",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": false
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;test:c=true;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1110",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": false
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-PLAIN",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-MIXED",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>mixed-hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;test:c=true;emit:mixed-hit;emit:suffix;"
+    },
+    {
+      "id": "BOOL-THROW-NORMAL",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "throw_at": null,
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    }
+  ],
+  "reachable_throw_rows": [
+    {
+      "id": "THROW-a",
+      "throw_at": "a",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "<threw>",
+      "exception": "IllegalStateException:probe-a",
+      "evaluated_tests": [
+        "a"
+      ],
+      "trace": "emit:prefix;test:a=true;"
+    },
+    {
+      "id": "THROW-b",
+      "throw_at": "b",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "<threw>",
+      "exception": "IllegalStateException:probe-b",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;"
+    },
+    {
+      "id": "THROW-c",
+      "throw_at": "c",
+      "bits": "0011",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "<threw>",
+      "exception": "IllegalStateException:probe-c",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;"
+    },
+    {
+      "id": "THROW-d",
+      "throw_at": "d",
+      "bits": "0011",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "<threw>",
+      "exception": "IllegalStateException:probe-d",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=true;"
+    }
+  ],
+  "skipped_throw_controls": [
+    {
+      "id": "SKIP-THROW-b",
+      "throw_at": "b",
+      "bits": "0011",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c",
+        "d"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=true;test:d=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "SKIP-THROW-c",
+      "throw_at": "c",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "SKIP-THROW-d-after-first-true",
+      "throw_at": "d",
+      "bits": "1111",
+      "inputs": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "result": "prefix>hit>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "b"
+      ],
+      "trace": "emit:prefix;test:a=true;test:b=true;emit:hit;emit:suffix;"
+    },
+    {
+      "id": "SKIP-THROW-d-after-c-false",
+      "throw_at": "d",
+      "bits": "0001",
+      "inputs": {
+        "a": false,
+        "b": false,
+        "c": false,
+        "d": true
+      },
+      "result": "prefix>miss>suffix",
+      "exception": "-",
+      "evaluated_tests": [
+        "a",
+        "c"
+      ],
+      "trace": "emit:prefix;test:a=false;test:c=false;emit:miss;emit:suffix;"
+    }
+  ],
+  "float_rows": [
+    {
+      "id": "FLOAT-nan",
+      "input": "NaN",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-negative-infinity",
+      "input": "NEGATIVE_INFINITY",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-positive-infinity",
+      "input": "POSITIVE_INFINITY",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-below-threshold",
+      "input": "-10.000001f",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-threshold",
+      "input": "-10.0f",
+      "result": "prefix>negative-in-range>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:negative-in-range;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-above-threshold",
+      "input": "-9.999999f",
+      "result": "prefix>negative-in-range>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:negative-in-range;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-negative-zero",
+      "input": "-0.0f",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-positive-zero",
+      "input": "0.0f",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    },
+    {
+      "id": "FLOAT-half",
+      "input": "0.5f",
+      "result": "prefix>not-negative-or-below-minus-ten>suffix",
+      "exception": "-",
+      "trace": "emit:prefix;emit:not-negative-or-below-minus-ten;emit:suffix;"
+    }
+  ],
+  "total_rows": 65
+}

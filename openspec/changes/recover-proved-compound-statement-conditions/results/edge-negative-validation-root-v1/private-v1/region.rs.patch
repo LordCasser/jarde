@@ -1,0 +1,444 @@
+--- crates/jarde-java/src/region.rs
++++ crates/jarde-java/src/region.rs
+@@ -452,6 +452,158 @@
+     join: CanonicalBlockId,
+ }
+ 
++/// Check the complete canonical edge rows touching the decoded compound tests and their two exits.
++/// The caller supplies the actual rows; tests may vary only this private proof input while keeping
++/// all canonical identities, view nodes, decoded tests, and instruction facts reader-produced.
++fn compound_canonical_edges_proved<'a>(
++    edges: impl IntoIterator<Item = (
++        &'a CanonicalBlockId,
++        CanonicalEdgeKind,
++        &'a CanonicalBlockId,
++    )>,
++    edge_count: usize,
++    root_is_method_entry: bool,
++    tests: &BTreeMap<usize, CompoundTest>,
++    exits: &BTreeSet<CanonicalBlockId>,
++    join: &CanonicalBlockId,
++    root: &CanonicalBlockId,
++    root_bci: u32,
++    frame: &Frame,
++    visited: &BTreeSet<usize>,
++    view: &NormalFlowView,
++    budget: &mut Budget,
++) -> Result<bool, StopReason> {
++    let scan_cost = u64::try_from(edge_count).unwrap_or(u64::MAX);
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        scan_cost,
++        Some(root_bci),
++    )?;
++    let test_ids: BTreeSet<CanonicalBlockId> =
++        tests.values().map(|test| test.block.clone()).collect();
++    let mut outgoing = BTreeMap::<CanonicalBlockId, Vec<CanonicalBlockId>>::new();
++    let mut incoming = BTreeMap::<CanonicalBlockId, Vec<CanonicalBlockId>>::new();
++    let mut exit_incoming = BTreeMap::<CanonicalBlockId, BTreeSet<CanonicalBlockId>>::new();
++    for (from, kind, to) in edges {
++        poll(budget, Some(from.bci()))?;
++        let from_test = test_ids.contains(from);
++        let to_test = test_ids.contains(to);
++        let to_exit = exits.contains(to);
++        if from_test || to_test || to_exit {
++            if kind != CanonicalEdgeKind::Normal {
++                return Ok(false);
++            }
++            if from_test {
++                outgoing
++                    .entry(from.clone())
++                    .or_default()
++                    .push(to.clone());
++            }
++            if to_test {
++                incoming
++                    .entry(to.clone())
++                    .or_default()
++                    .push(from.clone());
++            }
++            if to_exit {
++                let source_is_test = from_test;
++                let edge_targets_candidate_join = to == join;
++                if !source_is_test && !edge_targets_candidate_join {
++                    return Ok(false);
++                }
++                if !exit_incoming
++                    .entry(to.clone())
++                    .or_default()
++                    .insert(from.clone())
++                {
++                    return Ok(false);
++                }
++            }
++        }
++    }
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        u64::try_from(tests.len()).unwrap_or(u64::MAX),
++        Some(root_bci),
++    )?;
++    for test in tests.values() {
++        let Some(rows) = outgoing.get(&test.block) else {
++            return Ok(false);
++        };
++        if rows.len() != 2
++            || rows[0] == rows[1]
++            || !rows.contains(&test.then)
++            || !rows.contains(&test.otherwise)
++        {
++            return Ok(false);
++        }
++        if test.block != *root {
++            let Some(sources) = incoming.get(&test.block) else {
++                return Ok(false);
++            };
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(sources.len())
++                    .unwrap_or(u64::MAX)
++                    .saturating_mul(2),
++                Some(test.branch_bci),
++            )?;
++            let Some(test_node) = view.index_of(&test.block) else {
++                return Ok(false);
++            };
++            let projected_sources = view.predecessors(test_node);
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(projected_sources.len()).unwrap_or(u64::MAX),
++                Some(test.branch_bci),
++            )?;
++            let projected: BTreeSet<CanonicalBlockId> = projected_sources
++                .into_iter()
++                .filter_map(|source| view.id_of(source).cloned())
++                .collect();
++            let actual: BTreeSet<CanonicalBlockId> = sources.iter().cloned().collect();
++            if sources.len() != actual.len()
++                || actual != projected
++                || actual.is_empty()
++                || actual.iter().any(|source| !test_ids.contains(source))
++            {
++                return Ok(false);
++            }
++        } else if let Some(sources) = incoming.get(&test.block) {
++            if sources.len() != 1 || sources[0] == *root {
++                return Ok(false);
++            }
++            let source = &sources[0];
++            let source_was_walked = view
++                .index_of(source)
++                .is_some_and(|source_node| visited.contains(&source_node));
++            let source_is_frame_entry = frame
++                .transfer_source_bci
++                .is_some_and(|bci| bci == source.bci())
++                || frame
++                    .switch_branch_bci
++                    .is_some_and(|bci| bci == source.bci());
++            if test_ids.contains(source) || (!source_was_walked && !source_is_frame_entry) {
++                return Ok(false);
++            }
++        } else if !root_is_method_entry {
++            return Ok(false);
++        }
++    }
++    if exits.iter().any(|exit| {
++        exit_incoming
++            .get(exit)
++            .is_none_or(|sources| !sources.iter().any(|source| test_ids.contains(source)))
++    }) {
++        return Ok(false);
++    }
++    Ok(true)
++}
++
+ /// What one region is.
+ #[derive(Clone, Debug, Eq, PartialEq)]
+ pub enum Region {
+@@ -7919,141 +8071,27 @@
+             }
+         }
+ 
+-        // Check every physical edge touching tests and exits once. This catches clone rows,
+-        // exceptional/context edges and external entry into a payload. Incoming join-source
+-        // ownership is closed after both statement arms have been resolved below.
+-        let scan_cost = u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX);
+-        charge(
++        // Reconcile the one canonical-edge scan with the same normal-flow view used above.
++        if !compound_canonical_edges_proved(
++            self.canonical
++                .edges()
++                .iter()
++                .map(|edge| (edge.from(), edge.kind(), edge.to())),
++            self.canonical.edges().len(),
++            self.canonical
++                .blocks()
++                .first()
++                .is_some_and(|entry| entry.id() == root),
++            &discovered,
++            &exits,
++            &join,
++            root,
++            root_bci,
++            frame,
++            &self.visited,
++            self.view,
+             self.budget,
+-            CountedBudgetDimension::AnalysisSteps,
+-            scan_cost,
+-            Some(root_bci),
+-        )?;
+-        let test_ids: BTreeSet<CanonicalBlockId> =
+-            discovered.values().map(|test| test.block.clone()).collect();
+-        let mut outgoing = BTreeMap::<CanonicalBlockId, Vec<CanonicalBlockId>>::new();
+-        let mut incoming = BTreeMap::<CanonicalBlockId, Vec<CanonicalBlockId>>::new();
+-        let mut exit_incoming = BTreeMap::<CanonicalBlockId, BTreeSet<CanonicalBlockId>>::new();
+-        for edge in self.canonical.edges() {
+-            poll(self.budget, Some(edge.from().bci()))?;
+-            let from_test = test_ids.contains(edge.from());
+-            let to_test = test_ids.contains(edge.to());
+-            let to_exit = exits.contains(edge.to());
+-            if from_test || to_test || to_exit {
+-                if (from_test || to_test || to_exit) && edge.kind() != CanonicalEdgeKind::Normal {
+-                    return Ok(None);
+-                }
+-                if from_test {
+-                    outgoing
+-                        .entry(edge.from().clone())
+-                        .or_default()
+-                        .push(edge.to().clone());
+-                }
+-                if to_test {
+-                    incoming
+-                        .entry(edge.to().clone())
+-                        .or_default()
+-                        .push(edge.from().clone());
+-                }
+-                if to_exit {
+-                    let source_is_test = from_test;
+-                    let edge_targets_candidate_join = edge.to() == &join;
+-                    if !source_is_test && !edge_targets_candidate_join {
+-                        return Ok(None);
+-                    }
+-                    if !exit_incoming
+-                        .entry(edge.to().clone())
+-                        .or_default()
+-                        .insert(edge.from().clone())
+-                    {
+-                        return Ok(None);
+-                    }
+-                }
+-            }
+-        }
+-        charge(
+-            self.budget,
+-            CountedBudgetDimension::AnalysisSteps,
+-            u64::try_from(discovered.len()).unwrap_or(u64::MAX),
+-            Some(root_bci),
+-        )?;
+-        for test in discovered.values() {
+-            let Some(rows) = outgoing.get(&test.block) else {
+-                return Ok(None);
+-            };
+-            if rows.len() != 2
+-                || rows[0] == rows[1]
+-                || !rows.contains(&test.then)
+-                || !rows.contains(&test.otherwise)
+-            {
+-                return Ok(None);
+-            }
+-            if test.block != *root {
+-                let Some(sources) = incoming.get(&test.block) else {
+-                    return Ok(None);
+-                };
+-                charge(
+-                    self.budget,
+-                    CountedBudgetDimension::AnalysisSteps,
+-                    u64::try_from(sources.len())
+-                        .unwrap_or(u64::MAX)
+-                        .saturating_mul(2),
+-                    Some(test.branch_bci),
+-                )?;
+-                let Some(test_node) = self.view.index_of(&test.block) else {
+-                    return Ok(None);
+-                };
+-                let projected_sources = self.view.predecessors(test_node);
+-                charge(
+-                    self.budget,
+-                    CountedBudgetDimension::AnalysisSteps,
+-                    u64::try_from(projected_sources.len()).unwrap_or(u64::MAX),
+-                    Some(test.branch_bci),
+-                )?;
+-                let projected: BTreeSet<CanonicalBlockId> = projected_sources
+-                    .into_iter()
+-                    .filter_map(|source| self.view.id_of(source).cloned())
+-                    .collect();
+-                let actual: BTreeSet<CanonicalBlockId> = sources.iter().cloned().collect();
+-                if sources.len() != actual.len()
+-                    || actual != projected
+-                    || actual.is_empty()
+-                    || actual.iter().any(|source| !test_ids.contains(source))
+-                {
+-                    return Ok(None);
+-                }
+-            } else if let Some(sources) = incoming.get(&test.block) {
+-                if sources.len() != 1 || sources[0] == *root {
+-                    return Ok(None);
+-                }
+-                let source = &sources[0];
+-                let source_was_walked = self
+-                    .view
+-                    .index_of(source)
+-                    .is_some_and(|source_node| self.visited.contains(&source_node));
+-                let source_is_frame_entry = frame
+-                    .transfer_source_bci
+-                    .is_some_and(|bci| bci == source.bci())
+-                    || frame
+-                        .switch_branch_bci
+-                        .is_some_and(|bci| bci == source.bci());
+-                if test_ids.contains(source) || (!source_was_walked && !source_is_frame_entry) {
+-                    return Ok(None);
+-                }
+-            } else if !self
+-                .canonical
+-                .blocks()
+-                .first()
+-                .is_some_and(|entry| entry.id() == root)
+-            {
+-                return Ok(None);
+-            }
+-        }
+-        if exits.iter().any(|exit| {
+-            exit_incoming
+-                .get(exit)
+-                .is_none_or(|sources| !sources.iter().any(|source| test_ids.contains(source)))
+-        }) {
++        )? {
+             return Ok(None);
+         }
+ 
+@@ -16216,7 +16254,7 @@
+                     view,
+                     ssa,
+                     operations,
+-                    pool: pool,
++                    pool,
+                     chains: &chains,
+                     sites: &sites,
+                     code,
+@@ -16255,7 +16293,7 @@
+                     view,
+                     ssa,
+                     operations,
+-                    pool: pool,
++                    pool,
+                     chains: &chains,
+                     sites: &sites,
+                     code,
+@@ -16297,7 +16335,7 @@
+                     view,
+                     ssa,
+                     operations,
+-                    pool: pool,
++                    pool,
+                     chains: &chains,
+                     sites: &sites,
+                     code,
+@@ -17492,7 +17530,93 @@
+                 assert_eq!(proof.then_exit.bci(), 131);
+                 assert_eq!(proof.else_exit.bci(), 136);
+                 assert_eq!(proof.join.bci(), 136);
++
++                // Exercise the exact private canonical-edge closure validator the full compound
++                // proof calls. All identities and base rows below come from this real reader CFG;
++                // only the offered row list is varied, so this does not fabricate CFG nodes or
++                // claim to exercise traversal-only cycle discovery.
++                let closure_tests: BTreeMap<usize, CompoundTest> = proof
++                    .tests
++                    .iter()
++                    .cloned()
++                    .map(|test| {
++                        (
++                            input.view.index_of(&test.block).unwrap(),
++                            test,
++                        )
++                    })
++                    .collect();
++                let closure_exits = BTreeSet::from([
++                    proof.then_exit.clone(),
++                    proof.else_exit.clone(),
++                ]);
++                let closure_visited = BTreeSet::from([root_node, root_predecessor]);
++                let root_is_method_entry = input
++                    .canonical
++                    .blocks()
++                    .first()
++                    .is_some_and(|entry| entry.id() == &root);
++                let check_compound_rows =
++                    |rows: &[(&CanonicalBlockId, CanonicalEdgeKind, &CanonicalBlockId)]| {
++                        let mut edge_budget = Budget::new(Limits {
++                            analysis_steps: 1 << 20,
++                            elapsed_millis: u64::MAX,
++                            ..Limits::default()
++                        });
++                        compound_canonical_edges_proved(
++                            rows.iter().copied(),
++                            rows.len(),
++                            root_is_method_entry,
++                            &closure_tests,
++                            &closure_exits,
++                            &proof.join,
++                            &root,
++                            root_branch_bci,
++                            &Frame::default(),
++                            &closure_visited,
++                            input.view,
++                            &mut edge_budget,
++                        )
++                    };
++                assert!(check_compound_rows(&input.full_rows)
++                    .expect("the actual compound edge rows close"));
++
++                let mut external_to_payload = input.full_rows.clone();
++                external_to_payload.push((
++                    input.block(171),
++                    CanonicalEdgeKind::Normal,
++                    input.block(131),
++                ));
++                assert!(
++                    !check_compound_rows(&external_to_payload)
++                        .expect("external entry is an ordinary proof refusal"),
++                    "a non-test predecessor cannot enter a non-join payload"
++                );
++
++                let mut duplicate_test_predecessor = input.full_rows.clone();
++                duplicate_test_predecessor.push((
++                    input.block(98),
++                    CanonicalEdgeKind::Normal,
++                    input.block(111),
++                ));
++                assert!(
++                    !check_compound_rows(&duplicate_test_predecessor)
++                        .expect("duplicate predecessor is an ordinary proof refusal"),
++                    "test incoming rows must be unique and match the reader view"
++                );
+ 
++                let mut non_normal_predecessor = input.full_rows.clone();
++                non_normal_predecessor.push((
++                    input.block(171),
++                    CanonicalEdgeKind::Exception { handler_ordinal: 0 },
++                    input.block(136),
++                ));
++                assert!(
++                    !check_compound_rows(&non_normal_predecessor)
++                        .expect("non-Normal incident edge is an ordinary proof refusal"),
++                    "every edge incident to a compound exit must be Normal"
++                );
++
+                 let mut integration_budget = Budget::new(Limits {
+                     analysis_steps: 1 << 20,
+                     elapsed_millis: u64::MAX,

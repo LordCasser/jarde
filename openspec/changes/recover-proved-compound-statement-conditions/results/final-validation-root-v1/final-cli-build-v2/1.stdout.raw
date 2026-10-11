@@ -1,0 +1,10 @@
+
+running 5 tests
+test build::tests::compound_builder_proof_and_emission_stops_restore_the_trial ... ok
+test emit::tests::compound_lvalues_emit_receiver_and_index_once_with_all_origins ... ok
+test region::tests::real_compound_non_tree_conditions_refuse_without_walker_state_leaks ... ok
+test region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join ... ok
+test region::tests::real_legacy_clone_compound_root_refuses_uncloned_join_path_without_state_leaks ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 346 filtered out; finished in 0.02s
+

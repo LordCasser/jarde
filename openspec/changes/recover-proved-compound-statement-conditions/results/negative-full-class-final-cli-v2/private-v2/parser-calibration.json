@@ -1,0 +1,44 @@
+{
+  "schema": "compound-negative-render-parser-calibration-v1",
+  "not_candidate_acceptance": true,
+  "javap_raw": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/observed-bytecode-v1/0.stdout.raw",
+    "bytes": 26195,
+    "sha256": "d2040faa04e74069f87c43c85d95aadec922b4381652502b988bbabcad54ff8a",
+    "command": [
+      "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "-v",
+      "-p",
+      "-c",
+      "/private/tmp/jarde-compound-bytecode-verification-root-v1/CompoundStatementConditionsCycle/CompoundStatementConditions.class"
+    ]
+  },
+  "historical_api": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/jarde-all/sources/class-source.api.json",
+    "bytes": 890820,
+    "sha256": "d501cf40c51684a596b14a5f3fe459c9a7caef8ba3fd08c138924b0510eae671",
+    "profile": "jarde-all from complete-runtime-baseline-root-v1"
+  },
+  "observed_shapes": {
+    "javap_member_count_including_constructor": 8,
+    "javap_constructor_count": 1,
+    "javap_nonconstructor_count": 7,
+    "historical_api_member_count_including_constructor": 8,
+    "historical_api_nonconstructor_count": 7,
+    "historical_test_map_origin_mentions": 44,
+    "historical_test_map_owner": {
+      "class_digest": "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a",
+      "class_length": 2848,
+      "location_snapshot": "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a"
+    },
+    "historical_api_class_owner": {
+      "digest": "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a",
+      "length": 2848,
+      "location": {
+        "kind": "standalone_root",
+        "snapshot": "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a"
+      }
+    }
+  },
+  "caveat": "The javap calibration raw belongs to the cycle fixture; the historical API map belongs to baseline class bytes. They are separate schema checks, not presented as one paired candidate observation."
+}

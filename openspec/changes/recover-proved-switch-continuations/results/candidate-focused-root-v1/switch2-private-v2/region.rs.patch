@@ -1,0 +1,718 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -12762,10 +12762,10 @@
+                 .is_some_and(|target| target.continue_target == *join)
+         });
+         let post_is_loop_exit = post_is_loop_break || switch_continue.is_some();
+-        let forward_join = if !post_is_loop_exit && post_join.is_none() {
+-            self.switch_forward_join(node, successors, frame, branch.bci())?
++        let (forward_join, candidate_fallthroughs) = if !post_is_loop_exit && post_join.is_none() {
++            self.switch_forward_join(node, successors, cases, default, frame, branch.bci())?
+         } else {
+-            None
++            (None, None)
+         };
+         let join_node = if post_is_loop_exit {
+             match self.switch_loop_join(node, successors, frame, branch_bci, switch_continue)? {
+@@ -12855,8 +12855,23 @@
+                     .map(|node| (group.2, node))
+             })
+             .collect();
+-        let fall_throughs =
+-            self.switch_fallthroughs(&groups, &targets, join_node, join_bci, node, branch.bci())?;
++        let candidate_join = forward_join.is_some_and(|join| {
++            successors
++                .iter()
++                .any(|successor| self.view.index_of(successor) == Some(join))
++        });
++        let fall_throughs = match candidate_fallthroughs {
++            Some(proof) => Some(proof),
++            None => self.switch_fallthroughs(
++                &groups,
++                &targets,
++                join_node,
++                join_bci,
++                node,
++                branch.bci(),
++                candidate_join,
++            )?,
++        };
+         let mut ordered_groups = groups.clone();
+         let case_entries: BTreeSet<usize> = targets.values().copied().collect();
+         if let Some(fall_throughs) = &fall_throughs
+@@ -13254,11 +13269,201 @@
+         Ok(true)
+     }
+ 
++    /// Keep the accepted linear proof as the first route. Only when it cannot find a non-case
++    /// target join do we try the narrower decoded-target DAG certificate.
++    fn switch_forward_join(
++        &mut self,
++        branch: usize,
++        successors: &[CanonicalBlockId],
++        cases: &[(i64, u32)],
++        default: u32,
++        frame: &Frame,
++        at: u32,
++    ) -> Result<(Option<usize>, Option<BTreeMap<u32, u32>>), StopReason> {
++        if let Some(join) = self.switch_forward_join_linear(branch, successors, frame, at)? {
++            return Ok((Some(join), None));
++        }
++        let mut groups: Vec<(Vec<i64>, bool, u32)> = Vec::new();
++        let mut group_by_target = BTreeMap::new();
++        let mut grouped_keys = BTreeSet::new();
++        for (key, target) in cases {
++            poll(self.budget, Some(at))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(at),
++            )?;
++            let index = if let Some(index) = group_by_target.get(target).copied() {
++                index
++            } else {
++                let index = groups.len();
++                group_by_target.insert(*target, index);
++                groups.push((Vec::new(), false, *target));
++                index
++            };
++            if grouped_keys.insert((*target, *key)) {
++                groups[index].0.push(*key);
++            }
++        }
++        poll(self.budget, Some(at))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            1,
++            Some(at),
++        )?;
++        if let Some(index) = group_by_target.get(&default).copied() {
++            groups[index].1 = true;
++        } else {
++            group_by_target.insert(default, groups.len());
++            groups.push((Vec::new(), true, default));
++        }
++        let Some(dispatch_id) = self.view.id_of(branch).cloned() else {
++            return Ok((None, None));
++        };
++        let mut successors_by_bci: BTreeMap<u32, Vec<usize>> = BTreeMap::new();
++        for successor in successors {
++            poll(self.budget, Some(at))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(at),
++            )?;
++            let Some(node) = self.view.index_of(successor) else {
++                continue;
++            };
++            successors_by_bci
++                .entry(successor.bci())
++                .or_default()
++                .push(node);
++        }
++        let mut direct_candidates = Vec::new();
++        for group in &groups {
++            poll(self.budget, Some(at))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(at),
++            )?;
++            let Some(nodes) = successors_by_bci.get(&group.2) else {
++                continue;
++            };
++            for candidate in nodes {
++                poll(self.budget, Some(at))?;
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(at),
++                )?;
++                if *candidate != branch
++                    && frame.boundary != Some(*candidate)
++                    && frame.scope.as_ref().is_none_or(|scope| scope.contains(candidate))
++                    && frame.case_entries.as_ref().is_none_or(|entries| !entries.contains(candidate))
++                    && self
++                        .view
++                        .id_of(*candidate)
++                        .is_some_and(|id| id.path() == dispatch_id.path())
++                {
++                    direct_candidates.push((group.2, *candidate));
++                }
++            }
++        }
++        let mut join_candidates = Vec::new();
++        for (candidate_bci, candidate) in direct_candidates {
++            poll(self.budget, Some(at))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(at),
++            )?;
++            let mut has_arm_predecessor = false;
++            for predecessor in self.view.predecessors(candidate) {
++                poll(self.budget, Some(at))?;
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(at),
++                )?;
++                has_arm_predecessor |= predecessor != branch;
++            }
++            if !has_arm_predecessor {
++                continue;
++            }
++            let mut candidate_targets = BTreeMap::new();
++            let mut complete_target_map = true;
++            for group in &groups {
++                poll(self.budget, Some(at))?;
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(at),
++                )?;
++                if group.2 == candidate_bci {
++                    continue;
++                }
++                let Some(nodes) = successors_by_bci.get(&group.2) else {
++                    complete_target_map = false;
++                    continue;
++                };
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    u64::try_from(nodes.len()).unwrap_or(u64::MAX),
++                    Some(at),
++                )?;
++                let mut matching = Vec::new();
++                for node in nodes {
++                    poll(self.budget, Some(at))?;
++                    if self
++                        .view
++                        .id_of(*node)
++                        .is_some_and(|id| id.path() == dispatch_id.path())
++                    {
++                        matching.push(*node);
++                    }
++                }
++                if matching.len() != 1 {
++                    complete_target_map = false;
++                } else {
++                    candidate_targets.insert(group.2, matching[0]);
++                }
++            }
++            if !complete_target_map {
++                continue;
++            }
++            if let Some(Some(fallthroughs)) = self
++                .switch_fallthroughs(
++                    &groups,
++                    &candidate_targets,
++                    Some(candidate),
++                    Some(candidate_bci),
++                    branch,
++                    at,
++                    true,
++                )?
++                .map(|fallthroughs| fallthroughs.is_empty().then_some(fallthroughs))
++            {
++                join_candidates.push((candidate, fallthroughs));
++            }
++        }
++        if let [(candidate, fallthroughs)] = join_candidates.as_slice() {
++            return Ok((Some(*candidate), Some(fallthroughs.clone())));
++        }
++        Ok((None, None))
++    }
++
+     /// Find the narrow shared forward join needed when a switch's direct return/throw arm
+     /// prevents an immediate post-dominator from existing. Every nonterminal target must be a
+     /// straight, acyclic path to the same candidate; other targets must be direct return/throw
+     /// blocks. This deliberately leaves nested exits and cross-case paths to the overlap refusal.
+-    fn switch_forward_join(
++    fn switch_forward_join_linear(
+         &mut self,
+         branch: usize,
+         successors: &[CanonicalBlockId],
+@@ -13425,6 +13630,7 @@
+         join_bci: Option<u32>,
+         dispatch_node: usize,
+         switch_bci: u32,
++        candidate_join: bool,
+     ) -> Result<Option<BTreeMap<u32, u32>>, StopReason> {
+         let edges = self
+             .canonical
+@@ -13442,6 +13648,7 @@
+             join_bci,
+             dispatch_node,
+             switch_bci,
++            candidate_join,
+             self.budget,
+         )
+     }
+@@ -13462,6 +13669,7 @@
+     join_bci: Option<u32>,
+     dispatch_node: usize,
+     switch_bci: u32,
++    candidate_join: bool,
+     budget: &mut Budget,
+ ) -> Result<Option<BTreeMap<u32, u32>>, StopReason>
+ where
+@@ -13537,10 +13745,71 @@
+     {
+         return Ok(None);
+     }
++    if candidate_join {
++        poll(budget, Some(switch_bci))?;
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            1,
++            Some(switch_bci),
++        )?;
++        let Some(join_node) = join else {
++            return Ok(None);
++        };
++        let Some(join_id) = view.id_of(join_node) else {
++            return Ok(None);
++        };
++        let expected_count = targets.len().saturating_add(1);
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(expected_count.saturating_add(dispatch_rows.len()))
++                .unwrap_or(u64::MAX),
++            Some(switch_bci),
++        )?;
++        let mut expected_dispatch = BTreeSet::new();
++        for (bci, node) in targets {
++            poll(budget, Some(switch_bci))?;
++            let Some(id) = view.id_of(*node) else {
++                return Ok(None);
++            };
++            if id.bci() != *bci || id.path() != dispatch.path() {
++                return Ok(None);
++            }
++            expected_dispatch.insert(id.clone());
++        }
++        poll(budget, Some(switch_bci))?;
++        if join_id.path() != dispatch.path() || !expected_dispatch.insert(join_id.clone()) {
++            return Ok(None);
++        }
++        let mut actual_dispatch = BTreeSet::new();
++        for (kind, target) in &dispatch_rows {
++            poll(budget, Some(switch_bci))?;
++            if *kind != CanonicalEdgeKind::Normal || !actual_dispatch.insert(target.clone()) {
++                return Ok(None);
++            }
++        }
++        if actual_dispatch.len() != expected_count {
++            return Ok(None);
++        }
++        poll(budget, Some(switch_bci))?;
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(expected_dispatch.len().saturating_add(actual_dispatch.len()))
++                .unwrap_or(u64::MAX),
++            Some(switch_bci),
++        )?;
++        if actual_dispatch != expected_dispatch {
++            return Ok(None);
++        }
++    }
+ 
+     let mut closures: BTreeMap<u32, BTreeSet<usize>> = BTreeMap::new();
+     let mut case_exits: BTreeMap<u32, BTreeSet<u32>> = BTreeMap::new();
+     let mut fallthroughs = BTreeMap::new();
++    let mut join_sources = BTreeSet::new();
++    let mut has_physical_terminal = false;
+     for (from_bci, start) in targets {
+         let Some(start_id) = view.id_of(*start).cloned() else {
+             return Ok(None);
+@@ -13634,6 +13903,7 @@
+                     {
+                         return Ok(None);
+                     }
++                    has_physical_terminal |= candidate_join;
+                     color.insert(node, 2);
+                 }
+                 successors => {
+@@ -13642,6 +13912,16 @@
+                             .iter()
+                             .any(|successor| view.index_of(successor) == Some(join_node))
+                     {
++                        if candidate_join {
++                            poll(budget, Some(switch_bci))?;
++                            charge(
++                                budget,
++                                CountedBudgetDimension::AnalysisSteps,
++                                1,
++                                Some(switch_bci),
++                            )?;
++                            join_sources.insert(id.clone());
++                        }
+                         let source_is_presentable = terminal_bci
+                             .and_then(|bci| operations.get(bci))
+                             .is_some_and(|operation| {
+@@ -13825,6 +14105,69 @@
+                     return Ok(None);
+                 }
+             }
++        }
++    }
++    if candidate_join {
++        let Some(join_node) = join else {
++            return Ok(None);
++        };
++        let Some(join_id) = view.id_of(join_node) else {
++            return Ok(None);
++        };
++        let rows = incoming.get(join_id).map(Vec::as_slice).unwrap_or(&[]);
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(rows.len()).unwrap_or(u64::MAX),
++            Some(switch_bci),
++        )?;
++        for _ in rows {
++            poll(budget, Some(switch_bci))?;
++        }
++        let mut expected_sources = BTreeSet::new();
++        poll(budget, Some(switch_bci))?;
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(join_sources.len().saturating_add(1)).unwrap_or(u64::MAX),
++            Some(switch_bci),
++        )?;
++        expected_sources.insert(dispatch.clone());
++        for source in &join_sources {
++            poll(budget, Some(switch_bci))?;
++            expected_sources.insert(source.clone());
++        }
++        let mut actual_sources = BTreeSet::new();
++        let mut unique_normal_rows = true;
++        for (kind, source) in rows {
++            poll(budget, Some(switch_bci))?;
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(switch_bci),
++            )?;
++            unique_normal_rows &= *kind == CanonicalEdgeKind::Normal
++                && actual_sources.insert(source.clone());
++        }
++        if !fallthroughs.is_empty()
++            || !has_physical_terminal
++            || join_sources.is_empty()
++            || !unique_normal_rows
++            || actual_sources.len() != expected_sources.len()
++        {
++            return Ok(None);
++        }
++        poll(budget, Some(switch_bci))?;
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(expected_sources.len().saturating_add(actual_sources.len()))
++                .unwrap_or(u64::MAX),
++            Some(switch_bci),
++        )?;
++        if actual_sources != expected_sources {
++            return Ok(None);
+         }
+     }
+     Ok(Some(fallthroughs))
+@@ -14736,6 +15079,7 @@
+                 join_bci,
+                 dispatch_node,
+                 switch_bci,
++                false,
+                 &mut proof_budget,
+             )
+         };
+@@ -14837,14 +15181,38 @@
+ 
+     impl RealSwitchInputs<'_> {
+         fn prove_with(&self, operations: &Operations) -> Option<BTreeMap<u32, u32>> {
++            self.prove_rows_with(&self.full_rows, operations, false)
++        }
++
++        fn prove_candidate(&self) -> Option<BTreeMap<u32, u32>> {
++            self.prove_rows_with(&self.full_rows, self.operations, true)
++        }
++
++        fn prove_rows_with(
++            &self,
++            rows: &[(&CanonicalBlockId, CanonicalEdgeKind, &CanonicalBlockId)],
++            operations: &Operations,
++            candidate_join: bool,
++        ) -> Option<BTreeMap<u32, u32>> {
+             use jarde_reader::budget::Limits;
+             let mut proof_budget = Budget::new(Limits {
+                 analysis_steps: 1 << 20,
+                 elapsed_millis: u64::MAX,
+                 ..Limits::default()
+             });
++            self.prove_rows_with_budget(rows, operations, candidate_join, &mut proof_budget)
++                .expect("ample proof budget completes")
++        }
++
++        fn prove_rows_with_budget(
++            &self,
++            rows: &[(&CanonicalBlockId, CanonicalEdgeKind, &CanonicalBlockId)],
++            operations: &Operations,
++            candidate_join: bool,
++            proof_budget: &mut Budget,
++        ) -> Result<Option<BTreeMap<u32, u32>>, StopReason> {
+             prove_switch_fallthroughs(
+-                self.full_rows.iter().copied(),
++                rows.iter().copied(),
+                 self.view,
+                 self.ssa,
+                 operations,
+@@ -14854,9 +15222,9 @@
+                 Some(self.join_bci),
+                 self.dispatch_node,
+                 self.switch_bci,
+-                &mut proof_budget,
++                candidate_join,
++                proof_budget,
+             )
+-            .expect("ample proof budget completes")
+         }
+ 
+         fn prove(&self) -> Option<BTreeMap<u32, u32>> {
+@@ -15115,6 +15483,176 @@
+             full_rows,
+         };
+         f(&input)
++    }
++
++    #[test]
++    fn real_switch2_direct_target_join_proves_candidate_witnesses() {
++        const CLASS: &[u8] = include_bytes!(
++            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"
++        );
++        assert_eq!(CLASS.len(), 1123);
++        assert_eq!(
++            blake3::hash(CLASS).to_hex().to_string(),
++            "3ec50697523d585c5a23797922f0289334f6e76e9e83f92596d46fdce4cf0b44"
++        );
++        with_real_conditional_switch(
++            CLASS,
++            "test",
++            "(I)V",
++            5,
++            164,
++            &[0, 48, 56, 63, 71, 78, 98, 111, 118, 124, 131, 136, 137, 153, 164, 171, 176, 181],
++            &[
++                (0, 48), (0, 56), (0, 71), (0, 137), (0, 164),
++                (48, 164), (56, 63), (56, 164), (63, 164),
++                (71, 78), (71, 164), (78, 98), (78, 136),
++                (98, 111), (98, 118), (111, 118), (111, 131),
++                (118, 124), (118, 136), (124, 131), (124, 136), (131, 136),
++                (137, 153), (137, 164), (164, 171), (164, 181),
++                (171, 176), (171, 181), (176, 181),
++            ],
++            &[48, 56, 71, 137],
++            |input| {
++                use crate::facts::Operation;
++
++                assert_eq!(input.prove(), Some(BTreeMap::new()), "the shared helper proves the DAG before candidate-only witnesses");
++                assert_eq!(input.prove_candidate(), Some(BTreeMap::new()));
++                use jarde_reader::budget::{CancellationToken, Limits};
++                let mut boundary_budget = Budget::new(Limits {
++                    analysis_steps: 29,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let stop = input
++                    .prove_rows_with_budget(
++                        &input.full_rows,
++                        input.operations,
++                        true,
++                        &mut boundary_budget,
++                    )
++                    .expect_err("candidate-only canonical identity checks stop before publishing proof");
++                assert_eq!(
++                    stop,
++                    StopReason::Budget {
++                        dimension: CountedBudgetDimension::AnalysisSteps,
++                        written: 0,
++                        limit: 29,
++                        at: Some(5),
++                    }
++                );
++                assert_eq!(boundary_budget.usage().analysis_steps, 29);
++                let token = CancellationToken::new();
++                let mut cancelled_budget = Budget::with_cancellation_token(
++                    Limits {
++                        analysis_steps: u64::MAX,
++                        elapsed_millis: u64::MAX,
++                        ..Limits::default()
++                    },
++                    token.clone(),
++                );
++                token.cancel();
++                let stop = input
++                    .prove_rows_with_budget(
++                        &input.full_rows,
++                        input.operations,
++                        true,
++                        &mut cancelled_budget,
++                    )
++                    .expect_err("candidate proof observes cancellation without a partial result");
++                assert_eq!(stop, StopReason::Cancelled { at: Some(5) });
++                assert_eq!(cancelled_budget.usage().analysis_steps, 0);
++                let mut incoming = input
++                    .full_rows
++                    .iter()
++                    .filter(|(_, _, to)| to.bci() == 164)
++                    .map(|(from, kind, _)| (from.bci(), *kind))
++                    .collect::<Vec<_>>();
++                incoming.sort_unstable_by_key(|(from, _)| *from);
++                assert_eq!(
++                    incoming,
++                    [0, 48, 56, 63, 71, 137]
++                        .into_iter()
++                        .map(|from| (from, CanonicalEdgeKind::Normal))
++                        .collect::<Vec<_>>()
++                );
++                let terminal136 = input.block(136);
++                let terminal153 = input.block(153);
++                let terminal136_bci = input.last_ssa_instruction_bci(136).expect("physical return");
++                let terminal153_bci = input.last_ssa_instruction_bci(153).expect("physical return");
++                assert!(matches!(input.operations.get(terminal136_bci), Some(Operation::Return)));
++                assert!(matches!(input.operations.get(terminal153_bci), Some(Operation::Return)));
++                assert!(input.canonical.edges().iter().all(|edge| edge.from() != terminal136));
++                assert!(input.canonical.edges().iter().all(|edge| edge.from() != terminal153));
++
++                let mut recovery_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let recovered = recover(
++                    input.canonical,
++                    input.view,
++                    input.ssa,
++                    input.operations,
++                    input.pool,
++                    &crate::concat::Plan::empty(),
++                    &crate::init::Sites::empty(),
++                    input.code,
++                    Some(false),
++                    false,
++                    &crate::pass::JAVA_8,
++                    &mut recovery_budget,
++                )
++                .expect("the frozen reader method recovers as a complete Region tree");
++                assert!(recovered.is_structured(), "{:#?}", recovered.regions);
++                assert!(recovered.fallbacks().is_empty(), "{:#?}", recovered.regions);
++                assert_eq!(recovered.claimed.len(), input.canonical.blocks().len());
++                let switch = recovered
++                    .regions
++                    .iter()
++                    .find_map(|region| match region {
++                        Region::Switch { branch_bci: 5, join, groups, .. } => {
++                            Some((join, groups))
++                        }
++                        _ => None,
++                    })
++                    .expect("production recovery admits the switch at BCI 5");
++                assert_eq!(switch.0.as_ref().map(CanonicalBlockId::bci), Some(164));
++                assert!(switch.1.iter().all(|group| {
++                    group.arm.blocks().iter().all(|block| block.bci() != 164)
++                }));
++                let recovered_block_164_count = recovered
++                    .regions
++                    .iter()
++                    .flat_map(Region::blocks)
++                    .filter(|block| block.bci() == 164)
++                    .count();
++                assert_eq!(recovered_block_164_count, 1, "shared continuation has one physical owner");
++                let return_blocks = switch
++                    .1
++                    .iter()
++                    .flat_map(|group| group.arm.blocks())
++                    .map(|block| block.bci())
++                    .filter(|bci| matches!(*bci, 136 | 153))
++                    .collect::<BTreeSet<_>>();
++                assert_eq!(return_blocks, BTreeSet::from([136, 153]));
++
++                let outsider = input.block(171);
++                let join = input.block(164);
++                let mut external = input.full_rows.clone();
++                external.push((outsider, CanonicalEdgeKind::Normal, join));
++                assert_eq!(input.prove_rows_with(&external, input.operations, true), None);
++
++                let mut duplicate = input.full_rows.clone();
++                duplicate.push((outsider, CanonicalEdgeKind::Normal, join));
++                duplicate.push((outsider, CanonicalEdgeKind::Normal, join));
++                assert_eq!(input.prove_rows_with(&duplicate, input.operations, true), None);
++
++                let mut exceptional = input.full_rows.clone();
++                exceptional.push((outsider, CanonicalEdgeKind::Exception { handler_ordinal: 0 }, join));
++                assert_eq!(input.prove_rows_with(&exceptional, input.operations, true), None);
++            },
++        );
+     }
+ 
+     #[test]
+@@ -15581,11 +16119,44 @@
+                 None,
+                 dispatch_node,
+                 6,
++                false,
+                 &mut proof_budget,
+             )
+             .expect("ample budget completes the private certificate probe"),
+             None,
+             "the real clone target's non-empty path differs from pathless dispatch before any successor traversal"
+         );
++        let operation_facts = Operations::of(code, ir.constant_pool());
++        let candidate_groups = vec![(vec![0_i64], false, 7_u32)];
++        let candidate_join = view
++            .index_of(clones[0])
++            .expect("candidate is the real Reader-produced clone identity");
++        let mut candidate_budget = Budget::new(Limits {
++            analysis_steps: 1 << 20,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        assert_eq!(
++            prove_switch_fallthroughs(
++                canonical
++                    .edges()
++                    .iter()
++                    .map(|edge| (edge.from(), edge.kind(), edge.to())),
++                &view,
++                ssa,
++                &operation_facts,
++                &candidate_groups,
++                &BTreeMap::new(),
++                Some(candidate_join),
++                Some(7),
++                dispatch_node,
++                6,
++                true,
++                &mut candidate_budget,
++            )
++            .expect("ample candidate proof completes"),
++            None,
++            "candidate mode rejects a real cloned target whose full CanonicalBlockId path differs from dispatch"
++        );
+     }
+ }

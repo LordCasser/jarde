@@ -1,0 +1,102 @@
+--- a/region.rs
++++ b/region.rs
+@@ -4385,6 +4385,10 @@
+             || frame.boundary != Some(return_node)
+             || frame.shared_tail == Some(return_node)
+             || frame.switch_join == Some(return_node)
++            || frame
++                .scope
++                .as_ref()
++                .is_some_and(|scope| !scope.contains(&return_node))
+             || outer_frame.boundary == Some(return_node)
+             || outer_frame.shared_tail == Some(return_node)
+             || outer_frame.switch_join == Some(return_node)
+@@ -4403,13 +4407,14 @@
+             || self.visited.contains(&return_node)
+             || !self.view.successors(return_node).is_empty()
+             || !self.ssa.block(next).is_some_and(|block| {
+-                block.instructions().last().is_some_and(|instruction| {
+-                    instruction.opcode() == 0xb1
+-                        && matches!(
+-                            self.operations.get(instruction.bci()),
+-                            Some(Operation::Return)
+-                        )
+-                })
++                let [instruction] = block.instructions() else {
++                    return false;
++                };
++                instruction.opcode() == 0xb1
++                    && matches!(
++                        self.operations.get(instruction.bci()),
++                        Some(Operation::Return)
++                    )
+             })
+         {
+             return Ok(false);
+@@ -17582,6 +17587,66 @@
+                         .collect::<BTreeSet<_>>(),
+                     BTreeSet::from([input.view.index_of(&return_next).unwrap()])
+                 );
++                let return_node = input.view.index_of(&return_next).unwrap();
++                let mut scoped_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut scoped_walker = continuation_walker!(scoped_budget);
++                scoped_walker.unclosed_tail_at = Some(181);
++                scoped_walker.catch_joins.insert((root_node, join_node));
++                let scoped_before_visited = scoped_walker.visited.clone();
++                let scoped_before_unclosed = scoped_walker.unclosed_tail_at;
++                let scoped_before_catches = scoped_walker.catch_joins.clone();
++                let mut scoped_run = make_continuation_run();
++                assert!(!scoped_walker
++                    .continue_early_return_arm(
++                        &mut scoped_run,
++                        &return_next,
++                        &Frame {
++                            scope: Some(continuation_owners.clone()),
++                            ..arm_frame.clone()
++                        },
++                        &outer_frame,
++                    )
++                    .expect("an excluded return is a bounded proof refusal"));
++                assert_eq!(scoped_walker.visited, scoped_before_visited);
++                assert_eq!(scoped_walker.unclosed_tail_at, scoped_before_unclosed);
++                assert_eq!(scoped_walker.catch_joins, scoped_before_catches);
++                assert!(scoped_walker.fragmented.is_none());
++                assert_eq!(scoped_run, make_continuation_run());
++
++                let mut case_budget = Budget::new(Limits {
++                    analysis_steps: 1 << 20,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                });
++                let mut case_walker = continuation_walker!(case_budget);
++                case_walker.unclosed_tail_at = Some(181);
++                case_walker.catch_joins.insert((root_node, join_node));
++                let case_before_visited = case_walker.visited.clone();
++                let case_before_unclosed = case_walker.unclosed_tail_at;
++                let case_before_catches = case_walker.catch_joins.clone();
++                let mut case_run = make_continuation_run();
++                assert!(!case_walker
++                    .continue_early_return_arm(
++                        &mut case_run,
++                        &return_next,
++                        &arm_frame,
++                        &Frame {
++                            boundary: outer_frame.boundary,
++                            case_entries: Some(BTreeSet::from([return_node])),
++                            ..Frame::default()
++                        },
++                    )
++                    .expect("a case-entry return is a bounded proof refusal"));
++                assert_eq!(case_walker.visited, case_before_visited);
++                assert_eq!(case_walker.unclosed_tail_at, case_before_unclosed);
++                assert_eq!(case_walker.catch_joins, case_before_catches);
++                assert!(case_walker.fragmented.is_none());
++                assert_eq!(case_run, make_continuation_run());
++
+                 let continuation_steps = continuation_walker.budget.usage().analysis_steps;
+                 let late_continuation_limit = continuation_steps.saturating_sub(1);
+                 let mut late_continuation_budget = Budget::new(Limits {

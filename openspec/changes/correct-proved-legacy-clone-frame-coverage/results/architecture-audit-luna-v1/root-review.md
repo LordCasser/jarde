@@ -1,0 +1,1 @@
+root 审查接受 bounded rooted coverage 思路，实施以 design 为准。原审计有两处事实表示需纠正：双 JDK 验证为 root 实际六条命令，不是用户口头确认；ECJ 历史 finally 的 handler 自2.9已可达，当前永久测试固定 unreachable 为空，不能借该例声称已覆盖 dead seed。保留死调用语义需新明确测试。原 audit 保存，不回写成已通过实施。

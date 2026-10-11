@@ -1,0 +1,12 @@
+--- /private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v1/verify.py
++++ /private/tmp/jarde-null-builder-final-cli-v2-replay-luna-v2/verify.py
+@@ -293,7 +293,8 @@
+             require(row.get('source') is not None and pin_matches(row['source']) and
+                     row.get('source_sha256') == sha(source), f'{leg}/{profile}: source pin mismatch')
+ 
+-        expected_entries = ['NullThenBuilder.class', 'Runner.class']
++        expected_entries = (['defpackage/NullThenBuilder.class', 'defpackage/Runner.class']
++                            if profile == 'jadx' else ['NullThenBuilder.class', 'Runner.class'])
+         require(sorted(p.relative_to(classes).as_posix() for p in classes.rglob('*.class')) == expected_entries,
+                 f'{leg}/{profile}: compiled whole-class/runner member set mismatch')
+         raw = raw_for(out, runtime_row, runtime_index)

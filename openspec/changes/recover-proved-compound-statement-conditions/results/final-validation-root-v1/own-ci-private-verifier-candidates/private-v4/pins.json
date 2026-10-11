@@ -1,0 +1,221 @@
+{
+  "schema": "compound-current-product-own-ci-pins-luna-v4",
+  "inputs": {
+    "ci_v5_helper": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "bytes": 43302,
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca",
+      "mode": 420
+    },
+    "ci_capture_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+      "bytes": 6778,
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3",
+      "mode": 420
+    },
+    "public_label_rule": {
+      "path": "/private/tmp/jarde-conditional-ci-public-labels-root-v1.py",
+      "bytes": 3697,
+      "sha256": "d7a6bcebb703b1520332cf4c7419c50d21d919d6a0c6123162d0d4d78bbcac65",
+      "mode": 420
+    },
+    "own_ci_checklist": {
+      "path": "/private/tmp/jarde-compound-own-ci-audit-luna-v2/ci-handoff-checklist.md",
+      "bytes": 9505,
+      "sha256": "c64e9928cfeef595cf4c1132ceb43b0287773fe8e84c47c3223a94a54a108563",
+      "mode": 420
+    },
+    "build_evidence_helper": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py",
+      "bytes": 8233,
+      "sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3",
+      "mode": 420
+    },
+    "final_cli_build_runner": {
+      "path": "/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py",
+      "bytes": 10982,
+      "sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93",
+      "mode": 420
+    },
+    "workspace_runner": {
+      "path": "/private/tmp/jarde-compound-workspace-batches-root-v1.py",
+      "bytes": 8178,
+      "sha256": "2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b",
+      "mode": 420
+    },
+    "workspace_runner_source": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/full-workspace-root-v1/jarde-run-conditional-workspace-batches-root-v5.py",
+      "bytes": 6932,
+      "sha256": "15fb42dd044f2371fa8d0c75010f9b87b3474ad4a20c5f9d1007f15af299c76f",
+      "mode": 420
+    },
+    "resource_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "mode": 420
+    },
+    "target_size_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "mode": 420
+    },
+    "v1_verifier": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v1/verify-own-ci.py",
+      "bytes": 27697,
+      "sha256": "9ef095b08ef58320a71e6ecfd323e7540e363f7da6a92b6e9126646abf939d45",
+      "mode": 420
+    },
+    "v1_patch": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v1/verify-own-ci.patch",
+      "bytes": 28218,
+      "sha256": "c2723713108f1083a8838e72de63ab44cb094ac7af55a1c57a8c9fc2e47da7a1",
+      "mode": 420
+    },
+    "v1_final": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v1/FINAL.md",
+      "bytes": 3035,
+      "sha256": "ec0ffd146c2f79bcc443eaf9497a6bff0fe923e5c278b122acd746a985e33bc9",
+      "mode": 420
+    },
+    "v1_pins": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v1/pins.json",
+      "bytes": 3862,
+      "sha256": "9fb7aa5ed65220be17cbf7dace646904650d88afdfb82875a223ad126286cdfa",
+      "mode": 420
+    },
+    "v2_verify_own_ci_py": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v2/verify-own-ci.py",
+      "bytes": 28572,
+      "sha256": "a5e693dcf4396be195e2baf1065d146860d117bc8591a3e40e1a4bc94a8f7413",
+      "mode": 420
+    },
+    "v2_v1_to_v2_patch": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v2/v1-to-v2.patch",
+      "bytes": 6296,
+      "sha256": "23cf858a22c49cd518d6210742d24c49170f140e2e6f25bf981bd86e3ed2342b",
+      "mode": 420
+    },
+    "v2_FINAL_md": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v2/FINAL.md",
+      "bytes": 2111,
+      "sha256": "07bb9721dca650caa724dd8bf51fc3ccedd499f1ffff31fbd8c20b404982fcfa",
+      "mode": 420
+    },
+    "v2_pins": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v2/pins.json",
+      "bytes": 4726,
+      "sha256": "d4868ecc7dbbed3844137f086f9279298e420b561474d40e2f0f9a5b5818ebf9",
+      "mode": 420
+    },
+    "v3_verify_own_ci_py": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v3/verify-own-ci.py",
+      "bytes": 28620,
+      "sha256": "d3e680f88cea9d988f560dca8866a02d28cd731ff55c2686a24c73c69c083589",
+      "mode": 420
+    },
+    "v3_v2_to_v3_patch": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v3/v2-to-v3.patch",
+      "bytes": 851,
+      "sha256": "50d8c8ae8e74911046c64e83b60a065a70a81ee4963f8c23ae07f9e32fb95c95",
+      "mode": 420
+    },
+    "v3_FINAL_md": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v3/FINAL.md",
+      "bytes": 1489,
+      "sha256": "0f6ddf5cbbdd683e59255ccae4930e1134d1ff33991bf1806b15bc83e9fabd82",
+      "mode": 420
+    },
+    "v3_pins": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v3/pins.json",
+      "bytes": 9850,
+      "sha256": "8cf2ff54f6bdaf5c1eae8b568988390dcb8a8c056ef423c37b96848fc90337b5",
+      "mode": 420
+    },
+    "metadata_for_mapping_audit": {
+      "path": "/private/tmp/jarde-compound-tail-regressions-root-v2/metadata.json",
+      "bytes": 93120,
+      "sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248",
+      "mode": 420
+    }
+  },
+  "artifacts": {
+    "verify-own-ci.py": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v4/verify-own-ci.py",
+      "bytes": 29635,
+      "sha256": "05c0bc76f46c3de5ce453374e7cf716deed3d7da1d9670950e2896c0d17528b5",
+      "mode": 420
+    },
+    "v3-to-v4.patch": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v4/v3-to-v4.patch",
+      "bytes": 6170,
+      "sha256": "cf09cbc441987da77e579720db012c2de6048248185236222fd52b09cf509c2e",
+      "mode": 420
+    },
+    "FINAL.md": {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v4/FINAL.md",
+      "bytes": 1413,
+      "sha256": "d0ff69582eaba29d372e3b14213d594eb98c03eba854dffab5bbf65bb9136fcf",
+      "mode": 420
+    }
+  },
+  "metadata_audit": {
+    "new_required_source_name_count": 25,
+    "source_to_target": {
+      "crates/jarde-jvm/src/canonical.rs": [
+        "jarde-jvm",
+        "jarde_jvm",
+        "lib"
+      ],
+      "crates/jarde-java/src/region.rs": [
+        "jarde-java",
+        "jarde_java",
+        "lib"
+      ],
+      "crates/jarde-java/src/build.rs": [
+        "jarde-java",
+        "jarde_java",
+        "lib"
+      ],
+      "tests/p3_switch_forward_join.rs": [
+        "jarde",
+        "p3_switch_forward_join",
+        "test"
+      ],
+      "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": [
+        "jarde-java",
+        "p3_conditional_switch_fallthrough",
+        "test"
+      ],
+      "tests/p3_reference_slot_lifetimes.rs": [
+        "jarde",
+        "p3_reference_slot_lifetimes",
+        "test"
+      ]
+    },
+    "summary_and_null_targets": {
+      "crates/jarde-jvm/src/lib.rs": [
+        "jarde-jvm",
+        "jarde_jvm",
+        "lib"
+      ],
+      "crates/jarde-java/src/lib.rs": [
+        "jarde-java",
+        "jarde_java",
+        "lib"
+      ],
+      "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": [
+        "jarde-java",
+        "p3_conditional_switch_fallthrough",
+        "test"
+      ],
+      "tests/p3_reference_slot_lifetimes.rs": [
+        "jarde",
+        "p3_reference_slot_lifetimes",
+        "test"
+      ]
+    }
+  },
+  "future_evidence": "workspace path, product commit, run ID, capture, and acceptance outcomes remain runtime inputs."
+}

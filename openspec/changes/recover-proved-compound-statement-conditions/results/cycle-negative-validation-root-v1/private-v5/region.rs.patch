@@ -1,0 +1,149 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -19041,7 +19041,15 @@
+             "../../../openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsNoRepeat.class"
+         );
+ 
+-        for (class, name, expected_len, cycle_from_bci, irreducible, shared_decision) in [
++        for (
++            class,
++            name,
++            expected_len,
++            cycle_from_bci,
++            irreducible,
++            shared_decision,
++            expected_exit_start_bci,
++        ) in [
+             (
+                 CYCLE,
+                 "single-entry cycle",
+@@ -19049,14 +19057,16 @@
+                 Some(51_u32),
+                 false,
+                 false,
++                83_u32,
+             ),
+             (
+                 IRREDUCIBLE,
+-                "two-entry SCC",
++                "two-entry SCC (return-containing exit starts at 74; physical BCI 83 is not a raw leader)",
+                 2848_usize,
+                 Some(62_u32),
+                 true,
+                 false,
++                74_u32,
+             ),
+             (
+                 NO_REPEAT,
+@@ -19065,6 +19075,7 @@
+                 None,
+                 false,
+                 true,
++                83_u32,
+             ),
+         ] {
+             assert_eq!(
+@@ -19175,20 +19186,6 @@
+                         )
+                     })
+             };
+-            let block_covering = |bci| {
+-                canonical
+-                    .blocks()
+-                    .iter()
+-                    .find(|block| block.blocks().contains(&bci) && block.id().path().is_empty())
+-                    .map(|block| block.id())
+-                    .unwrap_or_else(|| {
+-                        panic!(
+-                            "{name}: expected pathless canonical coverage of physical block BCI {bci}; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
+-                            canonical_ids(),
+-                            canonical.unreachable(),
+-                        )
+-                    })
+-            };
+             let root = block(0);
+             let root_node = view
+                 .index_of(root)
+@@ -19210,12 +19207,59 @@
+                 view.predecessors(root_node).is_empty(),
+                 "canonical block 0 is the method entry; physical branch BCI 26 is not a block ID"
+             );
+-            // Normalization may fuse the physical return block into its sole predecessor in
+-            // the irreducible mutation. Locate the node by its represented original block, while
+-            // requiring root and every branch block above/below to retain exact pathless IDs.
+-            let join_node = view.index_of(block_covering(83)).unwrap_or_else(|| {
++            // BCI 83 is a shared-exit block start in the cycle and no-repeat variants. In the
++            // irreducible mutation, the changed goto removes that raw leader; physical BCI 83 and
++            // the return at BCI 97 remain in the raw/canonical interval represented by block 74.
++            // Resolve that one variant by the original-block interval rather than inventing a
++            // canonical block identity for 83.
++            let exit_id = if irreducible {
++                assert!(
++                    canonical.blocks().iter().all(|block| {
++                        !block.id().path().is_empty() || block.id().bci() != 83
++                    }),
++                    "{name}: physical BCI 83 is not a pathless raw block leader; actual={:?}",
++                    canonical_ids(),
++                );
++                let block = canonical
++                    .blocks()
++                    .iter()
++                    .find(|block| {
++                        block.id().path().is_empty()
++                            && block.id().bci() <= 83
++                            && 83 < block.end_bci()
++                    })
++                    .unwrap_or_else(|| {
++                        panic!(
++                            "{name}: no pathless canonical block interval contains physical BCI 83; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
++                            canonical_ids(),
++                            canonical.unreachable(),
++                        )
++                    });
++                assert_eq!(
++                    block.id().bci(),
++                    expected_exit_start_bci,
++                    "{name}: return-containing canonical exit"
++                );
++                assert!(
++                    ssa.block(block.id()).is_some_and(|ssa_block| {
++                        ssa_block.instructions().iter().any(|instruction| {
++                            instruction.bci() == 97
++                                && matches!(operations.get(97), Some(Operation::Return))
++                        })
++                    }),
++                    "{name}: canonical exit 74 retains physical return@97"
++                );
++                block.id()
++            } else {
++                assert_eq!(expected_exit_start_bci, 83, "{name}: exact shared-exit block pin");
++                let block = block(83);
++                assert_eq!(block.bci(), 83);
++                block
++            };
++            let candidate_exit_node = view.index_of(exit_id).unwrap_or_else(|| {
+                 panic!(
+-                    "{name}: physical shared-exit BCI 83 is represented canonically but absent from the normal-flow view; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
++                    "{name}: expected canonical candidate-exit {} in the normal-flow view; actual (id_bci, path, original_block_starts)={:?}; unreachable={:?}",
++                    exit_id.bci(),
+                     canonical_ids(),
+                     canonical.unreachable(),
+                 )
+@@ -19267,7 +19311,7 @@
+             let chains = crate::concat::Plan::empty();
+             let sites = crate::init::Sites::empty();
+             let initial_visited = BTreeSet::from([root_node]);
+-            let initial_catch_joins = BTreeSet::from([(root_node, join_node)]);
++            let initial_catch_joins = BTreeSet::from([(root_node, candidate_exit_node)]);
+             let mut proof_budget = Budget::new(Limits {
+                 analysis_steps: 1 << 20,
+                 elapsed_millis: u64::MAX,
+@@ -19303,7 +19347,7 @@
+                     root_op,
+                     root_target,
+                     &Frame::default(),
+-                    join_node,
++                    candidate_exit_node,
+                 )
+                 .expect("bounded compound refusal completes under an ample budget");
+             assert!(stop.is_none(), "{name} must not produce a compound proof");

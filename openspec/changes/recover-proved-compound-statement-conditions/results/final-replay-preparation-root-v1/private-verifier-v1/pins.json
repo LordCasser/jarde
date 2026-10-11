@@ -1,0 +1,78 @@
+{
+  "schema": "jarde-compound-final-cli-v2-replay-verifier-pins-v1",
+  "inputs": {
+    "build_evidence.py": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/build_evidence.py",
+      "bytes": 7534,
+      "sha256": "7b4f3b16df8bb6eca6f30cef5764dd462f2af4b27264c5628be4dff34fc5f8b6"
+    },
+    "runtime_verifier_accepted_v2": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-candidate-root-v1/private-verifier-v2/verify.py",
+      "bytes": 34276,
+      "sha256": "7d8701cb1e3f5468c23bd70424efe79520edd8c46b08069bf97f38d8224b486d"
+    },
+    "runtime_collector_root_v3": {
+      "path": "/private/tmp/jarde-compound-condition-runtime-compare-root-v3.py",
+      "bytes": 23576,
+      "sha256": "97768f361087f720df68df68ee84d1c26728d7562642c02bf495cb6f5a1340cc"
+    },
+    "runtime_accepted_verification_v2": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-candidate-root-v1/verification-root-v2.json",
+      "bytes": 61905,
+      "sha256": "be5e8336d8b16bd847e60e4422070fafe3956feb5b166ab481c53975ffa713ed"
+    },
+    "cf12_collector_root_v2": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/jarde-cf12-ten-fixture-replay-runner-luna-v2.py",
+      "bytes": 25970,
+      "sha256": "d26ad08dd63aeb1982804aa5876ddd32d87a09f8518b9e0e898a0f1353732e39"
+    },
+    "cf12_verifier_accepted_v8": {
+      "path": "/private/tmp/jarde-cf12-compound-verifier-luna-v8/independent-verifier-luna-v8.py",
+      "bytes": 62058,
+      "sha256": "4bf0328b16e5e0f279b6f95ecf407ff6de73949f59e0600df472bf57009b1e90"
+    },
+    "cli_build_runner_v5": {
+      "path": "/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py",
+      "bytes": 10982,
+      "sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93"
+    },
+    "historical_class_digest_manifest": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/cli-build-passed/execution.json",
+      "bytes": 16960,
+      "sha256": "8c0ca6f8232bf18ee055585d3bbf2dbd03ffb3afb0ad570f7d2684af9fc094a0"
+    }
+  },
+  "artifacts": {
+    "build_evidence.py": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/build_evidence.py",
+      "bytes": 8233,
+      "sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3"
+    },
+    "runtime-verifier-v3.py": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/runtime-verifier-v3.py",
+      "bytes": 34884,
+      "sha256": "5d2d28300e7c545e919488f8e909af1bfb92044e72aba4e40dda48ce80180334"
+    },
+    "cf12-verifier-v9.py": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/cf12-verifier-v9.py",
+      "bytes": 58053,
+      "sha256": "e4ff71efcf6edc2f96ccc3389c2dbee355e56c7523fb85f25e7a5616d42c3bfa"
+    },
+    "runtime-v2-to-v3.patch": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/runtime-v2-to-v3.patch",
+      "bytes": 3424,
+      "sha256": "7e85c78599718aad4e6496678878b1db406e00795bf2404900e77d0eaa195609"
+    },
+    "cf12-v8-to-v9.patch": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/cf12-v8-to-v9.patch",
+      "bytes": 6448,
+      "sha256": "2777c8009fb8294fe09c3d950b9a461195f78d3ad046440d553842637e2d49e6"
+    },
+    "FINAL.md": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v1/FINAL.md",
+      "bytes": 3434,
+      "sha256": "942effe1b0e75f0ac07510f4dbacd24331d304ffe664481093500a553a6a33c4"
+    }
+  },
+  "cli_digest": "intentionally supplied from actual build execution.json at invocation time; no value precomputed"
+}

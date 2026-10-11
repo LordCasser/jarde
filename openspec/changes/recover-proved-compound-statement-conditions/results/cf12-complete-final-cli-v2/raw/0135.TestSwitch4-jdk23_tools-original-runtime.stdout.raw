@@ -1,0 +1,6 @@
+check=passed
+switch4 slice=123 offset=0 length=3 result=123
+switch4 slice=a=1234 offset=2 length=4 result=1234
+switch4 slice=0000 offset=0 length=4 result=0
+switch4 slice=42 offset=0 length=2 result=42
+switch4 slice=x7 offset=1 length=1 result=7

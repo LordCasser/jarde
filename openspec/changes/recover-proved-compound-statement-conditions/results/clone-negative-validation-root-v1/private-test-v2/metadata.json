@@ -1,0 +1,33 @@
+{
+  "schema": "compound-clone-reader-proof-test-private-v2",
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "base_sha256": "65f6ef29dae25e4901a97b4d1b74d08b3c26856587817f5417a97de0930d512b",
+  "candidate_path": "/private/tmp/jarde-compound-region-clone-test-luna-v2/region.rs.candidate",
+  "candidate_sha256": "cb5fa13f29f98dca15889d3c6179c00147d28002b3ae1f0d5be25eea361a5f4e",
+  "patch_sha256": "0f74a79df3575f3c9e799f92c1823c8707b1d84f6ae0b4eb59979c280ebbbfb5",
+  "fixture_repo_path": "openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class",
+  "fixture_sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525",
+  "fixture_blake3": "af3b18f31c433684f1c685c62a6ce11b540e8304f158e576b8776bc5d76a5a4b",
+  "fixture_bytes": 2662,
+  "expected_reader_ids": {
+    "clone_root_block_bci": 8,
+    "comparison_instruction_bci": 11,
+    "clone_path": [
+      0
+    ],
+    "sibling_clone_path": [
+      3
+    ],
+    "caller_join_bci": 3,
+    "caller_join_path": [],
+    "call0_return_instruction_bci": 35
+  },
+  "validation": [
+    "base SHA matched current live region.rs before private edits",
+    "fixture SHA matched repository fixture; BLAKE3 matched root oracle",
+    "patch adds one test before the test module closing brace; no existing source hunk changes",
+    "Walker budget usage is read through walker after the proof call",
+    "no Cargo/JDK/Git/formatter executed",
+    "not compiled or executed"
+  ]
+}

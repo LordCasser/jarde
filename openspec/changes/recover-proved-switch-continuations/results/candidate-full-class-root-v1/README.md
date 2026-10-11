@@ -1,0 +1,11 @@
+# Candidate complete-class observations
+
+同一新CLI实际构建成功并冻结为0555，SHA fd2d526f3e684d13179d344cf7394bbfeefb391d541ea55d01dafd81ab3d0054，path /private/tmp/jarde-switch-continuation-candidate-cli-root-v1。region source SHA34dcf89ccee47c33e0b6e08089ae53567b30ce0f73b50e76b13aec1ddf040025，facade未改。首版runner在成功build后误找jarde而非jarde-cli导致AssertionError，失败和clean原样保留；v2从头构建、链接已有BLAKE3的private摘要oracle并对11真实class执行，实际清理target不存在。rlib已被clean删除，历史链接输入pin保留，不伪称仍可读取。
+
+新ten-fixture replay实际175命令、10fixture、20 JDK profiles，所有完整input classes/JADX source/helpers/SDK/JDK按既有plan159distinct pins绑定；Labels包含outer+Inner独立输入。original复制原始编译类，JADX/Jarde重新完整编译，在class set、compile/API和probe前提通过时运行原check及完整状态矩阵，不截取方法编译。
+
+FT2在JDK8/JDK23、default/all四组生成类compile/runtime exit0、class set相同，原/JADX也通过。Switch2四组Jarde compile exit1，不能运行生成类，不计恢复成功。JDK23其它Jarde组实际compile/runtime0；JADX Switch4仍runtime1，原/Jarde0。JDK8 FallThrough、Switch3、Switch4原runtime UnsupportedClassVersionError（上游JadxAssertions.class major55），三个generated sides也编译失败；这些是工具helper环境不适配，不能计产品成功或归因生产回归。
+
+独立verifier v3实际因已clean rlib不存在exit1；v4修正后在历史baseline streams list与当前dict schema不一致处exit1，原稿/raw均保留。v5实际exit0，root v6又核实际目录class集合/原class复制字节，并按精确中文javac55→52错误单列9组环境不可用，实际exit0：4组Switch2生产编译失败、1组JADX Switch4运行失败、3组原JDK8环境不可用，20组default/all正文map一致。root v7再将8组目标方法source-map BCI与实际javap全指令集合逐项比对（Switch2 78条、FT2 90条），无缺失或额外项，实际exit0；fallback来源完整不等于恢复成功。root仅接受完整观察与FT2正例，complete_milestone/cf12_complete仍false；原collector状态保持原字节pending，另有acceptance.json。
+
+FT2永久source-origin test已真实1/0/0独立接受，全90物理BCI覆盖；原失败和换行断言修正见../ft2-public-origins-root-v1。原记录绝对private路径保留原字节；仓库archive和inventory提供同一批raw/source/class/probe/helpers备份。没有归档60MB CLI重复体，外部工具/jar仍由原pin绑定。

@@ -1,0 +1,530 @@
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/golden-usage-reconciliation-root-v1/observed-before-update/1.stdout.raw:20: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/golden-usage-reconciliation-root-v1/observed-capture-v1/1.stdout.raw:15: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/golden-usage-reconciliation-root-v1/permanent-golden-v2/1.stdout.raw:14: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/jvm-java-validation-root-v1/observed-attempt-v1/1.stdout.raw:251: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/jvm-java-validation-root-v1/observed-attempt-v2/1.stdout.raw:251: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/jvm-java-validation-root-v1/observed-attempt-v2/2.stdout.raw:355: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v1/canonical.patch:77: trailing whitespace.
++ 
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v1/canonical.patch:383: trailing whitespace.
++ 
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v1/canonical.patch:383: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v2/canonical.patch:78: trailing whitespace.
++ 
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v2/canonical.patch:87: trailing whitespace.
++ 
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v3/canonical.patch:78: trailing whitespace.
++ 
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/private-implementation-root-v1/private-v3/canonical.patch:87: trailing whitespace.
++ 
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/10.stdout.raw:143: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/11.stdout.raw:151: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/12.stdout.raw:144: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/13.stdout.raw:135: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/14.stdout.raw:155: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/15.stdout.raw:162: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/16.stdout.raw:173: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/17.stdout.raw:189: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/18.stdout.raw:142: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/19.stdout.raw:191: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/2.stdout.raw:367: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/20.stdout.raw:172: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/21.stdout.raw:206: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/22.stdout.raw:205: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/3.stdout.raw:144: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/4.stdout.raw:136: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/5.stdout.raw:135: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/6.stdout.raw:237: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/7.stdout.raw:155: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/8.stdout.raw:135: new blank line at EOF.
+openspec/changes/correct-proved-legacy-clone-frame-coverage/results/workspace-golden-failure-root-v1/observed-workspace-v1/9.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/observed-v2/1.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/observed-v3/1.stdout.raw:6: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/observed-v3/2.stdout.raw:18: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v1/build.rs.patch:21: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v1/build.rs.patch:264: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v3/build.rs.patch:83: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v4/build.rs.patch:22: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v4/build.rs.patch:37: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v4/build.rs.patch:56: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/private-v4/build.rs.patch:68: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-passed-v2/1.stdout.raw:27: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v1/p3_conditional_switch_fallthrough.patch:9: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v1/p3_conditional_switch_fallthrough.patch:37: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v1/p3_conditional_switch_fallthrough.patch:40: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v1/p3_conditional_switch_fallthrough.patch:62: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v2/p3_conditional_switch_fallthrough.patch:9: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v2/p3_conditional_switch_fallthrough.patch:38: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/builder-stop-validation-root-v1/public-stop-private-v2/p3_conditional_switch_fallthrough.patch:71: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/candidate-review-root-v1/compound-condition.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/candidate-review-root-v1/compound-condition.patch:926: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/candidate-review-root-v1/compound-condition.patch:1034: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/candidate-review-root-v1/compound-condition.patch:1243: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/candidate-review-root-v1/compound-condition.patch:1429: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/cf12-complete-candidate-root-v1/observed/raw/0137.TestSwitch4-jdk23_tools-jadx-runtime.stderr.raw:7: trailing whitespace.
++Caused by: org.opentest4j.AssertionFailedError: 
+openspec/changes/recover-proved-compound-statement-conditions/results/cf12-complete-candidate-root-v1/private-verifier-v8/independent-verifier-luna-v8.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/cf12-complete-candidate-root-v1/private-verifier-v8/independent-verifier-luna-v8.patch:161: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/cf12-complete-final-cli-v2/raw/0137.TestSwitch4-jdk23_tools-jadx-runtime.stderr.raw:7: trailing whitespace.
++Caused by: org.opentest4j.AssertionFailedError: 
+openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/observed-lib-v8/1.stdout.raw:360: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/observed-lib-v9/1.stdout.raw:360: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/cf12-v8-to-v9.patch:8: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/cf12-v8-to-v9.patch:13: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/cf12-v8-to-v9.patch:14: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/cf12-v8-to-v9.patch:21: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/cf12-v8-to-v9.patch:22: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/cf12-v8-to-v9.patch:82: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/runtime-v2-to-v3.patch:8: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-final-cli-v2/private-verifier-v2/runtime-v2-to-v3.patch:41: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/observed-baseline-lib-v3/1.stdout.raw:353: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/observed-lib-v4/1.stdout.raw:359: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/observed-lib-v5/1.stdout.raw:359: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/private-v4/region.rs.patch:68: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/private-v5/region.rs.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/edge-negative-validation-root-v1/observed-lib-v2/1.stdout.raw:353: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/edge-negative-validation-root-v1/private-v1/region.rs.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/edge-negative-validation-root-v1/private-v1/region.rs.patch:165: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/edge-negative-validation-root-v1/private-v1/region.rs.patch:323: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/edge-negative-validation-root-v1/private-v1/region.rs.patch:429: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/exact-stop-validation-root-v1/private-v3/region.rs.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-cli-runner-v5/runner-v3-to-v5.patch:12: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-cli-runner-v5/runner-v3-to-v5.patch:34: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-cli-runner-v5/runner-v3-to-v5.patch:35: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-cli-runner-v5/runner-v3-to-v5.patch:38: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/cf12-v8-to-v9.patch:8: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/cf12-v8-to-v9.patch:13: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/cf12-v8-to-v9.patch:14: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/cf12-v8-to-v9.patch:21: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/cf12-v8-to-v9.patch:22: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/cf12-v8-to-v9.patch:82: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/runtime-v2-to-v3.patch:8: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v1/runtime-v2-to-v3.patch:41: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/cf12-v8-to-v9.patch:8: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/cf12-v8-to-v9.patch:13: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/cf12-v8-to-v9.patch:14: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/cf12-v8-to-v9.patch:21: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/cf12-v8-to-v9.patch:22: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/cf12-v8-to-v9.patch:82: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/runtime-v2-to-v3.patch:8: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-replay-preparation-root-v1/private-verifier-v2/runtime-v2-to-v3.patch:41: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/final-cli-build-v2/1.stdout.raw:10: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/final-cli-build-v2/2.stdout.raw:13: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/10.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/11.stdout.raw:151: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/12.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/13.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/14.stdout.raw:155: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/15.stdout.raw:162: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/16.stdout.raw:173: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/17.stdout.raw:189: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/18.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/19.stdout.raw:191: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/2.stdout.raw:367: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/20.stdout.raw:172: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/21.stdout.raw:206: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/22.stdout.raw:183: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/23.stdout.raw:197: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/24.stdout.raw:157: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/25.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/26.stdout.raw:145: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/27.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/28.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/29.stdout.raw:128: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/3.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/30.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/31.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/32.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/33.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/34.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/35.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/36.stdout.raw:149: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/37.stdout.raw:148: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/38.stdout.raw:132: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/39.stdout.raw:147: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/4.stdout.raw:136: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/40.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/41.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/42.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/43.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/44.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/45.stdout.raw:132: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/46.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/47.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/48.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/49.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/5.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/50.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/51.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/52.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/53.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/54.stdout.raw:130: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/55.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/56.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/57.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/58.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/59.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/6.stdout.raw:237: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/60.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/61.stdout.raw:141: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/62.stdout.raw:152: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/63.stdout.raw:156: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/64.stdout.raw:182: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/65.stdout.raw:165: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/66.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/67.stdout.raw:150: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/68.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/69.stdout.raw:141: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/7.stdout.raw:155: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/70.stdout.raw:141: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/71.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/72.stdout.raw:145: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/73.stdout.raw:141: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/74.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/75.stdout.raw:160: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/76.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/77.stdout.raw:406: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/78.stdout.raw:104: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/79.stdout.raw:87: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/8.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/80.stdout.raw:86: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/81.stdout.raw:92: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/82.stdout.raw:103: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/83.stdout.raw:147: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/84.stdout.raw:186: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/85.stdout.raw:100: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/86.stdout.raw:114: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/87.stdout.raw:92: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/88.stdout.raw:59: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/89.stdout.raw:305: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/9.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/90.stdout.raw:64: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/91.stdout.raw:60: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/92.stdout.raw:271: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/93.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/94.stdout.raw:83: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/95.stdout.raw:148: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/full-workspace-final-v4/96.stdout.raw:112: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/handoff-before-final-current-update.md:14: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/private-v2/v1-to-v2.patch:14: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/private-v2/v1-to-v2.patch:15: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/private-v2/v1-to-v2.patch:62: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/private-v4/v3-to-v4.patch:5: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/private-v4/v3-to-v4.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/private-v4/v3-to-v4.patch:94: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/pre-delivery-worktrees/worktrees.raw:60: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/diagnostic-v1/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/diagnostic-v2/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/diagnostic-v3/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/diagnostic-v4/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/diagnostic-v5/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/v2/1.stdout.raw:28: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/v3/1.stdout.raw:27: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v1/v4/1.stdout.raw:27: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v2/observed/1.stdout.raw:27: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v2/private-v5/region.rs.patch:232: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v2/private-v5/region.rs.patch:345: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v3/observed/1.stdout.raw:22: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v3/observed/2.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/focused-validation-root-v3/private-public-v4/increment.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v4/verify.patch:52: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v4/verify.patch:61: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v4/verify.patch:67: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v4/verify.patch:90: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v5/verify.patch:11: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v5/verify.patch:11: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:5: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:44: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:96: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:99: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:100: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/independent-effect-boundary-root-v1/private-verifier-v6/verify.patch:108: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/negative-full-class-final-cli-v2/private-v2/v1-to-v2.patch:152: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/negative-full-class-final-cli-v2/private-v2/v1-to-v2.patch:153: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/negative-full-class-final-cli-v2/private-v2/v1-to-v2.patch:175: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/negative-full-class-final-cli-v2/private-v2/v1-to-v2.patch:176: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/negative-full-class-final-cli-v2/private-v2/v1-to-v2.patch:289: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/negative-full-class-final-cli-v2/private-v2/v1-to-v2.patch:290: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/10.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/11.stdout.raw:151: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/12.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/13.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/14.stdout.raw:155: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/15.stdout.raw:162: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/16.stdout.raw:173: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/17.stdout.raw:189: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/18.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/19.stdout.raw:191: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/2.stdout.raw:367: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/20.stdout.raw:172: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/21.stdout.raw:206: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/22.stdout.raw:183: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/23.stdout.raw:197: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/24.stdout.raw:157: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/25.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/26.stdout.raw:145: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/27.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/28.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/29.stdout.raw:128: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/3.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/30.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/31.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/32.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/33.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/34.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/35.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/36.stdout.raw:149: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/37.stdout.raw:148: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/38.stdout.raw:132: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/39.stdout.raw:147: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/4.stdout.raw:136: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/40.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/41.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/42.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/43.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/44.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/45.stdout.raw:132: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/46.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/47.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/48.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/49.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/5.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/50.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/51.stdout.raw:153: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/6.stdout.raw:237: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/7.stdout.raw:155: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/8.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/observed-workspace-v2/9.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/private-replay-v1/verifier.patch:23: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/private-replay-v1/verifier.patch:154: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/private-replay-v1/verifier.patch:155: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/private-replay-v2/v1-to-v2.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/null-builder-regression-root-v1/private-test-v1/p3_reference_slot_lifetimes.rs.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/actual-fingerprint-recorder/1.stdout.raw:7: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/actual-recorder/1.stdout.raw:24: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/2.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/3.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/4.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/5.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/6.stdout.raw:141: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/7.stdout.raw:152: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/8.stdout.raw:156: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v2/9.stdout.raw:167: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/2.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/3.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/4.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/5.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/6.stdout.raw:141: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/7.stdout.raw:152: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/8.stdout.raw:156: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/p5-billing-reconciliation-root-v1/failed-tail-v3/9.stdout.raw:209: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/public-origins-root-v1/v1/1.stdout.raw:17: new blank line at EOF.
+openspec/changes/recover-proved-compound-statement-conditions/results/public-origins-root-v2/private-candidate-v3/increment.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/ft2-focused-passed/0.stdout.raw:6: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/ft2-private-v3/region.rs.patch:36: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/ft2-private-v3/region.rs.patch:70: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-initial/0.stdout.raw:25: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-join-trace/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-private-v2/region.rs.patch:46: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-private-v2/region.rs.patch:333: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-private-v2/region.rs.patch:446: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-private-v2/region.rs.patch:495: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-focused-root-v1/switch2-private-v2/region.rs.patch:672: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/ten-fixture-replay/raw/0133.TestSwitch4-jdk23_tools-jadx-runtime.stderr.raw:7: trailing whitespace.
++Caused by: org.opentest4j.AssertionFailedError: 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-tail-v1/2.stdout.raw:121: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/10.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/11.stdout.raw:151: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/12.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/13.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/14.stdout.raw:155: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/15.stdout.raw:162: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/16.stdout.raw:173: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/17.stdout.raw:189: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/18.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/19.stdout.raw:191: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/2.stdout.raw:367: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/20.stdout.raw:172: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/21.stdout.raw:206: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/22.stdout.raw:183: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/23.stdout.raw:197: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/24.stdout.raw:157: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/25.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/26.stdout.raw:145: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/27.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/28.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/29.stdout.raw:128: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/3.stdout.raw:144: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/30.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/31.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/32.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/33.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/34.stdout.raw:134: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/35.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/36.stdout.raw:149: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/37.stdout.raw:148: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/38.stdout.raw:132: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/39.stdout.raw:147: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/4.stdout.raw:136: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/40.stdout.raw:142: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/41.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/42.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/43.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/44.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/45.stdout.raw:132: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/46.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/47.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/48.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/49.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/5.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/50.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/51.stdout.raw:139: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/52.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/53.stdout.raw:143: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/54.stdout.raw:130: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/55.stdout.raw:138: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/56.stdout.raw:133: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/57.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/6.stdout.raw:237: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/7.stdout.raw:155: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/8.stdout.raw:135: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/observed-workspace-v3/9.stdout.raw:137: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-runtime-v1-rejected/verify.py:125: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-runtime-v2/v2.patch:396: trailing whitespace.
++- 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v1/test.patch:6: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v1/test.patch:48: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v1/test.patch:115: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v2/test.patch:5: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v2/test.patch:46: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v2/test.patch:123: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v3/test.patch:5: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v3/test.patch:46: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/private-test-v3/test.patch:122: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/root-runtime-v5/warning-only.patch:1: trailing whitespace.
++--- 
+openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/root-runtime-v5/warning-only.patch:2: trailing whitespace.
+++++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/private-v1/p3_conditional_switch_fallthrough.patch:90: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/private-v1/p3_conditional_switch_fallthrough.patch:118: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/private-v1/p3_conditional_switch_fallthrough.patch:139: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/private-v1/p3_conditional_switch_fallthrough.patch:154: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/private-v1/p3_conditional_switch_fallthrough.patch:165: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/private-v1/p3_conditional_switch_fallthrough.patch:292: trailing whitespace.
++ 
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/v1/0.stdout.raw:11: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/ft2-public-origins-root-v1/v2/0.stdout.raw:6: new blank line at EOF.
+openspec/changes/recover-proved-switch-continuations/results/nested-certificate-boundary-root-v1/private-v5/region.rs.patch:5: trailing whitespace.
++ 

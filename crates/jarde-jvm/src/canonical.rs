@@ -389,10 +389,10 @@ impl CanonicalCfg {
 impl CanonicalCfg {
     /// Post-condition of 3.5, checked before the graph is published.
     ///
-    /// Every block maps back to original instruction starts, through **every** member of its
-    /// origin; a clone is covered by the call site that reaches it, so no clone is orphaned; the
-    /// handler rows and edges only name blocks the graph holds; and every exception edge is stated
-    /// by a row of its own ordinal that lists the edge's source among the blocks it covers.
+    /// Every block maps back to original instruction starts, through every member of its origin;
+    /// edges, throw sites and handler rows only name blocks the graph holds; and every exception
+    /// edge is stated by a row of its own ordinal that lists the edge source among the blocks it
+    /// covers. Clone coverage is checked in budgeted assembly before this structural check runs.
     pub(crate) fn postcondition(
         &self,
         facts: &MethodCodeFacts,
@@ -436,35 +436,6 @@ impl CanonicalCfg {
                             block.id
                         ));
                     }
-                }
-            }
-            if let Some(call_site) = block.id.call_site() {
-                // A clone is covered by the call path it belongs to: either the `jsr` at its last
-                // call site entered that frame, or a `ret` of the frame one level deeper returned
-                // into it (the continuation of that nested call is part of the outer clone).
-                let parent = &block.id.path[..block.id.path.len() - 1];
-                let covered = self.edges.iter().any(|edge| {
-                    if edge.to != block.id {
-                        return false;
-                    }
-                    match edge.kind {
-                        CanonicalEdgeKind::Call { call_site: entered } => {
-                            entered == call_site && edge.from.path.as_slice() == parent
-                        }
-                        CanonicalEdgeKind::Return {
-                            call_site: returned,
-                        } => edge.from.path.split_last().is_some_and(|(last, parent)| {
-                            *last == returned && parent == block.id.path.as_slice()
-                        }),
-                        _ => false,
-                    }
-                });
-                if !covered {
-                    return Err(format!(
-                        "clone {:?} is orphaned: no `jsr` at BCI {call_site} enters its frame and \
-                         no `ret` returns into it",
-                        block.id
-                    ));
                 }
             }
         }
@@ -531,13 +502,14 @@ impl CanonicalCfg {
 ///
 /// Charges, in order: one `IrItems` per derived successor list and one `IrEdges` per entry of
 /// them, one `AnalysisSteps` per worklist pop, per raw transfer examined, per resolved `ret`, per
-/// step of the fusion and of the reachability walk and per identity the fusion resolves or the
-/// remapping moves, one `NormalizationClones` and one `IrItems` per created node (the block and
-/// the origin member its own BCI contributes) **before** the node exists, one `IrEdges` per
-/// canonical edge, one `IrItems` per handler row, per throw-site record and for the published
-/// artifact itself. The fusion moves origin members between nodes instead of creating them, and
-/// the remapping rewrites the records it was given in place, so neither of them charges a second
-/// item.
+/// step of fusion and reachability and per identity the fusion resolves or remapping moves; one
+/// `NormalizationClones` and two `IrItems` per created node (the block and its origin member)
+/// before the node exists; one `IrEdges` per canonical edge; and one `IrItems` per handler row,
+/// throw-site record and published artifact. For graphs with clones only, assembly charges two
+/// `IrItems` before adding each covered identity to its retained seen and worklist slots, plus
+/// `AnalysisSteps` for edge-shape checks, worklist pops, edge examinations and clone checks. The
+/// fusion moves origin members and remapping rewrites existing records in place, so neither
+/// charges a second item.
 pub(crate) fn canonical_cfg(
     facts: &MethodCodeFacts,
     raw: &RawCfgOutcome,
@@ -553,6 +525,7 @@ pub(crate) fn canonical_cfg(
 }
 
 /// Why one normalization run stopped.
+#[derive(Debug)]
 enum Norm {
     /// The payload does not decide the normalization: no graph is published.
     Unproven(String),
@@ -1405,6 +1378,101 @@ fn remap_identities(
     Ok(())
 }
 
+/// Proves that every clone is forward-covered from a retained method-frame node.
+///
+/// Validate all edge path shapes first, including disconnected components, so an unreachable
+/// malformed edge cannot enter the published graph.
+fn clone_coverage<'a>(
+    ids: &BTreeSet<CanonicalBlockId>,
+    outgoing: &BTreeMap<&'a CanonicalBlockId, Vec<&'a CanonicalEdge>>,
+    budget: &mut Budget,
+) -> std::result::Result<(), Norm> {
+    for edges in outgoing.values() {
+        for edge in edges {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                path_comparison_steps(edge),
+            )?;
+            if !edge_matches_call_path(edge) {
+                return unproven(format!(
+                    "canonical edge {edge:?} crosses an invalid call path"
+                ));
+            }
+        }
+    }
+
+    let mut seen: BTreeSet<&CanonicalBlockId> = BTreeSet::new();
+    let mut worklist: VecDeque<&CanonicalBlockId> = VecDeque::new();
+    for id in ids {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if id.path.is_empty() {
+            add_coverage_node(id, &mut seen, &mut worklist, budget)?;
+        }
+    }
+    while let Some(id) = worklist.pop_front() {
+        checkpoint(Phase::Assembly, budget)?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        for edge in outgoing.get(id).map_or(&[][..], Vec::as_slice) {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if !seen.contains(&edge.to) {
+                add_coverage_node(&edge.to, &mut seen, &mut worklist, budget)?;
+            }
+        }
+    }
+    for id in ids {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if id.is_clone() && !seen.contains(&id) {
+            return unproven(format!(
+                "clone {id:?} has no rooted path through matching canonical edges"
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// Charges each retained seen/worklist slot before growing its collection.
+fn add_coverage_node<'a>(
+    id: &'a CanonicalBlockId,
+    seen: &mut BTreeSet<&'a CanonicalBlockId>,
+    worklist: &mut VecDeque<&'a CanonicalBlockId>,
+    budget: &mut Budget,
+) -> std::result::Result<(), Norm> {
+    if seen.contains(&id) {
+        return Ok(());
+    }
+    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+    seen.insert(id);
+    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+    worklist.push_back(id);
+    Ok(())
+}
+
+/// Charges one unit for the edge check plus each call-site element compared on both paths.
+fn path_comparison_steps(edge: &CanonicalEdge) -> u64 {
+    let from = u64::try_from(edge.from.path.len()).unwrap_or(u64::MAX);
+    let to = u64::try_from(edge.to.path.len()).unwrap_or(u64::MAX);
+    1u64.saturating_add(from).saturating_add(to)
+}
+
+/// Whether one canonical edge preserves or transforms the call-site stack exactly.
+fn edge_matches_call_path(edge: &CanonicalEdge) -> bool {
+    match edge.kind {
+        CanonicalEdgeKind::Normal | CanonicalEdgeKind::Exception { .. } => {
+            edge.from.path == edge.to.path
+        }
+        CanonicalEdgeKind::Call { call_site } => {
+            edge.to.path.len() == edge.from.path.len() + 1
+                && &edge.to.path[..edge.from.path.len()] == edge.from.path.as_slice()
+                && edge.to.path.last() == Some(&call_site)
+        }
+        CanonicalEdgeKind::Return { call_site } => {
+            edge.from.path.len() == edge.to.path.len() + 1
+                && &edge.from.path[..edge.to.path.len()] == edge.to.path.as_slice()
+                && edge.from.path.last() == Some(&call_site)
+        }
+    }
+}
+
 /// Assembles the published graph from the fused drafts.
 #[allow(clippy::too_many_arguments)]
 fn assemble(
@@ -1445,12 +1513,13 @@ fn assemble(
             .then_with(|| left.kind.cmp(&right.kind))
             .then_with(|| left.to.cmp(&right.to))
     });
-    // What the entry of the method really reaches, over the canonical transfers: everything else
-    // is a truth table entry rather than a silently dropped node.
-    let mut outgoing: BTreeMap<&CanonicalBlockId, Vec<&CanonicalBlockId>> = BTreeMap::new();
+    // Keep edge identity in the existing adjacency so both walks share one index and avoid
+    // copying call-path vectors.
+    let mut outgoing: BTreeMap<&CanonicalBlockId, Vec<&CanonicalEdge>> = BTreeMap::new();
     for edge in &edges {
-        outgoing.entry(&edge.from).or_default().push(&edge.to);
+        outgoing.entry(&edge.from).or_default().push(edge);
     }
+    // What the method entry really reaches remains independent of clone coverage.
     let mut seen: BTreeSet<CanonicalBlockId> = BTreeSet::new();
     let mut worklist: Vec<CanonicalBlockId> = vec![root];
     while let Some(id) = worklist.pop() {
@@ -1458,10 +1527,13 @@ fn assemble(
         if !seen.insert(id.clone()) {
             continue;
         }
-        for child in outgoing.get(&id).map_or(&[][..], Vec::as_slice) {
+        for edge in outgoing.get(&id).map_or(&[][..], Vec::as_slice) {
             budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-            worklist.push((*child).clone());
+            worklist.push(edge.to.clone());
         }
+    }
+    if clones > 0 {
+        clone_coverage(&ids, &outgoing, budget)?;
     }
     let unreachable: Vec<CanonicalBlockId> =
         ids.into_iter().filter(|id| !seen.contains(id)).collect();
@@ -2867,5 +2939,366 @@ mod tests {
         assert!(after.ir_items > before.ir_items + u64::try_from(graph.blocks.len()).unwrap());
         assert!(after.ir_edges > before.ir_edges);
         assert!(after.analysis_steps > before.analysis_steps);
+    }
+    fn conditional_shared_subroutine() -> MethodCodeFacts {
+        let code = vec![
+            jsr(0, 7),
+            jsr(3, 4),
+            plain(6, 0xb1),
+            astore(7, 0),
+            plain(8, 0x03),
+            instruction(
+                9,
+                0x99,
+                3,
+                InstructionOperands {
+                    branch_offset: Some(7),
+                    ..operands(0x99)
+                },
+            ),
+            plain(12, 0x00),
+            instruction(
+                13,
+                0xa7,
+                3,
+                InstructionOperands {
+                    branch_offset: Some(3),
+                    ..operands(0xa7)
+                },
+            ),
+            ret(16, 0),
+        ];
+        body(code, Vec::new(), 18)
+    }
+
+    fn coverage_fixture(
+        ids: &[CanonicalBlockId],
+        edges: &[CanonicalEdge],
+        budget: &mut Budget,
+    ) -> std::result::Result<(), Norm> {
+        let ids: BTreeSet<CanonicalBlockId> = ids.iter().cloned().collect();
+        let mut outgoing: BTreeMap<&CanonicalBlockId, Vec<&CanonicalEdge>> = BTreeMap::new();
+        for edge in edges {
+            outgoing.entry(&edge.from).or_default().push(edge);
+        }
+        clone_coverage(&ids, &outgoing, budget)
+    }
+
+    fn coverage_id(bci: u32, path: &[u32]) -> CanonicalBlockId {
+        CanonicalBlockId {
+            bci,
+            path: path.to_vec(),
+        }
+    }
+
+    fn assert_unproven_coverage(ids: &[CanonicalBlockId], edges: &[CanonicalEdge]) {
+        match coverage_fixture(ids, edges, &mut budget()) {
+            Err(Norm::Unproven(message)) => assert!(
+                message.contains("invalid call path") || message.contains("no rooted path"),
+                "coverage refusal names the failed proof: {message}"
+            ),
+            other => panic!("the mutated graph must fail coverage, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn shared_conditional_subroutine_is_covered_per_call_path() {
+        let graph = normalize(&conditional_shared_subroutine());
+        let entries = nodes_at(&graph, 7);
+        assert_eq!(
+            entries
+                .iter()
+                .map(|block| block.id.path.clone())
+                .collect::<Vec<_>>(),
+            vec![vec![0], vec![3]],
+            "each caller has its own clone"
+        );
+        for path in [&[0][..], &[3][..]] {
+            assert!(
+                graph
+                    .blocks
+                    .iter()
+                    .any(|block| block.id.path.as_slice() == path && block.id.bci == 12),
+                "conditional block is present under path {path:?}"
+            );
+        }
+    }
+
+    // The following malformed graphs mutate a synthetic decoded-fact result at the canonical
+    // publication layer; they are adversarial graph tests, not claims of JVM-legal classfiles.
+    #[test]
+    fn clone_coverage_rejects_a_disconnected_internal_node() {
+        let graph = normalize(&conditional_shared_subroutine());
+        let target = graph
+            .blocks
+            .iter()
+            .find(|block| block.id.path.as_slice() == &[0] && block.id.bci == 12)
+            .expect("the clone has the conditional arm block")
+            .id
+            .clone();
+        let ids = graph
+            .blocks
+            .iter()
+            .map(|block| block.id.clone())
+            .collect::<Vec<_>>();
+        let mut edges = graph.edges.clone();
+        edges.retain(|edge| edge.to != target);
+        assert_unproven_coverage(&ids, &edges);
+    }
+
+    #[test]
+    fn clone_coverage_rejects_a_disconnected_self_cycle() {
+        let graph = normalize(&conditional_shared_subroutine());
+        let target = graph
+            .blocks
+            .iter()
+            .find(|block| block.id.path.as_slice() == &[0] && block.id.bci == 12)
+            .expect("the clone has the conditional arm block")
+            .id
+            .clone();
+        let ids = graph
+            .blocks
+            .iter()
+            .map(|block| block.id.clone())
+            .collect::<Vec<_>>();
+        let mut edges = graph.edges.clone();
+        edges.retain(|edge| edge.to != target);
+        edges.push(CanonicalEdge {
+            from: target.clone(),
+            to: target.clone(),
+            kind: CanonicalEdgeKind::Normal,
+        });
+        assert_unproven_coverage(&ids, &edges);
+    }
+
+    #[test]
+    fn clone_coverage_rejects_wrong_normal_call_return_and_exception_paths() {
+        let graph = normalize(&conditional_shared_subroutine());
+        let ids = graph
+            .blocks
+            .iter()
+            .map(|block| block.id.clone())
+            .collect::<Vec<_>>();
+        let mut wrong_normal = graph.edges.clone();
+        wrong_normal.push(CanonicalEdge {
+            from: coverage_id(7, &[0]),
+            to: coverage_id(7, &[3]),
+            kind: CanonicalEdgeKind::Normal,
+        });
+        assert_unproven_coverage(&ids, &wrong_normal);
+
+        let mut wrong_call = graph.edges.clone();
+        let call = wrong_call
+            .iter_mut()
+            .find(|edge| matches!(edge.kind, CanonicalEdgeKind::Call { call_site: 0 }))
+            .expect("the first call edge exists");
+        call.kind = CanonicalEdgeKind::Call { call_site: 3 };
+        assert_unproven_coverage(&ids, &wrong_call);
+
+        let mut wrong_return = graph.edges.clone();
+        let ret = wrong_return
+            .iter_mut()
+            .find(|edge| matches!(edge.kind, CanonicalEdgeKind::Return { call_site: 0 }))
+            .expect("the first return edge exists");
+        ret.kind = CanonicalEdgeKind::Return { call_site: 3 };
+        assert_unproven_coverage(&ids, &wrong_return);
+
+        let mut wrong_exception = graph.edges.clone();
+        wrong_exception.push(CanonicalEdge {
+            from: coverage_id(12, &[0]),
+            to: coverage_id(12, &[3]),
+            kind: CanonicalEdgeKind::Exception { handler_ordinal: 0 },
+        });
+        assert_unproven_coverage(&ids, &wrong_exception);
+    }
+
+    #[test]
+    fn clone_coverage_accepts_a_nested_return_continuation() {
+        let graph = normalize(&nested_calls().0);
+        let ids = graph
+            .blocks
+            .iter()
+            .map(|block| block.id.clone())
+            .collect::<Vec<_>>();
+        coverage_fixture(&ids, &graph.edges, &mut budget())
+            .expect("the covered nested ret reaches its matching outer continuation");
+        assert!(graph.edges.iter().any(|edge| {
+            matches!(edge.kind, CanonicalEdgeKind::Return { call_site: 5 })
+                && edge.to == coverage_id(8, &[0])
+        }));
+    }
+
+    #[test]
+    fn an_uncovered_nested_return_cannot_cover_its_outer_continuation() {
+        let graph = normalize(&nested_calls().0);
+        let ids = graph
+            .blocks
+            .iter()
+            .map(|block| block.id.clone())
+            .collect::<Vec<_>>();
+        let mut edges = graph.edges.clone();
+        edges.retain(|edge| !matches!(edge.kind, CanonicalEdgeKind::Call { call_site: 5 }));
+        assert_unproven_coverage(&ids, &edges);
+    }
+
+    #[test]
+    fn explicit_dead_callsite_seed_stays_unreachable_after_coverage() {
+        let facts = body(
+            vec![
+                instruction(
+                    0,
+                    0xa7,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(6),
+                        ..operands(0xa7)
+                    },
+                ),
+                jsr(3, 4),
+                plain(6, 0xb1),
+                astore(7, 0),
+                ret(8, 0),
+            ],
+            Vec::new(),
+            10,
+        );
+        let graph = normalize(&facts);
+        assert!(
+            graph
+                .blocks
+                .iter()
+                .any(|block| block.id == coverage_id(3, &[]))
+        );
+        assert!(
+            graph
+                .blocks
+                .iter()
+                .any(|block| block.id == coverage_id(7, &[3]))
+        );
+        assert!(graph.unreachable.contains(&coverage_id(3, &[])));
+        assert!(graph.unreachable.contains(&coverage_id(7, &[3])));
+    }
+
+    #[test]
+    fn clone_coverage_budgets_storage_work_and_assembly_cancellation() {
+        let facts = conditional_shared_subroutine();
+        let graph = normalize(&facts);
+        let ids = graph
+            .blocks
+            .iter()
+            .map(|block| block.id.clone())
+            .collect::<Vec<_>>();
+        let full = {
+            let mut measured = budget();
+            coverage_fixture(&ids, &graph.edges, &mut measured)
+                .expect("ample coverage budgets suffice");
+            measured.usage()
+        };
+        assert!(full.ir_items > 0);
+        let item_limit = full.ir_items - 1;
+        let mut item_short =
+            Budget::new(limits_bounded(CountedBudgetDimension::IrItems, item_limit));
+        match coverage_fixture(&ids, &graph.edges, &mut item_short) {
+            Err(Norm::Halted(Error::BudgetExceeded {
+                dimension,
+                limit,
+                consumed,
+                requested,
+            })) => {
+                assert_eq!(dimension, BudgetDimension::IrItems);
+                assert_eq!((limit, consumed, requested), (item_limit, item_limit, 1));
+            }
+            other => panic!("coverage storage over the measured item bound must halt: {other:?}"),
+        }
+        assert!(full.analysis_steps > 0);
+        let step_limit = full.analysis_steps - 1;
+        let mut step_short = Budget::new(limits_bounded(
+            CountedBudgetDimension::AnalysisSteps,
+            step_limit,
+        ));
+        match coverage_fixture(&ids, &graph.edges, &mut step_short) {
+            Err(Norm::Halted(Error::BudgetExceeded {
+                dimension,
+                limit,
+                consumed,
+                requested,
+            })) => {
+                assert_eq!(dimension, BudgetDimension::AnalysisSteps);
+                assert_eq!((limit, consumed, requested), (step_limit, step_limit, 1));
+            }
+            other => panic!("coverage work over the measured step bound must halt: {other:?}"),
+        }
+
+        let root = coverage_id(0, &[]);
+        let clone = coverage_id(10, &[0]);
+        let simple_ids = vec![root.clone(), clone.clone()];
+        let simple_edges = vec![CanonicalEdge {
+            from: root,
+            to: clone,
+            kind: CanonicalEdgeKind::Call { call_site: 0 },
+        }];
+        let mut cancelled_budget = budget();
+        let _seam = checkpoint_seam(Phase::Assembly);
+        match coverage_fixture(&simple_ids, &simple_edges, &mut cancelled_budget) {
+            Err(Norm::Halted(Error::Cancelled { .. })) => {
+                assert!(cancelled_budget.usage().analysis_steps > 0);
+                assert!(cancelled_budget.usage().ir_items > 0);
+            }
+            other => panic!("coverage cancellation after charged work must halt: {other:?}"),
+        }
+
+        let raw = raw_of(&facts);
+        let contexts = contexts_of(&facts, &raw);
+        let _seam = checkpoint_seam(Phase::Assembly);
+        match canonical_cfg(&facts, &raw, &contexts, &method(), &mut budget()) {
+            Err(Error::Cancelled { .. }) => {}
+            other => panic!("assembly cancellation must publish no graph: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn a_clone_exception_edge_reaches_its_handler_and_ret_restores_the_caller_path() {
+        // Synthetic proved decoded facts exercise a handler reached from a subroutine clone;
+        // this fixture is not asserted to be a JVM-verified classfile.
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                astore(4, 0),
+                plain(5, 0x01),
+                plain(6, 0xbf),
+                astore(7, 1),
+                ret(8, 0),
+            ],
+            vec![catch(0, 4, 7, 7, None)],
+            10,
+        );
+        let graph = normalize(&facts);
+        let thrower = coverage_id(4, &[0]);
+        let handler = coverage_id(7, &[0]);
+        assert!(
+            graph.edges.iter().any(|edge| {
+                edge.from == thrower
+                    && edge.to == handler
+                    && edge.kind == (CanonicalEdgeKind::Exception { handler_ordinal: 0 })
+            }),
+            "the cloned throw site reaches the cloned handler with record ordinal 0"
+        );
+        assert_eq!(
+            returns_of(&graph, &handler),
+            vec![(0, coverage_id(3, &[]))],
+            "the handler's ret pops the clone path and returns to the caller continuation"
+        );
+        assert_eq!(
+            graph
+                .throw_sites
+                .iter()
+                .map(|site| (site.bci, site.block.clone(), site.handlers.clone()))
+                .collect::<Vec<_>>(),
+            vec![(6, thrower, vec![0])],
+            "the throw-site source path and handler ordinal are retained"
+        );
+        assert_eq!(graph.handler_rows[0].handler, Some(coverage_id(7, &[0])));
+        assert_eq!(graph.handler_rows[0].protected, vec![coverage_id(4, &[0])]);
     }
 }

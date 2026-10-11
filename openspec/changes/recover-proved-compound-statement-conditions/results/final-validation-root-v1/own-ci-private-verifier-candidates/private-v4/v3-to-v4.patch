@@ -1,0 +1,103 @@
+--- /private/tmp/jarde-compound-own-ci-verifier-luna-v3/verify-own-ci.py
++++ /private/tmp/jarde-compound-own-ci-verifier-luna-v4/verify-own-ci.py
+@@ -274,24 +274,39 @@
+     return result
+ 
+ 
+-def verify_named_tests(local_observations, product: str, pins: dict[str, str]):
++def metadata_target_for_source(source: str, by_named: dict):
++    """Resolve a Rust source to its Cargo target using fresh metadata, not package-name guesses."""
++    exact = [row for row in by_named.values() if row['source_path'] == source]
++    if not exact:
++        absolute = (ROOT / source).resolve()
++        candidates = [row for row in by_named.values()
++                      if row['kind'] == 'lib' and absolute.is_relative_to(Path(row['package_dir']).resolve())]
++        need(candidates, 'source is outside all Cargo library package directories: ' + source)
++        deepest = max(len(Path(row['package_dir']).resolve().parts) for row in candidates)
++        exact = [row for row in candidates if len(Path(row['package_dir']).resolve().parts) == deepest]
++    need(len(exact) == 1, 'source does not map to exactly one Cargo target in current metadata: ' + source)
++    return exact[0]
++
++
++def target_key(row: dict):
++    return (row['package'], row['name'], row['kind'])
++
++
++def verify_named_tests(local_observations, product: str, pins: dict[str, str], metadata: dict):
+     # Retain the earlier accepted conditional control tests as a subset, then require this increment.
+     legacy = ci.verify_required_tests(local_observations)
+     source_details = source_test_names(product, pins)
+-    by_source = {}
+-    for row in local_observations:
+-        by_source.setdefault(row['source_path'], []).append(row)
+-    source_to_target = {
+-        'crates/jarde-jvm/src/canonical.rs': 'crates/jarde-jvm/src/lib.rs',
+-        'crates/jarde-java/src/region.rs': 'crates/jarde-java/src/lib.rs',
+-        'crates/jarde-java/src/build.rs': 'crates/jarde-java/src/lib.rs',
+-    }
++    _, by_named, _ = ci.metadata_targets(metadata)
++    targets = {row['key']: row for row in local_observations}
++    source_targets = {}
+     checked = []
+     for source, names in NEW_REQUIRED.items():
+-        target_source = source_to_target.get(source, source)
+-        rows = by_source.get(target_source, [])
+-        need(len(rows) == 1, 'required increment tests do not map to exactly one local target: ' + source)
+-        outcomes = rows[0]['outcomes']
++        metadata_row = metadata_target_for_source(source, by_named)
++        key = target_key(metadata_row)
++        source_targets[source] = {'target': key, 'target_source_path': metadata_row['source_path']}
++        need(key in targets, 'mapped Cargo target was not run in the fresh workspace: ' + repr(key))
++        local = targets[key]
++        outcomes = local['outcomes']
+         for name in names:
+             matches = [(actual, state) for actual, state in outcomes
+                        if actual == name or actual.endswith('::' + name)]
+@@ -300,25 +315,27 @@
+             if source in ('crates/jarde-jvm/src/canonical.rs', 'crates/jarde-java/src/region.rs',
+                           'crates/jarde-java/src/build.rs'):
+                 need('::tests::' in matches[0][0], 'unit test outcome lacks its test module identity: ' + name)
+-        checked.append({'source_path': source, 'target': rows[0]['key'], 'passed_test_names': list(names)})
+-
+-    targets = {row['key']: row for row in local_observations}
+-    expected_counts = {
+-        ('jarde-jvm', 'jarde_jvm', 'lib'): [243, 0, 0],
+-        ('jarde-java', 'jarde_java', 'lib'): [351, 0, 0],
+-        ('jarde-java', 'p3_conditional_switch_fallthrough', 'test'): [8, 0, 0],
++        checked.append({'source_path': source, 'target': key, 'passed_test_names': list(names)})
++
++    expected_counts_by_source = {
++        'crates/jarde-jvm/src/lib.rs': [243, 0, 0],
++        'crates/jarde-java/src/lib.rs': [351, 0, 0],
++        'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs': [8, 0, 0],
+     }
+-    for key, expected in expected_counts.items():
++    summary_checks = {}
++    for source, expected in expected_counts_by_source.items():
++        key = target_key(metadata_target_for_source(source, by_named))
+         need(key in targets and targets[key]['counts'] == expected,
+              f'fresh local target {key!r} does not have the requested exact current summary')
+-    null_key = ('jarde-java', 'p3_reference_slot_lifetimes', 'test')
++        summary_checks[str(key)] = targets[key]['counts']
++    null_key = target_key(metadata_target_for_source('tests/p3_reference_slot_lifetimes.rs', by_named))
+     need(null_key in targets, 'fresh local NullThenBuilder integration target is absent')
+     null_outcomes = dict(targets[null_key]['outcomes'])
+     need(null_outcomes.get(RENAMED_NULL_TEST) == 'ok' and MASKED_OLD_NULL_TEST not in null_outcomes,
+          'fresh local NullThenBuilder target lacks renamed passing test or retains stale test name')
+     return {'prior_controls': legacy, 'increment_tests': checked,
+-            'source_text_checks': source_details,
+-            'target_summary_checks': {str(k): targets[k]['counts'] for k in expected_counts},
++            'source_text_checks': source_details, 'source_to_metadata_target': source_targets,
++            'target_summary_checks': summary_checks,
+             'null_test_rename': {'target': null_key, 'passed': RENAMED_NULL_TEST,
+                                  'stale_name_absent': MASKED_OLD_NULL_TEST not in null_outcomes}}
+ 
+@@ -422,7 +439,7 @@
+     ex, metadata, local = verify_workspace(args.product_commit, args.workspace)
+     checklist = verify_checklist_sources(args.product_commit, ex['source_pins'])
+     candidate = verify_product_build(args.product_commit, ex['source_pins'])
+-    required = verify_named_tests(local['target_observations'], args.product_commit, ex['source_pins'])
++    required = verify_named_tests(local['target_observations'], args.product_commit, ex['source_pins'], metadata)
+     ci_result = verify_ci_capture(args.capture.resolve(), args.product_commit, args.run_id,
+                                   local['target_observations'])
+     acceptance = {

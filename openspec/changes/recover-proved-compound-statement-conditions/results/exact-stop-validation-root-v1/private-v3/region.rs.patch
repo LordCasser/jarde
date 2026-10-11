@@ -1,0 +1,352 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -16370,6 +16370,185 @@
+                 assert_eq!(stop_walker.budget.usage().analysis_steps, 0);
+                 assert_eq!(stop_walker.visited, prior_owners);
+ 
++                let prior_arm_run = arm_run.clone();
++                // Measure the real continuation independently, then stop one counted step before
++                // completion and verify that neither its caller-owned run nor Walker state leaks.
++                let before_tail_steps = warm_walker.budget.usage().analysis_steps;
++                assert!(warm_walker
++                    .continue_switch_arm(
++                        &mut arm_run,
++                        &next,
++                        &switch_start,
++                        &outer_frame,
++                        &BTreeSet::new(),
++                        true,
++                    )
++                    .expect("ample budget proves the straight tail"));
++                let complete_tail_steps = warm_walker
++                    .budget
++                    .usage()
++                    .analysis_steps
++                    .saturating_sub(before_tail_steps);
++                assert_eq!(complete_tail_steps, 54);
++                assert_eq!(next.bci(), 175);
++                assert_eq!(join.bci(), 197);
++                assert_eq!(
++                    arm_run.iter().map(|region| count_block(region, 175)).sum::<usize>(),
++                    1,
++                    "successful continuation claims the switch join exactly once"
++                );
++                assert_eq!(
++                    arm_run.iter().map(|region| count_block(region, 197)).sum::<usize>(),
++                    0,
++                    "the enclosing outer-if boundary stays outside the consumed tail"
++                );
++
++                let late_limit = complete_tail_steps - 1;
++                assert_eq!(late_limit, 53);
++                let mut late_budget = Budget::new(jarde_reader::budget::Limits {
++                    analysis_steps: late_limit,
++                    elapsed_millis: u64::MAX,
++                    ..Default::default()
++                });
++                let mut late_run = prior_arm_run.clone();
++                let mut late_walker = Walker {
++                    canonical,
++                    view,
++                    ssa,
++                    operations,
++                    pool,
++                    chains: &chains,
++                    sites: &sites,
++                    code,
++                    method_synchronized: Some(false),
++                    has_reachable_explicit_monitor: false,
++                    return_is_boolean: false,
++                    handlers: &code.exception_handlers,
++                    profile: &crate::pass::JAVA_8,
++                    budget: &mut late_budget,
++                    catch_joins: BTreeSet::new(),
++                    fragmented: None,
++                    excluded_edge_nodes: BTreeSet::new(),
++                    visited: prior_owners.clone(),
++                    unclosed_tail_at: None,
++                    own_monitor: None,
++                    depth: 0,
++                };
++                let late_catches = late_walker.catch_joins.clone();
++                let late_excluded = late_walker.excluded_edge_nodes.clone();
++                let late_tail = late_walker.unclosed_tail_at;
++                let late_monitor = late_walker
++                    .own_monitor
++                    .as_ref()
++                    .map(|monitor| monitor.owned.clone());
++                let late_depth = late_walker.depth;
++                let late_stop = late_walker
++                    .continue_switch_arm(
++                        &mut late_run,
++                        &next,
++                        &switch_start,
++                        &outer_frame,
++                        &BTreeSet::new(),
++                        true,
++                    )
++                    .expect_err("one fewer analysis step stops the proved tail atomically");
++                let late_usage = late_walker.budget.usage().analysis_steps;
++                assert_eq!(
++                    late_stop,
++                    StopReason::Budget {
++                        dimension: CountedBudgetDimension::AnalysisSteps,
++                        written: 0,
++                        limit: 53,
++                        at: Some(197),
++                    }
++                );
++                assert_eq!(late_usage, 53);
++                assert_eq!(late_run, prior_arm_run, "late Stop restores the caller's run");
++                assert_eq!(late_walker.visited, prior_owners, "late Stop restores ownership");
++                assert_eq!(late_walker.catch_joins, late_catches);
++                assert_eq!(late_walker.excluded_edge_nodes, late_excluded);
++                assert_eq!(late_walker.unclosed_tail_at, late_tail);
++                assert_eq!(
++                    late_walker
++                        .own_monitor
++                        .as_ref()
++                        .map(|monitor| monitor.owned.clone()),
++                    late_monitor
++                );
++                assert_eq!(late_walker.depth, late_depth);
++                assert!(late_walker.fragmented.is_none());
++
++                let cancel_token = jarde_reader::budget::CancellationToken::new();
++                cancel_token.cancel();
++                let mut cancel_budget = Budget::with_cancellation_token(
++                    jarde_reader::budget::Limits {
++                        analysis_steps: u64::MAX,
++                        elapsed_millis: u64::MAX,
++                        ..Default::default()
++                    },
++                    cancel_token,
++                );
++                let mut cancel_run = prior_arm_run.clone();
++                let mut cancel_walker = Walker {
++                    canonical,
++                    view,
++                    ssa,
++                    operations,
++                    pool,
++                    chains: &chains,
++                    sites: &sites,
++                    code,
++                    method_synchronized: Some(false),
++                    has_reachable_explicit_monitor: false,
++                    return_is_boolean: false,
++                    handlers: &code.exception_handlers,
++                    profile: &crate::pass::JAVA_8,
++                    budget: &mut cancel_budget,
++                    catch_joins: BTreeSet::new(),
++                    fragmented: None,
++                    excluded_edge_nodes: BTreeSet::new(),
++                    visited: prior_owners.clone(),
++                    unclosed_tail_at: None,
++                    own_monitor: None,
++                    depth: 0,
++                };
++                let cancel_catches = cancel_walker.catch_joins.clone();
++                let cancel_fragmented = cancel_walker.fragmented.clone();
++                let cancel_excluded = cancel_walker.excluded_edge_nodes.clone();
++                let cancel_visited = cancel_walker.visited.clone();
++                let cancel_tail = cancel_walker.unclosed_tail_at;
++                let cancel_monitor = cancel_walker
++                    .own_monitor
++                    .as_ref()
++                    .map(|monitor| monitor.owned.clone());
++                let cancel_depth = cancel_walker.depth;
++                let cancel_stop = cancel_walker
++                    .continue_switch_arm(
++                        &mut cancel_run,
++                        &next,
++                        &switch_start,
++                        &outer_frame,
++                        &BTreeSet::new(),
++                        true,
++                    )
++                    .expect_err("pre-cancelled request stops at the consumer entry");
++                assert_eq!(cancel_stop, StopReason::Cancelled { at: Some(175) });
++                assert_eq!(cancel_walker.budget.usage().analysis_steps, 0);
++                assert_eq!(cancel_run, prior_arm_run);
++                assert_eq!(cancel_walker.visited, cancel_visited);
++                assert_eq!(cancel_walker.catch_joins, cancel_catches);
++                assert_eq!(cancel_walker.fragmented, cancel_fragmented);
++                assert_eq!(cancel_walker.excluded_edge_nodes, cancel_excluded);
++                assert_eq!(cancel_walker.unclosed_tail_at, cancel_tail);
++                assert_eq!(
++                    cancel_walker
++                        .own_monitor
++                        .as_ref()
++                        .map(|monitor| monitor.owned.clone()),
++                    cancel_monitor
++                );
++                assert_eq!(cancel_walker.depth, cancel_depth);
++
+                 let mut origins = Vec::new();
+                 switch_breaks(switch, &mut origins);
+                 assert!(
+@@ -17789,20 +17968,17 @@
+                         &outer_frame,
+                     )
+                     .expect_err("the return continuation stops atomically one step short");
+-                assert!(matches!(
++                assert_eq!(
+                     stop,
+                     StopReason::Budget {
+                         dimension: CountedBudgetDimension::AnalysisSteps,
+                         written: 0,
+-                        limit,
+-                        at: Some(_),
+-                    } if limit == late_continuation_limit
+-                ));
+-                assert!(late_continuation_walker.budget.usage().analysis_steps > 0);
+-                assert!(
+-                    late_continuation_walker.budget.usage().analysis_steps
+-                        <= late_continuation_limit
++                        limit: 36,
++                        at: Some(136),
++                    }
+                 );
++                assert_eq!(late_continuation_limit, 36);
++                assert_eq!(late_continuation_walker.budget.usage().analysis_steps, 36);
+                 assert_eq!(late_continuation_walker.visited, before_visited);
+                 assert_eq!(late_continuation_walker.unclosed_tail_at, before_unclosed);
+                 assert_eq!(late_continuation_walker.catch_joins, before_catches);
+@@ -17829,15 +18005,16 @@
+                 let before_unclosed = cancelled_continuation_walker.unclosed_tail_at;
+                 let before_catches = cancelled_continuation_walker.catch_joins.clone();
+                 let mut cancelled_run = make_continuation_run();
+-                assert!(matches!(
++                assert_eq!(
+                     cancelled_continuation_walker.continue_early_return_arm(
+                         &mut cancelled_run,
+                         &return_next,
+                         &arm_frame,
+                         &outer_frame,
+                     ),
+-                    Err(StopReason::Cancelled { at: Some(_) })
+-                ));
++                    Err(StopReason::Cancelled { at: Some(136) })
++                );
++                assert_eq!(cancelled_continuation_walker.budget.usage().analysis_steps, 0);
+                 assert_eq!(cancelled_continuation_walker.visited, before_visited);
+                 assert_eq!(
+                     cancelled_continuation_walker.unclosed_tail_at,
+@@ -17873,27 +18050,20 @@
+                 let before_unclosed_tail = late_integration_walker.unclosed_tail_at;
+                 let before_catch_joins = late_integration_walker.catch_joins.clone();
+                 let before_fragmented = late_integration_walker.fragmented.clone();
+-                assert!(
+-                    matches!(
+-                        late_integration_walker.compound_statement_region(
+-                            &proof,
+-                            &[],
+-                            root_branch_bci,
+-                            &Frame::default()
+-                        ),
+-                        Err(StopReason::Budget {
+-                            dimension: CountedBudgetDimension::AnalysisSteps,
+-                            written: 0,
+-                            limit,
+-                            at: Some(_),
+-                        }) if limit == late_integration_limit
+-                    ),
+-                    "the late edge-closure scan can stop after both arms were walked"
++                let late_integration_stop = late_integration_walker
++                    .compound_statement_region(&proof, &[], root_branch_bci, &Frame::default())
++                    .expect_err("the late edge-closure scan stops after both arms were walked");
++                assert_eq!(
++                    late_integration_stop,
++                    StopReason::Budget {
++                        dimension: CountedBudgetDimension::AnalysisSteps,
++                        written: 0,
++                        limit: 39,
++                        at: Some(108),
++                    }
+                 );
+-                assert!(late_integration_walker.budget.usage().analysis_steps > 0);
+-                assert!(
+-                    late_integration_walker.budget.usage().analysis_steps <= late_integration_limit
+-                );
++                assert_eq!(late_integration_limit, 39);
++                assert_eq!(late_integration_walker.budget.usage().analysis_steps, 11);
+                 assert_eq!(late_integration_walker.visited, before_visited);
+                 assert_eq!(
+                     late_integration_walker.unclosed_tail_at,
+@@ -17902,6 +18072,35 @@
+                 assert_eq!(late_integration_walker.catch_joins, before_catch_joins);
+                 assert!(before_fragmented.is_none());
+                 assert!(late_integration_walker.fragmented.is_none());
++
++                let integration_cancel_token = CancellationToken::new();
++                integration_cancel_token.cancel();
++                let mut integration_cancel_budget = Budget::with_cancellation_token(
++                    Limits {
++                        analysis_steps: u64::MAX,
++                        elapsed_millis: u64::MAX,
++                        ..Limits::default()
++                    },
++                    integration_cancel_token,
++                );
++                let mut integration_cancel_walker = compound_walker!(integration_cancel_budget);
++                let before_integration_cancel_visited = integration_cancel_walker.visited.clone();
++                let before_integration_cancel_tail = integration_cancel_walker.unclosed_tail_at;
++                let before_integration_cancel_catches = integration_cancel_walker.catch_joins.clone();
++                let integration_cancel_stop = integration_cancel_walker
++                    .compound_statement_region(&proof, &[], root_branch_bci, &Frame::default())
++                    .expect_err("integration observes a pre-cancelled request");
++                assert_eq!(
++                    integration_cancel_stop,
++                    StopReason::Cancelled { at: Some(108) }
++                );
++                assert_eq!(root_branch_bci, 108);
++                assert_eq!(integration_cancel_walker.budget.usage().analysis_steps, 0);
++                assert_eq!(integration_cancel_walker.visited, before_integration_cancel_visited);
++                assert_eq!(integration_cancel_walker.unclosed_tail_at, before_integration_cancel_tail);
++                assert_eq!(integration_cancel_walker.catch_joins, before_integration_cancel_catches);
++                assert!(integration_cancel_walker.fragmented.is_none());
++
+                 let complete_proof_steps = proof_budget.usage().analysis_steps;
+                 let last_step_limit = complete_proof_steps.saturating_sub(1);
+                 let mut late_stop_budget = Budget::new(Limits {
+@@ -17920,17 +18119,17 @@
+                         join_node,
+                     )
+                     .expect_err("one fewer step refuses the fully scanned candidate atomically");
+-                assert!(matches!(
++                assert_eq!(
+                     stop,
+                     StopReason::Budget {
+                         dimension: CountedBudgetDimension::AnalysisSteps,
+                         written: 0,
+-                        limit,
+-                        at: Some(_),
+-                    } if limit == last_step_limit
+-                ));
+-                assert!(late_stop_walker.budget.usage().analysis_steps > 0);
+-                assert!(late_stop_walker.budget.usage().analysis_steps <= last_step_limit);
++                        limit: 119,
++                        at: Some(108),
++                    }
++                );
++                assert_eq!(last_step_limit, 119);
++                assert_eq!(late_stop_walker.budget.usage().analysis_steps, 116);
+                 assert_eq!(
+                     late_stop_walker.visited,
+                     BTreeSet::from([root_node, root_predecessor])
+@@ -17988,12 +18187,8 @@
+                         join_node,
+                     )
+                     .expect_err("the candidate proof observes cancellation before scanning");
+-                assert_eq!(
+-                    stop,
+-                    StopReason::Cancelled {
+-                        at: Some(root_branch_bci)
+-                    }
+-                );
++                assert_eq!(stop, StopReason::Cancelled { at: Some(108) });
++                assert_eq!(root_branch_bci, 108);
+                 assert_eq!(cancelled_walker.budget.usage().analysis_steps, 0);
+                 assert_eq!(
+                     cancelled_walker.visited,

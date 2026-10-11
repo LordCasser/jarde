@@ -1,0 +1,10 @@
+{
+  "purpose": "Private correction to the compound cycle-negative test: distinguish physical BCI 83 from raw/canonical block starts for the irreducible bytecode variant.",
+  "base_sha256": "e143ca7549f85ed6ee5d9e8ddcc08c319224c284ac5cdfb2805421e25d7e8db7",
+  "candidate_sha256": "65f6ef29dae25e4901a97b4d1b74d08b3c26856587817f5417a97de0930d512b",
+  "patch_sha256": "97517325b9c239f42c4028d32cb43a6ee2c83b26e9dae23054ced0fc4bde2a91",
+  "source_path": "crates/jarde-java/src/region.rs",
+  "live_source_sha256": "e143ca7549f85ed6ee5d9e8ddcc08c319224c284ac5cdfb2805421e25d7e8db7",
+  "toolchain_run": false,
+  "repo_modified": false
+}

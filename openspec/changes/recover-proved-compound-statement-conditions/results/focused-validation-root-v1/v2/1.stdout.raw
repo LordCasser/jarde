@@ -1,0 +1,28 @@
+
+running 17 tests
+test region::tests::a_fallback_names_the_code_and_the_place_it_could_not_prove ... ok
+test region::tests::cf02_tail_requires_both_distinct_normal_predecessors ... ok
+test region::tests::cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir ... ok
+test region::tests::cf12_ft2_switch_join_stays_outside_cases_and_straight_tail_is_claimed_once ... ok
+test region::tests::cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants ... ok
+test region::tests::intermediate_join_requires_one_new_claim_per_tail_block ... ok
+test region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners ... ok
+test region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope ... ok
+test region::tests::range_end_transfer_rejects_competing_entries_and_exits ... ok
+test region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join ... FAILED
+test region::tests::real_inner_loop_cycle_refuses_switch_certificate ... ok
+test region::tests::real_legacy_clone_target_with_different_path_refuses_switch_certificate ... ok
+test region::tests::real_multiple_exit_class_refuses_conditional_switch_certificate ... ok
+test region::tests::real_nonadjacent_class_proves_one_map_entry ... ok
+test region::tests::real_switch2_direct_target_join_proves_candidate_witnesses ... FAILED
+test region::tests::shared_tail_needs_one_comparable_first_common_block ... ok
+test region::tests::terminal_case_unknown_terminal_fact_refuses_certificate ... ok
+
+failures:
+
+failures:
+    region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join
+    region::tests::real_switch2_direct_target_join_proves_candidate_witnesses
+
+test result: FAILED. 15 passed; 2 failed; 0 ignored; 0 measured; 330 filtered out; finished in 0.02s
+

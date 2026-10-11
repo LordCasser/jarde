@@ -1,0 +1,8 @@
+{
+  "status": "corrected-minimal-clone-fields-and-reapplied-diagnostic",
+  "region_before": "26e3646f032894135e44306db7ebcd00fa7d56b28ff4062a4fbfcfb7fb788766",
+  "build_before": "34c8d100ba8dcae10b0c1561874ca082312ab49a0f6c3662cb2357d3da1d586d",
+  "region_applied": "291f0fb0fa4f1292cef13f128cb1ac84d8046ddd14064a702475f659bdc0ffc6",
+  "build_applied": "d98b5b8e41c8b5cd677daecfa024e17956df4b6d57ff9e1840a86d65b5d04d57",
+  "old_candidate_rejected": "v3 appended duplicate test despite one-line claim"
+}

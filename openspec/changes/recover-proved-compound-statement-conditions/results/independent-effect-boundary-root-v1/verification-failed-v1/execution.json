@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-compound-negative-verifier-luna-v3/verify.py"
+  ],
+  "exit_code": 1,
+  "verifier_sha256": "41041fdd4341ea5f378c9f5f5786fd0997e1817c2d85d818ab683240d1e0eb53",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "12649d859384c075cd4d418990aee4369e8512cac854773f2aa589999fa881f8"
+}

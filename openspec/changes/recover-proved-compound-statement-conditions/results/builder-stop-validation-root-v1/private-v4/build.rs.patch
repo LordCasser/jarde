@@ -1,0 +1,77 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -36908,6 +36908,7 @@
+                     owned.contains(at),
+                     "stop BCI {at} belongs to the real compound region"
+                 );
++                assert_eq!(*at, 59, "the pinned final condition test owns this Stop");
+             }
+             other => panic!("expected the exact AnalysisSteps stop, got {other:?}"),
+         }
+@@ -37070,7 +37071,7 @@
+                     "[compound-stop-test] proof_usage={proof_usage} root_bci={}",
+                     root.branch_bci
+                 );
+-                assert!(proof_usage > 1);
++                assert_eq!(proof_usage, 52, "pin the measured compound preflight cost");
+                 assert_eq!(
+                     compound_trial_state(&high),
+                     before,
+@@ -37078,6 +37079,7 @@
+                 );
+ 
+                 let proof_limit = proof_usage - 1;
++                assert_eq!(proof_limit, 51);
+                 let mut proof_budget = compound_test_budget(proof_limit);
+                 let mut proof_setup = compound_test_budget(1 << 25);
+                 let mut proof_stop_builder = compound_test_builder(
+@@ -37121,7 +37123,8 @@
+                 );
+                 assert_eq!(
+                     proof_stop_builder.budget.usage().analysis_steps,
+-                    proof_limit
++                    51,
++                    "the failed proof charge retains the exact admitted usage"
+                 );
+                 assert_eq!(compound_trial_state(&proof_stop_builder), before);
+ 
+@@ -37172,10 +37175,8 @@
+                     "[compound-stop-test] emission_prepared_usage={prepared_usage} emission_total_usage={total_usage} root_bci={}",
+                     root.branch_bci
+                 );
+-                assert!(
+-                    total_usage > prepared_usage,
+-                    "the emitter consumes analysis steps"
+-                );
++                assert_eq!(prepared_usage, 52, "preflight cost matches its independent pin");
++                assert_eq!(total_usage, 68, "pin the measured CompoundIf emission cost");
+                 let emitted = &emission.stmts[emitted_start..];
+                 assert!(
+                     emitted
+@@ -37188,6 +37189,7 @@
+                     "high-budget structured output has no fallback"
+                 );
+                 let emission_limit = total_usage - 1;
++                assert_eq!(emission_limit, 67);
+ 
+                 let mut stopped_emission_budget = compound_test_budget(emission_limit);
+                 let mut stopped_emission_setup = compound_test_budget(1 << 25);
+@@ -37239,7 +37241,8 @@
+                 );
+                 assert_eq!(
+                     stopped_emission.budget.usage().analysis_steps,
+-                    emission_limit
++                    67,
++                    "the failed emission charge retains the exact admitted usage"
+                 );
+                 assert_eq!(compound_trial_state(&stopped_emission), before);
+ 
+@@ -37284,6 +37287,8 @@
+                     });
+                 cancelled.compound_conditions_ready.insert(root.branch_bci);
+                 let before = compound_trial_state(&cancelled);
++                // Cancel after prepare has completed and immediately before entering region();
++                // this is not an asynchronous cancellation injected during emitter work.
+                 let token = cancelled.budget.cancellation_token();
+                 token.cancel();
+                 let stop = cancelled

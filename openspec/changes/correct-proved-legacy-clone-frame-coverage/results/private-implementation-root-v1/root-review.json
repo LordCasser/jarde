@@ -1,0 +1,19 @@
+{
+  "base_sha256": "3770e6f0bb295c361d9855545c30a93f33986dcaed626506a97b584c4c26558e",
+  "candidate_v3_sha256": "b1204295a7deddc75832b58003f08bc9d5470341ab1b3efaf7ee2573ee57c31a",
+  "patch_v3_sha256": "ed113cbc693e9117188ef7127d6a56b42be72a65809b4438dfe218ed02a7895b",
+  "status": "reviewed_and_applied_pending_execution",
+  "rejected_v1": [
+    "assemble lint attribute",
+    "Norm Debug compile",
+    "invalid internal block identity",
+    "uncharged path comparisons",
+    "ordinary root walk copying",
+    "coverage cancellation seam"
+  ],
+  "rejected_v2": [
+    "dead seed instruction gap",
+    "handler clone path expectation"
+  ],
+  "actual_patch_bytes_reconstructed": true
+}

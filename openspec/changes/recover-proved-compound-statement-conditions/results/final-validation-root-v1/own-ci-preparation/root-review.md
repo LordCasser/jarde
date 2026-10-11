@@ -1,0 +1,1 @@
+Private只读清单不是CI验收记录。Root读取实际v1/v2：v1误识别新增nested为旧init test，v2已更正。CI关键名还须加入region::tests::real_legacy_clone_compound_root_refuses_uncloned_join_path_without_state_leaks和实际FT2/共享return精确Stop core测试；以当前Rust函数与fresh workspace raw实际结果为准。最终CI需exact产品commit与Git/live源输入绑定、四jobs/52steps/双seed完整359目标，不预填新总数。

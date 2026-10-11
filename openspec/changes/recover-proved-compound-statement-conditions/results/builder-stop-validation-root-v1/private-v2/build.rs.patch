@@ -1,0 +1,121 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -36953,6 +36953,7 @@
+                     unreachable!()
+                 };
+                 let root = tests.first().expect("the recovered condition has a root");
++                let test_path: RegionPath = Vec::new();
+                 let owned: BTreeSet<u32> = compound
+                     .blocks()
+                     .into_iter()
+@@ -37043,8 +37044,19 @@
+                 seed_compound_trial(&mut high, root.branch_bci, &owned);
+                 let before = compound_trial_state(&high);
+                 high.prepare_compound_condition(prefix, tests, condition, root.branch_bci)
+-                    .expect("the actual compound preflight succeeds at high budget");
++                    .unwrap_or_else(|failure| match failure {
++                        ValueRenderFailure::Refusal(reason) => {
++                            panic!("the actual compound preflight refused: {reason}")
++                        }
++                        ValueRenderFailure::Stop(stop) => {
++                            panic!("the actual compound preflight stopped: {stop:?}")
++                        }
++                    });
+                 let proof_usage = high.budget.usage().analysis_steps;
++                eprintln!(
++                    "[compound-stop-test] proof_usage={proof_usage} root_bci={}",
++                    root.branch_bci
++                );
+                 assert!(proof_usage > 1);
+                 assert_eq!(
+                     compound_trial_state(&high),
+@@ -37090,6 +37102,10 @@
+                     }
+                 };
+                 assert_compound_budget_stop(&stop, proof_limit, &owned);
++                eprintln!(
++                    "[compound-stop-test] proof_stop_usage={} stop={stop:?}",
++                    proof_stop_builder.budget.usage().analysis_steps
++                );
+                 assert_eq!(
+                     proof_stop_builder.budget.usage().analysis_steps,
+                     proof_limit
+@@ -37124,13 +37140,24 @@
+                 seed_compound_trial(&mut emission, root.branch_bci, &owned);
+                 emission
+                     .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
+-                    .expect("emission preflight succeeds");
++                    .unwrap_or_else(|failure| match failure {
++                        ValueRenderFailure::Refusal(reason) => {
++                            panic!("emission preflight refused: {reason}")
++                        }
++                        ValueRenderFailure::Stop(stop) => {
++                            panic!("emission preflight stopped: {stop:?}")
++                        }
++                    });
+                 emission.compound_conditions_ready.insert(root.branch_bci);
+                 let prepared_usage = emission.budget.usage().analysis_steps;
+                 emission
+-                    .region(&compound, &[])
++                    .region(&compound, &test_path)
+                     .expect("the actual compound emitter completes at high budget");
+                 let total_usage = emission.budget.usage().analysis_steps;
++                eprintln!(
++                    "[compound-stop-test] emission_prepared_usage={prepared_usage} emission_total_usage={total_usage} root_bci={}",
++                    root.branch_bci
++                );
+                 assert!(
+                     total_usage > prepared_usage + 1,
+                     "the emitter consumes its own metered work"
+@@ -37165,15 +37192,26 @@
+                 seed_compound_trial(&mut stopped_emission, root.branch_bci, &owned);
+                 stopped_emission
+                     .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
+-                    .expect("emitter-stop trial completes its preflight first");
++                    .unwrap_or_else(|failure| match failure {
++                        ValueRenderFailure::Refusal(reason) => {
++                            panic!("emitter-stop preflight refused: {reason}")
++                        }
++                        ValueRenderFailure::Stop(stop) => {
++                            panic!("emitter-stop preflight stopped: {stop:?}")
++                        }
++                    });
+                 stopped_emission
+                     .compound_conditions_ready
+                     .insert(root.branch_bci);
+                 let before = compound_trial_state(&stopped_emission);
+                 let stop = stopped_emission
+-                    .region(&compound, &[])
++                    .region(&compound, &test_path)
+                     .expect_err("usage minus one stops inside compound emission");
+                 assert_compound_budget_stop(&stop, emission_limit, &owned);
++                eprintln!(
++                    "[compound-stop-test] emission_stop_usage={} stop={stop:?}",
++                    stopped_emission.budget.usage().analysis_steps
++                );
+                 assert_eq!(
+                     stopped_emission.budget.usage().analysis_steps,
+                     emission_limit
+@@ -37211,13 +37249,20 @@
+                 seed_compound_trial(&mut cancelled, root.branch_bci, &owned);
+                 cancelled
+                     .prepare_compound_condition(prefix, tests, condition, root.branch_bci)
+-                    .expect("cancel trial preflight completes before cancellation");
++                    .unwrap_or_else(|failure| match failure {
++                        ValueRenderFailure::Refusal(reason) => {
++                            panic!("cancel trial preflight refused: {reason}")
++                        }
++                        ValueRenderFailure::Stop(stop) => {
++                            panic!("cancel trial preflight stopped: {stop:?}")
++                        }
++                    });
+                 cancelled.compound_conditions_ready.insert(root.branch_bci);
+                 let before = compound_trial_state(&cancelled);
+                 let token = cancelled.budget.cancellation_token();
+                 token.cancel();
+                 let stop = cancelled
+-                    .region(&compound, &[])
++                    .region(&compound, &test_path)
+                     .expect_err("the real emitter polls the cancelled request");
+                 assert!(
+                     matches!(stop, StopReason::Cancelled { at: Some(at) } if owned.contains(&at))

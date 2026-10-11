@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/private/tmp/jarde-compound-negative-render-luna-v2/verify.py",
+    "--cli",
+    "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+    "--sha256",
+    "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+    "--build",
+    "/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json",
+    "--out",
+    "/private/tmp/jarde-compound-negative-render-final-cli-v2"
+  ],
+  "exit_code": 1,
+  "scope": "read-only verifier; no target method invocation",
+  "failure": "collector omits redundant per-fixture expected_owner; top-level frozen table exists"
+}

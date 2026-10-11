@@ -1,0 +1,17 @@
+
+running 6 tests
+test cf12_conditional_switch_keeps_exact_case_and_exit_sources ... ok
+test cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins ... ok
+test cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact ... ok
+test cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact ... ok
+test compound_float_condition_preserves_nan_sensitive_comparison_origins ... FAILED
+test compound_statement_conditions_have_exact_physical_origins ... FAILED
+
+failures:
+
+failures:
+    compound_float_condition_preserves_nan_sensitive_comparison_origins
+    compound_statement_conditions_have_exact_physical_origins
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

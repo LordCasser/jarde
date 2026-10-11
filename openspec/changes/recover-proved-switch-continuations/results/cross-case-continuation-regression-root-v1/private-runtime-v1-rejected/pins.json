@@ -1,0 +1,117 @@
+{
+  "schema": "candidate-continuation-replay-review-pins-v1",
+  "inputs": {
+    "candidate_fixture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class",
+      "bytes": 255,
+      "sha256": "9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238"
+    },
+    "original_join_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/fixtures/cross-case/Join.class",
+      "bytes": 726,
+      "sha256": "bec9b2bbbbb1b0ec2af20f125368bfd66b855efa4d188bac3d735d99cbfcf6c0"
+    },
+    "generation": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/generation.json",
+      "bytes": 5729,
+      "sha256": "f956f5b2649201a1f61d1e49806c6afbf653868c3cbccb000316cfc1d9793a5f"
+    },
+    "physical_javap": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/1.stdout.raw",
+      "bytes": 2014,
+      "sha256": "37f039fe831d63981da1bf9dee369582a86d87e0653001eb5803a5046545407a"
+    },
+    "large_join_fallback_raw": {
+      "path": "/private/tmp/jarde-cross-case-continuation-diagnosis-root-v1/1.stdout.raw",
+      "bytes": 78965,
+      "sha256": "c58ae7e7ab27ac53d2826e17c9e36a8c16f567ccb9c3790c25046cc831f1132a"
+    },
+    "jdk_manifest": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    "jadx": {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    "build_evidence": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py",
+      "bytes": 8233,
+      "sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3"
+    },
+    "build_runner": {
+      "path": "/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py",
+      "bytes": 10982,
+      "sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93"
+    },
+    "resource_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "target_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    }
+  },
+  "artifacts": {
+    "collect.py": {
+      "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v1/collect.py",
+      "bytes": 10941,
+      "sha256": "341ae9eb56c739c8e3116bbec6f194eaef933bdf1b0c31fbac23cde219089033"
+    },
+    "verify.py": {
+      "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v1/verify.py",
+      "bytes": 21282,
+      "sha256": "94098b8b58ad6a76060726795978549050be89a6d3a48986ef8452a4d1f8677c"
+    },
+    "FINAL.md": {
+      "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v1/FINAL.md",
+      "bytes": 3347,
+      "sha256": "7da038a6be2ab1d381191c0f9a697ed5a554a4893e130ffbc7833deb572c2215"
+    },
+    "adapter-delta.md": {
+      "path": "/private/tmp/jarde-candidate-continuation-replay-luna-v1/adapter-delta.md",
+      "bytes": 1056,
+      "sha256": "e9149d5adb06d19c4e0b50c92f86125bea2211a02cc10be9f68c960cbd1773cf"
+    }
+  },
+  "expected": {
+    "candidate_class": "CandidateContinuation",
+    "candidate_sha256": "9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238",
+    "candidate_bytes": 255,
+    "oracle_class": "Join",
+    "oracle_sha256": "bec9b2bbbbb1b0ec2af20f125368bfd66b855efa4d188bac3d735d99cbfcf6c0",
+    "large_join_members": 7,
+    "large_join_fallbacks": [
+      "deepCatch",
+      "pick"
+    ],
+    "candidate_methods": 2,
+    "mixed_exits_code_bytes": 42,
+    "mixed_exits_code_sha256": "d8428ee78a6b587fcba9f412f119e33302f903019ac6bb8486269b5087363736",
+    "mixed_exits_target_bcis": [
+      0,
+      1,
+      2,
+      3,
+      28,
+      30,
+      31,
+      34,
+      36,
+      37,
+      39,
+      40,
+      41
+    ],
+    "old_goto": 9,
+    "new_goto": 6,
+    "commands": 19,
+    "runtime_legs": 8,
+    "expected_runtime": "MIN=30\\n-3=30\\n-1=30\\n0=30\\n1=30\\n2=20\\n3=30\\n4=30\\nMAX=30\\n"
+  }
+}

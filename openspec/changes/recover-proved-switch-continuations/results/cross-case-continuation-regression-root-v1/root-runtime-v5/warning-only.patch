@@ -1,0 +1,12 @@
+--- 
++++ 
+@@ -173,7 +173,8 @@
+  for i,row in enumerate(rec['commands']):
+   require(row.get('guard_stop') is None and row.get('exit_code')==0,'guard/command failure at '+str(i))
+   raw=raw_for(out,row,i)
+-  require(raw['stderr']==b'','stderr was not empty at '+str(i))
++  expected_stderr=b'warning: [options] source value 8 is obsolete and will be removed in a future release\nwarning: [options] target value 8 is obsolete and will be removed in a future release\nwarning: [options] To suppress warnings about obsolete options, use -Xlint:-options.\n3 warnings\n' if i in (11,13,15,17) else b''
++  require(raw['stderr']==expected_stderr,'unexpected command stderr at '+str(i))
+  for p,label in [('default','default'),('all','all')]:
+   meta=rec.get('apis',{}).get(p,{})
+   api=json.loads(Path(meta['api_json']['path']).read_text(encoding='utf-8'))

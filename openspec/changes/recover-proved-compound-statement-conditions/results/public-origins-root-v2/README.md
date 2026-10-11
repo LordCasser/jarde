@@ -1,0 +1,1 @@
+Root actual public test run: compilation failed E0308 at helper direct_of_bci (u16 supplied; API u32). No tests ran. Guard not tripped; cargo clean completed and target absent. Production unchanged in this run. Private v3 candidate was FINAL-frozen before application. This is failure evidence, not product acceptance.

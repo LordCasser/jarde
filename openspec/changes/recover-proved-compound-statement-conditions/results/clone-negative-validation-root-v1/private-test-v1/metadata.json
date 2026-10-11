@@ -1,0 +1,33 @@
+{
+  "schema": "compound-clone-reader-proof-test-private-v1",
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "base_sha256": "e143ca7549f85ed6ee5d9e8ddcc08c319224c284ac5cdfb2805421e25d7e8db7",
+  "candidate_path": "/private/tmp/jarde-compound-region-clone-test-luna-v1/region.rs.candidate",
+  "candidate_sha256": "bc5cf2c2fae2659abb54246af1b93a99d3ee74f04548ee9521610b08ee31205e",
+  "patch_sha256": "d172896663ded2d4da084b418202ef2209105188292c074e1a82ba66f656479b",
+  "fixture_repo_path": "openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class",
+  "fixture_sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525",
+  "fixture_private_copy": "/private/tmp/jarde-compound-region-clone-test-luna-v1/openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class",
+  "fixture_bytes": 2662,
+  "expected_reader_ids": {
+    "clone_root_block_bci": 8,
+    "comparison_instruction_bci": 11,
+    "clone_path": [
+      0
+    ],
+    "sibling_clone_path": [
+      3
+    ],
+    "caller_join_bci": 3,
+    "caller_join_path": [],
+    "call0_return_instruction_bci": 35
+  },
+  "validation": [
+    "source pin matched before editing",
+    "fixture repository copy matches pinned SHA",
+    "diff adds exactly one test before the tests module closing brace; no existing source hunk is changed",
+    "fixture instruction sequence pinned explicitly; root search does not panic on unrelated path-[0] blocks",
+    "no Cargo/JDK/Git/formatter executed",
+    "not compiled or executed"
+  ]
+}

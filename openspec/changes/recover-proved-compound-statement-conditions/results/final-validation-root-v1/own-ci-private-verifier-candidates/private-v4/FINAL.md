@@ -1,0 +1,7 @@
+# Current-product own-CI acceptance adapter v4
+
+v4 resolves every required test source through the supplied current Cargo metadata. Exact target source paths map directly; crate-internal Rust files map to the unique deepest containing library package directory. This correctly maps `tests/p3_reference_slot_lifetimes.rs` to `jarde / p3_reference_slot_lifetimes / test` and both `tests/p3_switch_forward_join.rs` cases to `jarde / p3_switch_forward_join / test`. The JVM lib, Java lib, and public integration target mappings were also checked from the same metadata. During preparation, all 25 `NEW_REQUIRED` source/name pairs were found in their mapped current source files. The reused v5 prior required-test list contains no stale NullThenBuilder test name.
+
+All v3 acceptance requirements remain: explicit `--workspace`, refusal of failed root-v3 evidence, pinned complete 95-batch runner, passed/no-carry/full 359-target local baseline, Git/live binding for all local and CLI production pins, and the exact two-seed 4-job/52-step CI comparison with unchanged raw logs and unique same-status masked-label mappings.
+
+Use the v3 FINAL invocation with this v4 verifier path and pass the actual fresh full-workspace directory. Commit, run ID, workspace evidence, and acceptance results remain runtime inputs. Preparation used only read-only metadata/source checks and AST parsing; no Git or toolchain commands ran.

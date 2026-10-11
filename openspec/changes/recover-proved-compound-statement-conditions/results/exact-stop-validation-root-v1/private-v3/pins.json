@@ -1,0 +1,14 @@
+{
+  "source_pins": {
+    "region.rs.base": "26e3646f032894135e44306db7ebcd00fa7d56b28ff4062a4fbfcfb7fb788766",
+    "region.rs.candidate": "73f1e39f30ba4153a2a64db67e5770814174b0698976dc3ee0f4b6f25179e206",
+    "region.rs.patch": "5575c244d96ba61b8b9e82e377a7056472cf508f3c6801237153c0715efafb3a",
+    "build.rs.base": "34c8d100ba8dcae10b0c1561874ca082312ab49a0f6c3662cb2357d3da1d586d",
+    "build.rs.candidate": "2586f9eaa09c06056bc8c565ed6bd00c18c35ad6ddb28970ef3d6e0ee2fa5bef",
+    "build.rs.patch": "6b4693e04450384b2c92f5e2860d8fdeaeb35fafcb2c115f769bccbc55be9782"
+  },
+  "diagnostic_prints_added": false,
+  "production_logic_changed": false,
+  "toolchain_run": false,
+  "repo_modified": false
+}

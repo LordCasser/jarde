@@ -1,0 +1,162 @@
+--- openspec/changes/recover-proved-switch-continuations/results/candidate-full-class-root-v1/independent-verifier-root-v7.py
++++ /private/tmp/jarde-cf12-compound-verifier-luna-v8/independent-verifier-luna-v8.py
+@@ -387,6 +387,80 @@
+     need(sorted(parsed,key=lambda x:x['path'])==recorded, 'execution digest observations differ from pinned oracle stdout')
+     return manifest, by_path
+ 
++
++COMPOUND_BUILD_SCHEMA = 'compound-condition-focused-and-cli-root-v2'
++COMPOUND_BUILD_PATH = Path('/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/execution.json').resolve()
++REPO_ROOT = Path('/Users/lordcasser/workspace/projects/jarde').resolve()
++COMPOUND_SOURCE_PINS = {
++    'Cargo.lock', 'Cargo.toml',
++    'crates/jarde-cli/Cargo.toml', 'crates/jarde-cli/src/main.rs', 'crates/jarde-cli/src/task.rs',
++    'crates/jarde-java/Cargo.toml', 'crates/jarde-java/src/build.rs', 'crates/jarde-java/src/emit.rs',
++    'crates/jarde-java/src/lib.rs', 'crates/jarde-java/src/region.rs', 'crates/jarde-java/src/report.rs',
++    'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs',
++    'crates/jarde-jvm/Cargo.toml', 'crates/jarde-query/Cargo.toml', 'crates/jarde-reader/Cargo.toml',
++    'openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class',
++    'src/class_source.rs', 'src/facade.rs', 'src/lib.rs',
++}
++
++
++def verify_candidate_build(path, replay_cli):
++    build_path = Path(path).resolve()
++    need(build_path == COMPOUND_BUILD_PATH, 'candidate build record is not the frozen compound CLI build execution')
++    build_sha = sha_bytes(build_path.read_bytes())
++    build = json.loads(build_path.read_text())
++    need(build.get('schema') == COMPOUND_BUILD_SCHEMA, 'unsupported compound candidate build schema')
++    need(build.get('status') == 'candidate-cli-built', 'compound candidate CLI build did not complete')
++    need(build.get('cli_is_unaccepted_candidate') is True, 'compound build does not identify its CLI as unaccepted')
++    cli = build.get('cli')
++    need(isinstance(cli, dict) and set(cli) == {'path', 'bytes', 'sha256', 'mode'},
++         'compound candidate CLI pin malformed')
++    verify_pin(cli)
++    need(cli['mode'] == 0o555 and (Path(cli['path']).stat().st_mode & 0o777) == 0o555,
++         'compound candidate CLI must be pinned executable mode 0555')
++    need({k: replay_cli.get(k) for k in ('path', 'bytes', 'sha256')} ==
++         {k: cli.get(k) for k in ('path', 'bytes', 'sha256')},
++         'full-class replay CLI does not match the separately pinned compound candidate build')
++
++    before, after = build.get('product_pins_before'), build.get('product_pins_after')
++    need(isinstance(before, dict) and isinstance(after, dict), 'compound product source pin maps missing')
++    need(set(before) == COMPOUND_SOURCE_PINS and set(after) == COMPOUND_SOURCE_PINS and len(before) == 19,
++         'compound candidate build must contain the exact 19-file product/source pin set')
++    need(before == after, 'compound product/source pins changed during candidate build')
++    for rel in sorted(COMPOUND_SOURCE_PINS):
++        target = (REPO_ROOT / rel).resolve()
++        need(target.is_relative_to(REPO_ROOT), f'compound source pin escapes repository: {rel}')
++        actual = sha_bytes(target.read_bytes())
++        need(actual == before[rel], f'compound source pin differs from live file: {rel}')
++
++    commands = build.get('commands')
++    need(isinstance(commands, list) and len(commands) == 5, 'compound build command envelope must contain five commands')
++    expected_argv = [
++        ['cargo', 'fmt', '--all', '--', '--check'],
++        ['cargo', 'test', '-p', 'jarde-java', '--lib', '--locked', 'region::tests::', '--', '--nocapture'],
++        ['cargo', 'test', '-p', 'jarde-java', '--test', 'p3_conditional_switch_fallthrough', '--locked', '--', '--nocapture'],
++        ['cargo', 'build', '-p', 'jarde-cli', '--locked'],
++        ['cargo', 'clean'],
++    ]
++    for i, (cmd, argv) in enumerate(zip(commands, expected_argv)):
++        need(cmd.get('index') == i and cmd.get('argv') == argv,
++             f'compound build command {i} argv/index differs from frozen successful build')
++        need(Path(cmd.get('cwd', '')).resolve() == REPO_ROOT, f'compound build command {i} cwd differs from repository')
++        need(cmd.get('exit_code') == 0 and cmd.get('guard_stop') is None,
++             f'compound build command {i} did not finish successfully without a guard stop')
++        raw_for(cmd)
++    need(build.get('target_absent_after_clean') is True,
++         'compound candidate build did not record target absence after cargo clean')
++    # Require the test counts from the pinned raw streams, not just runner summary fields.
++    for index, count in ((1, 17), (2, 6)):
++        raw = raw_for(commands[index])
++        stdout = re.sub(r'\x1b\[[0-9;]*m', '', raw['stdout'].decode('utf-8', errors='strict'))
++        summary = re.findall(r'^test result: ok\. (\d+) passed; 0 failed; 0 ignored; 0 measured; \d+ filtered out; finished in [^\n]+$',
++                             stdout, flags=re.MULTILINE)
++        need(summary == [str(count)], f'compound build command {index} raw test summary is not exactly {count}/0')
++    return {'path': str(build_path), 'sha256': build_sha, 'cli': cli,
++            'product_source_pin_count': 19, 'successful_command_count': 5,
++            'region_test_count': 17, 'public_test_count': 6, 'target_absent_after_clean': True}
++
+ def baseline_rows():
+     pins = [
+       {'path': '/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/execution.json',
+@@ -527,6 +601,7 @@
+     ap = argparse.ArgumentParser()
+     ap.add_argument('--execution', required=True, type=Path)
+     ap.add_argument('--class-digests', required=True, type=Path)
++    ap.add_argument('--candidate-build', required=True, type=Path)
+     args = ap.parse_args()
+     execution_path = args.execution.resolve()
+     execution = json.loads(execution_path.read_text())
+@@ -536,6 +611,7 @@
+     need(execution.get('status') == 'observed_pending_root_independent_acceptance', 'execution status is not observed/pending')
+     verify_pin(execution['cli'])
+     need(execution.get('cli_mode') == 0o555 and (Path(execution['cli']['path']).stat().st_mode & 0o777) == 0o555, 'CLI mode pin mismatch')
++    candidate_build = verify_candidate_build(args.candidate_build, execution['cli'])
+     workspace_envelope=verify_workspace_envelope(execution,plan)
+     fixture_rows = execution.get('fixtures', [])
+     need(len(plan['fixtures']) == 10 and len(fixture_rows) == 10, 'need ten planned and observed fixture rows')
+@@ -543,7 +619,9 @@
+     digest_manifest_sha=sha_bytes(args.class_digests.read_bytes())
+     digest_manifest, digests = read_class_digest_manifest(args.class_digests.resolve(), fixture_rows)
+     need(execution.get('plan')==plan_pin(PLAN),'replay top-level plan pin differs from pinned plan')
+-    need(digest_manifest['cli']==execution['cli'],'replay CLI differs from CLI pinned in root build/digest execution')
++    # The class digests are historical oracle evidence from a separate CLI build.
++    # Their CLI pin remains verified by read_class_digest_manifest, but is deliberately
++    # not equated with the newly built compound candidate CLI.
+     need(digest_manifest.get('cli_is_unaccepted_candidate') is True,'digest source does not identify candidate CLI as unaccepted')
+     fixtures = {f['fixture']: f for f in fixture_rows}
+     need(len(fixtures) == 10 and set(fixtures) == {f['fixture'] for f in plan['fixtures']}, 'fixture set differs from fixed plan')
+@@ -825,8 +903,21 @@
+                 if target_origins[name][f'{jdk}/{side_name}']['state']!='verified_against_actual_javap':
+                     return False
+         return True
++    need(len(observed['default_all_api_comparisons']) == 20 and
++         all(row.get('equal') is True and not row.get('missing_default') and not row.get('missing_all')
++             for row in observed['default_all_api_comparisons']),
++         'default/all identity, text, and source-map comparisons must all be present and equal across 20 profiles')
+     ft2_positive=positive('TestSwitchWithFallThroughCase2')
+     switch2_restored=positive('TestSwitch2')
++    need(ft2_positive, 'FT2 control did not compile/run identically and verify all physical origins')
++    need(switch2_restored, 'Switch2 did not compile/run identically and verify all physical origins')
++    for fixture, expected_count in (('TestSwitch2', 78), ('TestSwitchWithFallThroughCase2', 90)):
++        need(set(target_origins[fixture]) == {f'{jdk}/{side}' for jdk in JDKS for side in ('jarde-default','jarde-all')},
++             f'{fixture}: missing JDK/default/all physical-origin profile')
++        for key, origin in target_origins[fixture].items():
++            need(origin.get('state') == 'verified_against_actual_javap' and
++                 origin.get('javap_instruction_count') == expected_count,
++                 f'{fixture}/{key}: complete physical BCI set must equal the {expected_count}-instruction javap method')
+     profile_summary={}
+     for fname, fprofiles in details.items():
+         profile_summary[fname]={}
+@@ -835,7 +926,9 @@
+             for side_name, side in profile['sides'].items():
+                 profile_summary[fname][jdk]['sides'][side_name]={k:v for k,v in side.items() if k!='docs'}
+     need(sha_bytes(args.class_digests.read_bytes())==digest_manifest_sha,'class digest manifest changed during verification')
+-    report={'schema':'cf12-ten-fixture-independent-verifier-luna-v3',
++    need(verify_candidate_build(args.candidate_build, execution['cli']) == candidate_build,
++         'compound candidate build/source pins changed during verification')
++    report={'schema':'cf12-ten-fixture-compound-independent-verifier-luna-v8',
+       'execution':str(execution_path),'execution_sha256':sha_bytes(execution_path.read_bytes()),
+       'status':'observed_pending_root_independent_acceptance','cf12_complete':False,
+       'complete_milestone':bool(ft2_positive and switch2_restored),
+@@ -843,7 +936,8 @@
+       'observation_envelope':observed,'profile_observations':profile_summary,'target_source_origins':target_origins,
+       'workspace_pin_envelope':workspace_envelope,
+       'class_digest_manifest':{'path':str(args.class_digests.resolve()),'sha256':digest_manifest_sha,
+-                               'oracle_provenance':{k:digest_manifest[k] for k in ('oracle_source','oracle_blake3_library','oracle_binary','plan','runner','guard','scanner')},'oracle_library_state':digest_manifest['oracle_library_verification_state']},
++                               'oracle_provenance':{k:digest_manifest[k] for k in ('oracle_source','oracle_blake3_library','oracle_binary','cli','plan','runner','guard','scanner')},'oracle_library_state':digest_manifest['oracle_library_verification_state']},
++      'compound_candidate_build':candidate_build,
+       'fixed_baseline_pins':baseline_pins,
+       'baseline_scope':'historical command raw streams are rehashed; historical source_files provide only recorded SHA-256 values (no source byte/length pins), so comparisons cover recorded source hashes and outcomes only',
+       'failure_counts':{
+@@ -857,7 +951,7 @@
+         'runtime_guard_stopped':sum(v['state']=='guard_stopped' for v in observed['runtime_states'].values()),
+         'runtime_skipped':sum(v['state']=='skipped' for v in observed['runtime_states'].values()),
+         'class_set_different':len(observed['class_set_differences'])},
+-      'note':'All outcomes are observed facts. A false milestone records incomplete recovery; it is not a verifier error.'}
++      'note':'Acceptance requires a pinned compound candidate build, all 20 default/all comparisons, and positive Switch2 plus FT2 physical-origin/runtime controls. Environment failures remain classified from their raw streams.'}
+     print(json.dumps(report,ensure_ascii=False,indent=2))
+ 
+ if __name__ == '__main__':

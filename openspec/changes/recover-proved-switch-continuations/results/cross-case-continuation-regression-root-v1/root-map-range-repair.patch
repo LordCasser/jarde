@@ -1,0 +1,25 @@
+--- before-v2.rs
++++ after-root-range-repair.rs
+@@ -178,14 +178,15 @@
+             segments
+         );
+     }
+-    for (bci, expected) in [(37, "local1 = 30;"), (40, "return local1;")] {
++    for (bci, statement) in [(37, "local1 = 30;"), (40, "return local1;")] {
++        let start = body.text.find(statement).expect("the tail statement exists");
++        let end = start + statement.len();
++        let segments = body.source_map.of_bci(bci);
+         assert!(
+-            body.source_map
+-                .text_of_bci(&body.text, bci)
+-                .iter()
+-                .any(|piece| piece.contains(expected)),
+-            "BCI {bci} maps to {expected}: {:?}",
+-            body.source_map.text_of_bci(&body.text, bci)
++            segments.iter().any(|segment| {
++                segment.start() >= start && segment.start() < segment.end() && segment.end() <= end
++            }),
++            "BCI {bci} maps inside the tail `{statement}` at {start}..{end}: {segments:?}"
+         );
+     }
+ }

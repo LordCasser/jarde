@@ -1,0 +1,164 @@
+{
+  "schema": "switch-continuation-candidate-cli-build-root-v1",
+  "status": "failed",
+  "runner": {
+    "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1.py",
+    "bytes": 4725,
+    "sha256": "aede7db3e7b2fbfa249dc5a5a3715e44b858645d4a99503813417863d1c2b5c5"
+  },
+  "guard": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "bytes": 23507,
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "scanner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "bytes": 471,
+    "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+  },
+  "product_source_pins": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "768735cd1cf5d7694d2a1d7b28030475b0bc0864e1d18d9a6350e12c999b1de1",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "34dcf89ccee47c33e0b6e08089ae53567b30ce0f73b50e76b13aec1ddf040025",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+  },
+  "cli_is_unaccepted_candidate": true,
+  "plan": {
+    "path": "/private/tmp/jarde-cf12-ten-fixture-replay-plan-luna-v1.json",
+    "bytes": 127204,
+    "sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c"
+  },
+  "oracle_source": {
+    "path": "/private/tmp/jarde-switch-continuation-class-digest-root-v1.rs",
+    "bytes": 222,
+    "sha256": "7a94091433b09e1e4767e7311fd124ce6df7690f93ead100b7a96eefe4e28203"
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:18:44.056849+00:00",
+      "duration_seconds": 4.035610584018286,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 42624008192,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:18:48.092923+00:00",
+      "duration_seconds": 40.50826779199997,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 357699757,
+      "free_bytes_after": 42627780608,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1/1.stderr.raw",
+          "bytes": 2768,
+          "sha256": "94911e68cfe7366b337249945ca0fb42b33140f7566a07087523dfd7efb77f8a"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T01:19:28.604228+00:00",
+      "duration_seconds": 1.0156845840101596,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 357699757,
+      "free_bytes_after": 42858500096,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1/2.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-continuation-cli-build-root-v1/2.stderr.raw",
+          "bytes": 52,
+          "sha256": "d3d18d99e6f9e85fed3a4ea904caf38a8f874cf94b940c8746cbe98c925df8d7"
+        }
+      }
+    }
+  ],
+  "error": "AssertionError()",
+  "target_absent_after_clean": true
+}

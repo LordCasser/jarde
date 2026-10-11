@@ -639,6 +639,11 @@ impl Billing {
 // every physical write examined by its char proof and eligible null-leading
 // reference scans. No fixture, read, IR, source, disposition or delivery count moved.
 // The ignored recorder and old-arm raw observations are retained in that change.
+// 2026-10-11 compound condition and switch continuation scans: measured AnalysisSteps-only
+// deltas are +23 for each of the first five corpus shapes and +0 for deep-expression.
+// Both per-method arms add +115, the sum of those actual recorder observations.
+// All other counted dimensions and the normal full-report/text assertions are unchanged.
+// Recorder and failed old pins are retained in the compound change results.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -659,7 +664,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 17,
         ir_items: 2497,
-        analysis_steps: 1517,
+        analysis_steps: 1540,
         result_items: 37,
         output_bytes: 3657,
     };
@@ -683,7 +688,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 26,
         ir_items: 4322,
-        analysis_steps: 2341,
+        analysis_steps: 2364,
         result_items: 64,
         output_bytes: 5628,
     };
@@ -705,7 +710,7 @@ impl Billing {
         class_headers: 4,
         method_bodies: 12,
         ir_items: 2082,
-        analysis_steps: 1258,
+        analysis_steps: 1281,
         result_items: 43,
         output_bytes: 2638,
     };
@@ -789,7 +794,7 @@ impl Billing {
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
         ir_items: 21384,
-        analysis_steps: 11827,
+        analysis_steps: 11850,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -807,7 +812,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 12,
         ir_items: 2082,
-        analysis_steps: 1258,
+        analysis_steps: 1281,
         result_items: 35,
         output_bytes: 2638,
     };
@@ -874,7 +879,7 @@ impl Billing {
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
         ir_items: 35580,
-        analysis_steps: 19570,
+        analysis_steps: 19685,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -913,7 +918,7 @@ impl Billing {
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
         ir_items: 35580,
-        analysis_steps: 19570,
+        analysis_steps: 19685,
         result_items: 26,
         output_bytes: 39617,
     };

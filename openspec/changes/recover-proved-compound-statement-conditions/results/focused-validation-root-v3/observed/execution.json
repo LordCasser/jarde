@@ -1,0 +1,268 @@
+{
+  "schema": "compound-condition-focused-and-cli-root-v2",
+  "status": "candidate-cli-built",
+  "runner_sha256": "2a45a8e3457af244ae81a5bf5399d9f3bbbd5797360cb8c28bc0db86340cd205",
+  "product_pins_before": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "c55ac016b402fb54ef4f6072dc54ee7d55809ea3d067e1d46c5eb30136afe392",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "bab494a21724ed61213240fcc75362a68163e47370fbd60ccb07d3ab15f2c235",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+    "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": "d7445477041184c58a002b09fcf81b38e1c76df8906d619e1e871f1b62bf49de",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:48:46.564686+00:00",
+      "duration_seconds": 3.0166769589995965,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 37020307456,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "actual_test_summaries": []
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "region::tests::",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:48:49.585740+00:00",
+      "duration_seconds": 29.35064204101218,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 157552267,
+      "free_bytes_after": 36277317632,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/1.stdout.raw",
+          "bytes": 1618,
+          "sha256": "235c6a3ce8b4b63bfb14ee877522aae6a8a93243aee11e28edb9cd973f67df73"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/1.stderr.raw",
+          "bytes": 1940,
+          "sha256": "bae3ec90ce393c9e362101006b94d96b29cffc3b9c3ea2c3d108972c8589c340"
+        }
+      },
+      "actual_test_summaries": [
+        [
+          17,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_conditional_switch_fallthrough",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:49:18.941936+00:00",
+      "duration_seconds": 11.118705166998552,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 243759489,
+      "free_bytes_after": 36187906048,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/2.stdout.raw",
+          "bytes": 593,
+          "sha256": "7b269a92b09e5f2b143a38777db6f70fdd1a9db1d2d5fd82b25fbaa574a94f20"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/2.stderr.raw",
+          "bytes": 322,
+          "sha256": "9c45a3cf4d5192cf5bd72efdab9b4295411fc08f00d64e7606d04d11d8743397"
+        }
+      },
+      "actual_test_summaries": [
+        [
+          6,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:49:30.066622+00:00",
+      "duration_seconds": 32.37791250000009,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 547443935,
+      "free_bytes_after": 35508932608,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/3.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/3.stderr.raw",
+          "bytes": 1649,
+          "sha256": "9124e5a416db998be12443f43fabf2445fc0ae7916d566436529d6fb658d18f4"
+        }
+      },
+      "actual_test_summaries": []
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T02:50:02.506880+00:00",
+      "duration_seconds": 1.0149259169993456,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 547443935,
+      "free_bytes_after": 35931611136,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/4.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v1/4.stderr.raw",
+          "bytes": 52,
+          "sha256": "fec2de9741189f935d65a33a40fbd0d96c49f1a48e6f3993cb0dbe1946613f5e"
+        }
+      }
+    }
+  ],
+  "cli": {
+    "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v1",
+    "bytes": 60735600,
+    "sha256": "465282ec5c11111eb5a76fde3dfc052f058441a3c9776864c8706cf2f5d2cf87",
+    "mode": 365
+  },
+  "cli_is_unaccepted_candidate": true,
+  "target_absent_after_clean": true,
+  "product_pins_after": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "c55ac016b402fb54ef4f6072dc54ee7d55809ea3d067e1d46c5eb30136afe392",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "bab494a21724ed61213240fcc75362a68163e47370fbd60ccb07d3ab15f2c235",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+    "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": "d7445477041184c58a002b09fcf81b38e1c76df8906d619e1e871f1b62bf49de",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+  }
+}

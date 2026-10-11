@@ -1,0 +1,15 @@
+{
+  "status": "accepted_complete_local_workspace",
+  "commands": 95,
+  "targets": 359,
+  "totals": [
+    3444,
+    0,
+    97
+  ],
+  "source_pin_count": 4693,
+  "peak_target_bytes": 810918567,
+  "target_absent_after_clean": true,
+  "scope": "fresh complete local run and independent validator, not product CI",
+  "source_pins_unchanged": true
+}

@@ -1,0 +1,21 @@
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v1/inputs/Runner.java:25: 错误: 找不到符号
+                result = CompoundStatementConditions.test(a, b, c, d, trace);
+                         ^
+  符号:   变量 CompoundStatementConditions
+  位置: 类 Runner
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v1/inputs/Runner.java:27: 错误: 找不到符号
+                result = CompoundStatementConditions.testMixed(a, b, c, d, trace);
+                         ^
+  符号:   变量 CompoundStatementConditions
+  位置: 类 Runner
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v1/inputs/Runner.java:29: 错误: 找不到符号
+                result = CompoundStatementConditions.testThrowing(a, b, c, d, throwAt, trace);
+                         ^
+  符号:   变量 CompoundStatementConditions
+  位置: 类 Runner
+/private/tmp/jarde-compound-condition-old-candidate-runtime-root-v1/inputs/Runner.java:44: 错误: 找不到符号
+        String result = CompoundStatementConditions.testFloat(value, trace);
+                        ^
+  符号:   变量 CompoundStatementConditions
+  位置: 类 Runner
+4 个错误

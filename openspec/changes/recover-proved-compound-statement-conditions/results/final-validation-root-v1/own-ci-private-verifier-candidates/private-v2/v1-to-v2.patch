@@ -1,0 +1,93 @@
+--- /private/tmp/jarde-compound-own-ci-verifier-luna-v1/verify-own-ci.py
++++ /private/tmp/jarde-compound-own-ci-verifier-luna-v2/verify-own-ci.py
+@@ -23,7 +23,7 @@
+ BUILD_EVIDENCE_SHA = '8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3'
+ BUILD_RUNNER = Path('/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py')
+ BUILD_RUNNER_SHA = 'd82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93'
+-WORKSPACE = Path('/private/tmp/jarde-compound-full-workspace-root-v3')
++FAILED_WORKSPACE_V3 = Path('/private/tmp/jarde-compound-full-workspace-root-v3').resolve()
+ WORKSPACE_RUNNER = Path('/private/tmp/jarde-compound-workspace-batches-root-v1.py')
+ WORKSPACE_RUNNER_SHA = '2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b'
+ BUILD_RECORD = Path('/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json')
+@@ -80,9 +80,12 @@
+     return rows
+ 
+ 
+-def verify_workspace(product: str):
+-    execution_path = WORKSPACE / 'execution.json'
+-    metadata_path = WORKSPACE / 'metadata.json'
++def verify_workspace(product: str, workspace: Path):
++    workspace = workspace.resolve(strict=True)
++    need(workspace != FAILED_WORKSPACE_V3, 'refusing the known failed workspace-root-v3 evidence')
++    need(workspace.is_dir(), 'workspace evidence path must be a directory')
++    execution_path = workspace / 'execution.json'
++    metadata_path = workspace / 'metadata.json'
+     ex_raw, metadata_raw = execution_path.read_bytes(), metadata_path.read_bytes()
+     ex, metadata = json.loads(ex_raw), json.loads(metadata_raw)
+     ex_sha, metadata_sha = sha(ex_raw), sha(metadata_raw)
+@@ -147,9 +150,10 @@
+     md_stdout = ci.verified_stream(ex['metadata_command']['streams']['stdout'])
+     need(md_stdout == metadata_raw, 'saved metadata differs from fresh workspace metadata raw output')
+     commands = ex.get('commands', [])
+-    need(ex.get('expected_batch_count') == len(commands) and
++    need(ex.get('expected_batch_count') == 95 and len(commands) == 95 and
++         ex.get('expected_batch_count') == len(commands) and
+          [row.get('index') for row in commands] == list(range(2, 2 + len(commands))),
+-         'fresh workspace batches are incomplete or out of order')
++         'fresh workspace must contain the complete 95-batch run in order')
+     all_observed = []
+     for row in commands:
+         need(row.get('exit_code') == 0 and row.get('guard_stop') is None,
+@@ -237,6 +241,8 @@
+         'compound_builder_proof_and_emission_stops_restore_the_trial',
+     ),
+     'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs': (
++        'cross_case_goto_target_owns_the_shared_forward_continuation',
++        'looping_arm_backedge_does_not_gain_a_forward_join',
+         'cf12_conditional_switch_keeps_exact_case_and_exit_sources',
+         'cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins',
+         'cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact',
+@@ -396,6 +402,8 @@
+     ap.add_argument('--product-commit', required=True)
+     ap.add_argument('--run-id', required=True)
+     ap.add_argument('--capture', type=Path, required=True)
++    ap.add_argument('--workspace', type=Path, required=True,
++                    help='directory containing the completed fresh full-workspace execution.json and metadata.json')
+     ap.add_argument('--out', type=Path, required=True)
+     args = ap.parse_args()
+     need(re.fullmatch(r'[0-9a-f]{40}', args.product_commit) is not None,
+@@ -409,14 +417,14 @@
+                            (WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA)):
+         need(path.is_file() and sha_file(path) == expected, 'reviewed helper pin mismatch: ' + str(path))
+ 
+-    ex, metadata, local = verify_workspace(args.product_commit)
++    ex, metadata, local = verify_workspace(args.product_commit, args.workspace)
+     checklist = verify_checklist_sources(args.product_commit, ex['source_pins'])
+     candidate = verify_product_build(args.product_commit, ex['source_pins'])
+     required = verify_named_tests(local['target_observations'], args.product_commit, ex['source_pins'])
+     ci_result = verify_ci_capture(args.capture.resolve(), args.product_commit, args.run_id,
+                                   local['target_observations'])
+     acceptance = {
+-        'schema': 'compound-own-ci-current-product-acceptance-luna-v1',
++        'schema': 'compound-own-ci-current-product-acceptance-luna-v2',
+         'status': 'accepted',
+         'product_commit': args.product_commit,
+         'run_id': int(args.run_id),
+@@ -426,6 +434,8 @@
+                'masked_public_label_mappings': ci_result['masked_public_label_mappings'],
+                'public_label_rule': ci_result['public_label_rule']},
+         'fresh_local_workspace': {k: v for k, v in local.items() if k != 'target_observations'},
++        'workspace_runner_contract': {'path': str(WORKSPACE_RUNNER), 'sha256': WORKSPACE_RUNNER_SHA,
++                                      'complete_batch_count': 95, 'target_count': TARGET_COUNT},
+         'candidate_cli_build': candidate,
+         'required_tests': required,
+         'checklist_source_pin_count': len(checklist),
+@@ -440,7 +450,7 @@
+                      'workspace_runner_path': str(WORKSPACE_RUNNER),
+                      'workspace_runner_sha256': WORKSPACE_RUNNER_SHA,
+                      'build_evidence_helper_sha256': BUILD_EVIDENCE_SHA},
+-        'acceptance_scope': 'Exact current product Git commit and completed 4-job/52-step CI run; both workflow workspace seeds reproduce all 359 full target summaries and named outcomes from the fresh no-carry local workspace run, with same-status unique binding for masked public labels; complete local and CLI production input pins are bound to product Git blobs and live bytes.'
++        'acceptance_scope': 'Exact current product Git commit and completed 4-job/52-step CI run; both workflow workspace seeds reproduce all 359 full target summaries and named outcomes from the fresh no-carry 95-batch local workspace run, with same-status unique binding for masked public labels; complete local and CLI production input pins are bound to product Git blobs and live bytes.'
+     }
+     out.parent.mkdir(parents=True, exist_ok=True)
+     with out.open('x', encoding='utf-8') as stream:

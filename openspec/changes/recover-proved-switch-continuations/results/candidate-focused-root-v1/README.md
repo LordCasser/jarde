@@ -1,0 +1,9 @@
+# Root focused observation
+
+生产候选已串行集成到region.rs。Switch2私有v2基于SHA b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c，root先核patch/完整候选再应用；FT2 v3随后通过patch dry-run和实际应用。root修正了FT2稿替换错误helper位置导致的undefined switch_bci，恢复旧独立测试dispatch0，仅在真实通用helper根据SSA terminal switch_bci选dispatch；另将Switch2 duplicate incoming负例改为已有owner48的重复边，避免外部入口先行遮蔽重复边检查。无第二套switch DFS或互相覆盖的证明器。
+
+实际记录：Switch2-only 0/1/0、原Region测试14/1/0；新direct-target proof见证、真实budget/cancel断言先通过，完整recover断言在ArmsDoNotMeet@78失败，其后的negative断言尚未运行。不能将这些记成Switch2整体成功。existing JRE_JOIN_PROBE trace指向共享四测试98/111/118/124；未增加新的生产插桩。
+
+FT2 v3首轮因helper变量错误编译失败，保留原raw；root修正后的真实定向测试1/0/0，tail175只拥有一次、case owners排除175、物理SwitchBreak边及ownership拒绝/零预算Stop已通过。该轮未格式化source SHA27eb6a2de3a50579396dceb975e1ea0bf352a9c09195d6590e87cb36f5930b91；随后cargo fmt生成SHA34dcf89ccee47c33e0b6e08089ae53567b30ce0f73b50e76b13aec1ddf040025，用于后续CLI构建。完整来源/公共永久测试尚待独立验收。
+
+全部测试runner均保留5GiB余量、target1GiB、一秒进程组守卫和finally cargo clean；成功FT2峰值157682667bytes，target清理不存在。inventory保留原文件字节。private候选的base/candidate仍在/private/tmp，仓库只归档patch/base pins/README以避免整份源码重复占用。

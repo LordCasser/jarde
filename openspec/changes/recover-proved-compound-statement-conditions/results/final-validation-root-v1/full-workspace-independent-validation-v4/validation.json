@@ -1,0 +1,20 @@
+{
+  "schema": "compound-full-workspace-batch-validation-v1",
+  "utc": "2026-10-11T05:51:55.482822+00:00",
+  "status": "passed",
+  "execution_dir": "/private/tmp/jarde-compound-full-workspace-root-v4",
+  "execution_sha256": "128e8abfa8074ff184d0f673b8abb6b27beff93aeb95f77a91b1214faefebfc4",
+  "metadata_target_count": 359,
+  "expected_batch_count": 95,
+  "completed_batch_count": 95,
+  "workspace_summary_count": 359,
+  "workspace_totals": [
+    3444,
+    0,
+    97
+  ],
+  "raw_stream_count": 196,
+  "removed_test_executable_count": 359,
+  "clean_raw_present": true,
+  "failures": []
+}

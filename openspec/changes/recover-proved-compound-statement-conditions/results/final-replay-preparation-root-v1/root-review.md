@@ -1,0 +1,1 @@
+root逐行审閱兩份actual verifier delta和build_evidence helper，保留原65/179驗收要求。v1自輸入pin錯誤，保存；v2實際逐個bytes/SHA校驗inputs及artifacts，AST有效。private v2 CF12 script仍保留無引用COMPOUND_SOURCE_PINS，agent兩次誤稱刪除不接受，不影響當前動態驗收邏輯。尚未執行新CLI build/replay，不是測試通過證據。

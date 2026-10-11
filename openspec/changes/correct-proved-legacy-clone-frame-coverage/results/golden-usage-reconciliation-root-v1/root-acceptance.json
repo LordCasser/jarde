@@ -1,0 +1,240 @@
+{
+  "status": "accepted_exact_usage_update_and_permanent_9_of_9",
+  "temporary_diagnostic_restored": true,
+  "nine_reports_compared_whole": [
+    {
+      "name": "historical-v45-finally",
+      "report_delta": [
+        {
+          "path": [
+            "execution",
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "execution",
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ],
+      "expect_delta": [
+        {
+          "path": [
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ]
+    },
+    {
+      "name": "historical-v46-finally",
+      "report_delta": [
+        {
+          "path": [
+            "execution",
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "execution",
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ],
+      "expect_delta": [
+        {
+          "path": [
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ]
+    },
+    {
+      "name": "historical-v47-finally",
+      "report_delta": [
+        {
+          "path": [
+            "execution",
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "execution",
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ],
+      "expect_delta": [
+        {
+          "path": [
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ]
+    },
+    {
+      "name": "historical-v48-finally",
+      "report_delta": [
+        {
+          "path": [
+            "execution",
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "execution",
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ],
+      "expect_delta": [
+        {
+          "path": [
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 154,
+          "after": 186
+        },
+        {
+          "path": [
+            "usage",
+            "ir_items"
+          ],
+          "before": 540,
+          "after": 552
+        }
+      ]
+    },
+    {
+      "name": "historical-v49-finally",
+      "report_delta": [],
+      "expect_delta": []
+    },
+    {
+      "name": "historical-v50-finally",
+      "report_delta": [],
+      "expect_delta": []
+    },
+    {
+      "name": "historical-v51-finally",
+      "report_delta": [],
+      "expect_delta": []
+    },
+    {
+      "name": "historical-v52-finally",
+      "report_delta": [],
+      "expect_delta": []
+    },
+    {
+      "name": "shared-subroutine-two-call-sites",
+      "report_delta": [
+        {
+          "path": [
+            "execution",
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 98,
+          "after": 125
+        },
+        {
+          "path": [
+            "execution",
+            "usage",
+            "ir_items"
+          ],
+          "before": 195,
+          "after": 205
+        }
+      ],
+      "expect_delta": [
+        {
+          "path": [
+            "usage",
+            "analysis_steps"
+          ],
+          "before": 98,
+          "after": 125
+        },
+        {
+          "path": [
+            "usage",
+            "ir_items"
+          ],
+          "before": 195,
+          "after": 205
+        }
+      ]
+    }
+  ],
+  "all_modern_zero_clone_entries_unchanged": true,
+  "all_other_report_and_expect_fields_unchanged": true,
+  "permanent_summaries": [
+    [
+      9,
+      0,
+      0
+    ]
+  ]
+}

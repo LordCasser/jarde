@@ -1,0 +1,18 @@
+{
+  "original_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-join-ownership/v8/Join.class",
+  "original_sha256": "458204d72c0298ab4b2e84ce6655d34d2ee131919b8f032e02f888febb988bf1",
+  "original_bytes": 726,
+  "unique_pattern_hex": "100a3ca70009",
+  "class_offset": 429,
+  "original_offset": 9,
+  "variants": {
+    "cross-case": {
+      "offset": 6,
+      "sha256": "bec9b2bbbbb1b0ec2af20f125368bfd66b855efa4d188bac3d735d99cbfcf6c0"
+    },
+    "backedge": {
+      "offset": -3,
+      "sha256": "8b12e16ab1f830fae148e6568bc4505032a547c5d5ff195070017639ec28cf18"
+    }
+  }
+}

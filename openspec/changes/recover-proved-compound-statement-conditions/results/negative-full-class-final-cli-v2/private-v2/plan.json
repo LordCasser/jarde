@@ -1,0 +1,35 @@
+{
+  "schema": "compound-negative-whole-class-render-plan-luna-v2",
+  "collector": "collect.py",
+  "independent_verifier": "verify.py",
+  "args": {
+    "collector": [
+      "--cli",
+      "--sha256",
+      "--build",
+      "--out"
+    ],
+    "verifier": [
+      "--out",
+      "--cli",
+      "--sha256",
+      "--build"
+    ]
+  },
+  "fixture_names": [
+    "cycle",
+    "irreducible",
+    "no-repeat",
+    "clone"
+  ],
+  "render_commands": 8,
+  "javap_commands": 4,
+  "members_including_constructor": 8,
+  "nonconstructor_methods": 7,
+  "target_method": "test(ZZZZLjava/lang/StringBuilder;)Ljava/lang/String;",
+  "physical_source_coverage": "exact set equality between all target map origin BCIs and that fixture javap instruction BCIs; at least one origin required; duplicates allowed",
+  "source_map_ranges": "check every present class/method map segment against actual UTF-8 bytes of doc.text/report.text",
+  "owner_identity": "exact BLAKE3 digest, byte length, and standalone_root snapshot from pinned oracle",
+  "candidate_cli_sha256": "caller-supplied exact final build pin",
+  "target_code_invoked": false
+}

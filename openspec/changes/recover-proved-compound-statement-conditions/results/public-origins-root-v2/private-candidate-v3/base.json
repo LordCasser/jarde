@@ -1,0 +1,15 @@
+{
+  "candidate_path": "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs",
+  "base_sha256": "348a06ecc13143a51641a684b050a989c41b3f02822f2d9324b9dd7a439c1e8e",
+  "candidate_sha256": "d91c8bf291ff086d7a6771c9d6fd75b3c132be76703a57b3f346838c4da27901",
+  "patch_sha256": "04093099e35b132a85675ca434917c59e250c7d632d4596ae56570cb0598de00",
+  "supersedes_private_candidate": "/private/tmp/jarde-compound-public-origins-luna-v2/candidate.rs",
+  "private_v2_candidate_sha256": "3fc8bbf576ca0bf517c77c4e820005baed9a7db6f5a1713c5cb3123fe12845ce",
+  "frozen_class_path": "openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class",
+  "class_length": 2848,
+  "class_sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+  "class_blake3": "bdd8be9a2985ec4561dc5aa69de3fdfaa51db7f151cd42cfb6653a2b230ff65a",
+  "javap_raw_path": "openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/physical-javap/raw/0001.physical-javap-v-p-c.stdout.raw",
+  "javap_raw_sha256": "1886af82cbcfe7cb683bcbeb58c47801c88fe370ad2cea8eab25a7b9e73b2d5a",
+  "test_status": "not_run"
+}

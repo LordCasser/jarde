@@ -1,0 +1,1 @@
+root审查private-v1后抽取原canonical edge scan到同一module-private helper，不增公开CFG API、额外扫描或收费。完整java库实际348/0/0，fmtcheck0，守卫未触发，cargo clean且target不存在。新增负向直接调用生产同一closure validator，覆盖external→payload、重复test predecessor、非Normal→sharedjoin；真实节点/rows来自reader Switch2。不能用这些row变体冒称完整图的cycle/clone/reduction traversal测试；这些边界仍待补。Builder精确52/51和52→68/67，Stop@59也在本完整库通过。

@@ -1562,7 +1562,7 @@
       "path": "tests/fixtures/p2-golden/exception-overlap.json"
     },
     {
-      "blake3": "8a84b3a0caf9f2bc9bc23c7d967e4af619aa486ce350e8d9b3adef018aadeb0a",
+      "blake3": "2e9e1e75012880a405b14cfce6d56a96580924a299e96b751a7195da24b01beb",
       "bytes": 100827,
       "path": "tests/fixtures/p2-golden/historical.json"
     },
@@ -1572,8 +1572,8 @@
       "path": "tests/fixtures/p2-golden/inputs.json"
     },
     {
-      "blake3": "7a7746b4e5b4f7195aea4e7385035bdb7bdb4998a984d3dbad620962ca7f8c6d",
-      "bytes": 12409,
+      "blake3": "526d41823b555f1b95f40edb10b68f20337f59cab4dacdf896d9e98b727a5531",
+      "bytes": 12411,
       "path": "tests/fixtures/p2-golden/legacy-clone.json"
     },
     {

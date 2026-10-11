@@ -1,0 +1,672 @@
+switch2 isolated mask=0 seed=0 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=0 seed=5 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=0 seed=1 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=0 seed=6 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=0 seed=2 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=0 seed=7 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=0 seed=3 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=0 seed=8 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=0 seed=4 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=0 seed=0 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=0 seed=5 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=0 seed=1 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence-start mask=0 seed=3 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence mask=0 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=0 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=0 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=0 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=0 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=0 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=0 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=0 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=1 seed=1 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=1 seed=6 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=1 seed=2 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=1 seed=7 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=1 seed=3 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=1 seed=8 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=1 seed=4 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=1 seed=0 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=1 seed=5 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=1 seed=1 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=1 seed=6 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=1 seed=2 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence-start mask=1 seed=4 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence mask=1 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=1 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=1 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=1 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=1 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=1 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=1 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=1 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=2 seed=2 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=2 seed=7 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=2 seed=3 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=2 seed=8 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=2 seed=4 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=2 seed=0 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=2 seed=5 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=2 seed=1 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=2 seed=6 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=2 seed=2 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=2 seed=7 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=2 seed=3 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence-start mask=2 seed=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence mask=2 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=2 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=2 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=2 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=2 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=2 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=2 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=2 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=3 seed=3 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=3 seed=8 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=3 seed=4 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=3 seed=0 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=3 seed=5 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=3 seed=1 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=3 seed=6 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=3 seed=2 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=3 seed=7 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=3 seed=3 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=3 seed=8 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=3 seed=4 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence-start mask=3 seed=6 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence mask=3 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=3 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=3 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=3 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=3 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=3 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=3 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=3 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=4 seed=4 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=4 seed=0 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=4 seed=5 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=4 seed=1 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=4 seed=6 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=4 seed=2 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=4 seed=7 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=4 seed=3 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=4 seed=8 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=4 seed=4 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=4 seed=0 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=4 seed=5 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence-start mask=4 seed=7 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence mask=4 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=4 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=4 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=4 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=4 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=4 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=4 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=4 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=5 seed=5 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=5 seed=1 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=5 seed=6 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=5 seed=2 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=5 seed=7 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=5 seed=3 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=5 seed=8 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=5 seed=4 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=5 seed=0 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=5 seed=5 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=5 seed=1 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=5 seed=6 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence-start mask=5 seed=8 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 sequence mask=5 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=5 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=5 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=5 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=5 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=5 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=5 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=5 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=6 seed=6 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=6 seed=2 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=6 seed=7 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=6 seed=3 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=6 seed=8 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=6 seed=4 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=6 seed=0 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=6 seed=5 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=6 seed=1 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=6 seed=6 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=6 seed=2 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=6 seed=7 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence-start mask=6 seed=0 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 sequence mask=6 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=6 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=6 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=6 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=6 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=6 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=6 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=6 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=7 seed=7 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=7 seed=3 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=7 seed=8 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=7 seed=4 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=7 seed=0 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=7 seed=5 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=7 seed=1 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=7 seed=6 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=7 seed=2 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=7 seed=7 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=7 seed=3 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=7 seed=8 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 sequence-start mask=7 seed=1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence mask=7 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=7 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=7 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=7 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=7 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=7 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=7 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=7 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=8 seed=8 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=8 seed=4 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=8 seed=0 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=8 seed=5 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=8 seed=1 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=8 seed=6 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=8 seed=2 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=8 seed=7 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=8 seed=3 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=8 seed=8 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=8 seed=4 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=8 seed=0 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 sequence-start mask=8 seed=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence mask=8 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=8 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=8 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=8 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=8 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=8 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=8 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=8 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=9 seed=0 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=9 seed=5 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=9 seed=1 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=9 seed=6 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=9 seed=2 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=9 seed=7 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=9 seed=3 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=9 seed=8 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=9 seed=4 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=9 seed=0 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=9 seed=5 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=9 seed=1 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence-start mask=9 seed=3 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence mask=9 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=9 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=9 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=9 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=9 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=9 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=9 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=9 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=10 seed=1 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=10 seed=6 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=10 seed=2 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=10 seed=7 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=10 seed=3 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=10 seed=8 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=10 seed=4 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=10 seed=0 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=10 seed=5 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=10 seed=1 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=10 seed=6 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=10 seed=2 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence-start mask=10 seed=4 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence mask=10 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=10 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=10 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=10 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=10 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=10 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=10 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=10 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=11 seed=2 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=11 seed=7 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=11 seed=3 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=11 seed=8 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=11 seed=4 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=11 seed=0 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=11 seed=5 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=11 seed=1 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=11 seed=6 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=11 seed=2 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=11 seed=7 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=11 seed=3 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence-start mask=11 seed=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence mask=11 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=11 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=11 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=11 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=11 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=11 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=11 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=11 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=12 seed=3 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=12 seed=8 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=12 seed=4 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=12 seed=0 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=12 seed=5 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=12 seed=1 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=12 seed=6 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=12 seed=2 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=12 seed=7 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=12 seed=3 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=12 seed=8 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=12 seed=4 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence-start mask=12 seed=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence mask=12 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=12 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=12 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=12 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=12 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=12 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=12 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=12 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=13 seed=4 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=13 seed=0 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=13 seed=5 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=13 seed=1 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=13 seed=6 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=13 seed=2 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=13 seed=7 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=13 seed=3 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=13 seed=8 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=13 seed=4 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=13 seed=0 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=13 seed=5 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence-start mask=13 seed=7 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence mask=13 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=13 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=13 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=13 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=13 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=13 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=13 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=13 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=14 seed=5 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=14 seed=1 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=14 seed=6 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=14 seed=2 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=14 seed=7 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=14 seed=3 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=14 seed=8 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=14 seed=4 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=14 seed=0 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=14 seed=5 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=14 seed=1 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=14 seed=6 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence-start mask=14 seed=8 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 sequence mask=14 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=14 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=14 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=14 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=14 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=14 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=14 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=14 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=15 seed=6 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=15 seed=2 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=15 seed=7 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=15 seed=3 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=15 seed=8 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=15 seed=4 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=15 seed=0 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=15 seed=5 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=15 seed=1 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=15 seed=6 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=15 seed=2 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=15 seed=7 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence-start mask=15 seed=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 sequence mask=15 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=15 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=15 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=15 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=15 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=15 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=15 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=15 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=16 seed=7 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=16 seed=3 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=16 seed=8 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=16 seed=4 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=16 seed=0 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=16 seed=5 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=16 seed=1 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=16 seed=6 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=16 seed=2 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=16 seed=7 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=16 seed=3 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=16 seed=8 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 sequence-start mask=16 seed=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence mask=16 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=16 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=16 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=16 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=16 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=16 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=16 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=16 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=17 seed=8 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=17 seed=4 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=17 seed=0 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=17 seed=5 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=17 seed=1 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=17 seed=6 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=17 seed=2 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=17 seed=7 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=17 seed=3 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=17 seed=8 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=17 seed=4 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=17 seed=0 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 sequence-start mask=17 seed=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence mask=17 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=17 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=17 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=17 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=17 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=17 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=17 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=17 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=18 seed=0 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=18 seed=5 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=18 seed=1 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=18 seed=6 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=18 seed=2 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=18 seed=7 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=18 seed=3 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=18 seed=8 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=18 seed=4 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=18 seed=0 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=18 seed=5 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=18 seed=1 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence-start mask=18 seed=3 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence mask=18 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=18 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=18 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=18 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=18 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=18 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=18 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=18 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=19 seed=1 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=19 seed=6 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=19 seed=2 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=19 seed=7 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=19 seed=3 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=19 seed=8 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=19 seed=4 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=19 seed=0 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=19 seed=5 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=19 seed=1 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=19 seed=6 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=19 seed=2 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence-start mask=19 seed=4 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence mask=19 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=19 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=19 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=19 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=19 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=19 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=19 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=19 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=20 seed=2 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=20 seed=7 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=20 seed=3 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=20 seed=8 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=20 seed=4 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=20 seed=0 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=20 seed=5 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=20 seed=1 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=20 seed=6 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=20 seed=2 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=20 seed=7 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=20 seed=3 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence-start mask=20 seed=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence mask=20 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=20 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=20 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=20 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=20 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=20 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=20 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=20 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=21 seed=3 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=21 seed=8 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=21 seed=4 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=21 seed=0 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=21 seed=5 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=21 seed=1 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=21 seed=6 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=21 seed=2 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=21 seed=7 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=21 seed=3 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=21 seed=8 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=21 seed=4 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence-start mask=21 seed=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence mask=21 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=21 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=21 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=21 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=21 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=21 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=21 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=21 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=22 seed=4 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=22 seed=0 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=22 seed=5 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=22 seed=1 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=22 seed=6 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=22 seed=2 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=22 seed=7 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=22 seed=3 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=22 seed=8 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=22 seed=4 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=22 seed=0 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=22 seed=5 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence-start mask=22 seed=7 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence mask=22 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=22 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=22 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=22 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=22 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=22 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=22 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=22 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=23 seed=5 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=23 seed=1 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=23 seed=6 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=23 seed=2 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=23 seed=7 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=23 seed=3 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=23 seed=8 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=23 seed=4 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=23 seed=0 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=23 seed=5 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=23 seed=1 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=23 seed=6 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence-start mask=23 seed=8 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 sequence mask=23 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=23 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=23 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=23 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=23 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=23 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=23 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=23 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=false,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=24 seed=6 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=24 seed=2 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=24 seed=7 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=24 seed=3 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=24 seed=8 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=24 seed=4 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=24 seed=0 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=24 seed=5 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=24 seed=1 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=24 seed=6 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=24 seed=2 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=24 seed=7 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence-start mask=24 seed=0 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 sequence mask=24 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=24 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=24 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=24 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=24 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=24 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=24 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=24 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=25 seed=7 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=25 seed=3 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=25 seed=8 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=25 seed=4 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=25 seed=0 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=25 seed=5 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=25 seed=1 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=25 seed=6 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=25 seed=2 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=25 seed=7 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=25 seed=3 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=25 seed=8 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 sequence-start mask=25 seed=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence mask=25 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=25 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=25 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=25 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=25 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=25 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=25 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=25 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=26 seed=8 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=26 seed=4 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=26 seed=0 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=26 seed=5 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=26 seed=1 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=26 seed=6 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=26 seed=2 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=26 seed=7 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=26 seed=3 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=26 seed=8 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=26 seed=4 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=26 seed=0 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 sequence-start mask=26 seed=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence mask=26 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=26 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=26 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=26 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=26 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=26 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=26 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=26 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=27 seed=0 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=27 seed=5 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=27 seed=1 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=27 seed=6 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=27 seed=2 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=27 seed=7 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=27 seed=3 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=27 seed=8 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=27 seed=4 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=27 seed=0 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=27 seed=5 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=27 seed=1 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 sequence-start mask=27 seed=3 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence mask=27 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=27 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=27 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=27 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=27 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=27 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=27 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=27 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=false,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=28 seed=1 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=28 seed=6 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=28 seed=2 action=2 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=28 seed=7 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=28 seed=3 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=28 seed=8 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=28 seed=4 action=-1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=28 seed=0 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=28 seed=5 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=28 seed=1 action=-254 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=28 seed=6 action=-251 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=28 seed=2 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 sequence-start mask=28 seed=4 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence mask=28 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=28 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=28 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=28 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=28 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=28 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=28 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=28 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=29 seed=2 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=29 seed=7 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=29 seed=3 action=2 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=29 seed=8 action=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=29 seed=4 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=29 seed=0 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=29 seed=5 action=-1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=29 seed=1 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-0.0/0x80000000}
+switch2 isolated mask=29 seed=6 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=29 seed=2 action=-254 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=29 seed=7 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=29 seed=3 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 sequence-start mask=29 seed=5 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence mask=29 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=29 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=29 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=29 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=29 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=29 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=29 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=29 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=30 seed=3 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=30 seed=8 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=30 seed=4 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=30 seed=0 action=5 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=30 seed=5 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=30 seed=1 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=30 seed=6 action=-1 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=30 seed=2 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=9.5/0x41180000}
+switch2 isolated mask=30 seed=7 action=-255 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=30 seed=3 action=-254 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=30 seed=8 action=-251 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=30 seed=4 action=-250 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 sequence-start mask=30 seed=6 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 sequence mask=30 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=30 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=30 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=30 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=30 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=30 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=30 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=30 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=31 seed=4 action=0 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=31 seed=0 action=1 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=0.0/0x00000000}
+switch2 isolated mask=31 seed=5 action=2 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 isolated mask=31 seed=1 action=5 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 isolated mask=31 seed=6 action=6 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=Infinity/0x7f800000}
+switch2 isolated mask=31 seed=2 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 isolated mask=31 seed=7 action=-1 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 isolated mask=31 seed=3 action=-256 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.0/0x41200000}
+switch2 isolated mask=31 seed=8 action=-255 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=NaN/0x7fc00000}
+switch2 isolated mask=31 seed=4 action=-254 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=10.5/0x41280000}
+switch2 isolated mask=31 seed=0 action=-251 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 isolated mask=31 seed=5 action=-250 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-10.5/0xc1280000}
+switch2 sequence-start mask=31 seed=7 state={isLongtouchable=true,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=-Infinity/0xff800000}
+switch2 sequence mask=31 action=261 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=31 action=2 state={isLongtouchable=false,isMultiTouchZoom=true,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=31 action=6 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=true,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=31 action=1 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=261.0/0x43828000}
+switch2 sequence mask=31 action=5 state={isLongtouchable=false,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=31 action=0 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=5.0/0x40a00000}
+switch2 sequence mask=31 action=-251 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
+switch2 sequence mask=31 action=-256 state={isLongtouchable=true,isMultiTouchZoom=false,isCanZoomIn=true,isCanZoomOut=true,isScrolling=false,multiTouchZoomOldDist=-251.0/0xc37b0000}
