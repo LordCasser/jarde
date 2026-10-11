@@ -1,0 +1,11 @@
+# CF07 / CF13 当前运行独立核对
+
+- **范围**：仅核验 bafb 冻结 CLI 对 CF07 `counted` 与 CF13 `walk` 两个候选恢复及对应的跨 JDK 原版/Jarde 运行对照；不表示整个 CF07、CF13 单元完成。
+- **Verifier**：`verify.py` 从两份 execution 记录、实际报告/源码/class/JDK/CLI 文件与每条命令 raw 流独立复算；结果 `PASS`。
+- **CLI**：`/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2`，SHA-256 `b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0`；patrol 声明 product commit `bafb61a5ec58b49f0040ea3a55420a56801bbe9c`。两项 class-source 命令 exit 0，format JSON、evidence all。
+- **CF07 输入**：`cf07.LoopCases` class SHA-256 `004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33`；原始 JSON stdout SHA-256 `6ba78b8e7c21c093513ab632e31e6a7e3917fa88a29841c749ef024d026a0348`；提交重建源码与 JSON 的 `text` 字段一致。`counted` 为 structured，source-map primary BCI 14 对应派生 BCI 20，精确 span `[271,391)` 为整个 `if (local3 == 7) { ... } else { ... }`，包括结尾换行。
+- **CF13 输入**：`cf13.SwitchLoopExits` class SHA-256 `c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b`；原始 JSON stdout SHA-256 `592def832056151ba92282361b324fd0ac95bf40b7bf57f878c540ecbcbda6f3`；`walk` 为 structured，正文含 switch 与 continue。
+- **源码/runner pins**：CF07 `Runner.java` SHA-256 `28b0a08ceb89b6ff31d12056831a2d7cc62bfda0a61ebc39835d2f62bc89bdf5`；CF13 runner SHA-256 `9f792f062fb8bbd6ccad80bf6b661898870f44632c3f8ade05064c7fbd968998`。两份输出源码与报告 `text` 字段逐字一致。
+- **JDK pins**：Corretto 8 `javac/java/javap` SHA-256 分别为 `598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd`、`3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5`、`fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1`。OpenJDK 23 分别为 `a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8`、`b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1`、`f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e`；均与 JDK manifest 和实际文件复核一致。
+- **运行证据**：16 条 compile/runtime 命令均 exit 0；每条记录中的 stdout 与 stderr SHA 均与对应 `.raw` 文件重算一致。四组原版/Jarde stdout 原始字节相同：CF07 两 JDK 均为 `0\n10\n39\n63\n9\n3\n-1\n3\n`；CF13 两 JDK 均为 `38\n`。每条 runtime 都带 `-Xverify:all`，运行 stderr 为空。
+- **文件**：execution 记录 `/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/execution.json`；独立 verifier `/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/luna-audit/verify.py`。

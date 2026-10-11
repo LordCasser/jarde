@@ -18,4 +18,4 @@
 
 - [x] 3.1 在 root 资源限制下运行格式化及精确适用的测试/lint 检查；原样保存每个失败，不扩大预算。验收方法：提交格式化与检查命令、退出状态和原始失败记录，所有要求项通过。
 - [x] 3.2 冻结新 CLI 及 source、class、helper、SDK、JDK 和 invocation pins；比较全部十个 CF12 fixture 的 original/JADX/Jarde-default/Jarde-all 完整类，保留上游检查、完整生成 class sets、runtime stdout/stderr 和物理 source origins。逐 profile 记录真实结果，不预设成功。验收方法：可复放的冻结记录包含完整 pins、十 fixture 的四组结果、class-set 差异、运行输出和两个改动方法的 origins。
-- [ ] 3.3 独立核验候选回放、OpenSpec strict validation、产品 CI 和干净交付；仅依据验收证据更新 verification/ledger/handoff，不宣称本里程碑完成全部 CF12 或 71-unit ledger。验收方法：独立核验记录逐项引用已通过证据，并确认 ledger/handoff 没有超出证据的完成声明。
+- [x] 3.3 独立核验候选回放、OpenSpec strict validation、产品 CI 和干净交付；仅依据验收证据更新 verification/ledger/handoff，不宣称本里程碑完成全部 CF12 或 71-unit ledger。验收方法：独立核验记录逐项引用已通过证据，并确认 ledger/handoff 没有超出证据的完成声明。

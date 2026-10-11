@@ -1,5 +1,9 @@
 # Root 验收
 
+当前产品 bafb61a5ec58b49f0040ea3a55420a56801bbe9c 的自身 CI 38119159950 已由 root 实际独立接受：4 jobs/52 steps，双 seed 各359目标、3444 passed/0 failed/97 ignored，完整具名结果绑定 fresh95批4693输入及132条构建输入。证据见 [stack 自身 CI](../bound-arithmetic-render-stack-frames/results/own-product-ci-root-v1/README.md)。本片实现及CI条件已闭合，进度 6/6；本轮交付文档的提交推送/clean checkpoint 仍须按实际 Git 终审记录确认。e041 的真实 stack overflow/SIGABRT 原样保留，不覆盖为成功，不宣称整个 CF12/71 单元完成。
+
+以下为此前验收阶段的历史记录。
+
 当前5/6；完整workspace v4 JVM243/Java351、最终Clippy及原CLI观察已接受。父片产品 e041b7635 的自身 CI 38116415118 在 overdeep lambda helper stack overflow/SIGABRT，2.4继续未完成，等待独立 bound-arithmetic-render-stack-frames 修复后的新产品验收。
 
 ## 历史验证记录

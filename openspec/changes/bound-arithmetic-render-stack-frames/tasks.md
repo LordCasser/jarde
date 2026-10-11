@@ -8,4 +8,4 @@
 
 - [x] 2.1 在 5 GiB free/target 1 GiB 守卫下冻结新 CLI，重放原 2 MiB 输入并比较冻结原报告的完整 text/maps/身份/usage；核父片最终对照无变化。验收：实际完整报告而非 signal，逐字段差异原样保存，相关原/JADX/Jarde 行为证据有效绑定。
 - [x] 2.2 完成格式化、适用测试/lint、完整 workspace 与 OpenSpec strict。验收：精确命令/raw/source pins 均通过，target 已清理，不借此前源码的执行结果。
-- [ ] 2.3 提交推送实际产品并验收自身全部 CI job/step/两 seed 测试，更新父片 verification/handoff 后完成干净交付。验收：精确新 head、实际 CI 日志和 main/分支/target 状态；e041 失败不覆盖或冒充已接受。
+- [x] 2.3 提交推送实际产品并验收自身全部 CI job/step/两 seed 测试，更新父片 verification/handoff 后完成干净交付。验收：精确新 head、实际 CI 日志和 main/分支/target 状态；e041 失败不覆盖或冒充已接受。
