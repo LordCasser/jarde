@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-computed-call-order-baseline-root-runner-v1.py", line 41, in <module>
+    render=run(argv);doc=json.load(open(render['streams']['stdout']['path']))
+  File "/private/tmp/jarde-computed-call-order-baseline-root-runner-v1.py", line 23, in run
+    if row['exit_code'] or row['guard_stop']:raise RuntimeError(str(argv))
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: [PosixPath('/private/tmp/jarde-cf12-constant-candidate-cli-root-v2'), 'class-source', '--input', PosixPath('/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class'), '--class', 'ComputedForEffectControl', '--format', 'json']

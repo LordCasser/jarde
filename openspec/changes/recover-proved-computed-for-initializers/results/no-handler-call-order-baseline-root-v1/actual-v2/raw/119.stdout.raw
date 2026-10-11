@@ -1,0 +1,4 @@
+input_sha256=56401a8d604d18dc8491df3f9c197f22021efa2c84de935928dfac7fff9af7a4
+output_sha256=77d5e0e9b0d9b5ee72b8f5ea324b49bf56e2ba8372743bf1fb29172d18d364bc
+find_swap_bci=5..10
+code_length=35 unchanged=true exception_table=empty

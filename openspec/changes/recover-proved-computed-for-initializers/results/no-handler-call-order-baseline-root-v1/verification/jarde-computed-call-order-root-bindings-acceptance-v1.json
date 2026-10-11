@@ -1,0 +1,67 @@
+{
+  "status": "accepted",
+  "scope": "additional root exact tool/compile/record bindings for current while baseline",
+  "execution_sha256": "09c2f3f23c476668be8fe10a8e5227d8da50b6bb4bb85c159425be8212909023",
+  "all_profile_runtime_rows_equal_recorded_commands": true,
+  "all_java_tools_match_profile_pins": true,
+  "exact_original_source_compile_argv_verified": true,
+  "render_compile_runtime_bindings": [
+    {
+      "jdk": "jdk8",
+      "variant": "original",
+      "mode": "default",
+      "compile_index": 105,
+      "runtime_index": 106
+    },
+    {
+      "jdk": "jdk8",
+      "variant": "original",
+      "mode": "all",
+      "compile_index": 108,
+      "runtime_index": 109
+    },
+    {
+      "jdk": "jdk8",
+      "variant": "pending",
+      "mode": "default",
+      "compile_index": 113,
+      "runtime_index": 114
+    },
+    {
+      "jdk": "jdk8",
+      "variant": "pending",
+      "mode": "all",
+      "compile_index": 116,
+      "runtime_index": 117
+    },
+    {
+      "jdk": "jdk23",
+      "variant": "original",
+      "mode": "default",
+      "compile_index": 123,
+      "runtime_index": 124
+    },
+    {
+      "jdk": "jdk23",
+      "variant": "original",
+      "mode": "all",
+      "compile_index": 126,
+      "runtime_index": 127
+    },
+    {
+      "jdk": "jdk23",
+      "variant": "pending",
+      "mode": "default",
+      "compile_index": 131,
+      "runtime_index": 132
+    },
+    {
+      "jdk": "jdk23",
+      "variant": "pending",
+      "mode": "all",
+      "compile_index": 134,
+      "runtime_index": 135
+    }
+  ],
+  "generated_class_pins_timing": "post-run observed; no pre-runtime inventory claim"
+}

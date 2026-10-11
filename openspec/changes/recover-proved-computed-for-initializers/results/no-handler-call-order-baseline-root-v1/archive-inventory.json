@@ -1,0 +1,810 @@
+{
+  "scope": "current 74b product while baseline only; no computed-for production delta applied",
+  "root_independent_verifier_exit_code": 0,
+  "additional_root_bindings_exit_code": 0,
+  "production_head": "74b02d205c6b99f223c5fe2dbc5095d370825972",
+  "guard_limits": {
+    "free_bytes": 5368709120,
+    "target_bytes": 1073741824
+  },
+  "final_cli_build_receipt": "../../../project-integer-constant-names-with-refused-member-family/results/full-workspace-final-cli-root-v1/final-cli-build/execution.json",
+  "copied_file_count": 131,
+  "archive_files": [
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/execution.json",
+      "archive_path": "actual-v2/execution.json",
+      "bytes": 97844,
+      "sha256": "09c2f3f23c476668be8fe10a8e5227d8da50b6bb4bb85c159425be8212909023"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/original/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk23/original/ComputedForEffectControl.class",
+      "bytes": 720,
+      "sha256": "56401a8d604d18dc8491df3f9c197f22021efa2c84de935928dfac7fff9af7a4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/original/Runner.class",
+      "archive_path": "actual-v2/jdk23/original/Runner.class",
+      "bytes": 1314,
+      "sha256": "a7fb56aad4424179478230b8ac4a10f3a7b91623726a7a950f79366ef672b243"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/original-all/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk23/original-all/ComputedForEffectControl.class",
+      "bytes": 938,
+      "sha256": "7c3f5f3cefcd0ae734d87575feab7fc685bf52ff8858b2647188c40c6cb0f39d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/original-all/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk23/original-all/ComputedForEffectControl.java",
+      "bytes": 2992,
+      "sha256": "2361c4b6ccd59151461438a8bf54a7be9f46d05f0ed4f6f4f6bffee2a32f873f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/original-default/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk23/original-default/ComputedForEffectControl.class",
+      "bytes": 938,
+      "sha256": "7c3f5f3cefcd0ae734d87575feab7fc685bf52ff8858b2647188c40c6cb0f39d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/original-default/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk23/original-default/ComputedForEffectControl.java",
+      "bytes": 2992,
+      "sha256": "2361c4b6ccd59151461438a8bf54a7be9f46d05f0ed4f6f4f6bffee2a32f873f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/pending/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk23/pending/ComputedForEffectControl.class",
+      "bytes": 720,
+      "sha256": "77d5e0e9b0d9b5ee72b8f5ea324b49bf56e2ba8372743bf1fb29172d18d364bc"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/pending/Runner.class",
+      "archive_path": "actual-v2/jdk23/pending/Runner.class",
+      "bytes": 1314,
+      "sha256": "a7fb56aad4424179478230b8ac4a10f3a7b91623726a7a950f79366ef672b243"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/pending-all/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk23/pending-all/ComputedForEffectControl.class",
+      "bytes": 947,
+      "sha256": "59dcbb236cfb48c4eadd6069e30de8cf74cc22140331e181c3eeafdf64026513"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/pending-all/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk23/pending-all/ComputedForEffectControl.java",
+      "bytes": 3021,
+      "sha256": "e11d010a93c65a2527fdbf0dc867267256f09d8238ec633d221268058fdc0862"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/pending-default/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk23/pending-default/ComputedForEffectControl.class",
+      "bytes": 947,
+      "sha256": "59dcbb236cfb48c4eadd6069e30de8cf74cc22140331e181c3eeafdf64026513"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk23/pending-default/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk23/pending-default/ComputedForEffectControl.java",
+      "bytes": 3021,
+      "sha256": "e11d010a93c65a2527fdbf0dc867267256f09d8238ec633d221268058fdc0862"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/original/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk8/original/ComputedForEffectControl.class",
+      "bytes": 720,
+      "sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/original/Runner.class",
+      "archive_path": "actual-v2/jdk8/original/Runner.class",
+      "bytes": 1320,
+      "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/original-all/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk8/original-all/ComputedForEffectControl.class",
+      "bytes": 938,
+      "sha256": "a76adfe3d8f1598fe501c0cfcb1469d75ba26dcafb85fb647d5e8b8a9aed491b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/original-all/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk8/original-all/ComputedForEffectControl.java",
+      "bytes": 2992,
+      "sha256": "2361c4b6ccd59151461438a8bf54a7be9f46d05f0ed4f6f4f6bffee2a32f873f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/original-default/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk8/original-default/ComputedForEffectControl.class",
+      "bytes": 938,
+      "sha256": "a76adfe3d8f1598fe501c0cfcb1469d75ba26dcafb85fb647d5e8b8a9aed491b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/original-default/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk8/original-default/ComputedForEffectControl.java",
+      "bytes": 2992,
+      "sha256": "2361c4b6ccd59151461438a8bf54a7be9f46d05f0ed4f6f4f6bffee2a32f873f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/pending/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk8/pending/ComputedForEffectControl.class",
+      "bytes": 720,
+      "sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/pending/Runner.class",
+      "archive_path": "actual-v2/jdk8/pending/Runner.class",
+      "bytes": 1320,
+      "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/pending-all/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk8/pending-all/ComputedForEffectControl.class",
+      "bytes": 947,
+      "sha256": "c58df01cc65fd90cc2135224b0c4449cf49f5f8c6f372d2e3c43aadd2d34260d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/pending-all/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk8/pending-all/ComputedForEffectControl.java",
+      "bytes": 3021,
+      "sha256": "e11d010a93c65a2527fdbf0dc867267256f09d8238ec633d221268058fdc0862"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/pending-default/ComputedForEffectControl.class",
+      "archive_path": "actual-v2/jdk8/pending-default/ComputedForEffectControl.class",
+      "bytes": 947,
+      "sha256": "c58df01cc65fd90cc2135224b0c4449cf49f5f8c6f372d2e3c43aadd2d34260d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/jdk8/pending-default/ComputedForEffectControl.java",
+      "archive_path": "actual-v2/jdk8/pending-default/ComputedForEffectControl.java",
+      "bytes": 3021,
+      "sha256": "e11d010a93c65a2527fdbf0dc867267256f09d8238ec633d221268058fdc0862"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/100.stderr.raw",
+      "archive_path": "actual-v2/raw/100.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/100.stdout.raw",
+      "archive_path": "actual-v2/raw/100.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/101.stderr.raw",
+      "archive_path": "actual-v2/raw/101.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/101.stdout.raw",
+      "archive_path": "actual-v2/raw/101.stdout.raw",
+      "bytes": 229,
+      "sha256": "ce0d116698bb247cfa120344f717d7bc2196ba610c4a543738987f3c08e081c7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/102.stderr.raw",
+      "archive_path": "actual-v2/raw/102.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/102.stdout.raw",
+      "archive_path": "actual-v2/raw/102.stdout.raw",
+      "bytes": 6810,
+      "sha256": "57d0919b3b961430afc188baed8a1c7d0653d18e993c08e81dd8cac87459e579"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/103.stderr.raw",
+      "archive_path": "actual-v2/raw/103.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/103.stdout.raw",
+      "archive_path": "actual-v2/raw/103.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/104.stderr.raw",
+      "archive_path": "actual-v2/raw/104.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/104.stdout.raw",
+      "archive_path": "actual-v2/raw/104.stdout.raw",
+      "bytes": 81837,
+      "sha256": "47dfa8788c2b66d55e54352e6c6fa362d3bfa84b15f8606887772f4df5e88b96"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/105.stderr.raw",
+      "archive_path": "actual-v2/raw/105.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/105.stdout.raw",
+      "archive_path": "actual-v2/raw/105.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/106.stderr.raw",
+      "archive_path": "actual-v2/raw/106.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/106.stdout.raw",
+      "archive_path": "actual-v2/raw/106.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/107.stderr.raw",
+      "archive_path": "actual-v2/raw/107.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/107.stdout.raw",
+      "archive_path": "actual-v2/raw/107.stdout.raw",
+      "bytes": 87260,
+      "sha256": "e499a3164ed92b350c1420125473b9174fd1b98cd2776529180dfe5a0ee1da2b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/108.stderr.raw",
+      "archive_path": "actual-v2/raw/108.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/108.stdout.raw",
+      "archive_path": "actual-v2/raw/108.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/109.stderr.raw",
+      "archive_path": "actual-v2/raw/109.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/109.stdout.raw",
+      "archive_path": "actual-v2/raw/109.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/110.stderr.raw",
+      "archive_path": "actual-v2/raw/110.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/110.stdout.raw",
+      "archive_path": "actual-v2/raw/110.stdout.raw",
+      "bytes": 6809,
+      "sha256": "d99164332684c17790c3e6095256358e93c7b50b9b38abcdced9f7cb437655bf"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/111.stderr.raw",
+      "archive_path": "actual-v2/raw/111.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/111.stdout.raw",
+      "archive_path": "actual-v2/raw/111.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/112.stderr.raw",
+      "archive_path": "actual-v2/raw/112.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/112.stdout.raw",
+      "archive_path": "actual-v2/raw/112.stdout.raw",
+      "bytes": 83168,
+      "sha256": "5fd35b637a27a0b265546fc96434df33702208ff07b1e3fc2c0042d893bf3f01"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/113.stderr.raw",
+      "archive_path": "actual-v2/raw/113.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/113.stdout.raw",
+      "archive_path": "actual-v2/raw/113.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/114.stderr.raw",
+      "archive_path": "actual-v2/raw/114.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/114.stdout.raw",
+      "archive_path": "actual-v2/raw/114.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/115.stderr.raw",
+      "archive_path": "actual-v2/raw/115.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/115.stdout.raw",
+      "archive_path": "actual-v2/raw/115.stdout.raw",
+      "bytes": 88602,
+      "sha256": "b96e12904b704201cf5574f5cee882f20c66d3161592f90621ce83e5e56a4851"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/116.stderr.raw",
+      "archive_path": "actual-v2/raw/116.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/116.stdout.raw",
+      "archive_path": "actual-v2/raw/116.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/117.stderr.raw",
+      "archive_path": "actual-v2/raw/117.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/117.stdout.raw",
+      "archive_path": "actual-v2/raw/117.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/118.stderr.raw",
+      "archive_path": "actual-v2/raw/118.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/118.stdout.raw",
+      "archive_path": "actual-v2/raw/118.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/119.stderr.raw",
+      "archive_path": "actual-v2/raw/119.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/119.stdout.raw",
+      "archive_path": "actual-v2/raw/119.stdout.raw",
+      "bytes": 229,
+      "sha256": "2341f86ccc9a9661a37033db579de6e180e1ffa0b5c0fc4b7217249a21dea88b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/120.stderr.raw",
+      "archive_path": "actual-v2/raw/120.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/120.stdout.raw",
+      "archive_path": "actual-v2/raw/120.stdout.raw",
+      "bytes": 7139,
+      "sha256": "7e39ff341f3d8cd95e7ad7413a3a2d0072a1e7f8f61def1f3c54a28ec1f7b5f5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/121.stderr.raw",
+      "archive_path": "actual-v2/raw/121.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/121.stdout.raw",
+      "archive_path": "actual-v2/raw/121.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/122.stderr.raw",
+      "archive_path": "actual-v2/raw/122.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/122.stdout.raw",
+      "archive_path": "actual-v2/raw/122.stdout.raw",
+      "bytes": 81826,
+      "sha256": "9c575fb1ba34d6edd878c2608bf88736a6b8dbf4741f4defad496ad8744a43a7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/123.stderr.raw",
+      "archive_path": "actual-v2/raw/123.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/123.stdout.raw",
+      "archive_path": "actual-v2/raw/123.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/124.stderr.raw",
+      "archive_path": "actual-v2/raw/124.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/124.stdout.raw",
+      "archive_path": "actual-v2/raw/124.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/125.stderr.raw",
+      "archive_path": "actual-v2/raw/125.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/125.stdout.raw",
+      "archive_path": "actual-v2/raw/125.stdout.raw",
+      "bytes": 87260,
+      "sha256": "a35539a7584fa6cd497964fa1b4f194fd66ac768c10c3de3de61663e53965733"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/126.stderr.raw",
+      "archive_path": "actual-v2/raw/126.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/126.stdout.raw",
+      "archive_path": "actual-v2/raw/126.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/127.stderr.raw",
+      "archive_path": "actual-v2/raw/127.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/127.stdout.raw",
+      "archive_path": "actual-v2/raw/127.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/128.stderr.raw",
+      "archive_path": "actual-v2/raw/128.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/128.stdout.raw",
+      "archive_path": "actual-v2/raw/128.stdout.raw",
+      "bytes": 7138,
+      "sha256": "bbcaa4714a3ad5f9e88d1a51f2512a23639bcdcb7684aae02be130dc5a60056e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/129.stderr.raw",
+      "archive_path": "actual-v2/raw/129.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/129.stdout.raw",
+      "archive_path": "actual-v2/raw/129.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/130.stderr.raw",
+      "archive_path": "actual-v2/raw/130.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/130.stdout.raw",
+      "archive_path": "actual-v2/raw/130.stdout.raw",
+      "bytes": 83168,
+      "sha256": "e5389e100d7d6323f4cf218ed656a770c9fdefadce3cc519a669384e28a62b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/131.stderr.raw",
+      "archive_path": "actual-v2/raw/131.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/131.stdout.raw",
+      "archive_path": "actual-v2/raw/131.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/132.stderr.raw",
+      "archive_path": "actual-v2/raw/132.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/132.stdout.raw",
+      "archive_path": "actual-v2/raw/132.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/133.stderr.raw",
+      "archive_path": "actual-v2/raw/133.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/133.stdout.raw",
+      "archive_path": "actual-v2/raw/133.stdout.raw",
+      "bytes": 88602,
+      "sha256": "76ec0d7bf044417897506c251b8b0885c529f79f8d43dda916786477d401e12d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/134.stderr.raw",
+      "archive_path": "actual-v2/raw/134.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/134.stdout.raw",
+      "archive_path": "actual-v2/raw/134.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/135.stderr.raw",
+      "archive_path": "actual-v2/raw/135.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2/raw/135.stdout.raw",
+      "archive_path": "actual-v2/raw/135.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/execution.json",
+      "archive_path": "preserved-failed-v1/execution.json",
+      "bytes": 13760,
+      "sha256": "1c78aad4d30336b3c56ca80eea7937929a59e3dbba6513922cb4b6e5c840eee3"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class",
+      "archive_path": "preserved-failed-v1/jdk8/original/ComputedForEffectControl.class",
+      "bytes": 720,
+      "sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/Runner.class",
+      "archive_path": "preserved-failed-v1/jdk8/original/Runner.class",
+      "bytes": 1320,
+      "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/pending/ComputedForEffectControl.class",
+      "archive_path": "preserved-failed-v1/jdk8/pending/ComputedForEffectControl.class",
+      "bytes": 720,
+      "sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/pending/Runner.class",
+      "archive_path": "preserved-failed-v1/jdk8/pending/Runner.class",
+      "bytes": 1320,
+      "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/100.stderr.raw",
+      "archive_path": "preserved-failed-v1/raw/100.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/100.stdout.raw",
+      "archive_path": "preserved-failed-v1/raw/100.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/101.stderr.raw",
+      "archive_path": "preserved-failed-v1/raw/101.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/101.stdout.raw",
+      "archive_path": "preserved-failed-v1/raw/101.stdout.raw",
+      "bytes": 229,
+      "sha256": "ce0d116698bb247cfa120344f717d7bc2196ba610c4a543738987f3c08e081c7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/102.stderr.raw",
+      "archive_path": "preserved-failed-v1/raw/102.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/102.stdout.raw",
+      "archive_path": "preserved-failed-v1/raw/102.stdout.raw",
+      "bytes": 6810,
+      "sha256": "bd1d672522a32f69d72e00c763505fac378fe561723a7cc001cb6f4bd0fd47e4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/103.stderr.raw",
+      "archive_path": "preserved-failed-v1/raw/103.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/103.stdout.raw",
+      "archive_path": "preserved-failed-v1/raw/103.stdout.raw",
+      "bytes": 296,
+      "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/104.stderr.raw",
+      "archive_path": "preserved-failed-v1/raw/104.stderr.raw",
+      "bytes": 654,
+      "sha256": "5dd4014eb51147f0eabed80902d4df46b538498451501aa45d2e75c8b0ce1a39"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/104.stdout.raw",
+      "archive_path": "preserved-failed-v1/raw/104.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/ComputedForEffectControl.java",
+      "archive_path": "source/ComputedForEffectControl.java",
+      "bytes": 955,
+      "sha256": "ebc11accf37955b2fbd5406d9766cac978dc7e4251ba269a99188adfc3c4be11"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/Runner.java",
+      "archive_path": "source/Runner.java",
+      "bytes": 1224,
+      "sha256": "21b77ee586aa649017b6868d9c6ea0422f33762a9e5d07e6113a0596ffda88c6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/swap_init_store_with_g.py",
+      "archive_path": "source/swap_init_store_with_g.py",
+      "bytes": 7185,
+      "sha256": "e5f21044fb45107c5b0793abcb93ad13e585808c1fe0aeb28e85fac88b50df36"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-runner-v1.py",
+      "archive_path": "verification/jarde-computed-call-order-baseline-root-runner-v1.py",
+      "bytes": 4449,
+      "sha256": "e2270ddb1ab4656b723c44cd919c05c7dbc5071747148a8564db06024e123d9b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-runner-v2.py",
+      "archive_path": "verification/jarde-computed-call-order-baseline-root-runner-v2.py",
+      "bytes": 4491,
+      "sha256": "125bddfca6960832bc0f781c5891b2394dc5a88b2aada316803ad1b25ea2338c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-independent-verifier-luna-v1/verify.py",
+      "archive_path": "verification/verify.py",
+      "bytes": 36957,
+      "sha256": "c999c89da9b957d81810aba7753b39c74cd9ee0d1da8069066cf2da6a8c2ce6c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-independent-acceptance-root-v1.json",
+      "archive_path": "verification/jarde-computed-call-order-independent-acceptance-root-v1.json",
+      "bytes": 72098,
+      "sha256": "dca157b49ac32e42bcb94c81a201945987dd1481a08ab61b7987b309602c5206"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-independent-acceptance-root-v1.stdout.raw",
+      "archive_path": "verification/jarde-computed-call-order-independent-acceptance-root-v1.stdout.raw",
+      "bytes": 573,
+      "sha256": "0a6eaa0d0c5ec848e8cbc6800fe2f87ce7e4c5f0ae6b4abdfcf2c4325e84fa75"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-independent-acceptance-root-v1.stderr.raw",
+      "archive_path": "verification/jarde-computed-call-order-independent-acceptance-root-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-root-bindings-v1.py",
+      "archive_path": "verification/jarde-computed-call-order-root-bindings-v1.py",
+      "bytes": 2057,
+      "sha256": "1311f666fd4e0acada3281f4728e844f67d7f07dc80e75a7e38859ac024f82e2"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-root-bindings-acceptance-v1.json",
+      "archive_path": "verification/jarde-computed-call-order-root-bindings-acceptance-v1.json",
+      "bytes": 1626,
+      "sha256": "088b4b4951e1b9404a290ce0082010986a7d1a5bbf12101c535dfc2e5a8288a8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-root-bindings-v1.stdout.raw",
+      "archive_path": "verification/jarde-computed-call-order-root-bindings-v1.stdout.raw",
+      "bytes": 98,
+      "sha256": "8bbf93928c966ae4f506626377120e20d9e89af79dd8fdc1a1969a2a85f41847"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-root-bindings-v1.stderr.raw",
+      "archive_path": "verification/jarde-computed-call-order-root-bindings-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1.stdout.raw",
+      "archive_path": "verification/jarde-computed-call-order-baseline-root-v1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v1.stderr.raw",
+      "archive_path": "verification/jarde-computed-call-order-baseline-root-v1.stderr.raw",
+      "bytes": 737,
+      "sha256": "d9eb952bbb0858ac432edc0b12035a97299bd3e1a4be8eb4c7bef457faa7e0e1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2.stdout.raw",
+      "archive_path": "verification/jarde-computed-call-order-baseline-root-v2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-baseline-root-v2.stderr.raw",
+      "archive_path": "verification/jarde-computed-call-order-baseline-root-v2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-doc-strict-root-v1.stdout.raw",
+      "archive_path": "verification/jarde-computed-call-order-doc-strict-root-v1.stdout.raw",
+      "bytes": 16057,
+      "sha256": "c33a2f7e97d3fd37f73c8f7b4c1741e609218247e7fb2b475797e5dc6d533dd1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-computed-call-order-doc-strict-root-v1.stderr.raw",
+      "archive_path": "verification/jarde-computed-call-order-doc-strict-root-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "root_document_strict": {
+    "argv": [
+      "openspec",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0
+  }
+}

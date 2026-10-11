@@ -1,0 +1,189 @@
+Classfile /private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class
+  Last modified 2026-10-11; size 720 bytes
+  MD5 checksum 1f14e9dc1bf5ae4064f66ccd2858fe34
+public final class ComputedForEffectControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #14.#32        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #13.#33        // ComputedForEffectControl.end:I
+   #3 = Fieldref           #13.#34        // ComputedForEffectControl.mode:I
+   #4 = Fieldref           #13.#35        // ComputedForEffectControl.fCalls:I
+   #5 = Fieldref           #13.#36        // ComputedForEffectControl.gCalls:I
+   #6 = Fieldref           #13.#37        // ComputedForEffectControl.order:I
+   #7 = Class              #38            // java/lang/RuntimeException
+   #8 = String             #39            // fail-f
+   #9 = Methodref          #7.#40         // java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+  #10 = String             #41            // fail-g
+  #11 = Methodref          #13.#42        // ComputedForEffectControl.f:()I
+  #12 = Methodref          #13.#43        // ComputedForEffectControl.g:()V
+  #13 = Class              #44            // ComputedForEffectControl
+  #14 = Class              #45            // java/lang/Object
+  #15 = Utf8               end
+  #16 = Utf8               I
+  #17 = Utf8               mode
+  #18 = Utf8               fCalls
+  #19 = Utf8               gCalls
+  #20 = Utf8               order
+  #21 = Utf8               <init>
+  #22 = Utf8               ()V
+  #23 = Utf8               Code
+  #24 = Utf8               reset
+  #25 = Utf8               (I)V
+  #26 = Utf8               f
+  #27 = Utf8               ()I
+  #28 = Utf8               StackMapTable
+  #29 = Utf8               g
+  #30 = Utf8               find
+  #31 = Utf8               ([IIIIII)I
+  #32 = NameAndType        #21:#22        // "<init>":()V
+  #33 = NameAndType        #15:#16        // end:I
+  #34 = NameAndType        #17:#16        // mode:I
+  #35 = NameAndType        #18:#16        // fCalls:I
+  #36 = NameAndType        #19:#16        // gCalls:I
+  #37 = NameAndType        #20:#16        // order:I
+  #38 = Utf8               java/lang/RuntimeException
+  #39 = Utf8               fail-f
+  #40 = NameAndType        #21:#46        // "<init>":(Ljava/lang/String;)V
+  #41 = Utf8               fail-g
+  #42 = NameAndType        #26:#27        // f:()I
+  #43 = NameAndType        #29:#22        // g:()V
+  #44 = Utf8               ComputedForEffectControl
+  #45 = Utf8               java/lang/Object
+  #46 = Utf8               (Ljava/lang/String;)V
+{
+  static int end;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int mode;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int fCalls;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int gCalls;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int order;
+    descriptor: I
+    flags: ACC_STATIC
+
+  public ComputedForEffectControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static void reset(int);
+    descriptor: (I)V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iconst_3
+         1: putstatic     #2                  // Field end:I
+         4: iload_0
+         5: putstatic     #3                  // Field mode:I
+         8: iconst_0
+         9: putstatic     #4                  // Field fCalls:I
+        12: iconst_0
+        13: putstatic     #5                  // Field gCalls:I
+        16: iconst_0
+        17: putstatic     #6                  // Field order:I
+        20: return
+
+  static int f();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #4                  // Field fCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #4                  // Field fCalls:I
+         8: getstatic     #6                  // Field order:I
+        11: bipush        10
+        13: imul
+        14: iconst_1
+        15: iadd
+        16: putstatic     #6                  // Field order:I
+        19: getstatic     #3                  // Field mode:I
+        22: iconst_1
+        23: if_icmpne     36
+        26: new           #7                  // class java/lang/RuntimeException
+        29: dup
+        30: ldc           #8                  // String fail-f
+        32: invokespecial #9                  // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+        35: athrow
+        36: getstatic     #2                  // Field end:I
+        39: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 36 /* same */
+
+  static void g();
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #5                  // Field gCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #5                  // Field gCalls:I
+         8: getstatic     #6                  // Field order:I
+        11: bipush        10
+        13: imul
+        14: iconst_2
+        15: iadd
+        16: putstatic     #6                  // Field order:I
+        19: iconst_0
+        20: putstatic     #2                  // Field end:I
+        23: getstatic     #3                  // Field mode:I
+        26: iconst_2
+        27: if_icmpne     40
+        30: new           #7                  // class java/lang/RuntimeException
+        33: dup
+        34: ldc           #10                 // String fail-g
+        36: invokespecial #9                  // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+        39: athrow
+        40: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 40 /* same */
+
+  static int find(int[], int, int, int, int, int);
+    descriptor: ([IIIIII)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=7, args_size=6
+         0: invokestatic  #11                 // Method f:()I
+         3: iconst_1
+         4: isub
+         5: istore        6
+         7: invokestatic  #12                 // Method g:()V
+        10: iload         6
+        12: iload_2
+        13: if_icmplt     33
+        16: aload_0
+        17: iload         6
+        19: iaload
+        20: iload_1
+        21: if_icmpne     27
+        24: iload         6
+        26: ireturn
+        27: iinc          6, -1
+        30: goto          10
+        33: iconst_m1
+        34: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 10
+          locals = [ int ]
+        frame_type = 16 /* same */
+        frame_type = 5 /* same */
+}

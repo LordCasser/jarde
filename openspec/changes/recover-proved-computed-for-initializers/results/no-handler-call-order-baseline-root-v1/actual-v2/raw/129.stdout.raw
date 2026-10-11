@@ -1,0 +1,5 @@
+normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0
+normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0
+normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0
+fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3
+fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0

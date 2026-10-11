@@ -1,0 +1,369 @@
+{
+  "status": "failed",
+  "runner": {
+    "path": "/private/tmp/jarde-computed-call-order-baseline-root-runner-v1.py",
+    "bytes": 4449,
+    "sha256": "e2270ddb1ab4656b723c44cd919c05c7dbc5071747148a8564db06024e123d9b"
+  },
+  "guard": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "bytes": 23507,
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "scanner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "bytes": 471,
+    "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+  },
+  "source_pins": [
+    {
+      "path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/ComputedForEffectControl.java",
+      "bytes": 955,
+      "sha256": "ebc11accf37955b2fbd5406d9766cac978dc7e4251ba269a99188adfc3c4be11"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/Runner.java",
+      "bytes": 1224,
+      "sha256": "21b77ee586aa649017b6868d9c6ea0422f33762a9e5d07e6113a0596ffda88c6"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/swap_init_store_with_g.py",
+      "bytes": 7185,
+      "sha256": "e5f21044fb45107c5b0793abcb93ad13e585808c1fe0aeb28e85fac88b50df36"
+    }
+  ],
+  "cli": {
+    "path": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+    "bytes": 60820032,
+    "sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b"
+  },
+  "commands": [
+    {
+      "index": 100,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-d",
+        "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original",
+        "/private/tmp/jarde-computed-for-call-order-control-luna-v2/ComputedForEffectControl.java",
+        "/private/tmp/jarde-computed-for-call-order-control-luna-v2/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T08:35:43.845348+00:00",
+      "duration_seconds": 1.013735499989707,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 27959975936,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/100.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/100.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 101,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/jarde-computed-for-call-order-control-luna-v2/swap_init_store_with_g.py",
+        "--input",
+        "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class",
+        "--output",
+        "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/pending/ComputedForEffectControl.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T08:35:44.860577+00:00",
+      "duration_seconds": 1.0065070840064436,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 27959955456,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/101.stdout.raw",
+          "bytes": 229,
+          "sha256": "ce0d116698bb247cfa120344f717d7bc2196ba610c4a543738987f3c08e081c7"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/101.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 102,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-classpath",
+        "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original",
+        "-c",
+        "-v",
+        "ComputedForEffectControl"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T08:35:45.868506+00:00",
+      "duration_seconds": 1.0147435829858296,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 27959943168,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/102.stdout.raw",
+          "bytes": 6810,
+          "sha256": "bd1d672522a32f69d72e00c763505fac378fe561723a7cc001cb6f4bd0fd47e4"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/102.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 103,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T08:35:46.883676+00:00",
+      "duration_seconds": 1.0155005419801455,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 27959975936,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/103.stdout.raw",
+          "bytes": 296,
+          "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/103.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 104,
+      "argv": [
+        "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class",
+        "--class",
+        "ComputedForEffectControl",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T08:35:47.900594+00:00",
+      "duration_seconds": 1.014592374995118,
+      "exit_code": 2,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 27959951360,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/104.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/104.stderr.raw",
+          "bytes": 654,
+          "sha256": "5dd4014eb51147f0eabed80902d4df46b538498451501aa45d2e75c8b0ce1a39"
+        }
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "jdk": "jdk8",
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "bytes": 152128,
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "bytes": 152096,
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "bytes": 152128,
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      },
+      "renders": [],
+      "runtimes": {
+        "original": {
+          "index": 103,
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original",
+            "Runner"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-11T08:35:46.883676+00:00",
+          "duration_seconds": 1.0155005419801455,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 27959975936,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": false,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": true,
+            "failure_reason": null
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/103.stdout.raw",
+              "bytes": 296,
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/raw/103.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      "original_class": {
+        "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class",
+        "bytes": 720,
+        "sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9"
+      },
+      "pending_class": {
+        "path": "/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/pending/ComputedForEffectControl.class",
+        "bytes": 720,
+        "sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e"
+      }
+    }
+  ],
+  "failure": "RuntimeError: [PosixPath('/private/tmp/jarde-cf12-constant-candidate-cli-root-v2'), 'class-source', '--input', PosixPath('/private/tmp/jarde-computed-call-order-baseline-root-v1/jdk8/original/ComputedForEffectControl.class'), '--class', 'ComputedForEffectControl', '--format', 'json']"
+}
