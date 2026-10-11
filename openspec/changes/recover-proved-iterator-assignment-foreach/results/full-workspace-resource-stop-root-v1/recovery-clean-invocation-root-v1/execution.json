@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T22:18:08.920031+00:00",
+  "finished_at": "2026-10-11T22:18:09.086014+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-iterator-assignment-guard-recovery-clean-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-iterator-assignment-guard-recovery-clean-invocation-root-v1/stderr.raw",
+      "bytes": 40,
+      "sha256": "49e37a6bd138d4822332ebe22b9feab93dca3a278b54c9ca30741027b43f277c"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,9 @@
+
+running 4 tests
+test a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias ... ok
+test the_anchor_round_trips_through_both_javac_legs ... ok
+test the_ascii_presentations_match_the_frozen_proved_loop_projections ... ok
+test the_cjk_declarations_are_presented_as_the_pool_states_them ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.34s
+

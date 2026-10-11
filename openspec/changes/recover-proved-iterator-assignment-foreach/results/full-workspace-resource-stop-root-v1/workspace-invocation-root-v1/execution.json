@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v1/workspace_runner.py",
+    "--regression-receipt",
+    "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+    "--regression-receipt-sha256",
+    "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b",
+    "--candidate-cli",
+    "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+    "--candidate-cli-sha256",
+    "526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5",
+    "--out",
+    "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v1/workspace-run-v1"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T22:09:43.561493+00:00",
+  "finished_at": "2026-10-11T22:16:31.396297+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-iterator-assignment-workspace-invocation-root-v1/stdout.raw",
+      "bytes": 3425,
+      "sha256": "d3021479dcf5f014d9c05445c877e19ef67059ba0a72938dabdbdc6b505d215f"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-iterator-assignment-workspace-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

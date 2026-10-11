@@ -1,0 +1,5 @@
+# 最终本地完整验收
+
+root实际执行fmt、当前ci.yml完整Clippy argv、全仓OpenSpec strict、fresh CLI build、finally cargo clean五命令，全部exit0。strict实际355/0；CLI与完整类对照使用的冻结candidate字节相同：61314560B/0555/SHA256526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5。4744输入恒同，默认栈及5GiB/1GiB一秒构建守卫；唯一固定terminal cargo clean允许释放空间，target已移除。
+
+独立accept-final实际exit0，原stdout即acceptance.json，SHA256fd4d494c4bee2da64c103be1814fb9514b425af309a699a3c7385dbb90acbead；final执行SHA256b3ea22423fee9a51f8839c4a7920cf301aa3b02a48c99b9c2229061c2d7d744c。仅接受本地，不提前认定尚待提交的产品CI和clean主线。附own-CI verifier-v3和clean auditor-v2均仅私有静态准备、尚未执行。

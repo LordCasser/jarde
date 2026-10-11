@@ -1,0 +1,8 @@
+both-empty|exception=none|l1=[]|l2=[]
+unmatched|exception=none|l1=[]|l2=[right]
+five-character-match-add|exception=java.util.ConcurrentModificationException|l1=[abcde, later]|l2=[abcde, tail, abcde]
+non-five-match-remove|exception=java.util.ConcurrentModificationException|l1=[later, tail]|l2=[four]
+non-five-match-continues-and-clears|exception=none|l1=[]|l2=[four]
+null-first-list|exception=java.lang.NullPointerException|l1=null|l2=[value]
+null-second-list|exception=java.lang.NullPointerException|l1=[value]|l2=null
+null-element|exception=java.lang.NullPointerException|l1=[null]|l2=[value]

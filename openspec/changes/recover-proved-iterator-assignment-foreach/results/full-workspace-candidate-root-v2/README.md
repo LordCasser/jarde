@@ -1,0 +1,5 @@
+# Fresh完整工作区独立接受
+
+root第二轮2026-10-11T22:24:55Z–22:36:24Z从零执行96批、362实际Cargo目标，3481/0/97，99命令198raw。独立acceptor实际exit0，核3578具名结果及20必要测试、4744输入前后/live、metadata全部目标与源码pin、默认Rust栈、5GiB/1GiB一秒守卫。非清理命令均受守卫；唯一最后cargo clean是释放空间的固定cleanup-only动作，raw/前后资源观测/target absent严格核验。
+
+execution SHA256 f1d4a40a6318a54602fe0eb958942e76cff573f6b491d1c861102d1aabdd74c0；acceptance SHA256 5b81bee26189269373ce3e54a2e1c2124d2bbfdd36fffba9834b07e6034926b8。原v1空间中止完整保留于旁目录，未拼接。仅接受本地全工作区，最终lint/CLI及产品自身CI另行核准。

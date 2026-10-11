@@ -1,0 +1,8 @@
+
+running 3 tests
+test nested_foreach_late_stop_and_precancel_leave_no_partial_method_artifact ... ok
+test nested_iterators_project_and_preserve_the_outer_assignment_and_cast ... ok
+test outer_assignment_foreach_public_api_and_real_controls_stay_conservative ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

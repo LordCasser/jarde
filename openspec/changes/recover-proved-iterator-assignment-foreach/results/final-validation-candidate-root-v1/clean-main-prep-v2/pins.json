@@ -1,0 +1,23 @@
+{
+  "schema": "iterator-assignment-clean-main-audit-prep-v2",
+  "status": "prepared_not_executed_full_validation_pending",
+  "base_v1": {
+    "path": "/private/tmp/jarde-iterator-assignment-clean-main-prep-luna-v1/audit-clean-main.py",
+    "sha256": "4a64d939f5f8b55a2005d83b6bf0a860084170c1db54171af9d2571c29782b15"
+  },
+  "auditor": {
+    "path": "/private/tmp/jarde-iterator-assignment-clean-main-prep-luna-v2/audit-clean-main.py",
+    "sha256": "d38117f342a03ef5486605a75e26842e2153450833a7f57a986e0e941d65563f"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+    "bytes": 61314560,
+    "mode": "0o555",
+    "sha256": "526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5"
+  },
+  "own_ci_success_contract": {
+    "schema": "iterator-assignment-own-ci-acceptance-v2",
+    "status": "accepted_local_own_ci_observation"
+  },
+  "input_receipts": "All actual receipt paths and SHA-256 values remain invocation inputs; no future receipt identity is embedded."
+}

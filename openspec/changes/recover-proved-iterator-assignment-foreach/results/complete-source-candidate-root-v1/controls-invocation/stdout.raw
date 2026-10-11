@@ -1,0 +1,2 @@
+{"status": "verified_observation_capture", "execution": {"path": "/private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/capture/execution.json", "bytes": 85178, "sha256": "09399f6a1652515e1ab8dfc083e897022625b713ca081bed97f28c5e6d1aa318"}, "out": "/private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/checker.json"}
+{"status": "checked_observations_only", "sources": 4744, "target_absent": true}

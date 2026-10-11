@@ -1,0 +1,7 @@
+# 循环外元素赋值控制
+
+canonical class1494B/SHA25628b92d58ce18fb08362bd39b0558de98c3c41830cc8cbc6bd60ec3a183b21956来自root真实双JDK完整类基线的Corretto javac8 original leg；原编译argv/raw见OpenSpec recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v2。源与Runner一同冻结；此目录只放目标class，不把observer Runner class算入census。
+
+positive需保留循环外String初值、循环内cast赋值和最后return，只恢复Object foreach。noCastAssign/bodyEffectBeforeAssign/extraNextConsumption为公开输出反例，不将while结果冒称某内部proof gate被触达。Runner以12 case记录调用次序、空/末值/null/错误元素/iterator异常；无法直接读取已展开异常栈帧局部，只观察赋值后callback和effect。
+
+noCastAssign初值Runner.seed():Object用于隔离独立literal-seeded Object错误收窄String的类型债务，不证明类型问题修复。JDK23同源class1485B/SHA8c40426f3184d7fddf4a6d4e2f55fd4a5e379bf50640cf98368eabd04d487c58保留在基线证据；不是canonical字节。

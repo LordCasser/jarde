@@ -1,0 +1,1 @@
+Private own-CI verifier v3 preparation. One exact focused-receipt status literal was corrected from v2. See pins.json and REVIEW.md. No acceptance run was performed; the in-progress workspace result is not assessed here.

@@ -1,0 +1,9 @@
+{
+  "schema": "iterator-assignment-own-ci-verifier-prep-v3",
+  "base_verifier": {"path": "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v2/verify-own-ci.py", "sha256": "3983e71e4247974f50c924cfc72aaa432e642d555e9b1e7305d2b2c81fd9c442"},
+  "candidate": {"path": "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/verify-own-ci.py", "sha256": "8b229a89e1235417c3b0a76006c1f9d8c808047ff5b1a7fe6e2a25bd4dc3139e"},
+  "patch": {"path": "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/candidate.patch", "sha256": "ccff558b8b7468c677edb8342cdc65a56c38f4fef7d4edbd4fc62fab7250577c"},
+  "focused_receipt": {"path": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json", "sha256": "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b", "schema": "iterator-assignment-regressions-root-v1", "actual_status": "passed_candidate_build_only"},
+  "change": "single status literal correction from passed_regressions_candidate_only to the receipt's actual passed_candidate_build_only",
+  "execution": "no verifier or toolchain execution"
+}

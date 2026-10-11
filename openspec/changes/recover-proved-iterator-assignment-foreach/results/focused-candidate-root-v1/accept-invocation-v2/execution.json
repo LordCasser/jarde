@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v2/accept.py",
+    "--receipt",
+    "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+    "--receipt-sha256",
+    "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b",
+    "--out",
+    "/private/tmp/jarde-iterator-assignment-focused-acceptance-root-v1.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T22:08:05.033812+00:00",
+  "finished_at": "2026-10-11T22:08:06.289586+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v2/stdout.raw",
+      "bytes": 203,
+      "sha256": "04e5c84e250a5d1d9ff3b5069c4db0ab2aed027e43c030912766db20f91fe0a0"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

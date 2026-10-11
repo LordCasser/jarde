@@ -1,0 +1,27 @@
+--- a/accept.py
++++ b/accept.py
+@@ -17,6 +17,13 @@
+ CHECKER = ('/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py', 'a05acce687bf0e22bfab9eb8ae00520d53a006b740732f4b0041182ce72a464a')
+ CLOSURE = ('/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace_runner.py', '711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e')
+ FOCUSED = ('/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json', '0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b')
++COLLECTOR_ARG_ORDER = [
++    'cli', 'cli_sha256', 'build_receipt', 'build_receipt_sha256',
++    'receipt_cli_object', 'receipt_status_key', 'receipt_accepted_value', 'receipt_mode_key',
++    'jdk_manifest', 'jdk_manifest_sha256', 'jadx', 'jadx_sha256', 'jadx_jar',
++    'jadx_jar_sha256', 'guard', 'guard_sha256', 'scanner', 'scanner_sha256',
++    'classfile_parser', 'classfile_parser_sha256', 'inputs_dir', 'inputs_manifest', 'out',
++]
+ CLI = Path('/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1')
+ CLI_SHA = '526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5'
+ BUILD = ('/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json', FOCUSED[1])
+@@ -137,8 +144,9 @@
+     need(launch['collector_argv'][1]==str(collector) and Path(launch['collector_argv'][1]).resolve()==collector.resolve(),f'{name} collector argv script differs')
+     need(launch['checker_argv'][1]==str(checker_src) and Path(launch['checker_argv'][1]).resolve()==checker_src.resolve(),f'{name} checker argv script differs')
+     need(Path(launch['checker_argv'][0]).resolve()==py,f'{name} checker executable differs from collector Python')
++    need(set(config)==set(COLLECTOR_ARG_ORDER) and len(COLLECTOR_ARG_ORDER)==len(config),f'{name} collector config key inventory differs')
+     expected_collector_argv=[launch['collector_argv'][0],str(collector)]
+-    for key,value in config.items(): expected_collector_argv.extend(['--'+key.replace('_','-'),str(value)])
++    for key in COLLECTOR_ARG_ORDER: expected_collector_argv.extend(['--'+key.replace('_','-'),str(config[key])])
+     need(launch['collector_argv']==expected_collector_argv,f'{name} full collector argv differs from receipt config')
+     need(launch['collector_argv'][-1]==str(base/'capture') and launch['checker_argv'][-4:]==['--execution',str(cap_path),'--out',str(checker_path)],f'{name} launch argv outputs differ')
+     need(config.get('out')==str(base/'capture'),f'{name} collector output path differs')

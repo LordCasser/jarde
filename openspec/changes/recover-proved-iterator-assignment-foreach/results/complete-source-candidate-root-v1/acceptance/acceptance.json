@@ -1,0 +1,90 @@
+{
+  "schema": "iterator-assignment-two-class-runtime-observations-v1",
+  "status": "accepted_fixed_and_controls_runtime_observations_only",
+  "scope": "Two captured source/class families and their named runtime cases only. This is not general behavioral equivalence, full-workspace acceptance, or a claim about unobserved inputs.",
+  "focused_candidate_receipt": {
+    "path": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+    "sha256": "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+    "sha256": "526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5",
+    "mode": "0555"
+  },
+  "captures": [
+    {
+      "name": "fixed",
+      "launch_sha256": "0f175a08398335246a663e03f8d1288944b0aed2c6b05d4b9eb8c7beacb4d232",
+      "capture_sha256": "556892704f6aece8b403a609a3cb383587a0dad951159da5f4898037207a3228",
+      "checker_sha256": "83907502c72701a5570372099d3d21ea0b855bb91fa62d44d9768e5ed4433bdd",
+      "source_path_count": 4744,
+      "all_live_source_pins_match": true,
+      "commands": 29,
+      "raw_streams": 58,
+      "peak_target_bytes": 0,
+      "minimum_free_bytes_after_command": 11570520064,
+      "source_profiles": 4,
+      "loop_rows": [
+        {
+          "method": "test",
+          "foreach": 2,
+          "while": 0
+        }
+      ],
+      "runtime_observations": 10,
+      "runtime_equal_to_same_jdk_original": true,
+      "jarde_method_maps_checked": 8,
+      "default_all_equal": true,
+      "behavior_mismatches": [],
+      "behavioral_acceptance": "not_claimed"
+    },
+    {
+      "name": "controls",
+      "launch_sha256": "cb6b57852cc37f50a02a3c20cf933c2fa69c86eb015ed8b7ae46af8a561da046",
+      "capture_sha256": "09399f6a1652515e1ab8dfc083e897022625b713ca081bed97f28c5e6d1aa318",
+      "checker_sha256": "c54292edbfe9f3740eb555ce1b5d2de3c1138a58df46d0be887d038e91eaeeb6",
+      "source_path_count": 4744,
+      "all_live_source_pins_match": true,
+      "commands": 29,
+      "raw_streams": 58,
+      "peak_target_bytes": 0,
+      "minimum_free_bytes_after_command": 10827915264,
+      "source_profiles": 4,
+      "loop_rows": [
+        {
+          "method": "positive",
+          "foreach": 1,
+          "while": 0
+        },
+        {
+          "method": "noCastAssign",
+          "foreach": 0,
+          "while": 1
+        },
+        {
+          "method": "bodyEffectBeforeAssign",
+          "foreach": 0,
+          "while": 1
+        },
+        {
+          "method": "extraNextConsumption",
+          "foreach": 0,
+          "while": 1
+        }
+      ],
+      "runtime_observations": 10,
+      "runtime_equal_to_same_jdk_original": true,
+      "jarde_method_maps_checked": 20,
+      "default_all_equal": true,
+      "behavior_mismatches": [],
+      "behavioral_acceptance": "not_claimed"
+    }
+  ],
+  "shared_source_closure_path_count": 4744,
+  "live_source_closure_matched_before_and_after": true,
+  "both_final_targets_absent": true,
+  "acceptor": {
+    "path": "/private/tmp/jarde-iterator-assignment-observation-accept-prep-luna-v3/accept.py",
+    "sha256": "94fe09b8e460fffeaafc2527ceca58c7c8804336c303a1fb09b4f9eeb38d7aaa"
+  }
+}

@@ -1,0 +1,249 @@
+Classfile /private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class
+  Last modified 2026-10-12; size 1494 bytes
+  MD5 checksum 972f2fd785085b25debb3bd8a2ad2e96
+  Compiled from "CF11OuterAssignmentTarget.java"
+public final class cf11.CF11OuterAssignmentTarget
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #11.#38        // java/lang/Object."<init>":()V
+   #2 = String             #39            // seed
+   #3 = InterfaceMethodref #40.#41        // java/util/List.iterator:()Ljava/util/Iterator;
+   #4 = InterfaceMethodref #42.#43        // java/util/Iterator.hasNext:()Z
+   #5 = InterfaceMethodref #42.#44        // java/util/Iterator.next:()Ljava/lang/Object;
+   #6 = Class              #45            // java/lang/String
+   #7 = Methodref          #46.#47        // cf11/Runner.assigned:(Ljava/lang/String;)V
+   #8 = Methodref          #46.#48        // cf11/Runner.seed:()Ljava/lang/Object;
+   #9 = Methodref          #46.#49        // cf11/Runner.beforeAssignment:()V
+  #10 = Class              #50            // cf11/CF11OuterAssignmentTarget
+  #11 = Class              #51            // java/lang/Object
+  #12 = Utf8               <init>
+  #13 = Utf8               ()V
+  #14 = Utf8               Code
+  #15 = Utf8               LineNumberTable
+  #16 = Utf8               LocalVariableTable
+  #17 = Utf8               this
+  #18 = Utf8               Lcf11/CF11OuterAssignmentTarget;
+  #19 = Utf8               positive
+  #20 = Utf8               (Ljava/util/List;)Ljava/lang/String;
+  #21 = Utf8               values
+  #22 = Utf8               Ljava/util/List;
+  #23 = Utf8               target
+  #24 = Utf8               Ljava/lang/String;
+  #25 = Utf8               iterator
+  #26 = Utf8               Ljava/util/Iterator;
+  #27 = Utf8               StackMapTable
+  #28 = Class              #45            // java/lang/String
+  #29 = Class              #52            // java/util/Iterator
+  #30 = Utf8               noCastAssign
+  #31 = Utf8               (Ljava/util/List;)Ljava/lang/Object;
+  #32 = Utf8               Ljava/lang/Object;
+  #33 = Class              #51            // java/lang/Object
+  #34 = Utf8               bodyEffectBeforeAssign
+  #35 = Utf8               extraNextConsumption
+  #36 = Utf8               SourceFile
+  #37 = Utf8               CF11OuterAssignmentTarget.java
+  #38 = NameAndType        #12:#13        // "<init>":()V
+  #39 = Utf8               seed
+  #40 = Class              #53            // java/util/List
+  #41 = NameAndType        #25:#54        // iterator:()Ljava/util/Iterator;
+  #42 = Class              #52            // java/util/Iterator
+  #43 = NameAndType        #55:#56        // hasNext:()Z
+  #44 = NameAndType        #57:#58        // next:()Ljava/lang/Object;
+  #45 = Utf8               java/lang/String
+  #46 = Class              #59            // cf11/Runner
+  #47 = NameAndType        #60:#61        // assigned:(Ljava/lang/String;)V
+  #48 = NameAndType        #39:#58        // seed:()Ljava/lang/Object;
+  #49 = NameAndType        #62:#13        // beforeAssignment:()V
+  #50 = Utf8               cf11/CF11OuterAssignmentTarget
+  #51 = Utf8               java/lang/Object
+  #52 = Utf8               java/util/Iterator
+  #53 = Utf8               java/util/List
+  #54 = Utf8               ()Ljava/util/Iterator;
+  #55 = Utf8               hasNext
+  #56 = Utf8               ()Z
+  #57 = Utf8               next
+  #58 = Utf8               ()Ljava/lang/Object;
+  #59 = Utf8               cf11/Runner
+  #60 = Utf8               assigned
+  #61 = Utf8               (Ljava/lang/String;)V
+  #62 = Utf8               beforeAssignment
+{
+  public cf11.CF11OuterAssignmentTarget();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/CF11OuterAssignmentTarget;
+
+  public static java.lang.String positive(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          36
+        19: aload_2
+        20: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        25: checkcast     #6                  // class java/lang/String
+        28: astore_1
+        29: aload_1
+        30: invokestatic  #7                  // Method cf11/Runner.assigned:(Ljava/lang/String;)V
+        33: goto          10
+        36: aload_1
+        37: areturn
+      LineNumberTable:
+        line 8: 0
+        line 9: 3
+        line 10: 10
+        line 11: 19
+        line 12: 29
+        line 14: 36
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      38     0 values   Ljava/util/List;
+            3      35     1 target   Ljava/lang/String;
+           10      28     2 iterator   Ljava/util/Iterator;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 25 /* same */
+
+  public static java.lang.Object noCastAssign(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: invokestatic  #8                  // Method cf11/Runner.seed:()Ljava/lang/Object;
+         3: astore_1
+         4: aload_0
+         5: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        10: astore_2
+        11: aload_2
+        12: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        17: ifeq          30
+        20: aload_2
+        21: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        26: astore_1
+        27: goto          11
+        30: aload_1
+        31: areturn
+      LineNumberTable:
+        line 18: 0
+        line 19: 4
+        line 20: 11
+        line 21: 20
+        line 23: 30
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      32     0 values   Ljava/util/List;
+            4      28     1 target   Ljava/lang/Object;
+           11      21     2 iterator   Ljava/util/Iterator;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 11
+          locals = [ class java/lang/Object, class java/util/Iterator ]
+        frame_type = 18 /* same */
+
+  public static java.lang.String bodyEffectBeforeAssign(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          39
+        19: invokestatic  #9                  // Method cf11/Runner.beforeAssignment:()V
+        22: aload_2
+        23: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        28: checkcast     #6                  // class java/lang/String
+        31: astore_1
+        32: aload_1
+        33: invokestatic  #7                  // Method cf11/Runner.assigned:(Ljava/lang/String;)V
+        36: goto          10
+        39: aload_1
+        40: areturn
+      LineNumberTable:
+        line 27: 0
+        line 28: 3
+        line 29: 10
+        line 30: 19
+        line 31: 22
+        line 32: 32
+        line 34: 39
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      41     0 values   Ljava/util/List;
+            3      38     1 target   Ljava/lang/String;
+           10      31     2 iterator   Ljava/util/Iterator;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 28 /* same */
+
+  public static java.lang.String extraNextConsumption(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          43
+        19: aload_2
+        20: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        25: pop
+        26: aload_2
+        27: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        32: checkcast     #6                  // class java/lang/String
+        35: astore_1
+        36: aload_1
+        37: invokestatic  #7                  // Method cf11/Runner.assigned:(Ljava/lang/String;)V
+        40: goto          10
+        43: aload_1
+        44: areturn
+      LineNumberTable:
+        line 38: 0
+        line 39: 3
+        line 40: 10
+        line 41: 19
+        line 42: 26
+        line 43: 36
+        line 45: 43
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      45     0 values   Ljava/util/List;
+            3      42     1 target   Ljava/lang/String;
+           10      35     2 iterator   Ljava/util/Iterator;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 32 /* same */
+}
+SourceFile: "CF11OuterAssignmentTarget.java"

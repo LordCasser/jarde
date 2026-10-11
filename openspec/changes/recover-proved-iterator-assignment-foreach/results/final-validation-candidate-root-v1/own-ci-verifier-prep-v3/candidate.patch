@@ -1,0 +1,11 @@
+--- /private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v2/verify-own-ci.py	2026-10-12 06:26:02
++++ /private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/verify-own-ci.py	2026-10-12 06:27:06
+@@ -507,7 +507,7 @@
+     workspace = load_json(workspace_receipt)
+     acceptance = load_json(workspace_acceptance)
+     need(regression.get('schema') == 'iterator-assignment-regressions-root-v1' and
+-         regression.get('status') == 'passed_regressions_candidate_only' and
++         regression.get('status') == 'passed_candidate_build_only' and
+          workspace.get('schema') == 'iterator-assignment-full-workspace-root-v2' and
+          workspace.get('status') == 'passed' and
+          acceptance.get('schema') == 'iterator-assignment-full-workspace-local-acceptance-v2' and

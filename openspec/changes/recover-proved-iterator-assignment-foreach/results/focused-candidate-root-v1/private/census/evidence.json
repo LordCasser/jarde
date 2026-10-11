@@ -1,0 +1,185 @@
+{
+  "classfile": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+  "class_sha256": "28b92d58ce18fb08362bd39b0558de98c3c41830cc8cbc6bd60ec3a183b21956",
+  "canonical_fixture_directory": "tests/fixtures/p3-iterator-assignment",
+  "reader_source": "crates/jarde-reader/src/classfile.rs",
+  "reader_test": "repository_class_fixtures_validate_without_false_target_rejections",
+  "decoder": {
+    "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469",
+    "instruction_sizes": "pinned parser.decode; branch/switch record shape follows MethodCodeFacts::control_flow_targets"
+  },
+  "methods_with_code": 5,
+  "totals": {
+    "classes": 1,
+    "bodies": 5,
+    "handler_records": 0,
+    "branch_switch_targets": 8,
+    "jsr_calls": 0
+  },
+  "methods": [
+    {
+      "method": "<init>",
+      "descriptor": "()V",
+      "code_length": 5,
+      "instruction_count": 3,
+      "handler_records": [],
+      "handler_count": 0,
+      "branch_switch_targets": [],
+      "branch_switch_target_count": 0,
+      "jsr_bcis": [],
+      "jsr_count": 0
+    },
+    {
+      "method": "positive",
+      "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+      "code_length": 38,
+      "instruction_count": 17,
+      "handler_records": [],
+      "handler_count": 0,
+      "branch_switch_targets": [
+        {
+          "bci": 16,
+          "opcode": "0x99",
+          "kind": "branch",
+          "offset": 20,
+          "target_bci": 36
+        },
+        {
+          "bci": 33,
+          "opcode": "0xa7",
+          "kind": "branch",
+          "offset": -23,
+          "target_bci": 10
+        }
+      ],
+      "branch_switch_target_count": 2,
+      "jsr_bcis": [],
+      "jsr_count": 0
+    },
+    {
+      "method": "noCastAssign",
+      "descriptor": "(Ljava/util/List;)Ljava/lang/Object;",
+      "code_length": 32,
+      "instruction_count": 14,
+      "handler_records": [],
+      "handler_count": 0,
+      "branch_switch_targets": [
+        {
+          "bci": 17,
+          "opcode": "0x99",
+          "kind": "branch",
+          "offset": 13,
+          "target_bci": 30
+        },
+        {
+          "bci": 27,
+          "opcode": "0xa7",
+          "kind": "branch",
+          "offset": -16,
+          "target_bci": 11
+        }
+      ],
+      "branch_switch_target_count": 2,
+      "jsr_bcis": [],
+      "jsr_count": 0
+    },
+    {
+      "method": "bodyEffectBeforeAssign",
+      "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+      "code_length": 41,
+      "instruction_count": 18,
+      "handler_records": [],
+      "handler_count": 0,
+      "branch_switch_targets": [
+        {
+          "bci": 16,
+          "opcode": "0x99",
+          "kind": "branch",
+          "offset": 23,
+          "target_bci": 39
+        },
+        {
+          "bci": 36,
+          "opcode": "0xa7",
+          "kind": "branch",
+          "offset": -26,
+          "target_bci": 10
+        }
+      ],
+      "branch_switch_target_count": 2,
+      "jsr_bcis": [],
+      "jsr_count": 0
+    },
+    {
+      "method": "extraNextConsumption",
+      "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+      "code_length": 45,
+      "instruction_count": 20,
+      "handler_records": [],
+      "handler_count": 0,
+      "branch_switch_targets": [
+        {
+          "bci": 16,
+          "opcode": "0x99",
+          "kind": "branch",
+          "offset": 27,
+          "target_bci": 43
+        },
+        {
+          "bci": 40,
+          "opcode": "0xa7",
+          "kind": "branch",
+          "offset": -30,
+          "target_bci": 10
+        }
+      ],
+      "branch_switch_target_count": 2,
+      "jsr_bcis": [],
+      "jsr_count": 0
+    }
+  ],
+  "reader_source_pin": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/classfile.rs",
+    "bytes": 531233,
+    "sha256": "fb02cf2b49e10830be09e4bd7edba9560bc7ebf45d98a670d6f0f447d317c4c2"
+  },
+  "old_reader_tuple": [
+    1104,
+    4914,
+    469,
+    2992,
+    10
+  ],
+  "new_reader_tuple": [
+    1105,
+    4919,
+    469,
+    3000,
+    10
+  ],
+  "tuple_delta": [
+    1,
+    5,
+    0,
+    8,
+    0
+  ],
+  "fixture_pin": {
+    "source_path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+    "sha256": "28b92d58ce18fb08362bd39b0558de98c3c41830cc8cbc6bd60ec3a183b21956",
+    "canonical_fixture_directory": "tests/fixtures/p3-iterator-assignment",
+    "copy_not_yet_performed": true
+  },
+  "patch_pin": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/reader-census.patch",
+    "bytes": 836,
+    "sha256": "8ac109afe3114d8b7e1111b19383ceea0fd32b091fd0dfbf7ab8d43dced03d94"
+  },
+  "candidate_reader_source_pin": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/classfile.rs.candidate",
+    "bytes": 531519,
+    "sha256": "58834f0bf7699b5ac5de8e28bf33fc1fa637e840a0bc29559e428cdeb6c3bbc5"
+  },
+  "status": "private_static_census_and_minimal_reader_patch_prepared_not_applied"
+}

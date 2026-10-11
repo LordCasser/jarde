@@ -1,0 +1,47 @@
+--- /private/tmp/jarde-iterator-assignment-clean-main-prep-luna-v1/audit-clean-main.py	2026-10-12 06:29:51
++++ /private/tmp/jarde-iterator-assignment-clean-main-prep-luna-v2/audit-clean-main.py	2026-10-12 06:31:06
+@@ -240,7 +240,7 @@
+     assert receipt['candidate_cli'] == receipt['focused_build_candidate_cli']
+     assert CLI == CLI_PATH and CLI_SHA256 == CLI_SHA256_PIN
+     assert CLI.is_file() and not CLI.is_symlink()
+-    assert sha256(CLI) == CLI_SHA256 and CLI.stat().st_size == cli_record['bytes']
++    assert sha256(CLI) == CLI_SHA256 == CLI_SHA256_PIN and CLI.stat().st_size == cli_record['bytes'] == 61314560
+     assert stat.S_IMODE(CLI.stat().st_mode) == CLI_MODE and cli_record['mode'] == oct(CLI_MODE)
+     assert len(CLI_SHA256) == 64 and all(ch in '0123456789abcdef' for ch in CLI_SHA256)
+     assert receipt['references'] == [
+@@ -319,15 +319,24 @@
+     assert workspace['source_pins_before'] == workspace['source_pins_after'] == pins
+     assert receipt['focused_build_candidate_cli']['sha256'] == regression['candidate_cli']['sha256'] == CLI_SHA256
+     regression_cli = Path(regression['candidate_cli']['path'])
+-    assert regression_cli != CLI and regression_cli.is_file() and not regression_cli.is_symlink()
+-    assert sha256(regression_cli) == sha256(CLI) and regression_cli.read_bytes() == CLI.read_bytes()
++    assert regression_cli == CLI == CLI_PATH and regression_cli.is_file() and not regression_cli.is_symlink()
++    assert sha256(regression_cli) == CLI_SHA256_PIN and regression_cli.read_bytes() == CLI.read_bytes()
++    assert regression_cli.stat().st_size == 61314560
+     assert stat.S_IMODE(regression_cli.stat().st_mode) == CLI_MODE
+     final_cli_initial_sha = sha256(CLI)
+     regression_cli_initial_sha = sha256(regression_cli)
+ 
+     own_ci_acceptance = json.loads(OWN_CI_ACCEPTANCE.read_text(encoding='utf-8'))
++    assert args.own_ci_schema == 'iterator-assignment-own-ci-acceptance-v2'
++    assert args.own_ci_status == 'accepted_local_own_ci_observation'
+     assert own_ci_acceptance.get('schema') == args.own_ci_schema
+     assert own_ci_acceptance.get('status') == args.own_ci_status
++    assert own_ci_acceptance.get('product_commit') == PRODUCT_COMMIT
++    assert own_ci_acceptance.get('all_local_and_both_ci_seed_named_outcomes_compared') is True
++    own_ci_evidence = own_ci_acceptance.get('evidence', {})
++    assert own_ci_evidence.get('workspace_execution_sha256') == workspace_sha
++    assert own_ci_evidence.get('workspace_named_manifest_sha256') == acceptance_sha
++    assert own_ci_evidence.get('final_build_record_sha256') == actual_receipt_sha256
+     final_acceptance = json.loads(FINAL_ACCEPTANCE.read_text(encoding='utf-8'))
+     assert final_acceptance['schema'] == 'iterator-assignment-final-validation-acceptance-v2'
+     assert final_acceptance['status'] == 'accepted_local_full_validation_only'
+@@ -434,7 +443,7 @@
+         'regression_cli_path': str(regression_cli),
+         'regression_and_final_cli_byte_identical': True,
+         'final_acceptance_sha256': EXPECTED_RECEIPT_HASHES[FINAL_ACCEPTANCE],
+-        'own_ci_acceptance': {'path': str(OWN_CI_ACCEPTANCE), 'sha256': EXPECTED_RECEIPT_HASHES[OWN_CI_ACCEPTANCE], 'schema': own_ci_acceptance['schema'], 'status': own_ci_acceptance['status']},
++        'own_ci_acceptance': {'path': str(OWN_CI_ACCEPTANCE), 'sha256': EXPECTED_RECEIPT_HASHES[OWN_CI_ACCEPTANCE], 'schema': own_ci_acceptance['schema'], 'status': own_ci_acceptance['status'], 'product_commit': own_ci_acceptance['product_commit'], 'all_local_and_both_ci_seed_named_outcomes_compared': own_ci_acceptance['all_local_and_both_ci_seed_named_outcomes_compared'], 'evidence': own_ci_evidence},
+         'cli_build_receipt': {
+             'path': str(CLI_EXECUTION), 'sha256': actual_receipt_sha256, 'schema': receipt['schema'],
+             'source_pin_count': len(pins), 'source_manifest_sha256': source_manifest,

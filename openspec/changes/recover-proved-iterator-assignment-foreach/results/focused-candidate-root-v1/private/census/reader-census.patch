@@ -1,0 +1,14 @@
+--- a/crates/jarde-reader/src/classfile.rs
++++ b/crates/jarde-reader/src/classfile.rs
+@@ -12241,7 +12241,10 @@
+             // HoistedIteratorPhiControls: one canonical javac8 class, three Code bodies,
+             // no handlers, five direct branch targets (mixed 3 + alias 2), no jsr;
+             // independently confirmed against both compiler legs and parsed Code bytes.
+-            (1104, 4914, 469, 2992, 10),
++            // CF11OuterAssignmentTarget: one javac 8 class and five Code bodies; four methods
++            // contribute two direct branch targets each, with no handlers or jsr. The per-method
++            // byte-level rows are recorded in the private census evidence for this fixture.
++            (1105, 4919, 469, 3000, 10),
+             "fixture population changed: re-measure these counts"
+         );
+     }

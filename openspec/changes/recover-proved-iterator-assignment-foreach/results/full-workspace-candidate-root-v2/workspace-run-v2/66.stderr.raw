@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.38s
+[1m[92m     Running[0m tests/p5_optimize_workloads.rs (target/debug/deps/p5_optimize_workloads-0ad07c1837855d53)
+[1m[92m     Running[0m tests/p5_shared_payload.rs (target/debug/deps/p5_shared_payload-01c1fe182b2440a4)
+[1m[92m     Running[0m tests/parameterized_interface_headers.rs (target/debug/deps/parameterized_interface_headers-4de2b11ca2667928)
+[1m[92m     Running[0m tests/preserve_local_scope_plan.rs (target/debug/deps/preserve_local_scope_plan-b6e3ee7f6701009c)

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.89s
+[1m[92m     Running[0m tests/recover_branching_guard_body.rs (target/debug/deps/recover_branching_guard_body-42f756ca06d90789)
+[1m[92m     Running[0m tests/recover_chained_field_assignment.rs (target/debug/deps/recover_chained_field_assignment-f20ef10c13045716)
+[1m[92m     Running[0m tests/recover_conditional_rhs_field_compound.rs (target/debug/deps/recover_conditional_rhs_field_compound-4c4d421e03b1d625)
+[1m[92m     Running[0m tests/recover_covariant_array_store_receiver.rs (target/debug/deps/recover_covariant_array_store_receiver-1077bd34b2d97606)

@@ -1,0 +1,21 @@
+{
+  "schema": "iterator-assignment-focused-accept-prep-luna-v1",
+  "status": "private_acceptor_candidate_not_executed",
+  "artifacts": {
+    "accept.py": {
+      "path": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v1/accept.py",
+      "bytes": 19040,
+      "sha256": "9e563e6020ad77bdc4beca3b96664af04d3b15811818a376f8b297cd8141c9bd"
+    },
+    "README.md": {
+      "path": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v1/README.md",
+      "bytes": 1992,
+      "sha256": "dd91e75eb05d30bb966a759a94c853143c2a40f54e9986d6832c8e35bb80c25c"
+    }
+  },
+  "producer_runner": {
+    "path": "/private/tmp/jarde-iterator-assignment-regressions-root-v1.py",
+    "sha256": "10a3254b8ac200b3de0f4887832cbe4025d2bbe27cad70bd4c771b84789ea1e5"
+  },
+  "focused_receipt_observed_sha256": "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b"
+}

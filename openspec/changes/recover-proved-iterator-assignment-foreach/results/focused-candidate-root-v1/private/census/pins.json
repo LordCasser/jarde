@@ -1,0 +1,31 @@
+{
+  "schema": "cf11-outer-assignment-reader-census-prep-luna-v1",
+  "status": "private_static_census_and_patch_only",
+  "artifacts": {
+    "measure.py": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/measure.py",
+      "bytes": 6744,
+      "sha256": "08e201bbbf14cd6af9f76d675add2fde63fd096e8db385a02fc12ba0f7f0f855"
+    },
+    "census.json": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/census.json",
+      "bytes": 3811,
+      "sha256": "d612e1915e632576e0543498a636d55ad5eb36578118e0b81be0663e85de5467"
+    },
+    "reader-census.patch": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/reader-census.patch",
+      "bytes": 836,
+      "sha256": "8ac109afe3114d8b7e1111b19383ceea0fd32b091fd0dfbf7ab8d43dced03d94"
+    },
+    "classfile.rs.candidate": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/classfile.rs.candidate",
+      "bytes": 531519,
+      "sha256": "58834f0bf7699b5ac5de8e28bf33fc1fa637e840a0bc29559e428cdeb6c3bbc5"
+    },
+    "README.md": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/README.md",
+      "bytes": 1793,
+      "sha256": "b06d7d9d183d13966802c617394deb25b4c036a6643112008678d2e16755cc4d"
+    }
+  }
+}

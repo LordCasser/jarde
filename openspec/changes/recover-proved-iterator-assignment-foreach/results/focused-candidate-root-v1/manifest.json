@@ -1,0 +1,274 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/0.stderr.raw",
+      "copy": "execution/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/0.stdout.raw",
+      "copy": "execution/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/1.stderr.raw",
+      "copy": "execution/1.stderr.raw",
+      "bytes": 3276,
+      "sha256": "464da9ac354797109ac530a1a4eaa2cc5c095cb19a9489d57d8aa1f3fece5c21"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/1.stdout.raw",
+      "copy": "execution/1.stdout.raw",
+      "bytes": 154,
+      "sha256": "2d80fb970d30fbe29a0325b8b111155ec7e657b520565690dbfa4ad99d2736f1"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/2.stderr.raw",
+      "copy": "execution/2.stderr.raw",
+      "bytes": 6996,
+      "sha256": "7f9b81731675767bd8afdc51d16236ff4b00ce6796d59b2daba0859aec129d3b"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/2.stdout.raw",
+      "copy": "execution/2.stdout.raw",
+      "bytes": 33985,
+      "sha256": "7be71666cf2448be3df378e4633f8128cf51c6461e7b30d71661cd746616f26c"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/3.stderr.raw",
+      "copy": "execution/3.stderr.raw",
+      "bytes": 422,
+      "sha256": "c9d54e08661a10b94550051bc81a5ea64386e759a705a40657f9f6001f6108df"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/3.stdout.raw",
+      "copy": "execution/3.stdout.raw",
+      "bytes": 361,
+      "sha256": "b89d47430dc7354d128ccf4f963ced5009591182408c1793c39e5ecfe39e8797"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/4.stderr.raw",
+      "copy": "execution/4.stderr.raw",
+      "bytes": 282,
+      "sha256": "9c3ce15d212d0e1f2b62e6a29ef97943326e8d5066c660ceceb3d26e04966cfd"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/4.stdout.raw",
+      "copy": "execution/4.stdout.raw",
+      "bytes": 211,
+      "sha256": "335630bff0d13a82ff23c3127ad3e76b3ad1279e2ddb9c226ce84d655859f81b"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/5.stderr.raw",
+      "copy": "execution/5.stderr.raw",
+      "bytes": 274,
+      "sha256": "df1050171766ff219d54e9105edb1770f40f6efc3619097c50676a9744262fac"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/5.stdout.raw",
+      "copy": "execution/5.stdout.raw",
+      "bytes": 1071,
+      "sha256": "d0ed0ff8248a29b04d340fd432d3f5ae7c304103ee3a3887b4f540596b7bc2e8"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/6.stderr.raw",
+      "copy": "execution/6.stderr.raw",
+      "bytes": 1485,
+      "sha256": "2cbdf030eae550ad4c544be8c351ed825fc554876daf9fd64d80be634322f3f3"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/6.stdout.raw",
+      "copy": "execution/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/7.stderr.raw",
+      "copy": "execution/7.stderr.raw",
+      "bytes": 286,
+      "sha256": "d7be96b91483cbe425655cc001b354ce44f3909053f82495a1b1967f8c5c93f2"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/7.stdout.raw",
+      "copy": "execution/7.stdout.raw",
+      "bytes": 396,
+      "sha256": "3d6fb17372481b344bfe489de8de6390a4b648c1497d26f237f221f82b7ae867"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/8.stderr.raw",
+      "copy": "execution/8.stderr.raw",
+      "bytes": 298,
+      "sha256": "bbcd0713ee0c5fb898c718eb4a504c4e467c0cd2338c3c0b8dcb090e0e434905"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/8.stdout.raw",
+      "copy": "execution/8.stdout.raw",
+      "bytes": 1220,
+      "sha256": "74bae48b4cf54b03365fc4a30c63ead0385305ae7abd328bb53869f0f927095e"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/9.stderr.raw",
+      "copy": "execution/9.stderr.raw",
+      "bytes": 52,
+      "sha256": "03840cbff6c63effaa69f490f971e802a49b9a0559013dcbe3f147b4040ee5a2"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/9.stdout.raw",
+      "copy": "execution/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+      "copy": "execution/execution.json",
+      "bytes": 3064576,
+      "sha256": "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-root-v1.py",
+      "copy": "private/runner.py",
+      "bytes": 5610,
+      "sha256": "10a3254b8ac200b3de0f4887832cbe4025d2bbe27cad70bd4c771b84789ea1e5"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-invocation-root-v1/execution.json",
+      "copy": "invocation/execution.json",
+      "bytes": 780,
+      "sha256": "e3809ea4ab594d393a2d476d9a49439418f2df64d022627816085ecc89dff58b"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-invocation-root-v1/stderr.raw",
+      "copy": "invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-regressions-invocation-root-v1/stdout.raw",
+      "copy": "invocation/stdout.raw",
+      "bytes": 475,
+      "sha256": "3ff4390ddaf3f4eab90759fec23b4e50068707f30681f3fa453722199c89dd01"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v1/README.md",
+      "copy": "private/accept-v1/README.md",
+      "bytes": 1992,
+      "sha256": "dd91e75eb05d30bb966a759a94c853143c2a40f54e9986d6832c8e35bb80c25c"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v1/accept.py",
+      "copy": "private/accept-v1/accept.py",
+      "bytes": 19040,
+      "sha256": "9e563e6020ad77bdc4beca3b96664af04d3b15811818a376f8b297cd8141c9bd"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v1/pins.json",
+      "copy": "private/accept-v1/pins.json",
+      "bytes": 882,
+      "sha256": "20e72371049523b1060cc699ad95dc32c98dae9512f0f550ef1053091e37da09"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v1/execution.json",
+      "copy": "accept-invocation-v1/execution.json",
+      "bytes": 1085,
+      "sha256": "9773ccb4d0aabcdd3819a48c02da457f202ee5108d6b74487c08eb276a86555f"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v1/stderr.raw",
+      "copy": "accept-invocation-v1/stderr.raw",
+      "bytes": 85,
+      "sha256": "298f5b398fe493d0d041c3fd10e07d0d4dfcd822ca86bdac39d421da3e0ec1c0"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v1/stdout.raw",
+      "copy": "accept-invocation-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v2/accept.py",
+      "copy": "private/accept-v2/accept.py",
+      "bytes": 19058,
+      "sha256": "826827ef10169c2a1ee69b7a25847939533065164df02f9fe209d8b705c267d0"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v2/execution.json",
+      "copy": "accept-invocation-v2/execution.json",
+      "bytes": 1086,
+      "sha256": "a000208fd917ae9c2d04c6f09da945c114c6ba89fa6e0ff9d359adc0a2335f91"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v2/stderr.raw",
+      "copy": "accept-invocation-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-accept-invocation-root-v2/stdout.raw",
+      "copy": "accept-invocation-v2/stdout.raw",
+      "bytes": 203,
+      "sha256": "04e5c84e250a5d1d9ff3b5069c4db0ab2aed027e43c030912766db20f91fe0a0"
+    },
+    {
+      "source": "/private/tmp/jarde-iterator-assignment-focused-acceptance-root-v1.json",
+      "copy": "acceptance.json",
+      "bytes": 56923,
+      "sha256": "b11095307f1337bdaa913f3acc86638abfd5b8034bc1b5f22896d48ebcf9906e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/README.md",
+      "copy": "private/census/README.md",
+      "bytes": 1793,
+      "sha256": "b06d7d9d183d13966802c617394deb25b4c036a6643112008678d2e16755cc4d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/census.json",
+      "copy": "private/census/census.json",
+      "bytes": 3811,
+      "sha256": "d612e1915e632576e0543498a636d55ad5eb36578118e0b81be0663e85de5467"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/classfile.rs.candidate",
+      "copy": "private/census/classfile.rs.candidate",
+      "bytes": 531519,
+      "sha256": "58834f0bf7699b5ac5de8e28bf33fc1fa637e840a0bc29559e428cdeb6c3bbc5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/evidence.json",
+      "copy": "private/census/evidence.json",
+      "bytes": 5167,
+      "sha256": "fd44e26eb4dd6d1002198176a124ff1a910d589a6cb1717e4ea14b0f69685d9e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/measure.py",
+      "copy": "private/census/measure.py",
+      "bytes": 6744,
+      "sha256": "08e201bbbf14cd6af9f76d675add2fde63fd096e8db385a02fc12ba0f7f0f855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/pins.json",
+      "copy": "private/census/pins.json",
+      "bytes": 1283,
+      "sha256": "96c43b00d8603b341d51c280f11898fd1a295cd6f991abc2704ea38ed2dd505d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-census-prep-luna-v1/reader-census.patch",
+      "copy": "private/census/reader-census.patch",
+      "bytes": 836,
+      "sha256": "8ac109afe3114d8b7e1111b19383ceea0fd32b091fd0dfbf7ab8d43dced03d94"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-impl-luna-v3/candidate.patch",
+      "copy": "private/candidate.patch",
+      "bytes": 14276,
+      "sha256": "2d3eca9b8be9d1517a045f61fb27eb09cf63ce9e371d7e0daa8d5a93e1e04e5c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-impl-luna-v3/architecture-review.md",
+      "copy": "private/architecture-review.md",
+      "bytes": 1533,
+      "sha256": "4e4fecbe8d723f534ee09696556898a4f792ff2ffb1a3229891ef47116088a22"
+    }
+  ]
+}

@@ -12241,7 +12241,9 @@ mod tests {
             // HoistedIteratorPhiControls: one canonical javac8 class, three Code bodies,
             // no handlers, five direct branch targets (mixed 3 + alias 2), no jsr;
             // independently confirmed against both compiler legs and parsed Code bytes.
-            (1104, 4914, 469, 2992, 10),
+            // CF11OuterAssignmentTarget: one canonical javac8 class, five Code bodies,
+            // no handlers, eight direct branch targets (two per loop method), no jsr.
+            (1105, 4919, 469, 3000, 10),
             "fixture population changed: re-measure these counts"
         );
     }

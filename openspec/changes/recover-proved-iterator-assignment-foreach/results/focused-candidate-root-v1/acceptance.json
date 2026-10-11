@@ -1,0 +1,1654 @@
+{
+  "status": "accepted_focused_only",
+  "scope": "focused iterator-assignment regression commands and their captured evidence only; no full-workspace or runtime acceptance",
+  "receipt": {
+    "path": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+    "sha256": "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b",
+    "schema": "iterator-assignment-regressions-root-v1"
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-iterator-assignment-regressions-root-v1.py",
+    "sha256": "10a3254b8ac200b3de0f4887832cbe4025d2bbe27cad70bd4c771b84789ea1e5"
+  },
+  "command_count": 10,
+  "raw_stream_count": 20,
+  "named_outcomes": {
+    "1": [
+      {
+        "name": "regenerate_corpus_fingerprint",
+        "status": "ok"
+      }
+    ],
+    "2": [
+      {
+        "name": "accessor::tests::the_marker_decides_whether_a_call_is_worth_a_verdict_and_nothing_else",
+        "status": "ok"
+      },
+      {
+        "name": "artifact::tests::every_contract_dimension_is_compared",
+        "status": "ok"
+      },
+      {
+        "name": "artifact::tests::the_configuration_states_the_rule_table_this_build_registers",
+        "status": "ok"
+      },
+      {
+        "name": "artifact::tests::the_text_identity_is_a_digest_and_not_a_length",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::a_class_literal_expression_presents_the_class_type",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::a_node_carries_its_own_anchors",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::bitwise_types_require_two_booleans_or_integral_operands",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::floating_leaves_present_their_own_type_from_their_own_bits",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::logical_operators_require_boolean_operands",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::shift_result_width_comes_only_from_integral_left_operand",
+        "status": "ok"
+      },
+      {
+        "name": "ast::tests::the_subset_spells_the_operators_and_types_it_claims",
+        "status": "ok"
+      },
+      {
+        "name": "bridge::tests::class_source_candidate_obeys_budget_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "bridge::tests::only_a_declared_bridge_is_this_rules_business",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_closed_nan_negation_saves_its_operand_so_the_real_operation_stays_runtime",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_concatenation_part_states_the_widening_its_own_append_performed",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_conditional_proof_binds_each_straight_arm_to_one_stack_phi_and_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_descriptor_that_states_a_type_is_spelled_as_java_source",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_name_that_states_no_java_type_is_refused_rather_than_written",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_nested_value_carried_into_a_later_argument_is_not_published_as_a_tree",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_position_converts_what_a_widening_conversion_states_and_nothing_else",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_position_writes_an_implicit_widening_as_the_value_itself",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_proved_member_construction_keeps_the_qualifier_and_hides_only_the_physical_prefix",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_switch_join_is_not_admitted_as_an_if_conditional_value",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::a_three_leaf_nested_conditional_is_published_as_one_value",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::alias_branch_phi_does_not_expand_the_exact_value_reader_allowlist",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_external_edge_into_a_nested_test_keeps_the_region_quoted",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_immediate_functional_receiver_is_typed_only_by_its_same_interface_owner",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_immediate_functional_receiver_refuses_missing_mismatched_and_unsupported_types",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_independent_effect_before_a_nested_if_prevents_tree_folding",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_int_ireturn_preserves_its_literal_values",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_unpresentable_nan_bit_pattern_is_refused_at_its_own_bci",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::an_unproven_common_reference_type_refuses_the_complete_tree",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::array_reference_widening_uses_only_bounded_component_evidence",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::array_store_opcode_matches_the_exact_primitive_component",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::boolean_iinc_cannot_justify_a_cross_catch_java_declaration",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::carried_constructor_argument_keeps_both_conditionals_and_all_origins",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::cf04_int_return_refuses_a_non_literal_producer",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::cf04_int_return_refuses_extra_consumer_and_handler_edges",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::cf04_nested_int_return_has_one_closed_value_and_physical_origin",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::cf12_switch_break_builder_consumes_only_the_reader_leaf_it_proves",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::class_literal_qualifiers_are_refused_only_when_the_current_type_shadows_the_root",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::compound_builder_proof_and_emission_stops_restore_the_trial",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::direct_child_array_builder_uses_exact_store_type_proofs_and_stops_atomically",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::direct_child_array_chain_is_structural_and_commits_only_as_a_whole",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::exception_if_join_transfer_rejects_a_canonical_exception_edge",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::explicit_conversion_source_categories_accept_int_family_but_reject_boolean",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::extra_argument_and_instance_receiver_refuse_the_whole_graph",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::finite_and_open_negations_render_inline_without_a_saved_local",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::frozen_shared_false_write_has_a_closed_ssa_value_proof",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::frozen_shared_true_write_proves_and_emits_one_delayed_rhs_assignment",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::inherited_field_owner_cannot_claim_a_derived_receiver_type",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::initializer_reference_widening_reuses_scalar_and_equal_rank_array_facts",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::initializer_snapshot_widening_requires_the_exact_store_and_full_type_pair",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::instance_field_near_misses_keep_one_complete_quote",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::instance_field_short_circuit_has_one_physical_owner_and_two_exact_operands",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::instance_receiver_with_an_earlier_static_owner_cannot_be_emitted_twice",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::intermediate_join_proof_binds_both_phis_and_ordered_bridge",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::intermediate_join_proof_rejects_a_second_owner_of_the_bridge_block",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::intermediate_join_proof_rejects_a_second_ssa_use",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::intermediate_join_proof_rejects_a_verifier_valid_unknown_operation",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::iterator_declaration_gate_rejects_real_split_slot_identity_changes",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::iterator_declaration_gate_uses_real_local_owner_and_refuses_incomplete_facts",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::iterator_phi_gate_counts_real_duplicate_inputs_and_ignores_unrelated_phi",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::java_lang_throwable_widening_reaches_exactly_the_table_ancestors",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::local_declaration_source_name_requires_one_complete_nongeneric_member_path",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::member_constructor_boolean_adaptation_uses_the_tail_descriptor_position",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::mixed_iterator_real_phi_is_live_and_fails_the_production_use_gate",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::mixed_short_circuit_argument_proves_one_static_boolean_sink",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::mixed_short_circuit_graphs_have_one_owner_and_one_proved_field_write",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::mixed_short_circuit_local_has_one_direct_phi_store_and_two_name_reads",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::mixed_short_circuit_return_reuses_the_graph_and_proves_boolean_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::nested_conditionals_in_the_false_arm_and_four_leaf_trees_are_supported",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::nested_effect_values_are_presented_once_at_their_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::one_armed_early_return_tail_is_not_an_intermediate_join_value",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::one_varargs_element_is_held_when_it_can_be_the_entire_array_argument",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::ordinary_if_and_real_loop_keep_their_region_forms",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::outer_super_handoff_projects_exact_bridge_and_refuses_a_stale_argument",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::platform_array_argument_widening_needs_a_proved_table_component",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::platform_interface_argument_widening_reaches_exactly_the_table_rows",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::platform_reference_argument_widening_reaches_exactly_the_java_util_table_ancestors",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::quoted_call_loads_are_added_in_source_order_without_duplicates",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::redirected_outer_edge_proves_shared_true_after_fresh_recovery",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_false_proof_rejects_independent_test_effect_after_fresh_recovery",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_false_proof_rejects_non_boolean_producer_after_fresh_recovery",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_false_proof_rejects_second_write_after_fresh_recovery",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_false_proof_requires_the_decoded_static_boolean_field",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_false_short_circuit_has_one_region_owner_and_one_field_write",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_true_duplicate_phi_consumer_is_freshly_quoted",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::shared_true_non_boolean_producer_is_freshly_quoted",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::short_circuit_write_keeps_a_local_declaration_before_the_field_effect",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::the_frozen_boolean_short_circuit_return_has_a_closed_value_proof",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::the_number_rows_reach_exactly_their_pairs",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::the_temporal_family_and_completable_future_rows_reach_exactly_their_pairs",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::three_test_chain_with_non_boolean_producer_quotes_every_instruction",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::three_test_shared_true_chain_has_one_owner_proof_and_delayed_write",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::value_level_refusals_are_the_six_diagnoses_and_not_their_cascade_lines",
+        "status": "ok"
+      },
+      {
+        "name": "build::tests::varargs_call_binding_requires_the_unique_exact_local_declaration",
+        "status": "ok"
+      },
+      {
+        "name": "concat::tests::an_append_whose_conversion_plus_would_not_reproduce_is_refused",
+        "status": "ok"
+      },
+      {
+        "name": "concat::tests::the_two_concatenation_classes_are_the_only_ones_this_rule_reads",
+        "status": "ok"
+      },
+      {
+        "name": "declaration::tests::a_missing_declaration_fact_is_refused_with_its_own_requirement_named",
+        "status": "ok"
+      },
+      {
+        "name": "declaration::tests::an_interface_method_without_either_flag_is_abstract_and_a_static_one_is_static",
+        "status": "ok"
+      },
+      {
+        "name": "declaration::tests::an_interfaces_non_abstract_method_is_a_default_method_and_a_classs_is_not",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::a_newarray_creation_states_the_atype_code_as_an_element_type",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::a_nul_decodes_to_the_one_nul_its_modified_utf8_bytes_state",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::a_raw_zero_byte_is_one_replacement_and_never_a_character",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::a_surrogate_pair_is_one_scalar_and_a_lone_half_is_one_replacement",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::a_switch_states_its_keys_and_the_bci_each_key_transfers_to",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::all_fifteen_numeric_conversion_opcodes_keep_their_source_and_result_types",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::an_invocation_names_its_target_out_of_the_classs_own_pool",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::every_form_this_encoding_does_not_have_is_one_replacement_per_sequence",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::ldc_and_ldc_w_admit_class_pool_entries_with_their_pool_index",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::ldc_does_not_admit_method_type_or_method_handle_pool_entries",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::modified_utf8_class_names_are_decoded_before_the_spelling_gate",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::nested_binary_names_admit_the_class_literal_when_every_segment_is_an_identifier",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::ordinary_text_survives_the_modified_utf8_read_unchanged",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::pool_float_and_double_entries_reach_ldc_with_their_raw_bits",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_array_accesses_are_the_facts_their_own_opcodes_state",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_creation_instructions_take_their_arrays_from_their_own_operands",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_float_and_double_constant_opcodes_state_their_exact_bits",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_four_numeric_negation_opcodes_decode_to_one_fact",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_polarity_of_a_branch_and_the_target_it_jumps_to_come_from_the_decode",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_pool_entries_the_body_names_are_the_ones_it_reads",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_six_integral_bitwise_opcodes_keep_their_shared_operators",
+        "status": "ok"
+      },
+      {
+        "name": "decode::tests::the_six_shift_opcodes_keep_their_directions",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_char_selector_writes_character_keys_and_every_other_selector_stays_decimal",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_comment_cannot_carry_an_escape_or_end_its_own_line",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_concatenation_starts_in_a_string_context_and_keeps_its_parts_groups",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_constructor_keeps_its_nested_return",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_deeply_nested_initializer_return_is_suppressed_at_every_depth",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_delimited_or_already_grouped_position_gains_no_parentheses",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_lambda_in_a_receiver_position_keeps_its_own_group",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_negation_keeps_nested_groups_and_negative_literals_lexically_separate",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_nested_return_is_suppressed_when_the_static_initializer_tail_is_projected",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_prefix_position_and_a_not_receiver_keep_their_groups",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_primary_operand_and_an_already_stated_group_gain_nothing",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_refused_write_empties_the_buffer_it_had_already_filled",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_single_if_else_child_is_spelled_as_a_chain_and_keeps_each_node",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_static_initializer_projection_keeps_budget_stop_atomic",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_static_initializer_tail_return_closes_the_block_and_keeps_its_origin",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_stop_inside_a_node_leaves_nothing_behind",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_string_literal_escapes_what_it_cannot_hold_literally_and_nothing_else",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_suffix_position_keeps_the_group_of_its_operand",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_throw_source_map_budget_stops_before_publishing_a_partial_node",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::a_throw_stops_atomically_at_the_output_bound",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::an_else_if_chain_obeys_output_budget_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::an_empty_static_initializer_has_no_statement_but_maps_its_terminator",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::an_initializer_return_with_a_value_stays_an_ordinary_statement",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::bitwise_operators_keep_java_precedence_and_mixed_grouping",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::compound_lvalues_emit_receiver_and_index_once_with_all_origins",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::enhanced_for_spells_its_label_element_and_array_with_folded_origins",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::floating_literals_are_spelled_exactly_from_their_own_bits",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::grouping_writes_parentheses_into_the_parents_span_and_moves_no_anchor",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::instanceof_uses_relational_precedence_under_not",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::local_assignment_is_grouped_under_comparison_and_null_test",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::logical_operators_keep_their_precedence_over_bitwise_operators",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::multi_statement_and_non_if_else_bodies_keep_their_block_spelling",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::non_initializer_returns_are_not_projected",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::postfix_increment_keeps_nested_writable_targets_and_their_origins",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::proven_switch_labels_use_one_closed_spelling_and_keep_integer_evidence",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::shifts_keep_precedence_associativity_casts_and_primary_operands",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::the_budget_is_checked_before_every_write_and_a_refusal_discards_the_buffer",
+        "status": "ok"
+      },
+      {
+        "name": "emit::tests::the_segment_table_covers_the_nodes_in_writing_order",
+        "status": "ok"
+      },
+      {
+        "name": "enumswitch::tests::the_rule_states_the_tables_it_reads_and_claims_no_mapping",
+        "status": "ok"
+      },
+      {
+        "name": "evidence::tests::the_essential_selection_builds_only_what_it_asked_for",
+        "status": "ok"
+      },
+      {
+        "name": "evidence::tests::the_evidence_of_one_text_is_never_attached_to_another",
+        "status": "ok"
+      },
+      {
+        "name": "evidence::tests::the_request_type_defaults_to_the_essential_selection",
+        "status": "ok"
+      },
+      {
+        "name": "evidence::tests::the_status_list_distinguishes_not_requested_complete_partial_and_not_performed",
+        "status": "ok"
+      },
+      {
+        "name": "facts::tests::parameter_types_places_an_arrays_successor_one_slot_past_the_array",
+        "status": "ok"
+      },
+      {
+        "name": "facts::tests::the_arithmetic_and_comparison_vocabulary_is_stated_once",
+        "status": "ok"
+      },
+      {
+        "name": "facts::tests::the_caller_states_identity_and_debug_names_and_nothing_about_the_body",
+        "status": "ok"
+      },
+      {
+        "name": "facts::tests::the_receiver_is_decided_by_the_members_own_static_flag_and_by_nothing_else",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::conditional_new_receipt_counts_only_one_method_local_direct_new",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::conditional_new_receipt_rejects_derived_primary_and_derived_only_candidate_anchors",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::final_refusal_gaps_keep_bci_order_across_plan_and_emission",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::receipt_budget_and_cancellation_never_return_a_partial_verdict",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::simple_static_final_proof_charges_claimed_work",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::simple_static_final_proof_honors_cancellation_before_indexing",
+        "status": "ok"
+      },
+      {
+        "name": "field::tests::the_rule_states_the_ir_it_reads_and_the_one_declaration_fact_it_needs",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::a_competing_row_refuses_the_same_otherwise_proved_copy",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::a_terminal_saved_return_is_part_of_the_resource_plan",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::an_extra_cleanup_result_consumer_is_refused",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::changed_argument_or_missing_coverage_refuses_the_copy",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::concat_saved_return_uses_the_same_complete_chain_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::conditional_test14_two_copies_and_verifier_valid_neighbors",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::constructor_resource_requires_its_verified_site",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::different_cleanup_member_refuses_the_copy",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::empty_catch_test16_two_real_rows_three_call_copies",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::implicit_cleanup_has_a_physical_copy_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::local_null_certificate_claims_the_fixed_two_row_lowering",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::local_null_certificate_does_not_claim_the_flag_or_field_shapes",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::nested_test1_and_test2_have_exclusive_joined_certificates",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::nested_test3_append_copies_have_one_shared_join_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::null_lead_straight_certificate_claims_the_fixed_two_row_lowering",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::null_lead_straight_certificate_refuses_the_verifier_valid_neighbors",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::null_lead_straight_extension_leaves_the_family_certificates_their_own_shapes",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::pinned_test4_nested_cleanup_has_one_four_row_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::proof_propagates_the_existing_budget_and_cancellation_stops",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::repeated_cleanup_calls_stay_outside_the_single_call_slice",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::segmented_null_lead_certificate_claims_the_fixed_two_row_lowering",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::segmented_null_lead_certificate_does_not_claim_the_family_neighbors",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::segmented_null_lead_certificate_refuses_every_frozen_neighbor",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::segmented_test13_certificate_and_verifier_valid_neighbors",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::shared_call_certificate_owns_three_rows_and_two_returns",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::shared_call_certificate_refuses_row_changes_and_propagates_stops",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::shared_field_certificate_owns_full_spans_and_propagates_stops",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::shared_join_certificate_owns_copies_and_preserves_continuation",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::shared_join_refuses_changed_rows_or_field_value_and_propagates_stops",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::test4_call_and_coverage_neighbors_cannot_merge_cleanup",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::the_inner_finally_composite_propagates_the_budget_and_cancellation_stops",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::the_trailing_finally_composite_propagates_the_budget_and_cancellation_stops",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::two_catch_test17_four_real_rows_four_call_copies",
+        "status": "ok"
+      },
+      {
+        "name": "guard::finally_copy_tests::widened_range_cannot_reenter_the_proved_cleanup",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::a_named_row_a_completed_store_precedes_is_not_examined_as_a_resource_header",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::a_non_store_statement_prefix_is_not_examined_as_a_resource_header",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::a_two_resource_header_keeps_its_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::a_twr_lowering_row_a_completed_store_precedes_keeps_its_examination",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::completed_instance_field_prefix_is_not_a_resource_header",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::existing_single_exit_monitor_plan_is_unchanged",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::frozen_two_arm_fixture_is_one_monitor_plan_and_three_arm_control_is_refused",
+        "status": "ok"
+      },
+      {
+        "name": "guard::monitor_branch_tests::the_crossing_answer_keeps_every_unreadable_or_unowned_store_refused",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::a_handler_boundary_inside_the_array_chain_keeps_the_refusal",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::a_verified_concat_is_composed_only_as_the_unique_constructor_argument",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::actual_dup2_reader_and_two_ssa_outputs_remain_a_statement_free_refusal",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::actual_independent_branch_effect_stays_on_the_existing_statement_path",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::actual_local_conditional_new_has_its_local_store_as_the_single_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::actual_nested_conditional_constructor_arms_do_not_become_one_two_way_site",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::actual_shared_field_return_keeps_dup_outside_the_new_expression",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::array_argument_conversion_is_accepted_but_unrelated_conversion_aborts_the_candidate",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::composed_nested_site_ownership_and_store_binding_are_exact",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::composed_reference_array_commits_exact_constructed_values_once",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::conditional_constructor_output_has_one_live_stack_phi_and_one_join_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::constructor_wrapper_casts_and_stored_local_reuse_keep_their_value_chains",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::dynamic_constructor_arguments_keep_one_handler_coverage",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::extra_stack_reader_byte_variant_reaches_exact_site_value_guard",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::fresh_array_index_byte_variants_do_not_commit_partial_candidates",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::functional_constructor_arguments_are_in_the_verified_dependency_run",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::handler_range_byte_variant_reaches_array_effect_closure",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::incomplete_or_double_purpose_array_chains_stay_refused",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::inline_char_array_proof_obeys_shared_budget_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::inline_char_certificate_requires_the_exact_parent_interval_and_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::member_call_proof_requires_same_qualifier_and_early_check",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::nested_argument_sites_present_the_complete_inner_construction",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::nested_composition_budget_can_stop_inside_recursive_constructor_proof",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::only_the_complete_direct_java8_string_char_array_is_embedded",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::ordinary_constructor_conversion_uses_the_shared_census_budget",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::ordinary_constructor_does_not_admit_an_unrelated_conversion",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::primitive_conversion_reuses_exact_handler_coverage_for_constructor_and_consumer",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::the_array_chain_certificate_requires_the_argument_consumer_interval",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::the_bound_receiver_tail_is_claimed_exactly_where_the_receiver_is_proved",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::the_two_construction_rules_state_what_they_read",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::three_layers_present_and_a_deeper_run_keeps_its_outermost_refusal",
+        "status": "ok"
+      },
+      {
+        "name": "init::tests::varargs_inline_array_argument_sites_present_the_complete_chain",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::a_descriptor_this_layer_does_not_read_is_refused_rather_than_split",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::a_method_descriptor_is_read_into_parameters_and_a_return_type",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::adaptation_plan_preserves_identity_and_proven_object_conversions",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::adaptation_plan_preserves_object_to_reference_and_array_checks",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::adaptation_plan_proves_boxed_sam_parameter_and_return_edges",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::adaptation_plan_rejects_unknown_reference_relations_and_unsupported_returns",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::array_constructor_proof_requires_exact_member_and_complete_effect_free_code",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::boxed_adaptation_pairs_are_exact_and_arity_keeps_receiver_staticness",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::boxed_array_constructor_requires_exact_integer_unbox",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::captured_array_length_does_not_receive_an_array_constructor_proof",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::implementation_result_can_be_discarded_only_for_a_void_sam",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::instantiated_return_is_retained_and_both_edges_are_proved",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::lambda_adapter_parameter_work_stops_through_the_shared_analysis_budget",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::plan_accepts_boxed_array_length_but_keeps_instance_handle_arity_and_captures_exact",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::the_declaration_spelling_reuses_this_parser_and_the_two_agree",
+        "status": "ok"
+      },
+      {
+        "name": "lambda::tests::the_generated_body_marker_is_the_only_thing_that_decides_the_lambda_writing",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::a_collision_resolves_by_slot_order_and_is_an_alias",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::a_dollar_top_level_class_is_a_member_of_nothing_the_rows_do_not_state",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::a_keyword_becomes_a_deterministic_alias_and_never_an_error",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::a_static_members_slot_zero_is_a_parameter_and_keeps_its_own_naming",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::a_table_that_states_no_split_still_states_one_variable",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::cross_class_nested_references_spell_dotted_and_self_nested_stays_pool",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::evidence_wins_where_it_exists_and_aliases_where_it_cannot_be_written",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::free_name_with_visits_every_reserved_local_and_candidate",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::names_source_already_spells_or_cannot_improve_stay_verbatim",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::no_debug_evidence_still_names_every_slot_deterministically",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::one_slot_can_hold_two_variables_and_each_takes_its_own_name",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::proven_field_names_are_reserved_for_locals_and_free_names",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::the_identifier_table_is_javas_beside_a_byte_identical_ascii_half",
+        "status": "ok"
+      },
+      {
+        "name": "names::tests::the_receiver_is_spelled_by_its_identity_and_not_by_the_name_the_table_states",
+        "status": "ok"
+      },
+      {
+        "name": "normal_flow::tests::handler_component_needs_one_root_and_no_exception_entry_inside_its_cycle",
+        "status": "ok"
+      },
+      {
+        "name": "normal_flow::tests::handler_component_stops_before_publishing_partial_dominance",
+        "status": "ok"
+      },
+      {
+        "name": "normal_flow::tests::the_view_states_exactly_which_edge_kinds_it_keeps",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_and_the_presentation_agree_on_a_do_whiles_effects",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_and_the_presentation_agree_on_a_lambdas_captures",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_and_the_presentation_agree_on_a_loops_effects",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_and_the_presentation_agree_on_polarity",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_names_no_helper_of_the_layers_it_checks",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_rejects_a_flipped_condition",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_rejects_a_loop_effect_moved_out_of_the_loop",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_rejects_a_reordered_or_shortened_capture_list",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_rejects_a_wrong_return",
+        "status": "ok"
+      },
+      {
+        "name": "oracle::tests::the_oracle_states_the_priority_of_a_crossing_table_and_the_report_carries_it",
+        "status": "ok"
+      },
+      {
+        "name": "pass::tests::a_requirement_says_what_it_asks_for_and_a_rule_version_says_who_asked",
+        "status": "ok"
+      },
+      {
+        "name": "pass::tests::the_profile_is_the_fact_layers_own_type_and_the_gate_reads_its_release",
+        "status": "ok"
+      },
+      {
+        "name": "pass::tests::the_registered_table_states_each_rule_and_its_preconditions",
+        "status": "ok"
+      },
+      {
+        "name": "refusal::tests::a_refusal_under_a_requirement_carries_the_rules_own_code",
+        "status": "ok"
+      },
+      {
+        "name": "refusal::tests::a_requirement_a_rule_never_declared_cannot_be_refused_under - should panic",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::a_fallback_names_the_code_and_the_place_it_could_not_prove",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::cf02_tail_requires_both_distinct_normal_predecessors",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::cf12_ft2_switch_join_stays_outside_cases_and_straight_tail_is_claimed_once",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::intermediate_join_requires_one_new_claim_per_tail_block",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::range_end_transfer_rejects_competing_entries_and_exits",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_cf11_side_exit_proof_uses_the_reader_graph_and_has_a_real_stop_boundary",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_compound_non_tree_conditions_refuse_without_walker_state_leaks",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_compound_statement_with_two_payload_arms_has_one_shared_join",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_inner_loop_cycle_refuses_switch_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_legacy_clone_compound_root_refuses_uncloned_join_path_without_state_leaks",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_legacy_clone_target_with_different_path_refuses_switch_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_multiple_exit_class_refuses_conditional_switch_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_nested_switch_target_refuses_candidate_certificate_without_partial_result",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_nonadjacent_class_proves_one_map_entry",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::real_switch2_direct_target_join_proves_candidate_witnesses",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::shared_stack_initializer_has_two_real_dup_outputs_before_builder_refusal",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::shared_tail_needs_one_comparable_first_common_block",
+        "status": "ok"
+      },
+      {
+        "name": "region::tests::terminal_case_unknown_terminal_fact_refuses_certificate",
+        "status": "ok"
+      },
+      {
+        "name": "report::anonymous_capture_projection_tests::ast_walk_budget_and_cancellation_stop_before_returning_a_projection",
+        "status": "ok"
+      },
+      {
+        "name": "report::anonymous_capture_projection_tests::duplicate_or_wrong_capture_ast_matches_refuse_the_whole_projection",
+        "status": "ok"
+      },
+      {
+        "name": "report::anonymous_capture_projection_tests::exact_same_run_capture_read_projects_and_preserves_its_bci",
+        "status": "ok"
+      },
+      {
+        "name": "report::class_initializer_candidate_tests::candidate_expression_charging_includes_a_member_creation_qualifier",
+        "status": "ok"
+      },
+      {
+        "name": "report::class_initializer_candidate_tests::candidate_expression_charging_stops_at_the_shared_value_depth_bound",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_array_return_candidate_tests::collection_grid_array_return_is_closed_and_uses_the_exact_allocation_value",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::body_consumers_capture_if_return_and_throw_expression_shapes",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::body_consumers_capture_only_exact_invocation_statements_and_their_catch_scope",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::body_consumers_refuse_resource_finally_and_propagate_budget_and_cancel",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::body_consumers_report_actual_returns_and_catch_scope_or_refuse_unknown_statements",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::cast_mutation_skips_a_foreign_method_node_with_the_same_bci_and_name",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::exact_object_presentation_wrapper_is_reported_transparent_and_removed_with_casts",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::exact_site_and_source_cast_preserve_the_child_anchor_and_presentation",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::invoke_site_resolver_refuses_zero_ast_match_and_foreign_caller",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::null_object_wrapper_is_reported_but_physical_checkcast_is_not_removable",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::presentation_wrapper_projection_propagates_budget_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::reference_wrapper_tracks_number_and_object_array_descriptors",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::required_site_scan_propagates_budget_stop_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::result_use_is_return_and_wrong_or_ambiguous_site_keys_refuse",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::same_class_invoke_inventory_accepts_complete_empty_inventory",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::same_class_invoke_inventory_propagates_budget_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "report::generic_call_ast_projection_tests::same_class_invoke_inventory_requires_complete_exact_sites",
+        "status": "ok"
+      },
+      {
+        "name": "report::instance_array_prefix_tests::budget_stop_returns_no_candidate",
+        "status": "ok"
+      },
+      {
+        "name": "report::instance_array_prefix_tests::non_super_handlers_unclaimed_duplicate_and_rhs_mismatch_refuse",
+        "status": "ok"
+      },
+      {
+        "name": "report::instance_array_prefix_tests::prefix_emission_keeps_super_arguments_and_final_return",
+        "status": "ok"
+      },
+      {
+        "name": "report::instance_array_prefix_tests::rhs_comparison_preserves_long_and_float_double_raw_bits",
+        "status": "ok"
+      },
+      {
+        "name": "report::instance_array_prefix_tests::static_rhs_call_arguments_and_overload_descriptor_are_exact",
+        "status": "ok"
+      },
+      {
+        "name": "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+        "status": "ok"
+      },
+      {
+        "name": "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+        "status": "ok"
+      },
+      {
+        "name": "report::lambda_helper_instruction_coverage_tests::equal_node_and_instruction_counts_do_not_cover_an_extra_physical_instruction",
+        "status": "ok"
+      },
+      {
+        "name": "report::raw_receiver_site_budget_tests::receiver_collector_stops_at_its_ast_scan_budget_and_cancellation",
+        "status": "ok"
+      },
+      {
+        "name": "source_map::tests::a_node_keeps_its_own_anchor_apart_from_the_one_it_presents",
+        "status": "ok"
+      },
+      {
+        "name": "source_map::tests::an_anchor_says_which_member_body_its_bytecode_index_is_in",
+        "status": "ok"
+      },
+      {
+        "name": "source_map::tests::cp_is_optional_and_survives_the_set",
+        "status": "ok"
+      },
+      {
+        "name": "source_map::tests::the_table_answers_by_bci_and_by_byte",
+        "status": "ok"
+      },
+      {
+        "name": "stop::tests::a_cancellation_outranks_a_bound_and_says_so",
+        "status": "ok"
+      },
+      {
+        "name": "stop::tests::a_refused_charge_names_the_bound_it_refused_on",
+        "status": "ok"
+      },
+      {
+        "name": "stringswitch::tests::duplicate_literal_and_cross_bucket_predecessor_refuse",
+        "status": "ok"
+      },
+      {
+        "name": "stringswitch::tests::final_switch_external_predecessor_refuses",
+        "status": "ok"
+      },
+      {
+        "name": "stringswitch::tests::independent_hash_use_and_wrong_bucket_refuse",
+        "status": "ok"
+      },
+      {
+        "name": "stringswitch::tests::unicode_and_collision_buckets_have_complete_final_mapping",
+        "status": "ok"
+      },
+      {
+        "name": "stringswitch::tests::utf16_hash_matches_java_for_bmp_supplementary_and_collision",
+        "status": "ok"
+      }
+    ],
+    "3": [
+      {
+        "name": "nested_foreach_late_stop_and_precancel_leave_no_partial_method_artifact",
+        "status": "ok"
+      },
+      {
+        "name": "nested_iterators_project_and_preserve_the_outer_assignment_and_cast",
+        "status": "ok"
+      },
+      {
+        "name": "outer_assignment_foreach_public_api_and_real_controls_stay_conservative",
+        "status": "ok"
+      }
+    ],
+    "4": [
+      {
+        "name": "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections",
+        "status": "ok"
+      }
+    ],
+    "5": [
+      {
+        "name": "corpus_files_match_the_recorded_fingerprint",
+        "status": "ok"
+      },
+      {
+        "name": "every_acceptance_row_is_indexed_against_existing_corpus",
+        "status": "ok"
+      },
+      {
+        "name": "every_dimension_is_carried_by_existing_corpus",
+        "status": "ok"
+      },
+      {
+        "name": "regenerate_corpus_fingerprint",
+        "status": "ignored"
+      },
+      {
+        "name": "the_indexed_rows_are_the_rows_the_acceptance_table_names",
+        "status": "ok"
+      },
+      {
+        "name": "the_manifest_matches_its_rendered_classification",
+        "status": "ok"
+      }
+    ],
+    "7": [
+      {
+        "name": "a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias",
+        "status": "ok"
+      },
+      {
+        "name": "the_anchor_round_trips_through_both_javac_legs",
+        "status": "ok"
+      },
+      {
+        "name": "the_ascii_presentations_match_the_frozen_proved_loop_projections",
+        "status": "ok"
+      },
+      {
+        "name": "the_cjk_declarations_are_presented_as_the_pool_states_them",
+        "status": "ok"
+      }
+    ],
+    "8": [
+      {
+        "name": "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+        "status": "ok"
+      },
+      {
+        "name": "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source",
+        "status": "ok"
+      },
+      {
+        "name": "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+        "status": "ok"
+      },
+      {
+        "name": "cf07_return_arm_latch_budget_and_cancellation_publish_no_partial_source",
+        "status": "ok"
+      },
+      {
+        "name": "cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn",
+        "status": "ok"
+      },
+      {
+        "name": "cf07_return_arm_loop_latch_is_derived_from_complete_for",
+        "status": "ok"
+      },
+      {
+        "name": "cf08_gateway_budget_and_cancellation_publish_no_partial_source",
+        "status": "ok"
+      },
+      {
+        "name": "cf08_two_gateways_have_one_loop_owner_and_complete_sources",
+        "status": "ok"
+      },
+      {
+        "name": "cf08_unproved_gateways_keep_physical_quotes",
+        "status": "ok"
+      },
+      {
+        "name": "no_prefix_latch_budget_and_cancellation_publish_no_partial_source",
+        "status": "ok"
+      },
+      {
+        "name": "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+        "status": "ok"
+      },
+      {
+        "name": "non_backedge_transfer_does_not_gain_a_loop_latch_origin",
+        "status": "ok"
+      },
+      {
+        "name": "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+        "status": "ok"
+      },
+      {
+        "name": "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source",
+        "status": "ok"
+      },
+      {
+        "name": "rejected_for_update_slot_keeps_the_independent_while_latch",
+        "status": "ok"
+      }
+    ]
+  },
+  "api_stop": {
+    "dimension": "AnalysisSteps",
+    "limit": 14279,
+    "usage": 14279,
+    "written": 2239,
+    "at_bci": 25
+  },
+  "api_stop_physical_binding": {
+    "class_path": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+    "class_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+    "method": "test(Ljava/util/List;Ljava/util/List;)V",
+    "code_length": 119,
+    "instruction_count": 45,
+    "stop_bci_is_instruction_start": true
+  },
+  "source_pins": {
+    "path_count": 4744,
+    "formatter_changed_paths": [
+      "tests/p3_hoisted_iterator_foreach.rs"
+    ],
+    "regenerator_changed_paths": [
+      "tests/fixtures/corpus-fingerprint.json"
+    ],
+    "examples_supplement_count": 7,
+    "fixture_class_paths": [
+      "tests/fixtures/p3-iterator-assignment/CF11OuterAssignmentTarget.class"
+    ],
+    "all_live_source_sha256_match": true
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+    "bytes": 61314560,
+    "sha256": "526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5",
+    "mode": "0o555"
+  },
+  "rust_min_stack": null,
+  "peak_target_bytes": 744069255,
+  "minimum_free_bytes_after_command": 10884415488,
+  "final_clean_target_absent": true,
+  "acceptor": {
+    "path": "/private/tmp/jarde-iterator-assignment-focused-accept-prep-luna-v2/accept.py",
+    "sha256": "826827ef10169c2a1ee69b7a25847939533065164df02f9fe209d8b705c267d0"
+  }
+}

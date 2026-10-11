@@ -1,0 +1,34 @@
+{
+  "utc": "2026-10-11T22:17:09.169136+00:00",
+  "scope": "duplicate retired hoisted v3/v4/v5 only; old delivered final v2/regression v6 and current assignment v1 kept",
+  "files": [
+    {
+      "original": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v3",
+      "archive": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v3.gz",
+      "original_bytes": 61314560,
+      "archive_bytes": 12763754,
+      "mode": "0o555",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "decompressed_byte_identity_checked": true
+    },
+    {
+      "original": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v4",
+      "archive": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v4.gz",
+      "original_bytes": 61314560,
+      "archive_bytes": 12763754,
+      "mode": "0o555",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "decompressed_byte_identity_checked": true
+    },
+    {
+      "original": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v5",
+      "archive": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v5.gz",
+      "original_bytes": 61314560,
+      "archive_bytes": 12763754,
+      "mode": "0o555",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "decompressed_byte_identity_checked": true
+    }
+  ],
+  "reclaimed_bytes": 145652418
+}

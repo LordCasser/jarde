@@ -1,0 +1,78 @@
+{
+  "schema": "iterator-assignment-observation-accept-prep-luna-v3",
+  "status": "private_static_review_only",
+  "files": {
+    "base_v2": {
+      "path": "/private/tmp/jarde-iterator-assignment-observation-accept-prep-luna-v2/accept.py",
+      "bytes": 22537,
+      "sha256": "2435ce873f9a466fca08aeb50043020f25fbb6a82f784a3d35c16751b9a16cd5"
+    },
+    "candidate": {
+      "path": "/private/tmp/jarde-iterator-assignment-observation-accept-prep-luna-v3/accept.py",
+      "bytes": 23113,
+      "sha256": "94fe09b8e460fffeaafc2527ceca58c7c8804336c303a1fb09b4f9eeb38d7aaa"
+    },
+    "candidate_patch": {
+      "path": "/private/tmp/jarde-iterator-assignment-observation-accept-prep-luna-v3/candidate.patch",
+      "bytes": 2513,
+      "sha256": "83b874edbc285503270e4a7f716deb38432a5b9b27236444333b7d13c50922e3"
+    },
+    "fixed_launch": {
+      "path": "/private/tmp/jarde-iterator-assignment-fixed-candidate-root-v1/execution.json",
+      "bytes": 1529503,
+      "sha256": "0f175a08398335246a663e03f8d1288944b0aed2c6b05d4b9eb8c7beacb4d232"
+    },
+    "fixed_capture": {
+      "path": "/private/tmp/jarde-iterator-assignment-fixed-candidate-root-v1/capture/execution.json",
+      "bytes": 83912,
+      "sha256": "556892704f6aece8b403a609a3cb383587a0dad951159da5f4898037207a3228"
+    },
+    "fixed_checker": {
+      "path": "/private/tmp/jarde-iterator-assignment-fixed-candidate-root-v1/checker.json",
+      "bytes": 5352,
+      "sha256": "83907502c72701a5570372099d3d21ea0b855bb91fa62d44d9768e5ed4433bdd"
+    },
+    "controls_launch": {
+      "path": "/private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/execution.json",
+      "bytes": 1529550,
+      "sha256": "cb6b57852cc37f50a02a3c20cf933c2fa69c86eb015ed8b7ae46af8a561da046"
+    },
+    "controls_capture": {
+      "path": "/private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/capture/execution.json",
+      "bytes": 85178,
+      "sha256": "09399f6a1652515e1ab8dfc083e897022625b713ca081bed97f28c5e6d1aa318"
+    },
+    "controls_checker": {
+      "path": "/private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/checker.json",
+      "bytes": 5422,
+      "sha256": "c54292edbfe9f3740eb555ce1b5d2de3c1138a58df46d0be887d038e91eaeeb6"
+    },
+    "collector": {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    "focused_receipt": {
+      "path": "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+      "bytes": 3064576,
+      "sha256": "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b"
+    },
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+      "bytes": 61314560,
+      "mode": "0o555",
+      "sha256": "526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5"
+    },
+    "static_checks": {
+      "python_ast_parse": "passed",
+      "collector_arg_order_vs_pinned_root_runner": "23 ordered options match",
+      "fixed_commands_full_argv": "29/29 exact",
+      "controls_commands_full_argv": "29/29 exact",
+      "collector_argv_config_mapping": "both launch receipts exact",
+      "acceptance_execution": "not_run",
+      "toolchain": "not_run",
+      "workspace_or_Git_mutation": "not_performed"
+    },
+    "scope": "Private correction to collector argv verification only; v2 failure preserved."
+  }
+}
