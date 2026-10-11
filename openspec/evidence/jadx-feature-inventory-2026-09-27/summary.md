@@ -393,3 +393,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 
 
 2026-10-11 CF-12 完整清单巡查：剩余 `TestSwitch2/3/4/Simple/WithFallThroughCase2` 五类已经按固定上游源码实际捕获并完成完整类对照，见[新增五类独立记录](../java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/README.md)。Jarde `3/4/Simple` default/all 六profile重编运行同原，另两类结构拒绝且编译失败；JADX TestSwitch4编译成功但运行1234检查得到2234，Jarde此例正确。JADX FTCase2的重复代码warning导致JUnit失败，完整重编check及68输入则同原。root核32完整对照命令/15行、13方法map对/238UTF8段；此批采用conditional产品6476b56，其自身CI现已接受4jobs/52steps、双seed各3422/0/97（GitHub公开测试名脱敏通过两处唯一绑定，原始raw保留）。十个上游测试类现均有实际对照记录，但旧五类分属先前冻结产品，整单元仍未接受，不改71单元完成数。后续优先早返回case共享continuation和外层if内switch尾语句，两项内部具体拒绝原因需受控诊断，不为本批已正确的副作用顺序新增机制。
+
+2026-10-11 conditional窄片7/7已关闭：自身产品CI准确接受，证据提交69cff3bd299feb71a820917be866db05b63b57dc实际clean审计接受15worktrees/仅main/无target；整CF12尚未接受，71单元完成数不变。

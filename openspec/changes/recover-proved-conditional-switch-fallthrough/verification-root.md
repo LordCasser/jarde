@@ -40,3 +40,5 @@ helper/caller gate与新产品尚未接受；private tests v1/v2均未编译，�
 
 
 2026-10-11 本轮产品自身CI已独立接受，任务 **6/7**。精确commit6476b56c357443ef17318891b12142f509977234/run38096105240：4jobs/52steps全部success、两seed各359targets和3422/0/97，与fresh本地95批有序名/结果逐个核同，2210Git/live source pins等全部闭合。实际扩展包装器验收和两次原v5失败在results/own-product-ci-root-v1；接受SHA c50bb7b672896ce19f14e152f288ef0522830fd22b6749ba18d68fc0ebf2fd7a。JDK别名已通过真实resolved v4重录replay（原verifier/CLI/产物未改）；GitHub日志每seed各一处公开测试名脱敏，通过同target/status唯一绑定，raw不改、其余有序tuple/counts检查全保留，Luna对抗审查通过。不能称原v5独立通过，accepted明确保存wrapper与原v5身份；实际argv无重复acceptance参数。最终clean主线交付还待文档提交与实核。新增CF12剩余五类已完整观测/独立核验，并单列两项结构缺口与私有OpenSpec草稿，不宣称整CF12/71完成。
+
+2026-10-11 clean交付已接受，任务 **7/7**：实际checkpoint主线 `69cff3bd299feb71a820917be866db05b63b57dc` = origin/main =真实远端唯一main；15worktrees全clean，14辅助均detached main祖先、无待合入分支，全无target/fuzz target，free 45672148992bytes。冻结CLI0555/SHA恒同。实际audit/raw在results/clean-delivery-checkpoint-root-v1，execution SHA4f2b6adc61135bfdbe4d1c9df46232a3e3dbe9df20c059d16c8e97efb676c490。该checkpoint先于本关闭文档，文档推送后继续私有final audit；不借文档CI，不宣称整CF12完成。
