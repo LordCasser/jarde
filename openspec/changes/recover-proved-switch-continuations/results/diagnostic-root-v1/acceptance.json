@@ -1,0 +1,73 @@
+{
+  "schema": "switch-continuation-root-diagnostic-acceptance-v1",
+  "utc": "2026-10-11T00:48:29.127304+00:00",
+  "status": "accepted_actual_diagnostics",
+  "execution_sha256": "7509ab39d1cf6261ab50fe6bbd1bbea33fa9a04bf1fb3fb3c1904163df651ec0",
+  "actual_test_summary": [
+    1,
+    0,
+    0
+  ],
+  "peak_target_bytes": 153517491,
+  "clean_target_absent": true,
+  "restored_region_sha256": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c",
+  "input_class_pins": {
+    "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9",
+    "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+  },
+  "observations": {
+    "ft2": {
+      "switch_block": 8,
+      "proved_post_join": 175,
+      "outer_if_block": 0,
+      "start": 8,
+      "next": 175,
+      "outer_boundary": 197,
+      "early_return_continuation": false,
+      "prefixed_loop_continuation": false,
+      "continue_switch_arm_not_called_for_outer_if": true,
+      "switch_owned_blocks": [
+        8,
+        36,
+        63,
+        67,
+        71,
+        96,
+        121,
+        125,
+        150,
+        153
+      ],
+      "observed_tail_normal_edge": [
+        175,
+        197
+      ],
+      "refusal": "ArmsDoNotMeet@0"
+    },
+    "switch2": {
+      "post_dominator": null,
+      "forward_join": null,
+      "targets": [
+        48,
+        56,
+        71,
+        137,
+        164
+      ],
+      "candidate164_incoming_sources": [
+        0,
+        48,
+        56,
+        63,
+        71,
+        137
+      ],
+      "first_reject_candidate_file_line": 13405,
+      "first_reject_condition": "linear route successor is another direct target (48 -> 164)",
+      "refusal": "SwitchArmsOverlap@0",
+      "uncovered_blocks": 17
+    }
+  },
+  "proof_of_correct_recovery": false,
+  "cf12_complete": false
+}

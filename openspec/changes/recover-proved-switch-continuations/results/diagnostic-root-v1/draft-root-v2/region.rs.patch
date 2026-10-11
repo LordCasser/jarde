@@ -1,0 +1,342 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -2329,6 +2329,29 @@
+ /// and the live blocks it left behind are named by the uncovered-blocks scan at the end of
+ /// [`recover`].
+ type Run = (Vec<Region>, Option<CanonicalBlockId>);
++
++#[cfg(test)]
++fn diagnostic_run_outline(run: &[Region]) -> Vec<(&'static str, Vec<u32>, Option<&'static str>)> {
++    run.iter()
++        .map(|region| {
++            let (kind, refusal) = match region {
++                Region::Straight { .. } => ("straight", None),
++                Region::If { .. } => ("if", None),
++                Region::Switch { .. } => ("switch", None),
++                Region::Fallback { reason, .. } => ("fallback", Some(reason.code())),
++                Region::Loop { .. } => ("loop", None),
++                Region::Sequence { .. } => ("sequence", None),
++                _ => ("other", None),
++            };
++            (
++                kind,
++                region.blocks().iter().map(|block| block.bci()).collect(),
++                refusal,
++            )
++        })
++        .collect()
++}
++
+ 
+ /// The run one gap leaves behind, and the successor that continues it.
+ ///
+@@ -3500,11 +3523,21 @@
+                         }
+                         let arm_before = self.visited.clone();
+                         let (mut arm_run, arm_next) = self.region_at(walk, &arm_frame)?;
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] arm-before-consumer branch={} start={} next={:?} boundary={:?} outline={:?} newly_visited={:?}", branch.bci(), walk.bci(), arm_next.as_ref().map(CanonicalBlockId::bci), arm_frame.boundary.and_then(|n| self.view.id_of(n).map(CanonicalBlockId::bci)), diagnostic_run_outline(&arm_run), self.visited.difference(&arm_before).filter_map(|n| self.view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>());
+                         if let Some(next) = arm_next.as_ref()
+                             && self.view.index_of(next) != Some(join_node)
+                         {
+                             let mut continued =
+                                 self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?;
++                            #[cfg(test)]
++                            eprintln!(
++                                "[switch-continuation-diagnostic] one-arm-if branch={} next={} boundary={:?} arm_run={:?} continue_early_return_arm={continued}",
++                                branch.bci(),
++                                next.bci(),
++                                arm_frame.boundary.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                                diagnostic_run_outline(&arm_run),
++                            );
+                             if !continued {
+                                 continued = self.continue_prefixed_loop_arm(
+                                     &mut arm_run,
+@@ -3514,6 +3547,11 @@
+                                     &arm_frame,
+                                     &arm_before,
+                                 )?;
++                                #[cfg(test)]
++                                eprintln!(
++                                    "[switch-continuation-diagnostic] one-arm-if branch={} continue_prefixed_loop_arm={continued}",
++                                    branch.bci(),
++                                );
+                             }
+                             if !continued {
+                                 self.unclosed_tail_at.get_or_insert(branch.bci());
+@@ -12767,6 +12805,14 @@
+         } else {
+             None
+         };
++        #[cfg(test)]
++        eprintln!(
++            "[switch-continuation-diagnostic] switch_region branch={} pdom={:?} loop_exit={} forward_join={:?}",
++            branch.bci(),
++            post_join.and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
++            post_is_loop_exit,
++            forward_join.and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
++        );
+         let join_node = if post_is_loop_exit {
+             match self.switch_loop_join(node, successors, frame, branch_bci, switch_continue)? {
+                 SwitchLoopJoin::Local(local_join) => Some(local_join),
+@@ -12959,13 +13005,23 @@
+             if let Some(next) = arm_next.as_ref()
+                 && matches!(arm_run.as_slice(), [Region::Switch { .. }])
+                 && self.view.index_of(next) != case_frame.boundary
+-                && !self.continue_switch_arm(
+-                    &mut arm_run,
+-                    next,
+-                    &start,
+-                    &case_frame,
+-                    &case_entries,
+-                )?
++                && {
++                    let continued = self.continue_switch_arm(
++                        &mut arm_run,
++                        next,
++                        &start,
++                        &case_frame,
++                        &case_entries,
++                    )?;
++                    #[cfg(test)]
++                    eprintln!(
++                        "[switch-continuation-diagnostic] continue_switch_arm start={} next={} boundary={:?} result={continued}",
++                        start.bci(),
++                        next.bci(),
++                        case_frame.boundary.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                    );
++                    !continued
++                }
+             {
+                 // A child switch left a continuation that this arm cannot own. Refuse the
+                 // method rather than publish its first dispatch with the tail elsewhere.
+@@ -13270,9 +13326,15 @@
+             .filter_map(|successor| self.view.index_of(successor))
+             .collect();
+         if targets.len() < 3 {
+-            return Ok(None);
+-        }
+-
++            {
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected", line!());
++                        return Ok(None);
++                    }
++        }
++
++        #[cfg(test)]
++        eprintln!("[switch-continuation-diagnostic] forward-join branch={} dispatch-bci={} targets={:?} predecessors={:?}", self.view.id_of(branch).map_or(u32::MAX, CanonicalBlockId::bci), at, targets.iter().filter_map(|n| self.view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(), targets.iter().map(|n| (self.view.id_of(*n).map(CanonicalBlockId::bci), self.view.predecessors(*n).iter().filter_map(|p| self.view.id_of(*p).map(CanonicalBlockId::bci)).collect::<Vec<_>>())).collect::<Vec<_>>());
+         let mut routes = Vec::new();
+         let mut terminal_targets = 0usize;
+         for start in targets.iter().copied() {
+@@ -13310,7 +13372,11 @@
+                         .as_ref()
+                         .is_some_and(|scope| !scope.contains(&current))
+                 {
+-                    return Ok(None);
++                    {
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected", line!());
++                        return Ok(None);
++                    }
+                 }
+                 route.push(current);
+                 if frame.boundary == Some(current) {
+@@ -13334,7 +13400,11 @@
+                                 .is_some_and(|scope| !scope.contains(next))
+                                 && frame.boundary != Some(*next))
+                         {
+-                            return Ok(None);
++                            {
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected", line!());
++                        return Ok(None);
++                    }
+                         }
+                         current = *next;
+                     }
+@@ -13345,7 +13415,11 @@
+             routes.push(route);
+         }
+         if routes.len() < 2 || terminal_targets == 0 {
+-            return Ok(None);
++            {
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected", line!());
++                        return Ok(None);
++                    }
+         }
+ 
+         // Linear routes can merge only once and then share their suffix. Build position maps once,
+@@ -13367,7 +13441,11 @@
+             positions.push(route_positions);
+         }
+         let Some(first) = routes.first() else {
+-            return Ok(None);
++            {
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected", line!());
++                        return Ok(None);
++                    }
+         };
+         // Charge candidate-to-route membership checks before the bounded nested scan.
+         poll(self.budget, Some(at))?;
+@@ -13381,7 +13459,11 @@
+             !targets.contains(candidate)
+                 && positions.iter().all(|route| route.contains_key(candidate))
+         }) else {
+-            return Ok(None);
++            {
++                        #[cfg(test)]
++                        eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected", line!());
++                        return Ok(None);
++                    }
+         };
+ 
+         let predecessors = self.view.predecessors(candidate);
+@@ -13396,9 +13478,12 @@
+         }
+         // Reuse the binary forward-join ownership rule: no outside predecessor and no backedge
+         // into the candidate. Do not skip an earlier common node if it fails this ownership test.
+-        Ok(self
+-            .forward_join_predecessors(branch, candidate)
+-            .then_some(candidate))
++        let owned = self.forward_join_predecessors(branch, candidate);
++        #[cfg(test)]
++        if !owned {
++            eprintln!("[switch-continuation-diagnostic] switch_forward_join at={} rejected ownership candidate={:?}", line!(), self.view.id_of(candidate).map(CanonicalBlockId::bci));
++        }
++        Ok(owned.then_some(candidate))
+     }
+ 
+     /// Whether a case target is a terminal block with an explicit return or throw.
+@@ -15588,4 +15673,129 @@
+             "the real clone target's non-empty path differs from pathless dispatch before any successor traversal"
+         );
+     }
++
++    #[test]
++    fn cf12_switch_continuation_temporary_diagnostic() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::budget::{Budget, Limits};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        fn diagnose(class: &[u8], method: &[u8], descriptor: &[u8], label: &str) {
++            let mut budget = Budget::new(Limits {
++                input_bytes: 1 << 20,
++                archive_entries: 100,
++                entry_bytes: 1 << 20,
++                read_bytes: 1 << 20,
++                class_bytes: 1 << 20,
++                attribute_bytes: 1 << 20,
++                code_bytes: 1 << 20,
++                result_items: 1 << 20,
++                output_bytes: 1 << 20,
++                class_headers: 100,
++                method_bodies: 100,
++                ir_items: 1 << 20,
++                ir_edges: 1 << 20,
++                analysis_steps: 1 << 20,
++                normalization_clones: 1 << 20,
++                nested_depth: 32,
++                dependency_depth: 32,
++                elapsed_millis: u64::MAX,
++            });
++            let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
++                .expect("frozen switch class opens");
++            let definition = PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot { snapshot: snapshot.id().clone() },
++                class_bytes: ClassBytesId {
++                    digest: Digest(blake3::hash(class).to_hex().to_string()),
++                    length: u64::try_from(class.len()).expect("fixture length fits"),
++                },
++                variant: PhysicalVariant::Base,
++            };
++            let domain = LoadDomain {
++                loader: LoaderId("app".to_owned()),
++                parent_loader: None,
++                delegation: DelegationPolicy::ParentFirst,
++                roots: vec![LoadRoot::StandaloneClass { snapshot: snapshot.id().clone() }],
++                module_mode: ModuleMode::ClassPath,
++                external_override: RuntimeUncertainty::None,
++                runtime_transformation: RuntimeUncertainty::None,
++            };
++            let analysis = analyze_method_ir(
++                &[snapshot.clone()],
++                &MethodAnalysisRequest {
++                    environment: ResolutionEnvironment {
++                        runtime: RuntimeView {
++                            physical: PhysicalView {
++                                snapshot: snapshot.id().clone(),
++                                scope: PhysicalScope::SnapshotAll,
++                            },
++                            profile: RuntimeProfile {
++                                java_release: 8,
++                                multi_release: MultiReleasePolicy::Disabled,
++                                layout: LayoutMode::Generic,
++                            },
++                            load_domain: domain.clone(),
++                        },
++                        domains: vec![domain],
++                        providers: Vec::new(),
++                    },
++                    method: PhysicalMethodId {
++                        owner: definition,
++                        name: JvmBytes(method.to_vec()),
++                        descriptor: JvmBytes(descriptor.to_vec()),
++                    },
++                    stages: AnalysisStage::ALL.to_vec(),
++                },
++                &mut budget,
++            ).expect("reader analyzes the exact real switch method");
++            let ir = analysis.ir();
++            let canonical = ir.canonical().expect("canonical CFG from exact method");
++            let ssa = ir.ssa().expect("SSA from exact method");
++            let code = ir.code().expect("decoded code from exact method");
++            let operations = Operations::of(code, ir.constant_pool());
++            let chains = crate::concat::plan_four_conditional_strings(
++                ssa,
++                canonical,
++                &operations,
++                &crate::build::FieldCopies::default(),
++                &mut budget,
++            ).expect("existing condition planner completes");
++            let view = NormalFlowView::build(canonical, &mut budget)
++                .expect("normal-flow view from same canonical CFG");
++            eprintln!("[switch-continuation-diagnostic] begin {label} blocks={} edges={}", canonical.blocks().len(), canonical.edges().len());
++            eprintln!("[switch-continuation-diagnostic] canonical {label} rows={:?}", canonical.edges().iter().map(|e| (e.from().bci(), e.kind(), e.to().bci())).collect::<Vec<_>>());
++            let result = recover(
++                canonical,
++                &view,
++                ssa,
++                &operations,
++                ir.constant_pool(),
++                &chains,
++                &crate::init::Sites::empty(),
++                code,
++                Some(false),
++                false,
++                &crate::pass::JAVA_8,
++                &mut budget,
++            ).expect("actual region recovery completes");
++            eprintln!("[switch-continuation-diagnostic] end {label} regions={:?}", diagnostic_run_outline(&result.regions));
++        }
++
++        const SWITCH2: &[u8] = include_bytes!("../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class");
++        const FALLTHROUGH2: &[u8] = include_bytes!("../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class");
++        diagnose(SWITCH2, b"test", b"(I)V", "TestSwitch2.test(I)V");
++        diagnose(FALLTHROUGH2, b"test", b"(IZZ)Ljava/lang/String;", "TestSwitchWithFallThroughCase2.test(IZZ)String");
++    }
++
+ }

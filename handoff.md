@@ -1,6 +1,6 @@
 # HANDOFF — jarde 主线接续入口
 
-当前断点：conditional 窄片已完成7/7，产品6476b56c357443ef17318891b12142f509977234自身CI38096105240独立接受；关闭提交0f6cf4ca320676b0b36d9c219b24587f373a059b已推送，私有final audit再次接受15worktrees全clean/14辅助detached祖先/仅main/main=origin/无target。下一项 `recover-proved-switch-continuations` 已用实际OpenSpec CLI创建四份中文artifact并strict通过，13任务中2/13仅完成前置与只读baseline（199Git/live pins、277inventory files）；FT2与Switch2内部拒绝待真实临时诊断，生产没有改动。常量名gate独立13项排队。
+当前断点：conditional 窄片已完成7/7，产品6476b56c357443ef17318891b12142f509977234自身CI38096105240独立接受；关闭提交0f6cf4ca320676b0b36d9c219b24587f373a059b已推送，私有final audit再次接受15worktrees全clean/14辅助detached祖先/仅main/main=origin/无target。下一项 `recover-proved-switch-continuations` 已用实际OpenSpec CLI创建四份中文artifact并strict通过，13任务中3/13已完成前置、只读baseline（199Git/live pins、277inventory files）和真实临时诊断。FT2 switch8 pdom175/outerif0 next175 boundary197且现有consumer均false；Switch2 pdomNone、旧线性48→directtarget164拒绝后arms overlap。插桩按字节还原，生产没有改动，target已clean。两个Luna私有实现和同新CLI十类replay runner正在准备，root将串行集成验收。常量名gate独立13项排队。
 
 用户明确继续在当前聊天推进。以本地JADX **71验收单元/612测试文件**为清单，逐片追平后再探索；root负责架构、OpenSpec、真实源码/JADX/Jarde整类对照及对抗验收，确定性私有稿交Luna。窄片成功不增加整单元完成数。
 
@@ -45,3 +45,5 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 conditional clean交付7/7 checkpoint：69cff3bd299feb71a820917be866db05b63b57dc，free 45672148992bytes，execution SHA4f2b6adc61135bfdbe4d1c9df46232a3e3dbe9df20c059d16c8e97efb676c490；见 [clean audit](openspec/changes/recover-proved-conditional-switch-fallthrough/results/clean-delivery-checkpoint-root-v1/execution.json)。持续目标active，下一步按实际拒绝路径规划两个结构缺口。
 
 下一结构里程碑：[proposal](openspec/changes/recover-proved-switch-continuations/proposal.md)、[design](openspec/changes/recover-proved-switch-continuations/design.md)、[tasks](openspec/changes/recover-proved-switch-continuations/tasks.md)。root已读取实际apply指令及全部context，用户持续自主实现授权有效，无需重新批准规划。Luna只准备private临时diagnostic候选；root守卫实跑后移除插桩，再依据真实路径派发两个私有实现候选。
+
+continuation诊断v2已接受3/13，actual1/0/0、peak153517491bytes、cargo clean341files/146.4MiB，region基线按字节恢复；v1私有路径记录器失败完整保留。见[新verification](openspec/changes/recover-proved-switch-continuations/verification-root.md)。十类replay准备159pins已核，仅是规划。

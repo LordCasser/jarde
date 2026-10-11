@@ -1,0 +1,1529 @@
+{
+  "schema": "cf12-ten-fixture-replay-preparation-luna-v1",
+  "purpose": "mapping only; no new replay result or pass claim",
+  "fixtures": [
+    {
+      "fixture": "TestSwitch",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+        "bytes": 939,
+        "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+          "bytes": 939,
+          "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class",
+          "bytes": 1083,
+          "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/jadx-source/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+          "bytes": 756,
+          "sha256": "3bb9f72c9b6941b4ddf54c1d9eacc5f874eb98ef933e6adcca5727475394df18"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/actual-input-paths.tsv",
+          "bytes": 278,
+          "sha256": "a30380b2ccbc7c7a9d9fff0bca9daa5a6439aef2bb8d2c2496537caedef02cd9"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/actual-jadx-args.txt",
+          "bytes": 1669,
+          "sha256": "0fd0d67fda52ec81162c6a774172acbed2a8a73993f16ed8aba9daed21060d1c"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        }
+      ],
+      "historical": "first-five frozen under earlier accepted product; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitchNoDefault",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+        "bytes": 697,
+        "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+          "bytes": 697,
+          "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class",
+          "bytes": 899,
+          "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/jadx-source/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+          "bytes": 545,
+          "sha256": "b07040f1c51941ad98b59a5c693534a273c3fdd2bd4015b1d5e3964248dccb9c"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/actual-input-paths.tsv",
+          "bytes": 305,
+          "sha256": "09ce4c20b5f8400544e90a98ca0c8631c0f8badf892225ff2356cc5fd78e4edc"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/actual-jadx-args.txt",
+          "bytes": 1678,
+          "sha256": "80e1e76010b60b0ae86cb668a818d6501dd5dd660e35e42b47196652f1180f03"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        }
+      ],
+      "historical": "first-five frozen under earlier accepted product; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitchLabels",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+        "bytes": 1305,
+        "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+          "bytes": 1305,
+          "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+          "bytes": 753,
+          "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/jadx-source/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+          "bytes": 835,
+          "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/actual-input-paths.tsv",
+          "bytes": 608,
+          "sha256": "a3ef76ab850df4c0f278abc5562ea13f28c8c1f15afc5ce345bfeb18b6f6cdd3"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/actual-jadx-args.txt",
+          "bytes": 1871,
+          "sha256": "4f2cefbfdd07165ea55063af7eea5fb8db33fd2c79e53e76ed816f1f5be7d012"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+          "bytes": 744,
+          "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+        }
+      ],
+      "historical": "first-five frozen under earlier accepted product; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitchFallThrough",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+        "bytes": 1077,
+        "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+          "bytes": 1077,
+          "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class",
+          "bytes": 1531,
+          "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/jadx-source/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+          "bytes": 906,
+          "sha256": "6404c52b5300d9bb6491675e3f11a7022297fad188fb37689121811976aa8659"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/actual-input-paths.tsv",
+          "bytes": 312,
+          "sha256": "b8db54c7fb59f3cd9c847f51ccf5744dffbf26c353399d43917a5419dad45493"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/actual-jadx-args.txt",
+          "bytes": 1684,
+          "sha256": "2bce9530536848a99b82fd5e1ff898ba0ae75897a281578f3cd5bf8e2adbf4e7"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        }
+      ],
+      "historical": "first-five frozen under earlier accepted product; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitchWithFallThroughCase",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+        "bytes": 1257,
+        "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+          "bytes": 1257,
+          "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class",
+          "bytes": 1563,
+          "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/jadx-source/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+          "bytes": 1337,
+          "sha256": "2ede155c84885e61612ed2e667610a242898ee84990f48874f9f564b2d907992"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/actual-input-paths.tsv",
+          "bytes": 336,
+          "sha256": "49b8979663cb35b7fa0417d3e8b2553c86aa0860b1c19a4d36f86dc3750e175c"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/actual-jadx-args.txt",
+          "bytes": 1689,
+          "sha256": "058dcedd46cc69e893143531403a946d79d67c9e8a436d390dce1ac8b4611f3d"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "03cbb6c52e522ce55e217e3f9d66dbd66d21ef6bf85024016a3b7f3080c7944f"
+        }
+      ],
+      "historical": "first-five frozen under earlier accepted product; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitch2",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch2.java",
+        "bytes": 1568,
+        "sha256": "4ee2c2455d4aedb7ee5903412dc608ae7a612229fc93f637ff39a78418fd4f99"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch2.java",
+          "bytes": 1568,
+          "sha256": "4ee2c2455d4aedb7ee5903412dc608ae7a612229fc93f637ff39a78418fd4f99"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+          "bytes": 1123,
+          "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/jadx-source/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+          "bytes": 1677,
+          "sha256": "94a3cd1fb837d2605a924038ac81120e4959f9b523f556a394310e76af632af5"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/actual-input-paths.tsv",
+          "bytes": 286,
+          "sha256": "708694b781ba2d02b96c6e7839bb0b5fb3a8715cdc01da23d4fa0c7213f66da5"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/actual-jadx-args.txt",
+          "bytes": 1679,
+          "sha256": "693fe8d16d86b91a3499d68f05457c96dbc9b21c0236585adc0a37944ff640ec"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        }
+      ],
+      "historical": "remaining-root-v1 frozen observation; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitch3",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch3.java",
+        "bytes": 868,
+        "sha256": "5062a2619e31a06bb17542ff0f4f2653e8bee993f54cd42604b99de4e3e6fb90"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch3.java",
+          "bytes": 868,
+          "sha256": "5062a2619e31a06bb17542ff0f4f2653e8bee993f54cd42604b99de4e3e6fb90"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+          "bytes": 1037,
+          "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/jadx-source/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+          "bytes": 928,
+          "sha256": "70bcd2ba08e5e8f06e25fd518263796aab383d8a8a5ffefbd64df5235ef20a15"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/actual-input-paths.tsv",
+          "bytes": 285,
+          "sha256": "e14c40d6c6efd2c87b20d338cd8f0f47d7a780047ff651d49fb0cf96c960d968"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/actual-jadx-args.txt",
+          "bytes": 1675,
+          "sha256": "8e433cc4f01f3bf53843e29d7a73a97eeacffb9ed9689428eca4367498470393"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        }
+      ],
+      "historical": "remaining-root-v1 frozen observation; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitch4",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch4.java",
+        "bytes": 945,
+        "sha256": "579fa4215a818cf3e982cb0245e6cdb971150152e48a0933f968e216d7211f35"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch4.java",
+          "bytes": 945,
+          "sha256": "579fa4215a818cf3e982cb0245e6cdb971150152e48a0933f968e216d7211f35"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+          "bytes": 1088,
+          "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/jadx-source/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+          "bytes": 850,
+          "sha256": "5b9b3bcfb53faf6b8c3a18255d78b8ee601c77a58c739055951a139a97df97a3"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/actual-input-paths.tsv",
+          "bytes": 286,
+          "sha256": "c1339affacc3de9acc7e7f238821085b65ef933b7733f5f1a64b71bce41d1e87"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/actual-jadx-args.txt",
+          "bytes": 1679,
+          "sha256": "4005031801c8ba6f8f01fe51f1b3404d3d66ff95f457aac0aa1be6a32682611d"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "03cbb6c52e522ce55e217e3f9d66dbd66d21ef6bf85024016a3b7f3080c7944f"
+        }
+      ],
+      "historical": "remaining-root-v1 frozen observation; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitchSimple",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchSimple.java",
+        "bytes": 892,
+        "sha256": "f715afb2acd38deceb71021bd602110b79e35d0e3d39f331849fe6145cefeb2a"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchSimple.java",
+          "bytes": 892,
+          "sha256": "f715afb2acd38deceb71021bd602110b79e35d0e3d39f331849fe6145cefeb2a"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+          "bytes": 926,
+          "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/jadx-source/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+          "bytes": 636,
+          "sha256": "7e414b2162cf2bc14b191582a1e65ed3411b2bfc6b7fe0dd097ddc77fc1fc27d"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/actual-input-paths.tsv",
+          "bytes": 300,
+          "sha256": "022266d168b7e6b1be24e443df3064ee3dd02bc15e8951a40a97bb5cd3481879"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/actual-jadx-args.txt",
+          "bytes": 1683,
+          "sha256": "73d63056d0e3c76098774a50aaceff57a0b782b558f2ef45b30fac0e5ecdcbd7"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+        }
+      ],
+      "historical": "remaining-root-v1 frozen observation; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    },
+    {
+      "fixture": "TestSwitchWithFallThroughCase2",
+      "capture_root": "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1",
+      "upstream_test_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2.java",
+        "bytes": 1377,
+        "sha256": "9093a8f92357964a9da1f1a2fba30906c9f1e757ac3e5f1ff3e0e970fa3b57a9"
+      },
+      "class_set_input_paths": [
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class"
+      ],
+      "pins": [
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2.java",
+          "bytes": 1377,
+          "sha256": "9093a8f92357964a9da1f1a2fba30906c9f1e757ac3e5f1ff3e0e970fa3b57a9"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+          "bytes": 1654,
+          "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/jadx-source/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+          "bytes": 1623,
+          "sha256": "4c9c547555b05a8047697421e65d6e0ec54d7aca3f21a98317acee40daff1a2e"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/actual-input-paths.tsv",
+          "bytes": 342,
+          "sha256": "83baa3c1fa48b0e7eb165d9d39db37d81c276a142e820114f5dec1f4668ded0c"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/actual-jadx-args.txt",
+          "bytes": 1697,
+          "sha256": "fbccfc6bd9df4c514bd376426b9dde8f3a73cb200489298801685f6a57b03786"
+        },
+        {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/test-status.txt",
+          "bytes": 7,
+          "sha256": "03cbb6c52e522ce55e217e3f9d66dbd66d21ef6bf85024016a3b7f3080c7944f"
+        }
+      ],
+      "historical": "remaining-root-v1 frozen observation; observations only",
+      "replay_legs_required": [
+        "jdk8",
+        "jdk23"
+      ],
+      "required_sides": [
+        "original",
+        "jadx",
+        "jarde-default",
+        "jarde-all"
+      ],
+      "upstream_check_policy": "Run source check; preserve actual status and failure; do not synthesize passing matrix after check failure. For no-check cases run frozen observer/probe."
+    }
+  ],
+  "shared_observers": {
+    "remaining_capture_extension": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/Cf12CaptureExtension.java",
+      "bytes": 2498,
+      "sha256": "2f900cb846b78ed1ceb1523f7b01105873777394625a90c2058e1330534f295c"
+    },
+    "runtime_probe": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    "remaining_runtime_probe": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/Cf12RemainingRuntimeProbe-root-v1.java",
+      "bytes": 10381,
+      "sha256": "8c10f7119b997a73607ce1457db5b41328bb4c6cbd95399100b753d014dfff08"
+    },
+    "remaining_inventory": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/../closed-inventory-root-v1.json",
+      "bytes": 58404,
+      "sha256": "4e5e12a3633dcbcb0aa962d0e1bcc7c76c7abaa69f28841469cab0ba56c97db2"
+    }
+  },
+  "jdk_profile_requirements": {
+    "jdk8": "Corretto 1.8.0_432; compile source/target 8; runtime -Xverify:all",
+    "jdk23": "OpenJDK 23.0.1; compile source/target 8 unless fixture profile requires javac 23 for observer; runtime -Xverify:all"
+  },
+  "known_exceptional_observations": {
+    "TestSwitchLabels": "retain both outer and Inner generated classes in every class-set comparison",
+    "TestSwitch4": "JADX source compiles but its upstream check truly fails 1234 expected vs 2234 actual; preserve as failure",
+    "TestSwitchWithFallThroughCase2": "JADX emits Code duplicated warning and upstream JUnit fails; full generated-source check and 68-input matrix match original; retain warning/failure"
+  },
+  "replay_rule": "All ten must be rerun against one frozen new CLI hash. Historical output is only oracle/context and never counts as new pass.",
+  "shared_pins": {
+    "upstream_frozen_source_root": "/Users/lordcasser/workspace/testzone/jadx at 2fb1b16386941660fda07e9017285aec40fcb37f (historical pin; replay source must hash-match capture)",
+    "old_full_replay_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-full-replay-root-v1.py",
+      "bytes": 4384,
+      "sha256": "64a7b25a50800d158f509ce87c8e3cf84fdb34261d6fe233a920084a0e3d195c"
+    },
+    "remaining_five_full_replay_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/jarde-cf12-remaining-full-replay-root-v1.py",
+      "bytes": 5871,
+      "sha256": "1062270b4c1c2c183817b38ac3fcc68ea827b9c6a1584556ac91e4ed90806c74"
+    },
+    "remaining_five_direct_harness": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/jarde-cf12-remaining-direct-root-v1.py",
+      "bytes": 7554,
+      "sha256": "b5b2e974fdfb4d0cfe48d2d0fee2e1a8d81fc5bedaefd39d394c819d77add72b"
+    },
+    "old_observer": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/Cf12CaptureExtension.java",
+      "bytes": 2498,
+      "sha256": "2f900cb846b78ed1ceb1523f7b01105873777394625a90c2058e1330534f295c"
+    },
+    "remaining_observer": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/Cf12CaptureExtension.java",
+      "bytes": 2498,
+      "sha256": "2f900cb846b78ed1ceb1523f7b01105873777394625a90c2058e1330534f295c"
+    },
+    "old_runtime_probe": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    "remaining_runtime_probe": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/Cf12RemainingRuntimeProbe-root-v1.java",
+      "bytes": 10381,
+      "sha256": "8c10f7119b997a73607ce1457db5b41328bb4c6cbd95399100b753d014dfff08"
+    },
+    "test_sdk_jars": [
+      {
+        "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar",
+        "bytes": 31094,
+        "sha256": "ebc7aec252ed0c7d2d04c039d7f00e69f7b86b1f493c741d67b3ef31b986b054"
+      },
+      {
+        "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar",
+        "bytes": 1399383,
+        "sha256": "c4a445426c3c2861666863b842cc4ec7bbb1c4226fefd370b6d2fe83d6c4ff0f"
+      },
+      {
+        "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar",
+        "bytes": 9223908,
+        "sha256": "d78396e3c5bce3f2865c9186647481e5589d34cacc632484715b686108d17c66"
+      },
+      {
+        "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar",
+        "bytes": 713862,
+        "sha256": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+      },
+      {
+        "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar",
+        "bytes": 3160927,
+        "sha256": "f7686c4960cf70c2ebc5c500a73a8cfc04541b730c18f1c5c21329889b137f45"
+      },
+      {
+        "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+        "bytes": 3178851,
+        "sha256": "7c6968cbcaf4301c729f202b23b7d736c5d88be625fc7d27ad5d746146a8bc28"
+      }
+    ],
+    "jadx_product_jars": [
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+        "bytes": 239543,
+        "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+        "bytes": 721157,
+        "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+        "bytes": 17536,
+        "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+        "bytes": 445288,
+        "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+        "bytes": 1153819,
+        "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+        "bytes": 167761,
+        "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+        "bytes": 126151,
+        "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+        "bytes": 13371507,
+        "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+        "bytes": 208835,
+        "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+        "bytes": 609182,
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+        "bytes": 1039009,
+        "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+        "bytes": 25886,
+        "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+        "bytes": 2020,
+        "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+        "bytes": 20255,
+        "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+        "bytes": 4617,
+        "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+        "bytes": 313604,
+        "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+        "bytes": 2785359,
+        "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+        "bytes": 8781,
+        "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+        "bytes": 23547,
+        "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+        "bytes": 16590,
+        "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+        "bytes": 11946,
+        "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+        "bytes": 8282,
+        "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+        "bytes": 6769,
+        "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+        "bytes": 65020,
+        "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+        "bytes": 2400805,
+        "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+        "bytes": 107404,
+        "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+        "bytes": 54158,
+        "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+        "bytes": 19973,
+        "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+        "bytes": 115864,
+        "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+        "bytes": 56006,
+        "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+        "bytes": 33989,
+        "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+        "bytes": 43273,
+        "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+        "bytes": 25907,
+        "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+        "bytes": 10711,
+        "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+        "bytes": 10470,
+        "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+        "bytes": 27061,
+        "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+        "bytes": 2497,
+        "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+        "bytes": 94038,
+        "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+        "bytes": 19936,
+        "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+        "bytes": 910795,
+        "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+        "bytes": 3750100,
+        "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+        "bytes": 1841933,
+        "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "bytes": 2199,
+        "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+        "bytes": 293273,
+        "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+        "bytes": 650132,
+        "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+        "bytes": 262096,
+        "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+        "bytes": 1876598,
+        "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+        "bytes": 20603304,
+        "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+        "bytes": 32614,
+        "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+        "bytes": 43019,
+        "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+        "bytes": 69982,
+        "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+        "bytes": 313205,
+        "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+        "bytes": 132972,
+        "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+        "bytes": 1194123,
+        "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+        "bytes": 33331,
+        "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+        "bytes": 148627,
+        "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+        "bytes": 82498,
+        "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6"
+      }
+    ],
+    "remaining_jadx_product_jars": [],
+    "jdk23_tools": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "bytes": 69872,
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    },
+    "jdk8_tools": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "bytes": 152128,
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    },
+    "old_product_cli": {
+      "cli": "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+      "cli_sha256": "39d5699c1665b16e0c4a46934f0e773aeedf392f5bc60869a7b2762680dd10f1",
+      "metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/candidate-cli-root-v1.json",
+      "validation_execution": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/validation-build-root-v2/execution.json",
+      "validation_sha256": "c3168e3b4ed8651b3300dbbabc67ebed759b95a01d9261131dade3278c1b1bd1",
+      "source_base": "2d70da515896c25ce022b8c28f4935ff2e105026",
+      "source_pins_before": {
+        "candidate_sources": {
+          "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+          "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+          "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+          "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+          "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+          "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+          "crates/jarde-java/src/build.rs": "768735cd1cf5d7694d2a1d7b28030475b0bc0864e1d18d9a6350e12c999b1de1",
+          "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+          "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+          "crates/jarde-java/src/region.rs": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c",
+          "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+          "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+          "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+          "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+          "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+          "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+          "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+        },
+        "test_sources": {
+          ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+          "crates/jarde-java/tests/cf12_proved_local_source_types.rs": "1eb2c9e039a6aa2dcb706f29969e7006f4ec6029340763b1d883accfb58e98db",
+          "crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs": "4d46b53920a405086dfafb3906770d6a7c986e45256594dd29e0417338a1d91a",
+          "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": "fc809a7921d1366c12b5472a3f211c3d4526c4c7bbf7f4eaf52e8e68c32aeb99",
+          "crates/jarde-java/tests/p3_conditional_switch_scope_boundaries.rs": "e2933d582693800dfaf3fe67b5824ecd17da7f80b048ffbf0f423d05522b733a",
+          "crates/jarde-java/tests/p3_patterns.rs": "19f773fc5a65567fc5cbc5e63ac05702490e327db9ca6ed0ea4ce5fd6f975be7",
+          "crates/jarde-java/tests/p3_proved_boolean_conditional_returns.rs": "d238eb5decbc470227c821c6d08338fd28614d44226c63cd61c191432f744500",
+          "crates/jarde-reader/src/classfile.rs": "709760f012c596d419b53ebbdcda8e3f1eabb6377829555a21d62e82987e4b45",
+          "tests/p3_array_slot_retype_locals.rs": "3fbfffe99a89ab76821d3158401ee5477cac3d0bff52beddf55072b53795bef5",
+          "tests/p3_char_switch.rs": "7e2a6917d8593ca63df050c209cdeb465625211c6f2fca1e674ecb2e766bf8a8",
+          "tests/p3_declarations.rs": "58a3a63b43114cb67579749de3650c9d87471c13e2cb7e5f97a1a0b75153a66e",
+          "tests/p3_guard.rs": "1beb0b9caea3c6732e49085010c9cd34dd9a5167ab9ba58c43b7831b1dc113da",
+          "tests/p3_invocation_arguments.rs": "e8e3a8dd676d6203deb4f63e47bc74fd87b9cebac601895649c90f9aaffdc8b0",
+          "tests/p3_parameter_slots.rs": "34c08a94340684cd5408ce14214b2e7c5dc38d49313168762a7f9c5de1559559",
+          "tests/p3_popped_static_qualifier.rs": "3137f96b18bed057f4c11aa063aff3e6c462851666d1fa9d803665604b3f42f6",
+          "tests/p3_string_switch_projection.rs": "9231f5a239b413d04d5a657ba4a6e79472045bc548fba0323a7d1e7f526f2b50",
+          "tests/p3_switch_arm_loop_exits.rs": "94c9a73929e3ef983928362efb3007e6a02778fd4a4e98d89b91068940a84d91",
+          "tests/p3_switch_fallthrough.rs": "14798fb1db9f64e53c445d4208f721aa612275ddda409183373154da468760e9",
+          "tests/p3_switch_forward_join.rs": "2767191160a981e85950aad4f41a459c2734be2d6376eca30c9e2eba72935e0e",
+          "tests/p3_switch_loop_exits.rs": "0abba12225a4fcf3b4155fde9997a92720db49fb7e495d24b1a4d0d6653db795",
+          "tests/p3_switch_value.rs": "1f2c81d0f6174b9057a16828e76f47068a0825c6a8026396216aeb2e8b2f1cf6"
+        },
+        "canonical_files": {
+          "crates/jarde-java/tests/fixtures/cf16-region-depth/javac23/BranchFinally.class": "59ceb398d1eecd251de372a7f7778196d400c40826a80d9758686fb540f0f248",
+          "crates/jarde-java/tests/fixtures/cf16-region-depth/javac8/BranchFinally.class": "ef062a2e0a1876a804a644855519d925cc81ef20c48143e9ba079f894a90fa1d",
+          "crates/jarde-java/tests/fixtures/em21-this-alias/ThisAliasRefusals.class": "a245d211ea8c2861333912cdcba10f5d32557bcbcce9859c05594c92307f984f",
+          "crates/jarde-java/tests/fixtures/em21-this-alias/ThisUse.class": "395f54b5335dd3c7b3a67c0151be2db5d82f247914e64c1f92508574a9f7609c",
+          "crates/jarde-java/tests/p3_patterns.rs": "19f773fc5a65567fc5cbc5e63ac05702490e327db9ca6ed0ea4ce5fd6f975be7",
+          "openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+          "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class": "a9d90b1b42d69cf3ec6e30dd6d16cacf0c0264fe86adc88f1ba27d897046de2f",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class": "304761e5c1fc796cfc126d209d1407d92b0bc7addcb1ce9a39d100ebe672c144",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/DifferentRhsByteArray.class": "592c7eb7b86953064d4e5b7c121937b5730f9206574a2b95a73e701a90e62b1e",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ReverseFieldOrderByteArray.class": "52437efd3c2ea14ec7608303c9868bb5424ab009b573efa235239c24d10faa1a",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ThisDelegatingByteArray.class": "800368fbb19014ba545ac7b2d50979de688421a643c7313b37a30d342f8c039a",
+          "openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/CommonNoClinitArrayInit.class": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4",
+          "openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class": "0cfe997bfb5cf5660536928cdd672fdce0af36c6e539ab03bca9141897cee0c8",
+          "openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class": "b650e498695a06c5098b38970eafdf4167ad623c93754a1c1ce602c05dca32d3",
+          "openspec/evidence/java-syntax-2026-09-22/enum-declaration/Stage.java": "79d1ed95933a759b5b8f0d04951deaee38786d353317c65cc02b79da0df8c4d9",
+          "openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java": "8ef6a8d563cba2459a6ce13065cb6e21d583da61ecd5942eeef820ff2c020bc7",
+          "openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6",
+          "openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class": "63fbb2c76199125f23540adc0611e65232be055e6817899291722c90d301c996",
+          "openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/boundary/InterfaceBoundaryProbe.class": "ec0c9caa6d67c9f367549f5a7d306c2e57cb7804cb891c1ecf298d39d5904151",
+          "openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/non-invoke-owner/NonInvokeQualifierProbe.owner-other.class": "5b6875ef447c448fa6dfaa65d5fdbeb0aa7e0848400bec8308df8e7649ce1180",
+          "openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class": "c5407d3f29b135818f003e24b218b5e4b7348d261665f0c71605471a7492935e",
+          "openspec/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class": "ce79125f7752333349583e6b1ca4a0297143b6b62bb002467db8934da314bdf9",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/ExtraHashUse.class": "076e908fcc980f54a6aa09d49a1b63ebaeb6f9306431a0f8b9fad829daa910c5",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/WrongHashBucket.class": "f0a22997ff6974a252ab5279b2aa1f07cb315ea2cde0b5e4dccdf443cd22dc16",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-unicode/StringSwitchUnicode.class": "434e6e84a045d67bc0a6337d89f5493779e12dc01133d89355220ff57cf367fa",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-variants/StringSwitchMiddleDefault.class": "fd6caaaac6c00799e218601c76a6dc133238a851d05672237219bfbebfb2a647",
+          "openspec/evidence/java-syntax-2026-09-24/switch-loop-exits/SwitchLoopExits.class": "279bb8be06bd8257c91d4c2e2a6807dc20d57ef190a8da49d7014ec1b372e03c",
+          "openspec/evidence/java-syntax-2026-09-25/constructor-conditional-delegation/ConstructorPairProbe.class": "4e587e0a6c7f81c7b1e9f2a9b71683427a3d78c689068ae5ad2a381fac29c0d4",
+          "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java": "c916ee8a6c5506e4694c4a6b9b51c4e3b75b04eeb0462fe74c49cd58715680b9",
+          "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java": "adea5e08fe4bcc5c7510a6dd29d7b9bda43e6f383a7c8667c54815315f4f47fb",
+          "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java": "58a28c3c7a2cb19a4c036ab516010b2caaf5e7b13ed19cbfaab66252563e008e",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/InnerRunner.class": "e36c36201d371f54532b97234d7a490abefd0074e7dc98122cdd8b5c661de49c",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class": "7ce649089f60472371b1a2ca9308175d601dd3df259752dd2451d941459d2c4d",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter.class": "9364f27d61b55d19c21db96045d31841bab30963b931b04e235412769f0d06bb",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class": "e44ce3a6eb4cba73ec50c530727d6764680d84e14c2d58d899083b002028ccae",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-outer-relation.jar": "bb1e6c9d0a3de24d4e4ff2e873f13ca58b33cfc1a503e9b574b28f679b2a8f2b",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-relation.jar": "e73343634dcc200beb6318706b7a27b47abb8cefb294e3ef1b472ff1143cd7eb",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/full-target.jar": "73ce32cca5e10008eb5519d4230080e65697cd378a277612c1faba22e72f0fb6",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/missing-target.jar": "11cef327c1a9e319b92403cc20ae9347f9f3e68c9bd783e7af58475f41565106",
+          "openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/BooleanMergeControls.class": "f521c4330cbb789fa69b81c4ff623b97d416cccbc1fe17861cb2e29c4d5e682b",
+          "openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/InstanceOfMerge.class": "cf9066c3257306c9d7e3235daa70ae2f66bed835810ada637c013bbe95642efe",
+          "openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class": "42dec3fe7f959bf4577417bd497cc14b5a55c59b0e6354e8eb65a9be33e8d32b",
+          "openspec/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class": "d135bb8ff9515fe79713cfec396245f96e6267d7a7b95bddabb02e7a62f36e92",
+          "openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar": "fee308350a667159e71cee7d8f6f9a73a9b63b0e3eab82f4de3554ecda0274a2",
+          "openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class": "5ce186a8d366a729a4796eb8afb36f35fcedf8f864f90ba04ceda195dd4a6bb2",
+          "openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.original.class": "b1a6be1a8c0c3ecc517cae946e298711f1367b5735c683c69d4812c015f9857b",
+          "openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/original/cf13/SwitchLoopExits.class": "c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b",
+          "openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/ExtraHashUse.original.class": "076e908fcc980f54a6aa09d49a1b63ebaeb6f9306431a0f8b9fad829daa910c5",
+          "openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class": "3d459c2e5180f7c47790e251ed38fded363897de7c74015894008cb529e632cc",
+          "openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/DoubleOperations.java": "6d38cf2f2b7d73208b9420474c8bdf28ecf460e79337a78189620ee13dc033a3",
+          "openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/IOps.java": "2d760bcbc4f2695499b14b2710a835017282f28727769de359eacd459a0bef74",
+          "openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Child.class": "51ec7dfb18f7fc1af79dbd079126f0b4d99d6b9286be24ab1f3da2540ce30237",
+          "openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class": "28e4090d31af9b0a4a7b7cdd902171b9fffec1abcb52a4d44935088a16bc174e",
+          "openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class": "b2ec9055704f161efb71e72972cb0827750257c172d504ec6a311fd2b5fbbf52",
+          "openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class": "02534b17440840aa452b3a4276f79d40a4e2ead66ea96a4115ef7bed6474c266",
+          "openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class": "7b2dea2282f4909a882ce6495feb8387a6088e89cc59616ca2e4dd0e9d12d3a8",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/fixture/Cf13Exits.class": "e375927fe06c82410db2c14dce25a778bf42a7d0603af019daf6706ee151723c",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/results/W2.baseline.java": "79f494ed003466abb41d033bdbc035af0219cc3e876587759d7f185ce5c1af8c",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W1.class": "f17ae967022f7efc6beac930a79ad6198af47d72c88a8a639fa2a9d972b4da95",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W2.class": "7f311954eb1b680dd04127075d12d22d637e590137e8e4bbb7fc145f6e241b3a",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.java": "576df4f9e11219fd8ce3b1d71ccda7a261a400b5f78468bcf3a9255e8e1ed4e5",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Holder3.java": "35d9993cd5b5df796404a1ae9875aaec9faf1e84356148b83810aa9f2ecfb77f",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/TwoLevel.java": "570b07e1660ef0112cff0973538dab72c94029434c5aa1c357fe628f9f23d1e4",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Weird$Name.java": "aa2b2c3a2957a262f41ed8b2c2fc202304d9fb577250d34661171102fb433566",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/nested-iface-abs.jar": "a99ecec9cdf364bfc83266208e6367e490e5b746f2da2c5aa8bf83c908a063a0",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/toplevel-op.jar": "6a9e4eda4cfa7f7d36325897b982c7135e7812d722382cf54cda9b7e3fc8d9d5",
+          "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+          "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18",
+          "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834",
+          "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034",
+          "tests/fixtures/cf04-nested-int/cf04/Negative.class": "f4b7f587d1397618508b573158fd1f790dc3526cb5bfba5da8d174a8f60a495e",
+          "tests/fixtures/cf04-nested-int/cf04/TernaryCases.class": "1949de97d638ea3775ee356a778f5b10950955c01c65c83263074609efd1f0e1",
+          "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class": "f9b6566fc4533e3be181ef7bf1455d478fb016f0d9a5e1f685a34901ddb0b6ad",
+          "tests/fixtures/p3-array-slot-retype-locals/baseline/V2.jarde.java": "a8a2f7dfe78259a566fcd9054742ecadfb410b653e5b96cee38651693912c4ed",
+          "tests/fixtures/p3-array-slot-retype-locals/baseline/V3.jarde.java": "959dce5c0bddfa5e886e9460ac62c2280ccfb9c125293518ee60602cf05983f6",
+          "tests/fixtures/p3-array-slot-retype-locals/baseline/V4.jarde.java": "2a275195295cb73c3cb37d7e555bfb99d82e404fccaf098eb22a7d2f91449074",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/A1.stdout": "1f4dc3a8717591e48b70f4588ea6f6be91f814fab3f80fc7910f92fea103fa2d",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/A2.stdout": "7201545704ac599a50e8b24fef766987338cfd070fcc73e28a8caafb3065e3d8",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V1.stdout": "37c66ac932ac5c71ffe99727b005e76634953523be5cb2a97b190484c1d0d256",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V2.stdout": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V3.stdout": "f273e79af5c46cee7a186b3889f290e30458a03b7b3b71361420bbfcf4ec25c0",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V4.stdout": "f273e79af5c46cee7a186b3889f290e30458a03b7b3b71361420bbfcf4ec25c0",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/A1.class": "24a58f9a4f5a5c2d0e4e5cce4f9bf2bc404aa81591a55e9eaacf0e53a2e8ced0",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/A2.class": "0e441de3da38795dd1c9495e7d6d34972a4bc7c90e49274fb63c6869c6163e35",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V1.class": "7716b76c8e63ec2c254305ffad41700ef42784e038c76bf32150a9d039e1bbfc",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V2.class": "22d88380a39d0080fab5ff902e4ba7366c74f0a97f1cda76663d699390b63a37",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V3.class": "e48f86634de9044cf0fa6689e9929c6b3ba78a109bb6ad2ba0846e83a2b6fdc6",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V4.class": "e85de3405f70237686ae10ac2168e0792e17c3606544a53c9e5dfd4745bd34e0",
+          "tests/fixtures/p3-boolean-short-circuit-return/v8/BoolValue.class": "dfe43180f7a2cf32c3417c523e11091272f9e7c374dc0674b4094d441b653604",
+          "tests/fixtures/p3-char-switch/v8/Letters.class": "913185e82f7a95479c09bbdcb05dab9edb6de263c2bfc519d433884f90cad5b5",
+          "tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+          "tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+          "tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+          "tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class": "5ef72ab6afa95cd945cb53123155ca99f86f4c99c9ad7fa78c2d58e044e04fa5",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-argument-controls/MixedArgumentControls.class": "23f441cdf7dd016f8a8b20da7046a6786262ef1fc93d8b1afeb53d782b3a2d3b",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-argument/MixedBooleanArgument.class": "5dbdfc2e66a44bab18c3ab39b824a0173a09cc38fa1bdf33d5ff9fdf04a2eeaa",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-field/MixedBooleanField.class": "13deab71668ec6c26f1a636f5a646bc87156d9aa46444a5b1a1eac9896bcbe5f",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedInstanceControls.class": "eda6320e2c906b09d1cf32f4da8fab048ffb48d01cd6da5eab3da8563bf7651f",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedShortCircuitField.class": "e69f52f563c4c7e6b8be1aeb7be946f4af09649c48280863f56ed0fe42033fd1",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-int-return/MixedIntReturn.class": "c30697a78bc0d86acb823b3cb73cece1e78a567c68dcf360548419b1da5a6d5d",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-local/MixedBooleanLocal.class": "8901ea8d51475567257d20b089c193fa4bd098fe70dc930755004cb72fca231b",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-return/MixedLocalReturn.class": "688ad8ed65e7da2cd3663b497ac6caa94e53885acae7656f468d457be5bd3288",
+          "tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class": "f7a2aaae1b55fe7642e25d8d3fc164b41b8ffd0735845add9574828f203e243f",
+          "tests/fixtures/p3-conditional-values/nested-independent-effect/NestedIndependentEffect.class": "677f990d2b26ceb46bff1a7bedd35c4f16cea9965e6c4c525cebb9d007ac03c3",
+          "tests/fixtures/p3-conditional-values/nested-repeated-use/NestedRepeatedUse.class": "d411a8d9464fb41bd08e38447fb5eee690bfdcb6d276ba03c44c6e1aaee952a0",
+          "tests/fixtures/p3-conditional-values/nested-tree/NestedTree.class": "6be89af433915d13ac72137a3ea7a7ccf26ae2b78ba3943cbc721fb957e745b3",
+          "tests/fixtures/p3-conditional-values/nested-type/NestedType.class": "46883e9c3984bf53c4323047909da18ebedc64079fb005d4b884d6d54070eef5",
+          "tests/fixtures/p3-conditional-values/short-circuit-chain-shared-true/ChainOrField.class": "30400aee839ed464b8ad804acc56cd99d382c5e8300c1e39ec4bd00632290666",
+          "tests/fixtures/p3-conditional-values/short-circuit-double-write/Base.class": "e0eae734f3fbce0b2f0111facb4275f30ade8adf36e040063c58cc2a9d1aff48",
+          "tests/fixtures/p3-conditional-values/short-circuit-local/LocalShortCircuit.class": "b183fd99fec782d07635d4d0a4df01c60e3155e2d5ebe7ef463fedf490c6ea93",
+          "tests/fixtures/p3-conditional-values/short-circuit-shared-true-controls/SharedTrueDuplicatePhi.class": "ec4ff7912cc1700eebf93b831c70f48a031617707535c9bbbb110ac6eaa9457e",
+          "tests/fixtures/p3-conditional-values/short-circuit-shared-true-controls/SharedTrueNonBoolean.class": "7ac7559fa925eae32e3ee7493e8408b7a290d3b4176d7f5cbfe2c992815d5144",
+          "tests/fixtures/p3-conditional-values/short-circuit-shared-true/SharedTrueShortCircuit.class": "4b3632dd7bc9bd26e640112a67a080d10f2171d0e83bf88f3190f67de412e935",
+          "tests/fixtures/p3-conditional-values/v8/ConditionalBoundarySwitch.class": "453c00b9ebb0974d084aca7a28e465c52c42ab8b92112ac0e913eb9c8d55a7ee",
+          "tests/fixtures/p3-conditional-values/v8/TernaryCore.class": "9c867c925fb0f42b7fe11af18bb4e90645fe6ac8fcd2718114100161378b6ce4",
+          "tests/fixtures/p3-conditional-values/v8/TernaryValues.class": "a2e96a4bb220fc3a61f4635827c628b84ad4571d8e71fd9da42a4c0e94c9a80f",
+          "tests/fixtures/p3-declarations/v8/p/Consts.class": "deafe155a7accfad5d17a5a96df47119df93d993df40138f6c3e83a441b45151",
+          "tests/fixtures/p3-declarations/v8/p/Ops2.class": "a0fcfeb367b105d9959b55b80e07347e630ee9f2ed7162dfa479fccd13fd030e",
+          "tests/fixtures/p3-dt29-branched/v8/BranchedBits.class": "3fc33386dd62b489874ce1ec1d9b0be7c346ffa6820028018c75b67532b87080",
+          "tests/fixtures/p3-dt29-branched/v8/BranchedBitsAlternate.class": "751d4fa80cf7f5e0c0c41c2a57a7e3046b6146bcdc05cda1802eb876fdd1c4cc",
+          "tests/fixtures/p3-dt29-branched/v8/BranchedBitsNegatives.class": "5b532b19c7d74109776ecdaa1434f38d2eef69fbda9028a7443f00b1f9fab05e",
+          "tests/fixtures/p3-handlers/v8/Guarded.class": "db52b41d27a78dcf5bc88fca2879c0f69947949afcc40112b58799245fe9edcf",
+          "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726",
+          "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677",
+          "tests/fixtures/p3-intermediate-join/unknown-operation/ConditionalIntermediateJoin.class": "8befd5c4763826d43b7b790983e7a32927993cbefa0657530654c7136bb46fe6",
+          "tests/fixtures/p3-invocation-arguments/ArgumentTarget.java": "536eceb2661b4599454541f47dfc995f23a75acd9843865d12456eea968b8b72",
+          "tests/fixtures/p3-invocation-arguments/GenericFactory.java": "462385a9c86d47473708175686c998fd60b49b75eb692cfd0f054d5c0770c4c5",
+          "tests/fixtures/p3-invocation-arguments/InvocationArgumentsProbe.java": "c18c0e7dee86babda1c1bb44d0e0d95ea87d04c666168dc45f06bb7f1dcd7b79",
+          "tests/fixtures/p3-invocation-arguments/InvocationArgumentsRunner.java": "170625d2e2d68efa7c34d95fb63198262791c6ab427814fc8a5f7375367fe7f9",
+          "tests/fixtures/p3-invocation-arguments/v8/InvocationArgumentsProbe.class": "f4c364f1ecb388c64c4ae9140df820ad625a43e3b158426698865e4fe43bedde",
+          "tests/fixtures/p3-join-ownership/v8/Join.class": "458204d72c0298ab4b2e84ce6655d34d2ee131919b8f032e02f888febb988bf1",
+          "tests/fixtures/p3-loop-transfers/v8/OuterContinue.class": "b756d4fcebe65bed901ef368d3ae93ed71b16cc122d995f44926d9117d8551b5",
+          "tests/fixtures/p3-parameter-slots/v8/SlotTypes.class": "ba2a1380f4530f578a507a3587bce97b426979a28267a1d7db7294e190249c12",
+          "tests/fixtures/p3-popped-static-qualifier/v8/StaticQualifierProbe.class": "21cdace20a84accd06e52567c250b0359ef76e059df993cc6c00a9fe1d6b7266",
+          "tests/fixtures/p3-special-dispatch/interface-super-proof/proof/BothDefault.class": "a5012f2130685a86f3decb3a6750f75534a7dd0c06a1fe627e6fcb6bfb19069b",
+          "tests/fixtures/p3-special-dispatch/interface-super-proof/proof/LeftDefault.class": "418e6271fad0c3e0133c603c357604f5ec30913e370f32237d6301b3fbda0265",
+          "tests/fixtures/p3-special-dispatch/interface-super-proof/proof/RightDefault.class": "21b22a396c7696033a97337b8249c578261e7ec3c2962ff33b1c5735efdf68e9",
+          "tests/fixtures/p3-special-dispatch/v8/BaseProbe.class": "b631eb77987041dd3d71a4e1098b08f2cddd613493a6a308add73ef1cdfe8266",
+          "tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class": "de73401a2d112c9b10fdc19792388782117b47c4cc02716e34c820f6bb5b5711",
+          "tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class": "a1cd50a4ae4b30779041521f50db5062cddd66ff067eff44328202f886479162",
+          "tests/fixtures/p3-string-switch/v8/ExtraBucketEffect.class": "df7bf504539b2d52a7029101ce2a16961c2771c7a7a7c645f366f937c4bd09e2",
+          "tests/fixtures/p3-string-switch/v8/StringSwitchProbe.class": "258fea472bfd8f80ee49726dc25f0c3d46dce8f61db57d43d5f63e52e6c2c53c",
+          "tests/fixtures/p3-switch-fallthrough/v8/DefaultMiddle.class": "8a137f3884bf366a8a962c4bb2efb460b882aae2cd6198c459ff8f6de434add8",
+          "tests/fixtures/p3-switch-fallthrough/v8/SwitchFallthroughOrder.class": "511fa56a325aeb1c2c7781e3fb0c86b6640cc4c3436df7cbb5c05ce0f5943ad0",
+          "tests/fixtures/p3-switch-fallthrough/v8/TableswitchFallthrough.class": "f45d78320286e1912b30f4b01524b17695a1cef269a0204b18d3d7191ce16f84",
+          "tests/fixtures/p3-switch-loop-exits/v8/SwitchLoopAdjacent.class": "b7c763c70be1901335194794be7bac778e426a8c86f466d037da2c6abd41d4e6",
+          "tests/fixtures/p3-switch-loop-exits/v8/SwitchLoopLocalBoundaries.class": "052fb805b7bacaa8695d892a0ac3b80d49a82e1471f1644745f64b23a89d3f3b",
+          "tests/fixtures/p3-switch-value/v21/Joined.class": "6734f743f5913a773aaa0f413a68d5fb4b5d8f3244479cef2a5497c8c4f9cccd",
+          "tests/fixtures/proved-java-structure/anonymous-capture/AnonymousCaptureCases$1.class": "f971b244c4d035b21a185fdd1ddd39981ad9db45d440b61309bafe5a3f40d61c",
+          "tests/fixtures/proved-java-structure/anonymous-super-dispatch/Base.class": "f957579bad5e74049e41d61966de5ba6fe951f053aff8cc82130607028240d2a",
+          "tests/fixtures/proved-java-structure/package-info-basic/v8/p/Check.class": "b424f71d3bd0794bf58a8e1674fe5d51995093ed35cbe435449c17e49817fbf1",
+          "tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class": "a43c23ab884e4caedd53afccf36272255e8a06f42d2642befa1bfe0f7162e240",
+          "tests/fixtures/raw-receiver-field-selection/SyntheticAccessorGuard.class": "317b2d52b4204178ecbc3abe89f4f8100564063d274eab0fe2fa2265292cffbf",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Generic.class": "01caef44567e8bb2979bfc734711386ec00a8eca8b65e92b8da872ba0585e6f7",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Plain.class": "9e74f651389f27d9aee43b3abfa7ed4eacf38b8b8cdda5b8aec6a2829574311c",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A.class": "954faae0aff34c6627fbb63a4beb9bc99af7b316bb0112f685828fbdebde3459",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer.class": "caa5b1470a7e8013ce849b6ef132672829a9d7da125336815b4fa4eba2af5b43",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.class": "6af4891b032f2751595c86b34ede87ad63bf22532944a6040f71296667af309c",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.class": "8cc6983f428336633637f17e71c74c54cf24e5c1816921a2bc95fb3ae24327c4",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.class": "45f2bc8aeab0561a20212dd31dd62ca7f781cbadb1bed79a033e20a31f173727",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class": "6e8986a85b46bc667c211ff490c9ea885ef66eecfeb93c223512cfc17b465408"
+        }
+      },
+      "source_pins_after": {
+        "candidate_sources": {
+          "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+          "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+          "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+          "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+          "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+          "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+          "crates/jarde-java/src/build.rs": "768735cd1cf5d7694d2a1d7b28030475b0bc0864e1d18d9a6350e12c999b1de1",
+          "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+          "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+          "crates/jarde-java/src/region.rs": "b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c",
+          "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+          "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+          "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+          "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+          "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+          "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+          "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+        },
+        "test_sources": {
+          ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+          "crates/jarde-java/tests/cf12_proved_local_source_types.rs": "1eb2c9e039a6aa2dcb706f29969e7006f4ec6029340763b1d883accfb58e98db",
+          "crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs": "4d46b53920a405086dfafb3906770d6a7c986e45256594dd29e0417338a1d91a",
+          "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": "fc809a7921d1366c12b5472a3f211c3d4526c4c7bbf7f4eaf52e8e68c32aeb99",
+          "crates/jarde-java/tests/p3_conditional_switch_scope_boundaries.rs": "e2933d582693800dfaf3fe67b5824ecd17da7f80b048ffbf0f423d05522b733a",
+          "crates/jarde-java/tests/p3_patterns.rs": "19f773fc5a65567fc5cbc5e63ac05702490e327db9ca6ed0ea4ce5fd6f975be7",
+          "crates/jarde-java/tests/p3_proved_boolean_conditional_returns.rs": "d238eb5decbc470227c821c6d08338fd28614d44226c63cd61c191432f744500",
+          "crates/jarde-reader/src/classfile.rs": "709760f012c596d419b53ebbdcda8e3f1eabb6377829555a21d62e82987e4b45",
+          "tests/p3_array_slot_retype_locals.rs": "3fbfffe99a89ab76821d3158401ee5477cac3d0bff52beddf55072b53795bef5",
+          "tests/p3_char_switch.rs": "7e2a6917d8593ca63df050c209cdeb465625211c6f2fca1e674ecb2e766bf8a8",
+          "tests/p3_declarations.rs": "58a3a63b43114cb67579749de3650c9d87471c13e2cb7e5f97a1a0b75153a66e",
+          "tests/p3_guard.rs": "1beb0b9caea3c6732e49085010c9cd34dd9a5167ab9ba58c43b7831b1dc113da",
+          "tests/p3_invocation_arguments.rs": "e8e3a8dd676d6203deb4f63e47bc74fd87b9cebac601895649c90f9aaffdc8b0",
+          "tests/p3_parameter_slots.rs": "34c08a94340684cd5408ce14214b2e7c5dc38d49313168762a7f9c5de1559559",
+          "tests/p3_popped_static_qualifier.rs": "3137f96b18bed057f4c11aa063aff3e6c462851666d1fa9d803665604b3f42f6",
+          "tests/p3_string_switch_projection.rs": "9231f5a239b413d04d5a657ba4a6e79472045bc548fba0323a7d1e7f526f2b50",
+          "tests/p3_switch_arm_loop_exits.rs": "94c9a73929e3ef983928362efb3007e6a02778fd4a4e98d89b91068940a84d91",
+          "tests/p3_switch_fallthrough.rs": "14798fb1db9f64e53c445d4208f721aa612275ddda409183373154da468760e9",
+          "tests/p3_switch_forward_join.rs": "2767191160a981e85950aad4f41a459c2734be2d6376eca30c9e2eba72935e0e",
+          "tests/p3_switch_loop_exits.rs": "0abba12225a4fcf3b4155fde9997a92720db49fb7e495d24b1a4d0d6653db795",
+          "tests/p3_switch_value.rs": "1f2c81d0f6174b9057a16828e76f47068a0825c6a8026396216aeb2e8b2f1cf6"
+        },
+        "canonical_files": {
+          "crates/jarde-java/tests/fixtures/cf16-region-depth/javac23/BranchFinally.class": "59ceb398d1eecd251de372a7f7778196d400c40826a80d9758686fb540f0f248",
+          "crates/jarde-java/tests/fixtures/cf16-region-depth/javac8/BranchFinally.class": "ef062a2e0a1876a804a644855519d925cc81ef20c48143e9ba079f894a90fa1d",
+          "crates/jarde-java/tests/fixtures/em21-this-alias/ThisAliasRefusals.class": "a245d211ea8c2861333912cdcba10f5d32557bcbcce9859c05594c92307f984f",
+          "crates/jarde-java/tests/fixtures/em21-this-alias/ThisUse.class": "395f54b5335dd3c7b3a67c0151be2db5d82f247914e64c1f92508574a9f7609c",
+          "crates/jarde-java/tests/p3_patterns.rs": "19f773fc5a65567fc5cbc5e63ac05702490e327db9ca6ed0ea4ce5fd6f975be7",
+          "openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+          "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class": "a9d90b1b42d69cf3ec6e30dd6d16cacf0c0264fe86adc88f1ba27d897046de2f",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class": "304761e5c1fc796cfc126d209d1407d92b0bc7addcb1ce9a39d100ebe672c144",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/DifferentRhsByteArray.class": "592c7eb7b86953064d4e5b7c121937b5730f9206574a2b95a73e701a90e62b1e",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ReverseFieldOrderByteArray.class": "52437efd3c2ea14ec7608303c9868bb5424ab009b573efa235239c24d10faa1a",
+          "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ThisDelegatingByteArray.class": "800368fbb19014ba545ac7b2d50979de688421a643c7313b37a30d342f8c039a",
+          "openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/CommonNoClinitArrayInit.class": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4",
+          "openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class": "0cfe997bfb5cf5660536928cdd672fdce0af36c6e539ab03bca9141897cee0c8",
+          "openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class": "b650e498695a06c5098b38970eafdf4167ad623c93754a1c1ce602c05dca32d3",
+          "openspec/evidence/java-syntax-2026-09-22/enum-declaration/Stage.java": "79d1ed95933a759b5b8f0d04951deaee38786d353317c65cc02b79da0df8c4d9",
+          "openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java": "8ef6a8d563cba2459a6ce13065cb6e21d583da61ecd5942eeef820ff2c020bc7",
+          "openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6",
+          "openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class": "63fbb2c76199125f23540adc0611e65232be055e6817899291722c90d301c996",
+          "openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/boundary/InterfaceBoundaryProbe.class": "ec0c9caa6d67c9f367549f5a7d306c2e57cb7804cb891c1ecf298d39d5904151",
+          "openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/non-invoke-owner/NonInvokeQualifierProbe.owner-other.class": "5b6875ef447c448fa6dfaa65d5fdbeb0aa7e0848400bec8308df8e7649ce1180",
+          "openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class": "c5407d3f29b135818f003e24b218b5e4b7348d261665f0c71605471a7492935e",
+          "openspec/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class": "ce79125f7752333349583e6b1ca4a0297143b6b62bb002467db8934da314bdf9",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/ExtraHashUse.class": "076e908fcc980f54a6aa09d49a1b63ebaeb6f9306431a0f8b9fad829daa910c5",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-negative-fixtures/classes/WrongHashBucket.class": "f0a22997ff6974a252ab5279b2aa1f07cb315ea2cde0b5e4dccdf443cd22dc16",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-unicode/StringSwitchUnicode.class": "434e6e84a045d67bc0a6337d89f5493779e12dc01133d89355220ff57cf367fa",
+          "openspec/evidence/java-syntax-2026-09-24/string-switch-variants/StringSwitchMiddleDefault.class": "fd6caaaac6c00799e218601c76a6dc133238a851d05672237219bfbebfb2a647",
+          "openspec/evidence/java-syntax-2026-09-24/switch-loop-exits/SwitchLoopExits.class": "279bb8be06bd8257c91d4c2e2a6807dc20d57ef190a8da49d7014ec1b372e03c",
+          "openspec/evidence/java-syntax-2026-09-25/constructor-conditional-delegation/ConstructorPairProbe.class": "4e587e0a6c7f81c7b1e9f2a9b71683427a3d78c689068ae5ad2a381fac29c0d4",
+          "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java": "c916ee8a6c5506e4694c4a6b9b51c4e3b75b04eeb0462fe74c49cd58715680b9",
+          "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java": "adea5e08fe4bcc5c7510a6dd29d7b9bda43e6f383a7c8667c54815315f4f47fb",
+          "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java": "58a28c3c7a2cb19a4c036ab516010b2caaf5e7b13ed19cbfaab66252563e008e",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/InnerRunner.class": "e36c36201d371f54532b97234d7a490abefd0074e7dc98122cdd8b5c661de49c",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class": "7ce649089f60472371b1a2ca9308175d601dd3df259752dd2451d941459d2c4d",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter.class": "9364f27d61b55d19c21db96045d31841bab30963b931b04e235412769f0d06bb",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class": "e44ce3a6eb4cba73ec50c530727d6764680d84e14c2d58d899083b002028ccae",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-outer-relation.jar": "bb1e6c9d0a3de24d4e4ff2e873f13ca58b33cfc1a503e9b574b28f679b2a8f2b",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-relation.jar": "e73343634dcc200beb6318706b7a27b47abb8cefb294e3ef1b472ff1143cd7eb",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/full-target.jar": "73ce32cca5e10008eb5519d4230080e65697cd378a277612c1faba22e72f0fb6",
+          "openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/missing-target.jar": "11cef327c1a9e319b92403cc20ae9347f9f3e68c9bd783e7af58475f41565106",
+          "openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/BooleanMergeControls.class": "f521c4330cbb789fa69b81c4ff623b97d416cccbc1fe17861cb2e29c4d5e682b",
+          "openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/InstanceOfMerge.class": "cf9066c3257306c9d7e3235daa70ae2f66bed835810ada637c013bbe95642efe",
+          "openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class": "42dec3fe7f959bf4577417bd497cc14b5a55c59b0e6354e8eb65a9be33e8d32b",
+          "openspec/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class": "d135bb8ff9515fe79713cfec396245f96e6267d7a7b95bddabb02e7a62f36e92",
+          "openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar": "fee308350a667159e71cee7d8f6f9a73a9b63b0e3eab82f4de3554ecda0274a2",
+          "openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class": "5ce186a8d366a729a4796eb8afb36f35fcedf8f864f90ba04ceda195dd4a6bb2",
+          "openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.original.class": "b1a6be1a8c0c3ecc517cae946e298711f1367b5735c683c69d4812c015f9857b",
+          "openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/original/cf13/SwitchLoopExits.class": "c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b",
+          "openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/ExtraHashUse.original.class": "076e908fcc980f54a6aa09d49a1b63ebaeb6f9306431a0f8b9fad829daa910c5",
+          "openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class": "3d459c2e5180f7c47790e251ed38fded363897de7c74015894008cb529e632cc",
+          "openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/DoubleOperations.java": "6d38cf2f2b7d73208b9420474c8bdf28ecf460e79337a78189620ee13dc033a3",
+          "openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/IOps.java": "2d760bcbc4f2695499b14b2710a835017282f28727769de359eacd459a0bef74",
+          "openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Child.class": "51ec7dfb18f7fc1af79dbd079126f0b4d99d6b9286be24ab1f3da2540ce30237",
+          "openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class": "28e4090d31af9b0a4a7b7cdd902171b9fffec1abcb52a4d44935088a16bc174e",
+          "openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class": "b2ec9055704f161efb71e72972cb0827750257c172d504ec6a311fd2b5fbbf52",
+          "openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class": "02534b17440840aa452b3a4276f79d40a4e2ead66ea96a4115ef7bed6474c266",
+          "openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class": "7b2dea2282f4909a882ce6495feb8387a6088e89cc59616ca2e4dd0e9d12d3a8",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/fixture/Cf13Exits.class": "e375927fe06c82410db2c14dce25a778bf42a7d0603af019daf6706ee151723c",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/arm-loop-exits/results/W2.baseline.java": "79f494ed003466abb41d033bdbc035af0219cc3e876587759d7f185ce5c1af8c",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W1.class": "f17ae967022f7efc6beac930a79ad6198af47d72c88a8a639fa2a9d972b4da95",
+          "openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W2.class": "7f311954eb1b680dd04127075d12d22d637e590137e8e4bbb7fc145f6e241b3a",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.java": "576df4f9e11219fd8ce3b1d71ccda7a261a400b5f78468bcf3a9255e8e1ed4e5",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Holder3.java": "35d9993cd5b5df796404a1ae9875aaec9faf1e84356148b83810aa9f2ecfb77f",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/TwoLevel.java": "570b07e1660ef0112cff0973538dab72c94029434c5aa1c357fe628f9f23d1e4",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Weird$Name.java": "aa2b2c3a2957a262f41ed8b2c2fc202304d9fb577250d34661171102fb433566",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/nested-iface-abs.jar": "a99ecec9cdf364bfc83266208e6367e490e5b746f2da2c5aa8bf83c908a063a0",
+          "openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/toplevel-op.jar": "6a9e4eda4cfa7f7d36325897b982c7135e7812d722382cf54cda9b7e3fc8d9d5",
+          "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+          "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18",
+          "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834",
+          "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034",
+          "tests/fixtures/cf04-nested-int/cf04/Negative.class": "f4b7f587d1397618508b573158fd1f790dc3526cb5bfba5da8d174a8f60a495e",
+          "tests/fixtures/cf04-nested-int/cf04/TernaryCases.class": "1949de97d638ea3775ee356a778f5b10950955c01c65c83263074609efd1f0e1",
+          "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class": "f9b6566fc4533e3be181ef7bf1455d478fb016f0d9a5e1f685a34901ddb0b6ad",
+          "tests/fixtures/p3-array-slot-retype-locals/baseline/V2.jarde.java": "a8a2f7dfe78259a566fcd9054742ecadfb410b653e5b96cee38651693912c4ed",
+          "tests/fixtures/p3-array-slot-retype-locals/baseline/V3.jarde.java": "959dce5c0bddfa5e886e9460ac62c2280ccfb9c125293518ee60602cf05983f6",
+          "tests/fixtures/p3-array-slot-retype-locals/baseline/V4.jarde.java": "2a275195295cb73c3cb37d7e555bfb99d82e404fccaf098eb22a7d2f91449074",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/A1.stdout": "1f4dc3a8717591e48b70f4588ea6f6be91f814fab3f80fc7910f92fea103fa2d",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/A2.stdout": "7201545704ac599a50e8b24fef766987338cfd070fcc73e28a8caafb3065e3d8",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V1.stdout": "37c66ac932ac5c71ffe99727b005e76634953523be5cb2a97b190484c1d0d256",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V2.stdout": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V3.stdout": "f273e79af5c46cee7a186b3889f290e30458a03b7b3b71361420bbfcf4ec25c0",
+          "tests/fixtures/p3-array-slot-retype-locals/expected/V4.stdout": "f273e79af5c46cee7a186b3889f290e30458a03b7b3b71361420bbfcf4ec25c0",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/A1.class": "24a58f9a4f5a5c2d0e4e5cce4f9bf2bc404aa81591a55e9eaacf0e53a2e8ced0",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/A2.class": "0e441de3da38795dd1c9495e7d6d34972a4bc7c90e49274fb63c6869c6163e35",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V1.class": "7716b76c8e63ec2c254305ffad41700ef42784e038c76bf32150a9d039e1bbfc",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V2.class": "22d88380a39d0080fab5ff902e4ba7366c74f0a97f1cda76663d699390b63a37",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V3.class": "e48f86634de9044cf0fa6689e9929c6b3ba78a109bb6ad2ba0846e83a2b6fdc6",
+          "tests/fixtures/p3-array-slot-retype-locals/v8/V4.class": "e85de3405f70237686ae10ac2168e0792e17c3606544a53c9e5dfd4745bd34e0",
+          "tests/fixtures/p3-boolean-short-circuit-return/v8/BoolValue.class": "dfe43180f7a2cf32c3417c523e11091272f9e7c374dc0674b4094d441b653604",
+          "tests/fixtures/p3-char-switch/v8/Letters.class": "913185e82f7a95479c09bbdcb05dab9edb6de263c2bfc519d433884f90cad5b5",
+          "tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+          "tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+          "tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+          "tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class": "5ef72ab6afa95cd945cb53123155ca99f86f4c99c9ad7fa78c2d58e044e04fa5",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-argument-controls/MixedArgumentControls.class": "23f441cdf7dd016f8a8b20da7046a6786262ef1fc93d8b1afeb53d782b3a2d3b",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-argument/MixedBooleanArgument.class": "5dbdfc2e66a44bab18c3ab39b824a0173a09cc38fa1bdf33d5ff9fdf04a2eeaa",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-field/MixedBooleanField.class": "13deab71668ec6c26f1a636f5a646bc87156d9aa46444a5b1a1eac9896bcbe5f",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedInstanceControls.class": "eda6320e2c906b09d1cf32f4da8fab048ffb48d01cd6da5eab3da8563bf7651f",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedShortCircuitField.class": "e69f52f563c4c7e6b8be1aeb7be946f4af09649c48280863f56ed0fe42033fd1",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-int-return/MixedIntReturn.class": "c30697a78bc0d86acb823b3cb73cece1e78a567c68dcf360548419b1da5a6d5d",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-local/MixedBooleanLocal.class": "8901ea8d51475567257d20b089c193fa4bd098fe70dc930755004cb72fca231b",
+          "tests/fixtures/p3-conditional-values/mixed-short-circuit-return/MixedLocalReturn.class": "688ad8ed65e7da2cd3663b497ac6caa94e53885acae7656f468d457be5bd3288",
+          "tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class": "f7a2aaae1b55fe7642e25d8d3fc164b41b8ffd0735845add9574828f203e243f",
+          "tests/fixtures/p3-conditional-values/nested-independent-effect/NestedIndependentEffect.class": "677f990d2b26ceb46bff1a7bedd35c4f16cea9965e6c4c525cebb9d007ac03c3",
+          "tests/fixtures/p3-conditional-values/nested-repeated-use/NestedRepeatedUse.class": "d411a8d9464fb41bd08e38447fb5eee690bfdcb6d276ba03c44c6e1aaee952a0",
+          "tests/fixtures/p3-conditional-values/nested-tree/NestedTree.class": "6be89af433915d13ac72137a3ea7a7ccf26ae2b78ba3943cbc721fb957e745b3",
+          "tests/fixtures/p3-conditional-values/nested-type/NestedType.class": "46883e9c3984bf53c4323047909da18ebedc64079fb005d4b884d6d54070eef5",
+          "tests/fixtures/p3-conditional-values/short-circuit-chain-shared-true/ChainOrField.class": "30400aee839ed464b8ad804acc56cd99d382c5e8300c1e39ec4bd00632290666",
+          "tests/fixtures/p3-conditional-values/short-circuit-double-write/Base.class": "e0eae734f3fbce0b2f0111facb4275f30ade8adf36e040063c58cc2a9d1aff48",
+          "tests/fixtures/p3-conditional-values/short-circuit-local/LocalShortCircuit.class": "b183fd99fec782d07635d4d0a4df01c60e3155e2d5ebe7ef463fedf490c6ea93",
+          "tests/fixtures/p3-conditional-values/short-circuit-shared-true-controls/SharedTrueDuplicatePhi.class": "ec4ff7912cc1700eebf93b831c70f48a031617707535c9bbbb110ac6eaa9457e",
+          "tests/fixtures/p3-conditional-values/short-circuit-shared-true-controls/SharedTrueNonBoolean.class": "7ac7559fa925eae32e3ee7493e8408b7a290d3b4176d7f5cbfe2c992815d5144",
+          "tests/fixtures/p3-conditional-values/short-circuit-shared-true/SharedTrueShortCircuit.class": "4b3632dd7bc9bd26e640112a67a080d10f2171d0e83bf88f3190f67de412e935",
+          "tests/fixtures/p3-conditional-values/v8/ConditionalBoundarySwitch.class": "453c00b9ebb0974d084aca7a28e465c52c42ab8b92112ac0e913eb9c8d55a7ee",
+          "tests/fixtures/p3-conditional-values/v8/TernaryCore.class": "9c867c925fb0f42b7fe11af18bb4e90645fe6ac8fcd2718114100161378b6ce4",
+          "tests/fixtures/p3-conditional-values/v8/TernaryValues.class": "a2e96a4bb220fc3a61f4635827c628b84ad4571d8e71fd9da42a4c0e94c9a80f",
+          "tests/fixtures/p3-declarations/v8/p/Consts.class": "deafe155a7accfad5d17a5a96df47119df93d993df40138f6c3e83a441b45151",
+          "tests/fixtures/p3-declarations/v8/p/Ops2.class": "a0fcfeb367b105d9959b55b80e07347e630ee9f2ed7162dfa479fccd13fd030e",
+          "tests/fixtures/p3-dt29-branched/v8/BranchedBits.class": "3fc33386dd62b489874ce1ec1d9b0be7c346ffa6820028018c75b67532b87080",
+          "tests/fixtures/p3-dt29-branched/v8/BranchedBitsAlternate.class": "751d4fa80cf7f5e0c0c41c2a57a7e3046b6146bcdc05cda1802eb876fdd1c4cc",
+          "tests/fixtures/p3-dt29-branched/v8/BranchedBitsNegatives.class": "5b532b19c7d74109776ecdaa1434f38d2eef69fbda9028a7443f00b1f9fab05e",
+          "tests/fixtures/p3-handlers/v8/Guarded.class": "db52b41d27a78dcf5bc88fca2879c0f69947949afcc40112b58799245fe9edcf",
+          "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac23/classes/Main.class": "787dd681668d9d2e1c3ecb59208a1e77a164d736ee7fb4a9c59aff752f59f726",
+          "tests/fixtures/p3-heterogeneous-array-initializers-v3/direct/javac8/classes/Main.class": "b33bede03f694fe68cfc258a49dccb0ba39b8670bff4c6471d2b8acda0510677",
+          "tests/fixtures/p3-intermediate-join/unknown-operation/ConditionalIntermediateJoin.class": "8befd5c4763826d43b7b790983e7a32927993cbefa0657530654c7136bb46fe6",
+          "tests/fixtures/p3-invocation-arguments/ArgumentTarget.java": "536eceb2661b4599454541f47dfc995f23a75acd9843865d12456eea968b8b72",
+          "tests/fixtures/p3-invocation-arguments/GenericFactory.java": "462385a9c86d47473708175686c998fd60b49b75eb692cfd0f054d5c0770c4c5",
+          "tests/fixtures/p3-invocation-arguments/InvocationArgumentsProbe.java": "c18c0e7dee86babda1c1bb44d0e0d95ea87d04c666168dc45f06bb7f1dcd7b79",
+          "tests/fixtures/p3-invocation-arguments/InvocationArgumentsRunner.java": "170625d2e2d68efa7c34d95fb63198262791c6ab427814fc8a5f7375367fe7f9",
+          "tests/fixtures/p3-invocation-arguments/v8/InvocationArgumentsProbe.class": "f4c364f1ecb388c64c4ae9140df820ad625a43e3b158426698865e4fe43bedde",
+          "tests/fixtures/p3-join-ownership/v8/Join.class": "458204d72c0298ab4b2e84ce6655d34d2ee131919b8f032e02f888febb988bf1",
+          "tests/fixtures/p3-loop-transfers/v8/OuterContinue.class": "b756d4fcebe65bed901ef368d3ae93ed71b16cc122d995f44926d9117d8551b5",
+          "tests/fixtures/p3-parameter-slots/v8/SlotTypes.class": "ba2a1380f4530f578a507a3587bce97b426979a28267a1d7db7294e190249c12",
+          "tests/fixtures/p3-popped-static-qualifier/v8/StaticQualifierProbe.class": "21cdace20a84accd06e52567c250b0359ef76e059df993cc6c00a9fe1d6b7266",
+          "tests/fixtures/p3-special-dispatch/interface-super-proof/proof/BothDefault.class": "a5012f2130685a86f3decb3a6750f75534a7dd0c06a1fe627e6fcb6bfb19069b",
+          "tests/fixtures/p3-special-dispatch/interface-super-proof/proof/LeftDefault.class": "418e6271fad0c3e0133c603c357604f5ec30913e370f32237d6301b3fbda0265",
+          "tests/fixtures/p3-special-dispatch/interface-super-proof/proof/RightDefault.class": "21b22a396c7696033a97337b8249c578261e7ec3c2962ff33b1c5735efdf68e9",
+          "tests/fixtures/p3-special-dispatch/v8/BaseProbe.class": "b631eb77987041dd3d71a4e1098b08f2cddd613493a6a308add73ef1cdfe8266",
+          "tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class": "de73401a2d112c9b10fdc19792388782117b47c4cc02716e34c820f6bb5b5711",
+          "tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class": "a1cd50a4ae4b30779041521f50db5062cddd66ff067eff44328202f886479162",
+          "tests/fixtures/p3-string-switch/v8/ExtraBucketEffect.class": "df7bf504539b2d52a7029101ce2a16961c2771c7a7a7c645f366f937c4bd09e2",
+          "tests/fixtures/p3-string-switch/v8/StringSwitchProbe.class": "258fea472bfd8f80ee49726dc25f0c3d46dce8f61db57d43d5f63e52e6c2c53c",
+          "tests/fixtures/p3-switch-fallthrough/v8/DefaultMiddle.class": "8a137f3884bf366a8a962c4bb2efb460b882aae2cd6198c459ff8f6de434add8",
+          "tests/fixtures/p3-switch-fallthrough/v8/SwitchFallthroughOrder.class": "511fa56a325aeb1c2c7781e3fb0c86b6640cc4c3436df7cbb5c05ce0f5943ad0",
+          "tests/fixtures/p3-switch-fallthrough/v8/TableswitchFallthrough.class": "f45d78320286e1912b30f4b01524b17695a1cef269a0204b18d3d7191ce16f84",
+          "tests/fixtures/p3-switch-loop-exits/v8/SwitchLoopAdjacent.class": "b7c763c70be1901335194794be7bac778e426a8c86f466d037da2c6abd41d4e6",
+          "tests/fixtures/p3-switch-loop-exits/v8/SwitchLoopLocalBoundaries.class": "052fb805b7bacaa8695d892a0ac3b80d49a82e1471f1644745f64b23a89d3f3b",
+          "tests/fixtures/p3-switch-value/v21/Joined.class": "6734f743f5913a773aaa0f413a68d5fb4b5d8f3244479cef2a5497c8c4f9cccd",
+          "tests/fixtures/proved-java-structure/anonymous-capture/AnonymousCaptureCases$1.class": "f971b244c4d035b21a185fdd1ddd39981ad9db45d440b61309bafe5a3f40d61c",
+          "tests/fixtures/proved-java-structure/anonymous-super-dispatch/Base.class": "f957579bad5e74049e41d61966de5ba6fe951f053aff8cc82130607028240d2a",
+          "tests/fixtures/proved-java-structure/package-info-basic/v8/p/Check.class": "b424f71d3bd0794bf58a8e1674fe5d51995093ed35cbe435449c17e49817fbf1",
+          "tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class": "a43c23ab884e4caedd53afccf36272255e8a06f42d2642befa1bfe0f7162e240",
+          "tests/fixtures/raw-receiver-field-selection/SyntheticAccessorGuard.class": "317b2d52b4204178ecbc3abe89f4f8100564063d274eab0fe2fa2265292cffbf",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Generic.class": "01caef44567e8bb2979bfc734711386ec00a8eca8b65e92b8da872ba0585e6f7",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Plain.class": "9e74f651389f27d9aee43b3abfa7ed4eacf38b8b8cdda5b8aec6a2829574311c",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A.class": "954faae0aff34c6627fbb63a4beb9bc99af7b316bb0112f685828fbdebde3459",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer.class": "caa5b1470a7e8013ce849b6ef132672829a9d7da125336815b4fa4eba2af5b43",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.class": "6af4891b032f2751595c86b34ede87ad63bf22532944a6040f71296667af309c",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.class": "8cc6983f428336633637f17e71c74c54cf24e5c1816921a2bc95fb3ae24327c4",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.class": "45f2bc8aeab0561a20212dd31dd62ca7f781cbadb1bed79a033e20a31f173727",
+          "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class": "6e8986a85b46bc667c211ff490c9ea885ef66eecfeb93c223512cfc17b465408"
+        }
+      }
+    },
+    "new_cli_rule": "Do not reuse either historical CLI as the new replay CLI. Root freezes one new CLI path and SHA and passes it to both old/remaining replay legs.",
+    "helper_class_files": [
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/NotYetImplemented.class",
+        "bytes": 467,
+        "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/NotYetImplementedExtension.class",
+        "bytes": 2379,
+        "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/api/JadxInternalAccess.class",
+        "bytes": 1041,
+        "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest$1.class",
+        "bytes": 1361,
+        "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest$2.class",
+        "bytes": 1409,
+        "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest.class",
+        "bytes": 30020,
+        "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/ClassFileManager.class",
+        "bytes": 2187,
+        "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/CompilerOptions.class",
+        "bytes": 1569,
+        "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/DynamicClassLoader.class",
+        "bytes": 1874,
+        "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+        "bytes": 1111,
+        "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/JavaClassObject.class",
+        "bytes": 1528,
+        "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/JavaUtils.class",
+        "bytes": 1145,
+        "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/StringJavaFileObject.class",
+        "bytes": 1298,
+        "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/TestCompiler.class",
+        "bytes": 9527,
+        "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/TestFilesGetter.class",
+        "bytes": 817,
+        "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/TestUtils.class",
+        "bytes": 4786,
+        "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxAssertions.class",
+        "bytes": 1518,
+        "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+        "bytes": 3982,
+        "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+        "bytes": 7050,
+        "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+        "bytes": 3636,
+        "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+      },
+      {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+        "bytes": 1178,
+        "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+      }
+    ],
+    "helper_class_count": 21
+  }
+}

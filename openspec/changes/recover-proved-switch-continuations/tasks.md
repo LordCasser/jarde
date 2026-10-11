@@ -2,7 +2,7 @@
 
 - [x] 1.1 等待 `recover-proved-conditional-switch-fallthrough` 完成自身 CI 精确验收并记录干净交付；在此之前不应用本变更。验收方法：检查该变更的 CI 结果和最终交付记录均可追溯且通过。
 - [x] 1.2 重新读取已验收的 `cf12-upstream-remaining-root-v1` README、root acceptance、冻结 source/class pins 和两结构计划；冻结新的只读候选 baseline，并把旧 Jarde 失败保留为历史失败。验收方法：候选记录包含新 baseline 的输入标识/pins，并明确旧失败没有被记为新通过。
-- [ ] 1.3 仅在私有诊断运行中定位两个方法的实际首个拒绝。记录已知 FT2 `ArmsDoNotMeet@0`，再确认或推翻 `next=175` 到外层 boundary 197 的假说；确认或推翻 TestSwitch2 候选/重叠假说后再选生产补丁。验收方法：诊断记录展示首个拒绝位置、各相关 proof 输入/结果和 ownership delta，且不包含仅供诊断的生产改动。
+- [x] 1.3 仅在私有诊断运行中定位两个方法的实际首个拒绝。记录已知 FT2 `ArmsDoNotMeet@0`，再确认或推翻 `next=175` 到外层 boundary 197 的假说；确认或推翻 TestSwitch2 候选/重叠假说后再选生产补丁。验收方法：诊断记录展示首个拒绝位置、各相关 proof 输入/结果和 ownership delta，且不包含仅供诊断的生产改动。
 
 ## 2. Local proof changes and focused tests
 

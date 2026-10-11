@@ -1,0 +1,51 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 31.30s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+[switch-continuation-diagnostic] begin TestSwitch2.test(I)V blocks=18 edges=29
+[switch-continuation-diagnostic] canonical TestSwitch2.test(I)V rows=[(0, Normal, 48), (0, Normal, 56), (0, Normal, 71), (0, Normal, 137), (0, Normal, 164), (48, Normal, 164), (56, Normal, 63), (56, Normal, 164), (63, Normal, 164), (71, Normal, 78), (71, Normal, 164), (78, Normal, 98), (78, Normal, 136), (98, Normal, 111), (98, Normal, 118), (111, Normal, 118), (111, Normal, 131), (118, Normal, 124), (118, Normal, 136), (124, Normal, 131), (124, Normal, 136), (131, Normal, 136), (137, Normal, 153), (137, Normal, 164), (164, Normal, 171), (164, Normal, 181), (171, Normal, 176), (171, Normal, 181), (176, Normal, 181)]
+[switch-continuation-diagnostic] forward-join branch=0 dispatch-bci=0 targets=[48, 56, 71, 137, 164] predecessors=[(Some(48), [0]), (Some(56), [0]), (Some(71), [0]), (Some(137), [0]), (Some(164), [137, 71, 63, 56, 48, 0])]
+[switch-continuation-diagnostic] switch_forward_join at=13405 rejected
+[switch-continuation-diagnostic] switch_region branch=0 pdom=None loop_exit=false forward_join=None
+[switch-continuation-diagnostic] end TestSwitch2.test(I)V regions=[("fallback", [0], Some("jre_region_switch_arms_overlap")), ("fallback", [48, 56, 71, 137, 164, 63, 78, 153, 171, 181, 98, 136, 176, 111, 118, 131, 124], Some("jre_region_uncovered_blocks"))]
+[switch-continuation-diagnostic] begin TestSwitchWithFallThroughCase2.test(IZZ)String blocks=16 edges=25
+[switch-continuation-diagnostic] canonical TestSwitchWithFallThroughCase2.test(IZZ)String rows=[(0, Normal, 8), (0, Normal, 197), (8, Normal, 36), (8, Normal, 121), (8, Normal, 150), (8, Normal, 153), (36, Normal, 63), (36, Normal, 121), (63, Normal, 67), (63, Normal, 121), (67, Normal, 71), (67, Normal, 96), (71, Normal, 175), (96, Normal, 175), (121, Normal, 125), (121, Normal, 175), (125, Normal, 175), (150, Normal, 175), (153, Normal, 175), (175, Normal, 197), (197, Normal, 201), (197, Normal, 227), (201, Normal, 205), (201, Normal, 227), (205, Normal, 227)]
+[switch-continuation-diagnostic] switch_region branch=8 pdom=Some(175) loop_exit=false forward_join=None
+[switch-continuation-diagnostic] arm-before-consumer branch=121 start=125 next=None boundary=Some(175) outline=[("straight", [125], None)] newly_visited=[125]
+[switch-continuation-diagnostic] arm-before-consumer branch=0 start=8 next=Some(175) boundary=Some(197) outline=[("switch", [8, 36, 63, 67, 71, 96, 121, 125, 150, 153], None)] newly_visited=[8, 36, 121, 150, 153, 63, 125, 67, 71, 96]
+[switch-continuation-diagnostic] one-arm-if branch=0 next=175 boundary=Some(197) arm_run=[("switch", [8, 36, 63, 67, 71, 96, 121, 125, 150, 153], None)] continue_early_return_arm=false
+[switch-continuation-diagnostic] one-arm-if branch=0 continue_prefixed_loop_arm=false
+[switch-continuation-diagnostic] end TestSwitchWithFallThroughCase2.test(IZZ)String regions=[("fallback", [0, 8, 197, 36, 121, 150, 153, 201, 227, 63, 125, 175, 205, 67, 71, 96], Some("jre_region_arms_do_not_meet"))]

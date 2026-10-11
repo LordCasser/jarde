@@ -1,0 +1,88 @@
+{
+  "schema": "switch-continuation-temporary-diagnostic-root-v1",
+  "runner_sha256": "1e95e5765b01c58c05a27144500794d8d09e668215ae80edec837cec840c08e3",
+  "region_sha256": "e7ab7e86fe282b5204b018cfb2942fbd90ff87d574a274f0a8c88e73a395e8a8",
+  "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+  "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "region::tests::cf12_switch_continuation_temporary_diagnostic",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T00:46:13.010835+00:00",
+      "duration_seconds": 29.372020208014874,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 153517491,
+      "free_bytes_after": 49916338176,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-continuation-diagnostic-execution-root-v2/0.stdout.raw",
+          "bytes": 187,
+          "sha256": "50c9b2e532bc812f58077efc8e316266d136b11033476bc493a08cbffb7d5214"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-continuation-diagnostic-execution-root-v2/0.stderr.raw",
+          "bytes": 4955,
+          "sha256": "1b7d9842c9d5f691b0a1d2f2e08dd54c00f35ed65ff641b5257bbffd20230491"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-11T00:46:42.387994+00:00",
+      "duration_seconds": 1.0156385830196086,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 153471771,
+      "free_bytes_after": 50424463360,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-continuation-diagnostic-execution-root-v2/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-continuation-diagnostic-execution-root-v2/1.stderr.raw",
+          "bytes": 52,
+          "sha256": "2c2dead508daebb49ea5f725a5a9fbab64126c8f672c0b3b97a22dd40ea2e09b"
+        }
+      }
+    }
+  ],
+  "status": "diagnostic-executed",
+  "target_absent_after_clean": true
+}

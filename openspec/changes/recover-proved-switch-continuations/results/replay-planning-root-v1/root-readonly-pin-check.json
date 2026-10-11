@@ -1,0 +1,8 @@
+{
+  "status": "verified_readonly_planning_pins",
+  "plan_sha256": "f8c0ee7b9b87a9872ce86e38614fce590a47d33b23f40af1d8cf07a2e4d4cb9c",
+  "fixtures": 10,
+  "distinct_file_pins": 159,
+  "replay_executed": false,
+  "cf12_complete": false
+}
