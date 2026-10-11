@@ -1,6 +1,6 @@
 # 保留既有赋值的 foreach 投影验收
 
-当前7/8，永久最小改写、完整类三方对照、全部本地验收及确切产品73adae72自身CI独立验收已接受；干净主线交付尚待。以下按实际节点保留历史观察，较早的“尚待”不覆盖后续实际接受记录。
+当前8/8，永久最小改写、完整类三方对照、全部本地验收、确切产品73adae72自身CI独立验收及实际干净main checkpoint已接受。关闭文档推送后按真实新HEAD执行外置最终审计。以下按实际节点保留历史观察，较早的“尚待”不覆盖后续实际接受记录。
 
 同IR三请求 outer13/path[1]、next17/cast22/store25全既有proof成功后强制None；恢复4732原字节、test1/0/0/clean及独立accept-v3实际exit0。无slot/name推定身份。详[diagnostic](results/outer-assignment-diagnostic-root-v1/README.md)。
 
@@ -23,3 +23,5 @@ Fresh第二轮全量已独立接受：96批362targets、3481/0/97、3578named及
 产品73adae72c6d89e8eba0a34e3cd92fe81e899cb3e已实际commit/push main；自身CI38181427452四任务运行，尚未捕获/独立接受，3.3保持未勾选。当前产品提交后source workspace clean/target absent只是一时点，不冒充CI后的最终clean交付。
 
 3.3实际接受：产品73adae72自身CI38181427452 root捕获4jobs/52steps、双seed各362targets/3481-0-97/3578named，全部与本地96批具名结果、20required、4744Git/live输入和准确CLI字节绑定。verifier-v4 actualexit0，接受SHA256c6acfceff814fcf1196f50d82510ebe6a6fcf76ef352a4ca1a823b5f5651aa19；v3 exact helper set漏acceptor的真实失败保持。详[自身CI](results/own-product-ci-clean-root-v1/README.md)。3.4按已推送真实HEAD继续审计。
+
+3.4交付checkpoint实际接受：docs 8df36aad48f5303f2a537ad2a6f86d428c247e56=main=origin/main、真实远端仅main、15checkouts/14aux detached干净祖先、全部target/fuzz target不存在、六收据与4744源码/准确CLI绑定；audit-v2实际exit0，SHA256 19140d47203ed6755ae90bc986642680791081db56001b62faa8fcc16cd9a7db。关闭文档推送后的真实新HEAD另作外置最终clean审计，路径固定`/private/tmp/jarde-iterator-assignment-final-clean-main-root-v1/execution.json`，不能预写未知HEAD。只关闭此窄片，整CF11/71/612不增加。

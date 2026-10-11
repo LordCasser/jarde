@@ -1,0 +1,53 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-iterator-assignment-clean-main-prep-luna-v2/audit-clean-main.py",
+    "/private/tmp/jarde-iterator-assignment-product-clean-main-root-v1",
+    "73adae72c6d89e8eba0a34e3cd92fe81e899cb3e",
+    "8df36aad48f5303f2a537ad2a6f86d428c247e56",
+    "--regression-receipt",
+    "/private/tmp/jarde-iterator-assignment-regressions-root-v1/execution.json",
+    "--regression-receipt-sha256",
+    "0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b",
+    "--workspace-receipt",
+    "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace-run-v2/execution.json",
+    "--workspace-receipt-sha256",
+    "f1d4a40a6318a54602fe0eb958942e76cff573f6b491d1c861102d1aabdd74c0",
+    "--workspace-acceptance",
+    "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace-acceptance-root-v2.json",
+    "--workspace-acceptance-sha256",
+    "5b81bee26189269373ce3e54a2e1c2124d2bbfdd36fffba9834b07e6034926b8",
+    "--final-build",
+    "/private/tmp/jarde-iterator-assignment-final-validation-prep-luna-v2/final-build-root-v1/execution.json",
+    "--final-build-sha256",
+    "b3ea22423fee9a51f8839c4a7920cf301aa3b02a48c99b9c2229061c2d7d744c",
+    "--final-acceptance",
+    "/private/tmp/jarde-iterator-assignment-final-validation-acceptance-root-v1.json",
+    "--final-acceptance-sha256",
+    "fd4d494c4bee2da64c103be1814fb9514b425af309a699a3c7385dbb90acbead",
+    "--own-ci-acceptance",
+    "/private/tmp/jarde-iterator-assignment-own-ci-acceptance-root-v2.json",
+    "--own-ci-acceptance-sha256",
+    "c6acfceff814fcf1196f50d82510ebe6a6fcf76ef352a4ca1a823b5f5651aa19",
+    "--own-ci-schema",
+    "iterator-assignment-own-ci-acceptance-v2",
+    "--own-ci-status",
+    "accepted_local_own_ci_observation"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T23:24:25.756783+00:00",
+  "finished_at": "2026-10-11T23:24:32.601113+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-iterator-assignment-product-clean-main-invocation-root-v1/stdout.raw",
+      "bytes": 287,
+      "sha256": "4b33fe0097b12c3ddc376c9f874214cc0907597b36f7691925be1741d4d54595"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-iterator-assignment-product-clean-main-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

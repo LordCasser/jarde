@@ -426,3 +426,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 
 
 2026-10-12 CF11 foreach外层Assign窄片：产品73adae72自身CI38181427452已root独立接受4jobs/52steps、双seed各362targets/3481-0-97/3578named、20required及4744Git/live输入/准确CLI字节绑定。当前7/8，最终干净main待审计。仅窄片接受，固定71单元/612文件及整CF11完成数不增加。证据：`../../changes/recover-proved-iterator-assignment-foreach/results/own-product-ci-clean-root-v1/README.md`。
+
+2026-10-12 上述外层Assign foreach窄片8/8交付checkpoint已实际接受：docs 8df36aad4 main/origin/真实remote仅main，15checkouts/14aux detached干净祖先、无target、5GiB守卫满足；关闭文档推送后按真实新HEAD外置audit。CF11/71/612不增加，下一片为有实际完整读写证据的局部类型兼容性。

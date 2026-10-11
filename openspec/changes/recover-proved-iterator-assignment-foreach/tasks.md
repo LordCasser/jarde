@@ -13,4 +13,4 @@
 - [x] 3.1 新 CLI 对固定及控制完整类执行双 JDK 三方对照。验收：generated class 未手修，实际 compile/exit/stdout/stderr、状态、异常和调用序列同原；JADX 差异与未恢复边界单列，来源真实核准。
 - [x] 3.2 fresh 全工作区、fmt/同 CI Clippy/global strict、最终 CLI 字节绑定。验收：实际目标及 named outcomes 完整核验、默认 Rust 栈、5GiB free/target1GiB 一秒守卫与 finally clean；失败不得拼接成成功。
 - [x] 3.3 提交推送确切产品并验收其自身 CI。验收：确切 head/run 全 jobs/steps及双 seed outcomes 与本地绑定，不借前片或文档 CI。
-- [ ] 3.4 更新账本、verification、handoff 并交付干净 main。验收：关闭文档推送后按真实 HEAD 检查 main/origin/remote、仅 main、aux detached干净祖先及全部无 target；只关闭窄片，CF-11/71/612 完成数不增加。
+- [x] 3.4 更新账本、verification、handoff 并交付干净 main。验收：关闭文档推送后按真实 HEAD 检查 main/origin/remote、仅 main、aux detached干净祖先及全部无 target；只关闭窄片，CF-11/71/612 完成数不增加。
