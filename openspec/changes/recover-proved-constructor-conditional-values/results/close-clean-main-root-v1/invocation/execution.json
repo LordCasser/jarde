@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-constructor-conditional-clean-main-audit-root-v1.py",
+    "/private/tmp/jarde-constructor-conditional-close-clean-main-root-v1",
+    "026de6ae4e2ab671b7e660a1c6d32aefaeab842a",
+    "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T19:21:12.265628+00:00",
+  "finished_at": "2026-10-11T19:21:18.720669+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-close-clean-main-root-v1/stdout.raw",
+      "bytes": 211,
+      "sha256": "1e2ef1e417c53cf7b690e34c7d019d4f2a0a612672b59256672bc889ea4635e7"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-close-clean-main-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

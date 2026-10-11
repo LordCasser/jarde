@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--no-interactive"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T19:22:23.295851+00:00",
+  "finished_at": "2026-10-11T19:22:23.826007+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-close-docs-strict-root-v3/stdout.raw",
+      "bytes": 16321,
+      "sha256": "990b9aa85651a94282284096257cdfa56ad09d7a6a1ffbcc9e0a13a39ff23154"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-close-docs-strict-root-v3/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

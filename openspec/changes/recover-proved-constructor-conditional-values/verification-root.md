@@ -1,6 +1,6 @@
-# 构造条件值恢复验收（在制）
+# 构造条件值恢复验收
 
-当前 8/9：production/永久fixtures/API/Stop、strict CLI完整固定/正例runtime、fresh全workspace及最终lint/strict/build/clean已实际接受。自身产品CI已独立接受，最终关闭文档/干净main交付待执行。
+当前 9/9：production/永久fixtures/API/Stop、strict CLI完整固定/正例runtime、fresh全workspace及最终lint/strict/build/clean已实际接受。自身产品CI及关闭证据提交026de6ae4的clean main已独立接受。最终任务文档提交推送后，按实际HEAD再次执行outside-repo audit，见下文。
 
 1.1 固定历史基线与当前同 IR 首拒已 root 接受，见 results/fixed-initial-observations-root-v1.json。29 命令完整对照中的旧 CLI 是 v10，不是上一产品最终 CLI；13 blocks/18 edges 的真实诊断确认 constructor96→Phi99→Return99，仅说明 Site 首拒，不能推断 Builder 已通过。
 
@@ -25,3 +25,5 @@ Fresh workspace v1及独立acceptor actualexit0：95批/361targets/98cmd/196raw�
 3.2最终lint/build及独立acceptor均actualexit0，见results/final-lint-build-root-v1。fmt/同CI Clippy/strict353-0/CLIbuild/clean五命令通过；4727闭包与focused v6/fullworkspace/live恒同，CLI61286928B/0555/SHA a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241与v6候选相同，target不存在，峰值432967262B。final receipt SHA90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2；产品c956050611f63a06f57caf0b1280238e81faeb80已提交，自身CI待接受。首次文档归档脚本因Path拼接TypeError中止；actual/raw已完整归档，invocation/README与task更新在本次补全，不影响此前实际构建和验收。
 
 3.3产品c956050611f63a06f57caf0b1280238e81faeb80自身CI38163820457经root capture/独立verifier-v2 actualexit0接受：4jobs/52steps、双seed各361targets/3473-0-97，95批与全部3570named outcomes逐项同本地。12关键tests与2个脱敏公开label独立绑定，4727完整inputs同产品Git/live/workspace/focused/finalbuild/CLI。详results/own-product-ci-root-v1/root-acceptance.json。3.4仍待本次关闭文档提交推送后真实HEAD clean audit，c956 checkpoint不是最终docs audit。
+
+3.4关闭证据提交026de6ae4e2ab671b7e660a1c6d32aefaeab842a推送后实际outside clean-main audit于19:21:12–19:21:18Z exit0，HEAD/main/origin/remote一致、仅main、15checkout/14aux detached干净main祖先无target，4727inputs与已验CLI闭包恒同。见results/close-clean-main-root-v1。此处仅关闭构造条件值窄片9/9，整个CF11/71/612完成数不变。最终关闭任务文档推送后，再按真实HEAD执行 `/private/tmp/jarde-constructor-conditional-final-clean-main-root-v1/execution.json`；本轮文档没有修改生产/fixture输入，不借文档CI代替产品CI。原始raw保持字节，空白检查只对文档执行。

@@ -11,7 +11,7 @@
 
 ### Prerequisites and Non-Goals
 
-构造条件值产品 c956050611f63a06f57caf0b1280238e81faeb80 本地全验证及自身CI已root独立接受，当前关闭文档clean audit尚待；root可在守卫及原字节恢复约束下并行执行下一片临时诊断/只读完整类观察；当前产品关闭交付后再应用永久候选。TestNestedLoops既有基线及同IR-v3首拒证据已接受，当前 owner 及后续 SSA 首拒已实际接受：init/test/next 是同一 LocalVariable，Phi97 的三个输入对应三条 None-use，输出 V22→V12→V37；新所有权门及更后面的 next/effect 证明尚未执行。外层BCI13首条Assign、typed String头、generic Signature/List<String>、跨frame可变AST编辑、死声明清理和一般Iterator语法均独立；不扩大CF11或71/612完成数。
+构造条件值产品 c956050611f63a06f57caf0b1280238e81faeb80 本地全验证及自身CI已root独立接受，关闭证据提交026de6ae4的实际clean audit亦接受，最终任务文档推送后另按真实HEAD审计；root可在守卫及原字节恢复约束下并行执行下一片临时诊断/只读完整类观察；当前产品关闭交付后再应用永久候选。TestNestedLoops既有基线及同IR-v3首拒证据已接受，当前 owner 及后续 SSA 首拒已实际接受：init/test/next 是同一 LocalVariable，Phi97 的三个输入对应三条 None-use，输出 V22→V12→V37；新所有权门及更后面的 next/effect 证明尚未执行。外层BCI13首条Assign、typed String头、generic Signature/List<String>、跨frame可变AST编辑、死声明清理和一般Iterator语法均独立；不扩大CF11或71/612完成数。
 
 ## Capabilities
 
