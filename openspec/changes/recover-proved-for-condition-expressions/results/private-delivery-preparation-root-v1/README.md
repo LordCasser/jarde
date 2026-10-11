@@ -1,0 +1,1 @@
+这些文件均是私有静态准备，未执行验收器/CI/clean-main audit。Root已审读runner差异并冻结workspace v4与finalbuild v3；workspace当前在运行，finalbuild和自身CI尚未运行。next-round-v1 pins误标成功row74为失败命令，v2只修正为实际row75/exit101，原稿保留不可用作事实验收。clean-audit-v2不必要地从receipt动态接受任意CLI identity，root审查拒绝该放宽；v3恢复已实测candidate精确bytes/SHA/0555常量，实际HEAD/receiptSHA仍运行参数。local-workspace-accept-v2/own-CI-verifier-v4必须等相应真实运行完成后root执行，静态审阅不算通过。

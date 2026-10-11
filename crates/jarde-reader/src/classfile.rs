@@ -12233,7 +12233,9 @@ mod tests {
             // handlers, 167 branch/switch targets, and the legacy control's two jsr calls.
             // CF11 fixed/controls: two classes, five Code bodies, no handlers, thirty
             // branch targets (10 + 20), no jsr; independently counted from accepted javap.
-            (1095, 4866, 468, 2912, 10),
+            // For-condition originals: five Java 8 classes, twenty-four Code bodies, no handlers,
+            // forty-one branch targets (12 + 12 + 5 + 6 + 6), and no jsr; accepted javap counts.
+            (1100, 4890, 468, 2953, 10),
             "fixture population changed: re-measure these counts"
         );
     }

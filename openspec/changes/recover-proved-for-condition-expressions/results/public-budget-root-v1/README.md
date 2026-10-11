@@ -1,0 +1,1 @@
+root实际4命令含clean，nested5/0/0、normalcorpus5/0/1。公开late Stop是AnalysisSteps2630，在sumWithChangingFieldBound()I的BCI1；source预算只用本次完整运行总计减open用量再减一，2630是raw观测，2631由测试动态limit+1推得，不写生产成本常量。早先已完成成员可保留；未生产正文为空text/map/NotProduced，预取消不发布declaration/fields/methods/text且全部工作计数为零，仅墙钟字段归零比较。完整raw/执行usage/physical method identity/stop保留，不把预取消当异步中途取消。

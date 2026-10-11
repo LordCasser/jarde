@@ -18,8 +18,8 @@
 //! 3. the byte-patched `Loc.punct` — the local's name `数量` replaced in place by `名。`, same byte
 //!    length, README recipe — still aliases, and declaration and uses share the alias: the widening
 //!    is Java's *letters and digits*, not "every non-ASCII character";
-//! 4. the ASCII presentations are byte-for-byte the pre-change ones, including the class whose own
-//!    name is no identifier at all (`com/example/package-info`, whose hyphen the class-declaration
+//! 4. the ASCII presentations retain their frozen text except F1's two proved for headers,
+//!    including the class whose own name is no identifier at all (`com/example/package-info`, whose hyphen the class-declaration
 //!    line spells as the pool states it — a boundary this change neither widens nor closes).
 
 use jarde::class_source::ClassSourceReport;
@@ -371,12 +371,12 @@ fn a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias() {
     );
 }
 
-/// The ASCII presentations, byte-for-byte the ones the pre-change layer wrote — the control the
-/// widening is bounded by (`README.md` records which binary rendered each frozen text, and that the
-/// standalone class bytes go in through the same single-entry jar shape the per-class CLI sweep
+/// The ASCII presentations retain their frozen text except F1's two proved array-length/+2 headers.
+/// The widening stays bounded (`README.md` records which binary rendered each frozen text, and
+/// that the standalone class bytes go in through the same single-entry jar shape the per-class CLI sweep
 /// reads them with).
 #[test]
-fn the_ascii_presentations_are_byte_for_byte_the_pre_change_ones() {
+fn the_ascii_presentations_only_change_in_the_two_proved_f1_for_headers() {
     let f1: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
     );
@@ -416,9 +416,32 @@ fn the_ascii_presentations_are_byte_for_byte_the_pre_change_ones() {
         ),
     ] {
         let report = source_of(&bytes, class);
+        let expected = if label == "F1" {
+            let mut expected = frozen.to_owned();
+            for (before, after) in [
+                (
+                    "        local2 = 0;\n        while (local2 < arg0.length) {\n            local1 = local1 + arg0[local2];\n            local2 = local2 + 2;\n        }",
+                    "        for (local2 = 0; local2 < arg0.length; local2 = local2 + 2) {\n            local1 = local1 + arg0[local2];\n        }",
+                ),
+                (
+                    "        local2 = 0;\n        while (local2 < arg0.length) {\n            local1.append(pick(arg0[local2]));\n            local2 = local2 + 2;\n        }",
+                    "        for (local2 = 0; local2 < arg0.length; local2 = local2 + 2) {\n            local1.append(pick(arg0[local2]));\n        }",
+                ),
+            ] {
+                assert_eq!(
+                    expected.matches(before).count(),
+                    1,
+                    "F1: each exact proved loop block occurs once"
+                );
+                expected = expected.replacen(before, after, 1);
+            }
+            expected
+        } else {
+            frozen.to_owned()
+        };
         assert_eq!(
-            report.text, frozen,
-            "{label}: an ASCII presentation must not move by one byte"
+            report.text, expected,
+            "{label}: only F1's two exact for headers may differ; all other ASCII presentations stay byte-for-byte fixed"
         );
     }
     // The boundary this change states and does not close: the hyphenated name is no identifier, and

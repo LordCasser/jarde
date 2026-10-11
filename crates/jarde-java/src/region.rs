@@ -13671,6 +13671,8 @@ impl Walker<'_> {
             if let Some(step) = step {
                 invariants.insert(step);
             }
+            // header_tested_loop has already accepted this test with test_is_pure; keep this
+            // scan aligned with that caller's condition producers while proving local roles here.
             for instruction in test {
                 match self.operations.get(instruction.bci()) {
                     Some(Operation::Load { slot: read }) if *read == slot => {
@@ -13689,7 +13691,17 @@ impl Walker<'_> {
                     Some(
                         Operation::Push(_)
                         | Operation::Arithmetic { .. }
-                        | Operation::Comparison { .. },
+                        | Operation::Negate
+                        | Operation::Comparison { .. }
+                        | Operation::NumericComparison { .. }
+                        | Operation::Invoke(_)
+                        | Operation::Field {
+                            access: crate::facts::FieldAccess::Read,
+                            ..
+                        }
+                        | Operation::ArrayLength
+                        | Operation::ArrayLoad
+                        | Operation::ArrayElementLoad { .. },
                     ) => {}
                     _ => return None,
                 }

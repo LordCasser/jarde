@@ -1461,6 +1461,56 @@
       "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
     },
     {
+      "blake3": "ab0ab0c3a4de5393f7a916103d4103cb45521b4b4b3b8d5acf8e701b3a319e86",
+      "bytes": 1464,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionEffects.class"
+    },
+    {
+      "blake3": "4ad8044cfdc2722a953b5d35d3d4c526699609daa4d1c1266900f3bdc58947f7",
+      "bytes": 1551,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionEffects.java"
+    },
+    {
+      "blake3": "3ded9022998ff6d5e681d21a14652aea2bcf9039fd98e6cec46a99e7cca2ca39",
+      "bytes": 861,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionNumeric.class"
+    },
+    {
+      "blake3": "917ec3dcc9166e1b8139d677d96e5be9519a2414337da891416f9042bc3f7b4d",
+      "bytes": 621,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionNumeric.java"
+    },
+    {
+      "blake3": "66803a88b2f57836c69b73a35ab69595ed76eec34cf6653671834407c4cd764d",
+      "bytes": 1382,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionReads.class"
+    },
+    {
+      "blake3": "c7c332bda4806da3ddf4f30e9357b0e140169d6d1cd8550254f82ce82e9d55b1",
+      "bytes": 1252,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionReads.java"
+    },
+    {
+      "blake3": "d9be3bdf643609b13c01395803b8be6586639dab3c0e9691a87fa3691f833ba5",
+      "bytes": 894,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionRefusals.class"
+    },
+    {
+      "blake3": "bd2d1353c8e20e26110885adb7c3f309942fdb0fbe4c6f5adf21c976cfae6a2f",
+      "bytes": 758,
+      "path": "tests/fixtures/java8/cf11-for-condition/ForConditionRefusals.java"
+    },
+    {
+      "blake3": "dea507700657611721f1db4e114f1d863ccbe2107cef495a492d3badbf4fd587",
+      "bytes": 878,
+      "path": "tests/fixtures/java8/cf11-for-condition/UpstreamNestedLoops2.class"
+    },
+    {
+      "blake3": "f331a49433a772de0296e0383b97f3d0435d939d82f05765408232025bec4843",
+      "bytes": 273,
+      "path": "tests/fixtures/java8/cf11-for-condition/UpstreamNestedLoops2.java"
+    },
+    {
       "blake3": "1002f7e1fad216ac36426d11c2e0371dd18512f1a3d88984f28c94eba87d6dfb",
       "bytes": 1046,
       "path": "tests/fixtures/java8/cf11/NestedLoopSideExitControls.class"
