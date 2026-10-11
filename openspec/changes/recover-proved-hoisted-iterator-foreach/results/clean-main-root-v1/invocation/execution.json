@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v4/audit-clean-main.py",
+    "/private/tmp/jarde-hoisted-iterator-clean-main-root-v1",
+    "993e9f8c0f413bb7c31538e6f7c2c92a742e7af4",
+    "e29b587f76f15348f0b0b87fa7937c5ac65d6da7",
+    "--regression-receipt",
+    "/private/tmp/jarde-hoisted-iterator-regressions-root-v6/execution.json",
+    "--regression-receipt-sha256",
+    "fed09c2295e2a33c40c6599bfc6acdcf62aad500e3eb06a9f640fe9a96b1690f",
+    "--workspace-receipt",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run-v4/execution.json",
+    "--workspace-receipt-sha256",
+    "ab1bcceaa5124681186a6f8dae8c8def59160810e2114e45c5533fcfe02c2d04",
+    "--workspace-acceptance",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-acceptance-v4.json",
+    "--workspace-acceptance-sha256",
+    "e585307c2eb3dbc10edf0b29297dcbc304200c0c79809fb5f86e0d0ac10842b9",
+    "--final-build",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/final-build-v5/execution.json",
+    "--final-build-sha256",
+    "800d88136720ebd68dfe0218532848a45bb2d45983a26bbaa8534e7dd4e5700f",
+    "--final-acceptance",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/final-acceptance-v5.json",
+    "--final-acceptance-sha256",
+    "181c60f8f598efcb94c865d1633c7b5c8153265c0c6d309df2a9c57c3c2ce292"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T22:00:53.143263+00:00",
+  "finished_at": "2026-10-11T22:01:00.208088+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-hoisted-iterator-clean-main-invocation-root-v1/stdout.raw",
+      "bytes": 287,
+      "sha256": "a1ad8726f33e757eaee3926e9b64e73b830db2a4eb3971bef53cd62211b29288"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-clean-main-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}
