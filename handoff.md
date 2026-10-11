@@ -2,7 +2,7 @@
 
 当前断点（2026-10-12）：持续目标 active，用户明确继续当前聊天；按固定 JADX 71 单元 / 612 文件账本推进。**构造条件值产品 `c956050611f63a06f57caf0b1280238e81faeb80` 已推送 main，自身 [CI 38163820457](https://github.com/LordCasser/jarde/actions/runs/38163820457) 已 root 独立接受四 jobs / 52 steps。** 双 seed 各 361 targets、3473/0/97，全部 3570 named outcomes 同本地；4727 输入绑定产品 Git/live/workspace/focused/finalCLI。
 
-[recover-proved-constructor-conditional-values](openspec/changes/recover-proved-constructor-conditional-values/verification-root.md) 当前 **8/9**：生产/API/真实 late Stop、完整类双 JDK 三方、本地 fresh 全工作区、fmt/CI 范围 Clippy/strict353-0、最终 CLI 及自身 CI 均接受。仅待本次关闭文档提交推送后的真实 HEAD clean audit；产品 c956 checkpoint 已通过，不能代替最终文档审计。
+[recover-proved-constructor-conditional-values](openspec/changes/recover-proved-constructor-conditional-values/verification-root.md) **9/9**：生产/API/真实 late Stop、完整类双 JDK 三方、本地 fresh 全工作区、fmt/CI 范围 Clippy/strict353-0、最终 CLI 及自身 CI 均接受。关闭证据提交 `026de6ae4e2ab671b7e660a1c6d32aefaeab842a` 推送后的实际 clean audit 已接受；最终关闭任务文档提交推送后再按真实 HEAD 运行 outside audit，收据 `/private/tmp/jarde-constructor-conditional-final-clean-main-root-v1/execution.json`。该最终收据保留在仓库外，避免弄脏交付树。
 
 生产只复用严格一跳 constructor→live 二输入 stack Phi→同 join 唯一消费者，完整 CFG/branch/effect 由既有 Builder 证明；最终 AST 单次扫描只认准确 method-local Direct constructor New，summary/gap/record 共用同一判定。普通 Site 路径独立。固定 SequentialLoops2 四 Jarde 完整类 runtime 同十行 oracle；控制 Positive 四 same-source isolated 完整类同十九行 oracle；combined/Refusals 八 compile 失败/no runtime 及既有 shared/nested/handler 缺口明确保留。详[验收](openspec/changes/recover-proved-constructor-conditional-values/results/current-cli-runtime-acceptance-root-v6/README.md)。
 
