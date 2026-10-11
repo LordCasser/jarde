@@ -1,0 +1,242 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -39,6 +39,55 @@
+ 
+ use std::cell::OnceCell;
+ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
++
++// Temporary explicit opt-in for one frozen TestNestedLoops same-IR diagnostic run.
++fn foreach_candidate_diagnostic_enabled() -> bool {
++    std::env::var_os("JARDE_FOREACH_CANDIDATE_DIAGNOSTIC").is_some()
++}
++
++fn foreach_candidate_loop_body(kind: &StmtKind) -> Option<&[Stmt]> {
++    match kind {
++        StmtKind::While { body, .. }
++        | StmtKind::DoWhile { body, .. }
++        | StmtKind::For { body, .. }
++        | StmtKind::ForEach { body, .. } => Some(body.as_slice()),
++        _ => None,
++    }
++}
++
++fn foreach_candidate_statement_kind(statement: Option<&Stmt>) -> &'static str {
++    let Some(statement) = statement else {
++        return "none";
++    };
++    match &statement.kind {
++        StmtKind::Declare { .. } => "Declare",
++        StmtKind::Assign { .. } => "Assign",
++        StmtKind::Expr(_) => "Expr",
++        StmtKind::FieldAssign { .. } => "FieldAssign",
++        StmtKind::IndexAssign { .. } => "IndexAssign",
++        StmtKind::ConstructorCall { .. } => "ConstructorCall",
++        StmtKind::Return { .. } => "Return",
++        StmtKind::Break { .. } => "Break",
++        StmtKind::Continue { .. } => "Continue",
++        StmtKind::Throw { .. } => "Throw",
++        StmtKind::Assert { .. } => "Assert",
++        StmtKind::If { .. } => "If",
++        StmtKind::While { .. } => "While",
++        StmtKind::For { .. } => "For",
++        StmtKind::ForEach { .. } => "ForEach",
++        StmtKind::DoWhile { .. } => "DoWhile",
++        StmtKind::Switch { .. } => "Switch",
++        StmtKind::Try { .. } => "Try",
++        StmtKind::Synchronized { .. } => "Synchronized",
++        StmtKind::Fallback { .. } => "Fallback",
++    }
++}
++
++fn log_foreach_candidate(event: &str, test_bci: u32, detail: &str) {
++    if foreach_candidate_diagnostic_enabled() {
++        eprintln!("JARDE_FOREACH_CANDIDATE event={event} test_bci={test_bci} {detail}");
++    }
++}
+ 
+ #[cfg(test)]
+ use jarde_jvm::method_ir::SsaUse;
+@@ -18985,8 +19034,36 @@
+             None
+         };
+         let iterable_projected = if for_header.is_none() && tests.len() == 1 {
+-            self.iterable_for_each_candidate(first_test_bci, &kind, body)?
++            log_foreach_candidate(
++                "attempt",
++                first_test_bci,
++                &format!(
++                    "header_bci={} path={path:?} form={form:?} tests={} for_header=false body_first={}",
++                    header_bci,
++                    tests.len(),
++                    foreach_candidate_statement_kind(
++                        foreach_candidate_loop_body(&kind).and_then(|body| body.first()),
++                    ),
++                ),
++            );
++            match self.iterable_for_each_candidate(first_test_bci, &kind, body) {
++                Ok(candidate) => candidate,
++                Err(reason) => {
++                    log_foreach_candidate("stopped", first_test_bci, "reason=StopReason");
++                    return Err(reason);
++                }
++            }
+         } else {
++            log_foreach_candidate(
++                "skipped",
++                first_test_bci,
++                &format!(
++                    "header_bci={} path={path:?} form={form:?} tests={} for_header={} reason=loop_eligibility",
++                    header_bci,
++                    tests.len(),
++                    for_header.is_some(),
++                ),
++            );
+             None
+         };
+         let (kind, origin) = if let Some((kind, origin, removed_element, declarations)) = projected
+@@ -21228,22 +21305,42 @@
+         regions: &[Region],
+     ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
+         let StmtKind::While { cond, body, .. } = kind else {
++            log_foreach_candidate("refused", test_bci, "gate=loop_kind_not_while");
+             return Ok(None);
+         };
+-        if self.profile.java_release < 8
+-            || !matches!(&cond.kind, ExprKind::Call { name, args, .. }
+-                if name == "hasNext" && args.is_empty())
+-            || !matches!(self.operations.get(cond.origin.primary().bci()),
+-                Some(Operation::Invoke(target))
+-                    if target.kind() == InvokeKind::Interface
+-                        && target.is_interface_reference()
+-                        && target.owner() == "java/util/Iterator"
+-                        && target.name() == "hasNext"
+-                        && target.descriptor() == "()Z")
+-            || !body
+-                .first()
+-                .is_some_and(|stmt| matches!(stmt.kind, StmtKind::Declare { value: Some(_), .. }))
++        if self.profile.java_release < 8 {
++            log_foreach_candidate("refused", test_bci, "gate=profile_release_before_8");
++            return Ok(None);
++        }
++        if !matches!(&cond.kind, ExprKind::Call { name, args, .. }
++            if name == "hasNext" && args.is_empty())
+         {
++            log_foreach_candidate("refused", test_bci, "gate=condition_not_zero_arg_hasNext_call");
++            return Ok(None);
++        }
++        if !matches!(self.operations.get(cond.origin.primary().bci()),
++            Some(Operation::Invoke(target))
++                if target.kind() == InvokeKind::Interface
++                    && target.is_interface_reference()
++                    && target.owner() == "java/util/Iterator"
++                    && target.name() == "hasNext"
++                    && target.descriptor() == "()Z")
++        {
++            log_foreach_candidate("refused", test_bci, "gate=hasNext_not_exact_iterator_interface_invoke");
++            return Ok(None);
++        }
++        if !body
++            .first()
++            .is_some_and(|stmt| matches!(stmt.kind, StmtKind::Declare { value: Some(_), .. }))
++        {
++            log_foreach_candidate(
++                "refused",
++                test_bci,
++                &format!(
++                    "gate=body_first_not_initialized_declaration statement={}",
++                    foreach_candidate_statement_kind(body.first()),
++                ),
++            );
+             return Ok(None);
+         }
+         poll(self.budget, Some(test_bci))?;
+@@ -21662,8 +21759,14 @@
+             ))
+         })();
+         let Some((label, iterable, mut body, next_bci, origin, remove)) = candidate else {
++            log_foreach_candidate(
++                "refused",
++                test_bci,
++                "gate=post_entry_candidate_proof_incomplete",
++            );
+             return Ok(None);
+         };
++        log_foreach_candidate("proof_complete", test_bci, "stage=ready_to_rewrite");
+         let mut base = format!("iteratorElement{next_bci}");
+         let name = loop {
+             let candidate = self.names.free_name_with(&base, || {
+@@ -21689,18 +21792,24 @@
+             ..
+         }) = body.first_mut()
+         else {
++            log_foreach_candidate("refused", test_bci, "gate=proved_body_binding_changed_before_rewrite");
+             return Ok(None);
+         };
+         let next = match &mut value.kind {
+             ExprKind::Call { .. } => value,
+             ExprKind::Cast { value, .. } => value.as_mut(),
+-            _ => return Ok(None),
++            _ => {
++                log_foreach_candidate("refused", test_bci, "gate=proved_binding_not_call_or_cast");
++                return Ok(None);
++            }
+         };
+         if next.origin.primary().bci() != next_bci {
++            log_foreach_candidate("refused", test_bci, "gate=proved_next_bci_changed_before_rewrite");
+             return Ok(None);
+         }
+         *next = Expr::new(ExprKind::Local(name.clone()), next.origin.clone())
+             .presenting(Type::Reference("java.lang.Object".to_owned()));
++        log_foreach_candidate("projected", test_bci, &format!("next_bci={next_bci}"));
+         Ok(Some((
+             StmtKind::ForEach {
+                 label,
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -12726,6 +12726,46 @@
+         bytes
+     }
+ 
++    #[test]
++    #[ignore = "temporary diagnostic; requires the frozen class and explicit logger opt-in"]
++    fn frozen_upstream_nested_loops_foreach_candidate_diagnostic() {
++        assert!(
++            std::env::var_os("JARDE_FOREACH_CANDIDATE_DIAGNOSTIC").is_some(),
++            "set the explicit diagnostic opt-in for this one frozen-class run"
++        );
++        const FROZEN_CLASS: &[u8] = include_bytes!(
++            "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
++        );
++        let engine = Engine::new();
++        let mut budget = Budget::new(task_limits(&[]).expect("task limits are valid"));
++        let snapshot = engine
++            .open(ArtifactInput::bytes(FROZEN_CLASS.to_vec()), &mut budget)
++            .expect("the frozen target class opens");
++        let request = ClassSourceRequest {
++            class: ClassRef::Name {
++                class: ClassNameQuery::dotted("cf11.UpstreamNestedLoops"),
++            },
++            environment: EnvironmentRequest {
++                snapshot: snapshot.id().clone(),
++                scope: PhysicalScope::SnapshotAll,
++                policy: EnvironmentPolicy::SingleClass,
++                profile: RuntimeProfile {
++                    java_release: 8,
++                    multi_release: crate::MultiReleasePolicy::Disabled,
++                    layout: LayoutMode::Generic,
++                },
++                loader: LoaderId("app".to_owned()),
++            },
++        };
++        match engine
++            .class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
++            .expect("class-source recovery runs on the frozen class")
++        {
++            OperationOutcome::Performed(_) => {}
++            other => panic!("the frozen class produces one class-source report: {other:?}"),
++        }
++    }
++
+     fn recover(bytes: Vec<u8>) -> ClassSourceReport {
+         let engine = Engine::new();
+         let mut budget = Budget::new(task_limits(&[]).expect("task limits are valid"));

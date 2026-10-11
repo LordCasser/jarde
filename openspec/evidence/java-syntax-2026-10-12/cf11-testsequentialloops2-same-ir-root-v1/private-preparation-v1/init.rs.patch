@@ -1,0 +1,130 @@
+--- init.rs.base
++++ init.rs.candidate
+@@ -6523,4 +6523,127 @@
+         assert_eq!(ConstructorTarget::Super.spell(), "super");
+         assert_eq!(ConstructorTarget::This.spell(), "this");
+     }
++    #[test]
++    fn cf11_sequential_loops2_constructor_phi_same_ir_diagnostic() {
++        use crate::build::{prove_conditional_value, ConditionalValueAttempt};
++        use crate::normal_flow::NormalFlowView;
++
++        const CLASS: &[u8] = include_bytes!(
++            "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class"
++        );
++        let descriptor = "(Ljava/lang/String;)Ljava/lang/String;";
++        let (analysis, _) = analyzed_caller(CLASS, "test", descriptor);
++        let ir = analysis.ir();
++        let canonical = ir.canonical().expect("canonical CFG");
++        let ssa = ir.ssa().expect("SSA");
++        let code = ir.code().expect("decoded code");
++        let pool = ir.constant_pool();
++        let operations = Operations::of(code, pool);
++        let mut budget = proof_budget();
++        let view = NormalFlowView::build(canonical, &mut budget).expect("normal-flow view");
++
++        eprintln!("CF11_SEQLOOPS2_DIAG class_len={} class_blake3={} method=test{}", CLASS.len(), blake3::hash(CLASS).to_hex(), descriptor);
++        eprintln!("CF11_SEQLOOPS2_CANONICAL blocks={} edges={} unreachable={:?}", canonical.blocks().len(), canonical.edges().len(), canonical.unreachable());
++        for edge in canonical.edges() {
++            eprintln!("CF11_SEQLOOPS2_EDGE kind={:?} from={:?} to={:?}", edge.kind(), edge.from(), edge.to());
++        }
++        for (node, id) in view.ids().iter().enumerate() {
++            let pred = view.predecessors(node).iter().filter_map(|n| view.id_of(*n).map(|b| b.bci())).collect::<Vec<_>>();
++            let succ = view.successors(node).iter().filter_map(|n| view.id_of(*n).map(|b| b.bci())).collect::<Vec<_>>();
++            eprintln!("CF11_SEQLOOPS2_NORMAL node={} id={:?} preds={:?} succs={:?}", node, id, pred, succ);
++        }
++        for block in ssa.blocks() {
++            for instruction in block.instructions().iter().filter(|instruction| (83..=99).contains(&instruction.bci())) {
++                eprintln!("CF11_SEQLOOPS2_INSN block={:?} bci={} opcode={} reads={:?} writes={:?} operation={:?}", block.block(), instruction.bci(), instruction.opcode(), instruction.reads(), instruction.writes(), operations.get(instruction.bci()));
++            }
++        }
++        let mut values = BTreeSet::new();
++        for block in ssa.blocks() {
++            for instruction in block.instructions().iter().filter(|instruction| (83..=99).contains(&instruction.bci())) {
++                values.extend(instruction.reads().iter().map(|(_, value)| *value));
++                values.extend(instruction.writes().iter().map(|(_, value)| *value));
++            }
++        }
++        for phi in ssa.phis() {
++            if (83..=99).contains(&phi.block().bci()) || values.contains(&phi.value()) {
++                values.insert(phi.value());
++                for input in phi.inputs() {
++                    if let jarde_jvm::method_ir::PhiInput::Value(value) = input {
++                        values.insert(*value);
++                    }
++                }
++                eprintln!("CF11_SEQLOOPS2_PHI {:#?}", phi);
++            }
++        }
++        for value in values {
++            let item = ssa.value(value);
++            eprintln!("CF11_SEQLOOPS2_VALUE id={:?} def={:?} replaced_by={:?} uses={:#?}", value, item.def(), item.replaced_by(), item.uses());
++        }
++
++        let producer_bcis = [91, 94, 96];
++        if let Some(block) = ssa.blocks().iter().find(|block| block.instructions().iter().any(|instruction| instruction.bci() == 91)) {
++            let mut meter = VerifyMeter::unmetered();
++            let readers = outside_readers(ssa, block.instructions(), &producer_bcis, &mut meter)
++                .expect("unmetered reader scan completes");
++            eprintln!("CF11_SEQLOOPS2_INIT_READERS producer_bcis={:?} external_reader_bcis={:?}", producer_bcis, readers);
++            for bci in producer_bcis {
++                if let Some(instruction) = block.instructions().iter().find(|instruction| instruction.bci() == bci) {
++                    for (_, value) in instruction.writes() {
++                        eprintln!("CF11_SEQLOOPS2_INIT_PRODUCER bci={} value={:?} def={:?} uses={:#?}", bci, value, ssa.value(*value).def(), ssa.value(*value).uses());
++                    }
++                }
++            }
++        } else {
++            eprintln!("CF11_SEQLOOPS2_INIT_READERS no SSA block contains allocation BCI 91");
++        }
++
++        let fields = field::Plan::empty();
++        let chains = crate::concat::Plan::empty();
++        let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
++            .expect("array proof completes");
++        let site_plan = sites(
++            ssa, &operations, &chains, chains.owned(), &fields, &arrays, 23, &[],
++            &MethodFacts::new("test", descriptor, 0), code,
++        );
++        eprintln!("CF11_SEQLOOPS2_INIT_CENSUS candidates={:?}", site_plan.allocation_candidates().iter().map(|candidate| (candidate.head, candidate.class.as_str(), candidate.verified)).collect::<Vec<_>>());
++        for gap in site_plan.refusals() {
++            eprintln!("CF11_SEQLOOPS2_INIT_REFUSAL code={} at={} message={}", gap.code(), gap.message());
++        }
++        eprintln!("CF11_SEQLOOPS2_INIT_SITE_91 present={}", site_plan.site_at_head(91).is_some());
++
++        let concat = crate::concat::plan_four_conditional_strings(
++            ssa, canonical, &operations, &crate::build::FieldCopies::default(), &mut budget,
++        ).expect("concat planning completes");
++        let recovered = crate::region::recover(
++            canonical, &view, ssa, &operations, pool, &concat, &site_plan, code,
++            Some(false), false, &crate::pass::JAVA_8, &mut budget,
++        ).expect("region recovery completes");
++        eprintln!("CF11_SEQLOOPS2_RECOVERY structured={} fallbacks={:?} regions={:#?}", recovered.is_structured(), recovered.fallbacks(), recovered.regions);
++
++        fn find_branch(region: &crate::region::Region, target: u32) -> Option<&crate::region::Region> {
++            use crate::region::Region;
++            match region {
++                Region::Sequence { regions } | Region::Loop { body: regions, .. } =>
++                    regions.iter().find_map(|child| find_branch(child, target)),
++                Region::If { branch_bci, then_arm, else_arm, .. } => {
++                    if *branch_bci == target { Some(region) }
++                    else { find_branch(then_arm, target).or_else(|| find_branch(else_arm, target)) }
++                }
++                _ => None,
++            }
++        }
++        let conditional = recovered.regions.iter().find_map(|region| find_branch(region, 84));
++        match conditional {
++            Some(region) => {
++                let attempt = prove_conditional_value(region, canonical, ssa, &operations, &mut budget)
++                    .expect("conditional proof attempt completes");
++                match &attempt {
++                    ConditionalValueAttempt::Proved(proof) => eprintln!("CF11_SEQLOOPS2_CONDITIONAL branch=84 result=Proved proof={:#?}", proof),
++                    ConditionalValueAttempt::Refused(reason) => eprintln!("CF11_SEQLOOPS2_CONDITIONAL branch=84 result=Refused reason={:?}", reason),
++                }
++            }
++            None => eprintln!("CF11_SEQLOOPS2_CONDITIONAL branch=84 region_not_found"),
++        }
++    }
++
+ }

@@ -1,0 +1,93 @@
+{
+  "schema": "testnestedloops-same-ir-diagnostic-analysis-v3",
+  "scope": "private read-only static analysis; no shared edits, Git, Atlas, Java/JADX/Jarde/Cargo execution",
+  "predecessor_preserved": {
+    "analysis_v2": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-analysis-luna-v2/analysis.md",
+      "sha256": "4133e774016d4c5d0d865de39dee991ebe14da75398844c80156c14fbb17b65f"
+    },
+    "pins_v2": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-analysis-luna-v2/pins.json",
+      "sha256": "a1c270d03683be6cb32f620c886ef80ca20dbd9f0631d8f72e08a5c15716ab92e"
+    }
+  },
+  "baseline": {
+    "execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    },
+    "actual_method_report": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+      "sha256": "8bb714b7c2bcef014db446d5501a4902832a66ea52eecb00d66d9a889c2fe76a"
+    },
+    "actual_jarde_source": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+    },
+    "original_jdk23_class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "original_jdk23_javap": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    "source_input": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    }
+  },
+  "source_pins": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b",
+      "lines": ["12729-12758", "1305-1402", "19996-20007", "20097-20116", "41355-41408", "41537-41595", "41717-41748", "41781-41844"],
+      "role": "public Engine::class_source helper and actual class-source-to-recovery-facts orchestration"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+      "lines": ["1785-1808", "15742-15749"],
+      "role": "descriptor parameter slots include receiver for instance methods; existing MethodFacts example"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "sha256": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+      "lines": ["11364-11427"],
+      "role": "derive descriptor types and pass exact same IR/facts/profile/debug locals to build::build"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "lines": ["18879-18991", "21224-21715"],
+      "role": "loop recursion, candidate call order and iterable candidate gates"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/facts.rs",
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef",
+      "lines": ["82-120", "1096-1120"],
+      "role": "manual facts APIs considered in v2; v3 recommends sourcing these through class_source"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli/src/task.rs",
+      "sha256": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+      "lines": ["1290-1340"],
+      "role": "CLI SingleClass/runtime profile mapping context"
+    }
+  ],
+  "fixed_method": "cf11.UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+  "instance_parameter_slots_including_receiver": 3,
+  "baseline_profile": {
+    "java_release": 8,
+    "multi_release": "Disabled",
+    "layout": "Generic",
+    "environment_policy": "SingleClass",
+    "physical_scope": "SnapshotAll",
+    "loader": "app"
+  },
+  "observed_bytecode_loop_branches": {
+    "outer": 13,
+    "inner": 42
+  },
+  "diagnostic_status": "static feasibility recommendation only; no instrumentation source or toolchain run created"
+}

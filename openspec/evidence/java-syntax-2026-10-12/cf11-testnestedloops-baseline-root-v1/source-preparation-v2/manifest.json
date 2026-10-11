@@ -1,0 +1,18 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.UpstreamNestedLoops",
+      "source": "UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 1348,
+    "sha256": "4ae87b7e86b0acab0abc67be666a9e8e3f78d95d17048707109bcf36a8f97b35"
+  }
+}

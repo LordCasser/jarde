@@ -1,0 +1,21 @@
+{
+  "status": "accepted_actual_foreach_entry_gate_observation_only",
+  "test_summary": {
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "commands": 2,
+  "source_closure_count": 4718,
+  "source_before_after_and_live_equal_finalbuild": true,
+  "target_absent_after": true,
+  "peak_target_bytes": 346991534,
+  "actual_logs": [
+    "JARDE_FOREACH_CANDIDATE event=attempt test_bci=42 header_bci=35 path=[1, 1] form=While tests=1 for_header=false body_first=Declare",
+    "JARDE_FOREACH_CANDIDATE event=refused test_bci=42 gate=post_entry_candidate_proof_incomplete",
+    "JARDE_FOREACH_CANDIDATE event=attempt test_bci=13 header_bci=7 path=[1] form=While tests=1 for_header=false body_first=Assign",
+    "JARDE_FOREACH_CANDIDATE event=refused test_bci=13 gate=body_first_not_initialized_declaration statement=Assign"
+  ],
+  "inner_first_internal_gate_confirmed": false,
+  "no_production_change": true
+}

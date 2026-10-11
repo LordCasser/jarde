@@ -1,0 +1,127 @@
+{
+  "schema": "testnestedloops-same-ir-diagnostic-guarded-runner-v2",
+  "status": "private static preparation only; runner not executed; no result predicted",
+  "scope": "temporary source changes limited to build.rs and facade.rs candidate v2; no Git/shared changes",
+  "runner": {
+    "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v2.py",
+    "sha256": "b51b650765d5842b41ffc484cac652bb9dd291f1b10b6c9d0bddbd0ea52cb004",
+    "mode": "0o755",
+    "ast_parse": "passed",
+    "symtable_parse": "passed",
+    "static_constant_crosscheck": "passed"
+  },
+  "runner_readme": {
+    "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v2-README.md",
+    "sha256": "2fe74cae59b504df50fcd988e98e6e893d18094c518fa4584735852330782112"
+  },
+  "final_build_v3": {
+    "receipt": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3/execution.json",
+      "sha256": "b4b7bba399b44686da9e990293df3ec99eab36b288ab984b2a9e63a711d8477d",
+      "schema": "for-condition-final-lint-build-root-v1",
+      "status": "passed_candidate_build_only",
+      "source_file_count": 4718
+    },
+    "runner": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+      "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e"
+    },
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "mode": "0o555"
+    },
+    "seed": "5350648285461741569",
+    "rust_min_stack": null
+  },
+  "guard_tools": {
+    "guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "free_limit_bytes": 5368709120,
+      "target_limit_bytes": 1073741824,
+      "poll_seconds": 1,
+      "process_group": true
+    },
+    "target_size_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "use": "target_bytes only; no include-closure scan after candidate apply"
+    }
+  },
+  "frozen_inputs": {
+    "class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "outside_workspace_source_closure": true
+    },
+    "baseline_execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    }
+  },
+  "source_closure": {
+    "count": 4718,
+    "baseline_before_after_must_match": true,
+    "only_candidate_hashes_may_differ_while_applied": true,
+    "enumerate_before_apply_only": true,
+    "re_enumerate_after_restore": true,
+    "verify_all_hashes_after_restore": true
+  },
+  "cleanup": {
+    "restore_both_source_files_in_finally": true,
+    "cargo_clean_in_finally": true,
+    "target_absent_after": true,
+    "raw_streams_preserved_on_failure": true
+  },
+  "candidate_v3": {
+    "directory": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v3",
+    "pins": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v3/pins.json",
+      "sha256": "a7c56a175f5269dafe63de2f5f0fd6384dc6ce966c9538fbcaf553589891b7ca"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v3/candidate.patch",
+      "sha256": "49e08f04dbe77ca570c1faa8b172c432a8ab16da3664bef266ba9fe0ce4f579d"
+    },
+    "source_candidates": {
+      "crates/jarde-java/src/build.rs": {
+        "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v3/build.rs.candidate",
+        "sha256": "b22c2c8b76e1842c00a4ed30f569a48bb9110f89aef775bcfa7354ef9ac51107",
+        "base_sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+      },
+      "src/facade.rs": {
+        "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v3/facade.rs.candidate",
+        "sha256": "719c8c3253437cbf1d33719b897c90d7a6773e757fe72242be0aa4ae28ac050f",
+        "base_sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b"
+      }
+    },
+    "source_bytes_identical_to_candidate_v2": true,
+    "test_path": "facade::same_class_generic_call_inventory_tests::frozen_upstream_nested_loops_foreach_candidate_diagnostic",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde",
+      "--lib",
+      "--all-features",
+      "--locked",
+      "facade::same_class_generic_call_inventory_tests::frozen_upstream_nested_loops_foreach_candidate_diagnostic",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "required_summary": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "environment_opt_in": "JARDE_FOREACH_CANDIDATE_DIAGNOSTIC=1"
+  },
+  "candidate_v2_preflight_failure": {
+    "invocation_dir": "/private/tmp/jarde-cf11-invocations-root-v1/testnestedloops-same-ir-root-v1",
+    "reason": "candidate pins omitted facade:: prefix; stopped before source mutation/Cargo"
+  }
+}

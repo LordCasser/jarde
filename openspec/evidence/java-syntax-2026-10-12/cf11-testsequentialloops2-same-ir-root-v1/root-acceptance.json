@@ -1,0 +1,24 @@
+{
+  "status": "accepted_same_ir_init_sites_observation_only",
+  "execution_sha256": "637499de1581b51a3a9c4f5b46963c6f496a04e6cdaf18f3484220c9d2781d61",
+  "root_acceptor_sha256": "7e1b9c3b1a870a716c387628d5b3f9e7587868d7bf65ea79894212b8d16d6fdb",
+  "source_pin_count": 4718,
+  "commands": 2,
+  "test_totals": [
+    1,
+    0,
+    0
+  ],
+  "blocks": 13,
+  "edges": 18,
+  "peak_target_bytes": 161069529,
+  "source_restored_and_target_absent": true,
+  "actual_first_site_refusal": {
+    "head_bci": 91,
+    "code": "jre_new_shape",
+    "outside_readers": [],
+    "site_present": false
+  },
+  "actual_ssa_chain": "new91 V49 -> dup94 V51 -> ctor96 V53 -> Phi99 Stack0 V14 -> Return99; Phi inputs V48(load87), V53; V53 sole use has bci None; V14 sole use is Some99; V50 unused",
+  "scope": "Same IR SSA/CFG/outside_readers and Sites test context only; no Region/Builder conditional proof execution and no full class-source rerender; production behavior unchanged. Controls/spec/implementation remain next work."
+}

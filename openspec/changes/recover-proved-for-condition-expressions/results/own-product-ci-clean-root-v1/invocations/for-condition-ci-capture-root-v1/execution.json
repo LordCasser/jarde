@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+    "--product-commit",
+    "02ecd63ff33270cea4413793db2f99d6927dc65c",
+    "--run-id",
+    "38154998619",
+    "--out",
+    "/private/tmp/jarde-for-condition-own-ci-capture-root-v1"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T17:02:36.736885+00:00",
+  "finished_at": "2026-10-11T17:02:49.642896+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-ci-capture-root-v1/stdout.raw",
+      "bytes": 129,
+      "sha256": "4cbe364bc6f0c916e826c69ed487c45eddd70efecf2f81259c7e4c862e3975b9"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-ci-capture-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

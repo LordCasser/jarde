@@ -1,0 +1,155 @@
+{
+  "source_map_gaps": [],
+  "all_method_physical_coverage_complete": true,
+  "schema": "cf11-target-full-source-observation-v2",
+  "status": "verified_observation_capture",
+  "rendered_class_digest_validation": "BLAKE3 shape and location/owner/default-all consistency only; physical files separately SHA256 pinned; no independent BLAKE3 recomputation",
+  "behavioral_acceptance": "not_claimed",
+  "behavior_mismatches": [],
+  "execution": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+    "bytes": 81267,
+    "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+  },
+  "actual_command_count": 29,
+  "raw_stream_count": 58,
+  "classes": [
+    "cf11.UpstreamNestedLoops"
+  ],
+  "original_oracle": {
+    "exit_code": 0,
+    "stdout_nonempty": true,
+    "stderr_empty": true,
+    "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jdk8_jdk23_equal": true
+  },
+  "jarde_method_maps_checked": 8,
+  "default_all": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.UpstreamNestedLoops",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.UpstreamNestedLoops",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    }
+  ],
+  "generated_compile_observations": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "7a344f5f3c01965927cf96e03ea53e530c3db99eb07ee1f6742e91132183314f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jarde_unusable_outputs": [],
+  "compile_failures_remain_observations": true,
+  "checker": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v5/check_controls.py",
+    "bytes": 31233,
+    "sha256": "d338d6ae9b4bec67f9b2fa76db0f71dc04ea7d75c82f7155805bb8ba6975c51b"
+  }
+}

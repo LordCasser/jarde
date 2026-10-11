@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-sequential-loops2-same-ir-accept-archive-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T16:49:18.190871+00:00",
+  "finished_at": "2026-10-11T16:49:18.406718+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/sequential-loops2-same-ir-accept-root-v1/stdout.raw",
+      "bytes": 225,
+      "sha256": "4d11ce69cab5f439c5057218b741a11b167b40bdeaa9f10df6b97596d50bcd0d"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/sequential-loops2-same-ir-accept-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

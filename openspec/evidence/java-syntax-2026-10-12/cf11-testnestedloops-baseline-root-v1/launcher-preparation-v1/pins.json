@@ -1,0 +1,271 @@
+{
+  "schema": "cf11-testnestedloops-root-baseline-launch-prep-v1",
+  "status": "prepared_not_run",
+  "collector_configuration_source": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/execution.json",
+    "bytes": 546303,
+    "sha256": "a7791a753850c636aa0c2d5fee5cce5b0a79434ef539eb486f5f4c8499f56951"
+  },
+  "collector_configuration_subject": "nested-loops2",
+  "collector_configuration_preserved_keys": [
+    "jdk_manifest",
+    "jdk_manifest_sha256",
+    "jadx",
+    "jadx_sha256",
+    "jadx_jar",
+    "jadx_jar_sha256",
+    "guard",
+    "guard_sha256",
+    "scanner",
+    "scanner_sha256",
+    "classfile_parser",
+    "classfile_parser_sha256"
+  ],
+  "tool_and_source_files": {
+    "launcher": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-launch-prep-luna-v1/launch_baseline.py",
+      "bytes": 11795,
+      "sha256": "bb4ac12cd38e4405ac41539f0f4bc3caf7b4e2c62a6ba018454b5fbef0f4d371"
+    },
+    "README": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-launch-prep-luna-v1/README.md",
+      "bytes": 3083,
+      "sha256": "ffe5902e960c850a71682755a4e931b9b90706d756b975c29098ac374c8aec6d"
+    },
+    "collector": {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    "checker": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v5/check_controls.py",
+      "bytes": 31233,
+      "sha256": "d338d6ae9b4bec67f9b2fa76db0f71dc04ea7d75c82f7155805bb8ba6975c51b"
+    },
+    "cli": {
+      "path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "mode": "0o555"
+    },
+    "build_receipt": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3/execution.json",
+      "bytes": 1525957,
+      "sha256": "b4b7bba399b44686da9e990293df3ec99eab36b288ab984b2a9e63a711d8477d"
+    },
+    "baseline_config_receipt": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/execution.json",
+      "bytes": 546303,
+      "sha256": "a7791a753850c636aa0c2d5fee5cce5b0a79434ef539eb486f5f4c8499f56951"
+    },
+    "source_closure_helper": {
+      "path": "/private/tmp/jarde-for-condition-next-round-luna-v1/jarde-for-condition-ci-verifier-luna-v4.py",
+      "bytes": 33867,
+      "sha256": "cc82f638e0292196020bee8422e62dc033c371565a7afc38c56d2b971e0df673"
+    },
+    "source_prep_pins": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v3/pins.json",
+      "bytes": 1805,
+      "sha256": "d09a4acb1e4a5a0789e06643028f53b1aa3103a2c5ea15287710e81d65c2273b"
+    },
+    "frozen_input_pins": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/frozen-pins.json",
+      "bytes": 2945,
+      "sha256": "850f390681d35a98cbaed1fb8e5c714dd5e0e698dd7f18f8976950c9c52a4099"
+    }
+  },
+  "pinned_config_tools": [
+    {
+      "role": "jdk_manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "pinned_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "matches": true
+    },
+    {
+      "role": "jadx",
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "pinned_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "matches": true
+    },
+    {
+      "role": "jadx_jar",
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+      "pinned_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+      "matches": true
+    },
+    {
+      "role": "guard",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "pinned_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "matches": true
+    },
+    {
+      "role": "scanner",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "pinned_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "matches": true
+    },
+    {
+      "role": "classfile_parser",
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469",
+      "pinned_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469",
+      "matches": true
+    },
+    {
+      "role": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "pinned_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "matches": true
+    },
+    {
+      "role": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "pinned_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "matches": true
+    },
+    {
+      "role": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "pinned_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "matches": true
+    },
+    {
+      "role": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "pinned_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "matches": true
+    },
+    {
+      "role": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "pinned_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "matches": true
+    },
+    {
+      "role": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "pinned_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "matches": true
+    }
+  ],
+  "frozen_inputs": [
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/Runner.java",
+      "bytes": 1348,
+      "sha256": "f4c99e837599440588b54df0bb2eaaac45f0ae76db1ddeddbb789c90ff527379",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/frozen-pins.json",
+      "bytes": 2945,
+      "sha256": "850f390681d35a98cbaed1fb8e5c714dd5e0e698dd7f18f8976950c9c52a4099",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/manifest.json",
+      "bytes": 457,
+      "sha256": "1227d9a427465af6249753fbf7139c710de2fe15138b1710b389602616e3cf59",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/README.md",
+      "bytes": 1485,
+      "sha256": "09ca1e63ba16d9d81c6092cdc26b0dd6ed5f1587d09d08e45eb9d275386a8345",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/TestNestedLoops.java",
+      "bytes": 876,
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/pins.json",
+      "bytes": 1805,
+      "sha256": "d09a4acb1e4a5a0789e06643028f53b1aa3103a2c5ea15287710e81d65c2273b",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/test-method.slice",
+      "bytes": 294,
+      "sha256": "a0b9999d8687d5ec6ac4676d68abf84d4f1de14ebc6146fb2048d3e1735d23ce",
+      "mode": "0o444"
+    }
+  ],
+  "upstream_method_slice": {
+    "source_path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+    "source_bytes": 876,
+    "source_sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+    "start_byte": 279,
+    "end_byte_exclusive": 573,
+    "bytes": 294,
+    "sha256": "a0b9999d8687d5ec6ac4676d68abf84d4f1de14ebc6146fb2048d3e1735d23ce",
+    "exact_match_upstream_and_wrapper": true
+  },
+  "cli_build_binding": {
+    "receipt_status": "passed_candidate_build_only",
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "mode": "0o555"
+    },
+    "matches_requested": true
+  },
+  "source_closure": {
+    "helper": {
+      "path": "/private/tmp/jarde-for-condition-next-round-luna-v1/jarde-for-condition-ci-verifier-luna-v4.py",
+      "bytes": 33867,
+      "sha256": "cc82f638e0292196020bee8422e62dc033c371565a7afc38c56d2b971e0df673"
+    },
+    "expected_count": 4718,
+    "function_names": [
+      "source_paths",
+      "pin_sources"
+    ],
+    "current_tree_matches_workspace_v4_receipt": true,
+    "target_absent_at_prep": true
+  },
+  "planned_calls": {
+    "collector": "python3 /private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+    "checker": "python3 /private/tmp/jarde-for-condition-checker-root-v5/check_controls.py --execution /private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json --out /private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/checker-root-v5.json",
+    "launcher": "python3 /private/tmp/jarde-cf11-testnestedloops-baseline-launch-prep-luna-v1/launch_baseline.py"
+  },
+  "checks": {
+    "all_pinned_config_tool_hashes_match": true,
+    "all_frozen_input_files_mode_0444": true,
+    "collector_checker_shas_match_requested": true,
+    "launcher_ast_parsed_without_execution": true,
+    "collector_or_checker_or_toolchain_run": false
+  }
+}

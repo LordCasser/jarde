@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-testnestedloops-baseline-launch-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T16:32:43.629985+00:00",
+  "finished_at": "2026-10-11T16:33:15.255896+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/testnestedloops-baseline-root-v1/stdout.raw",
+      "bytes": 550,
+      "sha256": "feaf6bb938351838e151ba366b2b38576adcce663fe4ad568a84472a4df20dd8"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/testnestedloops-baseline-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

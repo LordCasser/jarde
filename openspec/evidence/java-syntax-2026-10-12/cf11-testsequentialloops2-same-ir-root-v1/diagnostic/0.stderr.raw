@@ -1,0 +1,568 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 30.79s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+CF11_SEQLOOPS2_DIAG class_len=931 class_blake3=a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7 method=asciiToLowerCase(Ljava/lang/String;)Ljava/lang/String;
+CF11_SEQLOOPS2_CANONICAL blocks=13 edges=18 unreachable=[]
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 0, path: [] } to=CanonicalBlockId { bci: 7, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 7, path: [] } to=CanonicalBlockId { bci: 14, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 7, path: [] } to=CanonicalBlockId { bci: 55, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 14, path: [] } to=CanonicalBlockId { bci: 26, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 14, path: [] } to=CanonicalBlockId { bci: 52, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 26, path: [] } to=CanonicalBlockId { bci: 39, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 26, path: [] } to=CanonicalBlockId { bci: 52, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 39, path: [] } to=CanonicalBlockId { bci: 55, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 52, path: [] } to=CanonicalBlockId { bci: 7, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 55, path: [] } to=CanonicalBlockId { bci: 62, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 55, path: [] } to=CanonicalBlockId { bci: 83, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 62, path: [] } to=CanonicalBlockId { bci: 55, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 62, path: [] } to=CanonicalBlockId { bci: 70, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 70, path: [] } to=CanonicalBlockId { bci: 55, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 83, path: [] } to=CanonicalBlockId { bci: 87, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 83, path: [] } to=CanonicalBlockId { bci: 91, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 87, path: [] } to=CanonicalBlockId { bci: 99, path: [] }
+CF11_SEQLOOPS2_EDGE kind=Normal from=CanonicalBlockId { bci: 91, path: [] } to=CanonicalBlockId { bci: 99, path: [] }
+CF11_SEQLOOPS2_NORMAL node=0 id=CanonicalBlockId { bci: 0, path: [] } preds=[] succs=[7]
+CF11_SEQLOOPS2_NORMAL node=1 id=CanonicalBlockId { bci: 7, path: [] } preds=[52, 0] succs=[55, 14]
+CF11_SEQLOOPS2_NORMAL node=2 id=CanonicalBlockId { bci: 14, path: [] } preds=[7] succs=[52, 26]
+CF11_SEQLOOPS2_NORMAL node=3 id=CanonicalBlockId { bci: 55, path: [] } preds=[70, 62, 39, 7] succs=[83, 62]
+CF11_SEQLOOPS2_NORMAL node=4 id=CanonicalBlockId { bci: 26, path: [] } preds=[14] succs=[52, 39]
+CF11_SEQLOOPS2_NORMAL node=5 id=CanonicalBlockId { bci: 52, path: [] } preds=[26, 14] succs=[7]
+CF11_SEQLOOPS2_NORMAL node=6 id=CanonicalBlockId { bci: 62, path: [] } preds=[55] succs=[70, 55]
+CF11_SEQLOOPS2_NORMAL node=7 id=CanonicalBlockId { bci: 83, path: [] } preds=[55] succs=[91, 87]
+CF11_SEQLOOPS2_NORMAL node=8 id=CanonicalBlockId { bci: 39, path: [] } preds=[26] succs=[55]
+CF11_SEQLOOPS2_NORMAL node=9 id=CanonicalBlockId { bci: 70, path: [] } preds=[62] succs=[55]
+CF11_SEQLOOPS2_NORMAL node=10 id=CanonicalBlockId { bci: 87, path: [] } preds=[83] succs=[99]
+CF11_SEQLOOPS2_NORMAL node=11 id=CanonicalBlockId { bci: 91, path: [] } preds=[83] succs=[99]
+CF11_SEQLOOPS2_NORMAL node=12 id=CanonicalBlockId { bci: 99, path: [] } preds=[91, 87] succs=[]
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 83, path: [] } bci=83 opcode=43 reads=[(Local(1), ValueId(5))] writes=[(Stack(0), ValueId(34))] operation=Some(Load { slot: 1 })
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 83, path: [] } bci=84 opcode=199 reads=[(Stack(0), ValueId(34))] writes=[] operation=Some(Comparison { op: JumpIfNotNull, target: 91 })
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 87, path: [] } bci=87 opcode=42 reads=[(Local(0), ValueId(0))] writes=[(Stack(0), ValueId(48))] operation=Some(Load { slot: 0 })
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 87, path: [] } bci=88 opcode=167 reads=[] writes=[] operation=Some(Transfer)
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 91, path: [] } bci=91 opcode=187 reads=[] writes=[(Stack(0), ValueId(49))] operation=Some(Allocate { ty: "java/lang/String" })
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 91, path: [] } bci=94 opcode=89 reads=[(Stack(0), ValueId(49))] writes=[(Stack(0), ValueId(50)), (Stack(1), ValueId(51))] operation=Some(Duplicate)
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 91, path: [] } bci=95 opcode=43 reads=[(Local(1), ValueId(5))] writes=[(Stack(2), ValueId(52))] operation=Some(Load { slot: 1 })
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 91, path: [] } bci=96 opcode=183 reads=[(Stack(2), ValueId(52)), (Stack(1), ValueId(51))] writes=[(Stack(0), ValueId(53))] operation=Some(Invoke(CallTarget { kind: Special, owner: "java/lang/String", name: "<init>", descriptor: "([C)V", interface_reference: false }))
+CF11_SEQLOOPS2_INSN block=CanonicalBlockId { bci: 99, path: [] } bci=99 opcode=176 reads=[(Stack(0), ValueId(14))] writes=[] operation=Some(Return)
+CF11_SEQLOOPS2_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 55,
+        path: [],
+    },
+    slot: Local(
+        1,
+    ),
+    value: ValueId(
+        5,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                16,
+            ),
+        ),
+        Value(
+            ValueId(
+                56,
+            ),
+        ),
+        Itself,
+        Itself,
+    ],
+}
+CF11_SEQLOOPS2_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 99,
+        path: [],
+    },
+    slot: Local(
+        0,
+    ),
+    value: ValueId(
+        11,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                0,
+            ),
+        ),
+        Value(
+            ValueId(
+                0,
+            ),
+        ),
+    ],
+}
+CF11_SEQLOOPS2_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 99,
+        path: [],
+    },
+    slot: Local(
+        1,
+    ),
+    value: ValueId(
+        12,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                5,
+            ),
+        ),
+        Value(
+            ValueId(
+                5,
+            ),
+        ),
+    ],
+}
+CF11_SEQLOOPS2_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 99,
+        path: [],
+    },
+    slot: Local(
+        2,
+    ),
+    value: ValueId(
+        13,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                23,
+            ),
+        ),
+        Value(
+            ValueId(
+                23,
+            ),
+        ),
+    ],
+}
+CF11_SEQLOOPS2_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 99,
+        path: [],
+    },
+    slot: Stack(
+        0,
+    ),
+    value: ValueId(
+        14,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                48,
+            ),
+        ),
+        Value(
+            ValueId(
+                53,
+            ),
+        ),
+    ],
+}
+CF11_SEQLOOPS2_VALUE id=ValueId(0) def=Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: Some(
+            2,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 7,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 55,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 14,
+            path: [],
+        },
+        bci: Some(
+            14,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 52,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 52,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 39,
+            path: [],
+        },
+        bci: Some(
+            39,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 55,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 87,
+            path: [],
+        },
+        bci: Some(
+            87,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(5) def=Phi { block: CanonicalBlockId { bci: 55, path: [] }, slot: Local(1) } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 62,
+            path: [],
+        },
+        bci: Some(
+            62,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 83,
+            path: [],
+        },
+        bci: Some(
+            83,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 70,
+            path: [],
+        },
+        bci: Some(
+            70,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 70,
+            path: [],
+        },
+        bci: Some(
+            75,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 91,
+            path: [],
+        },
+        bci: Some(
+            95,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(11) def=Phi { block: CanonicalBlockId { bci: 99, path: [] }, slot: Local(0) } replaced_by=Some(ValueId(0)) uses=[]
+CF11_SEQLOOPS2_VALUE id=ValueId(12) def=Phi { block: CanonicalBlockId { bci: 99, path: [] }, slot: Local(1) } replaced_by=Some(ValueId(5)) uses=[]
+CF11_SEQLOOPS2_VALUE id=ValueId(13) def=Phi { block: CanonicalBlockId { bci: 99, path: [] }, slot: Local(2) } replaced_by=Some(ValueId(23)) uses=[]
+CF11_SEQLOOPS2_VALUE id=ValueId(14) def=Phi { block: CanonicalBlockId { bci: 99, path: [] }, slot: Stack(0) } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: Some(
+            99,
+        ),
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(16) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 1 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 7,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 55,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 52,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 52,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(23) def=Instruction { block: CanonicalBlockId { bci: 55, path: [] }, bci: 56 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 62,
+            path: [],
+        },
+        bci: Some(
+            63,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 55,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 70,
+            path: [],
+        },
+        bci: Some(
+            71,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 70,
+            path: [],
+        },
+        bci: Some(
+            76,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 55,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(34) def=Instruction { block: CanonicalBlockId { bci: 83, path: [] }, bci: 83 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 83,
+            path: [],
+        },
+        bci: Some(
+            84,
+        ),
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(48) def=Instruction { block: CanonicalBlockId { bci: 87, path: [] }, bci: 87 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(49) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 91 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 91,
+            path: [],
+        },
+        bci: Some(
+            94,
+        ),
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(50) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 94 } replaced_by=None uses=[]
+CF11_SEQLOOPS2_VALUE id=ValueId(51) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 94 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 91,
+            path: [],
+        },
+        bci: Some(
+            96,
+        ),
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(52) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 95 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 91,
+            path: [],
+        },
+        bci: Some(
+            96,
+        ),
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(53) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 96 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_VALUE id=ValueId(56) def=Instruction { block: CanonicalBlockId { bci: 39, path: [] }, bci: 43 } replaced_by=None uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 39,
+            path: [],
+        },
+        bci: Some(
+            44,
+        ),
+    },
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 55,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_INIT_READERS producer_bcis=[91, 94, 96] external_reader_bcis=[]
+CF11_SEQLOOPS2_INIT_PRODUCER bci=91 value=ValueId(49) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 91 } uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 91,
+            path: [],
+        },
+        bci: Some(
+            94,
+        ),
+    },
+]
+CF11_SEQLOOPS2_INIT_PRODUCER bci=94 value=ValueId(50) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 94 } uses=[]
+CF11_SEQLOOPS2_INIT_PRODUCER bci=94 value=ValueId(51) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 94 } uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 91,
+            path: [],
+        },
+        bci: Some(
+            96,
+        ),
+    },
+]
+CF11_SEQLOOPS2_INIT_PRODUCER bci=96 value=ValueId(53) def=Instruction { block: CanonicalBlockId { bci: 91, path: [] }, bci: 96 } uses=[
+    SsaUse {
+        block: CanonicalBlockId {
+            bci: 99,
+            path: [],
+        },
+        bci: None,
+    },
+]
+CF11_SEQLOOPS2_INIT_CENSUS candidates=[(91, "java/lang/String", false)]
+CF11_SEQLOOPS2_INIT_REFUSAL code=jre_new_shape message=the construction at BCI 91 was not presented: nothing in this method reads the instance the allocation at BCI 91 builds, so the construction has no place in the body
+CF11_SEQLOOPS2_INIT_SITE_91 present=false
+CF11_SEQLOOPS2_DIAG_END same_ir_site_observation_only

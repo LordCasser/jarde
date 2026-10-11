@@ -1,0 +1,2 @@
+{"status": "verified_observation_capture", "execution": {"path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json", "bytes": 81267, "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"}, "out": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/checker-root-v5.json"}
+{"status": "complete", "collector_exit_code": 0, "checker_exit_code": 0, "checker_skip_reason": null, "source_pin_count_before": 4718, "source_pin_count_after": 4718, "source_pins_unchanged": true, "target_absent_after": true}

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v1.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T17:01:35.731728+00:00",
+  "finished_at": "2026-10-11T17:01:35.767858+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/testnestedloops-same-ir-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/testnestedloops-same-ir-root-v1/stderr.raw",
+      "bytes": 103,
+      "sha256": "67046973f07598e8c39eca868ed32f91429449b108ae42549f5df609acbc9a32"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

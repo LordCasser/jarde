@@ -1,0 +1,44 @@
+{
+  "schema": "cf11-testnestedloops-private-input-pins-v2",
+  "status": "prepared_not_compiled_or_run",
+  "source_path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+  "source_bytes": 876,
+  "source_sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+  "method_slice": {
+    "name": "TestCls.test(List<String>, List<String>)",
+    "start_byte_in_source": 279,
+    "end_byte_exclusive_in_source": 573,
+    "bytes": 294,
+    "sha256": "a0b9999d8687d5ec6ac4676d68abf84d4f1de14ebc6146fb2048d3e1735d23ce",
+    "saved_path": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v2/test-method.slice"
+  },
+  "wrapper": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v2/UpstreamNestedLoops.java",
+    "bytes": 371,
+    "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1",
+    "contains_exact_method_slice": true
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v2/Runner.java",
+    "bytes": 1348,
+    "sha256": "4ae87b7e86b0acab0abc67be666a9e8e3f78d95d17048707109bcf36a8f97b35"
+  },
+  "manifest": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v2/manifest.json",
+    "bytes": 457,
+    "sha256": "72cdb04d4096f74ef7aace3a6f3e55d73ccc322af09ade4880d807d907cd1a51"
+  },
+  "readme": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v2/README.md",
+    "bytes": 1441,
+    "sha256": "ab8518f14c20860b070c9029dc1d0da153651e9c10262382e8a4f3e53addc974"
+  },
+  "constraints": {
+    "top_level_classes": [
+      "cf11.UpstreamNestedLoops",
+      "cf11.Runner"
+    ],
+    "toolchains_started": false,
+    "shared_files_modified": false
+  }
+}

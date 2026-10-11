@@ -1,0 +1,179 @@
+{
+  "schema": "jarde-sequential-loops2-same-ir-diagnostic-prep-v3",
+  "status": "private_static_candidate_not_run",
+  "scope": "test-only same-IR SSA/CFG/outside_readers/sites observation; no production or Builder/Region change",
+  "preserves": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v2",
+  "base": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+    "bytes": 266684,
+    "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+  },
+  "candidate": {
+    "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/init.rs",
+    "bytes": 272035,
+    "sha256": "4506b652e0ded4408bd740cd8f1349065e2f6d5f5fcbdcf7f708e11b32c1b1c2"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/init.rs.patch",
+    "bytes": 5689,
+    "sha256": "460939cd5a11404bba1b8775f7de19a2cb3d193aceae61b7f2f0af0168abebb5"
+  },
+  "delta_from_v2": {
+    "only_change": "MethodFacts::new(\"asciiToLowerCase\", descriptor, 0) -> MethodFacts::new(\"asciiToLowerCase\", descriptor, 1).with_access_flags(0x0009)",
+    "candidate_line": "MethodFacts::new(\"asciiToLowerCase\", descriptor, 1).with_access_flags(0x0009)"
+  },
+  "method_facts": {
+    "constructor_signature": "MethodFacts::new(name, descriptor, parameters: u16)",
+    "third_argument_meaning": "number of JVM parameter slots, not access flags",
+    "parameter_slots": 1,
+    "access_flags_method": "with_access_flags(u16)",
+    "access_flags": 9,
+    "flags_hex": "0x0009",
+    "flags_meaning": [
+      "ACC_PUBLIC",
+      "ACC_STATIC"
+    ],
+    "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+    "reason": "The method has one reference parameter occupying one slot; frozen declarations report public static flags 9."
+  },
+  "input_class": {
+    "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+    "bytes": 931,
+    "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664",
+    "digest_policy": "SHA-256 pins bytes; report/Jarde class identity is BLAKE3",
+    "class_identity_blake3": "a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7"
+  },
+  "physical_method": {
+    "name": "asciiToLowerCase",
+    "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+    "access_flags": 9,
+    "javap_declaration_line": 81,
+    "javap_flags_line": 83,
+    "method_code_BCIs_observed": [
+      83,
+      84,
+      87,
+      88,
+      91,
+      94,
+      95,
+      96,
+      99
+    ]
+  },
+  "read_only_dependency_pins": {
+    "init_test_base": {
+      "name": "init_test_base",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    "facts_api": {
+      "name": "facts_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/facts.rs",
+      "bytes": 58831,
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef"
+    },
+    "normal_flow_api": {
+      "name": "normal_flow_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/normal_flow.rs",
+      "bytes": 37236,
+      "sha256": "8945a6d45b36acfb46066954ece0ec0ec50ad310987fad7155b586d7be2cf3ee"
+    },
+    "ssa_api": {
+      "name": "ssa_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    "method_ir_api": {
+      "name": "method_ir_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/method_ir.rs",
+      "bytes": 39778,
+      "sha256": "cb4fd073be36ae09081e897f1a37292ee1b3821d7257c79238fabdf1fbe1c286"
+    },
+    "canonical_cfg_api": {
+      "name": "canonical_cfg_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/canonical.rs",
+      "bytes": 135508,
+      "sha256": "79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86"
+    },
+    "operation_decode_api": {
+      "name": "operation_decode_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/decode.rs",
+      "bytes": 73105,
+      "sha256": "704e6be41edc5dd5d36cb46cf6d7e62d607ae92392e7e231354d2ae5e931425d"
+    },
+    "array_initializer_api": {
+      "name": "array_initializer_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    "field_plan_api": {
+      "name": "field_plan_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "bytes": 45933,
+      "sha256": "68cb90ff3dc08d9ad8ccb834079f1e2590b1b2c145fc55cc4594b4259d377145"
+    },
+    "concat_plan_api": {
+      "name": "concat_plan_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/concat.rs",
+      "bytes": 83175,
+      "sha256": "c2ef3c80d178800c476ccbf0f8abffca78ca6188059e59217d169b1f33932d3b"
+    },
+    "refusal_gap_api": {
+      "name": "refusal_gap_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/refusal.rs",
+      "bytes": 9415,
+      "sha256": "7d794b88a0b6c28d39bcaca7458e7820662b05b03e7b114e295a1a9c320f5400"
+    }
+  },
+  "frozen_evidence": {
+    "javap_capture": {
+      "name": "javap_capture",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6873,
+      "sha256": "9a9094bfe8356217cf2a029910555185053463d20c9114811a59b15c2e90aaaf"
+    },
+    "report_capture": {
+      "name": "report_capture",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/jarde/javac23-jarde-all-UpstreamSequentialLoops2/report.json",
+      "bytes": 263024,
+      "sha256": "5cc19d1de6f59a6ae63e31240277f265e4581599e46ff51ca92ae0ed7770aa93"
+    },
+    "observation_capture": {
+      "name": "observation_capture",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-observations-root-v1.json",
+      "bytes": 9953,
+      "sha256": "0468358465e435067af0c84a2c4aa3e7d84a07f09899982e681e8d490604f4f1"
+    },
+    "original_class": {
+      "name": "original_class",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 931,
+      "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+    }
+  },
+  "diagnostic_test": "init::tests::cf11_sequential_loops2_constructor_phi_same_ir_diagnostic",
+  "future_command": "JRE_CF11_DIAGNOSTIC=1 cargo test -p jarde-java --lib init::tests::cf11_sequential_loops2_constructor_phi_same_ir_diagnostic -- --exact --nocapture --test-threads=1",
+  "must_not_run_during_prep": true,
+  "shared_source_changed": false,
+  "candidate_static_scope": [
+    "SSA and phi reads",
+    "canonical CFG and NormalFlowView read-only edge/block inventory",
+    "outside_readers over producer BCIs [91, 94, 96]",
+    "existing array proof and init::sites allocation census"
+  ],
+  "candidate_exclusions": [
+    "no Region or Builder invocation",
+    "no production implementation",
+    "no CFG mutation",
+    "no additional helper or behavior"
+  ],
+  "observed_flags": {
+    "javap": "flags: (0x0009) ACC_PUBLIC, ACC_STATIC",
+    "report_json_access_flags": 9
+  },
+  "prepared_only": true
+}

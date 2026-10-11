@@ -1,0 +1,111 @@
+{
+  "schema": "testnestedloops-same-ir-diagnostic-candidate-v1",
+  "status": "private unapplied candidate; not compiled or run",
+  "scope": "temporary same-IR candidate logging only; no product change",
+  "baseline": {
+    "execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    },
+    "class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "javap": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    "jarde_report": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+      "sha256": "8bb714b7c2bcef014db446d5501a4902832a66ea52eecb00d66d9a889c2fe76a"
+    }
+  },
+  "same_ir_request": {
+    "method": "cf11.UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+    "scope": "SnapshotAll",
+    "policy": "SingleClass",
+    "java_release": 8,
+    "multi_release": "Disabled",
+    "layout": "Generic",
+    "loader": "app",
+    "facts": "obtained by Engine::class_source; no manual RecoveryFacts"
+  },
+  "source_base_pins": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "relevant_lines": [
+        "18767-18991",
+        "21224-21715"
+      ],
+      "role": "loop eligibility/candidate call, fast gates and later proof closure"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b",
+      "relevant_lines": [
+        "12729-12758",
+        "1305-1402",
+        "19996-20007",
+        "41355-41408",
+        "41717-41844"
+      ],
+      "role": "existing public class-source test helper and actual prepared recovery facts route"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+      "relevant_lines": [
+        "1785-1808"
+      ],
+      "role": "instance receiver included in parameter slot count"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "sha256": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+      "relevant_lines": [
+        "11364-11427"
+      ],
+      "role": "same facts/profile/IR reach build::build"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "sha256": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171",
+      "relevant_lines": [
+        "753-913"
+      ],
+      "role": "exhaustive statement variant names used in compact event"
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v1/build.rs.candidate",
+      "sha256": "d6e1b0d9a4a0d928aabc44411c298c9b14c73c44ba2e3802dea665dd4a8f04aa",
+      "bytes": 1732209
+    },
+    {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v1/facade.rs.candidate",
+      "sha256": "47e4305753337c7aae4468c07744cb99c5acd70e0d999fc778367b8c8d94256c",
+      "bytes": 1936820
+    }
+  ],
+  "diagnostic_limits": [
+    "first-level early gates have exact labels",
+    "post-entry proof None is grouped; no interior first-refusal claim",
+    "find_map local None semantics untouched",
+    "StopReason is logged separately and propagated unchanged",
+    "candidate was not compiled or run"
+  ],
+  "private_artifacts": [
+    {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v1/candidate.patch",
+      "sha256": "fdddfcb9a120095c302216b1e3fa44e8651242985306223fd2dec33d33963d6f",
+      "bytes": 9812
+    },
+    {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v1/README.md",
+      "sha256": "a8661ee511dead9f92456047010b47d75427ec4ac577b131a8733223e1edb97e",
+      "bytes": 2959
+    }
+  ]
+}

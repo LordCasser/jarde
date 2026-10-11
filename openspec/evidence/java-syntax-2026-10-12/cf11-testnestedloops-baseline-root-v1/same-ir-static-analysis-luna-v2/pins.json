@@ -1,0 +1,78 @@
+{
+  "schema": "testnestedloops-same-ir-diagnostic-analysis-v2",
+  "scope": "private read-only static analysis; no shared edits, Git, Atlas, Java/JADX/Jarde/Cargo execution",
+  "baseline": {
+    "execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    },
+    "actual_method_report": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+      "sha256": "8bb714b7c2bcef014db446d5501a4902832a66ea52eecb00d66d9a889c2fe76a"
+    },
+    "actual_jarde_source": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+    },
+    "original_jdk23_class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "original_jdk23_javap": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    "source_input": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    }
+  },
+  "source_pins": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "lines": ["18879-18991", "21224-21715"],
+      "role": "loop recursion/candidate call order and iterable candidate"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "sha256": "c905af706bda527881fa99e6a3f1e771164d676900a5c57c1dd154bb9fb63eaa",
+      "lines": ["1438-1453", "22093-22168"],
+      "role": "region-only recovery boundary and same-IR analyze_method_ir fixture pattern"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "sha256": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e",
+      "lines": ["8447-8472", "8794-8799", "11156-11172", "11379-11427", "15381-15418"],
+      "role": "RecoveryRequest and actual same-IR Program construction call path"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/facts.rs",
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef",
+      "lines": ["82-120", "1096-1120"],
+      "role": "MethodFacts and RecoveryFacts construction API"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a",
+      "role": "same-run SSA API pin used by existing same-IR patterns"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/normal_flow.rs",
+      "sha256": "8945a6d45b36acfb46066954ece0ec0ec50ad310987fad7155b586d7be2cf3ee",
+      "role": "same-run NormalFlowView API pin used by existing same-IR patterns"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v3/region.rs.candidate",
+      "sha256": "202f7638c7934898e68725f3c83e1e3b86d1c585173f8590c3a1672144611017",
+      "lines": ["15849-15997"],
+      "role": "prior same-IR diagnostic style; only analyzes CFG/SSA/regions, does not build Program"
+    }
+  ],
+  "fixed_method": "cf11.UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+  "observed_bytecode_loop_branches": {
+    "outer": 13,
+    "inner": 42
+  },
+  "diagnostic_status": "proposed only; no diagnostic candidate source or toolchain run created"
+}

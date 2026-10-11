@@ -1,0 +1,216 @@
+{
+  "schema": "cf11-sequential-loops2-same-ir-runner-prep-v1",
+  "status": "private_runner_static_review_not_run",
+  "runner": {
+    "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-root-v1.py",
+    "bytes": 19294,
+    "sha256": "3825308764c08884bddd3d68403495ce08c9fb14154036fc078fe8a527ef1989",
+    "mode": "0o555"
+  },
+  "candidate": {
+    "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/init.rs",
+    "bytes": 272035,
+    "sha256": "4506b652e0ded4408bd740cd8f1349065e2f6d5f5fcbdcf7f708e11b32c1b1c2"
+  },
+  "candidate_pins": {
+    "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/pins.json",
+    "bytes": 7621,
+    "sha256": "120ba1ea322dfacb6ad358925fd6a6933a117ae5d741668d51bf6fbd2ca0de85",
+    "mode": "0o644"
+  },
+  "candidate_patch": {
+    "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/init.rs.patch",
+    "bytes": 5689,
+    "sha256": "460939cd5a11404bba1b8775f7de19a2cb3d193aceae61b7f2f0af0168abebb5",
+    "mode": "0o644"
+  },
+  "external_class": {
+    "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+    "bytes": 931,
+    "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664",
+    "counted_in_repo_closure": false
+  },
+  "accepted_final_build": {
+    "record": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3/execution.json",
+      "bytes": 1525957,
+      "sha256": "b4b7bba399b44686da9e990293df3ec99eab36b288ab984b2a9e63a711d8477d",
+      "mode": "0o644"
+    },
+    "schema": "for-condition-final-lint-build-root-v1",
+    "status": "passed_candidate_build_only",
+    "runner": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+      "bytes": 5761,
+      "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e",
+      "mode": "0o555"
+    },
+    "source_closure_count": 4718,
+    "source_pins_before_after_equal": true,
+    "source_pin_map_canonical_sha256": "e270e30e230ccedb879c66ef6bf480e48be27ec71bb4021db5e715126f0936b3"
+  },
+  "baseline_init": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+    "bytes": 266684,
+    "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+  },
+  "expected_candidate_test": "init::tests::cf11_sequential_loops2_constructor_phi_same_ir_diagnostic",
+  "exact_argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--lib",
+    "--all-features",
+    "--locked",
+    "init::tests::cf11_sequential_loops2_constructor_phi_same_ir_diagnostic",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "guard": {
+    "template": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "mode": "0o644"
+    },
+    "scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "mode": "0o644"
+    },
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_interval_seconds": 1,
+    "fresh_target_required": true,
+    "RUST_MIN_STACK": "unset/default"
+  },
+  "candidate_read_only_dependencies": {
+    "init_test_base": {
+      "name": "init_test_base",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    "facts_api": {
+      "name": "facts_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/facts.rs",
+      "bytes": 58831,
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef"
+    },
+    "normal_flow_api": {
+      "name": "normal_flow_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/normal_flow.rs",
+      "bytes": 37236,
+      "sha256": "8945a6d45b36acfb46066954ece0ec0ec50ad310987fad7155b586d7be2cf3ee"
+    },
+    "ssa_api": {
+      "name": "ssa_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    "method_ir_api": {
+      "name": "method_ir_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/method_ir.rs",
+      "bytes": 39778,
+      "sha256": "cb4fd073be36ae09081e897f1a37292ee1b3821d7257c79238fabdf1fbe1c286"
+    },
+    "canonical_cfg_api": {
+      "name": "canonical_cfg_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/canonical.rs",
+      "bytes": 135508,
+      "sha256": "79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86"
+    },
+    "operation_decode_api": {
+      "name": "operation_decode_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/decode.rs",
+      "bytes": 73105,
+      "sha256": "704e6be41edc5dd5d36cb46cf6d7e62d607ae92392e7e231354d2ae5e931425d"
+    },
+    "array_initializer_api": {
+      "name": "array_initializer_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    "field_plan_api": {
+      "name": "field_plan_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "bytes": 45933,
+      "sha256": "68cb90ff3dc08d9ad8ccb834079f1e2590b1b2c145fc55cc4594b4259d377145"
+    },
+    "concat_plan_api": {
+      "name": "concat_plan_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/concat.rs",
+      "bytes": 83175,
+      "sha256": "c2ef3c80d178800c476ccbf0f8abffca78ca6188059e59217d169b1f33932d3b"
+    },
+    "refusal_gap_api": {
+      "name": "refusal_gap_api",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/refusal.rs",
+      "bytes": 9415,
+      "sha256": "7d794b88a0b6c28d39bcaca7458e7820662b05b03e7b114e295a1a9c320f5400"
+    }
+  },
+  "frozen_evidence": {
+    "javap_capture": {
+      "name": "javap_capture",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6873,
+      "sha256": "9a9094bfe8356217cf2a029910555185053463d20c9114811a59b15c2e90aaaf"
+    },
+    "report_capture": {
+      "name": "report_capture",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/jarde/javac23-jarde-all-UpstreamSequentialLoops2/report.json",
+      "bytes": 263024,
+      "sha256": "5cc19d1de6f59a6ae63e31240277f265e4581599e46ff51ca92ae0ed7770aa93"
+    },
+    "observation_capture": {
+      "name": "observation_capture",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-observations-root-v1.json",
+      "bytes": 9953,
+      "sha256": "0468358465e435067af0c84a2c4aa3e7d84a07f09899982e681e8d490604f4f1"
+    },
+    "original_class": {
+      "name": "original_class",
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 931,
+      "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+    }
+  },
+  "checks": {
+    "python_ast_parse": "passed",
+    "baseline_source_enumeration_equals_receipt": true,
+    "live_baseline_pins_equal_receipt": true,
+    "candidate_and_external_input_hashes_match": true,
+    "rust_toolchain_or_test_run": "not_run",
+    "runtime_or_toolchain_invocation": "not_run",
+    "runner_ast_parse": "passed",
+    "runner_or_toolchain_invocation": "not_run"
+  },
+  "execution_record_path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-root-v1/execution.json",
+  "recorded_before_after_contract": {
+    "repository_source_pin_count": 4718,
+    "source_pins_before_from": "accepted final-build-v3 receipt source_pins_before",
+    "source_pins_after_restore_must_equal_before": true,
+    "candidate_tool_pins_before_after_must_match": true,
+    "runner_sha256_before_after_must_match": true,
+    "candidate_init_must_be_the_only_temporary_repository_source_change": true,
+    "external_class_pinned_separately": true,
+    "target_absent_after_clean_required": true,
+    "candidate_tool_pins_must_cover": [
+      "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/init.rs",
+      "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/init.rs.patch",
+      "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-prep-luna-v3/pins.json",
+      "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "/private/tmp/jarde-for-condition-final-lint-build-root-v3/execution.json",
+      "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "all v3 candidate read_only_dependency_pins and frozen_evidence paths"
+    ]
+  }
+}
