@@ -1,6 +1,6 @@
 # Root 当前验收
 
-当前 tasks 9/10。computed-for 实现及永久回归已接受：生产只改 region.rs，复用既有SSA Store/terminal-return/ForHeader/Builder，不新增机制。实际fresh完整workspace v2的95批/359目标为3451 passed、0 failed、97 ignored；4700输入前后恒同，峰值811131401 bytes，最低free19350835200 bytes，cargo clean成功、target不存在。root独立workspace verifier v2与共享聚焦verifier v2均真实exit0；OpenSpec strict349/0。最终同CI Clippy已root独立接受三命令并clean，最终CLI/fullclosure绑定已接受；实际产品提交推送、自身CI/clean交付待完成，仅3.3保持开放。
+当前 tasks **10/10**。产品 8bef1b76acfc93e1b1510e8cb71d7c7a25b0fdc6 已提交推送 main，自身 [CI 38131239404](https://github.com/LordCasser/jarde/actions/runs/38131239404) 的4 jobs/52 steps全部成功，root实际独立verifier exit0；两固定seed各359目标/3451 passed、0 failed、97 ignored，全部named outcomes与本地fresh workspace绑定。4700输入绑定该产品Git/live/最终CLI。原始summary、日志、实际invocation和产品提交后的clean audit见 [自身CI与干净交付](results/own-product-ci-clean-root-v1/README.md)。生产仅region.rs，复用既有SSA Store/terminal-return/ForHeader/Builder，无新机制。本地95批/359目标、同CI Clippy、strict349/0和CLI已实际接受；峰值811131401 bytes、最低free19350835200 bytes，clean后target不存在。关闭证据文档推送后再对其实际HEAD运行最终主线审计；不借文档CI冒称产品CI。
 
 候选v1冻结CLI的整类对照已分别root接受：call-order36命令60行、controls/direct66命令、CF0724命令80行。新永久共享SSA1/API8/terminal5全通过；共享栈值只接受可靠拒绝，四完整Jarde源编译失败/no runtime如实保留。最终CLI v2字节与v1完全相同，root独立绑定已接受对照，未称重新执行对照命令。所有历史测试/harness失败保留，详见下段和各results目录。整CF07/71单元目标不变。
 

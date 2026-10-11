@@ -15,4 +15,4 @@
 
 - [x] 3.1 root 冻结实际候选 CLI，双 JDK 运行完整原/JADX/Jarde 类与固定 runner，核 default/all、所有物理 BCI/identity、UTF8 span 以及新增效果输入。验收：实际完整源码原样重编/运行，逐条 raw 结果一致；单独记录 JADX/环境失败，不称整个 CF07 或 71 单元完成。
 - [x] 3.2 按 5 GiB free/target 1 GiB 一秒守卫执行格式、适用库与 integration 测试、同 CI Clippy、必要 workspace 检查及 OpenSpec strict。验收：真实源码 pins 前后相同，准确命令结果通过，冻结 CLI 后 clean；不借旧版本结果。
-- [ ] 3.3 提交推送实际产品并验收其自身全部 CI job/step/测试，再更新 ledger/verification/handoff 完成 clean main 交付。验收：精确 head、实际 CI raw 与分支/worktree/target 状态，不关闭尚未实际接受的任务。
+- [x] 3.3 提交推送实际产品并验收其自身全部 CI job/step/测试，再更新 ledger/verification/handoff 完成 clean main 交付。验收：精确 head、实际 CI raw 与分支/worktree/target 状态，不关闭尚未实际接受的任务。
