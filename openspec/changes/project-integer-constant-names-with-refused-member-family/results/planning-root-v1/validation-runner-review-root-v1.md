@@ -1,0 +1,7 @@
+# Root 对私有 runner 的审查
+
+已读完整runner与README；尚未运行。它要求新out/CLI都不存在且同一/private/tmp父目录，只清理本次确实创建的CLI，不删除既有冻结CLI；正常Cargo clean发生在freeze后。失败后target仍可能保留，须root另做实际clean。source-base由调用者指定且与真实git HEAD核同，不锁死尚未完成关闭的主线SHA。
+
+复用已冻结conditional runner的29条CI Clippy allowances、v9 guard和单次stat target scanner。每条命令采用5GiB free/target1GiB、一秒取消整个进程组。五个集成目标均实际存在，包含inner_class_static_mixed_folding和member_class_static_folding；全jarde lib与新测试准确fullname各真实执行，不预填聚合通过数。成功测试binary仅在受检deps路径记录SHA/size后删除。freeze与source/recursive literal includes前后pins复核，失败不留成功CLI标记。
+
+这份ready私稿未编译或执行，不表示13项任务完成。当前MVP优先两个CF12结构缺口；本常量名计划保留排队。任何实际运行须在前产品自身CI与干净交付完成后使用当时settled source-base；未来应用私有补丁前核完整base bytes，格式化后再冻结actual source pins，不能用私稿hash代替实测。
