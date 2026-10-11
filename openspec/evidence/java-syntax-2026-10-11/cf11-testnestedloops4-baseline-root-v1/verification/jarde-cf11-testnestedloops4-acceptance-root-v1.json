@@ -1,0 +1,373 @@
+{
+  "schema": "cf11-testnestedloops4-scoped-gap-verification-luna-v2",
+  "status": "accepted_scoped_gap_observation",
+  "execution": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/execution.json",
+    "bytes": 101180,
+    "sha256": "8331f1a279760df5b1959cf0820cfd9f81cdab2a13aad07221a8896a377a2fd9",
+    "command_count": 25,
+    "raw_stream_count": 50
+  },
+  "target": {
+    "owner": "cf11/UpstreamNestedLoops4",
+    "method": "testFor()I",
+    "ctor_instruction_count": 3,
+    "testFor_instruction_count": 40,
+    "javap_and_classfile_parser_agree": true
+  },
+  "fresh_jadx": {
+    "version": "1.5.6",
+    "profiles": [
+      "default",
+      "none"
+    ],
+    "complete_source_count": 2,
+    "one_class_jar": true
+  },
+  "original_oracle": {
+    "stdout": "testFor=12\n",
+    "stderr_empty": true,
+    "jdk_runs": 2
+  },
+  "jarde_observation": {
+    "profiles": 4,
+    "quality": "fallback",
+    "content": "explanation_only",
+    "reason": "jre_region_arms_do_not_meet",
+    "bci": 10,
+    "default_all_text_and_maps_equal": true,
+    "javac_compile_failures": 4,
+    "runtime_invocations": 0,
+    "generated_class_files": 0
+  },
+  "physical_source_maps": [
+    {
+      "method": "<init>()V",
+      "physical_bcis": [
+        0,
+        1,
+        4
+      ],
+      "source_origin_bci_count": 3,
+      "exception_count": 0,
+      "method_index": 0,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 292,
+        "length": 47
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "testFor()I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        18,
+        20,
+        23,
+        24,
+        25,
+        28,
+        29,
+        31,
+        33,
+        34,
+        35,
+        36,
+        39,
+        40,
+        42,
+        45,
+        46,
+        47,
+        50,
+        53,
+        56,
+        59,
+        62,
+        65,
+        68,
+        71,
+        72
+      ],
+      "source_origin_bci_count": 40,
+      "exception_count": 0,
+      "method_index": 1,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 353,
+        "length": 239
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "<init>()V",
+      "physical_bcis": [
+        0,
+        1,
+        4
+      ],
+      "source_origin_bci_count": 3,
+      "exception_count": 0,
+      "method_index": 0,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 292,
+        "length": 47
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "testFor()I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        18,
+        20,
+        23,
+        24,
+        25,
+        28,
+        29,
+        31,
+        33,
+        34,
+        35,
+        36,
+        39,
+        40,
+        42,
+        45,
+        46,
+        47,
+        50,
+        53,
+        56,
+        59,
+        62,
+        65,
+        68,
+        71,
+        72
+      ],
+      "source_origin_bci_count": 40,
+      "exception_count": 0,
+      "method_index": 1,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 353,
+        "length": 239
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "<init>()V",
+      "physical_bcis": [
+        0,
+        1,
+        4
+      ],
+      "source_origin_bci_count": 3,
+      "exception_count": 0,
+      "method_index": 0,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 292,
+        "length": 47
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "testFor()I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        18,
+        20,
+        23,
+        24,
+        25,
+        28,
+        29,
+        31,
+        33,
+        34,
+        35,
+        36,
+        39,
+        40,
+        42,
+        45,
+        46,
+        47,
+        50,
+        53,
+        56,
+        59,
+        62,
+        65,
+        68,
+        71,
+        72
+      ],
+      "source_origin_bci_count": 40,
+      "exception_count": 0,
+      "method_index": 1,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 353,
+        "length": 239
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "<init>()V",
+      "physical_bcis": [
+        0,
+        1,
+        4
+      ],
+      "source_origin_bci_count": 3,
+      "exception_count": 0,
+      "method_index": 0,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 292,
+        "length": 47
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    },
+    {
+      "method": "testFor()I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        18,
+        20,
+        23,
+        24,
+        25,
+        28,
+        29,
+        31,
+        33,
+        34,
+        35,
+        36,
+        39,
+        40,
+        42,
+        45,
+        46,
+        47,
+        50,
+        53,
+        56,
+        59,
+        62,
+        65,
+        68,
+        71,
+        72
+      ],
+      "source_origin_bci_count": 40,
+      "exception_count": 0,
+      "method_index": 1,
+      "access_flags": 1,
+      "code_attribute_span": {
+        "start": 353,
+        "length": 239
+      },
+      "origin_method_identity_fields": [
+        "descriptor",
+        "name",
+        "owner"
+      ]
+    }
+  ],
+  "return_zero_dynamic_coverage_claimed": false,
+  "final_cli_receipt": {
+    "path": "/private/tmp/jarde-computed-for-final-cli-acceptance-root-v1.json",
+    "sha256": "7b6b28e99965a9a8d710ee097d1174c1a60519d2bc2f03b8f690d42082548fea",
+    "cli_sha256": "d1543cb69867d78f964873fe0e3d534f18923d3350d6dcf88b6a7e02738b56d1",
+    "source_input_count": 4700
+  },
+  "verifier": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops4-verifier-root-v1.py",
+    "bytes": 32390,
+    "sha256": "7d590c5865634bf67d6fa4c83c9a4744c0282dc79b527eb79b7d879b0e4d856f"
+  }
+}

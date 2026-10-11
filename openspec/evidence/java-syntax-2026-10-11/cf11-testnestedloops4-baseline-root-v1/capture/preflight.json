@@ -1,0 +1,185 @@
+[
+  {
+    "label": "upstream",
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops4.java",
+    "expected_sha256": "b84dbf9988e1343f6d26f06345a4e8ba8b17993b4dc33419c86d9e9194968cca",
+    "actual_sha256": "b84dbf9988e1343f6d26f06345a4e8ba8b17993b4dc33419c86d9e9194968cca",
+    "ok": true
+  },
+  {
+    "label": "JADX-Cellar-runtime-command",
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "expected_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "actual_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "ok": true
+  },
+  {
+    "label": "JADX-homebrew-alias",
+    "path": "/opt/homebrew/bin/jadx",
+    "expected_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "actual_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "ok": true
+  },
+  {
+    "label": "JADX-cellar-wrapper",
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "expected_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "actual_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "ok": true
+  },
+  {
+    "label": "JADX-runtime-launcher",
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/bin/jadx",
+    "expected_sha256": "6b732b576bf8dc554278beb94ce006f9549ac898eff975d83548f87244961f13",
+    "actual_sha256": "6b732b576bf8dc554278beb94ce006f9549ac898eff975d83548f87244961f13",
+    "ok": true
+  },
+  {
+    "label": "JADX-runtime-jar",
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "expected_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "actual_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "ok": true
+  },
+  {
+    "label": "JADX-install-receipt",
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/INSTALL_RECEIPT.json",
+    "expected_sha256": "5c5d3dc861cfc9e61d2ab6da6eece90b9058d354366f769ecbfab1ed2bfc205b",
+    "actual_sha256": "5c5d3dc861cfc9e61d2ab6da6eece90b9058d354366f769ecbfab1ed2bfc205b",
+    "ok": true
+  },
+  {
+    "label": "Jarde CLI",
+    "path": "/private/tmp/jarde-computed-for-final-cli-root-v2",
+    "expected_sha256": "d1543cb69867d78f964873fe0e3d534f18923d3350d6dcf88b6a7e02738b56d1",
+    "actual_sha256": "d1543cb69867d78f964873fe0e3d534f18923d3350d6dcf88b6a7e02738b56d1",
+    "ok": true
+  },
+  {
+    "label": "CLI acceptance receipt",
+    "path": "/private/tmp/jarde-computed-for-final-cli-acceptance-root-v1.json",
+    "expected_sha256": "7b6b28e99965a9a8d710ee097d1174c1a60519d2bc2f03b8f690d42082548fea",
+    "actual_sha256": "7b6b28e99965a9a8d710ee097d1174c1a60519d2bc2f03b8f690d42082548fea",
+    "ok": true
+  },
+  {
+    "label": "Jarde class-source schema sample",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/candidate-replay-root-v3/cases/javac8-jarde-render/class-source-default.json",
+    "expected_sha256": "d30364f37e15172a1d8ccca6c4371c57005940b55bac65544612adc3081bbbe2",
+    "actual_sha256": "d30364f37e15172a1d8ccca6c4371c57005940b55bac65544612adc3081bbbe2",
+    "ok": true
+  },
+  {
+    "label": "JDK manifest",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "ok": true
+  },
+  {
+    "label": "helper",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/prepare-baseline-luna-v1.py",
+    "expected_sha256": "a1ed035789f96f2a945bc9e8499bb4d1d089639082ccb59ce61933c97660879c",
+    "actual_sha256": "a1ed035789f96f2a945bc9e8499bb4d1d089639082ccb59ce61933c97660879c",
+    "ok": true
+  },
+  {
+    "label": "jarde-class-source-json-schema",
+    "ok": true,
+    "sample_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/candidate-replay-root-v3/cases/javac8-jarde-render/class-source-default.json",
+    "sample_sha256": "d30364f37e15172a1d8ccca6c4371c57005940b55bac65544612adc3081bbbe2",
+    "top_level_keys": [
+      "anonymous_interface_projection",
+      "bridge_proofs",
+      "class",
+      "coverage",
+      "declaration",
+      "diagnostics",
+      "direct_override_proofs",
+      "enum_switch_proofs",
+      "execution",
+      "fields",
+      "initializer_proof",
+      "integer_constant_projections",
+      "limits",
+      "member_family",
+      "methods",
+      "nested_annotation_family",
+      "nested_enum_family",
+      "outcome",
+      "stages",
+      "text",
+      "usage",
+      "view"
+    ],
+    "text_type": "str",
+    "methods_type": "list",
+    "execution_status": "complete"
+  },
+  {
+    "label": "cli-acceptance-link",
+    "ok": true,
+    "receipt_path": "/private/tmp/jarde-computed-for-final-cli-acceptance-root-v1.json",
+    "final_cli": {
+      "path": "/private/tmp/jarde-computed-for-final-cli-root-v2",
+      "size_bytes": 60821472,
+      "sha256": "d1543cb69867d78f964873fe0e3d534f18923d3350d6dcf88b6a7e02738b56d1",
+      "mode": "0o555"
+    },
+    "build_sha256": "45564f10cc40ec86e723f1650ef331c33b4a98625fce01eb60ed8ea2e543cb29"
+  },
+  {
+    "label": "jdk-leg-set",
+    "expected": [
+      "javac8",
+      "javac23"
+    ],
+    "actual": [
+      "javac23",
+      "javac8"
+    ],
+    "ok": true
+  },
+  {
+    "label": "javac8:javac",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "ok": true
+  },
+  {
+    "label": "javac8:java",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+    "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "ok": true
+  },
+  {
+    "label": "javac8:javap",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+    "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+    "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+    "ok": true
+  },
+  {
+    "label": "javac23:javac",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+    "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+    "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+    "ok": true
+  },
+  {
+    "label": "javac23:java",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+    "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "ok": true
+  },
+  {
+    "label": "javac23:javap",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+    "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+    "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+    "ok": true
+  }
+]

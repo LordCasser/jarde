@@ -1,0 +1,1 @@
+{"status": "accepted_scoped_gap_observation", "execution": {"path": "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/execution.json", "bytes": 101180, "sha256": "8331f1a279760df5b1959cf0820cfd9f81cdab2a13aad07221a8896a377a2fd9", "command_count": 25, "raw_stream_count": 50}, "out": "/private/tmp/jarde-cf11-testnestedloops4-acceptance-root-v1.json"}

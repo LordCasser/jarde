@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/private/tmp/jarde-computed-for-own-ci-verifier-root-v1.py",
+    "--product-commit",
+    "8bef1b76acfc93e1b1510e8cb71d7c7a25b0fdc6",
+    "--run-id",
+    "38131239404",
+    "--capture",
+    "/private/tmp/jarde-computed-for-own-ci-capture-root-v1",
+    "--workspace",
+    "/private/tmp/jarde-computed-for-workspace-root-v2",
+    "--out",
+    "/private/tmp/jarde-computed-for-own-ci-acceptance-root-v1.json",
+    "--checklist",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/results/final-local-product-validation-root-v1/ci-source-checklist.md",
+    "--final-cli-build",
+    "/private/tmp/jarde-computed-for-final-cli-build-root-v2/execution.json",
+    "--final-cli-runner",
+    "/private/tmp/jarde-final-cli-build-root-v1/build-final-cli.py",
+    "--final-cli-runner-sha256",
+    "a72b70a7b2699bf5f936f81b657df4073f105be3fceacf753e865f0ce2d4d79b",
+    "--build-source-base",
+    "d9e7e7b4085dd8dad5ce5abcf662c2ea4433eb65"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-11T10:58:59.511756+00:00",
+  "finished_at": "2026-10-11T10:59:01.873826+00:00",
+  "exit_code": 0,
+  "verifier_sha256_before": "8b7c88758ffb5edb76b43691035aad2803cc4c96e6aabb7bcdcbaa2afdd92d6d",
+  "verifier_sha256_after": "8b7c88758ffb5edb76b43691035aad2803cc4c96e6aabb7bcdcbaa2afdd92d6d",
+  "invoker_sha256": "c7213c3e0df009f73de1f295eb8170b13d1523db890135370b47312a385de306",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-computed-for-own-ci-acceptance-root-v1.stdout",
+      "sha256": "c04b5e36b817921a9b46f5db0e70a90622ba2c12a6613af928118950373bb73f",
+      "bytes": 232
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-computed-for-own-ci-acceptance-root-v1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

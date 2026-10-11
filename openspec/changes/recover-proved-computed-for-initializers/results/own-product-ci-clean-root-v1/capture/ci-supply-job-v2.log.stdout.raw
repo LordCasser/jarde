@@ -1,0 +1,926 @@
+supply chain	Set up job	﻿2026-10-11T10:14:34.0335475Z Current runner version: '2.337.0'
+supply chain	Set up job	2026-10-11T10:14:34.0357361Z ##[group]Runner Image Provisioner
+supply chain	Set up job	2026-10-11T10:14:34.0358129Z Hosted Compute Agent
+supply chain	Set up job	2026-10-11T10:14:34.0358689Z Version: 20261002.596
+supply chain	Set up job	2026-10-11T10:14:34.0359186Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+supply chain	Set up job	2026-10-11T10:14:34.0359822Z Build Date: 2026-10-02T22:28:27Z
+supply chain	Set up job	2026-10-11T10:14:34.0360387Z Worker ID: {a2d7c77d-3a3a-403a-a431-f48e42b7a03e}
+supply chain	Set up job	2026-10-11T10:14:34.0361002Z Region: mexicocentral
+supply chain	Set up job	2026-10-11T10:14:34.0361511Z Cloud: Azure
+supply chain	Set up job	2026-10-11T10:14:34.0361955Z ##[endgroup]
+supply chain	Set up job	2026-10-11T10:14:34.0363104Z ##[group]Operating System
+supply chain	Set up job	2026-10-11T10:14:34.0363612Z Ubuntu
+supply chain	Set up job	2026-10-11T10:14:34.0364028Z 24.04.5
+supply chain	Set up job	2026-10-11T10:14:34.0364620Z LTS
+supply chain	Set up job	2026-10-11T10:14:34.0365043Z ##[endgroup]
+supply chain	Set up job	2026-10-11T10:14:34.0365534Z ##[group]Runner Image
+supply chain	Set up job	2026-10-11T10:14:34.0366338Z Image: ubuntu-24.04
+supply chain	Set up job	2026-10-11T10:14:34.0366787Z Version: 20261004.327.1
+supply chain	Set up job	2026-10-11T10:14:34.0367727Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+supply chain	Set up job	2026-10-11T10:14:34.0369168Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+supply chain	Set up job	2026-10-11T10:14:34.0369964Z ##[endgroup]
+supply chain	Set up job	2026-10-11T10:14:34.0370923Z ##[group]GITHUB_TOKEN Permissions
+supply chain	Set up job	2026-10-11T10:14:34.0372641Z Contents: read
+supply chain	Set up job	2026-10-11T10:14:34.0373401Z Metadata: read
+supply chain	Set up job	2026-10-11T10:14:34.0373925Z ##[endgroup]
+supply chain	Set up job	2026-10-11T10:14:34.0375566Z Secret source: Actions
+supply chain	Set up job	2026-10-11T10:14:34.0376588Z Cache mode: write
+supply chain	Set up job	2026-10-11T10:14:34.0377307Z Prepare workflow directory
+supply chain	Set up job	2026-10-11T10:14:34.0722778Z Prepare all required actions
+supply chain	Set up job	2026-10-11T10:14:34.0760805Z Getting action download info
+supply chain	Set up job	2026-10-11T10:14:34.3495989Z Download action repository 'actions/checkout@v7.0.1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+supply chain	Set up job	2026-10-11T10:14:34.4403131Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:686976e191b89faba57d3206551f0f330d8cb249)
+supply chain	Set up job	2026-10-11T10:14:34.7773743Z Complete job name: supply chain
+supply chain	Run actions/checkout@v7.0.1	﻿2026-10-11T10:14:34.8356216Z ##[group]Run actions/checkout@v7.0.1
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8357013Z with:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8357369Z   repository: LordCasser/jarde
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8360293Z   token: ***
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8360642Z   ssh-strict: true
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8360992Z   ssh-user: git
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8361357Z   persist-credentials: true
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8361741Z   clean: true
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8362093Z   sparse-checkout-cone-mode: true
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8362502Z   fetch-depth: 1
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8362847Z   fetch-tags: false
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8363191Z   show-progress: true
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8363539Z   lfs: false
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8363860Z   submodules: false
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8364208Z   set-safe-directory: true
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8364597Z   allow-unsafe-pr-checkout: false
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8365134Z env:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8365446Z   CARGO_BUILD_JOBS: 1
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8365933Z   CARGO_INCREMENTAL: 0
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8366288Z   RUST_TEST_THREADS: 1
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8366648Z   CARGO_TERM_COLOR: always
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.8367061Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9163397Z Syncing repository: LordCasser/jarde
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9165058Z ##[group]Getting Git version info
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9165612Z Working directory is '/home/runner/work/jarde/jarde'
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9186478Z [command]/usr/bin/git version
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9293708Z git version 2.55.0
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9310946Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9319928Z Temporarily overriding HOME='/home/runner/work/_temp/21a6bd6f-6fe3-421c-9896-bfb8bad4214e' before making global git config changes
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9321717Z Adding repository directory to the temporary git global config as a safe directory
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9325940Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jarde/jarde
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9367202Z Deleting the contents of '/home/runner/work/jarde/jarde'
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9370320Z ##[group]Determining repository object format
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9371542Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9372152Z ##[group]Initializing the repository
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9375462Z [command]/usr/bin/git init /home/runner/work/jarde/jarde
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9485161Z hint: Using 'master' as the name for the initial branch. This default branch name
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9486516Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9487682Z hint: to use in all of your new repositories, which will suppress this warning,
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9488577Z hint: call:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9489088Z hint:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9489740Z hint: 	git config --global init.defaultBranch <name>
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9490523Z hint:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9491257Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9492399Z hint: 'development'. The just-created branch can be renamed via this command:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9493356Z hint:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9493879Z hint: 	git branch -m <name>
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9494576Z hint:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9495346Z hint: Disable this message with "git config set advice.defaultBranchName false"
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9496751Z Initialized empty Git repository in /home/runner/work/jarde/jarde/.git/
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9499122Z [command]/usr/bin/git remote add origin https://github.com/LordCasser/jarde
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9545615Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9546872Z ##[group]Disabling automatic garbage collection
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9548913Z [command]/usr/bin/git config --local gc.auto 0
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9581721Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9582604Z ##[group]Setting up auth
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9583240Z Removing SSH command configuration
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9586968Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:34.9617629Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0449511Z Removing HTTP extra header
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0454717Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0486060Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0670488Z Removing includeIf entries pointing to credentials config files
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0674582Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0704401Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0911278Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0945564Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jarde/jarde/.git.path /home/runner/work/_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.0976217Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.1008956Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.1040922Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.1070151Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.1071060Z ##[group]Fetching the repository
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:35.1083013Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8bef1b76acfc93e1b1510e8cb71d7c7a25b0fdc6:refs/remotes/origin/main
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7877011Z From https://github.com/LordCasser/jarde
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7878516Z  * [new ref]           8bef1b76acfc93e1b1510e8cb71d7c7a25b0fdc6 -> origin/main
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7886556Z [command]/usr/bin/git branch --list --remote origin/main
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7914548Z   origin/main
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7921126Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7944138Z 8bef1b76acfc93e1b1510e8cb71d7c7a25b0fdc6
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7948367Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7949456Z ##[group]Determining the checkout info
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7950681Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.7952140Z [command]/usr/bin/git sparse-checkout disable
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.8002128Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.8032340Z ##[group]Checking out the ref
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:42.8036276Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:43.9969323Z Updating files:  11% (20569/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:44.3394875Z Updating files:  12% (21473/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:44.4246237Z Updating files:  13% (23263/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:44.5997229Z Updating files:  14% (25052/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:44.7389644Z Updating files:  15% (26841/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:44.9584110Z Updating files:  16% (28631/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:44.9602322Z Updating files:  17% (30420/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.0724376Z Updating files:  17% (30453/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.1646552Z Updating files:  18% (32210/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.2734453Z Updating files:  19% (33999/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.3571999Z Updating files:  20% (35788/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.4021472Z Updating files:  21% (37578/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.9718667Z Updating files:  22% (39367/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:45.9936455Z Updating files:  22% (40281/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.0747186Z Updating files:  23% (41156/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.1588243Z Updating files:  24% (42946/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.2391514Z Updating files:  25% (44735/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.3201385Z Updating files:  26% (46525/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.8610834Z Updating files:  27% (48314/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.9390663Z Updating files:  28% (50103/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:46.9602456Z Updating files:  29% (51893/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.0154771Z Updating files:  29% (52349/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.0877125Z Updating files:  30% (53682/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.1638098Z Updating files:  31% (55472/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.6489419Z Updating files:  32% (57261/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.7232703Z Updating files:  33% (59050/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.7958337Z Updating files:  34% (60840/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:47.8704430Z Updating files:  35% (62629/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.0699628Z Updating files:  36% (64419/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.1133001Z Updating files:  36% (65144/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.1858549Z Updating files:  37% (66208/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.2581675Z Updating files:  38% (67997/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.3327992Z Updating files:  39% (69787/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.5769371Z Updating files:  40% (71576/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.6589096Z Updating files:  41% (73365/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:48.7349893Z Updating files:  42% (75155/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.2580378Z Updating files:  43% (76944/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.2908099Z Updating files:  43% (77870/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.3481603Z Updating files:  44% (78734/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.3934015Z Updating files:  45% (80523/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.4376255Z Updating files:  46% (82312/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.4850230Z Updating files:  47% (84102/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:49.5295839Z Updating files:  48% (85891/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.0169561Z Updating files:  49% (87681/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.0478543Z Updating files:  49% (88261/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.0930255Z Updating files:  50% (89470/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.1386444Z Updating files:  51% (91259/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.1847434Z Updating files:  52% (93049/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.2293221Z Updating files:  53% (94838/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.2745147Z Updating files:  54% (96628/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.3232771Z Updating files:  55% (98417/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.3687006Z Updating files:  56% (100206/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.4509139Z Updating files:  57% (101996/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.4978878Z Updating files:  58% (103785/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.5453215Z Updating files:  59% (105575/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.5922709Z Updating files:  60% (107364/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.6403486Z Updating files:  61% (109153/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.6874322Z Updating files:  62% (110943/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.7335389Z Updating files:  63% (112732/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.7802729Z Updating files:  64% (114521/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:50.8291139Z Updating files:  65% (116311/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.2027491Z Updating files:  66% (118100/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.2275417Z Updating files:  66% (119319/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.2818189Z Updating files:  67% (119890/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.3340051Z Updating files:  68% (121679/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.3876387Z Updating files:  69% (123468/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.4416923Z Updating files:  70% (125258/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.4957062Z Updating files:  71% (127047/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.9303926Z Updating files:  72% (128837/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.9602099Z Updating files:  73% (130626/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:51.9887288Z Updating files:  73% (131500/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:52.0738491Z Updating files:  74% (132415/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:52.1701320Z Updating files:  75% (134205/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:52.2406988Z Updating files:  76% (135994/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:52.3040029Z Updating files:  77% (137784/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:52.3559011Z Updating files:  78% (139573/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:52.4194547Z Updating files:  79% (141362/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.0633353Z Updating files:  80% (143152/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.0852011Z Updating files:  80% (144317/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.1404637Z Updating files:  81% (144941/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.1987372Z Updating files:  82% (146730/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.2667937Z Updating files:  83% (148520/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.3367995Z Updating files:  84% (150309/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.6700831Z Updating files:  85% (152099/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.7359063Z Updating files:  86% (153888/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.8026905Z Updating files:  87% (155677/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.9493663Z Updating files:  88% (157467/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:53.9608022Z Updating files:  89% (159256/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:54.0420661Z Updating files:  89% (159360/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:54.3808891Z Updating files:  90% (161046/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:54.4486997Z Updating files:  91% (162835/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:54.5045148Z Updating files:  92% (164624/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.1626440Z Updating files:  93% (166414/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.1919869Z Updating files:  93% (167687/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.2599843Z Updating files:  94% (168203/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.3260167Z Updating files:  95% (169993/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.8715288Z Updating files:  96% (171782/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.9450021Z Updating files:  97% (173571/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:55.9601892Z Updating files:  98% (175361/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.0303560Z Updating files:  98% (175742/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.3462357Z Updating files:  99% (177150/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.3463121Z Updating files: 100% (178939/178939)
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.3463430Z Updating files: 100% (178939/178939), done.
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.5996999Z Switched to a new branch 'main'
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.6055808Z branch 'main' set up to track 'origin/main'.
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.6098290Z ##[endgroup]
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.6137160Z [command]/usr/bin/git log -1 --format=%H
+supply chain	Run actions/checkout@v7.0.1	2026-10-11T10:14:56.6162410Z 8bef1b76acfc93e1b1510e8cb71d7c7a25b0fdc6
+supply chain	Install stable Rust for cargo-deny	﻿2026-10-11T10:14:56.6496186Z ##[group]Run dtolnay/rust-toolchain@stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6496453Z with:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6496623Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6496939Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6497093Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6497269Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6497443Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6497625Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6497813Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6553040Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6831003Z ##[group]Run if [[ -z $toolchain ]]; then
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6831365Z ^[[36;1mif [[ -z $toolchain ]]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6831800Z ^[[36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6832242Z ^[[36;1m  echo "'toolchain' is a required input" >&2^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6832488Z ^[[36;1m  exit 1^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6832752Z ^[[36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6833123Z ^[[36;1m  if [[ Linux == macOS ]]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6833544Z ^[[36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6833924Z ^[[36;1m  else^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6834230Z ^[[36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6834570Z ^[[36;1m  fi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6834806Z ^[[36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6835206Z ^[[36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6835556Z ^[[36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6836175Z ^[[36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6836547Z ^[[36;1melse^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6836714Z ^[[36;1m  delimiter=EOF^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6836956Z ^[[36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6837350Z ^[[36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.6837674Z ^[[36;1mfi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7323256Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7323574Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7323767Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7323952Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7324128Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7324295Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7324481Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7324646Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7450293Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=89]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7454166Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7602089Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7602483Z ^[[36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7653632Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7653905Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7654078Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7654257Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7654434Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7654607Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7654792Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7814174Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=35]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.7816265Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8896716Z ##[group]Run if ! command -v rustup &>/dev/null; then
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8897071Z ^[[36;1mif ! command -v rustup &>/dev/null; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8897885Z ^[[36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8898562Z ^[[36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8898786Z ^[[36;1mfi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8955197Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8955468Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8955633Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8956045Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8956215Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8956389Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8956592Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.8956798Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9318220Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=150]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9320506Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9327976Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9340165Z ##[start-action display=rustup toolchain install stable;id=__dtolnay_rust-toolchain.__run_4]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9588147Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9588988Z ^[[36;1mset -f  # split targets and components on commas and whitespace, without glob expansion^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9589518Z ^[[36;1mflags=()^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9589857Z ^[[36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9590352Z ^[[36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9590962Z ^[[36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9591484Z ^[[36;1mlog=$(mktemp)^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9591768Z ^[[36;1mtrap 'rm -f "$log"' EXIT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9592087Z ^[[36;1mfor attempt in 1 2 3 4 5; do^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9592796Z ^[[36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9593492Z ^[[36;1m    break^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9593741Z ^[[36;1m  else^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9593986Z ^[[36;1m    status=$?^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9594245Z ^[[36;1m  fi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9594587Z ^[[36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9595270Z ^[[36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9595947Z ^[[36;1m    exit "$status"^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9596222Z ^[[36;1m  fi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9596659Z ^[[36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9597168Z ^[[36;1m  sleep 30^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9597423Z ^[[36;1mdone^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9653307Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9653588Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9653753Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9653926Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9654099Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9654274Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9654479Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9654675Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9654839Z   targets: 
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9654991Z   components: 
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9655158Z   RUSTUP_PERMIT_COPY_RENAME: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:56.9655349Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.1538846Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3018123Z 
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3086401Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3086795Z 
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3132071Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=1379]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3141068Z ##[start-action display=rustup default stable;id=__dtolnay_rust-toolchain.__run_5]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3159852Z ##[group]Run rustup default "$toolchain" --force-non-host
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3160315Z ^[[36;1mrustup default "$toolchain" --force-non-host^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3223249Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3223689Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3223929Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3224208Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3224482Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3224668Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3224951Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3225153Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3225320Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3335303Z info: using existing install for stable-x86_64-unknown-linux-gnu
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3356324Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3356567Z 
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3422699Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3423016Z 
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3437315Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=29]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3440564Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3456977Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3457610Z ^[[36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3458133Z ^[[36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3458538Z ^[[36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3511834Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3512107Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3512277Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3512452Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3512631Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3512801Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3513004Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3513204Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3513369Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3939646Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=49]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3961655Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3980722Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3981038Z ^[[36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3981311Z ^[[36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.3981536Z ^[[36;1mfi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4040061Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4040336Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4040509Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4040688Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4040871Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4041042Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4041230Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4041423Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4118697Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=15]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4120558Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4137589Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4137896Z ^[[36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4138164Z ^[[36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4138401Z ^[[36;1mfi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4191795Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4192067Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4192234Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4192578Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4192752Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4193042Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4193241Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4193443Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4268399Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=14]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4271579Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4288652Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4289068Z ^[[36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4289610Z ^[[36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4290197Z ^[[36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4290717Z ^[[36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4291129Z ^[[36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4291524Z ^[[36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4291959Z ^[[36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4292350Z ^[[36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4292630Z ^[[36;1m  fi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4292792Z ^[[36;1mfi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4345978Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4346263Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4346422Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4346605Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4346779Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4346950Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4347154Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4347363Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4347543Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4630325Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=35]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4633589Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4650194Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4650790Z ^[[36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4651272Z ^[[36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4651656Z ^[[36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4651909Z ^[[36;1mfi^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4707923Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4708205Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4708381Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4708572Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4708743Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4708913Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4709102Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4709303Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4709470Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4889890Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=25]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4893593Z ##[start-action display=rustc +stable --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4909443Z ##[group]Run rustc +"$toolchain" --version --verbose
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4909742Z ^[[36;1mrustc +"$toolchain" --version --verbose^[[0m
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4963411Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4963691Z env:
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4963860Z   CARGO_BUILD_JOBS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4964183Z   CARGO_INCREMENTAL: 0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4964356Z   RUST_TEST_THREADS: 1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4964637Z   CARGO_TERM_COLOR: always
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4964837Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4965046Z   toolchain: stable
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.4965217Z ##[endgroup]
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5125973Z rustc 1.99.0 (b940084d7 2026-09-28)
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5126381Z binary: rustc
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5126641Z commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5127015Z commit-date: 2026-09-28
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5127224Z host: x86_64-unknown-linux-gnu
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5127431Z release: 1.99.0
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5127602Z LLVM version: 23.1.1
+supply chain	Install stable Rust for cargo-deny	2026-10-11T10:14:58.5144514Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=25]
+supply chain	Install cargo-deny 0.20.2	﻿2026-10-11T10:14:58.5192894Z ##[group]Run cargo install cargo-deny --version 0.20.2 --locked
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5193255Z ^[[36;1mcargo install cargo-deny --version 0.20.2 --locked^[[0m
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5248014Z shell: /usr/bin/bash -e {0}
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5248230Z env:
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5248393Z   CARGO_BUILD_JOBS: 1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5248585Z   CARGO_INCREMENTAL: 0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5248756Z   RUST_TEST_THREADS: 1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5248931Z   CARGO_TERM_COLOR: always
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5249124Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.5249325Z ##[endgroup]
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:58.9674347Z ^[[1m^[[92m    Updating^[[0m crates.io index
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:59.0730852Z ^[[1m^[[92m Downloading^[[0m crates ...
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:59.0937341Z ^[[1m^[[92m  Downloaded^[[0m cargo-deny v0.20.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:59.1933842Z ^[[1m^[[92m  Installing^[[0m cargo-deny v0.20.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:14:59.1967674Z ^[[1m^[[92m    Updating^[[0m crates.io index
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.0607631Z ^[[1m^[[92m    Updating^[[0m crates.io index
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.0918001Z ^[[1m^[[92m Downloading^[[0m crates ...
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1041389Z ^[[1m^[[92m  Downloaded^[[0m allocator-api2 v0.2.21
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1067024Z ^[[1m^[[92m  Downloaded^[[0m anstream v1.0.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1083158Z ^[[1m^[[92m  Downloaded^[[0m anstyle v1.0.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1094787Z ^[[1m^[[92m  Downloaded^[[0m anstyle-parse v1.0.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1107452Z ^[[1m^[[92m  Downloaded^[[0m anstyle-query v1.1.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1116291Z ^[[1m^[[92m  Downloaded^[[0m aho-corasick v1.1.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1159629Z ^[[1m^[[92m  Downloaded^[[0m anyhow v1.0.103
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1198487Z ^[[1m^[[92m  Downloaded^[[0m bitvec v1.0.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1363808Z ^[[1m^[[92m  Downloaded^[[0m codespan v0.13.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1372756Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-utils v0.8.21
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1396020Z ^[[1m^[[92m  Downloaded^[[0m either v1.16.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1411582Z ^[[1m^[[92m  Downloaded^[[0m codespan-reporting v0.13.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1478473Z ^[[1m^[[92m  Downloaded^[[0m equivalent v1.0.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1486273Z ^[[1m^[[92m  Downloaded^[[0m borsh v1.6.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1545417Z ^[[1m^[[92m  Downloaded^[[0m camino v1.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1561009Z ^[[1m^[[92m  Downloaded^[[0m crossbeam v0.8.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1569766Z ^[[1m^[[92m  Downloaded^[[0m clap_builder v4.6.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1621769Z ^[[1m^[[92m  Downloaded^[[0m block-buffer v0.10.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1629807Z ^[[1m^[[92m  Downloaded^[[0m clap_lex v1.1.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1638186Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-epoch v0.9.20
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1657713Z ^[[1m^[[92m  Downloaded^[[0m crypto-common v0.1.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1664556Z ^[[1m^[[92m  Downloaded^[[0m colorchoice v1.0.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1672284Z ^[[1m^[[92m  Downloaded^[[0m displaydoc v0.2.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1696483Z ^[[1m^[[92m  Downloaded^[[0m smol_str v0.3.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1708367Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-deque v0.8.6
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1718998Z ^[[1m^[[92m  Downloaded^[[0m utf8parse v0.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1726541Z ^[[1m^[[92m  Downloaded^[[0m synstructure v0.13.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1734016Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-channel v0.5.15
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1766084Z ^[[1m^[[92m  Downloaded^[[0m digest v0.10.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1780267Z ^[[1m^[[92m  Downloaded^[[0m strum_macros v0.28.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1799604Z ^[[1m^[[92m  Downloaded^[[0m thiserror-impl v2.0.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1810885Z ^[[1m^[[92m  Downloaded^[[0m writeable v0.6.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1826549Z ^[[1m^[[92m  Downloaded^[[0m strsim v0.11.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1836476Z ^[[1m^[[92m  Downloaded^[[0m twox-hash v2.1.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1854207Z ^[[1m^[[92m  Downloaded^[[0m untrusted v0.9.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1867164Z ^[[1m^[[92m  Downloaded^[[0m fern v0.7.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1901644Z ^[[1m^[[92m  Downloaded^[[0m tap v1.0.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1908775Z ^[[1m^[[92m  Downloaded^[[0m version_check v0.9.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1918362Z ^[[1m^[[92m  Downloaded^[[0m yoke-derive v0.8.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1927146Z ^[[1m^[[92m  Downloaded^[[0m stable_deref_trait v1.2.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1933680Z ^[[1m^[[92m  Downloaded^[[0m tinystr v0.8.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1949911Z ^[[1m^[[92m  Downloaded^[[0m strum v0.28.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1956440Z ^[[1m^[[92m  Downloaded^[[0m tinyvec_macros v0.1.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1962682Z ^[[1m^[[92m  Downloaded^[[0m utf8_iter v1.0.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1970363Z ^[[1m^[[92m  Downloaded^[[0m zerofrom-derive v0.1.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1978351Z ^[[1m^[[92m  Downloaded^[[0m find-msvc-tools v0.1.9
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1990637Z ^[[1m^[[92m  Downloaded^[[0m zerofrom v0.1.8
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.1997877Z ^[[1m^[[92m  Downloaded^[[0m foldhash v0.1.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2007292Z ^[[1m^[[92m  Downloaded^[[0m potential_utf v0.1.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2015317Z ^[[1m^[[92m  Downloaded^[[0m zerovec-derive v0.11.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2027237Z ^[[1m^[[92m  Downloaded^[[0m fixedbitset v0.5.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2041993Z ^[[1m^[[92m  Downloaded^[[0m lock_api v0.4.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2051851Z ^[[1m^[[92m  Downloaded^[[0m rustc-stable-hash v0.1.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2064133Z ^[[1m^[[92m  Downloaded^[[0m termcolor v1.4.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2073639Z ^[[1m^[[92m  Downloaded^[[0m wyz v0.5.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2082689Z ^[[1m^[[92m  Downloaded^[[0m zmij v1.0.21
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2096824Z ^[[1m^[[92m  Downloaded^[[0m target-lexicon v0.13.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2113207Z ^[[1m^[[92m  Downloaded^[[0m generic-array v0.14.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2123933Z ^[[1m^[[92m  Downloaded^[[0m heck v0.5.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2133748Z ^[[1m^[[92m  Downloaded^[[0m zstd-safe v7.2.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2145276Z ^[[1m^[[92m  Downloaded^[[0m toml-span v0.7.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2157910Z ^[[1m^[[92m  Downloaded^[[0m thiserror v2.0.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2210565Z ^[[1m^[[92m  Downloaded^[[0m tinyvec v1.11.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2230968Z ^[[1m^[[92m  Downloaded^[[0m unicode-ident v1.0.24
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2252880Z ^[[1m^[[92m  Downloaded^[[0m walkdir v2.5.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2267288Z ^[[1m^[[92m  Downloaded^[[0m yoke v0.8.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2281444Z ^[[1m^[[92m  Downloaded^[[0m zstd v0.13.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2305849Z ^[[1m^[[92m  Downloaded^[[0m zerotrie v0.2.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2337258Z ^[[1m^[[92m  Downloaded^[[0m tame-index v0.26.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2372227Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-queue v0.3.12
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2381667Z ^[[1m^[[92m  Downloaded^[[0m funty v2.0.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2387452Z ^[[1m^[[92m  Downloaded^[[0m url v2.5.8
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2407793Z ^[[1m^[[92m  Downloaded^[[0m typenum v1.20.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2435769Z ^[[1m^[[92m  Downloaded^[[0m unicode-normalization v0.1.25
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2463314Z ^[[1m^[[92m  Downloaded^[[0m zerovec v0.11.6
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2511981Z ^[[1m^[[92m  Downloaded^[[0m syn v2.0.117
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2598245Z ^[[1m^[[92m  Downloaded^[[0m unicode-width v0.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2644897Z ^[[1m^[[92m  Downloaded^[[0m itoa v1.0.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2656200Z ^[[1m^[[92m  Downloaded^[[0m sha2 v0.10.9
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2676844Z ^[[1m^[[92m  Downloaded^[[0m form_urlencoded v1.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2682616Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.17.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2725295Z ^[[1m^[[92m  Downloaded^[[0m krates v0.21.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2744968Z ^[[1m^[[92m  Downloaded^[[0m same-file v1.0.6
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2755630Z ^[[1m^[[92m  Downloaded^[[0m cfg_aliases v0.2.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2763070Z ^[[1m^[[92m  Downloaded^[[0m is_terminal_polyfill v1.70.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2770774Z ^[[1m^[[92m  Downloaded^[[0m percent-encoding v2.3.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2777344Z ^[[1m^[[92m  Downloaded^[[0m radium v0.7.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2784851Z ^[[1m^[[92m  Downloaded^[[0m cpufeatures v0.2.17
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2795543Z ^[[1m^[[92m  Downloaded^[[0m idna_adapter v1.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2802528Z ^[[1m^[[92m  Downloaded^[[0m plain v0.2.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2810971Z ^[[1m^[[92m  Downloaded^[[0m scopeguard v1.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2820198Z ^[[1m^[[92m  Downloaded^[[0m pkg-config v0.3.33
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2832334Z ^[[1m^[[92m  Downloaded^[[0m scroll_derive v0.13.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2838429Z ^[[1m^[[92m  Downloaded^[[0m shlex v1.3.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2848724Z ^[[1m^[[92m  Downloaded^[[0m zstd-sys v2.0.16+zstd.1.5.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2985030Z ^[[1m^[[92m  Downloaded^[[0m globset v0.4.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.2996900Z ^[[1m^[[92m  Downloaded^[[0m quote v1.0.45
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3018546Z ^[[1m^[[92m  Downloaded^[[0m cfg-if v1.0.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3030225Z ^[[1m^[[92m  Downloaded^[[0m jobserver v0.1.34
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3046703Z ^[[1m^[[92m  Downloaded^[[0m nu-ansi-term v0.50.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3065490Z ^[[1m^[[92m  Downloaded^[[0m smallvec v1.15.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3082437Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.2.17
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3106211Z ^[[1m^[[92m  Downloaded^[[0m parking_lot v0.12.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3125979Z ^[[1m^[[92m  Downloaded^[[0m scroll v0.13.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3136934Z ^[[1m^[[92m  Downloaded^[[0m semver v1.0.28
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3155259Z ^[[1m^[[92m  Downloaded^[[0m memmap2 v0.9.11
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3168910Z ^[[1m^[[92m  Downloaded^[[0m litemap v0.8.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3187199Z ^[[1m^[[92m  Downloaded^[[0m cfg-expr v0.20.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3210795Z ^[[1m^[[92m  Downloaded^[[0m icu_provider v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3231467Z ^[[1m^[[92m  Downloaded^[[0m log v0.4.29
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3251201Z ^[[1m^[[92m  Downloaded^[[0m parking_lot_core v0.9.12
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3267762Z ^[[1m^[[92m  Downloaded^[[0m rayon v1.12.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3345957Z ^[[1m^[[92m  Downloaded^[[0m serde_core v1.0.228
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3367778Z ^[[1m^[[92m  Downloaded^[[0m clap v4.6.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3446401Z ^[[1m^[[92m  Downloaded^[[0m icu_locale_core v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3503640Z ^[[1m^[[92m  Downloaded^[[0m proc-macro2 v1.0.106
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3527514Z ^[[1m^[[92m  Downloaded^[[0m rayon-core v1.13.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3558059Z ^[[1m^[[92m  Downloaded^[[0m serde_derive v1.0.228
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3582862Z ^[[1m^[[92m  Downloaded^[[0m bytes v1.11.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3616718Z ^[[1m^[[92m  Downloaded^[[0m icu_collections v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3667670Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3697225Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer_data v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3714323Z ^[[1m^[[92m  Downloaded^[[0m icu_properties v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3732980Z ^[[1m^[[92m  Downloaded^[[0m serde v1.0.228
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3760768Z ^[[1m^[[92m  Downloaded^[[0m cc v1.2.62
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3784623Z ^[[1m^[[92m  Downloaded^[[0m http v1.4.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3813531Z ^[[1m^[[92m  Downloaded^[[0m indexmap v2.14.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3848154Z ^[[1m^[[92m  Downloaded^[[0m memchr v2.8.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3891626Z ^[[1m^[[92m  Downloaded^[[0m icu_properties_data v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.3979260Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.15.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4018692Z ^[[1m^[[92m  Downloaded^[[0m idna v1.1.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4046805Z ^[[1m^[[92m  Downloaded^[[0m regex v1.12.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4089513Z ^[[1m^[[92m  Downloaded^[[0m serde_json v1.0.150
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4149229Z ^[[1m^[[92m  Downloaded^[[0m goblin v0.10.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4207368Z ^[[1m^[[92m  Downloaded^[[0m bstr v1.12.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4270881Z ^[[1m^[[92m  Downloaded^[[0m regex-syntax v0.8.10
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4326613Z ^[[1m^[[92m  Downloaded^[[0m regex-automata v0.4.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4441078Z ^[[1m^[[92m  Downloaded^[[0m jiff v0.2.24
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4577502Z ^[[1m^[[92m  Downloaded^[[0m petgraph v0.8.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.4734154Z ^[[1m^[[92m  Downloaded^[[0m libc v0.2.186
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.5066061Z ^[[1m^[[92m  Downloaded^[[0m ring v0.17.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.5412407Z ^[[1m^[[92m  Downloaded^[[0m spdx v0.13.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:00.8546363Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.106
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:05.2719380Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.24
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:05.4053332Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.45
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:06.1413744Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.117
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:07.5870831Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.186
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:07.6964072Z ^[[1m^[[92m   Compiling^[[0m synstructure v0.13.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:07.9455468Z ^[[1m^[[92m   Compiling^[[0m zerofrom-derive v0.1.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:08.2798003Z ^[[1m^[[92m   Compiling^[[0m zerofrom v0.1.8
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:08.3750743Z ^[[1m^[[92m   Compiling^[[0m yoke-derive v0.8.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:08.6689561Z ^[[1m^[[92m   Compiling^[[0m stable_deref_trait v1.2.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:08.6861463Z ^[[1m^[[92m   Compiling^[[0m yoke v0.8.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:09.3550615Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.228
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:09.4390580Z ^[[1m^[[92m   Compiling^[[0m jobserver v0.1.34
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:09.5970879Z ^[[1m^[[92m   Compiling^[[0m zerovec-derive v0.11.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:10.1104125Z ^[[1m^[[92m   Compiling^[[0m smallvec v1.15.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:10.2902649Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.9
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:10.4067715Z ^[[1m^[[92m   Compiling^[[0m shlex v1.3.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:10.4672323Z ^[[1m^[[92m   Compiling^[[0m cc v1.2.62
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:11.1755792Z ^[[1m^[[92m   Compiling^[[0m zerovec v0.11.6
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:12.8546955Z ^[[1m^[[92m   Compiling^[[0m displaydoc v0.2.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:13.0641790Z ^[[1m^[[92m   Compiling^[[0m crossbeam-utils v0.8.21
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:13.1697188Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:14.0748127Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.228
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:14.1488646Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:14.2465156Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:14.2991248Z ^[[1m^[[92m   Compiling^[[0m tinystr v0.8.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:14.3824341Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.228
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:15.6689681Z ^[[1m^[[92m   Compiling^[[0m litemap v0.8.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:15.7487493Z ^[[1m^[[92m   Compiling^[[0m pkg-config v0.3.33
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:15.9408803Z ^[[1m^[[92m   Compiling^[[0m writeable v0.6.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:16.0200597Z ^[[1m^[[92m   Compiling^[[0m crossbeam-epoch v0.9.20
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:16.0802875Z ^[[1m^[[92m   Compiling^[[0m icu_locale_core v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:17.1161630Z ^[[1m^[[92m   Compiling^[[0m zstd-sys v2.0.16+zstd.1.5.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:17.9248635Z ^[[1m^[[92m   Compiling^[[0m zerotrie v0.2.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.0907639Z ^[[1m^[[92m   Compiling^[[0m potential_utf v0.1.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.1360844Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.1798715Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.2238132Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.5392152Z ^[[1m^[[92m   Compiling^[[0m utf8_iter v1.0.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.5847274Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:18.6011466Z ^[[1m^[[92m   Compiling^[[0m icu_collections v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:19.1471082Z ^[[1m^[[92m   Compiling^[[0m icu_provider v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:53.9209088Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.21
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:53.9933596Z ^[[1m^[[92m   Compiling^[[0m crossbeam-deque v0.8.6
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:54.1424541Z ^[[1m^[[92m   Compiling^[[0m aho-corasick v1.1.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:55.7515184Z ^[[1m^[[92m   Compiling^[[0m unicode-width v0.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:55.8508450Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:55.8705556Z ^[[1m^[[92m   Compiling^[[0m rayon-core v1.13.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:55.9122529Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:55.9943760Z ^[[1m^[[92m   Compiling^[[0m regex-syntax v0.8.10
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.1979907Z ^[[1m^[[92m   Compiling^[[0m target-lexicon v0.13.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.3487080Z ^[[1m^[[92m   Compiling^[[0m camino v1.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.4233347Z ^[[1m^[[92m   Compiling^[[0m utf8parse v0.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.4499968Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.150
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.4957936Z ^[[1m^[[92m   Compiling^[[0m zstd-safe v7.2.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.5414902Z ^[[1m^[[92m   Compiling^[[0m termcolor v1.4.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:58.7106469Z ^[[1m^[[92m   Compiling^[[0m codespan-reporting v0.13.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:59.1619882Z ^[[1m^[[92m   Compiling^[[0m anstyle-parse v1.0.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:15:59.2470095Z ^[[1m^[[92m   Compiling^[[0m regex-automata v0.4.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:02.5094168Z ^[[1m^[[92m   Compiling^[[0m icu_properties v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:03.1646036Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer v2.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:03.8054352Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:03.8490360Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:03.8807867Z ^[[1m^[[92m   Compiling^[[0m log v0.4.29
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:03.9560035Z ^[[1m^[[92m   Compiling^[[0m foldhash v0.1.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.0211039Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.1076999Z ^[[1m^[[92m   Compiling^[[0m is_terminal_polyfill v1.70.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.1304482Z ^[[1m^[[92m   Compiling^[[0m colorchoice v1.0.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.1568827Z ^[[1m^[[92m   Compiling^[[0m anstyle-query v1.1.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.1820400Z ^[[1m^[[92m   Compiling^[[0m allocator-api2 v0.2.21
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.3616638Z ^[[1m^[[92m   Compiling^[[0m parking_lot_core v0.9.12
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.4181723Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.7850053Z ^[[1m^[[92m   Compiling^[[0m radium v0.7.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.8538920Z ^[[1m^[[92m   Compiling^[[0m tinyvec_macros v0.1.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.8709980Z ^[[1m^[[92m   Compiling^[[0m anstyle v1.0.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:04.9601964Z ^[[1m^[[92m   Compiling^[[0m anstream v1.0.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:05.1110948Z ^[[1m^[[92m   Compiling^[[0m tinyvec v1.11.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:05.3288874Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:05.7615957Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.15.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:06.1226994Z ^[[1m^[[92m   Compiling^[[0m digest v0.10.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:07.1265545Z ^[[1m^[[92m   Compiling^[[0m idna_adapter v1.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:08.0187951Z ^[[1m^[[92m   Compiling^[[0m semver v1.0.28
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:08.2175579Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:08.3769114Z ^[[1m^[[92m   Compiling^[[0m scroll_derive v0.13.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:08.6487026Z ^[[1m^[[92m   Compiling^[[0m thiserror-impl v2.0.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.1209474Z ^[[1m^[[92m   Compiling^[[0m percent-encoding v2.3.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.1971885Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.2148064Z ^[[1m^[[92m   Compiling^[[0m tap v1.0.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.2467288Z ^[[1m^[[92m   Compiling^[[0m fixedbitset v0.5.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.4107431Z ^[[1m^[[92m   Compiling^[[0m bytes v1.11.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.7361468Z ^[[1m^[[92m   Compiling^[[0m either v1.16.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.8129311Z ^[[1m^[[92m   Compiling^[[0m heck v0.5.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.8766138Z ^[[1m^[[92m   Compiling^[[0m anyhow v1.0.103
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:09.9529299Z ^[[1m^[[92m   Compiling^[[0m clap_lex v1.1.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:10.0585976Z ^[[1m^[[92m   Compiling^[[0m scopeguard v1.2.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:10.0830899Z ^[[1m^[[92m   Compiling^[[0m strsim v0.11.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:10.3554027Z ^[[1m^[[92m   Compiling^[[0m clap_builder v4.6.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:13.7704238Z ^[[1m^[[92m   Compiling^[[0m lock_api v0.4.14
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:13.8955359Z ^[[1m^[[92m   Compiling^[[0m strum_macros v0.28.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:14.7128095Z ^[[1m^[[92m   Compiling^[[0m rayon v1.12.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:16.0423447Z ^[[1m^[[92m   Compiling^[[0m http v1.4.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:16.7220470Z ^[[1m^[[92m   Compiling^[[0m petgraph v0.8.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:17.6307301Z ^[[1m^[[92m   Compiling^[[0m wyz v0.5.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:17.7092904Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:18.1038185Z ^[[1m^[[92m   Compiling^[[0m form_urlencoded v1.2.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:18.2011965Z ^[[1m^[[92m   Compiling^[[0m scroll v0.13.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:25.2597437Z ^[[1m^[[92m   Compiling^[[0m cfg-expr v0.20.7
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:25.6203959Z ^[[1m^[[92m   Compiling^[[0m idna v1.1.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:26.2800638Z ^[[1m^[[92m   Compiling^[[0m zstd v0.13.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:26.6126399Z ^[[1m^[[92m   Compiling^[[0m unicode-normalization v0.1.25
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:26.8496657Z ^[[1m^[[92m   Compiling^[[0m regex v1.12.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:27.2107223Z ^[[1m^[[92m   Compiling^[[0m toml-span v0.7.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:28.2127288Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.2.17
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:28.2782519Z ^[[1m^[[92m   Compiling^[[0m smol_str v0.3.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:28.3800026Z ^[[1m^[[92m   Compiling^[[0m crossbeam-queue v0.3.12
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:28.4367100Z ^[[1m^[[92m   Compiling^[[0m crossbeam-channel v0.5.15
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:28.7018282Z ^[[1m^[[92m   Compiling^[[0m bstr v1.12.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:28.9768780Z ^[[1m^[[92m   Compiling^[[0m twox-hash v2.1.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:29.0338055Z ^[[1m^[[92m   Compiling^[[0m plain v0.2.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:29.0634773Z ^[[1m^[[92m   Compiling^[[0m funty v2.0.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:29.4235642Z ^[[1m^[[92m   Compiling^[[0m rustc-stable-hash v0.1.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:29.4814471Z ^[[1m^[[92m   Compiling^[[0m same-file v1.0.6
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:29.5233892Z ^[[1m^[[92m   Compiling^[[0m untrusted v0.9.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:31.0394645Z ^[[1m^[[92m   Compiling^[[0m walkdir v2.5.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:31.2333300Z ^[[1m^[[92m   Compiling^[[0m tame-index v0.26.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:33.1684642Z ^[[1m^[[92m   Compiling^[[0m bitvec v1.0.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:34.5093430Z ^[[1m^[[92m   Compiling^[[0m goblin v0.10.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:38.4639562Z ^[[1m^[[92m   Compiling^[[0m globset v0.4.18
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:39.2723814Z ^[[1m^[[92m   Compiling^[[0m crossbeam v0.8.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:39.2910481Z ^[[1m^[[92m   Compiling^[[0m spdx v0.13.4
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:40.4056887Z ^[[1m^[[92m   Compiling^[[0m parking_lot v0.12.5
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:40.6746534Z ^[[1m^[[92m   Compiling^[[0m url v2.5.8
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:41.4241773Z ^[[1m^[[92m   Compiling^[[0m krates v0.21.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:43.7302717Z ^[[1m^[[92m   Compiling^[[0m strum v0.28.0
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:43.9519358Z ^[[1m^[[92m   Compiling^[[0m clap v4.6.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:43.9704976Z ^[[1m^[[92m   Compiling^[[0m fern v0.7.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:44.3716309Z ^[[1m^[[92m   Compiling^[[0m codespan v0.13.1
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:44.5182949Z ^[[1m^[[92m   Compiling^[[0m memmap2 v0.9.11
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:44.6094953Z ^[[1m^[[92m   Compiling^[[0m jiff v0.2.24
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:47.9395259Z ^[[1m^[[92m   Compiling^[[0m nu-ansi-term v0.50.3
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:16:48.0980638Z ^[[1m^[[92m   Compiling^[[0m cargo-deny v0.20.2
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:17:37.9068610Z ^[[1m^[[92m    Finished^[[0m `release` profile [optimized] target(s) in 2m 39s
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:17:37.9157884Z ^[[1m^[[92m  Installing^[[0m /home/runner/.cargo/bin/cargo-deny
+supply chain	Install cargo-deny 0.20.2	2026-10-11T10:17:37.9242591Z ^[[1m^[[92m   Installed^[[0m package `cargo-deny v0.20.2` (executable `cargo-deny`)
+supply chain	Check root workspace advisories, licenses, bans, and sources	﻿2026-10-11T10:17:38.1411656Z ##[group]Run cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1412301Z ^[[36;1mcargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1466794Z shell: /usr/bin/bash -e {0}
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1466999Z env:
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1467156Z   CARGO_BUILD_JOBS: 1
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1467331Z   CARGO_INCREMENTAL: 0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1467502Z   RUST_TEST_THREADS: 1
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1467669Z   CARGO_TERM_COLOR: always
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1467861Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:38.1468084Z ##[endgroup]
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0967542Z ^[[0m^[[1m^[[38;5;11mwarning[duplicate]^[[0m^[[1m: found 2 duplicate entries for crate 'hashbrown'^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0968984Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/Cargo.lock:31:1
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0969735Z    ^[[0m^[[36m│^[[0m  
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0970703Z ^[[0m^[[36m31^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m╭^[[0m ^[[0m^[[33mhashbrown 0.15.5 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0971833Z ^[[0m^[[36m32^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m│^[[0m ^[[0m^[[33mhashbrown 0.17.1 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0972764Z    ^[[0m^[[36m│^[[0m ^[[0m^[[33m╰^[[0m^[[0m^[[33m──────────────────────────────────────────────────────────────────────┘ lock entries^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0973306Z    ^[[0m^[[36m│^[[0m  
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0973590Z    ^[[0m^[[36m├^[[0m hashbrown v0.15.5
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0973884Z      └── petgraph v0.8.3
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0974159Z          ├── (dev) jarde v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0974478Z          │   └── jarde-cli v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0974827Z          ├── jarde-java v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0975545Z          │   └── jarde v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0975980Z          └── jarde-jvm v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0976253Z              ├── jarde v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0976551Z              └── jarde-java v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0976897Z    ^[[0m^[[36m├^[[0m hashbrown v0.17.1
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0977261Z      └── indexmap v2.14.2
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0977524Z          ├── noak v0.7.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0977794Z          │   └── jarde-reader v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0978097Z          │       ├── jarde v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0978445Z          │       │   └── jarde-cli v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0978832Z          │       ├── jarde-java v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0979157Z          │       │   └── jarde v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0979467Z          │       ├── jarde-jvm v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0979778Z          │       │   ├── jarde v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0980167Z          │       │   └── jarde-java v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0980512Z          │       └── jarde-query v0.1.0
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0980854Z          │           ├── jarde v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0981173Z          │           └── jarde-jvm v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0981485Z          └── petgraph v0.8.3
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0981786Z              ├── (dev) jarde v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0982192Z              ├── jarde-java v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0982514Z              └── jarde-jvm v0.1.0 (*)
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0982681Z 
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0983128Z ^[[0m^[[1m^[[38;5;11mwarning[license-exception-not-encountered]^[[0m^[[1m: license exception was not encountered^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0983927Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:33:10
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0984370Z    ^[[0m^[[36m│^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0984734Z ^[[0m^[[36m33^[[0m ^[[0m^[[36m│^[[0m crate = "^[[0m^[[33mlibfuzzer-sys@0.4.13^[[0m"
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0985316Z    ^[[0m^[[36m│^[[0m          ^[[0m^[[33m━━━━━━━━━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license exception^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0985785Z 
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0986200Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0986779Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:18:4
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0987142Z    ^[[0m^[[36m│^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0987495Z ^[[0m^[[36m18^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-2-Clause^[[0m",
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0988279Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0988566Z 
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0988929Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0989604Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:19:4
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0989965Z    ^[[0m^[[36m│^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0990280Z ^[[0m^[[36m19^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-3-Clause^[[0m",
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0990760Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0991050Z 
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0991392Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0992064Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:24:4
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0992412Z    ^[[0m^[[36m│^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0992728Z ^[[0m^[[36m24^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mUnicode-DFS-2016^[[0m",
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0993316Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.0994082Z 
+supply chain	Check root workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1337957Z advisories ^[[32mok^[[0m, bans ^[[32mok^[[0m, licenses ^[[32mok^[[0m, sources ^[[32mok^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	﻿2026-10-11T10:17:39.1409026Z ##[group]Run cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1409707Z ^[[36;1mcargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1464143Z shell: /usr/bin/bash -e {0}
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1464347Z env:
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1464502Z   CARGO_BUILD_JOBS: 1
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1464829Z   CARGO_INCREMENTAL: 0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1464998Z   RUST_TEST_THREADS: 1
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1465163Z   CARGO_TERM_COLOR: always
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1465353Z   CARGO_HOME: /home/runner/.cargo
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.1465546Z ##[endgroup]
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6261211Z ^[[0m^[[1m^[[38;5;11mwarning[duplicate]^[[0m^[[1m: found 2 duplicate entries for crate 'hashbrown'^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6262277Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/fuzz/Cargo.lock:16:1
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6262794Z    ^[[0m^[[36m│^[[0m  
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6263573Z ^[[0m^[[36m16^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m╭^[[0m ^[[0m^[[33mhashbrown 0.15.5 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6264767Z ^[[0m^[[36m17^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m│^[[0m ^[[0m^[[33mhashbrown 0.17.1 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6265984Z    ^[[0m^[[36m│^[[0m ^[[0m^[[33m╰^[[0m^[[0m^[[33m──────────────────────────────────────────────────────────────────────┘ lock entries^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6266688Z    ^[[0m^[[36m│^[[0m  
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6267049Z    ^[[0m^[[36m├^[[0m hashbrown v0.15.5
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6267482Z      └── petgraph v0.8.3
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6267873Z          ├── jarde-java v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6268245Z          │   └── jarde v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6268642Z          │       └── jarde-fuzz v0.0.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6269091Z          └── jarde-jvm v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6269471Z              ├── jarde v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6269892Z              └── jarde-java v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6270399Z    ^[[0m^[[36m├^[[0m hashbrown v0.17.1
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6270833Z      └── indexmap v2.14.2
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6271209Z          ├── noak v0.7.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6271590Z          │   └── jarde-reader v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6271996Z          │       ├── jarde v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6272391Z          │       │   └── jarde-fuzz v0.0.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6272814Z          │       ├── jarde-java v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6273218Z          │       │   └── jarde v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6273648Z          │       ├── jarde-jvm v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6274043Z          │       │   ├── jarde v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6274470Z          │       │   └── jarde-java v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6274914Z          │       └── jarde-query v0.1.0
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6275357Z          │           ├── jarde v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6275929Z          │           └── jarde-jvm v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6276345Z          └── petgraph v0.8.3
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6276738Z              ├── jarde-java v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6277143Z              └── jarde-jvm v0.1.0 (*)
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6277388Z 
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6277808Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6279658Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:18:4
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6280164Z    ^[[0m^[[36m│^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6280629Z ^[[0m^[[36m18^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-2-Clause^[[0m",
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6281389Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6281789Z 
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6282209Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6282933Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:19:4
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6283402Z    ^[[0m^[[36m│^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6283814Z ^[[0m^[[36m19^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-3-Clause^[[0m",
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6284442Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6285219Z 
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6285637Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6286856Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:24:4
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6287353Z    ^[[0m^[[36m│^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6287795Z ^[[0m^[[36m24^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mUnicode-DFS-2016^[[0m",
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6288705Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6289080Z 
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6289488Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6290196Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:25:4
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6290657Z    ^[[0m^[[36m│^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6291079Z ^[[0m^[[36m25^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mUnlicense^[[0m",
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6291692Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6292103Z 
+supply chain	Check fuzz workspace advisories, licenses, bans, and sources	2026-10-11T10:17:39.6540567Z advisories ^[[32mok^[[0m, bans ^[[32mok^[[0m, licenses ^[[32mok^[[0m, sources ^[[32mok^[[0m
+supply chain	Post Run actions/checkout@v7.0.1	﻿2026-10-11T10:17:39.6667043Z Post job cleanup.
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7356331Z [command]/usr/bin/git version
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7387620Z git version 2.55.0
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7422319Z Temporarily overriding HOME='/home/runner/work/_temp/62805937-0df6-4133-b7b0-1256588d01f1' before making global git config changes
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7423414Z Adding repository directory to the temporary git global config as a safe directory
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7425895Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jarde/jarde
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7453774Z Removing SSH command configuration
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7458846Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7488427Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7886826Z Removing HTTP extra header
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7892201Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.7929851Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8321806Z Removing includeIf entries pointing to credentials config files
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8327449Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8355648Z includeif.gitdir:/home/runner/work/jarde/jarde/.git.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8356349Z includeif.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8356859Z includeif.gitdir:/github/workspace/.git.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8357307Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8370751Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/jarde/jarde/.git.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8386418Z /home/runner/work/_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8395278Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/jarde/jarde/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-ed7de841\-97c0\-4a4f\-a88c\-7d34bb94d7a6\.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8428667Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8450302Z /home/runner/work/_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8462790Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-ed7de841\-97c0\-4a4f\-a88c\-7d34bb94d7a6\.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8493950Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8515571Z /github/runner_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8522106Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-ed7de841\-97c0\-4a4f\-a88c\-7d34bb94d7a6\.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8553534Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8574763Z /github/runner_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8581469Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-ed7de841\-97c0\-4a4f\-a88c\-7d34bb94d7a6\.config
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.8615853Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+supply chain	Post Run actions/checkout@v7.0.1	2026-10-11T10:17:39.9005360Z Removing credentials config '/home/runner/work/_temp/git-credentials-ed7de841-97c0-4a4f-a88c-7d34bb94d7a6.config'
+supply chain	Complete job	﻿2026-10-11T10:17:39.9151654Z Cleaning up orphan processes

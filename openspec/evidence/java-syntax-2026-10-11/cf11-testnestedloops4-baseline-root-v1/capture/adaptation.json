@@ -1,0 +1,26 @@
+{
+  "upstream_method_sha256": "4cbd942ce6b355efd521971c2d95e07daacd5f7f7c85c8cb75061c457827069e",
+  "upstream_byte_offset_start": 274,
+  "upstream_byte_offset_end_exclusive": 599,
+  "method_bytes": 325,
+  "method_exact_utf8": "\n\t\tpublic int testFor() {\n\t\t\tint tmp = 1;\n\t\t\tfor (int i = 10; i > -1; i--) {\n\t\t\t\tif (i > tmp) {\n\t\t\t\t\tfor (int j = 0; j < 54; j += 4) {\n\t\t\t\t\t\tif (i < j) {\n\t\t\t\t\t\t\tfor (int k = j; k < j + 4; k++) {\n\t\t\t\t\t\t\t\tif (tmp > k) {\n\t\t\t\t\t\t\t\t\treturn 0;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\ttmp++;\n\t\t\t}\n\t\t\treturn tmp;\n\t\t}",
+  "adapter_note": "Only upstream TestCls.testFor declaration/body is retained in top-level cf11.UpstreamNestedLoops4. JUnit shell, TestCls owner wrapper and AssertJ are removed. This is adapted source, not the upstream class/classfile.",
+  "upstream_pin": {
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops4.java",
+    "bytes": 819,
+    "sha256": "b84dbf9988e1343f6d26f06345a4e8ba8b17993b4dc33419c86d9e9194968cca"
+  },
+  "adapted_source_pin": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/inputs/UpstreamNestedLoops4.java",
+    "bytes": 378,
+    "sha256": "cd29e7cf0a8886048f2aa73d2612d86bf42281b1d9ad06bf087e91a4af756ca0"
+  },
+  "runner_pin": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/inputs/Runner.java",
+    "bytes": 174,
+    "sha256": "260b8ca393470fed1e50eb97ae243405df22dd649a609f42f0bb8bf586f6fda8"
+  },
+  "target_method": "adapted cf11.UpstreamNestedLoops4.testFor()I; upstream owner was nested TestCls",
+  "expected_observation": "testFor=12",
+  "expected_observation_is_oracle_not_result": true
+}
