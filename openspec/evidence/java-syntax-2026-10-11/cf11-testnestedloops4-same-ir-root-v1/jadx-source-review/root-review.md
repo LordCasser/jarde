@@ -1,0 +1,1 @@
+Root已审查两版说明并读取JADX checkLoopExits/validOutBlock原源码。v1错误地把28→31判为本质越界，v2已更正：它是j循环正文的合法退出子图，不属于自然环不等于不属于Java正文。loop_arm_join_source拒绝gate为实际Region形状与源码推导，非helper内部实测trace。参考JADX多出口/支配frontier/edge-specific break的问题分解，优先复用Jarde已有Frame、Region、normal graph、terminal/transfer证书；不直接导入JADX可变CFG重写或宽泛例外。新实现设计仍待形成，不能将该研究当作已恢复。
