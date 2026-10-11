@@ -1,6 +1,6 @@
 # 提升iterator声明的内层foreach验收
 
-当前7/9：1.1–1.3基线/诊断和2.1最小实现已接受。私有v1的strict-prefix列表误判被静态拦截；v2按当前准确空声明行区分两条路径，root补充owner anchor的Iterator类型核验。实际focused-v2默认栈通过新增API 2、既有foreach 5/6/4和Java lib360；8cmd/16raw、4729输入闭包前后/live一致、peak654226085B、finally clean。root独立accept实际exit0且Luna只读复核一致。2.2永久反例已应用并实跑接受，完整class3.1已root实际接受；最终4732输入的fresh full workspace/fmt/同CI Clippy/global strict/final CLI字节绑定已root实际接受；自身CI及交付尚待。
+当前8/9：1.1–1.3基线/诊断和2.1最小实现已接受。私有v1的strict-prefix列表误判被静态拦截；v2按当前准确空声明行区分两条路径，root补充owner anchor的Iterator类型核验。实际focused-v2默认栈通过新增API 2、既有foreach 5/6/4和Java lib360；8cmd/16raw、4729输入闭包前后/live一致、peak654226085B、finally clean。root独立accept实际exit0且Luna只读复核一致。2.2永久反例已应用并实跑接受，完整class3.1已root实际接受；最终4732输入的fresh full workspace/fmt/同CI Clippy/global strict/final CLI字节绑定已root实际接受；自身CI及交付尚待。
 
 准确范围：inner42在iterator_declaration_before_init；outer13在body_first_not_initialized_declaration。现有Object iteratorElement头保留cast/body binding，泛型和外层Assign独立。不将同列表找不到空声明推断成其余gate已通过，不跨frame删除祖先声明。
 
@@ -35,3 +35,5 @@ fixture单canonical javac8 class606B，javac23同source603B不同字节，两腿
 3.2最终实际接受：[regressions-v6](results/regressions-root-v6/README.md) 与 [fresh full-workspace-v2](results/full-workspace-root-v2/README.md) 及 [final-v2](results/final-validation-root-v2/README.md) 绑定同一最终4732输入闭包。完整362targets/96批、3480-0-97、3577named/19required，最终5cmd/10raw fmt/CI-Clippy/global strict354-0/CLI/final clean实际全通过，独立acceptor exit0。CLI61314560B/0555/8bdb868...准确同双JDKruntime-v2；contains只是cfg(test)写法，无生产变化。3.2已勾，7/9；3.3产品自身CI与3.4最终主线交付尚待，不借前片CI或未走完的driver成功。
 
 产品已实际提交推送：993e9f8c0f413bb7c31538e6f7c2c92a742e7af4，自身CI38176302604正在运行；MSRV/supply chain/fuzz成功，stable完整双seed尚待。7/9不变。并行下一固定outer13同IR诊断已实际接受，全部4732源码恢复/clean，详下一片recover-proved-iterator-assignment-foreach/results/outer-assignment-diagnostic-root-v1；该诊断没有永久改写，不影响本产品/live字节绑定，亦不关闭本产品CI或下一片实现。
+
+3.3已root实际接受：[自身CI](results/own-product-ci-root-v1/README.md)绑定993e9f8/38176302604，四jobs/52steps、两seed各362targets/3480-0-97及3577逐named同本地，19required全部通过。capture及verifier-v3均实际exit0；原v2漏记examples pin错误与显式七example productGit/live补充核验保留，不伪造历史source pin。当前8/9，关闭文档后按真实HEAD做3.4 clean audit，target不存在。

@@ -26,3 +26,7 @@ root 受控同 IR 诊断 v2 实际执行 test 和 clean 两命令，公开 API �
 ## Migration Plan
 
 先接受诊断和控制基线，Luna 私有最小 candidate/root 对抗审阅；前片自身 CI 与干净 main 关闭后才应用。root 串行构建，5GiB最低余量/target1GiB一秒进程组守卫、默认 Rust 栈、finally clean。完成永久回归、完整类双 JDK 原/JADX/Jarde、fresh工作区、lint/strict、确切产品自身 CI 后交付。只关闭该窄片，不关闭 CF-11。
+
+## 控制基线实际观察
+
+旧产品双JDK原/JADX/Jarde十条完整类运行腿在12 case一致，20profile来源全闭合；四方法仍while。独立验收accept-v2由root真实exit0，只接受冻结案例观察。v1 literal-seeded Object 被错误收窄String的8次编译失败另记类型债务；v2用返回Object的Runner.seed()仅隔离fixture，不改产品类型决策。全部原始失败和实际证据见results/controlled-baseline-root-v1，不能借旧产品runtime当新候选验收。

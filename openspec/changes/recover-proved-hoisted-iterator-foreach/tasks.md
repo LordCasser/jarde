@@ -13,5 +13,5 @@
 
 - [x] 3.1 冻结当前完整输入闭包新CLI并root接受完整双JDK三方对照。验收：同源完整generated class未经编辑重编执行，exit/stdout/stderr/身份/顺序及异常同原，来源default/all准确；JADX差异、未恢复部分与原始失败单列。
 - [x] 3.2 完成fresh全工作区、fmt/同CI Clippy/global strict与最终CLI绑定。验收：实际metadata各目标恰好一次、逐named outcomes核验；默认Rust stack、5GiB free/target1GiB一秒守卫、最终clean，CLI与实测candidate字节一致。
-- [ ] 3.3 提交推送产品并独立接受自身CI。验收：确切head/run全部jobs/steps和双seed目标/named outcomes同本地，失败修复后用新产品自身CI，不借前片。
+- [x] 3.3 提交推送产品并独立接受自身CI。验收：确切head/run全部jobs/steps和双seed目标/named outcomes同本地，失败修复后用新产品自身CI，不借前片。
 - [ ] 3.4 更新账本/verification/handoff并交付干净main。验收：实际HEAD/main/origin/remote一致、仅main、aux checkout detached干净main祖先无target，关闭文档推送后按真实HEAD审计；仅关闭该窄片，不增加整个CF11/71/612完成数。
