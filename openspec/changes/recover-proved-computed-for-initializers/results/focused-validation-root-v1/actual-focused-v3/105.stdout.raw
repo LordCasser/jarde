@@ -1,0 +1,10 @@
+
+running 5 tests
+test complete_java8_debug_and_nodebug_classes_match_original_execution ... ok
+test direct_iterable_projects_with_or_without_debug_names_and_preserves_cast ... ok
+test platform_collection_owners_project_only_with_matching_proof_and_preserve_execution ... ok
+test source_selection_and_bounded_stops_keep_the_loop_atomic ... ok
+test subtype_owners_project_and_extra_next_or_iterator_escape_refuse ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.25s
+

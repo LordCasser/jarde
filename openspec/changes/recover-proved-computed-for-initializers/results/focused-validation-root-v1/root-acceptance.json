@@ -1,0 +1,132 @@
+{
+  "status": "accepted_narrow_observations",
+  "scope": "historical failed attempts plus focused correctness and lint; not current whole-workspace/runtime/CI acceptance",
+  "records": [
+    {
+      "execution": "/private/tmp/jarde-computed-for-focused-root-v1/execution.json",
+      "sha256": "c9a4508e0bba2d4d98816f4a9ee3233d805287b028a47a0e58429b176940b1de",
+      "status": "failed",
+      "actual_test_outcomes": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          1,
+          0
+        ]
+      ],
+      "source_pin_count": 4696,
+      "source_base": "d9e7e7b4085dd8dad5ce5abcf662c2ea4433eb65",
+      "peak_target_bytes": 381156394,
+      "clean": true
+    },
+    {
+      "execution": "/private/tmp/jarde-computed-for-focused-root-v2/execution.json",
+      "sha256": "b8e3ba54c2d3df0c00bc8adf9c73b96dbb5b8a898db1c8647ecab876fbf7e95f",
+      "status": "failed",
+      "actual_test_outcomes": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          5,
+          1,
+          0
+        ]
+      ],
+      "source_pin_count": 4698,
+      "source_base": "d9e7e7b4085dd8dad5ce5abcf662c2ea4433eb65",
+      "peak_target_bytes": 400420618,
+      "clean": true
+    },
+    {
+      "execution": "/private/tmp/jarde-computed-for-focused-root-v3/execution.json",
+      "sha256": "5d097558e0775b7bbcfd8fc1660805dd789cfa81694eebcd2caa4247cc449dd4",
+      "status": "focused-passed-pending-root-review",
+      "actual_test_outcomes": [
+        [
+          351,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ]
+      ],
+      "source_pin_count": 4698,
+      "source_base": "d9e7e7b4085dd8dad5ce5abcf662c2ea4433eb65",
+      "peak_target_bytes": 381342578,
+      "clean": true
+    },
+    {
+      "execution": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/execution.json",
+      "sha256": "252a58dc6512e4ba52eb52ded59f7c76f2eef0040bfef661218ef2e083db3fc3",
+      "status": "focused-passed-pending-root-review",
+      "actual_test_outcomes": [
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "source_pin_count": 4698,
+      "source_base": "d9e7e7b4085dd8dad5ce5abcf662c2ea4433eb65",
+      "peak_target_bytes": 263865702,
+      "clean": true
+    }
+  ],
+  "distinct_focused_success_coverage": {
+    "java_unit_tests_passed": 351,
+    "root_integration_suites": 9,
+    "root_integration_tests_passed": 43
+  },
+  "duplicate_runs_not_added_to_distinct_coverage": true,
+  "root_checker_sha256": "35385a13f7aebd0191ca0c76868f21738255399c92f22d5f6e09cb5eab514482"
+}

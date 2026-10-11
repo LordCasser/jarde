@@ -1,0 +1,359 @@
+{
+  "status": "byte-identical-copies-verified",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/103.stdout.raw",
+      "archive": "preserved-failed-v1/103.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/102.stderr.raw",
+      "archive": "preserved-failed-v1/102.stderr.raw",
+      "bytes": 2712,
+      "sha256": "a0b77c6a5b9c4443a0dcd556ec4a4111453ef9894478baa5cf61a11974080b9e"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/101.stdout.raw",
+      "archive": "preserved-failed-v1/101.stdout.raw",
+      "bytes": 207,
+      "sha256": "74b4fc04555c03ef14a31e577d3f2a80bdfc632c74013ca6e130b523bf97717b"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/100.stderr.raw",
+      "archive": "preserved-failed-v1/100.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/103.stderr.raw",
+      "archive": "preserved-failed-v1/103.stderr.raw",
+      "bytes": 52,
+      "sha256": "f52839e4cbae4a11736a49af941260abfaf292b23133ba2f28c7262b1d5b75d3"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/102.stdout.raw",
+      "archive": "preserved-failed-v1/102.stdout.raw",
+      "bytes": 555,
+      "sha256": "ed8e80205a4e837826485e9cd6ccd269e8b718743355f4a4f94d075e4ef74e52"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/101.stderr.raw",
+      "archive": "preserved-failed-v1/101.stderr.raw",
+      "bytes": 2614,
+      "sha256": "a6c8a714977fcebeea4f77892ab1785a76d4becd7d7523ee06f2bf13d43945ed"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/100.stdout.raw",
+      "archive": "preserved-failed-v1/100.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v1/execution.json",
+      "archive": "preserved-failed-v1/execution.json",
+      "bytes": 1517204,
+      "sha256": "c9a4508e0bba2d4d98816f4a9ee3233d805287b028a47a0e58429b176940b1de"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/103.stdout.raw",
+      "archive": "preserved-failed-v2/103.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/102.stderr.raw",
+      "archive": "preserved-failed-v2/102.stderr.raw",
+      "bytes": 3947,
+      "sha256": "db191bdc97d6d6224f640121609b61d076479de141e22f2050673f702ee2d7e3"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/101.stdout.raw",
+      "archive": "preserved-failed-v2/101.stdout.raw",
+      "bytes": 207,
+      "sha256": "aa3b00e286d58625d6c2e93d3c364f0f363ea68c2d3c12872578d0065bad1960"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/100.stderr.raw",
+      "archive": "preserved-failed-v2/100.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/103.stderr.raw",
+      "archive": "preserved-failed-v2/103.stderr.raw",
+      "bytes": 52,
+      "sha256": "f52839e4cbae4a11736a49af941260abfaf292b23133ba2f28c7262b1d5b75d3"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/102.stdout.raw",
+      "archive": "preserved-failed-v2/102.stdout.raw",
+      "bytes": 630,
+      "sha256": "eeeab06f32b4a191473627b2bbb66a9db4a117130441304ec3776d0661d72d70"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/101.stderr.raw",
+      "archive": "preserved-failed-v2/101.stderr.raw",
+      "bytes": 2614,
+      "sha256": "519db9c3306034f061000d9cd36c377b35f766a5b7648d07c5c26e491813812e"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/100.stdout.raw",
+      "archive": "preserved-failed-v2/100.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v2/execution.json",
+      "archive": "preserved-failed-v2/execution.json",
+      "bytes": 1518139,
+      "sha256": "b8e3ba54c2d3df0c00bc8adf9c73b96dbb5b8a898db1c8647ecab876fbf7e95f"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/107.stderr.raw",
+      "archive": "actual-focused-v3/107.stderr.raw",
+      "bytes": 290,
+      "sha256": "dde4510b62f7018e491740a81eb2abb271c2a23b7f78add76d0a06d6f0924614"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/103.stdout.raw",
+      "archive": "actual-focused-v3/103.stdout.raw",
+      "bytes": 310,
+      "sha256": "a71b5f61336765a336f1a341845e0c3f01a0446309f971c1b51bb6f9f717cc49"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/106.stdout.raw",
+      "archive": "actual-focused-v3/106.stdout.raw",
+      "bytes": 358,
+      "sha256": "0cfe280189b6415fbcb84ccabcb11e42066cea86d1342e224dbb904b634a4ed7"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/102.stderr.raw",
+      "archive": "actual-focused-v3/102.stderr.raw",
+      "bytes": 2001,
+      "sha256": "d3b0a67099c06ade0fe3686dfb154768649a10d349429a13cdb82c618fdd9893"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/105.stderr.raw",
+      "archive": "actual-focused-v3/105.stderr.raw",
+      "bytes": 270,
+      "sha256": "8c298a28d0cefc6b0c8595af84c4b5ec638ac27b749a0fc1e0d2b85ab0f33687"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/101.stdout.raw",
+      "archive": "actual-focused-v3/101.stdout.raw",
+      "bytes": 32622,
+      "sha256": "67d05f775c0ebafd86a691e1f98f30a535f7dddc49cc0bcc87953902cf0ed7a7"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/110.stdout.raw",
+      "archive": "actual-focused-v3/110.stdout.raw",
+      "bytes": 622,
+      "sha256": "d7a9f9414111dd2fd60074ed8f476e4280e511fbc430f00ceb8e8d591c5a4e07"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/108.stderr.raw",
+      "archive": "actual-focused-v3/108.stderr.raw",
+      "bytes": 266,
+      "sha256": "d650d7e8a2e346496d1909cb2f7aec5217164fdce97b064286e38a2f1bdc78fd"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/111.stderr.raw",
+      "archive": "actual-focused-v3/111.stderr.raw",
+      "bytes": 52,
+      "sha256": "311ba97baaab6f4f02bd02b052b3cdf00351489e834f95f53a1b0820227c28c7"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/109.stdout.raw",
+      "archive": "actual-focused-v3/109.stdout.raw",
+      "bytes": 384,
+      "sha256": "e27d62a2cc4db84c64358c493e6b59bbd98f2c4f8f7e00d2c51cde1674794fad"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/104.stdout.raw",
+      "archive": "actual-focused-v3/104.stdout.raw",
+      "bytes": 576,
+      "sha256": "4d716d1f7b98a9a37821e65d30cd39efd01f386770d4b07bbb79288895aeee74"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/100.stderr.raw",
+      "archive": "actual-focused-v3/100.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/103.stderr.raw",
+      "archive": "actual-focused-v3/103.stderr.raw",
+      "bytes": 264,
+      "sha256": "eb22570c562214360959b4ea2b26ab6b533399ece71c2ab545696c494ca94f84"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/107.stdout.raw",
+      "archive": "actual-focused-v3/107.stdout.raw",
+      "bytes": 271,
+      "sha256": "0f06c9454c423307e1ca3b21bbb3570b49fe12fe1635477bb73f0b342d132142"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/102.stdout.raw",
+      "archive": "actual-focused-v3/102.stdout.raw",
+      "bytes": 531,
+      "sha256": "81d1335efa8d6ed418c369a0f34254e37dd785a7049152f9019013c177845f52"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/106.stderr.raw",
+      "archive": "actual-focused-v3/106.stderr.raw",
+      "bytes": 280,
+      "sha256": "36b425b18dc9483c7f6656031f0b596c333376400a4c00456f518b849e84364f"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/110.stderr.raw",
+      "archive": "actual-focused-v3/110.stderr.raw",
+      "bytes": 288,
+      "sha256": "0ce10bb2eeb02c727870f0f4fbbceb2bb672d591bdb4748d871b6d033aa9c463"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/108.stdout.raw",
+      "archive": "actual-focused-v3/108.stdout.raw",
+      "bytes": 509,
+      "sha256": "b69cf50edcb5df2b17b0979a4eac13f2176be37a863eb8fb176144d5735117fa"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/101.stderr.raw",
+      "archive": "actual-focused-v3/101.stderr.raw",
+      "bytes": 6494,
+      "sha256": "bd0d474624b39799c766f8c52608189aa67508d1b1251385139415a5722d774f"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/105.stdout.raw",
+      "archive": "actual-focused-v3/105.stdout.raw",
+      "bytes": 514,
+      "sha256": "a9e2ea06f37948120de0e73483ee16dc0e12f81346a97607f5e4a8545ac57624"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/100.stdout.raw",
+      "archive": "actual-focused-v3/100.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/execution.json",
+      "archive": "actual-focused-v3/execution.json",
+      "bytes": 1530553,
+      "sha256": "5d097558e0775b7bbcfd8fc1660805dd789cfa81694eebcd2caa4247cc449dd4"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/104.stderr.raw",
+      "archive": "actual-focused-v3/104.stderr.raw",
+      "bytes": 264,
+      "sha256": "528086f9f962901692895445bd38636ae5d184f9a1353ff8dd75212b6bfe7dc6"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/111.stdout.raw",
+      "archive": "actual-focused-v3/111.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-v3/109.stderr.raw",
+      "archive": "actual-focused-v3/109.stderr.raw",
+      "bytes": 270,
+      "sha256": "f8638852b1b63f1d83ab088b3bfae54a7090e8feabb4afc2517b91f4add7168f"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/103.stdout.raw",
+      "archive": "actual-lint-boundaries-v1/103.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/102.stderr.raw",
+      "archive": "actual-lint-boundaries-v1/102.stderr.raw",
+      "bytes": 1940,
+      "sha256": "f6f7eceea51443d3bb04c0683d5d9642c9b02f84d95c26cf67395fde22af1a8d"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/101.stdout.raw",
+      "archive": "actual-lint-boundaries-v1/101.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/100.stderr.raw",
+      "archive": "actual-lint-boundaries-v1/100.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/103.stderr.raw",
+      "archive": "actual-lint-boundaries-v1/103.stderr.raw",
+      "bytes": 53,
+      "sha256": "65b7ea1c39891b80faa775fa690ba1533797dd8e34a902819f19e11edaec51dc"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/102.stdout.raw",
+      "archive": "actual-lint-boundaries-v1/102.stdout.raw",
+      "bytes": 207,
+      "sha256": "aa3b00e286d58625d6c2e93d3c364f0f363ea68c2d3c12872578d0065bad1960"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/101.stderr.raw",
+      "archive": "actual-lint-boundaries-v1/101.stderr.raw",
+      "bytes": 3835,
+      "sha256": "c71e49c5acf4f567720b931aca7887b56b52ff7e3fccba2a4963104f82ed2d7a"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/100.stdout.raw",
+      "archive": "actual-lint-boundaries-v1/100.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-lint-boundaries-root-v1/execution.json",
+      "archive": "actual-lint-boundaries-v1/execution.json",
+      "bytes": 1519641,
+      "sha256": "252a58dc6512e4ba52eb52ded59f7c76f2eef0040bfef661218ef2e083db3fc3"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-acceptance-v1.py",
+      "archive": "executed-root-checker.py",
+      "bytes": 2540,
+      "sha256": "35385a13f7aebd0191ca0c76868f21738255399c92f22d5f6e09cb5eab514482"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-acceptance-root-v1.json",
+      "archive": "root-acceptance.json",
+      "bytes": 3060,
+      "sha256": "365200c7c61a55de01983e610db205d1aab6773ae3342ff79ec3581c3605498c"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-acceptance-root-v1.stdout.raw",
+      "archive": "root-acceptance.stdout.raw",
+      "bytes": 109,
+      "sha256": "c3226044734888f54f62f6ce117d812da30579ec8616acdebb220e46b28772c2"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-acceptance-root-v1.stderr.raw",
+      "archive": "root-acceptance.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-runner-v1.py",
+      "archive": "runner-v1.py",
+      "bytes": 4333,
+      "sha256": "b10b0f2f9649f48834cc93d7fb9720b2d9538fd61eb8d7cfb4e9f5abeaea992a"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-runner-v2.py",
+      "archive": "runner-v2.py",
+      "bytes": 4333,
+      "sha256": "3cd72093e4cdce02cc07d0ec8d64797e95b4ca0d336ea95c1e04c2048ae47986"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-focused-root-runner-v3.py",
+      "archive": "runner-v3.py",
+      "bytes": 4533,
+      "sha256": "83d39742aa0a3d4f4c0e502fe10a4045536b32679f5875d5bf104115a0e1476a"
+    }
+  ]
+}

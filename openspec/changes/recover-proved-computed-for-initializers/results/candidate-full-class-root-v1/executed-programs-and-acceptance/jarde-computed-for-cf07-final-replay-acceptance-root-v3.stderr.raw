@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v3.py", line 542, in <module>
+    main()
+    ~~~~^^
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v3.py", line 534, in main
+    result=verify_execution(execution,build,cli,args.cli_sha256,out,ROOT.resolve())
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v3.py", line 463, in verify_execution
+    need(sorted(p.relative_to(original_dir).as_posix() for p in original_dir.rglob('*.class'))==['cf07/LoopCases.class'],'original class input directory changed or contains compiled shadows')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v3.py", line 48, in need
+    raise ValueError(message)
+ValueError: original class input directory changed or contains compiled shadows

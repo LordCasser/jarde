@@ -1,0 +1,123 @@
+Classfile /private/tmp/jarde-computed-shared-stack-compare-root-v4/javac8/original/classes/SharedStoreInput.class
+  Last modified 2026-10-11; size 533 bytes
+  MD5 checksum aaf2b7059755a36936db80b4c8dcedc8
+final class SharedStoreInput
+  minor version: 0
+  major version: 52
+  flags: ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #11.#26        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #10.#27        // SharedStoreInput.limitCalls:I
+   #3 = Fieldref           #10.#28        // SharedStoreInput.throwFromLimit:Z
+   #4 = Class              #29            // java/lang/IllegalStateException
+   #5 = String             #21            // limit
+   #6 = Methodref          #4.#30         // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+   #7 = Fieldref           #10.#31        // SharedStoreInput.limitValue:I
+   #8 = Methodref          #10.#32        // SharedStoreInput.limit:()I
+   #9 = Fieldref           #10.#33        // SharedStoreInput.savedField:I
+  #10 = Class              #34            // SharedStoreInput
+  #11 = Class              #35            // java/lang/Object
+  #12 = Utf8               savedField
+  #13 = Utf8               I
+  #14 = Utf8               limitCalls
+  #15 = Utf8               limitValue
+  #16 = Utf8               throwFromLimit
+  #17 = Utf8               Z
+  #18 = Utf8               <init>
+  #19 = Utf8               ()V
+  #20 = Utf8               Code
+  #21 = Utf8               limit
+  #22 = Utf8               ()I
+  #23 = Utf8               StackMapTable
+  #24 = Utf8               find
+  #25 = Utf8               ([III)I
+  #26 = NameAndType        #18:#19        // "<init>":()V
+  #27 = NameAndType        #14:#13        // limitCalls:I
+  #28 = NameAndType        #16:#17        // throwFromLimit:Z
+  #29 = Utf8               java/lang/IllegalStateException
+  #30 = NameAndType        #18:#36        // "<init>":(Ljava/lang/String;)V
+  #31 = NameAndType        #15:#13        // limitValue:I
+  #32 = NameAndType        #21:#22        // limit:()I
+  #33 = NameAndType        #12:#13        // savedField:I
+  #34 = Utf8               SharedStoreInput
+  #35 = Utf8               java/lang/Object
+  #36 = Utf8               (Ljava/lang/String;)V
+{
+  static int savedField;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limitCalls;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limitValue;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static boolean throwFromLimit;
+    descriptor: Z
+    flags: ACC_STATIC
+
+  SharedStoreInput();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static int limit();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #2                  // Field limitCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #2                  // Field limitCalls:I
+         8: getstatic     #3                  // Field throwFromLimit:Z
+        11: ifeq          24
+        14: new           #4                  // class java/lang/IllegalStateException
+        17: dup
+        18: ldc           #5                  // String limit
+        20: invokespecial #6                  // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        23: athrow
+        24: getstatic     #7                  // Field limitValue:I
+        27: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 24 /* same */
+
+  static int find(int[], int, int);
+    descriptor: ([III)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: invokestatic  #8                  // Method limit:()I
+         3: iconst_1
+         4: isub
+         5: dup
+         6: putstatic     #9                  // Field savedField:I
+         9: istore_3
+        10: iload_3
+        11: iload_2
+        12: if_icmplt     30
+        15: aload_0
+        16: iload_3
+        17: iaload
+        18: iload_1
+        19: if_icmpne     24
+        22: iload_3
+        23: ireturn
+        24: iinc          3, -1
+        27: goto          10
+        30: iconst_m1
+        31: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 10
+          locals = [ int ]
+        frame_type = 13 /* same */
+        frame_type = 5 /* same */
+}

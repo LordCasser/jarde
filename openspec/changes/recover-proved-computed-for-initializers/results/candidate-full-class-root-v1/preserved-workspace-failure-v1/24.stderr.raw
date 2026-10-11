@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.57s
+[1m[92m     Running[0m tests/p2_resolution.rs (target/debug/deps/p2_resolution-bddc7899381b0f77)
+[1m[92m     Running[0m tests/p2_return_address.rs (target/debug/deps/p2_return_address-eb0073c73c985bca)
+[1m[92m     Running[0m tests/p2_ssa.rs (target/debug/deps/p2_ssa-fd58565efe649802)
+[1m[92m     Running[0m tests/p3_accessor_edges.rs (target/debug/deps/p3_accessor_edges-d9f78bddb1982494)

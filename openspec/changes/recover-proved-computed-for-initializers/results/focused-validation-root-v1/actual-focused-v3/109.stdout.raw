@@ -1,0 +1,9 @@
+
+running 4 tests
+test a_field_condition_survives_beside_an_increment_test_in_the_same_method ... ok
+test a_store_in_a_loop_test_remains_refused ... ok
+test an_iinc_in_a_loop_test_is_presented_in_place ... ok
+test an_iterator_call_consumed_by_the_loop_branch_stays_in_the_condition ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

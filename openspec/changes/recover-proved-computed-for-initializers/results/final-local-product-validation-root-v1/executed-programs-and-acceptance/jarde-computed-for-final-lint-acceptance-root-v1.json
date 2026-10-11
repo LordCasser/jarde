@@ -1,0 +1,10 @@
+{
+  "status": "accepted",
+  "execution_sha256": "568c2d91dbc7eed2433140348c69288e2415d5ebf8c5c3a05b825b6a0aa38ca5",
+  "command_count": 3,
+  "clippy_argv_matches_ci": true,
+  "source_input_count": 4700,
+  "source_pins_unchanged": true,
+  "captured_target_absent_after_clean": true,
+  "verifier_sha256": "722e5141859e9e4a8ab65115ef2c07c5818b054eb183e035eb57687ced174fcc"
+}

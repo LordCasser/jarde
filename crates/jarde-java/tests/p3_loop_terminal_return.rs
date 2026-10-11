@@ -210,6 +210,7 @@ fn cf07_unproved_terminal_candidates_keep_source_and_quote() {
             "{method}: {}",
             report.text
         );
+        assert!(!report.text.contains("for ("), "{method}: {}", report.text);
         assert!(
             !report.source_map.of_bci(leaf).is_empty(),
             "{method} leaf lost provenance"

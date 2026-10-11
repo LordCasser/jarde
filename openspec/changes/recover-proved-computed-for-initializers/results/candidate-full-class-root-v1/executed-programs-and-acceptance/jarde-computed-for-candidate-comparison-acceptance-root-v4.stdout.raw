@@ -1,0 +1,12 @@
+{
+  "status": "accepted_candidate_replay",
+  "scope": "candidate runtime/source comparison only; not CI acceptance",
+  "commands": 66,
+  "fresh_oracle_families": 2,
+  "raw_class_runs": 6,
+  "fixed_jadx_source_replays": 12,
+  "candidate_jarde_renders": 12,
+  "controls_compile_refusals_preserved": 8,
+  "direct_full_class_verified_runs": 4,
+  "source_closure_count": 4698
+}

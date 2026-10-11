@@ -1,0 +1,4 @@
+hit:return=2,calls=1,saved=2
+miss:return=-1,calls=1,saved=2
+below-lower:return=-1,calls=1,saved=2
+throw:throw=limit,calls=1,saved=-99

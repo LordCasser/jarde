@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-computed-shared-stack-compare-luna-v3/run_compare.py", line 169, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/private/tmp/jarde-computed-shared-stack-compare-luna-v3/run_compare.py", line 152, in main
+    if pin(GUARD)!=guard_pin or pin(SCANNER)!=scanner_pin or pin(__file__)!=runner_pin:raise ValueError('runner/guard/scanner changed during capture')
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: runner/guard/scanner changed during capture

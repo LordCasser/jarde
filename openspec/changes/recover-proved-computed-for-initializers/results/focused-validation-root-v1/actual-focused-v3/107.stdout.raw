@@ -1,0 +1,7 @@
+
+running 2 tests
+test budget_and_cancellation_do_not_publish_a_partial_array_length_loop ... ok
+test stride_two_loop_keeps_array_length_index_update_return_and_origins ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

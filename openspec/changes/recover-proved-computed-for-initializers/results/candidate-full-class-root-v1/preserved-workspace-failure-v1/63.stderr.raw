@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.57s
+[1m[92m     Running[0m tests/p4_plugins.rs (target/debug/deps/p4_plugins-ac8aa06fc35734c5)
+[1m[92m     Running[0m tests/p4_runtime_matrix.rs (target/debug/deps/p4_runtime_matrix-9cc31446f80a92dc)
+[1m[92m     Running[0m tests/p4_x2_states.rs (target/debug/deps/p4_x2_states-dd7ccb16b13f2514)
+[1m[92m     Running[0m tests/p4_x3_patterns.rs (target/debug/deps/p4_x3_patterns-c351c1974511c14c)

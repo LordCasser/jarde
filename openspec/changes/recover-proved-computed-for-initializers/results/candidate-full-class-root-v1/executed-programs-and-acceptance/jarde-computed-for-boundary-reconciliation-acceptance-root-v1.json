@@ -1,0 +1,38 @@
+{
+  "status": "accepted-narrow-boundary-reconciliation",
+  "execution_sha256": "fe63581def38d92babf8c87c5cc8a8b7452b7b9ec4ab61068a599d70a71ef1de",
+  "actual_summaries": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      15,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0
+    ],
+    [
+      7,
+      0,
+      0
+    ],
+    [
+      85,
+      0,
+      0
+    ],
+    [
+      6,
+      0,
+      0
+    ]
+  ],
+  "source_pin_count": 4698,
+  "target_absent": true
+}

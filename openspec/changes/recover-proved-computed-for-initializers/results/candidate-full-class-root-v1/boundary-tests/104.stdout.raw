@@ -1,0 +1,12 @@
+
+running 7 tests
+test negative_cleanup_slot_or_argument_slot_refuses ... ok
+test negative_copy_grammar_addition_refuses ... ok
+test negative_disagreeing_copy_targets_refuses ... ok
+test negative_lead_is_no_null_constant_or_more_than_two_instructions_refuses ... ok
+test negative_saved_or_rethrow_identity_rewrite_refuses ... ok
+test negative_self_protecting_row_widening_refuses ... ok
+test null_lead_test_has_one_finally_one_call_and_all_origins ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

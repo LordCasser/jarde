@@ -1,0 +1,212 @@
+{
+  "status": "checked",
+  "execution": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/execution.json",
+  "command_count": 20,
+  "original": {
+    "status": "matched",
+    "issues": [],
+    "runtime_sha256": {
+      "javac8": "cbff706c0d638248db2281c5a00c21c75ebae00a473c6ed12235ee8dbf4891c9",
+      "javac23": "cbff706c0d638248db2281c5a00c21c75ebae00a473c6ed12235ee8dbf4891c9"
+    },
+    "shared_bytecode": [
+      {
+        "jdk": "javac8",
+        "call_bci": 0,
+        "dup_bci": 5,
+        "putstatic_bci": 6,
+        "istore_bci": 9,
+        "instruction_count": 20,
+        "physical_bcis": [
+          0,
+          3,
+          4,
+          5,
+          6,
+          9,
+          10,
+          11,
+          12,
+          15,
+          16,
+          17,
+          18,
+          19,
+          22,
+          23,
+          24,
+          27,
+          30,
+          31
+        ]
+      },
+      {
+        "jdk": "javac23",
+        "call_bci": 0,
+        "dup_bci": 5,
+        "putstatic_bci": 6,
+        "istore_bci": 9,
+        "instruction_count": 20,
+        "physical_bcis": [
+          0,
+          3,
+          4,
+          5,
+          6,
+          9,
+          10,
+          11,
+          12,
+          15,
+          16,
+          17,
+          18,
+          19,
+          22,
+          23,
+          24,
+          27,
+          30,
+          31
+        ]
+      }
+    ]
+  },
+  "jarde": {
+    "status": "failed_or_incomplete",
+    "issues": [
+      "('javac8', 'default') generated class compile failed",
+      "('javac8', 'all') generated class compile failed",
+      "('javac23', 'default') generated class compile failed",
+      "('javac23', 'all') generated class compile failed"
+    ],
+    "renders": []
+  },
+  "jadx": {
+    "status": "matched",
+    "issues": [],
+    "results": [
+      {
+        "class_inventory": [
+          {
+            "bytes": 553,
+            "relative": "defpackage/SharedStoreInput.class",
+            "sha256": "e83a0439990670875a51f98db127928d64a78f690afcf5f538c6b1b8686e3ef0"
+          },
+          {
+            "bytes": 1226,
+            "relative": "defpackage/SharedStoreInputRunner.class",
+            "sha256": "ceae49bd22e270dfb7a36112d3fc5a5292d8814ed2e713ce947672312344415e"
+          }
+        ],
+        "classes_dir": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/jadx-build/javac8/classes",
+        "compile_command": 9,
+        "compile_exit": 0,
+        "jdk": "javac8",
+        "runner_source": {
+          "bytes": 1224,
+          "path": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/SharedStoreInputRunner.java",
+          "sha256": "5d01265b41e307b50de8a5c0c8d26108e64b3026aad063a8025ec7dded7ebcfc"
+        },
+        "runtime_command": 10,
+        "runtime_exit": 0,
+        "runtime_inventory": {
+          "after": [
+            {
+              "bytes": 553,
+              "relative": "defpackage/SharedStoreInput.class",
+              "sha256": "e83a0439990670875a51f98db127928d64a78f690afcf5f538c6b1b8686e3ef0"
+            },
+            {
+              "bytes": 1226,
+              "relative": "defpackage/SharedStoreInputRunner.class",
+              "sha256": "ceae49bd22e270dfb7a36112d3fc5a5292d8814ed2e713ce947672312344415e"
+            }
+          ],
+          "before": [
+            {
+              "bytes": 553,
+              "relative": "defpackage/SharedStoreInput.class",
+              "sha256": "e83a0439990670875a51f98db127928d64a78f690afcf5f538c6b1b8686e3ef0"
+            },
+            {
+              "bytes": 1226,
+              "relative": "defpackage/SharedStoreInputRunner.class",
+              "sha256": "ceae49bd22e270dfb7a36112d3fc5a5292d8814ed2e713ce947672312344415e"
+            }
+          ],
+          "unchanged": true
+        },
+        "runtime_matches_original": true,
+        "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "runtime_stdout_sha256": "cbff706c0d638248db2281c5a00c21c75ebae00a473c6ed12235ee8dbf4891c9",
+        "source": {
+          "bytes": 715,
+          "path": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/jadx-build/javac8/SharedStoreInput.java",
+          "sha256": "e216a60e8fdd1e0cd3379d9afde6bb8e80beafb7a98c365f562d559a832aedcd"
+        }
+      },
+      {
+        "class_inventory": [
+          {
+            "bytes": 553,
+            "relative": "defpackage/SharedStoreInput.class",
+            "sha256": "0f10df3bc95ad1bc0d7990a35c8a3492150278167fe58d92188c752ae7f56377"
+          },
+          {
+            "bytes": 1223,
+            "relative": "defpackage/SharedStoreInputRunner.class",
+            "sha256": "b9b83915584f01a53d7b39e6206d80fe29e9baaabbb2d41cefcef4cf5d4b0d41"
+          }
+        ],
+        "classes_dir": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/jadx-build/javac23/classes",
+        "compile_command": 11,
+        "compile_exit": 0,
+        "jdk": "javac23",
+        "runner_source": {
+          "bytes": 1224,
+          "path": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/SharedStoreInputRunner.java",
+          "sha256": "5d01265b41e307b50de8a5c0c8d26108e64b3026aad063a8025ec7dded7ebcfc"
+        },
+        "runtime_command": 12,
+        "runtime_exit": 0,
+        "runtime_inventory": {
+          "after": [
+            {
+              "bytes": 553,
+              "relative": "defpackage/SharedStoreInput.class",
+              "sha256": "0f10df3bc95ad1bc0d7990a35c8a3492150278167fe58d92188c752ae7f56377"
+            },
+            {
+              "bytes": 1223,
+              "relative": "defpackage/SharedStoreInputRunner.class",
+              "sha256": "b9b83915584f01a53d7b39e6206d80fe29e9baaabbb2d41cefcef4cf5d4b0d41"
+            }
+          ],
+          "before": [
+            {
+              "bytes": 553,
+              "relative": "defpackage/SharedStoreInput.class",
+              "sha256": "0f10df3bc95ad1bc0d7990a35c8a3492150278167fe58d92188c752ae7f56377"
+            },
+            {
+              "bytes": 1223,
+              "relative": "defpackage/SharedStoreInputRunner.class",
+              "sha256": "b9b83915584f01a53d7b39e6206d80fe29e9baaabbb2d41cefcef4cf5d4b0d41"
+            }
+          ],
+          "unchanged": true
+        },
+        "runtime_matches_original": true,
+        "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "runtime_stdout_sha256": "cbff706c0d638248db2281c5a00c21c75ebae00a473c6ed12235ee8dbf4891c9",
+        "source": {
+          "bytes": 715,
+          "path": "/private/tmp/jarde-computed-shared-stack-compare-root-v4/jadx-build/javac23/SharedStoreInput.java",
+          "sha256": "e216a60e8fdd1e0cd3379d9afde6bb8e80beafb7a98c365f562d559a832aedcd"
+        }
+      }
+    ]
+  },
+  "limits_and_pins": "verified"
+}

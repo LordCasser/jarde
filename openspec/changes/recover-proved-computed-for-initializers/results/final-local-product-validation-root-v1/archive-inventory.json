@@ -1,0 +1,1376 @@
+[
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/0.stderr.raw",
+    "archived": "workspace/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/0.stdout.raw",
+    "archived": "workspace/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/1.stderr.raw",
+    "archived": "workspace/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/1.stdout.raw",
+    "archived": "workspace/1.stdout.raw",
+    "bytes": 93120,
+    "sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/10.stderr.raw",
+    "archived": "workspace/10.stderr.raw",
+    "bytes": 668,
+    "sha256": "085691057be68f08b263ac17a074c56670cf7ee5aa76c05f5f033956dc22ffe5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/10.stdout.raw",
+    "archived": "workspace/10.stdout.raw",
+    "bytes": 76880,
+    "sha256": "37c6e61b77c8705d18dd67891d77983400ba12238f6690876eab18e4ef1c9711"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/11.stderr.raw",
+    "archived": "workspace/11.stderr.raw",
+    "bytes": 656,
+    "sha256": "c95911dfecca196853ed27cdcbe18b4be22585e3fc969d1ba0e88e54e973e505"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/11.stdout.raw",
+    "archived": "workspace/11.stdout.raw",
+    "bytes": 76446,
+    "sha256": "d4062def4df6bc2ad72c6959a3f5381373c3f0e8de8e0273c9d17084589c0d57"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/12.stderr.raw",
+    "archived": "workspace/12.stderr.raw",
+    "bytes": 686,
+    "sha256": "307d7e36603d9d6e2dd4e87fc4f69b9ffaecf72f56f10d4dab33b5219eadbfe2"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/12.stdout.raw",
+    "archived": "workspace/12.stdout.raw",
+    "bytes": 75905,
+    "sha256": "ae28207d3f5d7890e346dae8fb7c3af17eee63458e4727ac7b0922383d439a68"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/13.stderr.raw",
+    "archived": "workspace/13.stderr.raw",
+    "bytes": 644,
+    "sha256": "8842518345265d3433e23fc3d55223d2c74ab82575e313598a9f0cc62e356efd"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/13.stdout.raw",
+    "archived": "workspace/13.stdout.raw",
+    "bytes": 75111,
+    "sha256": "db41f480d5a38f6c4b2ea2eb2b308f1ea4c048b546b1af2851444614e85e8ef7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/14.stderr.raw",
+    "archived": "workspace/14.stderr.raw",
+    "bytes": 664,
+    "sha256": "31c4a6fb7765b04506a4056ace727d3471ef5c844202730c7a5a15ca4d2e07c9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/14.stdout.raw",
+    "archived": "workspace/14.stdout.raw",
+    "bytes": 76696,
+    "sha256": "1b00f7f1ce57027f410a58f6f2f2b6fc2c8f13399c5c0360d496b7eac7221492"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/15.stderr.raw",
+    "archived": "workspace/15.stderr.raw",
+    "bytes": 646,
+    "sha256": "1a4b1fd2ad369750757e5577b1b43c1cd1b5438dd270614090a6336b452b713d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/15.stdout.raw",
+    "archived": "workspace/15.stdout.raw",
+    "bytes": 76921,
+    "sha256": "ece57ddf6009f236317006888171b4e4369352679d19af9c631faf78ada74cc4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/16.stderr.raw",
+    "archived": "workspace/16.stderr.raw",
+    "bytes": 602,
+    "sha256": "503ec6153b50fc86672f09b9f92e0bef89657bff2fcf48addc61642a09183729"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/16.stdout.raw",
+    "archived": "workspace/16.stdout.raw",
+    "bytes": 77851,
+    "sha256": "f409b292fa744fb33df94088ca8ea2fac654249532ce4861fa7de0e99bfeb8af"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/17.stderr.raw",
+    "archived": "workspace/17.stderr.raw",
+    "bytes": 574,
+    "sha256": "307c01d74df505dbdde4ebcbe1613f7c1bbc85a885a45b59cccbcee09fa91c9c"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/17.stdout.raw",
+    "archived": "workspace/17.stdout.raw",
+    "bytes": 78667,
+    "sha256": "8979b350b6bea3d904ff6bf0f7fb5176872228984971087af1652ba150a4a0c5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/18.stderr.raw",
+    "archived": "workspace/18.stderr.raw",
+    "bytes": 578,
+    "sha256": "8fc868a2186556bb635224f6786e925a64babe8bea5ded1ddd52f6ca3b711db7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/18.stdout.raw",
+    "archived": "workspace/18.stdout.raw",
+    "bytes": 75430,
+    "sha256": "48aa2640c158189e28c2c0a24b2406801276e881ef1e38609453f71c15745d0e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/19.stderr.raw",
+    "archived": "workspace/19.stderr.raw",
+    "bytes": 572,
+    "sha256": "120c20e9d61b443113a44c2d9a2fc99cee95f895def1f3c1c61ef560cb9f855f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/19.stdout.raw",
+    "archived": "workspace/19.stdout.raw",
+    "bytes": 78864,
+    "sha256": "cc2f410f3830ce77de790d25a6d8fc94433338e0f6b52748db1120ef9ff26876"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/2.stderr.raw",
+    "archived": "workspace/2.stderr.raw",
+    "bytes": 4127,
+    "sha256": "d049f2ecf5106553ea049fd29406417db9ddf83fecf76b222b300d564c197eb3"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/2.stdout.raw",
+    "archived": "workspace/2.stdout.raw",
+    "bytes": 101738,
+    "sha256": "122c01167865440d0ce87caaa0b04a28a37cc9396ad007340d73741364a08104"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/20.stderr.raw",
+    "archived": "workspace/20.stderr.raw",
+    "bytes": 574,
+    "sha256": "e2ec94516a15c3e54def70e7ff851b1c1dab5ef9ad64b099b1a1db9dd5159eed"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/20.stdout.raw",
+    "archived": "workspace/20.stdout.raw",
+    "bytes": 77281,
+    "sha256": "9dacb502581e7996e7f9daacda1c8f62154a9127e306c3c2f5f89ccc76b0ffd8"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/21.stderr.raw",
+    "archived": "workspace/21.stderr.raw",
+    "bytes": 548,
+    "sha256": "6cd29f2e9722b2d80ed6a9bf2cab74e88a05e9940611b4c019e3702914cd2c58"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/21.stdout.raw",
+    "archived": "workspace/21.stdout.raw",
+    "bytes": 79641,
+    "sha256": "2bd3e30728af82ea7a576c91273f6bcfe1d8ca81ff17dbba871f66b572b84e43"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/22.stderr.raw",
+    "archived": "workspace/22.stderr.raw",
+    "bytes": 540,
+    "sha256": "53f8a0da21c2b36d152e6c5dac971e4451736c37b47a6bffc9baebad69784bb1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/22.stdout.raw",
+    "archived": "workspace/22.stdout.raw",
+    "bytes": 78104,
+    "sha256": "481548bbfd60e91d37e27d253b8442c9c69f23a425e807871a5ec4d508dbd3c5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/23.stderr.raw",
+    "archived": "workspace/23.stderr.raw",
+    "bytes": 552,
+    "sha256": "29d5674b48b2abeed426f238f3caa8e40693c21bb44ffb45f00eb23061148513"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/23.stdout.raw",
+    "archived": "workspace/23.stdout.raw",
+    "bytes": 79145,
+    "sha256": "04b4acfe9337e40ac58912ac0935314e7d777f2a2d69283d022a72cc578d75ea"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/24.stderr.raw",
+    "archived": "workspace/24.stderr.raw",
+    "bytes": 560,
+    "sha256": "eb7c7763433c45ae1504e5bdea572fbae73e7f4fdec7064259d84961c31ae8c9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/24.stdout.raw",
+    "archived": "workspace/24.stdout.raw",
+    "bytes": 76412,
+    "sha256": "577ba2edfe69f47dea7fcb18cb9709c0b971aefd28ec58ec6a22b27b88313fb7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/25.stderr.raw",
+    "archived": "workspace/25.stderr.raw",
+    "bytes": 602,
+    "sha256": "34f71226f3981495bd68b2d0088c6b159e07b777b1265808be77a481276f6a6e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/25.stdout.raw",
+    "archived": "workspace/25.stdout.raw",
+    "bytes": 75510,
+    "sha256": "49074fc61c899af2900913c3984298f47281a99c8fdd90f5568b2e517a9137e2"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/26.stderr.raw",
+    "archived": "workspace/26.stderr.raw",
+    "bytes": 610,
+    "sha256": "3349d0a10e43473aee0548e62f3c5832f14b5d316a8fbe86e4b77ac3c4b9bfda"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/26.stdout.raw",
+    "archived": "workspace/26.stdout.raw",
+    "bytes": 75742,
+    "sha256": "14c9639cd7078f29f80f3029d62d1040d3184b8ca5306f331e1d708c8964cf3d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/27.stderr.raw",
+    "archived": "workspace/27.stderr.raw",
+    "bytes": 648,
+    "sha256": "833d347c04205913df629da6392df647e67909a33ed676ac3f69d004fafe8a9f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/27.stdout.raw",
+    "archived": "workspace/27.stdout.raw",
+    "bytes": 75462,
+    "sha256": "d56663b30f5e07ffa9da703146c37e52c6a3a5fde19ce004ebc9fdc05f19c5f7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/28.stderr.raw",
+    "archived": "workspace/28.stderr.raw",
+    "bytes": 646,
+    "sha256": "fa8a1b586e5baf600729356e359b8d0bfc3cec50ca279b5f57a55df496a3dd19"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/28.stdout.raw",
+    "archived": "workspace/28.stdout.raw",
+    "bytes": 75730,
+    "sha256": "9fde865a39cf0eb4d87493385f7320be904418011cb8608d6777ed2cc97db945"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/29.stderr.raw",
+    "archived": "workspace/29.stderr.raw",
+    "bytes": 672,
+    "sha256": "5664d74aefac2dc5fd2c06378ee4cda93e89d2b99c5d7a031609bb9684b9aee9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/29.stdout.raw",
+    "archived": "workspace/29.stdout.raw",
+    "bytes": 74556,
+    "sha256": "6b858324233907bf6a89453a34c682566815bf0e0a6b439351e547cfcc75872d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/3.stderr.raw",
+    "archived": "workspace/3.stderr.raw",
+    "bytes": 658,
+    "sha256": "f729e280e346f5e08c6ea0cfc3daef44d1875ad40fdd8c66467770e994a4f144"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/3.stdout.raw",
+    "archived": "workspace/3.stdout.raw",
+    "bytes": 75709,
+    "sha256": "2e2c10121e539c597b61e2e79c7dc6d1e0a6e1e6643b1885def89c9ee35d1f40"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/30.stderr.raw",
+    "archived": "workspace/30.stderr.raw",
+    "bytes": 596,
+    "sha256": "7730ae62c99b7d3a19c7ed053fe56d992aab341f0696341078522df7474f527d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/30.stdout.raw",
+    "archived": "workspace/30.stdout.raw",
+    "bytes": 75056,
+    "sha256": "2ea6b10bb58ab505545948f733ee8c8cbbabb43437c0412791de358070b8fb1c"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/31.stderr.raw",
+    "archived": "workspace/31.stderr.raw",
+    "bytes": 682,
+    "sha256": "3cbd0ab68e994359542a771f7e80c7eef11034e0af3616cb9a88e776230a06c7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/31.stdout.raw",
+    "archived": "workspace/31.stdout.raw",
+    "bytes": 75397,
+    "sha256": "c8a99cbd4b6608d35298ff391e17bfbe4690f3b01c2c2643b770b1083998c245"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/32.stderr.raw",
+    "archived": "workspace/32.stderr.raw",
+    "bytes": 632,
+    "sha256": "481dacd19e211c272018ad67f373966c7364a950e0a13f16edd6bd202ae45200"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/32.stdout.raw",
+    "archived": "workspace/32.stdout.raw",
+    "bytes": 75712,
+    "sha256": "0f817765f6a49bf0c7bc6d7086099c6ba180a55496cf186515a2fa062d5986f3"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/33.stderr.raw",
+    "archived": "workspace/33.stderr.raw",
+    "bytes": 602,
+    "sha256": "790d82c9f7a7cabb9ab695982afa9b0cd4894c4a96bf298ff46f0d4cd144f691"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/33.stdout.raw",
+    "archived": "workspace/33.stdout.raw",
+    "bytes": 75682,
+    "sha256": "ef7f50179aaf88dcd0b2485d62e1cbba8e790e2e3ff7597b4da059554e37b780"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/34.stderr.raw",
+    "archived": "workspace/34.stderr.raw",
+    "bytes": 602,
+    "sha256": "e35fdf0802d7e5a16561b5a5dc17a9eaf6b5ed1c9e07fd076aefbf9772184bf6"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/34.stdout.raw",
+    "archived": "workspace/34.stdout.raw",
+    "bytes": 74989,
+    "sha256": "ba62a6510c6cdaa54ba97c1d3c7e844642df805adb47b01df01d155e8c375819"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/35.stderr.raw",
+    "archived": "workspace/35.stderr.raw",
+    "bytes": 582,
+    "sha256": "7760d9531a15cdb2af5025b3447a525395ccce7dcdad40452c288f65aa793b0f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/35.stdout.raw",
+    "archived": "workspace/35.stdout.raw",
+    "bytes": 75135,
+    "sha256": "d51c1fbfeac02ebda5e1c78a4b49ca968aaa3b44648bc232f28295c737ffe66a"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/36.stderr.raw",
+    "archived": "workspace/36.stderr.raw",
+    "bytes": 608,
+    "sha256": "31e289dd4a5601397f0ec73633926e63cd54202f018d99773a1cad9e5a0958db"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/36.stdout.raw",
+    "archived": "workspace/36.stdout.raw",
+    "bytes": 75983,
+    "sha256": "8efe1214233d79e608a2714e43f99694e480b379ed1c1e8bbff9b69e409688e7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/37.stderr.raw",
+    "archived": "workspace/37.stderr.raw",
+    "bytes": 658,
+    "sha256": "80e4b090e7012c6168ea9c2ac218ae5e7634de00b249c8b92c6b526a84fc0748"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/37.stdout.raw",
+    "archived": "workspace/37.stdout.raw",
+    "bytes": 76315,
+    "sha256": "df9120be8a67a006ccf10f5a61577642a8d477c1d87e72eaa057cd7f68401036"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/38.stderr.raw",
+    "archived": "workspace/38.stderr.raw",
+    "bytes": 644,
+    "sha256": "fe612c38fc997f3b5d6046db5b90cd2e9c7e06ac979fbda1092efa739f1043b9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/38.stdout.raw",
+    "archived": "workspace/38.stdout.raw",
+    "bytes": 74909,
+    "sha256": "90be469ef84f6cf789fbd220a4d5a79f0c9baa63e7dee514b23abe5712979f87"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/39.stderr.raw",
+    "archived": "workspace/39.stderr.raw",
+    "bytes": 634,
+    "sha256": "011e71e278e985a804b28c80725f5d14a644ec3108b92e7111d7363de8c7be47"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/39.stdout.raw",
+    "archived": "workspace/39.stdout.raw",
+    "bytes": 76211,
+    "sha256": "d49d9197821a224598cd4565b959b216c8172533a4326359a11601bc92cb501a"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/4.stderr.raw",
+    "archived": "workspace/4.stderr.raw",
+    "bytes": 628,
+    "sha256": "b4a4f69ecc6965cd26056693bc2896bd16ed9d13ac44b6e4693fda5212a08387"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/4.stdout.raw",
+    "archived": "workspace/4.stdout.raw",
+    "bytes": 75103,
+    "sha256": "cd01d0ea5f720c32e1ec1582abf3101804292329ecd381bb3b6f541a6854e633"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/40.stderr.raw",
+    "archived": "workspace/40.stderr.raw",
+    "bytes": 616,
+    "sha256": "e028c6c8fc1368827d3e520c073594c1a70de8cd3b74312e941e584544de1686"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/40.stdout.raw",
+    "archived": "workspace/40.stdout.raw",
+    "bytes": 75569,
+    "sha256": "7abb659b5aa54e9d470f67fafa34e49b959e83864fc5315f4e077aad69abdfcc"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/41.stderr.raw",
+    "archived": "workspace/41.stderr.raw",
+    "bytes": 616,
+    "sha256": "b424b17e8eeb58b17646fc7eac5b3a4883b3d1409f8c81f020132a93212edd96"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/41.stdout.raw",
+    "archived": "workspace/41.stdout.raw",
+    "bytes": 75198,
+    "sha256": "9dfe7a3b322c0e536ebdfa98e515e1cedeb517994a47b570d74f9b53b3901a90"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/42.stderr.raw",
+    "archived": "workspace/42.stderr.raw",
+    "bytes": 616,
+    "sha256": "077ae0663525c0e10c41d3ff37efd91cf20594414aa10fe4bdda79d8abeea481"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/42.stdout.raw",
+    "archived": "workspace/42.stdout.raw",
+    "bytes": 75035,
+    "sha256": "1c3862d4dd3ef3f5eddc7bfa9e6f52e1c26d500152d483e08e34382fb866bda5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/43.stderr.raw",
+    "archived": "workspace/43.stderr.raw",
+    "bytes": 698,
+    "sha256": "74fa9f7363888cbf05c1f70f64c48a0ff959f00cde1ce871e1ba415ac42f5910"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/43.stdout.raw",
+    "archived": "workspace/43.stdout.raw",
+    "bytes": 75123,
+    "sha256": "a83816831c1d9aa9879e1c36d726b61e938294008b24da1e8fff1515d071a560"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/44.stderr.raw",
+    "archived": "workspace/44.stderr.raw",
+    "bytes": 628,
+    "sha256": "942540dc6c4af3a40462372758dbc280908cfd4cf23688fa5cae1a827386b867"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/44.stdout.raw",
+    "archived": "workspace/44.stdout.raw",
+    "bytes": 75156,
+    "sha256": "bfd704bdda68f04f402bb8c503628a3ff8519f86bb39079d4f6f2e8c7e33939f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/45.stderr.raw",
+    "archived": "workspace/45.stderr.raw",
+    "bytes": 668,
+    "sha256": "07146836fc0357e4b1cdbfbf4db285c1b51d8181c7eaab87cfb48698c669f868"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/45.stdout.raw",
+    "archived": "workspace/45.stdout.raw",
+    "bytes": 75037,
+    "sha256": "6824b3ed856a849233f559141aff67b573882bf5794ba905b4d81641bcc06640"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/46.stderr.raw",
+    "archived": "workspace/46.stderr.raw",
+    "bytes": 662,
+    "sha256": "2fbc6e110a85262b3835858a91fb8ea8c6749e1f567232033561c3c32472fd38"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/46.stdout.raw",
+    "archived": "workspace/46.stdout.raw",
+    "bytes": 76021,
+    "sha256": "e4bfe7f8187f07b836b6a639c84f3915b145d70064da2e31166b8ee425cab894"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/47.stderr.raw",
+    "archived": "workspace/47.stderr.raw",
+    "bytes": 582,
+    "sha256": "7fa05edf51e64269d1527fc84aa22220be836b7d4c37454e42f29856ef88fb74"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/47.stdout.raw",
+    "archived": "workspace/47.stdout.raw",
+    "bytes": 75245,
+    "sha256": "ac43c599c38fc4d691a686ce985fb71d394e9d053d2af85fce26dbb75b3ca6e9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/48.stderr.raw",
+    "archived": "workspace/48.stderr.raw",
+    "bytes": 652,
+    "sha256": "fed0c8d11c1f65b3aa2634176443b70b44b4ab43497ff25940d6555659624855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/48.stdout.raw",
+    "archived": "workspace/48.stdout.raw",
+    "bytes": 75182,
+    "sha256": "a5a9c76b77218c08a7202a304f130c78939752b64bb64fd82bcdf7797364ffea"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/49.stderr.raw",
+    "archived": "workspace/49.stderr.raw",
+    "bytes": 644,
+    "sha256": "377b88664a69f06b07cf835ffd962bf532d5527776c6c63bbecb8a03030f18dc"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/49.stdout.raw",
+    "archived": "workspace/49.stdout.raw",
+    "bytes": 75117,
+    "sha256": "1529f7940edf96a8c9795e0b263cffc2fae6bba94f9e4792ceac6e1a4d0d1e61"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/5.stderr.raw",
+    "archived": "workspace/5.stderr.raw",
+    "bytes": 606,
+    "sha256": "d5d47fbdf4355e7aa00821e524ba8ba443a7fd881576683b7bac1bb93e0bddc9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/5.stdout.raw",
+    "archived": "workspace/5.stdout.raw",
+    "bytes": 75016,
+    "sha256": "b2a3cd61babd7d2531dc763a34893a897213dd236ba5ed623332e2e1b3a922dc"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/50.stderr.raw",
+    "archived": "workspace/50.stderr.raw",
+    "bytes": 614,
+    "sha256": "eb0df9be3aed65803d69d27d555236361da8ea48929430f31e461d859bb9f7c1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/50.stdout.raw",
+    "archived": "workspace/50.stdout.raw",
+    "bytes": 75007,
+    "sha256": "047391df08ec512f1da5372162adb38d70f3270ce70662b1ec76c639fb2b605e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/51.stderr.raw",
+    "archived": "workspace/51.stderr.raw",
+    "bytes": 622,
+    "sha256": "4a2ea3578c43f5a5e6a30135c1d3f9b65fe2b5467633563ce61704a5652232e3"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/51.stdout.raw",
+    "archived": "workspace/51.stdout.raw",
+    "bytes": 75420,
+    "sha256": "5f668d2e2a6dad5cc10c8353b9a9e3ac7b4c2bd312a3d5e349a33d3b39eeb9d5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/52.stderr.raw",
+    "archived": "workspace/52.stderr.raw",
+    "bytes": 614,
+    "sha256": "d6c8ba98bec48a9c256428b8b5b44442b851172701a276667e959dcb133ed76e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/52.stdout.raw",
+    "archived": "workspace/52.stdout.raw",
+    "bytes": 75415,
+    "sha256": "e1bb1cf23f0b68b99979f9feed8013a419d40d2977a5fc0c8ea76c0ab1f8614d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/53.stderr.raw",
+    "archived": "workspace/53.stderr.raw",
+    "bytes": 648,
+    "sha256": "bbc357daa716ddaa7937447917ef697a0e568c8553b04e2a7b3286b993fbde38"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/53.stdout.raw",
+    "archived": "workspace/53.stdout.raw",
+    "bytes": 75521,
+    "sha256": "87de64f64cfecf25e141c041d87119a2c8e2afecfda4169aafeb417a8682a1b0"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/54.stderr.raw",
+    "archived": "workspace/54.stderr.raw",
+    "bytes": 702,
+    "sha256": "f7dc3af42cdbbd4c2db0183e148b9b1f568d539a71eb8556c1d42db6fbb9a9f1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/54.stdout.raw",
+    "archived": "workspace/54.stdout.raw",
+    "bytes": 74771,
+    "sha256": "8c58193c7f60c21412fb477190d93f523a8dd83523d2b29e7d8a953b415c6ed1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/55.stderr.raw",
+    "archived": "workspace/55.stderr.raw",
+    "bytes": 616,
+    "sha256": "fdf799cf39f7c1215041329696bc5eb401460df0e57361345f9a8bd9e8b21ae3"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/55.stdout.raw",
+    "archived": "workspace/55.stdout.raw",
+    "bytes": 75271,
+    "sha256": "cf9a774f825a73cf196c52a162df9c7c6af13a00a36e71915304fc007a9f3813"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/56.stderr.raw",
+    "archived": "workspace/56.stderr.raw",
+    "bytes": 626,
+    "sha256": "4aa8375eae8ee4bc482d23021031e9c9efa138b2cf3ae39f743e6cb47ee45cd8"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/56.stdout.raw",
+    "archived": "workspace/56.stdout.raw",
+    "bytes": 74861,
+    "sha256": "ddd313d913e0acbf0de54eb12324f77aacdb4b329fcf4d62b2d1e7f706fa27cf"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/57.stderr.raw",
+    "archived": "workspace/57.stderr.raw",
+    "bytes": 596,
+    "sha256": "2f7fae34d1d80b0b288813662cc2cd1bd32128a322ebaf6eafec8d951b2f4dd0"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/57.stdout.raw",
+    "archived": "workspace/57.stdout.raw",
+    "bytes": 74862,
+    "sha256": "c994c0269c9ed40e841cf28a015a49a75283e9cf58cebd75a2a49dc9d3a90bf5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/58.stderr.raw",
+    "archived": "workspace/58.stderr.raw",
+    "bytes": 584,
+    "sha256": "fda7eee3ce896d86af99a722271021c811199684d1dc22e20126d145decb6621"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/58.stdout.raw",
+    "archived": "workspace/58.stdout.raw",
+    "bytes": 75444,
+    "sha256": "362af2cf52d7599ce3de69cc189db2dceeaeb47ced1a380e4517f0437ce7f2be"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/59.stderr.raw",
+    "archived": "workspace/59.stderr.raw",
+    "bytes": 618,
+    "sha256": "f7115785ed5117be112e9ffa7af3c74787d17c4e8124b672519d89c587e39294"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/59.stdout.raw",
+    "archived": "workspace/59.stdout.raw",
+    "bytes": 75548,
+    "sha256": "77d9ebcb6481715a017223b094b73f5da8fffc681186b29e4fa7bb82c146415f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/6.stderr.raw",
+    "archived": "workspace/6.stderr.raw",
+    "bytes": 670,
+    "sha256": "018265dd573efa5d094795f3c67905c8e0f2a7fb663677b6a9e6391d9555c76f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/6.stdout.raw",
+    "archived": "workspace/6.stdout.raw",
+    "bytes": 83242,
+    "sha256": "c2ee3f34c0782b0773ab959ec8afdcd2ca93adf2b8085b7d092ac1f0157584c9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/60.stderr.raw",
+    "archived": "workspace/60.stderr.raw",
+    "bytes": 616,
+    "sha256": "b6405da70e9c0c44a849885cc2b6e8643979dd08f6c64048adc6525d18479ba9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/60.stdout.raw",
+    "archived": "workspace/60.stdout.raw",
+    "bytes": 75184,
+    "sha256": "67f38f21d3060484340d3d1f57320c890f8bb64bafcc5f1e94b3c53ddde77129"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/61.stderr.raw",
+    "archived": "workspace/61.stderr.raw",
+    "bytes": 596,
+    "sha256": "d2de05f8922d88128870430b78eb965830664776e6e155852789b11fbcbacaa4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/61.stdout.raw",
+    "archived": "workspace/61.stdout.raw",
+    "bytes": 75407,
+    "sha256": "c606da0b440fe0327ee6f5c30c84cdb9825d96382d76a31f7800e3c7d24f2360"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/62.stderr.raw",
+    "archived": "workspace/62.stderr.raw",
+    "bytes": 588,
+    "sha256": "ec5ce24aac8c7638f0e85e2272ff1c6db01b1edd038a77f43c7f051854b575cc"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/62.stdout.raw",
+    "archived": "workspace/62.stdout.raw",
+    "bytes": 76125,
+    "sha256": "2c402ff484947825c61b7432ba94259aef8d5943884bea24f493dfd1d35522ae"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/63.stderr.raw",
+    "archived": "workspace/63.stderr.raw",
+    "bytes": 560,
+    "sha256": "340a7ed6410ca76d972ac175beb095b4f6dfbd1b53e746e3b73fe2b302f1c035"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/63.stdout.raw",
+    "archived": "workspace/63.stdout.raw",
+    "bytes": 76334,
+    "sha256": "17df9e3134897ceb55505aa4b80b64fe02ebb5aa6adce4545dd0fc18b6589679"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/64.stderr.raw",
+    "archived": "workspace/64.stderr.raw",
+    "bytes": 586,
+    "sha256": "a077898cc70d391f7f4fb132d12599fbb906541aa1f55245542081fbdc68f465"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/64.stdout.raw",
+    "archived": "workspace/64.stdout.raw",
+    "bytes": 78189,
+    "sha256": "b61a7fc5c379fcea185d45ec9da6816bb2b1a0727dc4f1ad30c6083fd6bc633e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/65.stderr.raw",
+    "archived": "workspace/65.stderr.raw",
+    "bytes": 606,
+    "sha256": "e696b9e4cf019ecaad48c582abc9778f42d8203cfcd43054a6636d5c7de47e8e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/65.stdout.raw",
+    "archived": "workspace/65.stdout.raw",
+    "bytes": 76917,
+    "sha256": "d3a99149397015797cf4d82db21a6dbab9238f1e98a2bd43fa12c5d72ac189c4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/66.stderr.raw",
+    "archived": "workspace/66.stderr.raw",
+    "bytes": 700,
+    "sha256": "42fb38328ea69aba568f6033cda222b2ffd6e0ae39d6efb2ec9e440729d3d3e8"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/66.stdout.raw",
+    "archived": "workspace/66.stdout.raw",
+    "bytes": 76096,
+    "sha256": "387d6819aff79ec3393233dfc4255887e55bc4495e1b942a297166d301eba1ac"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/67.stderr.raw",
+    "archived": "workspace/67.stderr.raw",
+    "bytes": 710,
+    "sha256": "2828b799981f2e0ca77aaa968182be43c17daabe8fcc7d91b4a8042f4bbeaf3c"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/67.stdout.raw",
+    "archived": "workspace/67.stdout.raw",
+    "bytes": 76713,
+    "sha256": "df2edf7f62f215ea7bcae872f3f013a2acfdc381b6828ad899c1a51dc6b48a87"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/68.stderr.raw",
+    "archived": "workspace/68.stderr.raw",
+    "bytes": 704,
+    "sha256": "d84bc7dc41c9e386fc51168feb6f08050c91ab05f9c18d44503eb4a3cbb59e1c"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/68.stdout.raw",
+    "archived": "workspace/68.stdout.raw",
+    "bytes": 75871,
+    "sha256": "eb28ab7fecfc41e4ba5ddeb9d4d0d562529d2d82de88ad32b62ae9b61a4a46ea"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/69.stderr.raw",
+    "archived": "workspace/69.stderr.raw",
+    "bytes": 736,
+    "sha256": "265d5b232f803b7b806ffa28331f896b39cc1e1c04dbfebe32531cce4f44b535"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/69.stdout.raw",
+    "archived": "workspace/69.stdout.raw",
+    "bytes": 76396,
+    "sha256": "b2981dcc0784bf55e545446e5f9280ee9fa75c39dae3256dc19da000cb53a81c"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/7.stderr.raw",
+    "archived": "workspace/7.stderr.raw",
+    "bytes": 604,
+    "sha256": "e24a65da73dea7c1af4eb66f3ccbac57bb452c51dd21ac096406e49e4eb686c4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/7.stdout.raw",
+    "archived": "workspace/7.stdout.raw",
+    "bytes": 76253,
+    "sha256": "d5e5862ddba91ff8cb6ce06e0a51d9db720070599c630232b3ffb4447f565e75"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/70.stderr.raw",
+    "archived": "workspace/70.stderr.raw",
+    "bytes": 764,
+    "sha256": "875cbe24597384f4547a7405f946d73f6de8a66a8521ab2021729d48e73a01b9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/70.stdout.raw",
+    "archived": "workspace/70.stdout.raw",
+    "bytes": 76213,
+    "sha256": "d2513d0016f4e4c3d5fe39229930d6df36d924fbd17a66d40550755a1323424d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/71.stderr.raw",
+    "archived": "workspace/71.stderr.raw",
+    "bytes": 740,
+    "sha256": "7627aac019d53cf3e3bb3102511f9475653fadf8c75ccee41b03ffcd2897e508"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/71.stdout.raw",
+    "archived": "workspace/71.stdout.raw",
+    "bytes": 75671,
+    "sha256": "792dda594af48cfd3fc94a62a39ac0f5021bfa9fd42503bb341795cbd3410ae0"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/72.stderr.raw",
+    "archived": "workspace/72.stderr.raw",
+    "bytes": 758,
+    "sha256": "19bdcaff1df6daf59528c894d871b662a0d4f4bb4e141da7b504d1c17dc8e8b4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/72.stdout.raw",
+    "archived": "workspace/72.stdout.raw",
+    "bytes": 76821,
+    "sha256": "3ae4a550c27e484f99d0da43241170fb3910129e55af12f4ab0e923f2336eab7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/73.stderr.raw",
+    "archived": "workspace/73.stderr.raw",
+    "bytes": 748,
+    "sha256": "a3e03274ed46bcb4e8164e6aa2ea31699363181b43b7753f4556e6a6cd3dab67"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/73.stdout.raw",
+    "archived": "workspace/73.stdout.raw",
+    "bytes": 76240,
+    "sha256": "e4edfb5b5a72d1f67a7a1ed164d44e77e93b93761795bf79d9364949310fd592"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/74.stderr.raw",
+    "archived": "workspace/74.stderr.raw",
+    "bytes": 728,
+    "sha256": "bb1ae454c994f2a70a7bd20d2ff1e71dfdc1a5d22bd2961024d5f19d73b76d99"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/74.stdout.raw",
+    "archived": "workspace/74.stdout.raw",
+    "bytes": 75838,
+    "sha256": "759465e6de8ebab7ecd955184df4ba807d7ce963ac14e5ad97425bddb93d80c9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/75.stderr.raw",
+    "archived": "workspace/75.stderr.raw",
+    "bytes": 694,
+    "sha256": "db758ea1f873c95d391c3086446f1bf4832a1073f6f595a0aa866e82ec022ad0"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/75.stdout.raw",
+    "archived": "workspace/75.stdout.raw",
+    "bytes": 77003,
+    "sha256": "2d7be9a92ed59d778377b631d1414446642bbfcfa75151ecc89e63f90a355bb1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/76.stderr.raw",
+    "archived": "workspace/76.stderr.raw",
+    "bytes": 404,
+    "sha256": "085cb1824ae1f187544533fbdbf9e1286826e4ff297cea3b67333325d28f6ab5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/76.stdout.raw",
+    "archived": "workspace/76.stdout.raw",
+    "bytes": 74632,
+    "sha256": "3c3e10adb494bd5a6effacbddce246749000b3ba9a0f519b6c3051ef57ba5e76"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/77.stderr.raw",
+    "archived": "workspace/77.stderr.raw",
+    "bytes": 683,
+    "sha256": "d76d41d6d3df7b6fa01c85616c84d9ef090fd80ce3e1354ecf12eb90b4983119"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/77.stdout.raw",
+    "archived": "workspace/77.stdout.raw",
+    "bytes": 69370,
+    "sha256": "410465bfbfe45fb86ca5b5e968dd3e202da3838b5c488433b8e895dc297e82dc"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/78.stderr.raw",
+    "archived": "workspace/78.stderr.raw",
+    "bytes": 706,
+    "sha256": "b1fbe3ab0bd13451eedadfa7abf42bbad42e703897885aeb6182e85c103afd03"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/78.stdout.raw",
+    "archived": "workspace/78.stdout.raw",
+    "bytes": 43013,
+    "sha256": "fb908e95eed226918bcba4dde089366e6f041ff847299eab7827f2e9abaadde7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/79.stderr.raw",
+    "archived": "workspace/79.stderr.raw",
+    "bytes": 667,
+    "sha256": "ae80a29b58f241c6b1514a16c8f605004804054e0fb22c3f12185462852918c2"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/79.stdout.raw",
+    "archived": "workspace/79.stdout.raw",
+    "bytes": 41429,
+    "sha256": "3b4356d0fa1d509101db2e18e5bc8f2f1ab0f1c779961ed7464afa8233dd7be9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/8.stderr.raw",
+    "archived": "workspace/8.stderr.raw",
+    "bytes": 614,
+    "sha256": "0f3e447ac0794905be49f1e092a09e2ec2ac00870cec41777991dfbdc8ed2a78"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/8.stdout.raw",
+    "archived": "workspace/8.stdout.raw",
+    "bytes": 75555,
+    "sha256": "e7ee7eaef1f62a0b7ed497bd9358c4f0a6f4f2f8c7e82f814b166aa214883491"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/80.stderr.raw",
+    "archived": "workspace/80.stderr.raw",
+    "bytes": 749,
+    "sha256": "e96c11a95926d49fd4159992358a014b31be6eb2992429d5408422225bd7bc80"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/80.stdout.raw",
+    "archived": "workspace/80.stdout.raw",
+    "bytes": 41502,
+    "sha256": "10e07e22e6555b1ced55f877378b0b63aefa9473522e2721cb88ad47fa5c078f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/81.stderr.raw",
+    "archived": "workspace/81.stderr.raw",
+    "bytes": 697,
+    "sha256": "a0b296a01d15a2f7c025b2515d7f9c708a8c83b48ee9733925a2c0fe62684d2b"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/81.stdout.raw",
+    "archived": "workspace/81.stdout.raw",
+    "bytes": 41842,
+    "sha256": "8a0e5bf2ca10ac9185041a8a27020676382eae9e3e9b7f0a822fa1cf91e8233b"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/82.stderr.raw",
+    "archived": "workspace/82.stderr.raw",
+    "bytes": 657,
+    "sha256": "1df0099b52cfb1c44735d55032d4fb889b0db12601f0178a7c3d5de745079a91"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/82.stdout.raw",
+    "archived": "workspace/82.stdout.raw",
+    "bytes": 42342,
+    "sha256": "5372cb141784e744c2c2401a302dc5f6741da7ceb4cc744847e98975a678e736"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/83.stderr.raw",
+    "archived": "workspace/83.stderr.raw",
+    "bytes": 665,
+    "sha256": "5b6aa249aac91cbf7fe5ad1d16102948a154ff6e7a1323035ecbc579f6645259"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/83.stdout.raw",
+    "archived": "workspace/83.stdout.raw",
+    "bytes": 45896,
+    "sha256": "59a50dae44fe8fbbd0d9062185034ac2dc11ab1802ad7a8a61eb7b969c56e075"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/84.stderr.raw",
+    "archived": "workspace/84.stderr.raw",
+    "bytes": 645,
+    "sha256": "23f5e5cf56274cd0af2e5d574b3f9b179a583a253b3ba948d6a1fe49441d5774"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/84.stdout.raw",
+    "archived": "workspace/84.stdout.raw",
+    "bytes": 48965,
+    "sha256": "ed6fd4c92fa80dc94eddbe49957c6c76d4707bdedf1f1f4babe22a8144beca15"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/85.stderr.raw",
+    "archived": "workspace/85.stderr.raw",
+    "bytes": 701,
+    "sha256": "a4c8733c43388b985038627040b99b9c957ab00e6111f546c8e79f6296aaf8f2"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/85.stdout.raw",
+    "archived": "workspace/85.stdout.raw",
+    "bytes": 42231,
+    "sha256": "3a801470d3d647955e3193907795dfb283a7d4140e09dfad7775d761e0519958"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/86.stderr.raw",
+    "archived": "workspace/86.stderr.raw",
+    "bytes": 667,
+    "sha256": "3affd09bc1aeed346964ac2aa1a04d30868267054d6f2cc5e461cebcf39c8ffb"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/86.stdout.raw",
+    "archived": "workspace/86.stdout.raw",
+    "bytes": 43276,
+    "sha256": "82e97c53e3d57811e3b4cd3fc8c0f0d01aa414ffa9af03a78ff1970778eb4c8b"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/87.stderr.raw",
+    "archived": "workspace/87.stderr.raw",
+    "bytes": 645,
+    "sha256": "1a6d6c8e9ffbb6635820bc7f041d075cf9bf39c38ac53011a1e31317a55b5c5e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/87.stdout.raw",
+    "archived": "workspace/87.stdout.raw",
+    "bytes": 41606,
+    "sha256": "547b8ace44c12b46ea8de903088db9d323a2af24cba1235ae8b67d70ba278194"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/88.stderr.raw",
+    "archived": "workspace/88.stderr.raw",
+    "bytes": 309,
+    "sha256": "4723fc8d292b1d026a4534868fe61edd0aa4c577e86750ad9d8da6a908be18cf"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/88.stdout.raw",
+    "archived": "workspace/88.stdout.raw",
+    "bytes": 37828,
+    "sha256": "a15d886845a7619a6c033dfc9c805b04c10cd1f286d76a3ed9e1e7b4a67cebd7"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/89.stderr.raw",
+    "archived": "workspace/89.stderr.raw",
+    "bytes": 273,
+    "sha256": "6846c849cfddfe29f4ca0bf0d022ab8a7a7496d4ff9cbc71805c664e7c88293e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/89.stdout.raw",
+    "archived": "workspace/89.stdout.raw",
+    "bytes": 62193,
+    "sha256": "e25424b21f24d8e5cd2391a721769316a8b8a55f7aaedefce67a37b4e340013f"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/9.stderr.raw",
+    "archived": "workspace/9.stderr.raw",
+    "bytes": 588,
+    "sha256": "99de81840a483f455676a6cc7eb0f5078bda33a87a4c4ce1f713863db8e9a392"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/9.stdout.raw",
+    "archived": "workspace/9.stdout.raw",
+    "bytes": 75105,
+    "sha256": "1f0afd25e7fef89c9c35f51404b3ad9b0d929cb956d912e0cbb13d58842468da"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/90.stderr.raw",
+    "archived": "workspace/90.stderr.raw",
+    "bytes": 390,
+    "sha256": "236fa3b6a65c0eaad11a891a335f88b677e559b02c2a7e5f56996302ed750add"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/90.stdout.raw",
+    "archived": "workspace/90.stdout.raw",
+    "bytes": 37817,
+    "sha256": "5318515ddece29d79a32c4b01d662714d0e8e179f824cbd1435527b7f92cab32"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/91.stderr.raw",
+    "archived": "workspace/91.stderr.raw",
+    "bytes": 289,
+    "sha256": "ac13dc6693e41040e91335a36891ea6ea199f1fd8d283134013094dfe7d96e01"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/91.stdout.raw",
+    "archived": "workspace/91.stdout.raw",
+    "bytes": 38198,
+    "sha256": "87c10564924a73a58a656064a7b512fd1ac6511365bc13163bb5060a3b9a57b2"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/92.stderr.raw",
+    "archived": "workspace/92.stderr.raw",
+    "bytes": 282,
+    "sha256": "f43fc8e7cfaed62624e1300c7246078c2424a0d052647a063a381d26a9082e14"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/92.stdout.raw",
+    "archived": "workspace/92.stdout.raw",
+    "bytes": 79612,
+    "sha256": "363c21c09f6cd52e269e0649fe5c27ef7aed8ffd42491258f8df94a533191558"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/93.stderr.raw",
+    "archived": "workspace/93.stderr.raw",
+    "bytes": 657,
+    "sha256": "44ad8e81b22aa6e14ccecf539b663090e19bb3c4c1d9386201626c36afc8ae6a"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/93.stdout.raw",
+    "archived": "workspace/93.stdout.raw",
+    "bytes": 69269,
+    "sha256": "552915d2d6484a21d111edaf0712c73b2f27eb1bbd506fa474ea27bb8d432e97"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/94.stderr.raw",
+    "archived": "workspace/94.stderr.raw",
+    "bytes": 1581,
+    "sha256": "8a261fb836f9f7852f30357f6b9182ed704bb74368055e4b15bf0f9a38cc88c1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/94.stdout.raw",
+    "archived": "workspace/94.stdout.raw",
+    "bytes": 55082,
+    "sha256": "980f5914683c018e4f7ebeed07556024b97d080b8efb0ad5937f4b0f62a82ccb"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/95.stderr.raw",
+    "archived": "workspace/95.stderr.raw",
+    "bytes": 577,
+    "sha256": "1772e48231208205969d6d3501ee3c1209ee6992797f1ba1500e7b665fc84456"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/95.stdout.raw",
+    "archived": "workspace/95.stdout.raw",
+    "bytes": 61734,
+    "sha256": "ae0eab579d8987bee81efaec68a655f6b032a23ae2639f56fb89711c66c7320a"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/96.stderr.raw",
+    "archived": "workspace/96.stderr.raw",
+    "bytes": 361,
+    "sha256": "2280648ae1e18fb6404fba0fd89bf03344b7e9cfa7eafb383b211a239742f27b"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/96.stdout.raw",
+    "archived": "workspace/96.stdout.raw",
+    "bytes": 58232,
+    "sha256": "73796163a780c2f8579d76df99bd0a2e5c8c519c4afde58cce870760cc6b0cae"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/97.stderr.raw",
+    "archived": "workspace/97.stderr.raw",
+    "bytes": 53,
+    "sha256": "3b36f088c1d8e47004485acb8710d32bdf6b0e61b85894b9566be93a87df7e99"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/97.stdout.raw",
+    "archived": "workspace/97.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/execution.json",
+    "archived": "workspace/execution.json",
+    "bytes": 1860486,
+    "sha256": "a290961a01d5760bcfed9a40962a1fee06260c037925e004bbd54b73b8e89ef9"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-root-v2/metadata.json",
+    "archived": "workspace/metadata.json",
+    "bytes": 93120,
+    "sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/100.stderr.raw",
+    "archived": "lint/100.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/100.stdout.raw",
+    "archived": "lint/100.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/101.stderr.raw",
+    "archived": "lint/101.stderr.raw",
+    "bytes": 3835,
+    "sha256": "63ab47b036b0fa2554597d94649cef8c51974e18375647ae1eb5f985a7561806"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/101.stdout.raw",
+    "archived": "lint/101.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/102.stderr.raw",
+    "archived": "lint/102.stderr.raw",
+    "bytes": 53,
+    "sha256": "8bad19cfe9162c0bb9fc687c15377235438b5a11f9f39e343ef453bc4b47c08d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/102.stdout.raw",
+    "archived": "lint/102.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-v1/execution.json",
+    "archived": "lint/execution.json",
+    "bytes": 1518816,
+    "sha256": "568c2d91dbc7eed2433140348c69288e2415d5ebf8c5c3a05b825b6a0aa38ca5"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-build-root-v2/0.stderr.raw",
+    "archived": "final-cli-build/0.stderr.raw",
+    "bytes": 2768,
+    "sha256": "af0212609b6554aec27deec5c89a029a80d0e7f3ce7bb5990ce9f1b1b3a219c2"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-build-root-v2/0.stdout.raw",
+    "archived": "final-cli-build/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-build-root-v2/1.stderr.raw",
+    "archived": "final-cli-build/1.stderr.raw",
+    "bytes": 52,
+    "sha256": "96f638d6efc1872ed3a51badae69edf3822ca8a7622a7a5060105e22805b2d4d"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-build-root-v2/1.stdout.raw",
+    "archived": "final-cli-build/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-build-root-v2/execution.json",
+    "archived": "final-cli-build/execution.json",
+    "bytes": 3174404,
+    "sha256": "45564f10cc40ec86e723f1650ef331c33b4a98625fce01eb60ed8ea2e543cb29"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-strict-root-v1/execution.json",
+    "archived": "strict/execution.json",
+    "bytes": 643,
+    "sha256": "8e90bf8754625c8a29cde9af3602d452a6d85e5b11aaa486b1bc0da9b84ff07e"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-strict-root-v1/stderr.raw",
+    "archived": "strict/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-strict-root-v1/stdout.raw",
+    "archived": "strict/stdout.raw",
+    "bytes": 16057,
+    "sha256": "c33a2f7e97d3fd37f73c8f7b4c1741e609218247e7fb2b475797e5dc6d533dd1"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-acceptance-root-v2.json",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-workspace-acceptance-root-v2.json",
+    "bytes": 804,
+    "sha256": "f7ff8f59db2c873cd8035e61ca8bee51fd5d943eae3ead425410e74710597cb4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-root-runner-v1.py",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-lint-root-runner-v1.py",
+    "bytes": 5173,
+    "sha256": "b5b693e188409e81ff68d8d9d32b103b578395bca90d03acf689aad126887f77"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-verifier-root-v1.py",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-lint-verifier-root-v1.py",
+    "bytes": 1710,
+    "sha256": "722e5141859e9e4a8ab65115ef2c07c5818b054eb183e035eb57687ced174fcc"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-acceptance-root-v1.json",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-lint-acceptance-root-v1.json",
+    "bytes": 371,
+    "sha256": "51163504161dfc4571ad87f0c8dd6e678b5265930b06c9c49557ceb801c613b3"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-verifier-root-v1.py",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-cli-verifier-root-v1.py",
+    "bytes": 3052,
+    "sha256": "7cd13f94a8e1480911787b66e81ab24bfbb1c5ae9d8d5d144335890653278988"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-acceptance-root-v1.json",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-cli-acceptance-root-v1.json",
+    "bytes": 1453,
+    "sha256": "7b6b28e99965a9a8d710ee097d1174c1a60519d2bc2f03b8f690d42082548fea"
+  },
+  {
+    "source": "/private/tmp/jarde-compound-workspace-batches-root-v1.py",
+    "archived": "executed-programs-and-acceptance/jarde-compound-workspace-batches-root-v1.py",
+    "bytes": 8178,
+    "sha256": "2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-acceptance-root-v2.stdout.raw",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-workspace-acceptance-root-v2.stdout.raw",
+    "bytes": 804,
+    "sha256": "f7ff8f59db2c873cd8035e61ca8bee51fd5d943eae3ead425410e74710597cb4"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-workspace-acceptance-root-v2.stderr.raw",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-workspace-acceptance-root-v2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-acceptance-root-v1.stdout.raw",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-lint-acceptance-root-v1.stdout.raw",
+    "bytes": 353,
+    "sha256": "d37eb18ef4c306aef940a9287800205d97e9d28cbb7a4fc0d4bcbe6856fdccc0"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-lint-acceptance-root-v1.stderr.raw",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-lint-acceptance-root-v1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-acceptance-root-v1.stdout.raw",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-cli-acceptance-root-v1.stdout.raw",
+    "bytes": 128,
+    "sha256": "049c53afd1ba029b21a4231b79dad78372eb5e4b49f5e655802cc849857d2bfd"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-final-cli-acceptance-root-v1.stderr.raw",
+    "archived": "executed-programs-and-acceptance/jarde-computed-for-final-cli-acceptance-root-v1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/project-integer-constant-names-with-refused-member-family/results/full-workspace-final-cli-root-v1/verify-workspace-v2.py",
+    "archived": "executed-programs-and-acceptance/verify-workspace-v2.py",
+    "bytes": 12987,
+    "sha256": "6bac0e54afdd9e216e54f6f095633cdf9dbf8848ff2af72a96945bce931cbf47"
+  },
+  {
+    "source": "/private/tmp/jarde-final-cli-build-root-v1/build-final-cli.py",
+    "archived": "executed-programs-and-acceptance/build-final-cli.py",
+    "bytes": 8357,
+    "sha256": "a72b70a7b2699bf5f936f81b657df4073f105be3fceacf753e865f0ce2d4d79b"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-archive-final-local-root-v1.py",
+    "archived": "archive.py",
+    "bytes": 4489,
+    "sha256": "15867a2247f9b6c1d661a11d11b229bc1974a520708ebd473a18034343a52fa3"
+  }
+]

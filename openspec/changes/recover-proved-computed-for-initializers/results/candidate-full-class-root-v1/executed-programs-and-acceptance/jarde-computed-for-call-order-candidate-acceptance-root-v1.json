@@ -1,0 +1,1719 @@
+{
+  "build": {
+    "build_clean_passed": true,
+    "build_raw_stream_pins": [
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-cli-build-root-v1/0.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2768,
+        "path": "/private/tmp/jarde-computed-for-cli-build-root-v1/0.stderr.raw",
+        "sha256": "6f51307753829ec3c9cc986414379ac98fb07d1c8948a0285d6b4d4be23150b9"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-cli-build-root-v1/1.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 52,
+        "path": "/private/tmp/jarde-computed-for-cli-build-root-v1/1.stderr.raw",
+        "sha256": "96f638d6efc1872ed3a51badae69edf3822ca8a7622a7a5060105e22805b2d4d"
+      }
+    ],
+    "build_runner_pins": [
+      {
+        "bytes": 8357,
+        "path": "/private/tmp/jarde-final-cli-build-root-v1/build-final-cli.py",
+        "sha256": "a72b70a7b2699bf5f936f81b657df4073f105be3fceacf753e865f0ce2d4d79b"
+      },
+      {
+        "bytes": 23507,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+        "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+      },
+      {
+        "bytes": 471,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+        "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+      }
+    ],
+    "execution_json": {
+      "bytes": 3172442,
+      "path": "/private/tmp/jarde-computed-for-cli-build-root-v1/execution.json",
+      "sha256": "fceb41f360bb5ee4819422ecf41aebf59f9b55d2be70a72b5dac49f85ff2a2a5"
+    },
+    "frozen_cli": {
+      "bytes": 60821472,
+      "mode": "0o555",
+      "path": "/private/tmp/jarde-computed-for-candidate-cli-root-v1",
+      "sha256": "d1543cb69867d78f964873fe0e3d534f18923d3350d6dcf88b6a7e02738b56d1"
+    },
+    "product_source_verification": {
+      "dynamic_source_pin_count": 4698,
+      "git_product_binding": "not performed; pins are bound to this workspace filesystem and build record only",
+      "live_source_files_checked": 4698,
+      "source_paths_before_after_equal": true,
+      "source_pins_before_after_freeze_equal": true
+    },
+    "schema": "jarde-final-cli-build-clean-root-v1",
+    "source_base_recorded_but_not_git_verified": "d9e7e7b4085dd8dad5ce5abcf662c2ea4433eb65",
+    "status": "validation-passed-cli-frozen-target-cleaned"
+  },
+  "candidate_execution": {
+    "all_commands_passed": true,
+    "all_runtime_sides_match": true,
+    "command_bindings": {
+      "all_java_tools_match_profile_pins": true,
+      "all_profile_runtime_rows_equal_recorded_commands": true,
+      "exact_original_and_generated_source_compile_argv_verified": true,
+      "render_compile_runtime_bindings": [
+        {
+          "compile_index": 105,
+          "jdk": "jdk8",
+          "mode": "default",
+          "runtime_index": 106,
+          "variant": "original"
+        },
+        {
+          "compile_index": 108,
+          "jdk": "jdk8",
+          "mode": "all",
+          "runtime_index": 109,
+          "variant": "original"
+        },
+        {
+          "compile_index": 113,
+          "jdk": "jdk8",
+          "mode": "default",
+          "runtime_index": 114,
+          "variant": "pending"
+        },
+        {
+          "compile_index": 116,
+          "jdk": "jdk8",
+          "mode": "all",
+          "runtime_index": 117,
+          "variant": "pending"
+        },
+        {
+          "compile_index": 123,
+          "jdk": "jdk23",
+          "mode": "default",
+          "runtime_index": 124,
+          "variant": "original"
+        },
+        {
+          "compile_index": 126,
+          "jdk": "jdk23",
+          "mode": "all",
+          "runtime_index": 127,
+          "variant": "original"
+        },
+        {
+          "compile_index": 131,
+          "jdk": "jdk23",
+          "mode": "default",
+          "runtime_index": 132,
+          "variant": "pending"
+        },
+        {
+          "compile_index": 134,
+          "jdk": "jdk23",
+          "mode": "all",
+          "runtime_index": 135,
+          "variant": "pending"
+        }
+      ]
+    },
+    "command_count": 36,
+    "control_source_pins": [
+      {
+        "bytes": 955,
+        "path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/ComputedForEffectControl.java",
+        "sha256": "ebc11accf37955b2fbd5406d9766cac978dc7e4251ba269a99188adfc3c4be11"
+      },
+      {
+        "bytes": 1224,
+        "path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/Runner.java",
+        "sha256": "21b77ee586aa649017b6868d9c6ea0422f33762a9e5d07e6113a0596ffda88c6"
+      },
+      {
+        "bytes": 7185,
+        "path": "/private/tmp/jarde-computed-for-call-order-control-luna-v2/swap_init_store_with_g.py",
+        "sha256": "e5f21044fb45107c5b0793abcb93ad13e585808c1fe0aeb28e85fac88b50df36"
+      }
+    ],
+    "execution_json": {
+      "bytes": 98998,
+      "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/execution.json",
+      "sha256": "7657cf9eee18224bce96108f5084321cd19cc270dd1de85828148d57c0ac090c"
+    },
+    "generated_classes": {
+      "class_count": 16,
+      "classes": [
+        {
+          "bytes": 720,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9"
+        },
+        {
+          "bytes": 1320,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original/Runner.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-runner-class (pending copy is not separately command-pinned)",
+          "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+        },
+        {
+          "bytes": 938,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original-all/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "a76adfe3d8f1598fe501c0cfcb1469d75ba26dcafb85fb647d5e8b8a9aed491b"
+        },
+        {
+          "bytes": 938,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original-default/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "a76adfe3d8f1598fe501c0cfcb1469d75ba26dcafb85fb647d5e8b8a9aed491b"
+        },
+        {
+          "bytes": 720,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-patched-class",
+          "sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e"
+        },
+        {
+          "bytes": 1320,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending/Runner.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-runner-class (pending copy is not separately command-pinned)",
+          "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+        },
+        {
+          "bytes": 943,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending-all/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "16f8f618f5a489c229506818f2bfe11d8f929c0d54b5e7c5202060df4d100fcc"
+        },
+        {
+          "bytes": 943,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending-default/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "16f8f618f5a489c229506818f2bfe11d8f929c0d54b5e7c5202060df4d100fcc"
+        },
+        {
+          "bytes": 720,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "56401a8d604d18dc8491df3f9c197f22021efa2c84de935928dfac7fff9af7a4"
+        },
+        {
+          "bytes": 1314,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original/Runner.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-runner-class (pending copy is not separately command-pinned)",
+          "sha256": "a7fb56aad4424179478230b8ac4a10f3a7b91623726a7a950f79366ef672b243"
+        },
+        {
+          "bytes": 938,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original-all/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "7c3f5f3cefcd0ae734d87575feab7fc685bf52ff8858b2647188c40c6cb0f39d"
+        },
+        {
+          "bytes": 938,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original-default/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "7c3f5f3cefcd0ae734d87575feab7fc685bf52ff8858b2647188c40c6cb0f39d"
+        },
+        {
+          "bytes": 720,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-patched-class",
+          "sha256": "77d5e0e9b0d9b5ee72b8f5ea324b49bf56e2ba8372743bf1fb29172d18d364bc"
+        },
+        {
+          "bytes": 1314,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending/Runner.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-runner-class (pending copy is not separately command-pinned)",
+          "sha256": "a7fb56aad4424179478230b8ac4a10f3a7b91623726a7a950f79366ef672b243"
+        },
+        {
+          "bytes": 943,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending-all/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "1bcab5b4c164002c9a16f5e7b0e5068413086e9f25552dd17309622aadfb990f"
+        },
+        {
+          "bytes": 943,
+          "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending-default/ComputedForEffectControl.class",
+          "pin_timing": "observed after completed run; not recorded in execution.json",
+          "provenance": "post-run-observed-javac-output-class",
+          "sha256": "1bcab5b4c164002c9a16f5e7b0e5068413086e9f25552dd17309622aadfb990f"
+        }
+      ],
+      "pin_timing": "post-run observed; root execution record did not contain full generated-class hash inventory",
+      "runner_harness_copies": {
+        "jdk23": {
+          "bytes": 1314,
+          "pending_copy_equals_original": true,
+          "pending_copy_timing": "post-run observed; runner script source states shutil.copy2",
+          "sha256": "a7fb56aad4424179478230b8ac4a10f3a7b91623726a7a950f79366ef672b243"
+        },
+        "jdk8": {
+          "bytes": 1320,
+          "pending_copy_equals_original": true,
+          "pending_copy_timing": "post-run observed; runner script source states shutil.copy2",
+          "sha256": "0d87dac27bd04369fb1f02bab7b6dc52c9cd3b3376b96543a5e3ccc9fa7e9808"
+        }
+      }
+    },
+    "guard": {
+      "bytes": 23507,
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "profiles": [
+      {
+        "class_input_order": {
+          "original": {
+            "class_bytes": 720,
+            "class_sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9",
+            "code_bytes": 35,
+            "find_exception_table_length": 0,
+            "init_call_order": "original",
+            "instruction_bcis": [
+              0,
+              3,
+              4,
+              5,
+              7,
+              10,
+              12,
+              13,
+              16,
+              17,
+              19,
+              20,
+              21,
+              24,
+              26,
+              27,
+              30,
+              33,
+              34
+            ],
+            "method_descriptor": "([IIIIII)I",
+            "owner_internal_name": "ComputedForEffectControl",
+            "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original/ComputedForEffectControl.class"
+          },
+          "pending": {
+            "class_bytes": 720,
+            "class_sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e",
+            "code_bytes": 35,
+            "find_exception_table_length": 0,
+            "init_call_order": "pending",
+            "instruction_bcis": [
+              0,
+              3,
+              4,
+              5,
+              8,
+              10,
+              12,
+              13,
+              16,
+              17,
+              19,
+              20,
+              21,
+              24,
+              26,
+              27,
+              30,
+              33,
+              34
+            ],
+            "method_descriptor": "([IIIIII)I",
+            "owner_internal_name": "ComputedForEffectControl",
+            "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending/ComputedForEffectControl.class"
+          }
+        },
+        "default_all_text_map_equal": {
+          "original": {
+            "all_method_source_maps_equal": true,
+            "all_method_texts_equal": true,
+            "find_source_map_physical_identity": {
+              "all": {
+                "class_identity_digest": "f903b545ab7803777acb33470dc3c28f3b9ed92cae4aaa489512b590112279cb",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 28,
+                "utf8_spans_valid": true
+              },
+              "default": {
+                "class_identity_digest": "f903b545ab7803777acb33470dc3c28f3b9ed92cae4aaa489512b590112279cb",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "62ba6f690df594786df0f037275ec6bc9f56546575828c5b235b111ea95f78e9",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 28,
+                "utf8_spans_valid": true
+              }
+            },
+            "find_source_map_segments": 25,
+            "find_text_bytes": 400,
+            "observed_loop_form": "while",
+            "whole_class_text_equal": true
+          },
+          "pending": {
+            "all_method_source_maps_equal": true,
+            "all_method_texts_equal": true,
+            "find_source_map_physical_identity": {
+              "all": {
+                "class_identity_digest": "f8cfafa0a0354d484a7ba15447a7dd67acf5fb3706616d7faf1f93a416cd5aa6",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 31,
+                "utf8_spans_valid": true
+              },
+              "default": {
+                "class_identity_digest": "f8cfafa0a0354d484a7ba15447a7dd67acf5fb3706616d7faf1f93a416cd5aa6",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "3520f5eddf6de49f3a91c15c240bc2e3484eb30d9109c6f16d2ecb698afcc12e",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 31,
+                "utf8_spans_valid": true
+              }
+            },
+            "find_source_map_segments": 27,
+            "find_text_bytes": 390,
+            "observed_loop_form": "for",
+            "whole_class_text_equal": true
+          }
+        },
+        "jdk": "jdk8",
+        "runtime_sides": [
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "control_exists_first": true,
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original",
+              "mode": "raw control runtime",
+              "runner_exists_first": true
+            },
+            "index": 103,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/103.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/103.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "control_exists_first": true,
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending",
+              "mode": "raw control runtime",
+              "runner_exists_first": true
+            },
+            "index": 111,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/111.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/111.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original-default:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original-default",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original"
+            },
+            "index": 106,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/106.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/106.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original-all:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original-all",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original"
+            },
+            "index": 109,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/109.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/109.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending-default:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending-default",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original"
+            },
+            "index": 114,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/114.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/114.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending-all:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/pending-all",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk8/original"
+            },
+            "index": 117,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/117.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/117.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          }
+        ],
+        "tools": {
+          "java": {
+            "bytes": 152096,
+            "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+          },
+          "javac": {
+            "bytes": 152128,
+            "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+          },
+          "javap": {
+            "bytes": 152128,
+            "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+          }
+        }
+      },
+      {
+        "class_input_order": {
+          "original": {
+            "class_bytes": 720,
+            "class_sha256": "56401a8d604d18dc8491df3f9c197f22021efa2c84de935928dfac7fff9af7a4",
+            "code_bytes": 35,
+            "find_exception_table_length": 0,
+            "init_call_order": "original",
+            "instruction_bcis": [
+              0,
+              3,
+              4,
+              5,
+              7,
+              10,
+              12,
+              13,
+              16,
+              17,
+              19,
+              20,
+              21,
+              24,
+              26,
+              27,
+              30,
+              33,
+              34
+            ],
+            "method_descriptor": "([IIIIII)I",
+            "owner_internal_name": "ComputedForEffectControl",
+            "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original/ComputedForEffectControl.class"
+          },
+          "pending": {
+            "class_bytes": 720,
+            "class_sha256": "77d5e0e9b0d9b5ee72b8f5ea324b49bf56e2ba8372743bf1fb29172d18d364bc",
+            "code_bytes": 35,
+            "find_exception_table_length": 0,
+            "init_call_order": "pending",
+            "instruction_bcis": [
+              0,
+              3,
+              4,
+              5,
+              8,
+              10,
+              12,
+              13,
+              16,
+              17,
+              19,
+              20,
+              21,
+              24,
+              26,
+              27,
+              30,
+              33,
+              34
+            ],
+            "method_descriptor": "([IIIIII)I",
+            "owner_internal_name": "ComputedForEffectControl",
+            "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending/ComputedForEffectControl.class"
+          }
+        },
+        "default_all_text_map_equal": {
+          "original": {
+            "all_method_source_maps_equal": true,
+            "all_method_texts_equal": true,
+            "find_source_map_physical_identity": {
+              "all": {
+                "class_identity_digest": "bedb5079262c0c01962907b4efbec2cc1b2655277485470da294b041d27feed4",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "56401a8d604d18dc8491df3f9c197f22021efa2c84de935928dfac7fff9af7a4",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 28,
+                "utf8_spans_valid": true
+              },
+              "default": {
+                "class_identity_digest": "bedb5079262c0c01962907b4efbec2cc1b2655277485470da294b041d27feed4",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "56401a8d604d18dc8491df3f9c197f22021efa2c84de935928dfac7fff9af7a4",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  7,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 28,
+                "utf8_spans_valid": true
+              }
+            },
+            "find_source_map_segments": 25,
+            "find_text_bytes": 400,
+            "observed_loop_form": "while",
+            "whole_class_text_equal": true
+          },
+          "pending": {
+            "all_method_source_maps_equal": true,
+            "all_method_texts_equal": true,
+            "find_source_map_physical_identity": {
+              "all": {
+                "class_identity_digest": "e78de5909989a915e631087d8cafc8373d38bd7ccad92dcb4407f13cdc3c281d",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "77d5e0e9b0d9b5ee72b8f5ea324b49bf56e2ba8372743bf1fb29172d18d364bc",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 31,
+                "utf8_spans_valid": true
+              },
+              "default": {
+                "class_identity_digest": "e78de5909989a915e631087d8cafc8373d38bd7ccad92dcb4407f13cdc3c281d",
+                "class_identity_field": "BLAKE3 (compared as reported; no SHA-256 relabeling)",
+                "input_class_bytes": 720,
+                "input_class_sha256": "77d5e0e9b0d9b5ee72b8f5ea324b49bf56e2ba8372743bf1fb29172d18d364bc",
+                "method": "find([IIIIII)I",
+                "physical_instruction_bcis": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_bci_coverage": [
+                  0,
+                  3,
+                  4,
+                  5,
+                  8,
+                  10,
+                  12,
+                  13,
+                  16,
+                  17,
+                  19,
+                  20,
+                  21,
+                  24,
+                  26,
+                  27,
+                  30,
+                  33,
+                  34
+                ],
+                "source_map_spans": 31,
+                "utf8_spans_valid": true
+              }
+            },
+            "find_source_map_segments": 27,
+            "find_text_bytes": 390,
+            "observed_loop_form": "for",
+            "whole_class_text_equal": true
+          }
+        },
+        "jdk": "jdk23",
+        "runtime_sides": [
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "control_exists_first": true,
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original",
+              "mode": "raw control runtime",
+              "runner_exists_first": true
+            },
+            "index": 121,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/121.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/121.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "control_exists_first": true,
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending",
+              "mode": "raw control runtime",
+              "runner_exists_first": true
+            },
+            "index": 129,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/129.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/129.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original-default:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original-default",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original"
+            },
+            "index": 124,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/124.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/124.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original-all:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original-all",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original"
+            },
+            "index": 127,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/127.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/127.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending-default:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending-default",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original"
+            },
+            "index": 132,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/132.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/132.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          },
+          {
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+              "-Xverify:all",
+              "-cp",
+              "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending-all:/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original",
+              "Runner"
+            ],
+            "classpath_proof": {
+              "first_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/pending-all",
+              "generated_control_differs_from_input": true,
+              "generated_control_exists_first": true,
+              "mode": "Jarde source runtime",
+              "runner_borrowed_from_original_harness": true,
+              "second_classpath": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/jdk23/original"
+            },
+            "index": 135,
+            "rows": [
+              "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+              "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+              "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+              "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+            ],
+            "stderr": {
+              "bytes": 0,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/135.stderr.raw",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 296,
+              "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/135.stdout.raw",
+              "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+            }
+          }
+        ],
+        "tools": {
+          "java": {
+            "bytes": 69952,
+            "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+          },
+          "javac": {
+            "bytes": 69872,
+            "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+          },
+          "javap": {
+            "bytes": 69872,
+            "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+          }
+        }
+      }
+    ],
+    "raw_stream_pins": [
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/100.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/100.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 229,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/101.stdout.raw",
+        "sha256": "ce0d116698bb247cfa120344f717d7bc2196ba610c4a543738987f3c08e081c7"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/101.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 6815,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/102.stdout.raw",
+        "sha256": "f252a7f50e7fb2cc66a72777c0186926d9aff2c098a3ffb0383d1dee9a13953d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/102.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/103.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/103.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 81833,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/104.stdout.raw",
+        "sha256": "50585d98f1281a174d4ac1c5c986454a7b7a7a3f7da0cb37cfa0f575d105d475"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/104.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/105.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/105.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/106.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/106.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 87260,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/107.stdout.raw",
+        "sha256": "2c5622bd0d926b7c5a511621b34db0d2ff1e0b7e0c72cb47080cf313f9933150"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/107.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/108.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/108.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/109.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/109.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 6814,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/110.stdout.raw",
+        "sha256": "47d8b1ea8cb7af3f0c9847d51717c0ce529f68c9e320d026da266568c075923c"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/110.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/111.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/111.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 83032,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/112.stdout.raw",
+        "sha256": "0a3a0d504b50d8782306c9cf09687539d7ca3edec9d9f8809ed3a97e108b3eed"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/112.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/113.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/113.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/114.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/114.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 88464,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/115.stdout.raw",
+        "sha256": "5ead23b92cfdbaba96c2fb3b7bf11af7348560bb05a4f9907de352ad8728ed31"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/115.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/116.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/116.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/117.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/117.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/118.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 483,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/118.stderr.raw",
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      },
+      {
+        "bytes": 229,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/119.stdout.raw",
+        "sha256": "2341f86ccc9a9661a37033db579de6e180e1ffa0b5c0fc4b7217249a21dea88b"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/119.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 7144,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/120.stdout.raw",
+        "sha256": "7bd2ce9641f4da46a8aaec22e062e1c111ab3c1ec7917353b75f89050df8d9ad"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/120.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/121.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/121.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 81826,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/122.stdout.raw",
+        "sha256": "1bdc4957d1c9018fffe332793244256dff616a3ecea32f0e185c23ac10fca8df"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/122.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/123.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 483,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/123.stderr.raw",
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/124.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/124.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 87260,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/125.stdout.raw",
+        "sha256": "927eb0dad804652d34620432eb676ebaec3308295cca63f90041f3d18cc1e441"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/125.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/126.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 483,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/126.stderr.raw",
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/127.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/127.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 7143,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/128.stdout.raw",
+        "sha256": "0fc8fde7f6142f1b3267a6be5a192ee6e510265dc590fb4bc27460d3e1e91f1d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/128.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/129.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/129.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 83030,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/130.stdout.raw",
+        "sha256": "ffdfe0e3f3166b58293ede6c9b46322a1f884516b9397249043e340e7d9a7c52"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/130.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/131.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 483,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/131.stderr.raw",
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/132.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/132.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 88464,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/133.stdout.raw",
+        "sha256": "3d17c548673cbdd7c44188f49a0ca325f476e60fa117e26df2109c332c68fe5d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/133.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/134.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 483,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/134.stderr.raw",
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      },
+      {
+        "bytes": 296,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/135.stdout.raw",
+        "sha256": "945951e139c570554def8aa87e3e90a46355a7b51da3fbe7a238af88491e2b7d"
+      },
+      {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/raw/135.stderr.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "recorded_command_stream_count": 72,
+    "runner": {
+      "bytes": 4807,
+      "path": "/private/tmp/jarde-computed-for-call-order-candidate-root-runner-v1.py",
+      "sha256": "651b27be084d008e624e052659548dc7943b27e1d65bd85e4cee3f691fa6a985"
+    },
+    "runtime_rows": [
+      "normal-hit outcome=normal result=1 f=1 g=1 order=12 end=0",
+      "normal-miss outcome=normal result=-1 f=1 g=1 order=12 end=0",
+      "normal-empty-range outcome=normal result=-1 f=1 g=1 order=12 end=0",
+      "fail-f outcome=fail-f result=777 f=1 g=0 order=1 end=3",
+      "fail-g outcome=fail-g result=777 f=1 g=1 order=12 end=0"
+    ],
+    "runtime_side_count": 12,
+    "scanner": {
+      "bytes": 471,
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    }
+  },
+  "inputs": {
+    "build": "/private/tmp/jarde-computed-for-cli-build-root-v1/execution.json",
+    "execution": "/private/tmp/jarde-computed-for-call-order-candidate-root-v1/execution.json",
+    "workspace": "/Users/lordcasser/workspace/projects/jarde"
+  },
+  "schema": "computed-for-candidate-runtime-verifier-luna-v1",
+  "scope": "candidate frozen-CLI complete-class/runtime comparison; not product-CI acceptance",
+  "status": "accepted_candidate_runtime"
+}

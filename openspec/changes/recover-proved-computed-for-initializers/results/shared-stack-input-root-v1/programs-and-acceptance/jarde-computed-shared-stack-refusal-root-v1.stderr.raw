@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-computed-shared-stack-refusal-verifier-root-v1.py", line 21, in <module>
+    assert b'missing return statement' in Path(cr['streams']['stderr']['path']).read_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

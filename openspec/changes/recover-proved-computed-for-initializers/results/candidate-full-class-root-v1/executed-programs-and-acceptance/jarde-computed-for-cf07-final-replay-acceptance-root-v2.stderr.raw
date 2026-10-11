@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v2.py", line 542, in <module>
+    main()
+    ~~~~^^
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v2.py", line 534, in main
+    result=verify_execution(execution,build,cli,args.cli_sha256,out,ROOT.resolve())
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v2.py", line 427, in verify_execution
+    summary=verify_loop_semantics(doc,class_path,method,rep)
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v2.py", line 262, in verify_loop_semantics
+    need(len(owners)==1 and owners[0]['structured'] and owners[0]['rule']['rule']=='loop',
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         'lastIndexOf loop blocks lack one structured loop owner')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v2.py", line 48, in need
+    raise ValueError(message)
+ValueError: lastIndexOf loop blocks lack one structured loop owner

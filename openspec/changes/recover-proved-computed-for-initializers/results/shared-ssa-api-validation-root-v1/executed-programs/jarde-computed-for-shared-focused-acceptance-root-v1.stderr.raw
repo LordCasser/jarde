@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-computed-for-shared-focused-verifier-root-v1.py", line 5, in <module>
+    assert len(d['source_pins_before'])==4699 and all(sha(root/p)==v for p,v in d['source_pins_before'].items())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

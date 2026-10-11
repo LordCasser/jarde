@@ -1,0 +1,8 @@
+
+running 3 tests
+test changed_step_extra_consumer_shared_effect_and_post_use_do_not_move ... ok
+test outer_continue_runs_the_update_and_skips_the_body_tail ... ok
+test pure_add_store_latch_is_one_for_update ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--no-interactive"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_code": 0,
+  "utc": "2026-10-11T10:04:53.570259+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-computed-for-strict-root-v1/stdout.raw",
+      "bytes": 16057,
+      "sha256": "c33a2f7e97d3fd37f73c8f7b4c1741e609218247e7fb2b475797e5dc6d533dd1"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-computed-for-strict-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

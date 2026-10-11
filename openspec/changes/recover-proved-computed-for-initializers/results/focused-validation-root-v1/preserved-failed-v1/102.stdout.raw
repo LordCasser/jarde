@@ -1,0 +1,15 @@
+
+running 5 tests
+test a_post_loop_use_or_another_update_refuses_the_header_projection ... ok
+test computed_init_return_leaf_and_latch_keep_one_physical_for_source ... FAILED
+test direct_call_initializer_is_written_once_in_the_for_header ... ok
+test for_proof_obeys_the_request_budget_and_cancellation ... ok
+test the_single_induction_update_is_a_for_header ... ok
+
+failures:
+
+failures:
+    computed_init_return_leaf_and_latch_keep_one_physical_for_source
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

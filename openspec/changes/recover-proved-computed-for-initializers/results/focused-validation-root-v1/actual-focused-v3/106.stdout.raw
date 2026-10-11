@@ -1,0 +1,9 @@
+
+running 4 tests
+test complete_java8_class_preserves_all_thirteen_observations ... ok
+test low_budget_and_cancellation_do_not_publish_half_folds ... ok
+test only_array_first_wrappers_project ... ok
+test wrapped_read_origins_and_essential_all_bodies_agree ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+

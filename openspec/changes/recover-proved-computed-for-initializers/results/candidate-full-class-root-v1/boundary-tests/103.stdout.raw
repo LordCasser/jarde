@@ -1,0 +1,10 @@
+
+running 5 tests
+test cf07_candidate_budget_and_cancellation_publish_no_partial_source ... ok
+test cf07_computed_terminal_returns_recover ... ok
+test cf07_loop_return_leaf_has_one_owner_and_source ... ok
+test cf07_nonterminal_break_does_not_become_a_terminal_return ... ok
+test cf07_unproved_terminal_candidates_keep_source_and_quote ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

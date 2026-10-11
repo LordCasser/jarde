@@ -1,0 +1,12 @@
+{
+  "status": "accepted",
+  "execution_sha256": "aa2b7ce83799a21b5f1fdf35f03b721320dbd8e8eb9e24790c8722eaf8760f2e",
+  "commands": 5,
+  "raw_streams": 10,
+  "source_inputs": 4700,
+  "real_shared_ssa_tests": 1,
+  "for_api_tests": 8,
+  "terminal_return_tests": 5,
+  "target_absent": true,
+  "verifier_sha256": "0d2ffa73e328461053cf05b37e919e9bbbc8ef23580930216f58507ffc867f6b"
+}

@@ -1,0 +1,25 @@
+{
+  "batch_count": 95,
+  "cargo_clean_succeeded": true,
+  "evidence": "/private/tmp/jarde-computed-for-workspace-root-v2/execution.json",
+  "execution_sha256": "a290961a01d5760bcfed9a40962a1fee06260c037925e004bbd54b73b8e89ef9",
+  "max_target_bytes": 811131401,
+  "min_free_bytes": 19350835200,
+  "reconstructed_source_pin_count": 4700,
+  "removed_test_executables": 359,
+  "runner_sha256": "2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b",
+  "schema": "compound-full-workspace-batched-root-v1",
+  "source_pin_count": 4700,
+  "source_pins_complete": true,
+  "source_pins_unchanged": true,
+  "status": "accepted",
+  "target_absent": true,
+  "target_inventory_count": 359,
+  "workspace_summary_count": 359,
+  "workspace_totals": [
+    3451,
+    0,
+    97
+  ],
+  "zero_test_summaries": 8
+}

@@ -1,0 +1,523 @@
+{
+  "schema": "cf07-final-replay-independent-verification-luna-v1",
+  "status": "accepted",
+  "execution": {
+    "path": "/private/tmp/jarde-computed-for-cf07-final-jdk-replay-root-v1/execution.json",
+    "bytes": 846446,
+    "sha256": "9a76ad437a5e097522b8c025c3bc65e262a0d2dfff4b0431a248f7add95e4d2f",
+    "command_count": 24,
+    "raw_stream_count": 48
+  },
+  "build": {
+    "schema": "jarde-final-cli-build-clean-root-v1",
+    "status": "validation-passed-cli-frozen-target-cleaned",
+    "cli": {
+      "path": "/private/tmp/jarde-computed-for-candidate-cli-root-v1",
+      "bytes": 60821472,
+      "sha256": "d1543cb69867d78f964873fe0e3d534f18923d3350d6dcf88b6a7e02738b56d1",
+      "mode": "0o555"
+    },
+    "live_product_source_pin_count": 4698,
+    "product_source_closure_equal_before_after_freeze": true,
+    "build_raw_streams": 4
+  },
+  "render_summaries": [
+    {
+      "jdk": "javac8",
+      "method_count": 4,
+      "default_all_text_and_source_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "method_count": 4,
+      "default_all_text_and_source_maps_equal": true
+    }
+  ],
+  "render_method_semantics": [
+    {
+      "method": "lastIndexOf([IIII)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        11,
+        12,
+        14,
+        15,
+        16,
+        19,
+        21,
+        22,
+        25,
+        28,
+        29
+      ],
+      "for_span_bytes": [
+        189,
+        335
+      ],
+      "for_header": "for (local4 = arg3 - 1; local4 >= arg2; local4 = local4 - 1) ",
+      "init_bcis": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "condition_bci": 8,
+      "update_bci": 22,
+      "latch_bci": 25,
+      "tail_return_excluded": true,
+      "loop_owner_blocks": null,
+      "jdk": "javac8",
+      "evidence": "default"
+    },
+    {
+      "method": "counted(II)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26,
+        27,
+        30,
+        33,
+        36,
+        37
+      ],
+      "for_span_bytes": [
+        224,
+        412
+      ],
+      "for_header": "for (local3 = arg0; local3 < arg1; local3 = local3 + 1) ",
+      "init_bcis": [
+        4,
+        5
+      ],
+      "condition_bci": 8,
+      "update_bci": 27,
+      "complete_if_span_bytes": [
+        286,
+        406
+      ],
+      "if_join_goto_bci": 20,
+      "latch_bci": 30,
+      "loop_owner_blocks": null,
+      "jdk": "javac8",
+      "evidence": "default"
+    },
+    {
+      "method": "lastIndexOf([IIII)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        11,
+        12,
+        14,
+        15,
+        16,
+        19,
+        21,
+        22,
+        25,
+        28,
+        29
+      ],
+      "for_span_bytes": [
+        189,
+        335
+      ],
+      "for_header": "for (local4 = arg3 - 1; local4 >= arg2; local4 = local4 - 1) ",
+      "init_bcis": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "condition_bci": 8,
+      "update_bci": 22,
+      "latch_bci": 25,
+      "tail_return_excluded": true,
+      "loop_owner_blocks": [
+        5,
+        11,
+        19,
+        22
+      ],
+      "jdk": "javac8",
+      "evidence": "all"
+    },
+    {
+      "method": "counted(II)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26,
+        27,
+        30,
+        33,
+        36,
+        37
+      ],
+      "for_span_bytes": [
+        224,
+        412
+      ],
+      "for_header": "for (local3 = arg0; local3 < arg1; local3 = local3 + 1) ",
+      "init_bcis": [
+        4,
+        5
+      ],
+      "condition_bci": 8,
+      "update_bci": 27,
+      "complete_if_span_bytes": [
+        286,
+        406
+      ],
+      "if_join_goto_bci": 20,
+      "latch_bci": 30,
+      "loop_owner_blocks": [
+        6,
+        11,
+        17,
+        23,
+        27
+      ],
+      "jdk": "javac8",
+      "evidence": "all"
+    },
+    {
+      "method": "lastIndexOf([IIII)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        11,
+        12,
+        14,
+        15,
+        16,
+        19,
+        21,
+        22,
+        25,
+        28,
+        29
+      ],
+      "for_span_bytes": [
+        189,
+        335
+      ],
+      "for_header": "for (local4 = arg3 - 1; local4 >= arg2; local4 = local4 - 1) ",
+      "init_bcis": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "condition_bci": 8,
+      "update_bci": 22,
+      "latch_bci": 25,
+      "tail_return_excluded": true,
+      "loop_owner_blocks": null,
+      "jdk": "javac23",
+      "evidence": "default"
+    },
+    {
+      "method": "counted(II)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26,
+        27,
+        30,
+        33,
+        36,
+        37
+      ],
+      "for_span_bytes": [
+        224,
+        412
+      ],
+      "for_header": "for (local3 = arg0; local3 < arg1; local3 = local3 + 1) ",
+      "init_bcis": [
+        4,
+        5
+      ],
+      "condition_bci": 8,
+      "update_bci": 27,
+      "complete_if_span_bytes": [
+        286,
+        406
+      ],
+      "if_join_goto_bci": 20,
+      "latch_bci": 30,
+      "loop_owner_blocks": null,
+      "jdk": "javac23",
+      "evidence": "default"
+    },
+    {
+      "method": "lastIndexOf([IIII)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        11,
+        12,
+        14,
+        15,
+        16,
+        19,
+        21,
+        22,
+        25,
+        28,
+        29
+      ],
+      "for_span_bytes": [
+        189,
+        335
+      ],
+      "for_header": "for (local4 = arg3 - 1; local4 >= arg2; local4 = local4 - 1) ",
+      "init_bcis": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "condition_bci": 8,
+      "update_bci": 22,
+      "latch_bci": 25,
+      "tail_return_excluded": true,
+      "loop_owner_blocks": [
+        5,
+        11,
+        19,
+        22
+      ],
+      "jdk": "javac23",
+      "evidence": "all"
+    },
+    {
+      "method": "counted(II)I",
+      "physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        12,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26,
+        27,
+        30,
+        33,
+        36,
+        37
+      ],
+      "for_span_bytes": [
+        224,
+        412
+      ],
+      "for_header": "for (local3 = arg0; local3 < arg1; local3 = local3 + 1) ",
+      "init_bcis": [
+        4,
+        5
+      ],
+      "condition_bci": 8,
+      "update_bci": 27,
+      "complete_if_span_bytes": [
+        286,
+        406
+      ],
+      "if_join_goto_bci": 20,
+      "latch_bci": 30,
+      "loop_owner_blocks": [
+        6,
+        11,
+        17,
+        23,
+        27
+      ],
+      "jdk": "javac23",
+      "evidence": "all"
+    }
+  ],
+  "runtime_checks": [
+    {
+      "jdk": "javac8",
+      "variant": "original-source",
+      "compile_index": 106,
+      "runtime_index": 107,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac8",
+      "variant": "jadx-frozen",
+      "compile_index": 108,
+      "runtime_index": 109,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac8",
+      "variant": "jarde-default",
+      "compile_index": 110,
+      "runtime_index": 111,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac8",
+      "variant": "jarde-all",
+      "compile_index": 112,
+      "runtime_index": 113,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac23",
+      "variant": "original-source",
+      "compile_index": 116,
+      "runtime_index": 117,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac23",
+      "variant": "jadx-frozen",
+      "compile_index": 118,
+      "runtime_index": 119,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac23",
+      "variant": "jarde-default",
+      "compile_index": 120,
+      "runtime_index": 121,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    },
+    {
+      "jdk": "javac23",
+      "variant": "jarde-all",
+      "compile_index": 122,
+      "runtime_index": 123,
+      "stdout_equal": true,
+      "stderr_equal": true,
+      "complete_isolated_class_set": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ]
+    }
+  ],
+  "fresh_jadx_execution_claimed": false,
+  "runtime_side_count": 10,
+  "source_variant_count": 8,
+  "verifier": {
+    "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "bytes": 35854,
+    "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "verifier_sha256_at_start": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+}
