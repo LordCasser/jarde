@@ -1,0 +1,7 @@
+# Private implementation draft v3
+
+v1 and v2 remain frozen. This candidate is based on the v2 private copy and retains its one production gate change plus the existing root-reader assertions. It extends the same single real reader/API test with a frozen, independently selected `TestSwitchLabels$TestCls$Inner.class` input as an outer-only negative control.
+
+The child assertions require complete class-source execution with the existing refused/no-child member-family state and absent enum, annotation, and anonymous-interface siblings. The child's physical field table and integer candidate must identify `CONST_CDE_PRIVATE = 3294` by its actual field index and identity. Its one f1(I)I derived projection must point to the exact assembled `CONST_CDE_PRIVATE` span and carry that field anchor plus the real method identity at BCI 1. The assembled child keeps `return 2748;`; its physical method text also retains numeric `case 3294:` and `return 2748;`. The child-only input has no `CONST_ABC` candidate/name, so this test does not name that return from the outer class. It does not pin any separate JADX duplicate-constant replacement behavior.
+
+The change adds no production helper, gate, public interface, or test framework. `facade.rs.patch` is the exact unified diff from the v2-time base copy to this v3 candidate; `v2-reference.patch` preserves the prior candidate diff for review. `draft-pin.json` records source and both fixture pins. This is a private, uncompiled, unformatted draft; no workspace file, Cargo, JDK, CLI, or Git mutation was performed.

@@ -1,0 +1,1390 @@
+{
+  "schema": "cf12-remaining-observation-inventory-root-v1",
+  "files": [
+    {
+      "path": "Cf12RemainingRuntimeProbe-root-v1-README.md",
+      "bytes": 2879,
+      "sha256": "7e42d66e2a2223f401d1883b864ece4bef0434177242b86b2dea45ff337f1dde"
+    },
+    {
+      "path": "Cf12RemainingRuntimeProbe-root-v1.java",
+      "bytes": 10381,
+      "sha256": "8c10f7119b997a73607ce1457db5b41328bb4c6cbd95399100b753d014dfff08"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4098,
+      "sha256": "bcb60d76ba3889bed82d28c6c46973b7007d0a70e65ee32f30835bb015831985"
+    },
+    {
+      "path": "direct-root-v1/Cf12CaptureExtension.java",
+      "bytes": 2498,
+      "sha256": "2f900cb846b78ed1ceb1523f7b01105873777394625a90c2058e1330534f295c"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch2.test/actual-input-paths.tsv",
+      "bytes": 286,
+      "sha256": "708694b781ba2d02b96c6e7839bb0b5fb3a8715cdc01da23d4fa0c7213f66da5"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch2.test/actual-jadx-args.txt",
+      "bytes": 1679,
+      "sha256": "693fe8d16d86b91a3499d68f05457c96dbc9b21c0236585adc0a37944ff640ec"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+      "bytes": 1123,
+      "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch2.test/jadx-source/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1677,
+      "sha256": "94a3cd1fb837d2605a924038ac81120e4959f9b523f556a394310e76af632af5"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch2.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch3.test/actual-input-paths.tsv",
+      "bytes": 285,
+      "sha256": "e14c40d6c6efd2c87b20d338cd8f0f47d7a780047ff651d49fb0cf96c960d968"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch3.test/actual-jadx-args.txt",
+      "bytes": 1675,
+      "sha256": "8e433cc4f01f3bf53843e29d7a73a97eeacffb9ed9689428eca4367498470393"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+      "bytes": 1037,
+      "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch3.test/jadx-source/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 928,
+      "sha256": "70bcd2ba08e5e8f06e25fd518263796aab383d8a8a5ffefbd64df5235ef20a15"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch3.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch4.test/actual-input-paths.tsv",
+      "bytes": 286,
+      "sha256": "c1339affacc3de9acc7e7f238821085b65ef933b7733f5f1a64b71bce41d1e87"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch4.test/actual-jadx-args.txt",
+      "bytes": 1679,
+      "sha256": "4005031801c8ba6f8f01fe51f1b3404d3d66ff95f457aac0aa1be6a32682611d"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+      "bytes": 1088,
+      "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch4.test/jadx-source/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 850,
+      "sha256": "5b9b3bcfb53faf6b8c3a18255d78b8ee601c77a58c739055951a139a97df97a3"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitch4.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "03cbb6c52e522ce55e217e3f9d66dbd66d21ef6bf85024016a3b7f3080c7944f"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchSimple.test/actual-input-paths.tsv",
+      "bytes": 300,
+      "sha256": "022266d168b7e6b1be24e443df3064ee3dd02bc15e8951a40a97bb5cd3481879"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchSimple.test/actual-jadx-args.txt",
+      "bytes": 1683,
+      "sha256": "73d63056d0e3c76098774a50aaceff57a0b782b558f2ef45b30fac0e5ecdcbd7"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+      "bytes": 926,
+      "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchSimple.test/jadx-source/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 636,
+      "sha256": "7e414b2162cf2bc14b191582a1e65ed3411b2bfc6b7fe0dd097ddc77fc1fc27d"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchSimple.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/actual-input-paths.tsv",
+      "bytes": 342,
+      "sha256": "83baa3c1fa48b0e7eb165d9d39db37d81c276a142e820114f5dec1f4668ded0c"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/actual-jadx-args.txt",
+      "bytes": 1697,
+      "sha256": "fbccfc6bd9df4c514bd376426b9dde8f3a73cb200489298801685f6a57b03786"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1654,
+      "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/jadx-source/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 1623,
+      "sha256": "4c9c547555b05a8047697421e65d6e0ec54d7aca3f21a98317acee40daff1a2e"
+    },
+    {
+      "path": "direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "03cbb6c52e522ce55e217e3f9d66dbd66d21ef6bf85024016a3b7f3080c7944f"
+    },
+    {
+      "path": "direct-root-v1/execution.json",
+      "bytes": 75365,
+      "sha256": "4de8513f444f75395f76ef019e439c8cf663819fb9e3cc4bb6a8dfd939187b96"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/META-INF/services/org.junit.jupiter.api.extension.Extension",
+      "bytes": 33,
+      "sha256": "094127c998f9e6316353a3041e592dcec69bb224212daa686a6fd5e06831d41c"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/cf12capture/Cf12CaptureExtension.class",
+      "bytes": 4359,
+      "sha256": "f10d73bde00cdc4d2bcdb40c7dab03402e721ee5b54890d6a25cac97b0ea3bb1"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/NotYetImplemented.class",
+      "bytes": 467,
+      "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/NotYetImplementedExtension.class",
+      "bytes": 2379,
+      "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/api/JadxInternalAccess.class",
+      "bytes": 1041,
+      "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/IntegrationTest$1.class",
+      "bytes": 1361,
+      "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/IntegrationTest$2.class",
+      "bytes": 1409,
+      "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/IntegrationTest.class",
+      "bytes": 30020,
+      "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/ClassFileManager.class",
+      "bytes": 2187,
+      "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/CompilerOptions.class",
+      "bytes": 1569,
+      "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/DynamicClassLoader.class",
+      "bytes": 1874,
+      "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+      "bytes": 1111,
+      "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/JavaClassObject.class",
+      "bytes": 1528,
+      "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/JavaUtils.class",
+      "bytes": 1145,
+      "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/StringJavaFileObject.class",
+      "bytes": 1298,
+      "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/compiler/TestCompiler.class",
+      "bytes": 9527,
+      "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/TestFilesGetter.class",
+      "bytes": 817,
+      "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/TestUtils.class",
+      "bytes": 4786,
+      "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+      "bytes": 3982,
+      "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+      "bytes": 7050,
+      "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+      "bytes": 3636,
+      "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+      "bytes": 1178,
+      "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 964,
+      "sha256": "bd505d8be17c6034b9981adc7022e83fef593c5e5919f9d270b88d2e7d583d05"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitch2.class",
+      "bytes": 1066,
+      "sha256": "b047b87804088a771b9ac9f4cbaa3acb86ea514c75178d854ea82e17f9967f6a"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 904,
+      "sha256": "8777452472c4a8769802e139c36d6072599f0842fb474339d24d3c094b1ff9d2"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitch3.class",
+      "bytes": 1066,
+      "sha256": "e67279028c4db5098ba27c40af1fe9b5f8a4f94d6cb429e58121ace583c415da"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 907,
+      "sha256": "050a4de592a5b974ea5f453c8c3a2130f06ad964efe2b296a744b4dfe8f927cd"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitch4.class",
+      "bytes": 1322,
+      "sha256": "a90992dc74cf27aa25854ec4dd4ceacd8c2a41d6111cc3537cf16c4337d836e0"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 767,
+      "sha256": "6823d3e6203776dfd77df6e20f00033e6a5e84721a37878e15e778c74b3fa9f8"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitchSimple.class",
+      "bytes": 1474,
+      "sha256": "12e25ace8a191b5ade388f6f0b15921a865d4fd156d61b6ed987a8ee4c1803b4"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1690,
+      "sha256": "6e35768485f1d07521cabdbe5bdc408207d4f77747c41a97855794b5d77b7409"
+    },
+    {
+      "path": "direct-root-v1/fresh-classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2.class",
+      "bytes": 1164,
+      "sha256": "e9a457cdb9312fc8547c1ea04cd9f38429c9b6d168d6f7b3c7c06c1ab90cb4f6"
+    },
+    {
+      "path": "direct-root-v1/fresh-compile.stderr.raw",
+      "bytes": 275,
+      "sha256": "432aa11c9c84c38f11ea8e077fa26f1537a63a79656b6401b390410146ff4823"
+    },
+    {
+      "path": "direct-root-v1/fresh-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "direct-root-v1/javac-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "direct-root-v1/javac-version.stdout.raw",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "direct-root-v1/reports/TEST-junit-jupiter.xml",
+      "bytes": 16714,
+      "sha256": "67735233542ae15535683eee885986ee4994d091ae90f93a2210d65e248aa08e"
+    },
+    {
+      "path": "direct-root-v1/reports/TEST-junit-platform-suite.xml",
+      "bytes": 11685,
+      "sha256": "be225b98425c8ed8ccd35bffa3da8a1eb1557bd8b0e806a3f3efec7502a883b9"
+    },
+    {
+      "path": "direct-root-v1/reports/TEST-junit-vintage.xml",
+      "bytes": 11664,
+      "sha256": "e6463460dee5c3dc07041345afc3c574ba2823d1a51a825a5d7535d20c81cdbd"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+      "bytes": 740,
+      "sha256": "b931ab6747698a410ea07b7bf798499eabb0525e8a2f22d7e2018ede7683b60d"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+      "bytes": 1397,
+      "sha256": "81bc96dade42fb3840db41dcc567091ee4280228e931825110701cfb1273d07d"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/api/JadxInternalAccess.java",
+      "bytes": 659,
+      "sha256": "b48e05cc08fc887c0abd9037f00caa96fc32502c0cc812a0ab984be21fedf051"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+      "bytes": 23241,
+      "sha256": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+      "bytes": 1342,
+      "sha256": "5dc6ca167a4a36f689fe6b55f4a7a9a8cfecd5f650391dff7fb2d3ffc6b69b2e"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+      "bytes": 1246,
+      "sha256": "7cced13b40d1b582ec953b672fbf6af78c6b20a5e4e548e5fff10f64d5aa7ae0"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+      "bytes": 1422,
+      "sha256": "26c8dfffc58d86d25cb1817ad0d38f09489aaa9b27113455cf630ea4795aad9b"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+      "bytes": 542,
+      "sha256": "3da3d559e47e6d9065b6273aaaeb71c6c5e6ea86034253193cd6e2c80cb60409"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+      "bytes": 673,
+      "sha256": "667fe20e0fe3926be4b3c02a5e40cdbedcf7541a45b3e333d1aa363f8d2b4fc5"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+      "bytes": 825,
+      "sha256": "c76d673620691ea64e8f03845ff46843f0ce382e35c04431b69c33dead39cd7d"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+      "bytes": 495,
+      "sha256": "a6cd4013b05546c39b9370feb7cd3c317fbcc7637ceb77f75bf64ef6a8f6ae2f"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+      "bytes": 5006,
+      "sha256": "a0f4f4e4017546279d7bd0e32276bb43b2d968b82c4d0f37880728524825a60b"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+      "bytes": 645,
+      "sha256": "1a7272556007a4166b1e6a6770a55388efc0118b2497270ffee9269fc4c991d2"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+      "bytes": 2526,
+      "sha256": "697077c8188a04505d89861ffa20d9a9c1fbcbd050de02bc5c15a8fd3f60af82"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+      "bytes": 823,
+      "sha256": "8b7d50aca9ec2ac8dd861444bd1854fa6d43adac4d8d9d3c12195c6544bc4d5e"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+      "bytes": 2651,
+      "sha256": "688a3c650aa3cb7177a7598799009b5a1d3f90e37e55f6de2aa5f0a4907e8802"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+      "bytes": 4262,
+      "sha256": "f0ddf91660e72ab461bdcfb1996f4881adf187931733d20449a784d2b8d7e417"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+      "bytes": 1114,
+      "sha256": "82ea32586a4cf216c3b880153087a67c28e1782fc62e6be08388aebc5f7fbde0"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+      "bytes": 571,
+      "sha256": "ae50a57880a4910ce185c7c5f7eeef1c3cd34d1743242ba5c09e1d99092e1d75"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch2.java",
+      "bytes": 1568,
+      "sha256": "4ee2c2455d4aedb7ee5903412dc608ae7a612229fc93f637ff39a78418fd4f99"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch3.java",
+      "bytes": 868,
+      "sha256": "5062a2619e31a06bb17542ff0f4f2653e8bee993f54cd42604b99de4e3e6fb90"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch4.java",
+      "bytes": 945,
+      "sha256": "579fa4215a818cf3e982cb0245e6cdb971150152e48a0933f968e216d7211f35"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchSimple.java",
+      "bytes": 892,
+      "sha256": "f715afb2acd38deceb71021bd602110b79e35d0e3d39f331849fe6145cefeb2a"
+    },
+    {
+      "path": "direct-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2.java",
+      "bytes": 1377,
+      "sha256": "9093a8f92357964a9da1f1a2fba30906c9f1e757ac3e5f1ff3e0e970fa3b57a9"
+    },
+    {
+      "path": "direct-root-v1/test-stderr.raw",
+      "bytes": 1527,
+      "sha256": "91942b47ba56f5936d5544d638f708bc615d6c116426d3472c3a9e4de717e145"
+    },
+    {
+      "path": "direct-root-v1/test-stdout.raw",
+      "bytes": 13415,
+      "sha256": "0d9cda0073af3c56fc3909f6951fdd9349f94e3836136b27710bdfdf54c8afd3"
+    },
+    {
+      "path": "direct-root-v1/upstream-junit.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "direct-root-v1/upstream-junit.stdout.raw",
+      "bytes": 4755,
+      "sha256": "d5ff560bf1459b2f51f42a39317d4c5f10e6e5e1f86f6e737bcff2cece351724"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jadx/classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 1052,
+      "sha256": "3dcee6de468ad9b0fe13a034edf253b87ddb8e73b6d8aed9ce073723ce9f955b"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jadx/runtime.stdout.raw",
+      "bytes": 123442,
+      "sha256": "86254e102c43503d8a080dc5771a57163aba53178705854aada011d9cc11ede7"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jadx/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 1677,
+      "sha256": "94a3cd1fb837d2605a924038ac81120e4959f9b523f556a394310e76af632af5"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jarde-all/compile.stderr.raw",
+      "bytes": 783,
+      "sha256": "ab93f39119ac063f4d14ba6849440be63b00efd4a74028cbad42eec09c657584"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 2020,
+      "sha256": "b1c8e691c7ef5e0d2e38d978dda87be22921cbd6d89f0a4447adab2f9f2ed440"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jarde-default/compile.stderr.raw",
+      "bytes": 787,
+      "sha256": "8055d0f9b6008a16be2528bd70b824456fa2cc3941e9ffc677075764e05168d3"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitch2$TestCls.java",
+      "bytes": 2020,
+      "sha256": "b1c8e691c7ef5e0d2e38d978dda87be22921cbd6d89f0a4447adab2f9f2ed440"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/original/classes/jadx/tests/integration/switches/TestSwitch2$TestCls.class",
+      "bytes": 1123,
+      "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch2.test/original/runtime.stdout.raw",
+      "bytes": 123442,
+      "sha256": "86254e102c43503d8a080dc5771a57163aba53178705854aada011d9cc11ede7"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jadx/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 960,
+      "sha256": "ef5274d8510cdf8f7a84bc96c8784842aad669931c98a023839e72f2ce9c44a6"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jadx/runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jadx/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 928,
+      "sha256": "70bcd2ba08e5e8f06e25fd518263796aab383d8a8a5ffefbd64df5235ef20a15"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 959,
+      "sha256": "24609a21889ca22b7d3455cf811c1f8dcd82b8b69a4d4c6edafaa01de95dfd48"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-all/runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 959,
+      "sha256": "24609a21889ca22b7d3455cf811c1f8dcd82b8b69a4d4c6edafaa01de95dfd48"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-default/runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitch3$TestCls.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/original/classes/jadx/tests/integration/switches/TestSwitch3$TestCls.class",
+      "bytes": 1037,
+      "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch3.test/original/runtime.stdout.raw",
+      "bytes": 214,
+      "sha256": "efe0b3a7dda71db8d76eddcaf7e0966c923ee36e4843e098ab65a75eec354a36"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jadx/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1036,
+      "sha256": "a539b36bb35777d3c053b5aee30ce888e3b57ef8d98c470855d06230ea5b6212"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jadx/runtime.stderr.raw",
+      "bytes": 750,
+      "sha256": "b1552d3b973363565cc87d8836acd48fe5dfb091710cacc7ce666bca1817d763"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jadx/runtime.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jadx/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 850,
+      "sha256": "5b9b3bcfb53faf6b8c3a18255d78b8ee601c77a58c739055951a139a97df97a3"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1010,
+      "sha256": "bf4534f9235519cec3ba411e0f918732fc682995ce70576745c79b293723665c"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-all/runtime.stdout.raw",
+      "bytes": 246,
+      "sha256": "50d331c181ccfbe7e0dae88cc37fe77544729267918e9abb89b9b707a9593461"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1010,
+      "sha256": "bf4534f9235519cec3ba411e0f918732fc682995ce70576745c79b293723665c"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-default/runtime.stdout.raw",
+      "bytes": 246,
+      "sha256": "50d331c181ccfbe7e0dae88cc37fe77544729267918e9abb89b9b707a9593461"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitch4$TestCls.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/original/classes/jadx/tests/integration/switches/TestSwitch4$TestCls.class",
+      "bytes": 1088,
+      "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitch4.test/original/runtime.stdout.raw",
+      "bytes": 246,
+      "sha256": "50d331c181ccfbe7e0dae88cc37fe77544729267918e9abb89b9b707a9593461"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jadx/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 839,
+      "sha256": "2789d82738920ccd5d58497ded2239a978ab00fc43c1f4680927f6a0cb6b93fa"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jadx/runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jadx/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 636,
+      "sha256": "7e414b2162cf2bc14b191582a1e65ed3411b2bfc6b7fe0dd097ddc77fc1fc27d"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 843,
+      "sha256": "9535fc0f418dd29a9a2e09d7440b73269e2c7bb8add272d1a5e7659691717975"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-all/runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 843,
+      "sha256": "9535fc0f418dd29a9a2e09d7440b73269e2c7bb8add272d1a5e7659691717975"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-default/runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchSimple$TestCls.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/original/classes/jadx/tests/integration/switches/TestSwitchSimple$TestCls.class",
+      "bytes": 926,
+      "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchSimple.test/original/runtime.stdout.raw",
+      "bytes": 639,
+      "sha256": "e1fc95eff358fd70398a98f255d6e61ba0e0c4cdb4eac1477350aac7fd545c8e"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jadx/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1587,
+      "sha256": "98c6e3050a3d87499c4c5a23c9a0e947efc8c5e2f3d256a40d32e1da0ea2f4be"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jadx/runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jadx/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 1623,
+      "sha256": "4c9c547555b05a8047697421e65d6e0ec54d7aca3f21a98317acee40daff1a2e"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jarde-all/compile.stderr.raw",
+      "bytes": 722,
+      "sha256": "530774f30927661fb036ece612bfb324f3d74b72a2598d6ad82b185dc83854fa"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 2640,
+      "sha256": "4fca514cb0fb37e487e4ddfa9018cd1e55d719dd7bf8f994a3c93ce7a2880114"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jarde-default/compile.stderr.raw",
+      "bytes": 726,
+      "sha256": "900031fc934405055fd6f3eb0fe38250b20fc05b437736cf6f9483bf137d80e0"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.java",
+      "bytes": 2640,
+      "sha256": "4fca514cb0fb37e487e4ddfa9018cd1e55d719dd7bf8f994a3c93ce7a2880114"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1654,
+      "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "full-replay-root-v1/TestSwitchWithFallThroughCase2.test/original/runtime.stdout.raw",
+      "bytes": 2897,
+      "sha256": "69c9a9d3f223f52435fd253cf63d5cf80e3c7eb12575e2ad6643452afb37c8ad"
+    },
+    {
+      "path": "full-replay-root-v1/execution.json",
+      "bytes": 254360,
+      "sha256": "68dedcf061eddaf36036265a703894f3d2584a20379b03b130d181a5355872d1"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/NotYetImplemented.class",
+      "bytes": 467,
+      "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/NotYetImplementedExtension.class",
+      "bytes": 2379,
+      "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/api/JadxInternalAccess.class",
+      "bytes": 1041,
+      "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest$1.class",
+      "bytes": 1361,
+      "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest$2.class",
+      "bytes": 1409,
+      "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest.class",
+      "bytes": 30020,
+      "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/ClassFileManager.class",
+      "bytes": 2187,
+      "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/CompilerOptions.class",
+      "bytes": 1569,
+      "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/DynamicClassLoader.class",
+      "bytes": 1874,
+      "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+      "bytes": 1111,
+      "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/JavaClassObject.class",
+      "bytes": 1528,
+      "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/JavaUtils.class",
+      "bytes": 1145,
+      "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/StringJavaFileObject.class",
+      "bytes": 1298,
+      "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/compiler/TestCompiler.class",
+      "bytes": 9527,
+      "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/TestFilesGetter.class",
+      "bytes": 817,
+      "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/TestUtils.class",
+      "bytes": 4786,
+      "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+      "bytes": 3982,
+      "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+      "bytes": 7050,
+      "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+      "bytes": 3636,
+      "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+    },
+    {
+      "path": "full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+      "bytes": 1178,
+      "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+    },
+    {
+      "path": "full-replay-root-v1/runtime-probe/Cf12RemainingRuntimeProbe.class",
+      "bytes": 8570,
+      "sha256": "c47a466345d00ecc7ce9179c344c1297383a647567141473641be9fa5b177149"
+    },
+    {
+      "path": "full-replay-root-v1/runtime-probe/Cf12RemainingRuntimeProbe.java",
+      "bytes": 10381,
+      "sha256": "8c10f7119b997a73607ce1457db5b41328bb4c6cbd95399100b753d014dfff08"
+    },
+    {
+      "path": "full-replay-root-v1/runtime-probe/probe-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "full-replay-root-v1/runtime-probe/probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "jarde-cf12-remaining-acceptance-root-v1.json",
+      "bytes": 1211,
+      "sha256": "d7d2d16b0f50007ce13b584c1241f7fa297160379a44d7c1703fe1aac71cdca2"
+    },
+    {
+      "path": "jarde-cf12-remaining-acceptance-root-v2.json",
+      "bytes": 1211,
+      "sha256": "0da81d9f7b8046b945267d071d3c7d17b4f530d981412bf1261046cecbb8ceab"
+    },
+    {
+      "path": "jarde-cf12-remaining-direct-root-v1.py",
+      "bytes": 7554,
+      "sha256": "b5b2e974fdfb4d0cfe48d2d0fee2e1a8d81fc5bedaefd39d394c819d77add72b"
+    },
+    {
+      "path": "jarde-cf12-remaining-five-upstream-audit-luna-v1.md",
+      "bytes": 10260,
+      "sha256": "fc55d07382172ada9e2d328f542f1ced789e776de4f89101dcfbafe4f9b997e7"
+    },
+    {
+      "path": "jarde-cf12-remaining-full-replay-root-v1.py",
+      "bytes": 5871,
+      "sha256": "1062270b4c1c2c183817b38ac3fcc68ea827b9c6a1584556ac91e4ed90806c74"
+    },
+    {
+      "path": "jarde-cf12-remaining-jadx-quality-audit-luna-v1.md",
+      "bytes": 8983,
+      "sha256": "093e7ed7d9ecfa98d3b8762b194f559f6555e6cc57e6cd46e7738ed3a92f9849"
+    },
+    {
+      "path": "jarde-cf12-remaining-render-root-v1.py",
+      "bytes": 3590,
+      "sha256": "618386933951679b6b6f14a3995560f5e339c8d73603ece05fe49234a1424d18"
+    },
+    {
+      "path": "jarde-cf12-remaining-verify-root-v1.py",
+      "bytes": 5722,
+      "sha256": "e3f55c5bef6b6b26b34baa6f68934e5d69935fd430a3f45371b76a99b5f7d61f"
+    },
+    {
+      "path": "jarde-cf12-remaining-verify-root-v2.py",
+      "bytes": 6513,
+      "sha256": "486d0d8ec32720cfa72010e58f92f0bec95de268cae35983bff409591664b4ba"
+    },
+    {
+      "path": "jarde-cf12-switch-join-proof-reuse-audit-luna-v1.md",
+      "bytes": 10391,
+      "sha256": "4888d53f67b6683ada4edec9b051e5ff518548c1e37f0e6d3ecbaf13123f0b44"
+    },
+    {
+      "path": "jarde-cf12-two-remaining-structure-plan-luna-v1.md",
+      "bytes": 15811,
+      "sha256": "587dd545dda4ab3c4a60a0592e64162381a9cf3503801ee304446619325fffa3"
+    },
+    {
+      "path": "private-openspec-draft-luna-v1/design.md",
+      "bytes": 7713,
+      "sha256": "955886b33365d7c9d0bdb4b7b5c5029c0b36e48b6a56dea0baced0b2b5bd8127"
+    },
+    {
+      "path": "private-openspec-draft-luna-v1/proposal.md",
+      "bytes": 2753,
+      "sha256": "ee65aa927a98bf2e4ff13a45d25cfd1d1ec80f568fe814eaf9463018cc91dd26"
+    },
+    {
+      "path": "private-openspec-draft-luna-v1/specs/java8-recovery/spec.md",
+      "bytes": 3415,
+      "sha256": "5a1d8ea6a58efaca38bb778aa94d95336d34731f2de0dba2dda0b36030409881"
+    },
+    {
+      "path": "private-openspec-draft-luna-v1/tasks.md",
+      "bytes": 3001,
+      "sha256": "20882f1ae00f1c6d128b485a32927befc5ac12b0de92a0a341134aa9d312c573"
+    },
+    {
+      "path": "private-openspec-draft-root-review.md",
+      "bytes": 1276,
+      "sha256": "690b20fd789e3d378bb5f6aa200953b02dd0005dd0a03a7f155f6d6a7371bc55"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-all.java",
+      "bytes": 2020,
+      "sha256": "b1c8e691c7ef5e0d2e38d978dda87be22921cbd6d89f0a4447adab2f9f2ed440"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-all.stdout.raw",
+      "bytes": 64650,
+      "sha256": "06c8d66b7e13864480c5bdd29dc6a106b9782c9039a79aec698a543c426f5736"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-default.java",
+      "bytes": 2020,
+      "sha256": "b1c8e691c7ef5e0d2e38d978dda87be22921cbd6d89f0a4447adab2f9f2ed440"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-default.stdout.raw",
+      "bytes": 56762,
+      "sha256": "b472928b3c7ef59864db65b4e4908979febcc2a8e3b86bc20ca5787520989e61"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/javap.stdout.raw",
+      "bytes": 8983,
+      "sha256": "973dbc6b42d463c57954ad78fa77d40560728e3b5933545bb7d3bcfcd5bef316"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-all.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-all.stdout.raw",
+      "bytes": 61100,
+      "sha256": "bc1e03ec9746f85db9a8ef3b1efbaad705ffbe2b112b353839eee330bb609daa"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-default.java",
+      "bytes": 2164,
+      "sha256": "ed9f36d814d9c4719678fe538f42017e4b8820a3e65e97d99bea238d2ae478b8"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-default.stdout.raw",
+      "bytes": 58153,
+      "sha256": "96443174f289bb497136f0eb50c39ab521078bf22dabbabd40bfc6b967187f75"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/javap.stdout.raw",
+      "bytes": 8494,
+      "sha256": "3d550fc1ce66a0ee9ec74dc5eb4ee3ce6507d8073138065693c4fb05b884a52e"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-all.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-all.stdout.raw",
+      "bytes": 58628,
+      "sha256": "be1eea39345a5905a534dd36a6513263e7fc88642698845872b6de0e36e9603b"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-default.java",
+      "bytes": 1943,
+      "sha256": "a4930f8d1b5ad253b85b40bad89c618e1d50b4dde831424e85e0026ee09aa983"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-default.stdout.raw",
+      "bytes": 57099,
+      "sha256": "f31ad4278753405fbafa5c76430d80595be616ce1b0bdfd54a69bda07a854913"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/javap.stdout.raw",
+      "bytes": 7868,
+      "sha256": "68701e8f070e46f5c09ffc5945755b09b038aee02b39031d3e7fe5598c9b9195"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-all.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-all.stdout.raw",
+      "bytes": 32483,
+      "sha256": "34b8e1b79b6b74d199fd8f60349387a7a366e573a7627c0208ba1bf3a5e93c24"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-default.java",
+      "bytes": 1584,
+      "sha256": "782ff7c7bb4483f88c83eb56fe146051be3bf588f06f6317f22fe4f1cd265fca"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-default.stdout.raw",
+      "bytes": 31001,
+      "sha256": "9a31e4a1b18c1908d82ffbc412cb6b7a2e69dfdb02b2f813ae5b5862bc9f913e"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/javap.stdout.raw",
+      "bytes": 6159,
+      "sha256": "87a9e55f540989abdeba71318a1f39609befda4f0e737dbcecf8f7827a5c8d00"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-all.java",
+      "bytes": 2640,
+      "sha256": "4fca514cb0fb37e487e4ddfa9018cd1e55d719dd7bf8f994a3c93ce7a2880114"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-all.stdout.raw",
+      "bytes": 95600,
+      "sha256": "fcad8a56fa5c620a5c08532581e8b57b12db214ecfd2a99eb96550f782bf1091"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-default.java",
+      "bytes": 2640,
+      "sha256": "4fca514cb0fb37e487e4ddfa9018cd1e55d719dd7bf8f994a3c93ce7a2880114"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-default.stdout.raw",
+      "bytes": 92721,
+      "sha256": "93e21d20c76ddd0f1a86728b08ff64a9c9a8a20f8764e26a9e171ab4ca42a6b4"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/javap.stdout.raw",
+      "bytes": 16405,
+      "sha256": "4631990d714f176e5566da9d3f8d8470418bd53a8107143ff17a6d927572afe1"
+    },
+    {
+      "path": "render-root-v1/execution.json",
+      "bytes": 20250,
+      "sha256": "d2056f1fb4bbb345f1d92d84a826485bc5793aa35745eb03619484e5ed4a6a98"
+    },
+    {
+      "path": "verifier-invocation-root-v2/execution.json",
+      "bytes": 991,
+      "sha256": "50c7ee349d7fdd0d9041d4bc214198f3a02ef1ba047c06a4888a054776a0686a"
+    },
+    {
+      "path": "verifier-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "verifier-invocation-root-v2/stdout.raw",
+      "bytes": 1067,
+      "sha256": "476d5f93a85023bf860f02c59c5024e439bef40581f166cc6f819fd0647ef0e6"
+    }
+  ]
+}

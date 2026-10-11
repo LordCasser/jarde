@@ -1,0 +1,9 @@
+# Conditional 产品自身 CI 独立验收
+
+产品6476b56c357443ef17318891b12142f509977234，run38096105240，实际4job/52step全部success；两个固定seed各359个真实Cargo目标、3422/0/97。fresh本地95批基线与两seed每个target/header/outcome有序tuple一致，2210源输入、17product/21test/162literal class等Git/live pins、冻结CLI/meta/build和独立完整replay invocation全部核同。接受SHA c50bb7b672896ce19f14e152f288ef0522830fd22b6749ba18d68fc0ebf2fd7a。
+
+两次原v5失败完整保留：verifier-invocation在JDK symlink与resolved argv表示不符；同一冻结原replay verifier实际重新使用resolved homes于v4调用exit0，stdout仍同SHA ac7c6b39b9d43c8362f3972003dc9ca944c4d0f27ee00483f500d320a8d6f893，没有改旧invocation。verifier-invocation-v2在公开测试名a_result_wei***被GitHub脱敏时严格tuple mismatch，没有修改raw。
+
+最终verifier-invocation-v3是真实包装器扩展验收，不冒称原v5独立通过。原v5在产品Git/live中逐字未改；wrapper只将***公开label匹配到本target、本status且唯一的source-pinned baseline测试名，仍核counts、顺序、各目标bijection。只两处（同一公开测试、每seed一次）需要此绑定。accepted JSON显式记录wrapper/v5身份与映射，捕获原raw/gzip均未改。Luna对抗审查的无mask/唯一mask/零或多候选/错误状态/重复/乱序/计数错误边界均实做机械核查；所指出重复--acceptance边界在本次实际argv不存在（仅一次），不扩展成通用CLI整改。所有原有job/step/seed/header/Git/live/fixture/CLI/replay约束保留。
+
+watch真实进程exit0，完整stdout/stderr保留；capture实际recorder exit0，API及两job日志raw含捕获调用与SHA。路径原记录与私有原文件保留，不回写历史执行。文档CI不作为产品CI替代。

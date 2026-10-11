@@ -1,0 +1,3 @@
+这是未应用、未编译的规划证据。root已审读现有源码/冻结report，v2 outer架构分析纠正v1不可达Prepared family方案与JADX global重复归因。validation plan原稿遗漏PreparedFold/Static专项目标，执行时按design/tasks补两现有target；scanner直接复用已提交root单stat版本，不必依赖原私稿scanner。未来实施以本change最终四规划artifact为准，不照抄原始draft的单class外层推断或数量。
+
+Root已保留Luna v3未应用patch/说明，以及未执行validation runner与完整root审查。patch只能在base facade SHA a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3完全匹配时应用；原私稿未格式化/编译，不能当产品证据。先推进两个CF12结构缺口，再处理此窄gate队列；13项保持未完成。

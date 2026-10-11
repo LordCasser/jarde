@@ -1,0 +1,537 @@
+{
+  "schema": "cf12-remaining-five-frozen-conditional-cli-render-root-v1",
+  "runner": {
+    "path": "/private/tmp/jarde-cf12-remaining-render-root-v1.py",
+    "sha256": "618386933951679b6b6f14a3995560f5e339c8d73603ece05fe49234a1424d18"
+  },
+  "cli_product_commit": "6476b56c357443ef17318891b12142f509977234",
+  "cli": {
+    "path": "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+    "sha256": "39d5699c1665b16e0c4a46934f0e773aeedf392f5bc60869a7b2762680dd10f1"
+  },
+  "harness_execution": {
+    "path": "/private/tmp/jarde-cf12-remaining-direct-root-v1/execution.json",
+    "sha256": "4de8513f444f75395f76ef019e439c8cf663819fb9e3cc4bb6a8dfd939187b96"
+  },
+  "commands": [
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class"
+      ],
+      "utc": "2026-10-11T00:13:23.852809+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0131644590001088,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/javap.stdout.raw",
+          "bytes": 8983,
+          "sha256": "973dbc6b42d463c57954ad78fa77d40560728e3b5933545bb7d3bcfcd5bef316"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-default",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitch2$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "utc": "2026-10-11T00:13:24.866479+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.004442540986929,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-default.stdout.raw",
+          "bytes": 56762,
+          "sha256": "b472928b3c7ef59864db65b4e4908979febcc2a8e3b86bc20ca5787520989e61"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-all",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitch2$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-11T00:13:25.872775+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0077192919852678,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-all.stdout.raw",
+          "bytes": 64650,
+          "sha256": "06c8d66b7e13864480c5bdd29dc6a106b9782c9039a79aec698a543c426f5736"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch2.test/TestSwitch2$TestCls/jarde-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class"
+      ],
+      "utc": "2026-10-11T00:13:26.883482+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0108028750109952,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/javap.stdout.raw",
+          "bytes": 8494,
+          "sha256": "3d550fc1ce66a0ee9ec74dc5eb4ee3ce6507d8073138065693c4fb05b884a52e"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-default",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitch3$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "utc": "2026-10-11T00:13:27.894754+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.008622249995824,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-default.stdout.raw",
+          "bytes": 58153,
+          "sha256": "96443174f289bb497136f0eb50c39ab521078bf22dabbabd40bfc6b967187f75"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-all",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitch3$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-11T00:13:28.905749+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0149705410003662,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-all.stdout.raw",
+          "bytes": 61100,
+          "sha256": "bc1e03ec9746f85db9a8ef3b1efbaad705ffbe2b112b353839eee330bb609daa"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch3.test/TestSwitch3$TestCls/jarde-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class"
+      ],
+      "utc": "2026-10-11T00:13:29.923628+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0119333750044461,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/javap.stdout.raw",
+          "bytes": 7868,
+          "sha256": "68701e8f070e46f5c09ffc5945755b09b038aee02b39031d3e7fe5598c9b9195"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-default",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitch4$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "utc": "2026-10-11T00:13:30.936080+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.007911166001577,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-default.stdout.raw",
+          "bytes": 57099,
+          "sha256": "f31ad4278753405fbafa5c76430d80595be616ce1b0bdfd54a69bda07a854913"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-all",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitch4$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-11T00:13:31.948122+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0132901249744464,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-all.stdout.raw",
+          "bytes": 58628,
+          "sha256": "be1eea39345a5905a534dd36a6513263e7fc88642698845872b6de0e36e9603b"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitch4.test/TestSwitch4$TestCls/jarde-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class"
+      ],
+      "utc": "2026-10-11T00:13:32.962844+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.004334708006354,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/javap.stdout.raw",
+          "bytes": 6159,
+          "sha256": "87a9e55f540989abdeba71318a1f39609befda4f0e737dbcecf8f7827a5c8d00"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-default",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitchSimple$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "utc": "2026-10-11T00:13:33.969294+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0091430409811437,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-default.stdout.raw",
+          "bytes": 31001,
+          "sha256": "9a31e4a1b18c1908d82ffbc412cb6b7a2e69dfdb02b2f813ae5b5862bc9f913e"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-all",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitchSimple$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-11T00:13:34.982902+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0141382080037147,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-all.stdout.raw",
+          "bytes": 32483,
+          "sha256": "34b8e1b79b6b74d199fd8f60349387a7a366e573a7627c0208ba1bf3a5e93c24"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchSimple.test/TestSwitchSimple$TestCls/jarde-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class"
+      ],
+      "utc": "2026-10-11T00:13:35.998166+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0036751670122612,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/javap.stdout.raw",
+          "bytes": 16405,
+          "sha256": "4631990d714f176e5566da9d3f8d8470418bd53a8107143ff17a6d927572afe1"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-default",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitchWithFallThroughCase2$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "utc": "2026-10-11T00:13:37.004613+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0178440420131665,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-default.stdout.raw",
+          "bytes": 92721,
+          "sha256": "93e21d20c76ddd0f1a86728b08ff64a9c9a8a20f8764e26a9e171ab4ca42a6b4"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-all",
+      "argv": [
+        "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "--class",
+        "jadx.tests.integration.switches.TestSwitchWithFallThroughCase2$TestCls",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-11T00:13:38.025093+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0104650830035098,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-all.stdout.raw",
+          "bytes": 95600,
+          "sha256": "fcad8a56fa5c620a5c08532581e8b57b12db214ecfd2a99eb96550f782bf1091"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-remaining-render-root-v1/TestSwitchWithFallThroughCase2.test/TestSwitchWithFallThroughCase2$TestCls/jarde-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+      "bytes": 1123,
+      "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+      "bytes": 1037,
+      "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+      "bytes": 1088,
+      "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+      "bytes": 926,
+      "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+      "bytes": 1654,
+      "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+    }
+  ],
+  "status": "observed-remaining-five-render-pending-independent-review",
+  "free_bytes_after": 57493381120
+}

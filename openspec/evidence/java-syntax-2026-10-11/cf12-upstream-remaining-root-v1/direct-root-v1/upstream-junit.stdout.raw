@@ -1,0 +1,99 @@
+╷
+├─ JUnit Platform Suite ✔
+├─ JUnit Jupiter ✔
+│  ├─ TestSwitch2 ✔
+│  │  └─ test() ✔
+│  ├─ TestSwitch3 ✔
+│  │  └─ test() ✔
+│  ├─ TestSwitch4 ✔
+│  │  └─ test() ✘ 
+│  │           expected: 1234
+│  │            but was: 2234
+│  ├─ TestSwitchSimple ✔
+│  │  └─ test() ✔
+│  └─ TestSwitchWithFallThroughCase2 ✔
+│     └─ test() ✘ Method with problems: jadx.tests.integration.switches.TestSwitchWithFallThroughCase2$TestCls.test(int, boolean, boolean):java.lang.String
+│               USE_LINES_HINTS
+│               COMPUTE_POST_DOM
+│               JadxCommentsAttr{
+│               WARN: 
+│               -> Code duplicated, block: B:16:0x007d }
+│               INLINE_NOT_NEEDED
+│               CodeFeatures{[SWITCH]}
+│               THROWS:[]
+│               CROSS_EDGE: B:23:0x00ca -> B:25:0x00e3
+│                  CROSS_EDGE: B:21:0x00c6 -> B:25:0x00e3
+│                  CROSS_EDGE: B:13:0x0060 -> B:19:0x00af
+│                  CROSS_EDGE: B:16:0x007d -> B:19:0x00af
+│                  CROSS_EDGE: B:15:0x007a -> B:19:0x00af
+│                  CROSS_EDGE: B:7:0x003c -> B:14:0x0079
+│                  CROSS_EDGE: B:5:0x000b -> B:14:0x0079
+│                  CROSS_EDGE: B:18:0x0099 -> B:19:0x00af
+│                  CROSS_EDGE: B:5:0x000b -> B:19:0x00af
+│                  CROSS_EDGE: B:3:0x0005 -> B:20:0x00c5
+│               TYPE_VARS: EMPTY
+└─ JUnit Vintage ✔
+
+Failures (2):
+  JUnit Jupiter:TestSwitch4:test()
+    MethodSource [className = 'jadx.tests.integration.switches.TestSwitch4', methodName = 'test', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: 
+expected: 1234
+ but was: 2234
+       jadx.tests.integration.switches.TestSwitch4$TestCls.check(TestSwitch4$TestCls.java:26)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       jadx.tests.api.compiler.TestCompiler.invoke(TestCompiler.java:123)
+       jadx.tests.api.IntegrationTest.invoke(IntegrationTest.java:554)
+       jadx.tests.api.IntegrationTest.lambda$runDecompiledAutoCheck$4(IntegrationTest.java:481)
+       java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+       java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+       java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+       java.base/java.lang.Thread.run(Thread.java:1575)
+  JUnit Jupiter:TestSwitchWithFallThroughCase2:test()
+    MethodSource [className = 'jadx.tests.integration.switches.TestSwitchWithFallThroughCase2', methodName = 'test', methodParameterTypes = '']
+    => java.lang.AssertionError: Method with problems: jadx.tests.integration.switches.TestSwitchWithFallThroughCase2$TestCls.test(int, boolean, boolean):java.lang.String
+ USE_LINES_HINTS
+ COMPUTE_POST_DOM
+ JadxCommentsAttr{
+ WARN: 
+ -> Code duplicated, block: B:16:0x007d }
+ INLINE_NOT_NEEDED
+ CodeFeatures{[SWITCH]}
+ THROWS:[]
+ CROSS_EDGE: B:23:0x00ca -> B:25:0x00e3
+    CROSS_EDGE: B:21:0x00c6 -> B:25:0x00e3
+    CROSS_EDGE: B:13:0x0060 -> B:19:0x00af
+    CROSS_EDGE: B:16:0x007d -> B:19:0x00af
+    CROSS_EDGE: B:15:0x007a -> B:19:0x00af
+    CROSS_EDGE: B:7:0x003c -> B:14:0x0079
+    CROSS_EDGE: B:5:0x000b -> B:14:0x0079
+    CROSS_EDGE: B:18:0x0099 -> B:19:0x00af
+    CROSS_EDGE: B:5:0x000b -> B:19:0x00af
+    CROSS_EDGE: B:3:0x0005 -> B:20:0x00c5
+ TYPE_VARS: EMPTY
+       jadx.tests.api.utils.TestUtils.checkCode(TestUtils.java:53)
+       jadx.tests.api.IntegrationTest.lambda$runChecks$1(IntegrationTest.java:313)
+       java.base/java.util.Collections$SingletonList.forEach(Collections.java:5188)
+       jadx.tests.api.IntegrationTest.runChecks(IntegrationTest.java:313)
+       jadx.tests.api.IntegrationTest.decompileAndCheck(IntegrationTest.java:305)
+       jadx.tests.api.IntegrationTest.decompileAndCheck(IntegrationTest.java:283)
+       jadx.tests.api.IntegrationTest.getClassNodeFromFiles(IntegrationTest.java:226)
+       jadx.tests.api.IntegrationTest.getClassNode(IntegrationTest.java:191)
+       jadx.tests.integration.switches.TestSwitchWithFallThroughCase2.test(TestSwitchWithFallThroughCase2.java:58)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       [...]
+
+Test run finished after 1437 ms
+[         8 containers found      ]
+[         0 containers skipped    ]
+[         8 containers started    ]
+[         0 containers aborted    ]
+[         8 containers successful ]
+[         0 containers failed     ]
+[         5 tests found           ]
+[         0 tests skipped         ]
+[         5 tests started         ]
+[         0 tests aborted         ]
+[         3 tests successful      ]
+[         2 tests failed          ]
+

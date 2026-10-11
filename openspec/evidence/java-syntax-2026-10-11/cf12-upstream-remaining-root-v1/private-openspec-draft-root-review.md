@@ -1,0 +1,7 @@
+# Root 对下一结构里程碑私稿的审查
+
+四artifact仍是私稿，并非formal change，也未应用生产代码。目标锁定两类真实控制流缺口，诊断先行；旧snapshot编译失败不是正例。root先完成conditional自身CI与干净交付，再用OpenSpec实际CLI创建新change。
+
+建正式稿前需修订三处：proposal首段不能把FT2失败唯一归因为175→197续接，实际只确认ArmsDoNotMeet@0；预算Stop要求保持实际计费位置，join发现可锚dispatch5，尾消费应保留实际next175或原Stop位置，不强制所有Stop都报switch dispatch；有限DAG优先复用已有prove_switch_fallthroughs并补join incoming/内部terminal/continuation见证及候选唯一性，不另写第二套DFS。所需私有最小证据可作为既有证明输出，不新增Region/API/框架，也不无条件加严旧shared-boundary调用。
+
+FT2优先重用continue_switch_arm的完整incoming/owned/visited delta检查，在明确外层frame boundary的直线tail窄形状消费，不预设要新增helper。两份Luna私有实现可并行准备，root串行合并同一region.rs并用同一CLI重放十个完整上游测试类；常量名gate仍独立排队。71单元与CF12不因这份规划或窄片成功而加完成数。

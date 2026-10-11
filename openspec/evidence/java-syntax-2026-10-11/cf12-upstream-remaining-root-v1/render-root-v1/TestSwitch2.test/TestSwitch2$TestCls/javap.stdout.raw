@@ -1,0 +1,241 @@
+Classfile /private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class
+  Last modified 2026年10月11日; size 1123 bytes
+  SHA-256 checksum 70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9
+  Compiled from "TestSwitch2.java"
+public class jadx.tests.integration.switches.TestSwitch2$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // jadx/tests/integration/switches/TestSwitch2$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 6, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // jadx/tests/integration/switches/TestSwitch2$TestCls.isLongtouchable:Z
+   #8 = Class              #10            // jadx/tests/integration/switches/TestSwitch2$TestCls
+   #9 = NameAndType        #11:#12        // isLongtouchable:Z
+  #10 = Utf8               jadx/tests/integration/switches/TestSwitch2$TestCls
+  #11 = Utf8               isLongtouchable
+  #12 = Utf8               Z
+  #13 = Fieldref           #8.#14         // jadx/tests/integration/switches/TestSwitch2$TestCls.isMultiTouchZoom:Z
+  #14 = NameAndType        #15:#12        // isMultiTouchZoom:Z
+  #15 = Utf8               isMultiTouchZoom
+  #16 = Fieldref           #8.#17         // jadx/tests/integration/switches/TestSwitch2$TestCls.multiTouchZoomOldDist:F
+  #17 = NameAndType        #18:#19        // multiTouchZoomOldDist:F
+  #18 = Utf8               multiTouchZoomOldDist
+  #19 = Utf8               F
+  #20 = Methodref          #21.#22        // java/lang/Math.abs:(F)F
+  #21 = Class              #23            // java/lang/Math
+  #22 = NameAndType        #24:#25        // abs:(F)F
+  #23 = Utf8               java/lang/Math
+  #24 = Utf8               abs
+  #25 = Utf8               (F)F
+  #26 = Float              10.0f
+  #27 = Fieldref           #8.#28         // jadx/tests/integration/switches/TestSwitch2$TestCls.isCanZoomIn:Z
+  #28 = NameAndType        #29:#12        // isCanZoomIn:Z
+  #29 = Utf8               isCanZoomIn
+  #30 = Fieldref           #8.#31         // jadx/tests/integration/switches/TestSwitch2$TestCls.isCanZoomOut:Z
+  #31 = NameAndType        #32:#12        // isCanZoomOut:Z
+  #32 = Utf8               isCanZoomOut
+  #33 = Fieldref           #8.#34         // jadx/tests/integration/switches/TestSwitch2$TestCls.isScrolling:Z
+  #34 = NameAndType        #35:#12        // isScrolling:Z
+  #35 = Utf8               isScrolling
+  #36 = Utf8               Code
+  #37 = Utf8               LineNumberTable
+  #38 = Utf8               LocalVariableTable
+  #39 = Utf8               this
+  #40 = Utf8               Ljadx/tests/integration/switches/TestSwitch2$TestCls;
+  #41 = Utf8               test
+  #42 = Utf8               (I)V
+  #43 = Utf8               scale
+  #44 = Utf8               dist
+  #45 = Utf8               action
+  #46 = Utf8               I
+  #47 = Utf8               StackMapTable
+  #48 = Utf8               SourceFile
+  #49 = Utf8               TestSwitch2.java
+  #50 = Utf8               InnerClasses
+  #51 = Class              #52            // jadx/tests/integration/switches/TestSwitch2
+  #52 = Utf8               jadx/tests/integration/switches/TestSwitch2
+  #53 = Utf8               TestCls
+{
+  boolean isLongtouchable;
+    descriptor: Z
+    flags: (0x0000)
+
+  boolean isMultiTouchZoom;
+    descriptor: Z
+    flags: (0x0000)
+
+  boolean isCanZoomIn;
+    descriptor: Z
+    flags: (0x0000)
+
+  boolean isCanZoomOut;
+    descriptor: Z
+    flags: (0x0000)
+
+  boolean isScrolling;
+    descriptor: Z
+    flags: (0x0000)
+
+  float multiTouchZoomOldDist;
+    descriptor: F
+    flags: (0x0000)
+
+  public jadx.tests.integration.switches.TestSwitch2$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 10: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitch2$TestCls;
+
+  public void test(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iload_1
+         1: sipush        255
+         4: iand
+         5: tableswitch   { // 0 to 6
+                       0: 48
+                       1: 56
+                       2: 71
+                       3: 164
+                       4: 164
+                       5: 137
+                       6: 56
+                 default: 164
+            }
+        48: aload_0
+        49: iconst_1
+        50: putfield      #7                  // Field isLongtouchable:Z
+        53: goto          164
+        56: aload_0
+        57: getfield      #13                 // Field isMultiTouchZoom:Z
+        60: ifeq          164
+        63: aload_0
+        64: iconst_0
+        65: putfield      #13                 // Field isMultiTouchZoom:Z
+        68: goto          164
+        71: aload_0
+        72: getfield      #13                 // Field isMultiTouchZoom:Z
+        75: ifeq          164
+        78: aload_0
+        79: getfield      #16                 // Field multiTouchZoomOldDist:F
+        82: fstore_2
+        83: fload_2
+        84: aload_0
+        85: getfield      #16                 // Field multiTouchZoomOldDist:F
+        88: fsub
+        89: invokestatic  #20                 // Method java/lang/Math.abs:(F)F
+        92: ldc           #26                 // float 10.0f
+        94: fcmpl
+        95: ifle          136
+        98: fload_2
+        99: aload_0
+       100: getfield      #16                 // Field multiTouchZoomOldDist:F
+       103: fdiv
+       104: fstore_3
+       105: fload_3
+       106: fconst_1
+       107: fcmpl
+       108: ifle          118
+       111: aload_0
+       112: getfield      #27                 // Field isCanZoomIn:Z
+       115: ifne          131
+       118: fload_3
+       119: fconst_1
+       120: fcmpg
+       121: ifge          136
+       124: aload_0
+       125: getfield      #30                 // Field isCanZoomOut:Z
+       128: ifeq          136
+       131: aload_0
+       132: fload_2
+       133: putfield      #16                 // Field multiTouchZoomOldDist:F
+       136: return
+       137: aload_0
+       138: iload_1
+       139: i2f
+       140: putfield      #16                 // Field multiTouchZoomOldDist:F
+       143: aload_0
+       144: getfield      #16                 // Field multiTouchZoomOldDist:F
+       147: ldc           #26                 // float 10.0f
+       149: fcmpl
+       150: ifle          164
+       153: aload_0
+       154: iconst_1
+       155: putfield      #13                 // Field isMultiTouchZoom:Z
+       158: aload_0
+       159: iconst_0
+       160: putfield      #7                  // Field isLongtouchable:Z
+       163: return
+       164: aload_0
+       165: getfield      #33                 // Field isScrolling:Z
+       168: ifeq          181
+       171: iload_1
+       172: iconst_1
+       173: if_icmpne     181
+       176: aload_0
+       177: iconst_0
+       178: putfield      #33                 // Field isScrolling:Z
+       181: return
+      LineNumberTable:
+        line 19: 0
+        line 21: 48
+        line 22: 53
+        line 25: 56
+        line 26: 63
+        line 30: 71
+        line 31: 78
+        line 32: 83
+        line 33: 98
+        line 34: 105
+        line 35: 131
+        line 38: 136
+        line 42: 137
+        line 43: 143
+        line 44: 153
+        line 45: 158
+        line 46: 163
+        line 50: 164
+        line 51: 176
+        line 53: 181
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+          105      31     3 scale   F
+           83      54     2  dist   F
+            0     182     0  this   Ljadx/tests/integration/switches/TestSwitch2$TestCls;
+            0     182     1 action   I
+      StackMapTable: number_of_entries = 9
+        frame_type = 48 /* same */
+        frame_type = 7 /* same */
+        frame_type = 14 /* same */
+        frame_type = 253 /* append */
+          offset_delta = 46
+          locals = [ float, float ]
+        frame_type = 12 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 4
+        frame_type = 250 /* chop */
+          offset_delta = 0
+        frame_type = 26 /* same */
+        frame_type = 16 /* same */
+}
+SourceFile: "TestSwitch2.java"
+InnerClasses:
+  public static #53= #8 of #51;           // TestCls=class jadx/tests/integration/switches/TestSwitch2$TestCls of class jadx/tests/integration/switches/TestSwitch2

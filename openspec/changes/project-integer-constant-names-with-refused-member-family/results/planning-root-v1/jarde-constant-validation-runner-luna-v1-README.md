@@ -1,0 +1,18 @@
+# Same-class constant validation runner (private draft)
+
+This is an unrun runner draft for `project-integer-constant-names-with-refused-member-family`. It is not evidence of a passing build or test. Root should run it only after the upstream conditional-switch commit `6476b56c357443ef17318891b12142f509977234` has its own CI closed and main/worktree cleanup is complete, then pass the newly settled source-base SHA.
+
+The runner takes four required values:
+
+- `--source-base`: exact 40-character settled Git HEAD; the script records a read-only `git rev-parse HEAD` command and requires equality.
+- `--out`: fresh absolute directory below `/private/tmp`, holding `execution.json` and every raw command stream.
+- `--frozen-cli`: fresh absolute executable path below `/private/tmp`, in the same parent directory as `--out`. On success it is copied from `target/debug/jarde-cli`, SHA-checked and chmod `0555`.
+- `--core-test-name`: exact full Rust test name under `integer_constant_name_tests`, for example `facade::integer_constant_name_tests::<implemented_test_name>`. The runner executes it with `--exact --nocapture` and requires that exact `test <fullname> ... ok` line, but intentionally does not pin any aggregate test count.
+
+The Python script imports `load_guard()` and the 29-entry Clippy debt allowance from the already committed conditional-switch validation runner, then invokes its race-safe single-stat target scanner and guarded process-group command runner. It does not duplicate the lint list or copy the v9 guard. Every command writes raw stdout/stderr and a status record; test commands also store the actual summaries. After each successful Rust test command, it records the one completed `target/debug/deps` executable's absolute path, SHA-256 and size, then deletes only that checked executable to keep `target` below the 1 GiB limit. The 5 GiB free-space floor, one-second polling and process-group stop behavior apply to each command. `CARGO_PROFILE_TEST_STRIP=symbols` is set, while the four Java override/classpath variables listed by the inherited guard are removed from each child process environment.
+
+The selected sequence is: read-only source-base check; `cargo fmt --all -- --check`; exact CI workspace Clippy; `cargo test -p jarde --lib`; the exact new core unit test; `member_family_identity`, `class_source`, `p3_nested_annotation_source`, `inner_class_static_mixed_folding`, and `member_class_static_folding` integration targets; `cargo build -p jarde-cli --locked`; freeze the CLI; finally `cargo clean`. Source SHA pins before/after cover the facade, class-source, CLI implementation, their manifests, CI workflow, all five exercised Rust integration sources, and the recursive literal `include_bytes!` / `include_str!` closure reachable from those sources and `src/facade.rs`. The frozen harness execution and closed input inventory are pinned independently; both root and inner TestSwitchLabels class files are checked against their inventory rows and exact byte/hash identities.
+
+Any failed command, missing/empty/failed test summary, absent exact core-test pass line, guard stop, changed source/fixture pin, or CLI identity mismatch leaves `status=failed`; the just-created private CLI is removed if a later step fails. The script does not run JDK, product CLI, OpenSpec, whole-workspace tests, Git mutations, commit, push, or CI. Those belong to the root's later replay/review/delivery steps.
+
+No command was executed while preparing this draft. The script and README are private artifacts only; they are not added to the repository and do not establish success.

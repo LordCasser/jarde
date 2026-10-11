@@ -1,0 +1,145 @@
+Classfile /private/tmp/jarde-cf12-remaining-direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class
+  Last modified 2026年10月11日; size 926 bytes
+  SHA-256 checksum 2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9
+  Compiled from "TestSwitchSimple.java"
+public class jadx.tests.integration.switches.TestSwitchSimple$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #29                         // jadx/tests/integration/switches/TestSwitchSimple$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // 1
+   #8 = Utf8               1
+   #9 = String             #10            // 2
+  #10 = Utf8               2
+  #11 = String             #12            // 3
+  #12 = Utf8               3
+  #13 = String             #14            // 4
+  #14 = Utf8               4
+  #15 = Fieldref           #16.#17        // java/lang/System.out:Ljava/io/PrintStream;
+  #16 = Class              #18            // java/lang/System
+  #17 = NameAndType        #19:#20        // out:Ljava/io/PrintStream;
+  #18 = Utf8               java/lang/System
+  #19 = Utf8               out
+  #20 = Utf8               Ljava/io/PrintStream;
+  #21 = String             #22            // Not Reach
+  #22 = Utf8               Not Reach
+  #23 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #24 = Class              #26            // java/io/PrintStream
+  #25 = NameAndType        #27:#28        // println:(Ljava/lang/String;)V
+  #26 = Utf8               java/io/PrintStream
+  #27 = Utf8               println
+  #28 = Utf8               (Ljava/lang/String;)V
+  #29 = Class              #30            // jadx/tests/integration/switches/TestSwitchSimple$TestCls
+  #30 = Utf8               jadx/tests/integration/switches/TestSwitchSimple$TestCls
+  #31 = Utf8               Code
+  #32 = Utf8               LineNumberTable
+  #33 = Utf8               LocalVariableTable
+  #34 = Utf8               this
+  #35 = Utf8               Ljadx/tests/integration/switches/TestSwitchSimple$TestCls;
+  #36 = Utf8               test
+  #37 = Utf8               (I)V
+  #38 = Utf8               a
+  #39 = Utf8               I
+  #40 = Utf8               s
+  #41 = Utf8               Ljava/lang/String;
+  #42 = Utf8               StackMapTable
+  #43 = Class              #44            // java/lang/String
+  #44 = Utf8               java/lang/String
+  #45 = Utf8               SourceFile
+  #46 = Utf8               TestSwitchSimple.java
+  #47 = Utf8               InnerClasses
+  #48 = Class              #49            // jadx/tests/integration/switches/TestSwitchSimple
+  #49 = Utf8               jadx/tests/integration/switches/TestSwitchSimple
+  #50 = Utf8               TestCls
+{
+  public jadx.tests.integration.switches.TestSwitchSimple$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 11: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitchSimple$TestCls;
+
+  public void test(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aconst_null
+         1: astore_2
+         2: iload_1
+         3: iconst_4
+         4: irem
+         5: tableswitch   { // 1 to 4
+                       1: 36
+                       2: 42
+                       3: 48
+                       4: 54
+                 default: 60
+            }
+        36: ldc           #7                  // String 1
+        38: astore_2
+        39: goto          68
+        42: ldc           #9                  // String 2
+        44: astore_2
+        45: goto          68
+        48: ldc           #11                 // String 3
+        50: astore_2
+        51: goto          68
+        54: ldc           #13                 // String 4
+        56: astore_2
+        57: goto          68
+        60: getstatic     #15                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        63: ldc           #21                 // String Not Reach
+        65: invokevirtual #23                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        68: getstatic     #15                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        71: aload_2
+        72: invokevirtual #23                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        75: return
+      LineNumberTable:
+        line 13: 0
+        line 14: 2
+        line 16: 36
+        line 17: 39
+        line 19: 42
+        line 20: 45
+        line 22: 48
+        line 23: 51
+        line 25: 54
+        line 26: 57
+        line 28: 60
+        line 31: 68
+        line 32: 75
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      76     0  this   Ljadx/tests/integration/switches/TestSwitchSimple$TestCls;
+            0      76     1     a   I
+            2      74     2     s   Ljava/lang/String;
+      StackMapTable: number_of_entries = 6
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ class java/lang/String ]
+        frame_type = 5 /* same */
+        frame_type = 5 /* same */
+        frame_type = 5 /* same */
+        frame_type = 5 /* same */
+        frame_type = 7 /* same */
+}
+SourceFile: "TestSwitchSimple.java"
+InnerClasses:
+  public static #50= #29 of #48;          // TestCls=class jadx/tests/integration/switches/TestSwitchSimple$TestCls of class jadx/tests/integration/switches/TestSwitchSimple

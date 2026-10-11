@@ -1,0 +1,38 @@
+## Context
+
+The evidence bundle `openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/` freezes the five previously missing upstream fixtures and complete original/JADX/Jarde observations. Its `README.md` and `jarde-cf12-remaining-acceptance-root-v2.json` record `cf12_complete: false`: TestSwitch2 and TestSwitchWithFallThroughCase2 currently fail Jarde whole-class compilation in both default/all profiles; TestSwitch3, TestSwitch4, and TestSwitchSimple match their original runtime. The same bundle records that JADX's TestSwitch4 check returns 2234 instead of 1234, while its FallThroughCase2 result has a duplicate-code warning but its check and 68-input matrix match the original. These are historical controls, not acceptable output expectations for the new Jarde result.
+
+The root-reviewed private structural analysis is `jarde-cf12-two-remaining-structure-plan-luna-v1.md`. It separates source-visible CFG shape from unverified responsibility: actual rejection points must be observed against the frozen classes before changing production behavior.
+
+## Goals and Non-Goals
+
+**Goals:** Recover the switch-to-outer-join sequence in FallThroughCase2 and the shared direct-target continuation DAG in TestSwitch2, while retaining exact ownership and origins. Prove both through complete generated-class compilation and execution, plus bounded refusal and Stop tests.
+
+**Non-Goals:** Do not alter unrelated switch patterns, infer joins from BCI order, relax canonical edge closure, introduce labels, change JVM IR/SSA/frame schemas, add a general graph library or public API, or merge the separately queued constant-name gate. Do not count old profile outputs as newly passing evidence or claim CF12/71-wide completion from these two methods.
+
+## Decisions
+
+1. **Observe before implementation.** The first product-facing step is a temporary, private diagnostic against each frozen method. For FallThroughCase2 record whether the internal switch proves join 175, the returned `next`, existing `continue_switch_arm` inputs/results, enclosing boundary 197, ownership/visited deltas, and the final refusal. For TestSwitch2 record immediate post-dominator, each `switch_forward_join` candidate and rejection, canonical predecessor checks, and the first later overlap/refusal. Remove diagnostic-only instrumentation before acceptance. If an internal switch/case proof fails before the proposed continuation point, do not apply a guessed outer-tail or DAG fix.
+
+2. **FallThroughCase2 uses the enclosing frame and a bounded tail.** Reuse the existing switch-arm proof/continuation path where it already owns the switch. Once a real `Region::Switch` ends at its proved internal join 175, the outer arm may continue from 175 in the enclosing frame to boundary 197. The first accepted tail is one nonempty straight region whose newly visited block set exactly matches its physical Region blocks, is disjoint from the switch blocks, and has complete canonical Normal incoming/outgoing ownership. Keep 175 outside the case-body owner and emit its statements once after the switch; do not copy them into arms or mistake 175 for the outer boundary. Any branch, loop, nested switch, external entry, non-normal edge, uncovered block, mismatched walk delta, or budget Stop remains a refusal/Stop.
+
+3. **TestSwitch2 uses a local finite-DAG outcome proof.** Start only if observation confirms join discovery is the relevant refusal. Enumerate the bounded candidate set from decoded switch targets; the first target class includes direct candidate 164, but a direct target is eligible only if full edge and ownership checks prove its role. A candidate is accepted only when it is unique and every complete path from each non-join arm closure reaches that candidate or an accurately decoded physical Return/Throw terminal with zero outgoing canonical rows. Internal branches must be proven comparisons; all interior nodes must form an acyclic, closed finite DAG. Reject loops, nested switches, unknown leaves, extra successors, non-Normal canonical edges, unproved case-entry crossings, external incoming edges, shared non-join ownership, or multiple valid candidates. Reuse existing arm/fallthrough checks after candidate discovery; do not treat the normal-flow projection as the complete graph.
+
+4. **Join and terminal ownership remain physical.** A switch arm owns its internal branch and exact terminal blocks once. The candidate join is excluded from all arm bodies and is walked as the enclosing continuation once. Existing break/return construction and any already accepted `SwitchBreak` consumer remain authoritative. No block is considered owned because it was merely visited, and failed proof must not leave partially consumed state or a partial source artifact.
+
+5. **Preserve shared budget and Stop semantics.** The proof and walker use the request's existing `Budget`; charge actual node, successor, canonical row, predecessor, and candidate checks before work and poll cancellation during bounded scans. A Stop retains its real reason, dimension, and dispatch location and publishes no partial body/map. Do not increase budgets or add a budget dimension to get these fixtures through.
+
+6. **Private drafts, root-owned serial integration.** The two proof shapes are separable enough for different Luna agents to prepare private candidate patches concurrently. No agent edits the workspace or creates a branch/worktree. The root reviews both and integrates them one at a time into the shared `region.rs`, resolving overlap before running validation. The final production diff remains one coherent local change, not two unreviewed parallel edits.
+
+7. **Full-class acceptance is a new root-owned comparison.** Freeze a new CLI and exact source/class/helper/runtime pins after the implementation candidate is stable. Recompile and run the original, JADX, and Jarde default/all full classes for all ten CF12 fixtures with their retained upstream checks and complete helper classpaths; compare stdout/stderr and actual class sets, and validate physical source origins for both changed methods. Record each profile's real pass, refusal, or compile failure. Earlier frozen Jarde failures and earlier CLI baselines remain historical observations, not positive evidence for this candidate.
+
+## Risks and Trade-offs
+
+- A shared normal successor can hide canonical exception/call/subroutine edges. Mitigation: compare complete canonical rows with the route proof and retain the current refusal on any unsupported kind.
+- A continuation can be emitted twice or assigned to a case. Mitigation: assert block-owner sets and walk deltas before publishing the composed region; test exact-once output and source spans.
+- A permissive common-node search can mistake a loop header, case entry, or outer join for the switch join. Mitigation: candidate uniqueness, decoded-target constraints, closed incoming ownership, acyclicity, and explicit frame boundaries.
+- The first observed failure may occur earlier than the proposed consumer. Mitigation: observation is a blocking implementation task; change the target or stop if evidence disproves the hypothesis.
+
+## Validation and Delivery
+
+The root performs all workspace edits and toolchain work after the conditional change is independently accepted and clean. Validate the focused real methods and existing switch regressions, adversarial refusal cases, budget/cancel behavior, OpenSpec strict checks, then the complete ten-fixture full-class comparison under one newly frozen CLI. Keep failure raw and exact pins. Do not prefill counts, conflate Jarde and JADX behavior, or update the 71-unit completion ledger until the applicable independent acceptance is complete.

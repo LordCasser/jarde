@@ -1,0 +1,14 @@
+{
+  "schema": "recover-proved-conditional-switch-fallthrough-complete-class-replay-root-v1",
+  "status": "verified-conditional-switch-replay-observations",
+  "cf12_complete": false,
+  "conditional_anchor_matches": 4,
+  "control_classifications_preserved": 14,
+  "default_all_map_pairs": 11,
+  "envelope_checks": {
+    "report_count": 22,
+    "usage_slots": 96,
+    "utf8_source_segments": 822,
+    "structured_anchor_profiles": 4
+  }
+}

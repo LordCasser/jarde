@@ -1,0 +1,293 @@
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -2171,6 +2171,7 @@
+             if matches!(
+                 report.member_family,
+                 class_source::ClassSourceMemberFamily::Absent
++                    | class_source::ClassSourceMemberFamily::Refused { child: None, .. }
+             ) && matches!(
+                 report.nested_enum_family,
+                 class_source::ClassSourceNestedEnumFamily::Absent
+@@ -44282,6 +44283,282 @@
+         }
+     }
+ 
++    const REFUSED_ROOT: &[u8] = include_bytes!(
++        "../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class"
++    );
++    const REFUSED_CHILD: &[u8] = include_bytes!(
++        "../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class"
++    );
++
++    #[test]
++    fn refused_root_without_child_keeps_same_class_integer_constant_names() {
++        let report = source(
++            REFUSED_ROOT,
++            "jadx/tests/integration/switches/TestSwitchLabels$TestCls",
++            &mut task_budget(&[]).unwrap(),
++        );
++
++        assert!(matches!(
++            report.execution,
++            ExecutionReport::Complete { .. }
++        ));
++        assert!(matches!(
++            &report.member_family,
++            class_source::ClassSourceMemberFamily::Refused { child: None, .. }
++        ));
++        let mut nesting_budget = task_budget(&[]).unwrap();
++        let selected = jarde_reader::classfile::class_facts(REFUSED_ROOT, &mut nesting_budget)
++            .expect("the frozen root's class facts remain readable");
++        let shells: Vec<_> = selected
++            .attributes
++            .iter()
++            .filter(|attribute| {
++                matches!(
++                    attribute.name.raw().0.as_slice(),
++                    b"InnerClasses" | b"EnclosingMethod"
++                )
++            })
++            .cloned()
++            .collect();
++        let assembly = class_source::read_class_source_assembly_context(
++            REFUSED_ROOT,
++            &shells,
++            &selected.constant_pool,
++            &mut nesting_budget,
++        )
++        .expect("the selected root's nesting attributes decode into typed facts");
++        assert!(assembly.resolved_inner_classes.iter().any(|row| {
++            row.class.as_slice() == b"jadx/tests/integration/switches/TestSwitchLabels$TestCls"
++                && row.outer_class.as_deref()
++                    == Some(&b"jadx/tests/integration/switches/TestSwitchLabels"[..])
++                && row.inner_name.as_ref().map(|name| name.0.as_slice())
++                    == Some(&b"TestCls"[..])
++        }), "the reader-resolved self row states TestSwitchLabels$TestCls -> TestSwitchLabels");
++        assert!(assembly.resolved_inner_classes.iter().any(|row| {
++            row.class.as_slice()
++                == b"jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner"
++                && row.outer_class.as_deref()
++                    == Some(&b"jadx/tests/integration/switches/TestSwitchLabels$TestCls"[..])
++                && row.inner_name.as_ref().map(|name| name.0.as_slice()) == Some(&b"Inner"[..])
++        }), "the reader-resolved child row states TestSwitchLabels$TestCls$Inner -> TestSwitchLabels$TestCls");
++        assert!(matches!(
++            report.nested_enum_family,
++            class_source::ClassSourceNestedEnumFamily::Absent
++        ));
++        assert!(matches!(
++            report.nested_annotation_family,
++            class_source::ClassSourceNestedAnnotationFamily::Absent
++        ));
++        assert!(matches!(
++            report.anonymous_interface_projection,
++            class_source::ClassSourceAnonymousInterfaceProjection::Absent
++        ));
++
++        assert!(report.text.contains("case CONST_ABC:"));
++        assert!(report.text.contains("return CONST_CDE;"));
++        assert!(!report.text.contains("class Inner"));
++
++        let method = report
++            .methods
++            .iter()
++            .find(|method| {
++                method.item.name.raw().0 == b"f1"
++                    && method.item.descriptor.raw().0 == b"(I)I"
++            })
++            .expect("the frozen root declares physical f1(I)I");
++        let class_source::ClassSourceOutcome::Recovered {
++            report: physical, ..
++        } = &method.outcome
++        else {
++            panic!("f1(I)I must retain its physical recovery report");
++        };
++        assert!(physical.text.contains("case 2748:"));
++        assert!(physical.text.contains("return 3294;"));
++
++        let abc = report
++            .integer_constant_candidates
++            .iter()
++            .find(|candidate| candidate.name == "CONST_ABC")
++            .expect("the root field table proves CONST_ABC");
++        let cde = report
++            .integer_constant_candidates
++            .iter()
++            .find(|candidate| candidate.name == "CONST_CDE")
++            .expect("the root field table proves CONST_CDE");
++        assert_eq!(abc.value, 2748);
++        assert_eq!(cde.value, 3294);
++        let abc_field = report
++            .fields
++            .iter()
++            .find(|field| field.item.name.raw().0 == b"CONST_ABC")
++            .expect("the candidate is a real root field");
++        let cde_field = report
++            .fields
++            .iter()
++            .find(|field| field.item.name.raw().0 == b"CONST_CDE")
++            .expect("the candidate is a real root field");
++        assert_eq!(abc_field.item.index, abc.field.index);
++        assert_eq!(abc_field.item.identity, abc.field.identity);
++        assert_eq!(abc_field.declaration.as_deref(), Some("public static final int CONST_ABC = 2748"));
++        assert_eq!(cde_field.item.index, cde.field.index);
++        assert_eq!(cde_field.item.identity, cde.field.identity);
++        assert_eq!(cde_field.declaration.as_deref(), Some("public static final int CONST_CDE = 3294"));
++
++        let mut method_projections = report
++            .integer_constant_projections
++            .iter()
++            .filter(|projection| {
++                projection.anchors.iter().any(|anchor| matches!(
++                    anchor,
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method: owner, .. }
++                        if owner == &method.item.identity
++                ))
++            })
++            .collect::<Vec<_>>();
++        assert_eq!(method_projections.len(), 2);
++        method_projections.sort_by_key(|projection| {
++            projection
++                .anchors
++                .iter()
++                .find_map(|anchor| match anchor {
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method: owner, bci }
++                        if owner == &method.item.identity => Some(*bci),
++                    _ => None,
++                })
++                .expect("each projection has its f1(I)I anchor")
++        });
++        for (projection, name, field, bci) in [
++            (&method_projections[0], "CONST_ABC", abc_field, 1),
++            (&method_projections[1], "CONST_CDE", cde_field, 20),
++        ] {
++            assert_eq!(
++                projection.kind,
++                class_source::MemberFamilyDerivedKind::IntegerConstantName
++            );
++            assert_eq!(report.text.get(projection.start..projection.end), Some(name));
++            assert_eq!(
++                projection.anchors,
++                vec![
++                    class_source::MemberFamilyPhysicalAnchor::Field {
++                        field: field.item.identity.clone(),
++                        index: field.item.index,
++                    },
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint {
++                        method: method.item.identity.clone(),
++                        bci,
++                    },
++                ]
++            );
++        }
++
++        // Independently selected frozen child: only its own physical field may
++        // name the case. The outer class bytes are absent from this single-class
++        // input, so the outer CONST_ABC cannot name the numeric return value.
++        let child = source(
++            REFUSED_CHILD,
++            "jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner",
++            &mut task_budget(&[]).unwrap(),
++        );
++        assert!(matches!(child.execution, ExecutionReport::Complete { .. }));
++        assert!(matches!(
++            &child.member_family,
++            class_source::ClassSourceMemberFamily::Refused { child: None, .. }
++        ));
++        assert!(matches!(
++            child.nested_enum_family,
++            class_source::ClassSourceNestedEnumFamily::Absent
++        ));
++        assert!(matches!(
++            child.nested_annotation_family,
++            class_source::ClassSourceNestedAnnotationFamily::Absent
++        ));
++        assert!(matches!(
++            child.anonymous_interface_projection,
++            class_source::ClassSourceAnonymousInterfaceProjection::Absent
++        ));
++        assert!(child.text.contains("case CONST_CDE_PRIVATE:"));
++        assert!(child.text.contains("return 2748;"));
++        assert!(!child.text.contains("CONST_ABC"));
++        assert!(child
++            .integer_constant_candidates
++            .iter()
++            .all(|candidate| candidate.name != "CONST_ABC"));
++
++        let child_method = child
++            .methods
++            .iter()
++            .find(|method| {
++                method.item.name.raw().0 == b"f1"
++                    && method.item.descriptor.raw().0 == b"(I)I"
++            })
++            .expect("the frozen child declares physical f1(I)I");
++        let class_source::ClassSourceOutcome::Recovered {
++            report: child_physical, ..
++        } = &child_method.outcome
++        else {
++            panic!("child f1(I)I must retain its physical recovery report");
++        };
++        assert!(child_physical.text.contains("case 3294:"));
++        assert!(child_physical.text.contains("return 2748;"));
++
++        let mut child_candidates = child
++            .integer_constant_candidates
++            .iter()
++            .filter(|candidate| candidate.name == "CONST_CDE_PRIVATE");
++        let child_candidate = child_candidates
++            .next()
++            .expect("the child field table proves CONST_CDE_PRIVATE");
++        assert!(child_candidates.next().is_none());
++        assert_eq!(child_candidate.value, 3294);
++        let child_field = child
++            .fields
++            .iter()
++            .find(|field| field.item.name.raw().0 == b"CONST_CDE_PRIVATE")
++            .expect("the candidate is a real child field");
++        assert_eq!(child_field.item.index, child_candidate.field.index);
++        assert_eq!(child_field.item.identity, child_candidate.field.identity);
++        assert_eq!(
++            child_field.declaration.as_deref(),
++            Some("private static final int CONST_CDE_PRIVATE = 3294")
++        );
++
++        let child_projections: Vec<_> = child
++            .integer_constant_projections
++            .iter()
++            .filter(|projection| {
++                projection.anchors.iter().any(|anchor| matches!(
++                    anchor,
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method: owner, .. }
++                        if owner == &child_method.item.identity
++                ))
++            })
++            .collect();
++        let [child_projection] = child_projections.as_slice() else {
++            panic!("the child f1(I)I has one derived case-name projection");
++        };
++        assert_eq!(
++            child_projection.kind,
++            class_source::MemberFamilyDerivedKind::IntegerConstantName
++        );
++        assert_eq!(
++            child.text.get(child_projection.start..child_projection.end),
++            Some("CONST_CDE_PRIVATE")
++        );
++        assert_eq!(
++            child_projection.anchors,
++            vec![
++                class_source::MemberFamilyPhysicalAnchor::Field {
++                    field: child_field.item.identity.clone(),
++                    index: child_field.item.index,
++                },
++                class_source::MemberFamilyPhysicalAnchor::MethodPoint {
++                    method: child_method.item.identity.clone(),
++                    bci: 1,
++                },
++            ]
++        );
++    }
++
+     #[test]
+     fn direct_integer_return_names_independently_of_a_numeric_case_key() {
+         let bytes = compiled(

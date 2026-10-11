@@ -1,0 +1,29 @@
+{
+  "schema": "conditional-ci-invocation-record-root-v2",
+  "utc": "2026-10-11T00:18:09.506658+00:00",
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "recorder": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/record-invocation-root-v2.py",
+    "sha256": "4618af5287d895254fe08f359c65b9fe94e601f8ce3ba8b4a44e1ac5e2ba9869"
+  },
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-cf12-remaining-verify-root-v2.py"
+  ],
+  "argv_sha256": "b334345fc46a6c0bd334f3eb20a965964cb01eddb5d02e5704a1f791d2ad6173",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 1067,
+      "sha256": "476d5f93a85023bf860f02c59c5024e439bef40581f166cc6f819fd0647ef0e6"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "duration_seconds": 0.13607229202170856
+}

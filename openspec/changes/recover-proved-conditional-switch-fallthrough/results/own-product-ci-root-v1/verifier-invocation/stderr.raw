@@ -1,0 +1,16 @@
+conditional CI verification failed: replay verifier argv does not bind exact execution/CLI/metadata/build/JDK inputs
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 578, in <module>
+    try:main()
+        ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 549, in main
+    replay=verify_replay_invocation(a.product_commit,a.replay_verifier_invocation.resolve(),a.replay_invocation_sha256,a.replay_argv_sha256,
+      a.replay_execution.resolve(),a.replay_execution_sha256,a.cli.resolve(),a.cli_sha256,a.metadata.resolve(),a.metadata_sha256,
+      a.build_execution.resolve(),a.build_sha256,a.source_base,a.jdk8_home,a.jdk23_home,a.replay_stdout_sha256)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 494, in verify_replay_invocation
+    need(all(values.get(k)==v for k,v in expected.items()),'replay verifier argv does not bind exact execution/CLI/metadata/build/JDK inputs')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 61, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: replay verifier argv does not bind exact execution/CLI/metadata/build/JDK inputs

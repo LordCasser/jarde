@@ -1,0 +1,27 @@
+{
+  "schema": "cf12-same-class-constant-impl-draft-v3",
+  "preserves_v2": "/private/tmp/jarde-cf12-same-class-constant-impl-luna-v2",
+  "workspace_source": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+  "workspace_source_sha256_at_v2_draft": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+  "private_base_copy": "/private/tmp/jarde-cf12-same-class-constant-impl-luna-v3/facade.rs.base",
+  "private_patched_copy": "/private/tmp/jarde-cf12-same-class-constant-impl-luna-v3/facade.rs",
+  "private_unified_diff": "/private/tmp/jarde-cf12-same-class-constant-impl-luna-v3/facade.rs.patch",
+  "v2_reference_diff": "/private/tmp/jarde-cf12-same-class-constant-impl-luna-v3/v2-reference.patch",
+  "patched_copy_sha256": "f3f6950a99c20ed329daff98826af28afb38ef11aca3605911cfbcd10c93c889",
+  "fixtures": [
+    {
+      "role": "root",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "length": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "role": "independently-selected-child-negative-control",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "length": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    }
+  ],
+  "status": "private draft only; not compiled or formatted; workspace and toolchains untouched",
+  "patch_sha256": "5a4ec5bacfb20614e399cb0f21c20e6d4d7bf76a61a3d9be46ce7de94cb2e00c"
+}

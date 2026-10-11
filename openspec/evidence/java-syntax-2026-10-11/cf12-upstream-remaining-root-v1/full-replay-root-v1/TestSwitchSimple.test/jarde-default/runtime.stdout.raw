@@ -1,0 +1,43 @@
+simple.begin input=-2147483648
+Not Reach
+null
+simple.end input=-2147483648
+simple.begin input=-5
+Not Reach
+null
+simple.end input=-5
+simple.begin input=-4
+Not Reach
+null
+simple.end input=-4
+simple.begin input=-1
+Not Reach
+null
+simple.end input=-1
+simple.begin input=0
+Not Reach
+null
+simple.end input=0
+simple.begin input=1
+1
+simple.end input=1
+simple.begin input=2
+2
+simple.end input=2
+simple.begin input=3
+3
+simple.end input=3
+simple.begin input=4
+Not Reach
+null
+simple.end input=4
+simple.begin input=5
+1
+simple.end input=5
+simple.begin input=8
+Not Reach
+null
+simple.end input=8
+simple.begin input=2147483647
+3
+simple.end input=2147483647

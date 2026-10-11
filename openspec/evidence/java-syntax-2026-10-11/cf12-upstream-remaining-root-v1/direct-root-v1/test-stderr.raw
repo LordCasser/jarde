@@ -1,0 +1,15 @@
+10月 11, 2026 8:12:51 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-remaining-direct-root-v1/junit-tmp/junit-1616622274405985534 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 8:12:51 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-remaining-direct-root-v1/junit-tmp/junit-448100533929008915 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+Invoke error for method: check
+org.opentest4j.AssertionFailedError: 
+expected: 1234
+ but was: 2234
+Decompiled check failed
+10月 11, 2026 8:12:51 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-remaining-direct-root-v1/junit-tmp/junit-1576415866864560565 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 8:12:51 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-remaining-direct-root-v1/junit-tmp/junit-8704046029218615247 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 8:12:51 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-remaining-direct-root-v1/junit-tmp/junit-1808874921741279031 for field IntegrationTest.testDir due to CleanupMode.NEVER.

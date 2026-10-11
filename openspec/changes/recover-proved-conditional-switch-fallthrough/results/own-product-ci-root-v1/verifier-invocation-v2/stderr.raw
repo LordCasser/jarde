@@ -1,0 +1,17 @@
+conditional CI verification failed: CI named outcomes/summary differ from local target ('jarde', 'bulk_recovery_backpressure', 'test')
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 578, in <module>
+    try:main()
+        ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 559, in main
+    seed_runs=[parse_ci_workspace(group,seed,targets) for group,seed in zip(groups,seeds)]
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 345, in parse_ci_workspace
+    need(block['counts']==ref['counts'] and block['outcomes']==ref['outcomes'],
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         'CI named outcomes/summary differ from local target '+repr(ref['key']))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py", line 61, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: CI named outcomes/summary differ from local target ('jarde', 'bulk_recovery_backpressure', 'test')
