@@ -1,0 +1,11 @@
+--- /private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v3/audit-clean-main.py
++++ /private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v4/audit-clean-main.py
+@@ -23,7 +23,7 @@
+ CLI_BUILDER = Path('/private/tmp/jarde-hoisted-iterator-final-build-root-v2.py')
+ CLI_BUILDER_SHA256 = 'ce22ee46288d21ec53514743c66b5c26fb7761746ffdb4f442ea31877100ecc3'
+ WORKSPACE_RUNNER = PREP / 'workspace_runner.py'
+-WORKSPACE_RUNNER_SHA256 = '711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf546773535bc506e'
++WORKSPACE_RUNNER_SHA256 = '711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e'
+ CLI_GUARD = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+ CLI_GUARD_SHA256 = '51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'
+ CLI_SCAN = ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'

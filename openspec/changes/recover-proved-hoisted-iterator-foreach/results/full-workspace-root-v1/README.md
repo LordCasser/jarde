@@ -1,0 +1,1 @@
+第三次从fresh target完整执行，actual2026-10-11 20:48:37–20:59:50 UTC，99cmd/198raw、metadata362targets/96batches恰一次。3480passed/0failed/97ignored，3577逐named outcomes及19required tests独立核验；source4732前后/live闭包、default stack、5GiB/target1GiB一秒守卫和finally clean。旧失败位置75（Unicode）11/0/2、85（gateway及同批）112/0/0真实通过。没有借用两次失败或tail诊断结果。最终fmt/CI-Clippy/strict/CLI及自身CI分别另验。

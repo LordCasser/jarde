@@ -1,0 +1,83 @@
+package cf11;
+
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * Source-only probes for iterator identity and ownership boundaries.
+ * No class bytes or compiler-produced local identities are claimed by this file.
+ */
+public class HoistedIteratorBoundaryControls {
+    public static int iteratorReadAfterLoop(List values) {
+        Iterator cursor = values.iterator();
+        int count = 0;
+        while (cursor.hasNext()) {
+            Object value = cursor.next();
+            if (value != null) {
+                count++;
+            }
+        }
+        return cursor == null ? -1 : count;
+    }
+
+    public static int mixedInitialIterator(List first, List second, boolean chooseFirst) {
+        Iterator cursor;
+        if (chooseFirst) {
+            cursor = first.iterator();
+        } else {
+            cursor = second.iterator();
+        }
+        int count = 0;
+        while (cursor.hasNext()) {
+            cursor.next();
+            count++;
+        }
+        return count;
+    }
+
+    public static int splitBranchCursors(List first, List second, boolean chooseFirst) {
+        int count = 0;
+        if (chooseFirst) {
+            Iterator cursor = first.iterator();
+            while (cursor.hasNext()) {
+                cursor.next();
+                count++;
+            }
+        } else {
+            Iterator cursor = second.iterator();
+            while (cursor.hasNext()) {
+                cursor.next();
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static int initializerHasSeparateCatchOwner(List values) {
+        Iterator cursor;
+        try {
+            cursor = values.iterator();
+        } catch (RuntimeException exception) {
+            return -1;
+        }
+        int count = 0;
+        while (cursor.hasNext()) {
+            cursor.next();
+            count++;
+        }
+        return count;
+    }
+
+    public static int iteratorReassignedInLoop(List first, List second) {
+        Iterator cursor = first.iterator();
+        int count = 0;
+        while (cursor.hasNext()) {
+            cursor.next();
+            count++;
+            if (count == 1) {
+                cursor = second.iterator();
+            }
+        }
+        return count;
+    }
+}

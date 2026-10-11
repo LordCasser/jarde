@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.09s
+[1m[92m     Running[0m tests/p3_short_circuit_exception_edge.rs (target/debug/deps/p3_short_circuit_exception_edge-8eb6e73b9c0948b0)
+[1m[92m     Running[0m tests/p3_short_circuit_transfer_gateway.rs (target/debug/deps/p3_short_circuit_transfer_gateway-348b78973802223d)
+[1m[92m     Running[0m tests/p3_snapshot_hierarchy_widening.rs (target/debug/deps/p3_snapshot_hierarchy_widening-fd30e426c070dda2)
+[1m[92m     Running[0m tests/p3_special_dispatch.rs (target/debug/deps/p3_special_dispatch-afdbb41cdeb20a62)

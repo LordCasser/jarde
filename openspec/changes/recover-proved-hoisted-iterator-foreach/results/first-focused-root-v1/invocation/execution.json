@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-focused-root-v1.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T19:39:18.656102+00:00",
+  "finished_at": "2026-10-11T19:39:46.356401+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-focused-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-focused-root-v1/stderr.raw",
+      "bytes": 817,
+      "sha256": "3d29ad1b7b6dbb70589c6b4fdcbe11f08dc0b1a05d90f8d229f732e15f1bb0cb"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -6,8 +6,13 @@
 
 #### Scenario: Inner iterator declaration belongs to an ancestor
 
-- **WHEN** 嵌套循环的内层iterator声明已提升到可见祖先，初始化在每次进入内层循环的位置，完整循环和唯一消费证据成立
+- **WHEN** 嵌套循环的内层iterator声明已提升到可见祖先且不在当前初始化语句列表，初始化在每次进入内层循环的位置，完整循环和唯一消费证据成立
 - **THEN** 系统 SHALL 呈现内层增强for，初始化仍每次进入执行，原元素cast和绑定语义保持；祖先空声明可以保留，外层语句和循环行为不变
+
+#### Scenario: A visible owner declaration remains in the current statement list
+
+- **WHEN** 准确同一iterator的空声明实际在当前self.stmts，且变量身份/owner证据完整，即使owner是loop path的严格前缀
+- **THEN** 系统 SHALL 保持既有同列表路径，删除只使用该当前列表的准确索引，不把owner前缀单独当作新祖先列表；其它列表的声明 MUST 保留
 
 #### Scenario: Slot identity or declaration visibility is incomplete
 

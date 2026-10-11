@@ -1,0 +1,7 @@
+
+running 2 tests
+test nested_foreach_late_stop_and_precancel_leave_no_partial_method_artifact ... ok
+test nested_inner_iterator_projects_without_changing_outer_loop_or_binding ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

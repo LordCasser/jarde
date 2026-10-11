@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-root-runner-prep-luna-v1/run_current.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T19:50:41.130500+00:00",
+  "finished_at": "2026-10-11T19:51:13.224597+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-current-candidate-root-v1/stdout.raw",
+      "bytes": 668,
+      "sha256": "46099b007e76617d2473ebe42d2abae3aeaa81edebb55544dee331abc322c083"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-current-candidate-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

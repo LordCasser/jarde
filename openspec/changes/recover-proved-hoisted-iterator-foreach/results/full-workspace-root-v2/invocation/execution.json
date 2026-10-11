@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace_runner.py",
+    "--regression-receipt",
+    "/private/tmp/jarde-hoisted-iterator-regressions-root-v6/execution.json",
+    "--regression-receipt-sha256",
+    "fed09c2295e2a33c40c6599bfc6acdcf62aad500e3eb06a9f640fe9a96b1690f",
+    "--candidate-cli",
+    "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v6",
+    "--out",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run-v4"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T21:06:53.486922+00:00",
+  "finished_at": "2026-10-11T21:18:16.488355+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-hoisted-iterator-workspace-invocation-root-v4/stdout.raw",
+      "bytes": 7114,
+      "sha256": "6b1386fba3a800bc7999d4f57ee8277eb34c51f771b110a92e187116588c951d"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-workspace-invocation-root-v4/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

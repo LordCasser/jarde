@@ -1,0 +1,413 @@
+--- crates/jarde-java/src/build.rs
++++ /private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v2/build.rs.candidate
+@@ -11845,6 +11845,257 @@
+ /// The consumer of one proved snapshot: where the old value is read, in the block that holds it.
+ struct SnapshotConsumer {
+     bci: u32,
++}
++
++/// Finds the current-list declaration, or verifies the complete visible owner for an already
++/// emitted ancestor declaration. `None` means the facts are incomplete; the inner index names
++/// only a current-list declaration eligible for removal, and the boolean marks a strict ancestor
++/// owner whose initialization gap has the stricter empty-declaration rule.
++fn iterator_declaration_for_loop(
++    declarations: &Declarations,
++    declared: &BTreeSet<LocalVariable>,
++    names: &NameTable,
++    reuse: &reuse::Plan,
++    statements: &[Stmt],
++    path: &[u32],
++    iterator_name: &str,
++    slot: u16,
++    init_index: usize,
++    access_bcis: [u32; 3],
++    init_store_bci: u32,
++    budget: &mut Budget,
++) -> Result<Option<(Option<usize>, bool)>, StopReason> {
++    let first_at = access_bcis[0];
++    poll(budget, Some(first_at))?;
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        1,
++        Some(first_at),
++    )?;
++    let Some(variable) = reuse.variable_at(slot, first_at) else {
++        return Ok(None);
++    };
++    for at in access_bcis.into_iter().skip(1) {
++        poll(budget, Some(at))?;
++        charge(
++            budget,
++            CountedBudgetDimension::AnalysisSteps,
++            1,
++            Some(at),
++        )?;
++        if reuse.variable_at(slot, at) != Some(variable) {
++            return Ok(None);
++        }
++    }
++    poll(budget, Some(init_store_bci))?;
++    charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(init_store_bci))?;
++    if names.text(variable) != Some(iterator_name) || !declared.contains(&variable) {
++        return Ok(None);
++    }
++
++    poll(budget, Some(init_store_bci))?;
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        1,
++        Some(init_store_bci),
++    )?;
++    let Some(placement) = declarations.placements.get(&variable) else {
++        return Ok(None);
++    };
++    let owner = match placement {
++        DeclarationPlacement::Local { owner } | DeclarationPlacement::Elevated { owner } => owner,
++        DeclarationPlacement::Incomplete { .. } => return Ok(None),
++    };
++    poll(budget, Some(init_store_bci))?;
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        u64::try_from(owner.len().saturating_add(1)).unwrap_or(u64::MAX),
++        Some(init_store_bci),
++    )?;
++    if !path.starts_with(owner.as_slice()) {
++        return Ok(None);
++    }
++    let strict_owner = owner.len() < path.len();
++    if strict_owner && !matches!(placement, DeclarationPlacement::Elevated { .. }) {
++        return Ok(None);
++    }
++
++    // RegionPath identifies declaration planning locations, not the physical statement Vec that
++    // owns an emitted declaration. A strict-prefix owner can still have emitted its row into this
++    // active list (for a single-level loop); use the identity-checked row in `statements` to keep
++    // the old same-list removal/gap behavior.
++    let mut statement_index = None;
++    for (index, statement) in statements[..init_index].iter().enumerate() {
++        let at = statement.origin.primary().bci();
++        poll(budget, Some(at))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
++        if matches!(
++            &statement.kind,
++            StmtKind::Declare {
++                ty: Type::Reference(ty),
++                name,
++                value: None,
++                ..
++            } if name == iterator_name
++                && (ty == "java.util.Iterator" || ty == "Iterator")
++                && reuse.variable_at(slot, at) == Some(variable)
++        ) {
++            if statement_index.replace(index).is_some() {
++                return Ok(None);
++            }
++        }
++    }
++
++    // If the exact declaration row is absent from the active list, this is a cross-list
++    // Elevated owner. It is safe to remove only the init row, and only for a strict ancestor.
++    let ancestor_owner = statement_index.is_none();
++    if ancestor_owner
++        && (!strict_owner || !matches!(placement, DeclarationPlacement::Elevated { .. }))
++    {
++        return Ok(None);
++    }
++
++    if let DeclarationPlacement::Elevated { .. } = placement {
++        let Some(owner_declarations) = declarations.at_region.get(owner) else {
++            return Ok(None);
++        };
++        let mut owner_variable_matches = 0usize;
++        let mut owner_anchor_matches = 0usize;
++        for declaration in owner_declarations {
++            poll(budget, Some(declaration.at))?;
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(declaration.at),
++            )?;
++            if declaration.variable == variable {
++                owner_variable_matches += 1;
++                if declaration.at == init_store_bci {
++                    owner_anchor_matches += 1;
++                }
++            }
++        }
++        if owner_variable_matches != 1 || owner_anchor_matches != 1 {
++            return Ok(None);
++        }
++    } else if statement_index.is_none() {
++        return Ok(None);
++    }
++
++    Ok(Some((statement_index, ancestor_owner)))
++}
++
++/// Checks every use of one iterator value. Phi operands are counted by exact ValueId, while
++/// replacement following is used only to prove that each matching historical arm still denotes
++/// this iterator. Unrelated Phis in the same block are intentionally outside this proof.
++fn iterator_phi_use_ownership(
++    ssa: &SsaTable,
++    iterator_value: ValueId,
++    allowed_loads: [u32; 2],
++    budget: &mut Budget,
++) -> Result<bool, StopReason> {
++    fn resolves_to(
++        ssa: &SsaTable,
++        mut value: ValueId,
++        target: ValueId,
++        budget: &mut Budget,
++        at: u32,
++    ) -> Result<bool, StopReason> {
++        for _ in 0..=ssa.phis().len() {
++            poll(budget, Some(at))?;
++            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
++            if value == target {
++                return Ok(true);
++            }
++            let Some(replacement) = ssa.value(value).replaced_by() else {
++                return Ok(false);
++            };
++            value = replacement;
++        }
++        Ok(false)
++    }
++
++    let mut none_uses_by_block = BTreeMap::<CanonicalBlockId, usize>::new();
++    for use_ in ssa.value(iterator_value).uses() {
++        let at = use_.block().bci();
++        poll(budget, Some(at))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
++        if let Some(bci) = use_.bci() {
++            if !allowed_loads.contains(&bci) {
++                return Ok(false);
++            }
++        } else {
++            let count = none_uses_by_block.entry(use_.block().clone()).or_default();
++            let Some(next_count) = count.checked_add(1) else {
++                return Ok(false);
++            };
++            *count = next_count;
++        }
++    }
++
++    for (block, expected_occurrences) in none_uses_by_block {
++        let at = block.bci();
++        let mut matching_phis = 0usize;
++        let mut exact_occurrences = 0usize;
++        for phi in ssa.phis() {
++            poll(budget, Some(at))?;
++            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
++            if phi.block() != &block {
++                continue;
++            }
++            let mut matching_values = Vec::new();
++            let mut phi_occurrences = 0usize;
++            for input in phi.inputs() {
++                poll(budget, Some(at))?;
++                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
++                match input {
++                    PhiInput::Value(value) => {
++                        if *value == iterator_value {
++                            let Some(next_count) = phi_occurrences.checked_add(1) else {
++                                return Ok(false);
++                            };
++                            phi_occurrences = next_count;
++                        }
++                        matching_values.push(Some(*value));
++                    }
++                    PhiInput::Itself => matching_values.push(None),
++                }
++            }
++            if phi_occurrences == 0 {
++                continue;
++            }
++            let Some(next_matching_phis) = matching_phis.checked_add(1) else {
++                return Ok(false);
++            };
++            matching_phis = next_matching_phis;
++            let Some(next_occurrences) = exact_occurrences.checked_add(phi_occurrences) else {
++                return Ok(false);
++            };
++            exact_occurrences = next_occurrences;
++            poll(budget, Some(at))?;
++            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
++            let phi_value = ssa.value(phi.value());
++            if phi_value.replaced_by().is_none()
++                || !phi_value.uses().is_empty()
++                || !resolves_to(ssa, phi.value(), iterator_value, budget, at)?
++            {
++                return Ok(false);
++            }
++            for input in matching_values.into_iter().flatten() {
++                if !resolves_to(ssa, input, iterator_value, budget, at)? {
++                    return Ok(false);
++                }
++            }
++        }
++        if matching_phis == 0 || exact_occurrences != expected_occurrences {
++            return Ok(false);
++        }
++    }
++    Ok(true)
+ }
+ 
+ impl Builder<'_> {
+@@ -18985,7 +19236,7 @@
+             None
+         };
+         let iterable_projected = if for_header.is_none() && tests.len() == 1 {
+-            self.iterable_for_each_candidate(first_test_bci, &kind, body)?
++            self.iterable_for_each_candidate(first_test_bci, path, &kind, body)?
+         } else {
+             None
+         };
+@@ -21224,6 +21475,7 @@
+     fn iterable_for_each_candidate(
+         &mut self,
+         test_bci: u32,
++        path: &[u32],
+         kind: &StmtKind,
+         regions: &[Region],
+     ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
+@@ -21271,6 +21523,7 @@
+             Some(test_bci),
+         )?;
+ 
++        let mut proof_stop = None;
+         let candidate = (|| {
+             let StmtKind::While { label, cond, body } = kind else {
+                 return None;
+@@ -21353,28 +21606,6 @@
+             let Some(Type::Reference(iterable_type)) = &iterable.presented else {
+                 return None;
+             };
+-            let declaration_index = self.stmts[..init_index].iter().rposition(|stmt| {
+-                matches!(&stmt.kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. }
+-                    if name == iterator_name && (ty == "java.util.Iterator" || ty == "Iterator"))
+-            })?;
+-            if self.stmts[init_index + 1..]
+-                .iter()
+-                .any(|stmt| match &stmt.kind {
+-                    StmtKind::Declare { value: None, .. } => false,
+-                    StmtKind::Declare {
+-                        value: Some(value), ..
+-                    }
+-                    | StmtKind::Assign { value, .. } => !matches!(
+-                        value.kind,
+-                        ExprKind::Integer(_) | ExprKind::Long(_) | ExprKind::Boolean(_)
+-                    ),
+-                    _ => true,
+-                }) || self.stmts[init_index + 1..].iter().any(|stmt| {
+-                matches!(&stmt.kind, StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. }
+-                    if name == iterable_name || name == iterator_name)
+-            }) {
+-                return None;
+-            }
+             let init_bci = match &init_stmt.kind {
+                 StmtKind::Assign { value, .. }
+                 | StmtKind::Declare {
+@@ -21454,6 +21685,52 @@
+             {
+                 return None;
+             }
++            let (declaration_index, ancestor_owner) = match iterator_declaration_for_loop(
++                self.declarations,
++                &self.declared,
++                self.names,
++                self.reuse,
++                &self.stmts,
++                path,
++                iterator_name,
++                *iterator_slot,
++                init_index,
++                [init_store_bci, test_load_bci, next_load_bci],
++                init_store_bci,
++                self.budget,
++            ) {
++                Ok(Some(owner)) => owner,
++                Ok(None) => return None,
++                Err(stop) => {
++                    proof_stop = Some(stop);
++                    return None;
++                }
++            };
++            let only_blank_declarations = self.stmts[init_index + 1..]
++                .iter()
++                .all(|stmt| matches!(stmt.kind, StmtKind::Declare { value: None, .. }));
++            let no_loop_local_writes = !self.stmts[init_index + 1..].iter().any(|stmt| {
++                matches!(&stmt.kind, StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. }
++                    if name == iterable_name || name == iterator_name)
++            });
++            let safe_gap = if ancestor_owner {
++                only_blank_declarations
++            } else {
++                !self.stmts[init_index + 1..].iter().any(|stmt| match &stmt.kind {
++                    StmtKind::Declare { value: None, .. } => false,
++                    StmtKind::Declare {
++                        value: Some(value), ..
++                    }
++                    | StmtKind::Assign { value, .. } => !matches!(
++                        value.kind,
++                        ExprKind::Integer(_) | ExprKind::Long(_) | ExprKind::Boolean(_)
++                    ),
++                    _ => true,
++                })
++            };
++            if !safe_gap || !no_loop_local_writes {
++                return None;
++            }
+             let iterator_value =
+                 instruction(init_store_bci)?
+                     .writes()
+@@ -21554,16 +21831,18 @@
+                 return None;
+             }
+             for value in [iterator_value, phi.value()] {
+-                if self.ssa.value(value).uses().iter().any(|use_| {
+-                    ![Some(test_load_bci), Some(next_load_bci)].contains(&use_.bci())
+-                        && !(use_.bci().is_none()
+-                            && use_.block() == header
+-                            && phi.inputs().iter().all(|input| {
+-                                *input == PhiInput::Value(iterator_value)
+-                                    || *input == PhiInput::Itself
+-                            }))
+-                }) {
+-                    return None;
++                match iterator_phi_use_ownership(
++                    self.ssa,
++                    value,
++                    [test_load_bci, next_load_bci],
++                    self.budget,
++                ) {
++                    Ok(true) => {}
++                    Ok(false) => return None,
++                    Err(stop) => {
++                        proof_stop = Some(stop);
++                        return None;
++                    }
+                 }
+             }
+             let next_result = stack_result(instruction(next_bci)?)?;
+@@ -21658,9 +21937,15 @@
+                 body.to_vec(),
+                 next_bci,
+                 origin,
+-                vec![declaration_index, init_index],
++                declaration_index
++                    .into_iter()
++                    .chain(std::iter::once(init_index))
++                    .collect(),
+             ))
+         })();
++        if let Some(stop) = proof_stop {
++            return Err(stop);
++        }
+         let Some((label, iterable, mut body, next_bci, origin, remove)) = candidate else {
+             return Ok(None);
+         };

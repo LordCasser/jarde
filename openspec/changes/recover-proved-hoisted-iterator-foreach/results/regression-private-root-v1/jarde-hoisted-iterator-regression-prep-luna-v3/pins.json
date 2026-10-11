@@ -1,0 +1,55 @@
+{
+  "status": "source-only preparation; expected class bytes not yet compiled or pinned",
+  "inputs": {
+    "shared_build_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1738662,
+      "sha256": "df113e368d9eb8762abbe269ee3a58421cb0b7b5a01e64154a068dbd34cfe28a"
+    },
+    "v2_candidate": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.candidate",
+      "bytes": 1756013,
+      "sha256": "658daf1504679a098337496ed9bae3da45f4b693ee4480a28f53debcddd63299"
+    },
+    "v2_patch": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.patch",
+      "bytes": 19383,
+      "sha256": "ea67f5ee745ebeb7b4a95e395ff6bf0045a329176979663c7e193c57ddd1decf"
+    },
+    "java_source": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v3/HoistedIteratorPhiControls.java",
+      "bytes": 707,
+      "sha256": "9cdf3915818be01928664d3c112b3f846797b9f71d110dc49df8d8144bd59bbb"
+    },
+    "test_delta": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v3/build.rs.phi-controls.patch",
+      "bytes": 8372,
+      "sha256": "6593999f28422b1ea853dec5fc72c26469f94d75d7265e35f6b88ae447506538"
+    },
+    "test_candidate_v3": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v3/build.rs.tests.candidate.v3",
+      "bytes": 1763894,
+      "sha256": "43a57f59983a07d31370c7c6544331c2a74817ddc18dd5c913850b8f0cd70677"
+    }
+  },
+  "roles": {
+    "shared_build_rs": "The current shared source is recorded for context; it does not contain the v2 candidate tests.",
+    "v2_candidate": "Base for applying this private v3 delta; apply the separately pinned v2 patch first.",
+    "v2_patch": "Existing v2 tests-only patch against the current shared source.",
+    "java_source": "Frozen Java source input; do not edit after this pin.",
+    "test_delta": "Rust test-only delta against v2_candidate.",
+    "test_candidate_v3": "Full private source candidate after v2 and v3 test changes."
+  },
+  "class_bytes": {
+    "path": "tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class",
+    "bytes": null,
+    "sha256": null,
+    "status": "pending root guarded compilation and actual SSA inspection"
+  },
+  "compiler_outputs": {
+    "javac8_original": null,
+    "javac23_release8": null,
+    "same_bytes": null
+  },
+  "note": "No source/runtime behavior, classfile BCIs, phi slots, or helper outcomes are claimed as actual until root compiles and inspects the class."
+}

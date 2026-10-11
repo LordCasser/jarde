@@ -8,11 +8,11 @@
 
 ## Decisions
 
-1. 声明证明复用reuse::Plan::variable_at与Declarations.placements/at_region。init Store、hasNext/next Load在准确BCI上必须映射同一LocalVariable；不能用slot/name相同代替。Elevated owner必须存在相应at_region条目、词法包含初始化和消费路径、且已安排发射；Incomplete/缺owner继续拒绝。当前列表原有空声明路径也需身份核验。若现有事实不足，只收集真实首拒，不新建全局声明索引或跨frame编辑协议。
-2. 候选只返回当前列表的可删除位置。祖先声明不被删除；当前初始化赋值只能在完整证明成功后删除。当前列表的空声明可沿既有路径删去；不同列表的索引不能混用。保留一条无用但合法空声明是此窄片可接受取舍。变换失败或Stop时不发布部分改写。
+1. 声明证明复用reuse::Plan::variable_at与Declarations.placements/at_region。init Store、hasNext/next Load在准确BCI上必须映射同一LocalVariable；不能用slot/name相同代替。Elevated owner必须存在相应at_region条目、词法包含初始化和消费路径、且已安排发射；Incomplete/缺owner继续拒绝。当前列表原有空声明路径也需身份核验。owner是loop path前缀仅证明可见性，不能据此推定空声明位于另一statement list：直接单层loop的owner常为[]、loop path含子索引，但空声明实际仍在当前self.stmts。若现有事实不足，只收集真实首拒，不新建全局声明索引或跨frame编辑协议。
+2. 候选只返回当前列表的可删除位置。以经准确身份/owner核准的空声明是否实际存在于self.stmts区分两条路径；若存在，沿既有同列表路径删除其当前索引并保留旧间隔准入。若不存在，只接受已发出且完整可见的Elevated严格祖先owner，按新路径保留其它列表的声明。不能以owner.len()<loop path.len()替代真实当前列表匹配。祖先其它列表声明不被删除；当前初始化赋值只能在完整证明成功后删除。当前列表的空声明可沿既有路径删去；不同列表的索引不能混用。保留一条无用但合法空声明是此窄片可接受取舍。变换失败或Stop时不发布部分改写。
 3. 原initializer、descriptor、header Phi/inputs、额外读写、next→cast→store唯一消费和handlers/effects证书保持。仅在既有iterator use门消费SSA已有replacement事实：对每个None-use block扫描全部Phi，只匹配输入中含当前精确ValueId的Phi；其精确input occurrence总数必须等于该block的None-use记录数。每个匹配输出必须已替换、uses为空且沿现有有界replacement链解析到同一iterator，每个Value arm同样解析，Itself不计次数。无replacement、live/mixed arm、未知block或计数不符拒绝。不含该精确value的其它slot Phi不参与判定；含它的其它slot必须完整检查。计数按精确ID，replacement仅用于语义核验，不按代表合并occurrence。不改SSA/reuse、不遍历指令alias，不增加通用liveness服务。新增owner/Phi/input/hop工作需明确计费并传播真实StopReason，不能由Option闭包吞掉Stop。
 
-   新祖先声明路径只允许init与loop之间的空声明；literal局部写入也可被iterator()抛错后的catch观察，不能仅凭无调用放行。旧同列表路径的此类时序风险单独登记，当前不混修。实际目标无执行语句间隔。inline cast与separate Cast(Local)旧证书深度不同，不宣称两者具有同一显式CheckCast/handler检查；目标应依其真实分支验收。
+   新祖先声明路径（准确空声明不在当前self.stmts）只允许init与loop之间的空声明；literal局部写入也可被iterator()抛错后的catch观察，不能仅凭无调用放行。旧同列表路径的此类时序风险单独登记，当前不混修。实际目标无执行语句间隔。inline cast与separate Cast(Local)旧证书深度不同，不宣称两者具有同一显式CheckCast/handler检查；目标应依其真实分支验收。
 4. 复用已有Object iteratorElement头及原body cast/元素绑定。raw List足以表达当前类型，不新增typed String头或generic body证明。参考JADX LoopRegionVisitor的iterator模式检查；其可变类型fix不构成本仓proof，不复制代码或引入JADX依赖。
 5. root独占工具链/共享编辑/Git，Luna仅私有候选和测试准备。用户已授权先spec后实现；本片首项是受控诊断及真实控制基线，当前构造条件值产品已本地接受并推送、自身CI已root独立接受；其交付期间执行的临时诊断/只读观察均按原字节恢复并绑定原产品；完成当前关闭文档clean audit后才应用永久候选。保持5GiB free/target1GiB一秒进程组守卫、默认Rust栈、结束clean。
 
@@ -28,3 +28,7 @@
 ## Migration Plan
 
 先固定current CLI wholeclass观察和真实声明owner/后续门，再按证据最小修改既有helper；永久测试、完整双JDK原/JADX/Jarde对照、fresh工作区/Clippy/strict/自身CI后交付main。只涉及私有实现，无公开API迁移；失败候选不作为已接受产品。
+
+## Candidate review refinement
+
+私有v1把strict owner prefix直接当作新祖先列表，root及独立审阅以既有RawIterableIterator.rawCast真实source/javap与region/declare_at/take-restore规则证实会回归：init/store0–6、result=0@7–8、header9；owner[]是loop path祖先，但其空声明就在root当前vector。v1静态不接受、未应用/编译。v2按当前list的准确匹配区分，不新增frameowner服务；新路径只删本list初始化，其他列表空声明保留。该澄清不修旧同列表literal-gap时序债务。

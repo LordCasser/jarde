@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-regressions-root-v3.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T20:01:39.553657+00:00",
+  "finished_at": "2026-10-11T20:03:23.825450+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-regressions-root-v3/stdout.raw",
+      "bytes": 370,
+      "sha256": "fe6d8be05a8b84c95bae8ac716b3e35640099a30088a3da11442e5cf60d581e1"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-regressions-root-v3/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,212 @@
+{
+  "schema": "private-hoisted-iterator-production-candidate-luna-v2",
+  "status": "static-only v2 candidate; v1 preserved and not accepted; no shared edit, compile, execution, or product acceptance",
+  "task": "OpenSpec recover-proved-hoisted-iterator-foreach task 2.1",
+  "base_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+    "bytes": 1728202,
+    "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+  },
+  "candidate_source": {
+    "path": "/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v2/build.rs.candidate",
+    "bytes": 1738365,
+    "sha256": "ebdcfaa00230d5d3dfca4cffa0120e959aa5bcd6b42beb9deb0381395515d2f3"
+  },
+  "candidate_patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v2/candidate.patch",
+    "bytes": 16096,
+    "sha256": "c5323ca335498b23f9c3aeb5248d9b91b38a5e671fea05b0657f32bc5f1634fc"
+  },
+  "related_sources": {
+    "facade_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "bytes": 1934970,
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b"
+    },
+    "reuse_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "bytes": 49833,
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458"
+    },
+    "ssa_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    "stop_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/stop.rs",
+      "bytes": 9295,
+      "sha256": "7021851211bf79c3b75a3f31bc99a926b516affb9394e5ca18ec4f65c5f738cb"
+    }
+  },
+  "planning_and_review_inputs": {
+    "proposal": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/proposal.md",
+      "bytes": 2365,
+      "sha256": "ba501b8bdf808c3a3a63ae9a7abbd4a46514cd912160c1005544953f19d90f5c"
+    },
+    "design": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "bytes": 5629,
+      "sha256": "3dd01e968618172bb797176ea688c31ff380ecad36a350288830d4bc05b84964"
+    },
+    "tasks": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "bytes": 3042,
+      "sha256": "cbc2af2c315475984ba0957fa02e029ff1fe5bb75739f81e4dd7c1b8ce0bdc8d"
+    },
+    "capability_spec": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md",
+      "bytes": 3201,
+      "sha256": "de06c4e5c8f5637b3f6f4427df8217245e2315df0f254ed774933794fc1c7a2f"
+    },
+    "root_verification": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md",
+      "bytes": 4404,
+      "sha256": "aa604bb3da0cc66d2dfd75c9ed2070f789e47ab7155d2aa0ae8662bb67a3dee9"
+    },
+    "phi_review_v2_analysis": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/phi-ownership-private-review-v2/analysis.md",
+      "bytes": 7262,
+      "sha256": "d5b30bacba36e8096ebb6e519740d172a7a51072401d59da94d8f0feebbb065e"
+    },
+    "phi_review_v2_pins": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/phi-ownership-private-review-v2/pins.json",
+      "bytes": 7164,
+      "sha256": "94359f85a976e48f41e305e560d92cf6cf76d97e2af0d6a9d82c1f2699a71599"
+    },
+    "same_ir_v1_execution": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v1/execution.json",
+      "bytes": 1534564,
+      "sha256": "40eee52fea7659b3e438229e4ce68f56a751f80c3bf88946be784a67d8e18236"
+    },
+    "same_ir_v1_root_acceptance": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v1/root-acceptance.json",
+      "bytes": 1578,
+      "sha256": "065a1b4c13ac2e2500b0de2912cec358bbd21a1ac19668cc19d94fb68b27e477"
+    },
+    "same_ir_v1_stdout": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/0.stdout.raw",
+      "bytes": 233,
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"
+    },
+    "same_ir_v1_stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/0.stderr.raw",
+      "bytes": 34021,
+      "sha256": "4a24afb4d22cc86945e612d62c5c5ba7994957f25cb7231bce3fd63fd78dd6d9"
+    },
+    "same_ir_v3_execution": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/execution.json",
+      "bytes": 1536678,
+      "sha256": "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87"
+    },
+    "same_ir_v3_root_acceptance": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/root-acceptance.json",
+      "bytes": 1846,
+      "sha256": "6cb6f4c6f950090012455dfcc37d867504030f00d52d9a653f9eb034ae0ac252"
+    },
+    "same_ir_v3_final_build_execution": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/final-build-execution.json",
+      "bytes": 1528893,
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    "same_ir_v3_stdout": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stdout.raw",
+      "bytes": 233,
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"
+    },
+    "same_ir_v3_stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 91032,
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"
+    },
+    "original_class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "original_baseline_execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "bytes": 81267,
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    }
+  },
+  "review": {
+    "source_tree": "/Users/lordcasser/workspace/projects/jarde",
+    "frozen_class_method": "cf11/UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+    "same_ir_diagnostic_test": "facade::same_class_generic_call_inventory_tests::frozen_upstream_nested_loops_foreach_candidate_diagnostic",
+    "root_v3_observed_inner_test_bci": 42,
+    "init_test_next_bcis": [
+      33,
+      35,
+      45
+    ],
+    "local_variable": "LocalVariable { slot: 5, index: 0 }",
+    "owner": "Elevated { owner: [1] }",
+    "candidate_region_path": [
+      1,
+      1
+    ],
+    "iterator_value": "V37",
+    "none_use_counts_by_block": {
+      "35": 1,
+      "97": 3
+    },
+    "header_phi": "block 35 Local(5) V12 inputs [V37, Itself], uses [], replaced_by V37",
+    "downstream_phi": "block 97 Local(5) V22 inputs [V37,V37,V37], uses [], replaced_by V12",
+    "unrelated_phi": "block 97 Local(6) V23 has no exact V37 input and is ignored by this proof",
+    "outer_test_bci_13_refusal": "body_first_not_initialized_declaration",
+    "later_candidate_gates": "not observed; no claim",
+    "declaration_list_policy": "Exact identity/owner-verified blank row present in active self.stmts means same-list path regardless of strict RegionPath prefix; absent row only permits a strict-prefix Elevated emitted owner, removes only init, and requires blank-only gap.",
+    "direct_iterable_fixture": "RawIterableIterator.rawCast; direct_iterable_projects_with_or_without_debug_names_and_preserves_cast; same-list gap contains literal result=0 between iterator init and loop.",
+    "v1_issue": "v1 treated strict owner-path prefix as a different statement vector; source traversal proves this is false for the direct one-level Iterable case and its literal-only gap. v1 remains frozen unchanged."
+  },
+  "budget_policy": "The new private owner/Phi helpers charge and poll each inspected access, statement, owner declaration, use, Phi row, input, and replacement hop before work. They return Result and StopReason is carried out of the existing Option closure; no upfront multiplier is assumed to cover new work.",
+  "verification": {
+    "syntax": "manual static review only",
+    "rust_parser_or_compiler": "not run",
+    "cargo_java_jadx_cli_git_network": "not run"
+  },
+  "declaration_list_review_inputs": {
+    "direct_iterable_java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.java",
+      "bytes": 1467,
+      "sha256": "c427bc103b7a8675c496e0a2b3aa6e5107184e13a72e30efd6ddea2f902d06d3"
+    },
+    "direct_iterable_test": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_iterable_foreach.rs",
+      "bytes": 21207,
+      "sha256": "edb0255845558529aac999d974614579f770eb134dad70f1461c90b729d92af3"
+    },
+    "direct_iterable_nodebug_javap": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.nodebug.javap.txt",
+      "bytes": 4664,
+      "sha256": "b610eb4baf65f5a6d3c3e3151078f3526873eb6a66125e1500a239e64dbf15b8"
+    },
+    "direct_iterable_debug_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.debug.class",
+      "bytes": 1602,
+      "sha256": "830848b4e2214ae583d5a9dbb6fc94701017baee91d84c8109413590ccf1bcb2"
+    },
+    "direct_iterable_nodebug_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.nodebug.class",
+      "bytes": 925,
+      "sha256": "cde98c7000ec01682c85ad49211b0567a606b967f16939b8476c88363eca0fe4"
+    },
+    "direct_iterable_root_verification": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/project-proved-enhanced-for-loops/verification-root-iterable-boundaries.md",
+      "bytes": 2537,
+      "sha256": "9065522e0f22d463f84ba96dff2967b0d1691d06174b02751b28cbff4bf067ea"
+    },
+    "direct_iterable_agent_verification": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/project-proved-enhanced-for-loops/verification-agent-iterable.md",
+      "bytes": 4077,
+      "sha256": "5d514cb0aa092a157dbd61ef4fb7cd6bb6bf9f26d4b7ce03b78c0b92b0fc879a"
+    },
+    "nested_root_v3_raw": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 91032,
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"
+    }
+  }
+}

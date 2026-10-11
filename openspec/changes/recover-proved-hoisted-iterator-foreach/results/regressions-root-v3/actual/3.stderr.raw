@@ -1,0 +1,4 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.79s
+[1m[92m     Running[0m tests/p3_hoisted_iterator_foreach.rs (target/debug/deps/p3_hoisted_iterator_foreach-1ac070adb7acebfe)
+[hoisted-iterator-api-stop] limit=8230 usage=8230 stop=Budget { dimension: AnalysisSteps, written: 2273, limit: 8230, at: Some(6) }

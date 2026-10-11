@@ -1,0 +1,10 @@
+{
+  "status": "static_scoped_research_only",
+  "files": {
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b",
+    "crates/jarde-java/src/report.rs": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497",
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/results/current-baseline-root-v1/capture/jarde/javac23-jarde-all-UpstreamNestedLoops/report.json": "d11a9643c28ac8f016ac032b11bd53cb2f7bc3c47adeb9f5a193e84bc7f21a3d",
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/results/current-baseline-root-v1/capture/jarde/javac23-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+  }
+}

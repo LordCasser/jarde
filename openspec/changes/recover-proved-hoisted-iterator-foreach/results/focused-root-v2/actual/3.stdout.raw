@@ -1,0 +1,11 @@
+
+running 6 tests
+test complete_java8_classes_keep_supplier_and_element_execution_order ... ok
+test low_work_budget_and_cancellation_publish_no_partial_array_loop ... ok
+test primitive_and_reference_arrays_project_but_unsafe_shapes_do_not ... ok
+test projected_origins_and_body_are_identical_under_essential_and_all_evidence ... ok
+test reused_array_and_int_slot_recompile_with_and_without_debug_names ... ok
+test same_slot_later_local_declaration_survives_array_projection ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.51s
+

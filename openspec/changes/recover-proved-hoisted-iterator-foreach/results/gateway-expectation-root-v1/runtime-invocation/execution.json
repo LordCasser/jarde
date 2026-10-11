@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-gateway-runtime-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T20:39:56.203489+00:00",
+  "finished_at": "2026-10-11T20:40:11.584741+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-hoisted-iterator-gateway-runtime-invocation-root-v1/stdout.raw",
+      "bytes": 476,
+      "sha256": "1c9f97d95c406089bc46dd16781f3ca67ce1d5467e7f48adeb2cb0b18ac6cbb8"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-gateway-runtime-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

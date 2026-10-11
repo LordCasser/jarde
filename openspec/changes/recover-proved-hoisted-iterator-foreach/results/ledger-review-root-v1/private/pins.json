@@ -1,0 +1,39 @@
+{
+  "candidate": "CF-11 fixed TestNestedLoops ledger wording only",
+  "base_files": [
+    {
+      "path": "openspec/evidence/jadx-feature-inventory-2026-09-27/control-flow.md",
+      "bytes": 60800,
+      "sha256": "5fad2a88c760916454627008c36a17bee918f4479f8ed2e6eb27d9a343d49da0",
+      "edited_by_patch": true
+    },
+    {
+      "path": "openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md",
+      "bytes": 150740,
+      "sha256": "e02e599c8b5dc2c18feb50e2672d46d40556c166ce39fb105cccf21f50ebfd8f",
+      "edited_by_patch": true
+    },
+    {
+      "path": "openspec/evidence/jadx-feature-inventory-2026-09-27/README.md",
+      "bytes": 2032,
+      "sha256": "1b58e92457e7d3e28a8fe1a7cf841a98fdf9174bec059a3780fed096d85083d2",
+      "edited_by_patch": false
+    }
+  ],
+  "patch": {
+    "path": "ledger.patch",
+    "bytes": 15222,
+    "sha256": "65ae10a9f4bfddffc732049ee1d05dcde6ea7c8fe84c9e3744171ce91b5ab11d"
+  },
+  "proposed_changes": [
+    "control-flow.md: append accepted fixed whole-class evidence to existing CF-11 audit paragraph",
+    "summary.md: replace stale pending-foreach sentence in existing CF-11 summary row"
+  ],
+  "unchanged_scope": [
+    "README.md",
+    "71 source-level unit count",
+    "612 test-file count",
+    "overall CF-11 status"
+  ],
+  "toolchain_or_git_run": false
+}

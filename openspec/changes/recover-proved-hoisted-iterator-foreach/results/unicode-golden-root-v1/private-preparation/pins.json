@@ -1,0 +1,65 @@
+{
+  "candidate": "single-method SB.cond golden projection from fresh workspace failure",
+  "inputs": [
+    {
+      "path": "tests/recover_unicode_identifiers.rs",
+      "bytes": 18587,
+      "sha256": "0216ddcc1970c653e3230a1d7457773ad9164c504a96d5218209c3e24a68053a"
+    },
+    {
+      "path": "tests/fixtures/recover-unicode-identifiers/ascii/SB.jarde.java",
+      "bytes": 5234,
+      "sha256": "e9096450346d4f4639930afcb2585c1f0bfe2e7e30728d24d6b22a1f681b3fcd"
+    },
+    {
+      "path": "openspec/evidence/java-syntax-2026-10-05/charsequence-arg-widening-patrol/fixture/SB.class",
+      "bytes": 2199,
+      "sha256": "a870d6e632d807c02fd8e142c0b437d9ee2893312402292565b6b707c4adf34b"
+    },
+    {
+      "path": "openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md",
+      "bytes": 6721,
+      "sha256": "b583dd2b621ec886858f9c88682ad279e8ff150b9a62bae7cb942e3ed323a885"
+    },
+    {
+      "path": "openspec/changes/recover-proved-hoisted-iterator-foreach/results/regressions-root-v3/README.md",
+      "bytes": 887,
+      "sha256": "6b4fe6e0d9b84e240dd88717e4823bbda65158e13e6ad114ba3ba70b94e5fabb"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "SB.jarde.java.original",
+      "bytes": 5234,
+      "sha256": "e9096450346d4f4639930afcb2585c1f0bfe2e7e30728d24d6b22a1f681b3fcd"
+    },
+    {
+      "path": "SB.jarde.java.candidate",
+      "bytes": 5192,
+      "sha256": "41f4a35923679b7af84bb4787bd49f5032622516e76a84563507e534d1efe34e"
+    },
+    {
+      "path": "golden.patch",
+      "bytes": 773,
+      "sha256": "8caf6a5b36e95901b37eeaa3c41ea32ef277dd38f452dd379c6e196f22471aab"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1703,
+      "sha256": "eece9f9cb28d2b67b9f99277f18ec8a70ec5d198f850e2863290052998011a65"
+    }
+  ],
+  "raw_observation": {
+    "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run/75.stdout.raw",
+    "bytes": 86696,
+    "sha256": "142b0186aa8415164934b1ad99b815ab83314dd45456686317891d268cdee788",
+    "test_outcome": "3 passed, 1 failed; failure is SB exact-text mismatch"
+  },
+  "checks": {
+    "raw_expected_equals_frozen_golden": true,
+    "raw_actual_equals_candidate": true,
+    "only_cond_method_changed": true,
+    "toolchain_git_cli_network_run": false
+  },
+  "behavioral_validation": "not performed; root must validate complete SB class before applying"
+}

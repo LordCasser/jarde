@@ -1,0 +1,52 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.HoistedIteratorPhiControls",
+      "source": "HoistedIteratorPhiControls.java",
+      "source_bytes": 707,
+      "source_sha256": "9cdf3915818be01928664d3c112b3f846797b9f71d110dc49df8d8144bd59bbb",
+      "expected_class_path": "tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class",
+      "status": "root compiled with both Java 8 and Java 23 --release 8; permanent fixture selection pending",
+      "outputs": [
+        {
+          "jdk": "javac8",
+          "bytes": 606,
+          "sha256": "31cd1bcbcd906ac5249ba6b917660774658b157964451136bbb3b86bc694ccda",
+          "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/javac8/classes/cf11/HoistedIteratorPhiControls.class"
+        },
+        {
+          "jdk": "javac23",
+          "bytes": 603,
+          "sha256": "87e300ec06fdc83dafc8e3cceb3ff5c2e3dc6300dfad6e794451061f5348f2a4",
+          "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/javac23/classes/cf11/HoistedIteratorPhiControls.class"
+        }
+      ],
+      "outputs_identical": false
+    }
+  ],
+  "observed_javap_bcis": {
+    "mixedIterator": {
+      "first_iterator_invoke": 1,
+      "first_iterator_store": 6,
+      "alternate_iterator_invoke": 12,
+      "alternate_iterator_store": 17,
+      "hasNext_receiver_load": 21,
+      "hasNext_invoke": 22,
+      "next_receiver_load": 30,
+      "next_invoke": 31
+    },
+    "extraAliasConsumer": {
+      "first_iterator_invoke": 1,
+      "first_iterator_store": 6,
+      "original_alias_copy_load": 11,
+      "alias_copy_store": 12,
+      "alternate_iterator_invoke": 18,
+      "alternate_iterator_store": 23,
+      "hasNext_receiver_load": 25,
+      "hasNext_invoke": 27
+    }
+  },
+  "ssa_and_helper_expectations": "pending focused IR inspection; README/review distinguish javap facts from inference"
+}

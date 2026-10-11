@@ -1,0 +1,55 @@
+{
+  "schema": "cf11-outer-assignment-probe-prep-luna-v3",
+  "status": "private static diagnostic delta; unapplied, uncompiled, and unrun",
+  "base": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+    "bytes": 1766219,
+    "sha256": "b3b9f75205add71234fd6f1854312e4b74ffafb5bda9e44a0c8fd3399259692c"
+  },
+  "original_copy": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/build.rs.orig",
+    "bytes": 1766219,
+    "sha256": "b3b9f75205add71234fd6f1854312e4b74ffafb5bda9e44a0c8fd3399259692c"
+  },
+  "candidate": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/build.rs.candidate",
+    "bytes": 1773207,
+    "sha256": "09d15f14fd5f2ed0b0674bfbffc21721bd46f30cb6541d04f795056393426a3a"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/diagnostic.patch",
+    "bytes": 15188,
+    "sha256": "2f7ad973e7c4014dd09b62715a2c041e74bb355b5df288c72028ef4c6bdb5f35"
+  },
+  "replay": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/build.rs.reapplied",
+    "matches_candidate": true,
+    "sha256": "09d15f14fd5f2ed0b0674bfbffc21721bd46f30cb6541d04f795056393426a3a"
+  },
+  "helper_pins": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/helper-pins.json",
+    "sha256": "b9faacee8c46c4497fdfcad5281d2d840a5115ce3db37691f779f8b80300f7d3"
+  },
+  "analysis": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/analysis.md",
+    "sha256": "5d70c64654c734dbaddc3d773df7efbda64f770beb8f8adaea9802ffd5eae485"
+  },
+  "scope": {
+    "class": "cf11/UpstreamNestedLoops",
+    "method": "test",
+    "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+    "test_bci": 13,
+    "path": [
+      1
+    ],
+    "env_opt_in": "JARDE_FOREACH_CANDIDATE_DIAGNOSTIC"
+  },
+  "safety": {
+    "all_diagnostic_formatting_lazy": true,
+    "AST_and_SSA_diagnostics_exact_scope_only": true,
+    "existing_assign_name_value_only": true,
+    "iterator_declaration_helper_unchanged": true,
+    "iterator_phi_ownership_helper_unchanged": true,
+    "forces_refusal_before_name_allocation_rewrite_or_removal": true
+  }
+}

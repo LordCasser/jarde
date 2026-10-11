@@ -1,0 +1,75 @@
+{
+  "inputs": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_loop_exit_gateways.rs",
+      "bytes": 50363,
+      "sha256": "519a2ebb0b7a1c2855142b76dfe86c91bc967328dc42f21261c298a641104697"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+      "bytes": 537,
+      "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/VariablePostfixLoop.java",
+      "bytes": 241,
+      "sha256": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/javap.txt",
+      "bytes": 4139,
+      "sha256": "6377f30223500354dd62a1a6079a7665f306020793325d55ce4761d56c0de85c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/verification-root.md",
+      "bytes": 2278,
+      "sha256": "75fe151dc24e8e5989bf18043ab50387f9ca49893fc2277243f713788a8f729e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md",
+      "bytes": 6721,
+      "sha256": "b583dd2b621ec886858f9c88682ad279e8ff150b9a62bae7cb942e3ed323a885"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/regressions-root-v3/README.md",
+      "bytes": 887,
+      "sha256": "6b4fe6e0d9b84e240dd88717e4823bbda65158e13e6ad114ba3ba70b94e5fabb"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run-v2/85.stdout.raw",
+      "bytes": 42051,
+      "sha256": "b4e7c4b2d2e04a17118eea786ccace2889310be752af21dffa2b1237c400ff62"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "p3_loop_exit_gateways.rs.original",
+      "bytes": 50363,
+      "sha256": "519a2ebb0b7a1c2855142b76dfe86c91bc967328dc42f21261c298a641104697"
+    },
+    {
+      "path": "p3_loop_exit_gateways.rs.candidate",
+      "bytes": 50934,
+      "sha256": "3c2adfeb9f97a4fb9c6ba193d1fd45692866a1518678ed8ffc2a141b950a2647"
+    },
+    {
+      "path": "gateway-test.patch",
+      "bytes": 1905,
+      "sha256": "bc593ac7dce0a10f461b9f09c0d388c1779bc0384b04e3bc866a915bd9fc7aeb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2833,
+      "sha256": "4711fc273c47bb779366202c43431270a2adf61ab064ef0de643dee25011e354"
+    }
+  ],
+  "static_checks": {
+    "exact old assertion block occurs once": true,
+    "patch touches only one test function assertion block": true,
+    "structural spelling is exact foreach header": true,
+    "source anchor retains BCIs 6 and 7": true,
+    "unrecovered counterexample tests unchanged": true,
+    "toolchain_git_network_run": false
+  },
+  "root_full_class_validation_required": true
+}

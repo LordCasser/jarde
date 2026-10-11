@@ -1,0 +1,150 @@
+{
+  "schema": "cf11-outer-assigned-foreach-static-review-pins-v2",
+  "scope": "Read-only static review of the fixed outer TestNestedLoops assignment-first loop. No implementation, spec, shared edits, or toolchain execution.",
+  "analysis": {
+    "path": "/private/tmp/jarde-cf11-outer-assigned-foreach-review-luna-v2/analysis.md",
+    "bytes": 7769,
+    "sha256": "f6c7f2447cd0887ea4606a09728e4573817bae7bda8cd207071a25f24624c4de"
+  },
+  "primary_observation": {
+    "execution_schema": "hoisted-iterator-same-ir-diagnostic-root-v3",
+    "execution_sha256": "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87",
+    "raw_stderr_sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a",
+    "actual_fact": "outer test BCI 13 attempt; body_first=Assign; refused at body_first_not_initialized_declaration; no later outer iterator/binding/liveness/effect proof was emitted."
+  },
+  "pinned_inputs": [
+    {
+      "role": "production_source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1766333,
+      "sha256": "18986a0fb47998edcf5e77330fd5fd9818ed267539e75598352036073276a779",
+      "note": "Current shared source read-only; builder entry, projection, declaration and statement-vector paths."
+    },
+    {
+      "role": "local_reuse",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "bytes": 49833,
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458",
+      "note": "Current split-aware local identity lookup."
+    },
+    {
+      "role": "statement_ast",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "bytes": 52168,
+      "sha256": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171",
+      "note": "Current Assign AST shape."
+    },
+    {
+      "role": "public_regression_contract",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_hoisted_iterator_foreach.rs",
+      "bytes": 12403,
+      "sha256": "f74a22662ab210e580f7c871a0097416b024ead5775c8c6837f3cd37046adabb",
+      "note": "Current neighboring inner-loop regression, not an outer success claim."
+    },
+    {
+      "role": "frozen_original_class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "note": "Exact classfile used by same-IR diagnostic."
+    },
+    {
+      "role": "javap",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "bytes": 8494,
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272",
+      "note": "Bytecode, descriptors, local-variable table and method layout."
+    },
+    {
+      "role": "original_java_input",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/inputs/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1",
+      "note": "Original enhanced-for source."
+    },
+    {
+      "role": "generated_jarde_baseline",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "bytes": 1964,
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1",
+      "note": "Full generated class showing blank s1 declaration and assignment-first outer body."
+    },
+    {
+      "role": "same_ir_execution",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/execution.json",
+      "bytes": 1536678,
+      "sha256": "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87",
+      "note": "Completed root same-IR diagnostic receipt; outer branch refusal only."
+    },
+    {
+      "role": "same_ir_stderr",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 91032,
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a",
+      "note": "Raw actual same-IR log; contains outer attempt/refusal and inner diagnostics."
+    },
+    {
+      "role": "same_ir_stdout",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stdout.raw",
+      "bytes": 233,
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50",
+      "note": "Actual test summary: exact ignored diagnostic test, 1 passed / 0 failed / 0 ignored."
+    },
+    {
+      "role": "same_ir_runner",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3.py",
+      "bytes": 24217,
+      "sha256": "5750646b4c1703cb6bbd5884b7f40a5d531a9627f576d20b45df00ebd4a75def",
+      "note": "Root runner source whose exact test invocation produced the receipt."
+    },
+    {
+      "role": "same_ir_readme",
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3-README.md",
+      "bytes": 1051,
+      "sha256": "335f769d05fd5199e63c18ef68419e48f9a3ba589d8f208d9b8eb44d28dd442c",
+      "note": "Diagnostic scope and interpretation from root."
+    }
+  ],
+  "line_references": {
+    "build_rs": [
+      "19023-19035 loop_region entry",
+      "19037-19058 test BCI selection",
+      "19243-19270 iterable candidate invocation and current-list removals",
+      "21480-21504 candidate early gate rejects anything but Declare(Some)",
+      "21550-21579 binding extraction and next/cast shape",
+      "21678-21713 iterator slot and declaration proof",
+      "21855-21875 next/cast single-consumer proof",
+      "21941-21950 removal list",
+      "21977-22007 body mutation and foreach construction",
+      "11854-11989 iterator local owner helper",
+      "22944-22975 region declaration emission",
+      "25733-25749 split-aware local/name lookup for stores"
+    ],
+    "reuse_rs": [
+      "84-100 Plan::variable_at"
+    ],
+    "ast_rs": [
+      "751-770 StmtKind::Declare and Assign"
+    ],
+    "javap": [
+      "94-143 method instruction sequence",
+      "156-166 LVT/LVTT"
+    ],
+    "existing_test": [
+      "108-130 inner projection acceptance assertions"
+    ]
+  },
+  "verification_state": "Static source/evidence review only; no Rust/Python/toolchain candidate was run. Same-IR facts quoted are from the separately pinned root run.",
+  "review_conclusion": {
+    "narrow_candidate": "Only a simple body-first Assign whose value is exactly inline Cast(Call Iterator.next) on the already-proved iterator; preserve the assignment target, cast, origin, and position.",
+    "existing_builder_responsibility": [
+      "exact store slot to split-aware LocalVariable/name via write_target",
+      "decided target type compatibility before write publication",
+      "declaration/assignment and declared/undeclared-read handling",
+      "next result single consumer at cast BCI; CheckCast operation; cast result single consumer at exact next-store BCI; store opcode"
+    ],
+    "new_foreach_target_gate": "No duplicate target-local owner/type/liveness/reader/overwrite gate is justified while this Assign and target remain unchanged. A diagnostic may expose producer facts, but they are not a new acceptance condition.",
+    "unobserved": "The same-IR diagnostic did not emit outer assignment origin/slot/SSA reads/writes and refused before outer iterator Phi/readers/handler/effect gates. Their outcome after narrowly opening this path is unknown.",
+    "excluded": "Renaming/removing the target or assignment, compound/field/array/local-expression assignment, unrelated side effects, deferred cast, extra consumers, and generic signature projection."
+  }
+}

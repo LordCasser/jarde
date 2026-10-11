@@ -1,0 +1,207 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -34480,6 +34480,204 @@
+         ), "the initial real iterator use owns the Stop: {stop:?}");
+     }
+ 
++    const HOISTED_ITERATOR_PHI_CONTROLS_CLASS: &[u8] = include_bytes!(
++        "../../../tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class"
++    );
++
++    fn iterator_source_store(analysis: &jarde_jvm::method_ir::MethodIrAnalysis) -> (u16, u32, ValueId) {
++        let ir = analysis.ir();
++        let ssa = ir.ssa().expect("control method SSA");
++        let code = ir.code().expect("control method bytecode");
++        let operations = Operations::of(code, ir.constant_pool());
++        let iterator_call = operations
++            .iter()
++            .find_map(|(bci, operation)| match operation {
++                Operation::Invoke(target)
++                    if target.name() == "iterator"
++                        && target.descriptor() == "()Ljava/util/Iterator;" => Some(*bci),
++                _ => None,
++            })
++            .expect("control method has an iterator() invocation");
++        let block = ssa
++            .blocks()
++            .iter()
++            .find(|block| block.instructions().iter().any(|instruction| instruction.bci() == iterator_call))
++            .expect("iterator() invocation has an SSA block");
++        let call_index = block
++            .instructions()
++            .iter()
++            .position(|instruction| instruction.bci() == iterator_call)
++            .expect("iterator() invocation is in its block");
++        let (store, slot, value) = block.instructions()[call_index + 1..]
++            .iter()
++            .find_map(|instruction| {
++                let Some(Operation::Store { slot }) = operations.get(instruction.bci()) else {
++                    return None;
++                };
++                instruction
++                    .writes()
++                    .iter()
++                    .find_map(|(written, value)| {
++                        (*written == Slot::Local(*slot)).then_some((instruction, *slot, *value))
++                    })
++            })
++            .expect("iterator() result is stored in a local after the call");
++        (slot, store.bci(), value)
++    }
++
++    fn iterator_source_load_bcis(
++        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
++        source: ValueId,
++    ) -> Vec<u32> {
++        let ir = analysis.ir();
++        let ssa = ir.ssa().expect("control method SSA");
++        let code = ir.code().expect("control method bytecode");
++        let operations = Operations::of(code, ir.constant_pool());
++        let mut loads = BTreeSet::new();
++        for use_ in ssa.value(source).uses() {
++            if let Some(bci) = use_.bci() {
++                assert!(
++                    matches!(operations.get(bci), Some(Operation::Load { .. })),
++                    "the source value's physical use at BCI {bci} is a decoded local load"
++                );
++                loads.insert(bci);
++            }
++        }
++        loads.into_iter().collect()
++    }
++
++    fn iterator_receiver_load_pair(
++        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
++        receiver_calls: &[&str],
++    ) -> [u32; 2] {
++        let ir = analysis.ir();
++        let ssa = ir.ssa().expect("control method SSA");
++        let code = ir.code().expect("control method bytecode");
++        let operations = Operations::of(code, ir.constant_pool());
++        let mut loads = BTreeSet::new();
++        for (bci, operation) in operations.iter() {
++            let Operation::Invoke(target) = operation else {
++                continue;
++            };
++            if !receiver_calls.contains(&target.name()) {
++                continue;
++            }
++            let block = ssa
++                .blocks()
++                .iter()
++                .find(|block| block.instructions().iter().any(|instruction| instruction.bci() == *bci))
++                .expect("receiver invocation has an SSA block");
++            let call_index = block
++                .instructions()
++                .iter()
++                .position(|instruction| instruction.bci() == *bci)
++                .expect("receiver invocation is in its block");
++            let load = block
++                .instructions()
++                .get(call_index.checked_sub(1).expect("receiver call has a preceding load"))
++                .expect("receiver load instruction");
++            assert!(
++                matches!(operations.get(load.bci()), Some(Operation::Load { .. })),
++                "the receiver of {} at BCI {bci} is loaded immediately before invocation",
++                target.name()
++            );
++            loads.insert(load.bci());
++        }
++        let loads: Vec<_> = loads.into_iter().collect();
++        match loads.as_slice() {
++            [one] => [*one, *one],
++            [first, second] => [*first, *second],
++            _ => panic!("expected one or two real receiver loads, got {loads:?}"),
++        }
++    }
++
++    fn phi_has_value(inputs: &[PhiInput], value: ValueId) -> bool {
++        inputs
++            .iter()
++            .any(|input| matches!(input, PhiInput::Value(input_value) if *input_value == value))
++    }
++
++    #[test]
++    fn mixed_iterator_real_phi_is_live_and_fails_the_production_use_gate() {
++        let (analysis, _) = analyze_test_method(
++            HOISTED_ITERATOR_PHI_CONTROLS_CLASS,
++            "mixedIterator",
++            "(Ljava/util/List;Ljava/util/List;Z)I",
++            8,
++        );
++        let ssa = analysis.ir().ssa().expect("mixed control SSA");
++        let (slot, _store_bci, source) = iterator_source_store(&analysis);
++        let mixed_phi = ssa
++            .phis()
++            .iter()
++            .find(|phi| {
++                phi.slot() == Slot::Local(slot)
++                    && phi_has_value(phi.inputs(), source)
++                    && phi.inputs().iter().any(
++                        |input| matches!(input, PhiInput::Value(value) if *value != source),
++                    )
++            })
++            .expect("the same local's merge phi has the original and alternate iterator values");
++        let mixed_value = ssa.value(mixed_phi.value());
++        assert!(mixed_value.replaced_by().is_none(), "the mixed phi is not replaced");
++        assert!(!mixed_value.uses().is_empty(), "the mixed phi is live at loop reads");
++        assert!(iterator_source_load_bcis(&analysis, source).is_empty());
++        assert!(ssa.value(source).uses().iter().any(|use_| {
++            use_.bci().is_none() && use_.block() == mixed_phi.block()
++        }));
++
++        let allowed = iterator_receiver_load_pair(&analysis, &["hasNext", "next"]);
++        assert_ne!(allowed[0], allowed[1], "both real receiver loads are present");
++        let mut budget = child_array_test_budget();
++        assert!(
++            !iterator_phi_use_ownership(ssa, source, allowed, &mut budget).unwrap(),
++            "after allowing actual hasNext/next loads, the real live unreplaced same-local phi is refused"
++        );
++    }
++
++    #[test]
++    fn alias_branch_phi_does_not_expand_the_exact_value_reader_allowlist() {
++        let (analysis, _) = analyze_test_method(
++            HOISTED_ITERATOR_PHI_CONTROLS_CLASS,
++            "extraAliasConsumer",
++            "(Ljava/util/List;Ljava/util/List;Z)Z",
++            8,
++        );
++        let ssa = analysis.ir().ssa().expect("alias control SSA");
++        let (source_slot, _store_bci, source) = iterator_source_store(&analysis);
++        let alias_phi = ssa
++            .phis()
++            .iter()
++            .find(|phi| {
++                matches!(phi.slot(), Slot::Local(slot) if slot != source_slot)
++                    && ssa.value(phi.value()).replaced_by().is_none()
++                    && !ssa.value(phi.value()).uses().is_empty()
++            })
++            .expect("the branch-written alias has a live phi in another local slot");
++        assert!(
++            alias_phi.inputs().iter().filter(|input| matches!(input, PhiInput::Value(_))).count() >= 2,
++            "both branch definitions reach the alias phi"
++        );
++        let source_loads = iterator_source_load_bcis(&analysis, source);
++        assert_eq!(source_loads.len(), 1, "the original value has one physical alias-copy load");
++        let allowed = iterator_receiver_load_pair(&analysis, &["hasNext"]);
++        assert_eq!(allowed[0], allowed[1], "one real hasNext receiver load fills the fixed pair");
++        assert!(
++            !allowed.contains(&source_loads[0]),
++            "the alias-copy load is an additional source-value consumer, not a hasNext receiver load"
++        );
++        assert!(
++            ssa.value(source).uses().iter().any(|use_| use_.bci() == Some(source_loads[0])),
++            "the extra physical consumer is the real source use"
++        );
++
++        let mut budget = child_array_test_budget();
++        assert!(
++            !iterator_phi_use_ownership(ssa, source, allowed, &mut budget).unwrap(),
++            "the source use at the alias-copy Load is refused before any cross-slot phi aliasing"
++        );
++    }
++
+     fn prove_own_grid(
+         analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+         java_release: u16,

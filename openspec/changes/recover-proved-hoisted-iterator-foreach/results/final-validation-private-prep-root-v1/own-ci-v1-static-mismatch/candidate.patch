@@ -1,0 +1,652 @@
+--- /private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py	2026-10-12 02:28:33
++++ /private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/verify-own-ci.py	2026-10-12 04:13:15
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Verify for-condition product CI against its complete local workspace and CLI receipts."""
++"""Verify hoisted-iterator product CI against its full local workspace and CLI receipts."""
+ from __future__ import annotations
+ 
+ import argparse
+@@ -19,19 +19,13 @@
+ HELPER_SHA256 = 'bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca'
+ CAPTURE_COLLECTOR_PATH = ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py'
+ CAPTURE_COLLECTOR_SHA256 = 'ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3'
+-WORKSPACE_RUNNER = Path('/private/tmp/jarde-constructor-conditional-workspace-root-v1.py')
+-WORKSPACE_RUNNER_SHA256 = '81484f984cdf909980b7dab25ee38ac560de0a1fa6028dc912b82ca05e0f0606'
+-BUILD_RUNNER = Path('/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1.py')
+-BUILD_RUNNER_SHA256 = '7bf3a61aec009aaa629efad18fe8e177b25d0e3b828de135d52eba498ea5c2c3'
+-FOCUSED_RECEIPT = Path('/private/tmp/jarde-constructor-conditional-focused-build-root-v6/execution.json')
+-FOCUSED_RUNNER = Path('/private/tmp/jarde-constructor-conditional-focused-build-root-v6.py')
+-FOCUSED_RUNNER_SHA256 = '5895c7024985d737ad7fa9b8f8bbd8c55371d87d5bf1c46d02458b6d38df574b'
+-EXPECTED_WORKSPACE = Path('/private/tmp/jarde-constructor-conditional-workspace-root-v1')
+-EXPECTED_BUILD_RECORD = Path('/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json')
+-EXPECTED_FINAL_CLI = Path('/private/tmp/jarde-constructor-conditional-final-cli-root-v1')
+-WORKSPACE_SCHEMA = 'constructor-conditional-full-workspace-batched-root-v1'
+-BUILD_SCHEMA = 'constructor-conditional-final-lint-build-root-v1'
+-WORKSPACE_SEED = '5350648285461741569'
++WORKSPACE_RUNNER: Path | None = None
++WORKSPACE_RUNNER_SHA256: str | None = None
++BUILD_RUNNER: Path | None = None
++BUILD_RUNNER_SHA256: str | None = None
++WORKSPACE_SCHEMA = 'hoisted-iterator-full-workspace-batched-root-v2'
++WORKSPACE_SEED: str | None = None
++EXPECTED_CLI_SHA256 = '8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a'
+ CI_SEEDS_RE = re.compile(r'PROPTEST_RNG_SEED:\s*"(\d+)"')
+ WORKSPACE_CMD = 'cargo test --workspace --all-targets --all-features --locked'
+ EXPECTED_JOBS = {'stable / test and specification', 'MSRV 1.88.0', 'supply chain', 'fuzz smoke'}
+@@ -224,19 +218,23 @@
+          f"batch {row.get('index')} aggregate totals differ from raw target summaries")
+ 
+ 
+-def verify_workspace(product: str, workspace: Path, ci):
++def verify_workspace(product: str, workspace: Path, ci, runner_path: Path,
++                     runner_sha256: str, workspace_schema: str):
++    global WORKSPACE_SEED
+     workspace = workspace.resolve(strict=True)
+     need(workspace.is_dir(), 'workspace receipt directory is invalid')
+     execution_path = workspace / 'execution.json'
+     metadata_path = workspace / 'metadata.json'
+     execution_raw, metadata_raw = execution_path.read_bytes(), metadata_path.read_bytes()
+     ex, metadata = json.loads(execution_raw), json.loads(metadata_raw)
+-    need(ex.get('schema') == WORKSPACE_SCHEMA and ex.get('status') == 'passed',
+-         'fresh constructor-conditional workspace receipt is incomplete or failed')
+-    need(ex.get('seed') == WORKSPACE_SEED and ex.get('no_carried_execution') is True,
+-         'workspace seed differs from the planned first CI seed or execution was carried')
++    need(ex.get('schema') == workspace_schema and ex.get('status') == 'passed',
++         'fresh hoisted-iterator workspace receipt is incomplete or failed')
++    need(isinstance(ex.get('seed'), str) and ex.get('seed').isdecimal() and
++         ex.get('no_carried_execution') is True,
++         'workspace seed is invalid or execution was carried')
++    WORKSPACE_SEED = ex['seed']
+     need(ex.get('rust_min_stack') is None, 'workspace receipt overrides RUST_MIN_STACK')
+-    runner_required = sorted(required_tests_from_runner())
++    runner_required = sorted(required_tests_from_runner(runner_path, runner_sha256))
+     need(ex.get('required_named_tests') == runner_required and
+          ex.get('required_named_tests_passed') == runner_required,
+          'workspace runner did not record the exact complete required-test set as passed')
+@@ -253,10 +251,10 @@
+          'workspace environment differs from the recorded seeded contract')
+ 
+     runner = ex.get('runner', {})
+-    need(runner == {'path': str(WORKSPACE_RUNNER),
+-                    'sha256_before': WORKSPACE_RUNNER_SHA256,
+-                    'sha256_after': WORKSPACE_RUNNER_SHA256} and
+-         WORKSPACE_RUNNER.is_file() and sha_file(WORKSPACE_RUNNER) == WORKSPACE_RUNNER_SHA256,
++    need(runner == {'path': str(runner_path),
++                    'sha256_before': runner_sha256,
++                    'sha256_after': runner_sha256} and
++         runner_path.is_file() and sha_file(runner_path) == runner_sha256,
+          'workspace runner path or before/after source SHA is invalid')
+     # Validate each recorded helper reference as provenance for the run machinery. These
+     # references are not treated as product source-closure evidence.
+@@ -284,11 +282,9 @@
+     need('tests/fixtures/corpus-fingerprint.json' in pins_before,
+          'workspace closure omits the corpus fingerprint')
+     dynamic_paths = set(ex.get('required_dynamic_source_paths', []))
+-    need({'tests/recover_proved_conditional_constructor_values.rs',
+-          'tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class',
+-          'tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class',
+-          'tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class'} <= dynamic_paths <= set(pins_before),
+-         'workspace required dynamic constructor sources are absent from its independent closure')
++    runner_dynamic_paths = required_dynamic_paths_from_runner(runner_path, runner_sha256)
++    need(dynamic_paths == runner_dynamic_paths and dynamic_paths <= set(pins_before),
++         'workspace dynamic-source contract differs from its pinned runner or source closure')
+ 
+     by_id, by_named, inventory = ci.metadata_targets(metadata)
+     target_count = len(inventory)
+@@ -299,8 +295,8 @@
+     need(len(manifest_inventory) == len(set(manifest_inventory)) and set(manifest_inventory) == set(inventory),
+          'static manifest inventory differs from cargo metadata')
+     planned, expected_inventory = expected_workspace_commands(metadata)
+-    need(len(expected_inventory) == target_count and len(planned) == 95 and target_count == 361,
+-         'actual cargo metadata does not independently derive 361 targets and 95 batches')
++    need(len(expected_inventory) == target_count and planned,
++         'actual cargo metadata did not derive a nonempty complete target/batch plan')
+     need(ex.get('metadata', {}).get('target_count') == target_count and
+          ex.get('metadata', {}).get('batch_count') == len(planned) and
+          ex.get('expected_target_count') == target_count and
+@@ -357,58 +353,58 @@
+     return ex, metadata, local
+ 
+ 
+-def required_tests_from_runner() -> set[str]:
+-    need(WORKSPACE_RUNNER.is_file() and sha_file(WORKSPACE_RUNNER) == WORKSPACE_RUNNER_SHA256,
++def required_tests_from_runner(runner_path: Path, runner_sha256: str) -> set[str]:
++    need(runner_path.is_file() and sha_file(runner_path) == runner_sha256,
+          'pinned workspace runner unavailable while reading exact required test names')
+-    tree = ast.parse(WORKSPACE_RUNNER.read_text(encoding='utf-8'), filename=str(WORKSPACE_RUNNER))
++    tree = ast.parse(runner_path.read_text(encoding='utf-8'), filename=str(runner_path))
+     value = None
+     for node in tree.body:
+         if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'REQUIRED_NAMED_TESTS'
+                                                 for t in node.targets):
+             value = ast.literal_eval(node.value)
+             break
+-    need(isinstance(value, set) and len(value) == 12 and all(isinstance(name, str) for name in value),
+-         'current workspace runner must declare the exact 12 required constructor outcomes')
+-    return value
++    need(isinstance(value, (set, list, tuple)) and value and
++         len(value) == len(set(value)) and all(isinstance(name, str) for name in value),
++         'workspace runner must declare a nonempty unique exact required named-test set')
++    return set(value)
+ 
+ 
++def required_dynamic_paths_from_runner(runner_path: Path, runner_sha256: str) -> set[str]:
++    need(runner_path.is_file() and sha_file(runner_path) == runner_sha256,
++         'pinned workspace runner unavailable while reading dynamic source requirements')
++    tree = ast.parse(runner_path.read_text(encoding='utf-8'), filename=str(runner_path))
++    for node in tree.body:
++        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and
++                                                t.id == 'REQUIRED_DYNAMIC_SOURCE_PATHS'
++                                                for t in node.targets):
++            value = ast.literal_eval(node.value)
++            need(isinstance(value, (set, list, tuple)) and
++                 all(isinstance(item, str) for item in value) and
++                 len(value) == len(set(value)),
++                 'workspace runner dynamic-source paths are not a unique string collection')
++            return set(value)
++    raise ValueError('workspace runner has no literal REQUIRED_DYNAMIC_SOURCE_PATHS contract')
++
++
+ def verify_required_tests(local_observations: list[dict], product: str,
+-                          pins: dict[str, str], metadata: dict, ci) -> dict:
+-    required = required_tests_from_runner()
+-    # Current integration outcomes are tied to their direct test target. The seven
+-    # implementation unit outcomes are emitted by the jarde-java lib test target.
+-    expected_sources = {}
+-    for name in required:
+-        if name.startswith('field::') or name.startswith('init::'):
+-            expected_sources[name] = 'crates/jarde-java/src/lib.rs'
+-        else:
+-            expected_sources[name] = 'tests/recover_proved_conditional_constructor_values.rs'
+-    source_targets = {}
+-    for row in local_observations:
+-        source_targets.setdefault(row['source_path'], []).append(row)
+-    _, by_named, _ = ci.metadata_targets(metadata)
++                          pins: dict[str, str], runner_path: Path,
++                          runner_sha256: str) -> dict:
++    required = required_tests_from_runner(runner_path, runner_sha256)
+     passed = []
+     for name in sorted(required):
+-        source = expected_sources[name]
+-        need(source in pins, 'workspace pins omit the source for required outcome: ' + name)
+-        product_bytes = ci.git_blob(product, source)
+-        digest = sha(product_bytes)
+-        need(digest == pins[source] == sha_file(ROOT / source),
+-             'required outcome source differs from product Git/live closure: ' + source)
+-        rows = source_targets.get(source, [])
+-        need(len(rows) == 1, 'required source does not map to exactly one executed Cargo target: ' + source)
+-        target = rows[0]
+-        metadata_target = by_named.get(target['key'])
+-        need(metadata_target is not None and metadata_target['source_path'] == source,
+-             'required target metadata source differs from its pinned Rust source')
+-        matches = [(actual, state) for actual, state in target['outcomes']
++        matches = [(target, actual, state) for target in local_observations
++                   for actual, state in target['outcomes']
+                    if actual == name or actual.endswith('::' + name)]
+-        need(len(matches) == 1 and matches[0][1] == 'ok',
+-             'required named local outcome did not pass exactly once: ' + source + '::' + name)
+-        passed.append({'name': name, 'source_path': source,
+-                       'target': target['key'], 'actual_outcome': matches[0][0], 'status': 'ok'})
++        need(len(matches) == 1 and matches[0][2] == 'ok',
++             'required named local outcome did not pass exactly once: ' + name)
++        target, actual, state = matches[0]
++        source = target['source_path']
++        need(source in pins and sha_file(ROOT / source) == pins[source],
++             'required named test source is not pinned by the live closure: ' + source)
++        passed.append({'name': name, 'source_path': source,
++                       'target': target['key'], 'actual_outcome': actual, 'status': state})
+     need({item['name'] for item in passed} == required,
+-         'not all current workspace-runner required constructor tests were checked')
++         'not all current workspace-runner required outcomes were checked')
+     return {'required_count': len(required), 'tests_from_pinned_workspace_runner': sorted(required),
+             'passed_outcomes': passed}
+ 
+@@ -430,40 +426,24 @@
+ 
+ 
+ def verify_final_build(product: str, workspace_pins: dict[str, str], build_record: Path,
+-                       final_cli_path: Path, ci) -> dict:
+-    need(BUILD_RUNNER.is_file() and sha_file(BUILD_RUNNER) == BUILD_RUNNER_SHA256,
++                       final_cli_path: Path, build_runner: Path, build_runner_sha256: str,
++                       build_schema: str, regression_receipt: Path, regression_sha256: str,
++                       workspace_receipt: Path, workspace_sha256: str,
++                       workspace_acceptance: Path, workspace_acceptance_sha256: str,
++                       ci) -> dict:
++    need(build_runner.is_file() and sha_file(build_runner) == build_runner_sha256,
+          'final build runner path/SHA mismatch')
+-    need(FOCUSED_RECEIPT.is_file(), 'accepted focused build receipt is missing')
+-    focused_raw = FOCUSED_RECEIPT.read_bytes()
+-    focused = json.loads(focused_raw)
+-    need(FOCUSED_RUNNER.is_file() and sha_file(FOCUSED_RUNNER) == FOCUSED_RUNNER_SHA256 and
+-         focused.get('schema') == 'constructor-conditional-focused-build-root-v6' and
+-         focused.get('status') == 'passed_candidate_build_only' and
+-         focused.get('target_absent') is True and
+-         focused.get('runner_sha256_before') == FOCUSED_RUNNER_SHA256 == focused.get('runner_sha256_after'),
+-         'focused build receipt/runner is not the accepted clean candidate build')
+-    focused_pins = focused.get('source_pins_before')
+-    need(focused_pins == focused.get('source_pins_after') == workspace_pins,
+-         'focused build source closure differs from the fresh workspace receipt')
+-    focused_cli = focused.get('candidate_cli', {})
+-    focused_cli_path = Path(focused_cli.get('path', ''))
+-    need(focused_cli_path.is_file() and not focused_cli_path.is_symlink() and
+-         focused_cli_path.stat().st_size == focused_cli.get('bytes') and
+-         sha_file(focused_cli_path) == focused_cli.get('sha256') and
+-         focused_cli.get('mode') == '0o555' and
+-         stat.S_IMODE(focused_cli_path.stat().st_mode) == 0o555,
+-         'focused candidate CLI file does not match its frozen receipt')
+-
+     raw = build_record.read_bytes()
+     build = json.loads(raw)
+-    need(build.get('schema') == BUILD_SCHEMA and build.get('status') == 'passed_candidate_build_only',
++    need(build.get('schema') == build_schema == 'hoisted-iterator-final-lint-build-root-v2' and
++         build.get('status') == 'passed_candidate_build_only',
+          'final build receipt is incomplete, wrong-schema, or not passing')
+-    need(build.get('focused_passed') is True and
+-         build.get('final_lint_strict_byte_identity_passed') is True and
++    need(build.get('final_lint_strict_byte_identity_passed') is True and
+          build.get('candidate_byte_identity') is True,
+-         'final build receipt lacks passing focused, lint/strict, and byte-identity gates')
+-    need(build.get('runner_sha256_before') == BUILD_RUNNER_SHA256 ==
+-         build.get('runner_sha256_after') and sha_file(BUILD_RUNNER) == BUILD_RUNNER_SHA256,
++         'final build receipt lacks passing lint/strict and CLI byte-identity gates')
++    need(build.get('runner', {}).get('path') == str(build_runner) and
++         build.get('runner', {}).get('sha256_before') == build_runner_sha256 ==
++         build.get('runner', {}).get('sha256_after') and sha_file(build_runner) == build_runner_sha256,
+          'final build runner before/after SHA mismatch')
+     need(build.get('source_pins_before') == workspace_pins == build.get('source_pins_after'),
+          'final build source pins differ from the full workspace closure')
+@@ -472,12 +452,70 @@
+          'final build source closure differs from product Git blobs or live source bytes')
+     need(build.get('target_absent') is True and not (ROOT / 'target').exists(),
+          'final build did not leave the Cargo target directory absent')
+-    expected_env = {**BASE_ENV, 'PROPTEST_RNG_SEED': WORKSPACE_SEED}
+-    need(build.get('actual_env_overrides') == expected_env and build.get('rust_min_stack') is None,
++    expected_env = {**BASE_ENV, 'PROPTEST_RNG_SEED': WORKSPACE_SEED,
++                    'CARGO_PROFILE_TEST_STRIP': 'symbols'}
++    need(build.get('environment_overrides') == expected_env and build.get('rust_min_stack') is None,
+          'final build environment or default stack setting differs')
+-    accepted = build.get('accepted_focused_receipt', {})
+-    need(accepted == {'path': str(FOCUSED_RECEIPT), 'sha256': sha(focused_raw)},
+-         'final build does not identify the exact accepted focused build receipt')
++    need(build.get('fresh_target_preflight', {}).get('target_absent') is True and
++         build.get('fresh_target_preflight', {}).get('free_bytes', 0) >= FREE_LIMIT and
++         build.get('guard_limits') == {'minimum_free_bytes': FREE_LIMIT,
++                                       'maximum_target_bytes': TARGET_LIMIT,
++                                       'poll_interval_seconds': 1},
++         'final build receipt lacks the 5-GiB/1-GiB/1-second guard and fresh-target preflight')
++    need(build.get('cleanup', {}).get('status') == 'passed' and
++         build.get('cleanup', {}).get('target_absent_after') is True and
++         build.get('cleanup', {}).get('command') == build.get('commands', [])[-1] and
++         build.get('commands', [])[-1].get('argv') == ['cargo', 'clean'],
++         'final build did not record a successful final guarded cargo clean')
++    expected_inputs = {
++        'regression_receipt': {'path': str(regression_receipt.resolve(strict=True)),
++                               'sha256': regression_sha256},
++        'workspace_receipt': {'path': str(workspace_receipt.resolve(strict=True)),
++                              'sha256': workspace_sha256},
++        'workspace_acceptance': {'path': str(workspace_acceptance.resolve(strict=True)),
++                                 'sha256': workspace_acceptance_sha256},
++    }
++    for name, expected in expected_inputs.items():
++        row = build.get(name, {})
++        need(row.get('path') == expected['path'] and row.get('sha256') == expected['sha256'],
++             'final build does not bind exact ' + name)
++    for path, expected in ((regression_receipt, regression_sha256),
++                           (workspace_receipt, workspace_sha256),
++                           (workspace_acceptance, workspace_acceptance_sha256)):
++        need(path.is_file() and not path.is_symlink() and sha_file(path) == expected,
++             'final build input receipt path/SHA mismatch: ' + str(path))
++    regression = load_json(regression_receipt)
++    workspace = load_json(workspace_receipt)
++    acceptance = load_json(workspace_acceptance)
++    need(regression.get('schema') == 'hoisted-iterator-regressions-root-v3' and
++         regression.get('status') == 'passed_regressions_candidate_only' and
++         workspace.get('schema') == 'hoisted-iterator-full-workspace-batched-root-v2' and
++         workspace.get('status') == 'passed' and
++         acceptance.get('schema') == 'hoisted-iterator-full-workspace-local-acceptance-v1' and
++         acceptance.get('status') == 'accepted_local_workspace_only' and
++         acceptance.get('evidence', {}).get('execution_sha256') == workspace_sha256,
++         'final build inputs are not completed root local acceptance receipts')
++    for name, receipt in (('regression_receipt', regression), ('workspace_receipt', workspace),
++                          ('workspace_acceptance', acceptance)):
++        bound = build.get(name, {})
++        need(bound.get('schema') == receipt.get('schema') and bound.get('status') == receipt.get('status'),
++             'final build input schema/status binding differs for ' + name)
++    need(regression.get('target_absent') is True and
++         workspace.get('cleanup', {}).get('target_absent_after') is True and
++         not (ROOT / 'target').exists(),
++         'regression/workspace receipts or current state do not prove clean target')
++    need(regression.get('source_pins_before') == regression.get('source_pins_after') ==
++         workspace_pins == workspace.get('source_pins_before') == workspace.get('source_pins_after'),
++         'regression, workspace, and final-build source closures differ')
++    runtime_cli = regression.get('candidate_cli', {})
++    recorded_runtime_cli = build.get('runtime_tested_cli', {})
++    need(runtime_cli.get('sha256') == EXPECTED_CLI_SHA256 and
++         runtime_cli.get('mode') == '0o555' and isinstance(runtime_cli.get('bytes'), int) and
++         runtime_cli.get('bytes') > 0,
++         'runtime-tested regression CLI does not match the accepted candidate identity')
++    need(recorded_runtime_cli == {'path': runtime_cli.get('path'), 'bytes': runtime_cli.get('bytes'),
++                                  'sha256': runtime_cli.get('sha256'), 'mode': runtime_cli.get('mode')},
++         'final build runtime CLI binding differs from the regression receipt')
+ 
+     guard = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+     scan = ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'
+@@ -495,27 +533,32 @@
+          'final build receipt lacks its format, clippy, strict validation, CLI build and clean commands')
+     build_dir = build_record.parent.resolve(strict=True)
+     for index, (row, argv) in enumerate(zip(commands, expected_argvs)):
+-        check_command(row, index, argv, BASE_ENV, build_dir)
+-    cli_row = build.get('candidate_cli')
+-    focused_cli = focused.get('candidate_cli', {})
++        check_command(row, index, argv, expected_env, build_dir)
++    cli_row = build.get('candidate_cli', {})
+     final_cli_path = final_cli_path.resolve(strict=True)
+-    need(isinstance(cli_row, dict) and cli_row.get('path') == str(final_cli_path) and
+-         cli_row.get('sha256') == focused_cli.get('sha256') and cli_row.get('mode') == '0o555',
+-         'final CLI path/hash/mode do not bind to the focused candidate bytes')
++    need(cli_row.get('path') == str(final_cli_path) and
++         cli_row.get('sha256') == runtime_cli.get('sha256') == EXPECTED_CLI_SHA256 and
++         cli_row.get('bytes') == runtime_cli.get('bytes') and cli_row.get('mode') == runtime_cli.get('mode'),
++         'final CLI receipt does not bind to the runtime-tested candidate bytes')
+     need(final_cli_path.is_file() and not final_cli_path.is_symlink() and
+          final_cli_path.stat().st_size == cli_row.get('bytes') and
+-         sha_file(final_cli_path) == focused_cli.get('sha256') and
+-         stat.S_IMODE(final_cli_path.stat().st_mode) == 0o555 and
+-         focused_cli.get('mode') == '0o555',
+-         'final CLI file bytes, size, or mode differ from the focused candidate')
++         sha_file(final_cli_path) == EXPECTED_CLI_SHA256 and
++         stat.S_IMODE(final_cli_path.stat().st_mode) == 0o555,
++         'final CLI file bytes, size, or mode differ from the runtime-tested candidate')
++    expected_references = {
++        str(build_runner): build_runner_sha256,
++        str(ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'): ci.GUARD_SHA,
++        str(ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'): ci.SCAN_SHA,
++    }
++    references = build.get('references', [])
++    need({row.get('path'): row.get('sha256') for row in references} == expected_references,
++         'final build helper references differ from the pinned runner/guard/scanner set')
+     return {'record_path': str(build_record.resolve()), 'record_sha256': sha(raw),
+-            'runner_path': str(BUILD_RUNNER), 'runner_sha256': BUILD_RUNNER_SHA256,
++            'runner_path': str(build_runner), 'runner_sha256': build_runner_sha256,
+             'commands': len(commands), 'target_absent_after_clean': True,
+-            'focused_receipt_path': str(FOCUSED_RECEIPT),
+-            'focused_receipt_sha256': sha(focused_raw),
+             'candidate_cli': {'path': str(final_cli_path), 'bytes': cli_row['bytes'],
+                               'sha256': cli_row['sha256'], 'mode': cli_row['mode'],
+-                              'byte_identical_to_focused_candidate': True}}
++                              'byte_identical_to_runtime_tested_candidate': True}}
+ 
+ 
+ def verify_capture_record(capture_dir: Path, product: str, run_id: str, ci):
+@@ -647,13 +690,15 @@
+ 
+ 
+ def verify_product_ci(capture_dir: Path, product: str, run_id: str,
+-                      local_observations: list[dict], product_pins: dict[str, str], ci) -> dict:
++                      local_observations: list[dict], product_pins: dict[str, str],
++                      local_seed: str, ci) -> dict:
+     capture, summary, steps, stable_raw, supply_raw, capture_sha = verify_capture_record(
+         capture_dir, product, run_id, ci)
+     workflow = workflow_bytes(product, ci, product_pins).decode('utf-8')
+     seeds = ci.CI_SEEDS_RE.findall(workflow)
+     need(len(seeds) == 2 and workflow.count('run: ' + ci.WORKSPACE_CMD) == 2,
+          'current product workflow does not define exactly two workspace seed runs')
++    need(local_seed in seeds, 'fresh local workspace seed is not one of the two product CI seeds')
+     lines = ci.strip_log(stable_raw).splitlines()
+     groups = ci.command_groups(lines, ci.WORKSPACE_CMD)
+     need(len(groups) == 2, 'stable job log does not contain both complete workspace command groups')
+@@ -681,12 +726,15 @@
+                                              for mapping in run['masked_public_label_mappings']]}
+ 
+ 
+-def verify_references(product: str, ci) -> dict:
++def verify_references(product: str, ci, workspace_runner: Path, workspace_runner_sha256: str,
++                      workspace_acceptor: Path, workspace_acceptor_sha256: str,
++                      build_runner: Path, build_runner_sha256: str) -> dict:
+     need(sha_file(HELPER_PATH) == HELPER_SHA256 and sha_file(CAPTURE_COLLECTOR_PATH) == CAPTURE_COLLECTOR_SHA256,
+          'basic CI parser or capture collector source SHA mismatch')
+-    need(sha_file(WORKSPACE_RUNNER) == WORKSPACE_RUNNER_SHA256 and
+-         sha_file(BUILD_RUNNER) == BUILD_RUNNER_SHA256,
+-         'current workspace/final-build runner source SHA mismatch')
++    need(workspace_runner.is_file() and sha_file(workspace_runner) == workspace_runner_sha256 and
++         workspace_acceptor.is_file() and sha_file(workspace_acceptor) == workspace_acceptor_sha256 and
++         build_runner.is_file() and sha_file(build_runner) == build_runner_sha256,
++         'current workspace/acceptor/final-build runner source SHA mismatch')
+     git_bound = {}
+     for path, expected in ((HELPER_PATH, HELPER_SHA256),
+                            (CAPTURE_COLLECTOR_PATH, CAPTURE_COLLECTOR_SHA256),
+@@ -696,44 +744,187 @@
+         need(live == expected and sha(ci.git_blob(product, rel)) == live,
+              'repository helper differs from selected product Git/live bytes: ' + rel)
+         git_bound[rel] = live
+-    for p in (WORKSPACE_RUNNER, BUILD_RUNNER, FOCUSED_RUNNER, FOCUSED_RECEIPT):
++    for p in (workspace_runner, workspace_acceptor, build_runner):
+         need(p.is_file(), 'private run machinery/receipt is missing: ' + str(p))
+     return {'basic_ci_parser': {'path': str(HELPER_PATH), 'sha256': HELPER_SHA256},
+             'capture_collector': {'path': str(CAPTURE_COLLECTOR_PATH), 'sha256': CAPTURE_COLLECTOR_SHA256},
+-            'workspace_runner': {'path': str(WORKSPACE_RUNNER), 'sha256': WORKSPACE_RUNNER_SHA256},
+-            'final_build_runner': {'path': str(BUILD_RUNNER), 'sha256': BUILD_RUNNER_SHA256},
+-            'focused_build_runner': {'path': str(FOCUSED_RUNNER), 'sha256': FOCUSED_RUNNER_SHA256},
+-            'product_git_live_bound_helpers': git_bound,
+-            'focused_receipt': {'path': str(FOCUSED_RECEIPT), 'sha256': sha_file(FOCUSED_RECEIPT)}}
++            'workspace_runner': {'path': str(workspace_runner), 'sha256': workspace_runner_sha256},
++            'workspace_acceptor': {'path': str(workspace_acceptor), 'sha256': workspace_acceptor_sha256},
++            'final_build_runner': {'path': str(build_runner), 'sha256': build_runner_sha256},
++            'product_git_live_bound_helpers': git_bound}
++
++
++def verify_named_manifest(path: Path, product: str, metadata_raw: bytes,
++                          metadata: dict, local_observations: list[dict], pins: dict[str, str],
++                          local: dict, execution: dict, runner_path: Path,
++                          runner_sha256: str, ci) -> dict:
++    """Bind the independently emitted full target/name manifest to metadata and local raw outcomes."""
++    need(not path.is_symlink(), 'named-outcomes manifest must not be a symlink')
++    raw = path.read_bytes()
++    doc = json.loads(raw)
++    need(doc.get('schema') == 'hoisted-iterator-full-workspace-local-acceptance-v1',
++         'workspace named-outcomes manifest has an unexpected schema')
++    evidence = doc.get('evidence', {})
++    need(doc.get('status') == 'accepted_local_workspace_only' and
++         doc.get('not_ci_or_release_acceptance') is True and
++         evidence.get('workspace') == str(Path(local['execution']).parent) and
++         evidence.get('execution_schema') == execution.get('schema') and
++         evidence.get('execution_sha256') == local['execution_sha256'] and
++         evidence.get('metadata_sha256') == sha(metadata_raw) and
++         evidence.get('runner_path') == str(runner_path) and
++         evidence.get('workspace_runner_sha256') == runner_sha256 and
++         evidence.get('conditional_helper_sha256') == HELPER_SHA256 and
++         evidence.get('guard_sha256') == ci.GUARD_SHA and
++         evidence.get('scanner_sha256') == ci.SCAN_SHA,
++         'named-outcomes manifest does not identify this exact accepted local workspace receipt')
++    regression = execution.get('regression_input_receipt')
++    need(isinstance(regression, dict) and evidence.get('regression_receipt') == regression,
++         'named-outcomes manifest is not bound to the regression input recorded by workspace execution')
++    contract = doc.get('contract', {})
++    need(contract.get('batch_count') == local['batch_count'] and
++         contract.get('metadata_target_count') == local['target_count'] and
++         contract.get('raw_stream_count') == len(execution.get('commands', [])) * 2 and
++         contract.get('source_pin_count') == len(pins) and
++         contract.get('seed') == local['seed'] and
++         contract.get('rust_min_stack') is None and
++         contract.get('resource_limits') == execution.get('guard_limits') and
++         contract.get('target_absent_before_and_after') is True and
++         contract.get('source_pins_equal_before_after_and_live') is True,
++         'named-outcomes manifest contract differs from the actual receipt-derived run facts')
++    command_receipts = doc.get('actual_command_receipts')
++    execution_commands = execution.get('commands', [])
++    need(isinstance(command_receipts, list) and len(command_receipts) == len(execution_commands),
++         'named-outcomes manifest omits actual command receipt inventory')
++    for manifest_row, execution_row in zip(command_receipts, execution_commands):
++        need(manifest_row.get('index') == execution_row.get('index') and
++             manifest_row.get('argv') == execution_row.get('argv') and
++             manifest_row.get('exit_code') == execution_row.get('exit_code') and
++             manifest_row.get('guard_stop') == execution_row.get('guard_stop') and
++             manifest_row.get('streams') == {name: {'path': ref['path'], 'bytes': ref['bytes'],
++                                                     'sha256': ref['sha256']}
++                                              for name, ref in execution_row['streams'].items()},
++             'named-outcomes manifest command evidence differs from the raw workspace receipt')
++    _, by_named, inventory = ci.metadata_targets(metadata)
++    rows = doc.get('all_target_outcomes')
++    need(isinstance(rows, list) and len(rows) == len(inventory),
++         'named-outcomes manifest does not enumerate every metadata target')
++    manifest_by_key = {}
++    for row in rows:
++        key = tuple(row.get('key', ()))
++        need(key in by_named and key not in manifest_by_key,
++             'named-outcomes manifest has an unknown or duplicate target key: ' + repr(key))
++        meta = by_named[key]
++        need(row.get('source_path') == meta['source_path'] and
++             row.get('source_path') in pins and
++             pins[row['source_path']] == sha_file(ROOT / row['source_path']),
++             'named-outcomes source path is not the metadata source in the live pinned closure')
++        manifest_by_key[key] = row
++    local_by_key = {tuple(row['key']): row for row in local_observations}
++    need(set(manifest_by_key) == set(inventory) == set(local_by_key),
++         'metadata, manifest, and local observations do not have identical target coverage')
++    for key in inventory:
++        declared = manifest_by_key[key]
++        local = local_by_key[key]
++        outcomes = declared.get('outcomes')
++        need(declared.get('counts') == list(local['counts']) and isinstance(outcomes, list),
++             'named-outcomes manifest counts differ from local raw target results: ' + repr(key))
++        local_outcomes = [{'name': name, 'status': status} for name, status in local['outcomes']]
++        manifest_outcomes = [{'name': item.get('name'), 'status': item.get('status')}
++                             for item in outcomes]
++        need(manifest_outcomes == local_outcomes,
++             'named-outcomes manifest differs from the local named outcomes: ' + repr(key))
++    totals = [sum(row['counts'][i] for row in local_observations) for i in range(3)]
++    outcome_count = sum(len(row['outcomes']) for row in local_observations)
++    actual_totals = doc.get('actual_workspace_totals', {})
++    need(actual_totals == {'passed': totals[0], 'failed': totals[1], 'ignored': totals[2],
++                           'named_test_outcome_count': outcome_count,
++                           'target_summary_count': len(local_observations),
++                           'per_target_named_outcomes_present': True},
++         'workspace named manifest aggregate totals differ from local target observations')
++    required = required_tests_from_runner(runner_path, runner_sha256)
++    required_rows = doc.get('required_test_outcomes')
++    need(isinstance(required_rows, list), 'workspace manifest omits required-test outcome evidence')
++    manifest_required = {name for row in required_rows for name in row.get('passed_test_names', [])}
++    need(manifest_required == required and all(row.get('passed_test_names') for row in required_rows),
++         'workspace manifest required-test results differ from the pinned runner inventory')
++    return {'path': str(path.resolve()), 'sha256': sha(raw),
++            'schema': doc['schema'], 'target_count': len(rows),
++            'all_target_outcomes_match_local': True,
++            'required_named_test_count': len(required),
++            'metadata_sha256_bound_by_execution_and_metadata_stdout': sha(metadata_raw)}
+ 
+ 
+ def main() -> int:
++    global EXPECTED_CLI_SHA256, WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256
++    global BUILD_RUNNER, BUILD_RUNNER_SHA256
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--product-commit', required=True)
+     parser.add_argument('--run-id', required=True)
+     parser.add_argument('--capture', type=Path, required=True)
+-    parser.add_argument('--workspace', type=Path, default=EXPECTED_WORKSPACE)
+-    parser.add_argument('--final-build', type=Path, default=EXPECTED_BUILD_RECORD)
+-    parser.add_argument('--final-cli', type=Path, default=EXPECTED_FINAL_CLI)
++    parser.add_argument('--workspace', type=Path, required=True)
++    parser.add_argument('--workspace-runner', type=Path, required=True)
++    parser.add_argument('--workspace-runner-sha256', required=True)
++    parser.add_argument('--workspace-schema', default=WORKSPACE_SCHEMA)
++    parser.add_argument('--workspace-named-manifest', type=Path, required=True)
++    parser.add_argument('--workspace-acceptor', type=Path, required=True)
++    parser.add_argument('--workspace-acceptor-sha256', required=True)
++    parser.add_argument('--regression-receipt', type=Path, required=True)
++    parser.add_argument('--regression-receipt-sha256', required=True)
++    parser.add_argument('--final-build', type=Path, required=True)
++    parser.add_argument('--build-runner', type=Path, required=True)
++    parser.add_argument('--build-runner-sha256', required=True)
++    parser.add_argument('--build-schema', default='hoisted-iterator-final-lint-build-root-v2')
++    parser.add_argument('--final-cli', type=Path, required=True)
++    parser.add_argument('--expected-cli-sha256', default=EXPECTED_CLI_SHA256)
+     parser.add_argument('--out', type=Path, required=True)
+     args = parser.parse_args()
+     need(re.fullmatch(r'[0-9a-f]{40}', args.product_commit) is not None,
+          'product commit must be a lowercase 40-hex SHA')
+     need(args.run_id.isdecimal(), 'CI run id must be decimal')
++    need(re.fullmatch(r'[0-9a-f]{64}', args.workspace_runner_sha256) is not None and
++         re.fullmatch(r'[0-9a-f]{64}', args.build_runner_sha256) is not None and
++         re.fullmatch(r'[0-9a-f]{64}', args.workspace_acceptor_sha256) is not None and
++         re.fullmatch(r'[0-9a-f]{64}', args.regression_receipt_sha256) is not None and
++         re.fullmatch(r'[0-9a-f]{64}', args.expected_cli_sha256) is not None,
++         'runner/candidate SHA inputs must be lowercase 64-hex')
++    EXPECTED_CLI_SHA256 = args.expected_cli_sha256
++    WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256 = args.workspace_runner.resolve(strict=True), args.workspace_runner_sha256
++    BUILD_RUNNER, BUILD_RUNNER_SHA256 = args.build_runner.resolve(strict=True), args.build_runner_sha256
++    workspace_acceptor = args.workspace_acceptor.resolve(strict=True)
++    regression_receipt = args.regression_receipt.resolve(strict=True)
++    workspace_receipt = args.workspace.resolve(strict=True) / 'execution.json'
++    workspace_acceptance = args.workspace_named_manifest.resolve(strict=True)
++    workspace_sha256 = sha_file(workspace_receipt)
++    workspace_acceptance_sha256 = sha_file(workspace_acceptance)
++    need(sha_file(regression_receipt) == args.regression_receipt_sha256,
++         'regression receipt SHA differs from explicit input')
+     out = args.out.resolve()
+     need(not out.exists(), 'refusing to overwrite a previous acceptance result: ' + str(out))
+     ci = load_ci_helper()
+-    refs = verify_references(args.product_commit, ci)
+-    ex, metadata, local = verify_workspace(args.product_commit, args.workspace, ci)
++    refs = verify_references(args.product_commit, ci, WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256,
++                             workspace_acceptor, args.workspace_acceptor_sha256,
++                             BUILD_RUNNER, BUILD_RUNNER_SHA256)
++    ex, metadata, local = verify_workspace(args.product_commit, args.workspace, ci,
++                                           WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256,
++                                           args.workspace_schema)
++    manifest = verify_named_manifest(args.workspace_named_manifest, args.product_commit,
++                                     Path(local['metadata']).read_bytes(), metadata,
++                                     local['target_observations'], ex['source_pins_before'],
++                                     local, ex, WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256, ci)
+     required = verify_required_tests(local['target_observations'], args.product_commit,
+-                                     ex['source_pins_before'], metadata, ci)
++                                     ex['source_pins_before'], WORKSPACE_RUNNER,
++                                     WORKSPACE_RUNNER_SHA256)
+     build = verify_final_build(args.product_commit, ex['source_pins_before'],
+-                               args.final_build.resolve(strict=True), args.final_cli, ci)
++                               args.final_build.resolve(strict=True), args.final_cli,
++                               BUILD_RUNNER, BUILD_RUNNER_SHA256, args.build_schema,
++                               regression_receipt, args.regression_receipt_sha256,
++                               workspace_receipt, workspace_sha256,
++                               workspace_acceptance, workspace_acceptance_sha256, ci)
+     ci_result = verify_product_ci(args.capture.resolve(strict=True), args.product_commit,
+                                   args.run_id, local['target_observations'],
+-                                  ex['source_pins_before'], ci)
++                                  ex['source_pins_before'], local['seed'], ci)
+     acceptance = {
+-        'schema': 'recover-proved-conditional-constructor-values-own-ci-acceptance-root-v1',
++        'schema': 'recover-proved-hoisted-iterator-foreach-own-ci-acceptance-luna-v1',
+         'status': 'accepted', 'product_commit': args.product_commit, 'run_id': int(args.run_id),
+         'ci': {'jobs': ci_result['jobs'], 'steps': ci_result['steps'],
+                'seed_runs': ci_result['seed_runs'], 'run_summary': ci_result['summary'],
+@@ -746,7 +937,8 @@
+                                       'batch_count_from_metadata': local['batch_count'],
+                                       'target_count_from_metadata': local['target_count'],
+                                       'source_closure_count_at_start': local['source_closure_count_at_start']},
+-        'required_tests': required, 'final_cli_build': build,
++        'required_tests': required, 'workspace_named_manifest': manifest,
++        'final_cli_build': build,
+         'all_local_and_both_ci_seed_named_outcomes_compared': True,
+         'references': refs,
+         'evidence': {'capture': str(args.capture.resolve()),
+@@ -755,10 +947,12 @@
+                      'workspace_execution_sha256': local['execution_sha256'],
+                      'workspace_metadata': local['metadata'],
+                      'workspace_metadata_sha256': local['metadata_sha256'],
++                     'workspace_named_manifest': manifest['path'],
++                     'workspace_named_manifest_sha256': manifest['sha256'],
+                      'final_build_record': build['record_path'],
+                      'final_build_record_sha256': build['record_sha256'],
+                      'final_cli': build['candidate_cli']},
+-        'acceptance_scope': ('Exact selected product commit and CI run. The independently reconstructed source/include/fixture closure is compared with the workspace starting count, before/after pins, product Git blobs, and live bytes. Cargo metadata independently derives the full target and batch inventory. All 12 named constructor outcomes from the pinned current workspace runner must pass, and every named outcome and count in each of both CI workspace seed runs is compared with the local observed target results. All four CI jobs and every recorded step must complete successfully. The final CLI is byte-identical to the focused candidate build and bound by the clean final format/clippy/strict-validation/build receipt.')
++        'acceptance_scope': ('Exact selected product commit and CI run. The independently reconstructed source/include/fixture closure is compared with the workspace starting count, before/after pins, product Git blobs, and live bytes. Cargo metadata independently derives target and batch coverage; the supplied full named-outcomes manifest must match every local target count and named outcome. Every named outcome and count in each CI workspace seed is compared target-by-target with the local run. All four CI jobs and every recorded step must complete successfully. The final CLI is byte-identical to the runtime-tested regression candidate and bound by the clean final format/clippy/strict-validation/build receipt. No anticipated target, test, batch, or aggregate count is predeclared.')
+     }
+     out.parent.mkdir(parents=True, exist_ok=True)
+     with out.open('x', encoding='utf-8') as stream:
+@@ -779,5 +973,5 @@
+     try:
+         raise SystemExit(main())
+     except Exception as error:
+-        print('constructor-conditional own-CI verification failed: ' + str(error), file=sys.stderr)
++        print('hoisted-iterator own-CI verification failed: ' + str(error), file=sys.stderr)
+         raise

@@ -1,0 +1,11 @@
+# Private clean-main wrapper v2
+
+This is a separate v2 copy; v1 remains unchanged. The wrapper accepts the product commit and docs-close HEAD as separate positional arguments, then requires explicit path and SHA-256 pairs for the regression receipt, workspace receipt, workspace acceptance, final-build receipt, and final acceptance. Each input must be a regular non-symlink file; each SHA is checked before reading and all five file hashes are checked again before acceptance.
+
+The regression schema remains `hoisted-iterator-regressions-root-v3`, including for the follow-up root-v4 output. No regression receipt, workspace output directory, workspace acceptance, or final-build path is hardcoded. The final CLI path is taken from the final-build receipt; the regression CLI path is taken from its receipt. Their bytes, SHA, mode and size are checked together. The expected runtime CLI digest is extracted as a literal from the pinned final-build runner, avoiding a guessed root-v4 digest.
+
+The final-build receipt is checked against the five command rows, raw streams, environment, cleanup, target absence, builder/reference pins, source closure and receipt input bindings. The final-acceptance JSON must bind the supplied final/regression/workspace receipt hashes and match the dynamic workspace totals/source count. The script then recomputes the 4,732 source pins and verifies identical Git blobs at the product commit, docs-close commit and live tree, with the required ancestry chain and main/origin agreement.
+
+The clean-main checks require 15 distinct physical checkouts (root on main and 14 detached auxiliaries), all clean, main ancestors, and without `target` or `fuzz/target`. Worktree lock/prunable values are recorded only; the script never changes worktree registration or protection. It checks available space and records raw streams for audit Git commands.
+
+Static review compared the wrapper against the actual frozen final-build runner and acceptor schemas. Python AST parse, symtable analysis, and unresolved-global audit passed. The wrapper was not executed; no Git, network, Cargo, JDK or other toolchain command was run. Root-v4 receipt/CLI digests remain runtime inputs and are not predicted here.

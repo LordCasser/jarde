@@ -1,0 +1,10 @@
+{
+  "iterator_declaration_for_loop": {
+    "sha256": "2848d3c829fc7bed1d6e912d7de3a8ab105519710b34080cf9cb49b529e0031c",
+    "bytes": 5131
+  },
+  "iterator_phi_use_ownership": {
+    "sha256": "b3f9fc6fe8d95b725b68ea2b360020dca0d8c3ee91bfacdf90ffe60ecfce90cb",
+    "bytes": 39855
+  }
+}

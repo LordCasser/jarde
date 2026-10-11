@@ -1,0 +1,108 @@
+{
+  "status": "v4 corrected static review; javap bytes are actual, SSA relations/helper results remain pending focused IR run",
+  "inputs": {
+    "shared_build_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1738662,
+      "sha256": "df113e368d9eb8762abbe269ee3a58421cb0b7b5a01e64154a068dbd34cfe28a"
+    },
+    "ssa_transfer_source": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    "v2_test_candidate_base": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.candidate",
+      "bytes": 1756013,
+      "sha256": "658daf1504679a098337496ed9bae3da45f4b693ee4480a28f53debcddd63299"
+    },
+    "v2_test_patch": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.patch",
+      "bytes": 19383,
+      "sha256": "ea67f5ee745ebeb7b4a95e395ff6bf0045a329176979663c7e193c57ddd1decf"
+    },
+    "java_source": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v4/HoistedIteratorPhiControls.java",
+      "bytes": 707,
+      "sha256": "9cdf3915818be01928664d3c112b3f846797b9f71d110dc49df8d8144bd59bbb"
+    },
+    "v4_test_insert": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v4/phi_test_insert.rs.txt",
+      "bytes": 8779,
+      "sha256": "02032134e180f43b903faed16953066a5795ccd37545fad3394b71f10b408a84"
+    },
+    "v4_test_delta": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v4/build.rs.phi-controls.patch",
+      "bytes": 9286,
+      "sha256": "947e2a0bd6a14e9f93fce74d9921b6028f6b2767b0e710b3dd12593152e8bb46"
+    },
+    "v4_full_test_candidate": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v4/build.rs.tests.candidate.v4",
+      "bytes": 1764793,
+      "sha256": "228773d7bf215ce853538ff007a9f92f9f6c91108dfb072953b96a0b0c271e9e"
+    },
+    "build_receipt": {
+      "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/execution.json",
+      "bytes": 6432,
+      "sha256": "0723cede9b88065b8c4665eb1440a793496c3fb1e6fd188508bef0cb619e3296"
+    },
+    "javap_javac8": {
+      "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/raw/1.stdout.raw",
+      "bytes": 4695,
+      "sha256": "768161c051becbf333b84b559733290fc16ce24f891e0f37c04b47a1030c61f9"
+    },
+    "javap_javac23": {
+      "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/raw/3.stdout.raw",
+      "bytes": 4904,
+      "sha256": "e9433bfe9a2a1771114194fdae3ffb73c421a0a81c2ee2f472ac966dbdb6d016"
+    },
+    "class_javac8": {
+      "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/javac8/classes/cf11/HoistedIteratorPhiControls.class",
+      "bytes": 606,
+      "sha256": "31cd1bcbcd906ac5249ba6b917660774658b157964451136bbb3b86bc694ccda"
+    },
+    "class_javac23": {
+      "path": "/private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/javac23/classes/cf11/HoistedIteratorPhiControls.class",
+      "bytes": 603,
+      "sha256": "87e300ec06fdc83dafc8e3cceb3ff5c2e3dc6300dfad6e794451061f5348f2a4"
+    }
+  },
+  "compiler_fact": "javac8 and javac23 --release 8 both succeeded; generated class bytes differ (606 vs 603). The chosen permanent fixture is pending root decision.",
+  "javap_observations": {
+    "mixedIterator": {
+      "iterator_call": 1,
+      "original_local_store": 6,
+      "alternate_iterator_call": 12,
+      "alternate_local_store": 17,
+      "hasNext_receiver_load": 21,
+      "hasNext_call": 22,
+      "next_receiver_load": 30,
+      "next_call": 31
+    },
+    "extraAliasConsumer": {
+      "iterator_call": 1,
+      "original_local_store": 6,
+      "copy_load_original": 11,
+      "copy_store_alias": 12,
+      "alternate_iterator_call": 18,
+      "alternate_store_alias": 23,
+      "hasNext_receiver_load": 25,
+      "hasNext_call": 27
+    }
+  },
+  "ssa_semantics_inference": {
+    "source": "crates/jarde-jvm/src/ssa.rs constructs a new instruction-defined value for each write; a local read records a use of the prior local value and writes a new stack value.",
+    "extra_alias_first_gate": "Expected physical source use at BCI 11, rejected against receiver-load allowlist [25,25] before other-slot phi resolution. This remains an inference until the actual IR reports source ValueIds and uses.",
+    "mixed_first_gate": "Expected initial store value as an exact arm of a same-local nontrivial loop/branch phi, then rejected because that phi value is live and unreplaced. This remains pending actual IR."
+  },
+  "patch_base": {
+    "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.candidate",
+    "sha256": "658daf1504679a098337496ed9bae3da45f4b693ee4480a28f53debcddd63299"
+  },
+  "permanent_fixture": {
+    "path": "tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class",
+    "sha256": null,
+    "bytes": null,
+    "status": "pending root selection/copy after SSA inspection"
+  }
+}

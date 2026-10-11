@@ -1,0 +1,7 @@
+{
+  "status": "pre_application_counter_assertion_failed",
+  "reason": "33 pin rows represent 32 unique paths; duplicate candidate-source row was counted twice",
+  "production_sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+  "new_test_absent": true,
+  "toolchain_not_run": true
+}

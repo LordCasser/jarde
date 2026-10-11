@@ -18,7 +18,8 @@
 //! 3. the byte-patched `Loc.punct` — the local's name `数量` replaced in place by `名。`, same byte
 //!    length, README recipe — still aliases, and declaration and uses share the alias: the widening
 //!    is Java's *letters and digits*, not "every non-ASCII character";
-//! 4. the ASCII presentations retain their frozen text except F1's two proved for headers,
+//! 4. the ASCII presentations retain their current frozen text except F1's two proved for headers,
+//!    with SB's separately proved iterator foreach recorded in its golden,
 //!    including the class whose own name is no identifier at all (`com/example/package-info`, whose hyphen the class-declaration
 //!    line spells as the pool states it — a boundary this change neither widens nor closes).
 
@@ -376,7 +377,7 @@ fn a_letter_name_is_spelled_and_a_punctuation_name_keeps_its_alias() {
 /// that the standalone class bytes go in through the same single-entry jar shape the per-class CLI sweep
 /// reads them with).
 #[test]
-fn the_ascii_presentations_only_change_in_the_two_proved_f1_for_headers() {
+fn the_ascii_presentations_match_the_frozen_proved_loop_projections() {
     let f1: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
     );
@@ -441,7 +442,7 @@ fn the_ascii_presentations_only_change_in_the_two_proved_f1_for_headers() {
         };
         assert_eq!(
             report.text, expected,
-            "{label}: only F1's two exact for headers may differ; all other ASCII presentations stay byte-for-byte fixed"
+            "{label}: only F1's two exact for headers may differ from the current golden"
         );
     }
     // The boundary this change states and does not close: the hyphenated name is no identifier, and

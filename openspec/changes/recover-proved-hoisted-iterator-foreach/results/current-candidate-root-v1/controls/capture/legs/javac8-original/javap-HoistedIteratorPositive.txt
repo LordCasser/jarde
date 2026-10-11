@@ -1,0 +1,182 @@
+Classfile /private/tmp/jarde-hoisted-iterator-controls-candidate-root-v4/legs/javac8-original/classes/cf11/HoistedIteratorPositive.class
+  Last modified 2026-10-12; size 1256 bytes
+  MD5 checksum c25e536571adcb44a42f66be636d0ac4
+  Compiled from "HoistedIteratorPositive.java"
+public final class cf11.HoistedIteratorPositive
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #10.#40        // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #41.#42        // java/util/List.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #43.#44        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #43.#45        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = Class              #46            // java/lang/String
+   #6 = Methodref          #9.#47         // cf11/HoistedIteratorPositive.body:(Ljava/lang/String;Ljava/lang/String;)I
+   #7 = Fieldref           #9.#48         // cf11/HoistedIteratorPositive.bodyCalls:I
+   #8 = Methodref          #5.#49         // java/lang/String.length:()I
+   #9 = Class              #50            // cf11/HoistedIteratorPositive
+  #10 = Class              #51            // java/lang/Object
+  #11 = Utf8               bodyCalls
+  #12 = Utf8               I
+  #13 = Utf8               <init>
+  #14 = Utf8               ()V
+  #15 = Utf8               Code
+  #16 = Utf8               LineNumberTable
+  #17 = Utf8               LocalVariableTable
+  #18 = Utf8               this
+  #19 = Utf8               Lcf11/HoistedIteratorPositive;
+  #20 = Utf8               sumNested
+  #21 = Utf8               (Ljava/util/List;Ljava/util/List;)I
+  #22 = Utf8               right
+  #23 = Utf8               Ljava/lang/String;
+  #24 = Utf8               left
+  #25 = Utf8               outer
+  #26 = Utf8               Ljava/util/List;
+  #27 = Utf8               inner
+  #28 = Utf8               total
+  #29 = Utf8               LocalVariableTypeTable
+  #30 = Utf8               Ljava/util/List<Ljava/lang/String;>;
+  #31 = Utf8               StackMapTable
+  #32 = Class              #52            // java/util/Iterator
+  #33 = Class              #46            // java/lang/String
+  #34 = Utf8               Signature
+  #35 = Utf8               (Ljava/util/List<Ljava/lang/String;>;Ljava/util/List<Ljava/lang/String;>;)I
+  #36 = Utf8               body
+  #37 = Utf8               (Ljava/lang/String;Ljava/lang/String;)I
+  #38 = Utf8               SourceFile
+  #39 = Utf8               HoistedIteratorPositive.java
+  #40 = NameAndType        #13:#14        // "<init>":()V
+  #41 = Class              #53            // java/util/List
+  #42 = NameAndType        #54:#55        // iterator:()Ljava/util/Iterator;
+  #43 = Class              #52            // java/util/Iterator
+  #44 = NameAndType        #56:#57        // hasNext:()Z
+  #45 = NameAndType        #58:#59        // next:()Ljava/lang/Object;
+  #46 = Utf8               java/lang/String
+  #47 = NameAndType        #36:#37        // body:(Ljava/lang/String;Ljava/lang/String;)I
+  #48 = NameAndType        #11:#12        // bodyCalls:I
+  #49 = NameAndType        #60:#61        // length:()I
+  #50 = Utf8               cf11/HoistedIteratorPositive
+  #51 = Utf8               java/lang/Object
+  #52 = Utf8               java/util/Iterator
+  #53 = Utf8               java/util/List
+  #54 = Utf8               iterator
+  #55 = Utf8               ()Ljava/util/Iterator;
+  #56 = Utf8               hasNext
+  #57 = Utf8               ()Z
+  #58 = Utf8               next
+  #59 = Utf8               ()Ljava/lang/Object;
+  #60 = Utf8               length
+  #61 = Utf8               ()I
+{
+  public static int bodyCalls;
+    descriptor: I
+    flags: ACC_PUBLIC, ACC_STATIC
+
+  public cf11.HoistedIteratorPositive();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/HoistedIteratorPositive;
+
+  public static int sumNested(java.util.List<java.lang.String>, java.util.List<java.lang.String>);
+    descriptor: (Ljava/util/List;Ljava/util/List;)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=7, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: aload_0
+         3: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         8: astore_3
+         9: aload_3
+        10: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        15: ifeq          75
+        18: aload_3
+        19: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        24: checkcast     #5                  // class java/lang/String
+        27: astore        4
+        29: aload_1
+        30: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        35: astore        5
+        37: aload         5
+        39: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        44: ifeq          72
+        47: aload         5
+        49: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        54: checkcast     #5                  // class java/lang/String
+        57: astore        6
+        59: iload_2
+        60: aload         4
+        62: aload         6
+        64: invokestatic  #6                  // Method body:(Ljava/lang/String;Ljava/lang/String;)I
+        67: iadd
+        68: istore_2
+        69: goto          37
+        72: goto          9
+        75: iload_2
+        76: ireturn
+      LineNumberTable:
+        line 9: 0
+        line 10: 2
+        line 11: 29
+        line 12: 59
+        line 13: 69
+        line 14: 72
+        line 15: 75
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           59      10     6 right   Ljava/lang/String;
+           29      43     4  left   Ljava/lang/String;
+            0      77     0 outer   Ljava/util/List;
+            0      77     1 inner   Ljava/util/List;
+            2      75     2 total   I
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      77     0 outer   Ljava/util/List<Ljava/lang/String;>;
+            0      77     1 inner   Ljava/util/List<Ljava/lang/String;>;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 9
+          locals = [ int, class java/util/Iterator ]
+        frame_type = 253 /* append */
+          offset_delta = 27
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 249 /* chop */
+          offset_delta = 34
+        frame_type = 250 /* chop */
+          offset_delta = 2
+    Signature: #35                          // (Ljava/util/List<Ljava/lang/String;>;Ljava/util/List<Ljava/lang/String;>;)I
+
+  private static int body(java.lang.String, java.lang.String);
+    descriptor: (Ljava/lang/String;Ljava/lang/String;)I
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #7                  // Field bodyCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field bodyCalls:I
+         8: aload_0
+         9: invokevirtual #8                  // Method java/lang/String.length:()I
+        12: aload_1
+        13: invokevirtual #8                  // Method java/lang/String.length:()I
+        16: iadd
+        17: ireturn
+      LineNumberTable:
+        line 19: 0
+        line 20: 8
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      18     0  left   Ljava/lang/String;
+            0      18     1 right   Ljava/lang/String;
+}
+SourceFile: "HoistedIteratorPositive.java"

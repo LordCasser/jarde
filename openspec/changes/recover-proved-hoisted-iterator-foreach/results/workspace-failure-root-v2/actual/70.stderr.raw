@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.90s
+[1m[92m     Running[0m tests/recover_double_brace_allocation_site.rs (target/debug/deps/recover_double_brace_allocation_site-6aef1274db8d15e8)
+[1m[92m     Running[0m tests/recover_dup_store_conditional.rs (target/debug/deps/recover_dup_store_conditional-11760daf3df76a94)
+[1m[92m     Running[0m tests/recover_inline_conditional_concat_operands.rs (target/debug/deps/recover_inline_conditional_concat_operands-5aabfb780d6cab53)
+[1m[92m     Running[0m tests/recover_instance_field_assignment_chains.rs (target/debug/deps/recover_instance_field_assignment_chains-16623e3a96ebd27f)

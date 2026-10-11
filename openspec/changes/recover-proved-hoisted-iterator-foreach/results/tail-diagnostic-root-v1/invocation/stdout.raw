@@ -1,0 +1,14 @@
+{"batch": 1, "of": 13, "totals": [112, 0, 0]}
+{"batch": 2, "of": 13, "totals": [26, 0, 0]}
+{"batch": 3, "of": 13, "totals": [40, 0, 0]}
+{"batch": 4, "of": 13, "totals": [18, 0, 0]}
+{"batch": 5, "of": 13, "totals": [3, 0, 0]}
+{"batch": 6, "of": 13, "totals": [243, 0, 0]}
+{"batch": 7, "of": 13, "totals": [7, 0, 0]}
+{"batch": 8, "of": 13, "totals": [2, 0, 0]}
+{"batch": 9, "of": 13, "totals": [178, 0, 0]}
+{"batch": 10, "of": 13, "totals": [21, 0, 0]}
+{"batch": 11, "of": 13, "totals": [5, 0, 0]}
+{"batch": 12, "of": 13, "totals": [50, 0, 1]}
+{"batch": 13, "of": 13, "totals": [25, 0, 2]}
+{"status": "passed_tail_only", "commands": 15, "target_absent": true}

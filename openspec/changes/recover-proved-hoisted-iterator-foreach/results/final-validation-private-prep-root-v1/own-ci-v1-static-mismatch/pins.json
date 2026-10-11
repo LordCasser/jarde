@@ -1,0 +1,78 @@
+{
+  "schema": "hoisted-iterator-own-ci-verifier-prep-luna-v1",
+  "status": "private_candidate_static_review_only",
+  "candidate": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/verify-own-ci.py",
+    "bytes": 62151,
+    "sha256": "710da2279b021b5ba4d7914800fc21aebec17cc87daa0e170d4b71ed6242ccf5"
+  },
+  "candidate_patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/candidate.patch",
+    "bytes": 45823,
+    "sha256": "064c68a2c1e31bab1943f0364c1ec3e222918211b8e47dd5d2bd152bd00e0dd8",
+    "base": {
+      "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+      "sha256": "ac511e1560c5da57fca5fcf4d37e837b726b4e20f2327014b9f29394870f0d1e"
+    }
+  },
+  "review": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/README.md",
+    "bytes": 4201,
+    "sha256": "fd5fdf3c8a3e543144c53601eb121c38b9f2fa044cd7830a86b12e19f1bc4ff6"
+  },
+  "runtime_inputs": {
+    "workspace_runner": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace_runner.py",
+      "sha256": "711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e"
+    },
+    "workspace_acceptor": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/accept_workspace.py",
+      "sha256": "16683decff47cdae9cc73b7abadcbc72bdf1ce9a71733b05d5e715cbdb380df9"
+    },
+    "final_build_runner": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/final_build_runner.py",
+      "sha256": "48af92704170947376c798a303ed9e8a492b2f55ef55b4762bc2b1439a203ccd"
+    },
+    "regression_receipt": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regressions-root-v3/execution.json",
+      "sha256": "5a5ca9c44f10fa4f1f057b16e2efd3e40687e266eb1b8fee8f762167931a108f",
+      "schema": "hoisted-iterator-regressions-root-v3",
+      "status": "passed_regressions_candidate_only"
+    },
+    "runtime_tested_cli": {
+      "path": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v2",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a"
+    },
+    "ci_parser_helper": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca"
+    },
+    "ci_capture_collector": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3"
+    },
+    "resource_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "target_size_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    }
+  },
+  "static_checks": {
+    "python_ast_parse": "passed",
+    "symbol_table_unresolved_global_audit": "passed; no unresolved globals",
+    "verifier_execution": "not run",
+    "ci_or_release_acceptance": "not performed"
+  },
+  "dynamic_contracts": [
+    "Cargo metadata independently derives exact target inventory and the current batch command plan; no anticipated target/batch/outcome totals are constants.",
+    "The all-target workspace manifest is bound to the exact execution/metadata/runner/regression receipts and every target's local raw outcomes.",
+    "Both workflow seed groups are parsed and every target count and named outcome is compared in order with the local full-workspace observations.",
+    "All four expected CI jobs and every step must complete successfully.",
+    "Full source/include/fixture closure is reconstructed live and matched to before/after workspace and final-build pins plus selected product Git blobs.",
+    "The clean final build binds regression, workspace, and workspace-acceptance receipts and checks final CLI bytes against runtime-tested SHA 8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a.",
+    "Every local command retains verified raw stdout/stderr, successful exit, 1 GiB target, 5 GiB free-space, 1-second polling guard, and default Rust stack checks."
+  ]
+}

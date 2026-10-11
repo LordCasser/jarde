@@ -1,0 +1,1 @@
+该actual driver完成regressions-v6及full workspace-v4、两独立acceptor后，final调用因复用已存在的final-build-invocation-root-v4名称被recorder覆盖守卫拒绝；没有启动Rust/修改旧receipt。root用新invocation-root-v5及原同一final runner v2、相同accepted inputs启动final-build-v5。旧名称对应真实Clippy失败完整保留。driver没有走到最终success，不当作整体通过收据。

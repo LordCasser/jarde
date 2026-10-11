@@ -1,0 +1,121 @@
+{
+  "derived_from": {
+    "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v3/audit-clean-main.py",
+    "sha256": "558f38a9e5086f0c1629cdbedb9e8673b625facbb5e8cb9cb45c89861193f3a2"
+  },
+  "v4_auditor": {
+    "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v4/audit-clean-main.py",
+    "sha256": "6bff946298c386cc39172d3ce1fb1f75b8a797d3e106bd4a3393ee913ee13093"
+  },
+  "only_v3_to_v4_source_change": {
+    "symbol": "WORKSPACE_RUNNER_SHA256",
+    "old": "711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf546773535bc506e",
+    "new": "711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e"
+  },
+  "fixed_reference_sha_audit": {
+    "v2_auditor": {
+      "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v2/audit-clean-main.py",
+      "sha256": "7df98de4c2acf37bb83c3ea01227939d6cb6da0412f8c213be0a344a8b21bdbb",
+      "verified_regular_file": true
+    },
+    "v3_auditor": {
+      "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v3/audit-clean-main.py",
+      "sha256": "558f38a9e5086f0c1629cdbedb9e8673b625facbb5e8cb9cb45c89861193f3a2",
+      "verified_regular_file": true
+    },
+    "final_build_runner_v2": {
+      "path": "/private/tmp/jarde-hoisted-iterator-final-build-root-v2.py",
+      "sha256": "ce22ee46288d21ec53514743c66b5c26fb7761746ffdb4f442ea31877100ecc3",
+      "verified_regular_file": true
+    },
+    "final_build_acceptor_v2": {
+      "path": "/private/tmp/jarde-hoisted-iterator-accept-final-root-v2.py",
+      "sha256": "a71e63ac2150a1681b9b2ff8df7611335d6dbb033b0af37d74e7896d28701a92",
+      "verified_regular_file": true
+    },
+    "workspace_runner": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace_runner.py",
+      "sha256": "711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e",
+      "verified_regular_file": true
+    },
+    "cli_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "verified_regular_file": true
+    },
+    "cli_scan": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "verified_regular_file": true
+    },
+    "workspace_receipt_v3": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run-v3/execution.json",
+      "sha256": "91998248ff624ba428dd3650ae412726e6664386d9329dfc45432d5e86e4c733",
+      "verified_regular_file": true
+    },
+    "workspace_acceptance_v3": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-acceptance-v3.json",
+      "sha256": "712cfdde9bba3de6b2102b1c694ad1652c24086eb5577a944c5f8aa1e0ea4b2d",
+      "verified_regular_file": true
+    },
+    "regression_receipt_v4": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regressions-root-v4/execution.json",
+      "sha256": "cf177ccc25447b9d2170ee18f7dda346c8514a1058ad42d790f266cb6a0b8c9e",
+      "verified_regular_file": true
+    },
+    "final_build_v4_failed_receipt": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/final-build-v4/execution.json",
+      "sha256": "f3c00f4155bf05260954c6ce7cbc4271f5ca490217fecfa0ae5fbc97b29ce497",
+      "verified_status": "failed; finally-clean passed"
+    }
+  },
+  "test_lint_patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v4/build.rs-lint.patch",
+    "sha256": "291f7c2a1c183bdaf4b14c39f271ae4c82fce62b5f098f2380be604e3844ea8b",
+    "target": "crates/jarde-java/src/build.rs",
+    "change": "test-only fixture helper: iterator over phi.inputs().iter().any(|input| *input == PhiInput::Value(iterator)) becomes phi.inputs().contains(&PhiInput::Value(iterator))"
+  },
+  "workspace_evidence": {
+    "status": "passed_local_workspace_only",
+    "receipt_sha256": "91998248ff624ba428dd3650ae412726e6664386d9329dfc45432d5e86e4c733",
+    "acceptance_sha256": "712cfdde9bba3de6b2102b1c694ad1652c24086eb5577a944c5f8aa1e0ea4b2d",
+    "totals": {
+      "targets": 362,
+      "batches": 96,
+      "passed": 3480,
+      "failed": 0,
+      "ignored": 97,
+      "named_test_outcomes": 3577
+    }
+  },
+  "final_build_v4": {
+    "status": "failed",
+    "cause": "Clippy manual_contains at the fixture helper in build.rs",
+    "cleanup": "finally clean passed per root report; no success receipt SHA is applicable"
+  },
+  "unknown_final_build_receipt": {
+    "path": "not pinned; pass actual successful final-build-v4 path and SHA as arguments after root finishes",
+    "sha256": "unknown"
+  },
+  "auditor_execution": {
+    "performed": false,
+    "AST_parsed": true,
+    "top_level_script_executed": false,
+    "git_audit": false,
+    "cargo_or_clippy": false
+  },
+  "auditor_cli_receipt_paths_remain_arguments": true,
+  "candidate_cli_sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+  "candidate_cli_verified_files": [
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v4",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "bytes": 61314560
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v5",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "bytes": 61314560
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "schema": "hoisted-iterator-regression-prep-v1",
+  "status": "private_candidate_unrun",
+  "restrictions": [
+    "no shared edits",
+    "no Git",
+    "no Cargo",
+    "no JDK/Java",
+    "no JADX",
+    "no CLI",
+    "no network",
+    "no new helper/API presumed"
+  ],
+  "inputs": [
+    {
+      "name": "frozen_class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "role": "Accepted Java 8 class bytes used by the candidate; same target as exact baseline."
+    },
+    {
+      "name": "accepted_baseline",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/root-acceptance.json",
+      "bytes": 9017,
+      "sha256": "61ddab732a39559fd57ce61bbda6ccdb5c89c377d08ad1bb480be1bedb5e584f",
+      "role": "Root-accepted baseline facts, including exact target method identity and physical instruction list."
+    },
+    {
+      "name": "same_ir_analysis",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/same-ir-static-analysis-luna-v3/analysis.md",
+      "bytes": 6328,
+      "sha256": "96b9b6f51caa125097ee277a2e7f38411451c2527b3f1595e864ee943f7cdddf",
+      "role": "Static same-IR analysis describing iterator local identity, owner, matching phi and unrelated phi."
+    },
+    {
+      "name": "same_ir_pins",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/same-ir-static-analysis-luna-v3/pins.json",
+      "bytes": 4645,
+      "sha256": "923fea440d42988dbd0808ee42604728115fed6632f0bad1d3f831ca8a2aa90c",
+      "role": "Pin metadata for same-IR analysis inputs."
+    },
+    {
+      "name": "change_proposal",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/proposal.md",
+      "bytes": 2365,
+      "sha256": "ba501b8bdf808c3a3a63ae9a7abbd4a46514cd912160c1005544953f19d90f5c",
+      "role": "Scope and accepted baseline context."
+    },
+    {
+      "name": "change_design",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "bytes": 5629,
+      "sha256": "3dd01e968618172bb797176ea688c31ff380ecad36a350288830d4bc05b84964",
+      "role": "Design proof obligations, ownership limits and SSA occurrence-count requirement."
+    },
+    {
+      "name": "change_tasks",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "bytes": 3042,
+      "sha256": "cbc2af2c315475984ba0957fa02e029ff1fe5bb75739f81e4dd7c1b8ce0bdc8d",
+      "role": "Task 2.2 acceptance requirements."
+    },
+    {
+      "name": "change_verification",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md",
+      "bytes": 4404,
+      "sha256": "aa604bb3da0cc66d2dfd75c9ed2070f789e47ab7155d2aa0ae8662bb67a3dee9",
+      "role": "Verification plan context."
+    },
+    {
+      "name": "build_rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "role": "Current production candidate and existing build.rs test helpers; API/helper structure only, not a test result."
+    },
+    {
+      "name": "ssa_rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a",
+      "role": "SSA data shape and visibility boundary; prevents fabricating private SSA inputs from external tests."
+    },
+    {
+      "name": "iterable_tests",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_iterable_foreach.rs",
+      "bytes": 21207,
+      "sha256": "edb0255845558529aac999d974614579f770eb134dad70f1461c90b729d92af3",
+      "role": "Existing public iterator test style and source-level controls."
+    },
+    {
+      "name": "constructor_api_test",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_proved_conditional_constructor_values.rs",
+      "bytes": 32595,
+      "sha256": "d57f0a227fca9144426cab2f41f698cda58dc4a8540d0e5b9a277781bcc839ee",
+      "role": "Existing public API report, map, measured stop and pre-cancel test patterns."
+    },
+    {
+      "name": "for_latch_test",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_for_latch.rs",
+      "bytes": 37734,
+      "sha256": "a45319aa767cff820a66c7688d74e6f0ae75ce98c78f1a89b2fd1addc1691998",
+      "role": "Existing exact physical source-map and budget test patterns."
+    },
+    {
+      "name": "candidate:p3_hoisted_iterator_foreach.rs.candidate",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v1/p3_hoisted_iterator_foreach.rs.candidate",
+      "bytes": 11689,
+      "sha256": "d24addea0ea6691517ef8befedee8ba16db66a2c1a0f9fad48bc16e9fac7e0f4",
+      "role": "Private preparation output; not shared, not compiled or executed."
+    },
+    {
+      "name": "candidate:HoistedIteratorBoundaryControls.java.candidate",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v1/HoistedIteratorBoundaryControls.java.candidate",
+      "bytes": 2240,
+      "sha256": "6fb612d99e31bbbf24d0c1110b78d057ac791c0476c0aa5c9b1e34a593446567",
+      "role": "Private preparation output; not shared, not compiled or executed."
+    },
+    {
+      "name": "candidate:gate-test-matrix.md",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v1/gate-test-matrix.md",
+      "bytes": 6193,
+      "sha256": "aecd65fb6b7cacd145b74e7b66b4652726f6b38d00f3a0a5d8634de5ab6a47ac",
+      "role": "Private preparation output; not shared, not compiled or executed."
+    },
+    {
+      "name": "candidate:candidate.patch",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v1/candidate.patch",
+      "bytes": 12042,
+      "sha256": "24c5b1e841bbeaec305e546d44be447bb45e625ae04f7910576d3efc02f40bf9",
+      "role": "Private preparation output; not shared, not compiled or executed."
+    },
+    {
+      "name": "candidate:README.md",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v1/README.md",
+      "bytes": 2134,
+      "sha256": "14c0f42353031495cb67de1e88379236a050074a7c3d79493815884e3d3e253d",
+      "role": "Private preparation output; not shared, not compiled or executed."
+    }
+  ]
+}

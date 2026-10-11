@@ -29,11 +29,9 @@ public class SB extends java.lang.Object {
         // @declaration a static method of `SB`, member flags 0x0008
         // recovered from bytecode; presentation is not claimed to compile
         java.lang.String local1;
-        java.util.Iterator local2;
         local1 = "";
-        local2 = arg0.iterator();
-        while (local2.hasNext()) {
-            java.lang.String local3 = (java.lang.String) local2.next();
+        for (java.lang.Object iteratorElement20 : arg0) {
+            java.lang.String local3 = (java.lang.String) iteratorElement20;
             if (local3.length() > 1) {
                 local1 = local1 + local3;
             }

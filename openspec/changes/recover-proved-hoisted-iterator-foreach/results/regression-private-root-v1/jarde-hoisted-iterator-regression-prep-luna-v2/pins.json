@@ -1,0 +1,58 @@
+{
+  "purpose": "private internal-test patch preparation for iterator declaration ownership and phi use proof",
+  "status": "candidate only; not compiled or run",
+  "constraints": "no shared edits, Git, Cargo, JDK, JADX, CLI, or network; source base read-only",
+  "inputs": {
+    "shared_build_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1738662,
+      "sha256": "df113e368d9eb8762abbe269ee3a58421cb0b7b5a01e64154a068dbd34cfe28a"
+    },
+    "upstream_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "slot_reuse_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-scope/v8-debug/Scope.class",
+      "bytes": 1101,
+      "sha256": "a93fdc7ff141daf5860c15106fb39ac860958cc8bb39ff44707ba36ac56a3d53"
+    },
+    "same_ir_diagnostic": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 91032,
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"
+    },
+    "openspec_design": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "bytes": 6814,
+      "sha256": "b479cd9fade6f5b7749b1c8150bfabb278bbe03887e5c0e251463a84a6299055"
+    },
+    "openspec_tasks": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "bytes": 3163,
+      "sha256": "6d1c6c8a1b4794ad22cda96d50f4a5082abb3dfeb195c233af0fbcd63ef62c40"
+    },
+    "test_patch": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.patch",
+      "bytes": 19383,
+      "sha256": "ea67f5ee745ebeb7b4a95e395ff6bf0045a329176979663c7e193c57ddd1decf"
+    },
+    "full_candidate": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.candidate",
+      "bytes": 1756013,
+      "sha256": "658daf1504679a098337496ed9bae3da45f4b693ee4480a28f53debcddd63299"
+    }
+  },
+  "observed_facts_from_same_ir_diagnostic": {
+    "method": "cf11.UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+    "iterator_local": "slot 5, LocalVariable index 0 at init/test/next",
+    "owner_path": "[1]",
+    "owner_anchor": "BCI 33, Reference(\"java.util.Iterator\")",
+    "header_phi": "one Value(iterator) and Itself self edge at the local-5 header phi",
+    "later_phi": "block BCI 97 has three Value(iterator) operands corresponding to three None uses",
+    "unrelated_phi": "block BCI 97 Local(6), replaced, with no iterator operand and no remaining uses",
+    "scope_reuse": "Scope.reuse(ZI)I slot 3 maps distinct debug-local identities at BCI 8 and 17"
+  },
+  "patch_scope": "tests module only; preserves analyze_own_grid through a generic wrapper"
+}

@@ -1,0 +1,182 @@
+{
+  "utc": "2026-10-11T19:38:21.415680+00:00",
+  "status": "static_review_applied_unbuilt",
+  "v1": "static_rejected_unapplied_path_vs_list_regression",
+  "v2": "static_accepted_for_guarded_actual_validation",
+  "pin_checks": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "kind": "live",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v2/build.rs.candidate",
+      "kind": "live",
+      "sha256": "ebdcfaa00230d5d3dfca4cffa0120e959aa5bcd6b42beb9deb0381395515d2f3"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v2/candidate.patch",
+      "kind": "live",
+      "sha256": "c5323ca335498b23f9c3aeb5248d9b91b38a5e671fea05b0657f32bc5f1634fc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "kind": "live",
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "kind": "live",
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "kind": "live",
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/stop.rs",
+      "kind": "live",
+      "sha256": "7021851211bf79c3b75a3f31bc99a926b516affb9394e5ca18ec4f65c5f738cb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/proposal.md",
+      "kind": "historical_git_context",
+      "sha256": "ba501b8bdf808c3a3a63ae9a7abbd4a46514cd912160c1005544953f19d90f5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "kind": "historical_git_context",
+      "sha256": "3dd01e968618172bb797176ea688c31ff380ecad36a350288830d4bc05b84964"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "kind": "historical_git_context",
+      "sha256": "cbc2af2c315475984ba0957fa02e029ff1fe5bb75739f81e4dd7c1b8ce0bdc8d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md",
+      "kind": "historical_git_context",
+      "sha256": "de06c4e5c8f5637b3f6f4427df8217245e2315df0f254ed774933794fc1c7a2f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md",
+      "kind": "live",
+      "sha256": "aa604bb3da0cc66d2dfd75c9ed2070f789e47ab7155d2aa0ae8662bb67a3dee9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/phi-ownership-private-review-v2/analysis.md",
+      "kind": "live",
+      "sha256": "d5b30bacba36e8096ebb6e519740d172a7a51072401d59da94d8f0feebbb065e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/phi-ownership-private-review-v2/pins.json",
+      "kind": "live",
+      "sha256": "94359f85a976e48f41e305e560d92cf6cf76d97e2af0d6a9d82c1f2699a71599"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v1/execution.json",
+      "kind": "live",
+      "sha256": "40eee52fea7659b3e438229e4ce68f56a751f80c3bf88946be784a67d8e18236"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v1/root-acceptance.json",
+      "kind": "live",
+      "sha256": "065a1b4c13ac2e2500b0de2912cec358bbd21a1ac19668cc19d94fb68b27e477"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/0.stdout.raw",
+      "kind": "live",
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/0.stderr.raw",
+      "kind": "live",
+      "sha256": "4a24afb4d22cc86945e612d62c5c5ba7994957f25cb7231bce3fd63fd78dd6d9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/execution.json",
+      "kind": "live",
+      "sha256": "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/root-acceptance.json",
+      "kind": "live",
+      "sha256": "6cb6f4c6f950090012455dfcc37d867504030f00d52d9a653f9eb034ae0ac252"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/final-build-execution.json",
+      "kind": "live",
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stdout.raw",
+      "kind": "live",
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "kind": "live",
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "kind": "live",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "kind": "live",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.java",
+      "kind": "live",
+      "sha256": "c427bc103b7a8675c496e0a2b3aa6e5107184e13a72e30efd6ddea2f902d06d3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_iterable_foreach.rs",
+      "kind": "live",
+      "sha256": "edb0255845558529aac999d974614579f770eb134dad70f1461c90b729d92af3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.nodebug.javap.txt",
+      "kind": "live",
+      "sha256": "b610eb4baf65f5a6d3c3e3151078f3526873eb6a66125e1500a239e64dbf15b8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.debug.class",
+      "kind": "live",
+      "sha256": "830848b4e2214ae583d5a9dbb6fc94701017baee91d84c8109413590ccf1bcb2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/iterable-raw-projection/remaining-4-1/original/RawIterableIterator.nodebug.class",
+      "kind": "live",
+      "sha256": "cde98c7000ec01682c85ad49211b0567a606b967f16939b8476c88363eca0fe4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/project-proved-enhanced-for-loops/verification-root-iterable-boundaries.md",
+      "kind": "live",
+      "sha256": "9065522e0f22d463f84ba96dff2967b0d1691d06174b02751b28cbff4bf067ea"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/project-proved-enhanced-for-loops/verification-agent-iterable.md",
+      "kind": "live",
+      "sha256": "5d514cb0aa092a157dbd61ef4fb7cd6bb6bf9f26d4b7ce03b78c0b92b0fc879a"
+    }
+  ],
+  "current_planning_inputs": {
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md": "aa604bb3da0cc66d2dfd75c9ed2070f789e47ab7155d2aa0ae8662bb67a3dee9",
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md": "6d1c6c8a1b4794ad22cda96d50f4a5082abb3dfeb195c233af0fbcd63ef62c40",
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/design.md": "b479cd9fade6f5b7749b1c8150bfabb278bbe03887e5c0e251463a84a6299055",
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/proposal.md": "963e1461f12f5359e050214f80da70f432fd1aa1ef379f37d84461072bc563e4",
+    "openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md": "d77451ae425e0298505fd2528664decdd3d4c260faea9af32399d57530b5a1e4"
+  },
+  "applied_source_sha256": "ebdcfaa00230d5d3dfca4cffa0120e959aa5bcd6b42beb9deb0381395515d2f3",
+  "public_test_sha256": "d24addea0ea6691517ef8befedee8ba16db66a2c1a0f9fad48bc16e9fac7e0f4",
+  "root_refinements": [
+    "absent owner declaration retains the same Iterator type requirement as the original current-list row",
+    "matching Phi arm proof iterates existing inputs a second time with explicit charge, avoiding a temporary Vec for unrelated Phi"
+  ],
+  "source_sha256_after_root_refinements": "789c860772ed97d4ceabaaad03ba0f86b243884b0f103e906159e9e517f98df0"
+}

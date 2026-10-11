@@ -1,0 +1,1 @@
+Private, uncompiled candidate for root review. `candidate.patch` is against `crates/jarde-java/src/build.rs` at the exact SHA in `pins.json`. Only `build.rs.candidate` is a proposed source change; the shared checkout is untouched. See `analysis.md` for proof boundaries and static-review limits.

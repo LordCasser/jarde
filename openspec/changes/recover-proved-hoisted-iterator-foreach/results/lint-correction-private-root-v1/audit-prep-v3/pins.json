@@ -1,0 +1,71 @@
+{
+  "source_v2_auditor": {
+    "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v2/audit-clean-main.py",
+    "sha256": "7df98de4c2acf37bb83c3ea01227939d6cb6da0412f8c213be0a344a8b21bdbb"
+  },
+  "v3_auditor": {
+    "path": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v3/audit-clean-main.py",
+    "sha256": "558f38a9e5086f0c1629cdbedb9e8673b625facbb5e8cb9cb45c89861193f3a2"
+  },
+  "changed_literals": {
+    "CLI_BUILDER": "/private/tmp/jarde-hoisted-iterator-final-build-root-v2.py",
+    "CLI_BUILDER_SHA256": "ce22ee46288d21ec53514743c66b5c26fb7761746ffdb4f442ea31877100ecc3",
+    "audit_schema": "jarde-hoisted-iterator-clean-main-audit-luna-v3"
+  },
+  "final_build_runner": {
+    "path": "/private/tmp/jarde-hoisted-iterator-final-build-root-v2.py",
+    "sha256": "ce22ee46288d21ec53514743c66b5c26fb7761746ffdb4f442ea31877100ecc3"
+  },
+  "final_build_acceptor": {
+    "path": "/private/tmp/jarde-hoisted-iterator-accept-final-root-v2.py",
+    "sha256": "a71e63ac2150a1681b9b2ff8df7611335d6dbb033b0af37d74e7896d28701a92"
+  },
+  "known_receipts": {
+    "workspace_receipt": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run-v3/execution.json",
+      "sha256": "91998248ff624ba428dd3650ae412726e6664386d9329dfc45432d5e86e4c733"
+    },
+    "workspace_acceptance": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-acceptance-v3.json",
+      "sha256": "712cfdde9bba3de6b2102b1c694ad1652c24086eb5577a944c5f8aa1e0ea4b2d"
+    },
+    "regression_receipt": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regressions-root-v4/execution.json",
+      "sha256": "cf177ccc25447b9d2170ee18f7dda346c8514a1058ad42d790f266cb6a0b8c9e"
+    }
+  },
+  "required_cli_arguments": [
+    "--regression-receipt",
+    "--regression-receipt-sha256",
+    "--workspace-receipt",
+    "--workspace-receipt-sha256",
+    "--workspace-acceptance",
+    "--workspace-acceptance-sha256",
+    "--final-build",
+    "--final-build-sha256",
+    "--final-acceptance",
+    "--final-acceptance-sha256"
+  ],
+  "runtime_cli": {
+    "path": "receipt-derived from final-build candidate_cli; verified byte-equal to regression receipt candidate_cli",
+    "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+    "mode": "0o555"
+  },
+  "schemas": {
+    "workspace": "hoisted-iterator-full-workspace-batched-root-v2",
+    "workspace_acceptance": "hoisted-iterator-full-workspace-local-acceptance-v1",
+    "final_build": "hoisted-iterator-final-lint-build-root-v2",
+    "final_acceptance": "hoisted-iterator-final-validation-acceptance-v1"
+  },
+  "final_build_v4_receipt": {
+    "path": "to be supplied after root actual final-build-v4 completes",
+    "sha256": "unknown; explicit CLI argument required; no forecast"
+  },
+  "audit_execution": {
+    "performed": false,
+    "commands_run": [
+      "Python AST parse and AST delta checks only"
+    ],
+    "git_or_cargo": false
+  }
+}

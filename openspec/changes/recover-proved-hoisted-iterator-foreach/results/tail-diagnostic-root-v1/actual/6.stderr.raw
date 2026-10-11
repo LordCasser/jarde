@@ -1,0 +1,7 @@
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 4.68s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_jvm-3c62f6d12b6ccf38)

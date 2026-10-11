@@ -1,0 +1,110 @@
+Classfile /private/tmp/jarde-hoisted-iterator-phi-fixture-build-root-v1/javac8/classes/cf11/HoistedIteratorPhiControls.class
+  Last modified 2026-10-12; size 606 bytes
+  MD5 checksum 6ea3307cbafc78efa78b29fa0947ddf3
+public final class cf11.HoistedIteratorPhiControls
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#16         // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #17.#18        // java/util/List.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #19.#20        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #19.#21        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = Class              #22            // cf11/HoistedIteratorPhiControls
+   #6 = Class              #23            // java/lang/Object
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               mixedIterator
+  #11 = Utf8               (Ljava/util/List;Ljava/util/List;Z)I
+  #12 = Utf8               StackMapTable
+  #13 = Class              #24            // java/util/Iterator
+  #14 = Utf8               extraAliasConsumer
+  #15 = Utf8               (Ljava/util/List;Ljava/util/List;Z)Z
+  #16 = NameAndType        #7:#8          // "<init>":()V
+  #17 = Class              #25            // java/util/List
+  #18 = NameAndType        #26:#27        // iterator:()Ljava/util/Iterator;
+  #19 = Class              #24            // java/util/Iterator
+  #20 = NameAndType        #28:#29        // hasNext:()Z
+  #21 = NameAndType        #30:#31        // next:()Ljava/lang/Object;
+  #22 = Utf8               cf11/HoistedIteratorPhiControls
+  #23 = Utf8               java/lang/Object
+  #24 = Utf8               java/util/Iterator
+  #25 = Utf8               java/util/List
+  #26 = Utf8               iterator
+  #27 = Utf8               ()Ljava/util/Iterator;
+  #28 = Utf8               hasNext
+  #29 = Utf8               ()Z
+  #30 = Utf8               next
+  #31 = Utf8               ()Ljava/lang/Object;
+{
+  public cf11.HoistedIteratorPhiControls();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int mixedIterator(java.util.List, java.util.List, boolean);
+    descriptor: (Ljava/util/List;Ljava/util/List;Z)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=5, args_size=3
+         0: aload_0
+         1: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         6: astore_3
+         7: iload_2
+         8: ifeq          18
+        11: aload_1
+        12: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        17: astore_3
+        18: iconst_0
+        19: istore        4
+        21: aload_3
+        22: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        27: ifeq          43
+        30: aload_3
+        31: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        36: pop
+        37: iinc          4, 1
+        40: goto          21
+        43: iload         4
+        45: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 18
+          locals = [ class java/util/Iterator ]
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+        frame_type = 21 /* same */
+
+  public static boolean extraAliasConsumer(java.util.List, java.util.List, boolean);
+    descriptor: (Ljava/util/List;Ljava/util/List;Z)Z
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=5, args_size=3
+         0: aload_0
+         1: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         6: astore_3
+         7: iload_2
+         8: ifeq          17
+        11: aload_3
+        12: astore        4
+        14: goto          25
+        17: aload_1
+        18: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        23: astore        4
+        25: aload         4
+        27: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        32: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 17
+          locals = [ class java/util/Iterator ]
+        frame_type = 252 /* append */
+          offset_delta = 7
+          locals = [ class java/util/Iterator ]
+}

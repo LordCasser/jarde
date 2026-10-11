@@ -1,0 +1,1 @@
+独立full workspace已经成功并接受；后续final runner的guard command_stream默认要求output相对repo，私有out不在repo，fmt运行后路径记录抛ValueError。commands数组为空；finally同index0输出已存在导致cleanup记录失败，target仍不存在（前段workspace已clean、fmt不构建）。此失败不当作fmt/Clippy/strict/final CLI通过，完整raw保留。新final runner v2仅将stream pin改绝对路径，source/预算/命令/CLI/三helper引用不变，acceptor只更新该runnerpath/SHA，实际重跑另存。

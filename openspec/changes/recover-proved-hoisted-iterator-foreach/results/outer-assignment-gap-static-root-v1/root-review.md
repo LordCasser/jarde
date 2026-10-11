@@ -1,0 +1,1 @@
+root 静态审阅接受 v2 的最小方向：保留 outer 的 Assign、cast、目标名及全部后续读写，只在现有 foreach 候选中识别准确 inline Cast(next) 并替换 next 为合成 Object 元素。v1 要求新增目标 owner/type 门没有改变的不变量可保护，已撤回；现有 write_target/write_statement/declare/push 负责原赋值的身份、类型和发布。这里只定位同一个固定 CF11 case 下一步，未应用实现或创建 spec。实际 sameIR 只证明 outer13 body_first Assign 首拒；更后的 outer origin/SSA/Phi/effect gates 未跑，必须受控实际确认后再立项。泛型债务独立，整个CF11不关闭。

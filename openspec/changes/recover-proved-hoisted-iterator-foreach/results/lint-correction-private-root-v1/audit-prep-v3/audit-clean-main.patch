@@ -1,0 +1,22 @@
+--- /private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v2/audit-clean-main.py
++++ /private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v3/audit-clean-main.py
+@@ -20,8 +20,8 @@
+ CLI_MODE = 0o555
+ CLI_SCHEMA = 'hoisted-iterator-final-lint-build-root-v2'
+ CLI_SOURCE_COUNT = 4732
+-CLI_BUILDER = PREP / 'final_build_runner.py'
+-CLI_BUILDER_SHA256 = '48af92704170947376c798a303ed9e8a492b2f55ef55b4762bc2b1439a203ccd'
++CLI_BUILDER = Path('/private/tmp/jarde-hoisted-iterator-final-build-root-v2.py')
++CLI_BUILDER_SHA256 = 'ce22ee46288d21ec53514743c66b5c26fb7761746ffdb4f442ea31877100ecc3'
+ WORKSPACE_RUNNER = PREP / 'workspace_runner.py'
+ WORKSPACE_RUNNER_SHA256 = '711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf546773535bc506e'
+ CLI_GUARD = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+@@ -193,7 +193,7 @@
+ 
+ 
+ result = {
+-    'schema': 'jarde-hoisted-iterator-clean-main-audit-luna-v2',
++    'schema': 'jarde-hoisted-iterator-clean-main-audit-luna-v3',
+     'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+     'expected_product_commit': PRODUCT_COMMIT,
+     'expected_docs_head': DOCS_HEAD,

@@ -1,0 +1,94 @@
+--- /private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/verify-own-ci.py	2026-10-12 04:13:15
++++ /private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py	2026-10-12 04:15:56
+@@ -427,6 +427,7 @@
+ 
+ def verify_final_build(product: str, workspace_pins: dict[str, str], build_record: Path,
+                        final_cli_path: Path, build_runner: Path, build_runner_sha256: str,
++                       workspace_runner: Path, workspace_runner_sha256: str,
+                        build_schema: str, regression_receipt: Path, regression_sha256: str,
+                        workspace_receipt: Path, workspace_sha256: str,
+                        workspace_acceptance: Path, workspace_acceptance_sha256: str,
+@@ -507,15 +508,32 @@
+     need(regression.get('source_pins_before') == regression.get('source_pins_after') ==
+          workspace_pins == workspace.get('source_pins_before') == workspace.get('source_pins_after'),
+          'regression, workspace, and final-build source closures differ')
+-    runtime_cli = regression.get('candidate_cli', {})
++    regression_cli = regression.get('candidate_cli', {})
+     recorded_runtime_cli = build.get('runtime_tested_cli', {})
+-    need(runtime_cli.get('sha256') == EXPECTED_CLI_SHA256 and
+-         runtime_cli.get('mode') == '0o555' and isinstance(runtime_cli.get('bytes'), int) and
+-         runtime_cli.get('bytes') > 0,
++    need(regression_cli.get('sha256') == EXPECTED_CLI_SHA256 and
++         regression_cli.get('mode') == '0o555' and isinstance(regression_cli.get('bytes'), int) and
++         regression_cli.get('bytes') > 0,
+          'runtime-tested regression CLI does not match the accepted candidate identity')
+-    need(recorded_runtime_cli == {'path': runtime_cli.get('path'), 'bytes': runtime_cli.get('bytes'),
+-                                  'sha256': runtime_cli.get('sha256'), 'mode': runtime_cli.get('mode')},
+-         'final build runtime CLI binding differs from the regression receipt')
++    runtime_cli_raw_path = Path(recorded_runtime_cli.get('path', ''))
++    regression_cli_raw_path = Path(regression_cli.get('path', ''))
++    need(not runtime_cli_raw_path.is_symlink() and not regression_cli_raw_path.is_symlink() and
++         not final_cli_path.is_symlink(),
++         'runtime/regression/final CLI path must not be a symlink')
++    runtime_cli_path = runtime_cli_raw_path.resolve(strict=True)
++    regression_cli_path = regression_cli_raw_path.resolve(strict=True)
++    need(recorded_runtime_cli.get('sha256') == regression_cli.get('sha256') == EXPECTED_CLI_SHA256 and
++         recorded_runtime_cli.get('bytes') == regression_cli.get('bytes') and
++         recorded_runtime_cli.get('mode') == regression_cli.get('mode') == '0o555' and
++         final_cli_path.resolve(strict=True) == runtime_cli_path and
++         runtime_cli_path.is_file() and regression_cli_path.is_file() and
++         not runtime_cli_path.is_symlink() and not regression_cli_path.is_symlink() and
++         runtime_cli_path.stat().st_size == recorded_runtime_cli.get('bytes') and
++         regression_cli_path.stat().st_size == regression_cli.get('bytes') and
++         stat.S_IMODE(runtime_cli_path.stat().st_mode) == 0o555 and
++         stat.S_IMODE(regression_cli_path.stat().st_mode) == 0o555 and
++         sha_file(runtime_cli_path) == sha_file(regression_cli_path) == EXPECTED_CLI_SHA256 and
++         runtime_cli_path.read_bytes() == regression_cli_path.read_bytes(),
++         'runtime-tested CLI and regression CLI are not the same exact pinned bytes at their recorded paths')
+ 
+     guard = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+     scan = ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'
+@@ -537,8 +555,9 @@
+     cli_row = build.get('candidate_cli', {})
+     final_cli_path = final_cli_path.resolve(strict=True)
+     need(cli_row.get('path') == str(final_cli_path) and
+-         cli_row.get('sha256') == runtime_cli.get('sha256') == EXPECTED_CLI_SHA256 and
+-         cli_row.get('bytes') == runtime_cli.get('bytes') and cli_row.get('mode') == runtime_cli.get('mode'),
++         cli_row.get('sha256') == recorded_runtime_cli.get('sha256') == EXPECTED_CLI_SHA256 and
++         cli_row.get('bytes') == recorded_runtime_cli.get('bytes') and
++         cli_row.get('mode') == recorded_runtime_cli.get('mode'),
+          'final CLI receipt does not bind to the runtime-tested candidate bytes')
+     need(final_cli_path.is_file() and not final_cli_path.is_symlink() and
+          final_cli_path.stat().st_size == cli_row.get('bytes') and
+@@ -546,7 +565,7 @@
+          stat.S_IMODE(final_cli_path.stat().st_mode) == 0o555,
+          'final CLI file bytes, size, or mode differ from the runtime-tested candidate')
+     expected_references = {
+-        str(build_runner): build_runner_sha256,
++        str(workspace_runner): workspace_runner_sha256,
+         str(ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'): ci.GUARD_SHA,
+         str(ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'): ci.SCAN_SHA,
+     }
+@@ -878,6 +897,12 @@
+     parser.add_argument('--expected-cli-sha256', default=EXPECTED_CLI_SHA256)
+     parser.add_argument('--out', type=Path, required=True)
+     args = parser.parse_args()
++    input_paths = (args.capture, args.workspace, args.workspace_runner,
++                   args.workspace_named_manifest, args.workspace_acceptor,
++                   args.regression_receipt, args.final_build, args.build_runner,
++                   args.final_cli)
++    need(all(not path.is_symlink() for path in input_paths),
++         'receipt, runner, evidence, and CLI inputs must not be symlinks')
+     need(re.fullmatch(r'[0-9a-f]{40}', args.product_commit) is not None,
+          'product commit must be a lowercase 40-hex SHA')
+     need(args.run_id.isdecimal(), 'CI run id must be decimal')
+@@ -916,7 +941,8 @@
+                                      WORKSPACE_RUNNER_SHA256)
+     build = verify_final_build(args.product_commit, ex['source_pins_before'],
+                                args.final_build.resolve(strict=True), args.final_cli,
+-                               BUILD_RUNNER, BUILD_RUNNER_SHA256, args.build_schema,
++                               BUILD_RUNNER, BUILD_RUNNER_SHA256,
++                               WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256, args.build_schema,
+                                regression_receipt, args.regression_receipt_sha256,
+                                workspace_receipt, workspace_sha256,
+                                workspace_acceptance, workspace_acceptance_sha256, ci)

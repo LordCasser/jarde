@@ -1,0 +1,6 @@
+a,b,/yy/[1, 2]/[1, 0]/p-q/9/6
+empty=
+null=java.lang.NullPointerException
+strings=bbccc
+null-element=java.lang.NullPointerException
+wrong-element=java.lang.ClassCastException

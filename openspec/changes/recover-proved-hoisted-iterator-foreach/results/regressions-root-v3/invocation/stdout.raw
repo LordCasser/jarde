@@ -1,0 +1,1 @@
+{"status": "passed_regressions_candidate_only", "source_count": 4732, "target_absent": true, "peak_target_bytes": 654224895, "same_cli": true, "summaries": [{"passed": 1, "failed": 0, "ignored": 0}, {"passed": 365, "failed": 0, "ignored": 0}, {"passed": 2, "failed": 0, "ignored": 0}, {"passed": 1, "failed": 0, "ignored": 0}, {"passed": 5, "failed": 0, "ignored": 1}]}

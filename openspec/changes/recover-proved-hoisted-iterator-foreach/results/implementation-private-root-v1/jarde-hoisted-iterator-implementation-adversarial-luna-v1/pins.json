@@ -1,0 +1,41 @@
+{
+  "schema": "private-hoisted-iterator-implementation-adversarial-review-luna-v1",
+  "status": "static only; candidate not compiled or run; no shared edits",
+  "files": [
+    {"role":"base production source","path":"/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs","bytes":1728202,"sha256":"f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"},
+    {"role":"candidate source","path":"/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v1/build.rs.candidate","bytes":1737776,"sha256":"2e72552b4715e27dc236b9bb1d20c62a8720ccc7ca817153ee671f5724850bb9"},
+    {"role":"candidate patch","path":"/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v1/candidate.patch","bytes":15646,"sha256":"ecde6aceb342eedf6d3815b6cd83173b0095a9a1c75b79de5fce26753499955c"},
+    {"role":"candidate pins","path":"/private/tmp/jarde-hoisted-iterator-implementation-prep-luna-v1/pins.json","bytes":8371,"sha256":"3a3f05a5c9c48cad4b61e0dc06a3091541d4e29afc79b63c0eeea512cca95c9f"},
+    {"role":"reuse identity API","path":"/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs","bytes":49833,"sha256":"fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458"},
+    {"role":"SSA/Phi/use API","path":"/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs","bytes":158622,"sha256":"03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"},
+    {"role":"proposal","path":"/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/proposal.md","bytes":2365,"sha256":"ba501b8bdf808c3a3a63ae9a7abbd4a46514cd912160c1005544953f19d90f5c"},
+    {"role":"design","path":"/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md","bytes":5629,"sha256":"3dd01e968618172bb797176ea688c31ff380ecad36a350288830d4bc05b84964"},
+    {"role":"spec","path":"/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md","bytes":3201,"sha256":"de06c4e5c8f5637b3f6f4427df8217245e2315df0f254ed774933794fc1c7a2f"},
+    {"role":"tasks","path":"/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md","bytes":3042,"sha256":"cbc2af2c315475984ba0957fa02e029ff1fe5bb75739f81e4dd7c1b8ce0bdc8d"},
+    {"role":"root v3 accepted same-IR execution record","path":"/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/execution.json","bytes":1536678,"sha256":"da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87"},
+    {"role":"root v3 acceptance","path":"/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/results/same-ir-diagnostic-root-v3/root-acceptance.json","bytes":1846,"sha256":"6cb6f4c6f950090012455dfcc37d867504030f00d52d9a653f9eb034ae0ac252"},
+    {"role":"root v3 raw stdout","path":"/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stdout.raw","bytes":233,"sha256":"2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"},
+    {"role":"root v3 raw stderr","path":"/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw","bytes":91032,"sha256":"e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"},
+    {"role":"frozen original class","path":"/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class","bytes":1213,"sha256":"8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"}
+  ],
+  "reviewed_facts": {
+    "method": "cf11/UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+    "inner_loop_path": [1,1],
+    "init_test_next_bcis": [33,35,45],
+    "iterator_local": "LocalVariable { slot: 5, index: 0 }",
+    "owner": "Elevated { owner: [1] }",
+    "iterator_value": "V37",
+    "none_use_counts_by_block": {"35":1,"97":3},
+    "header_phi": "V12 inputs [V37,Itself], uses empty, replaced by V37",
+    "downstream_phi": "V22 inputs [V37,V37,V37], uses empty, replaced by V12",
+    "unrelated_phi": "block 97 Local(6) V23 has no exact V37 input",
+    "later_next_cast_effect_gates": "not established"
+  },
+  "checks": {
+    "candidate_sha256_recomputed": true,
+    "patch_sha256_recomputed": true,
+    "planning_artifact_sha256_recomputed": true,
+    "candidate_static_diff_reviewed": true,
+    "rust_compile_or_execution": "not run"
+  }
+}

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-hoisted-iterator-regressions-accept-root-v1.py", line 18, in <module>
+    raw=Path(c['streams']['stdout']['path']).read_text();outcomes=re.findall(r'^test (.+) \.\.\. (ok|FAILED|ignored)(?:, .*)?$',raw,re.M);assert len(outcomes)==sum(counts[n]) and len({a for a,b in outcomes})==len(outcomes);assert tuple(sum(s==status for a,s in outcomes) for status in ['ok','FAILED','ignored'])==counts[n]
+                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

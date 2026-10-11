@@ -1,0 +1,642 @@
+{
+  "source_map_gaps": [
+    {
+      "label": "javac8-jarde-default-HoistedIteratorRefusal",
+      "name": "sumWithWrittenGap",
+      "descriptor": "(Ljava/util/List;)I",
+      "access_flags": 9,
+      "method_index": 1,
+      "code_span": {
+        "start": 913,
+        "length": 250
+      },
+      "code_length": 54,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        13,
+        14,
+        19,
+        22,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        44,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ],
+      "source_origin_bci_count": 6,
+      "source_origin_records": 6,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-HoistedIteratorRefusal",
+      "name": "sumWithWrittenGap",
+      "descriptor": "(Ljava/util/List;)I",
+      "access_flags": 9,
+      "method_index": 1,
+      "code_span": {
+        "start": 913,
+        "length": 250
+      },
+      "code_length": 54,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        13,
+        14,
+        19,
+        22,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        44,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ],
+      "source_origin_bci_count": 6,
+      "source_origin_records": 6,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-HoistedIteratorRefusal",
+      "name": "sumWithWrittenGap",
+      "descriptor": "(Ljava/util/List;)I",
+      "access_flags": 9,
+      "method_index": 1,
+      "code_span": {
+        "start": 907,
+        "length": 250
+      },
+      "code_length": 54,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        13,
+        14,
+        19,
+        22,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        44,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ],
+      "source_origin_bci_count": 6,
+      "source_origin_records": 6,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-HoistedIteratorRefusal",
+      "name": "sumWithWrittenGap",
+      "descriptor": "(Ljava/util/List;)I",
+      "access_flags": 9,
+      "method_index": 1,
+      "code_span": {
+        "start": 907,
+        "length": 250
+      },
+      "code_length": 54,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 4,
+          "end_pc": 44,
+          "handler_pc": 47,
+          "catch_type": "java/lang/IllegalStateException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        13,
+        14,
+        19,
+        22,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        44,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ],
+      "source_origin_bci_count": 6,
+      "source_origin_records": 6,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    }
+  ],
+  "all_method_physical_coverage_complete": false,
+  "schema": "cf11-target-full-source-observation-v2",
+  "status": "verified_observation_capture_with_quality_gaps",
+  "rendered_class_digest_validation": "BLAKE3 shape and location/owner/default-all consistency only; physical files separately SHA256 pinned; no independent BLAKE3 recomputation",
+  "behavioral_acceptance": "not_claimed",
+  "behavior_mismatches": [
+    {
+      "label": "javac8-jadx-default",
+      "runtime_exit": 0,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_exit": 0,
+      "expected_stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "expected_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "runtime_exit": 0,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_exit": 0,
+      "expected_stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "expected_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "runtime_exit": 0,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_exit": 0,
+      "expected_stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "expected_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "runtime_exit": 0,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_exit": 0,
+      "expected_stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "expected_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "execution": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-candidate-root-v4/execution.json",
+    "bytes": 137380,
+    "sha256": "f2926999da64cc6648c876cc0db4d6398d92a3220143761c01af55bfcbed97c5"
+  },
+  "actual_command_count": 43,
+  "raw_stream_count": 86,
+  "classes": [
+    "cf11.HoistedIteratorPositive",
+    "cf11.HoistedIteratorRefusal"
+  ],
+  "original_oracle": {
+    "exit_code": 0,
+    "stdout_nonempty": true,
+    "stderr_empty": true,
+    "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jdk8_jdk23_equal": true
+  },
+  "jarde_method_maps_checked": 20,
+  "default_all": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.HoistedIteratorPositive",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.HoistedIteratorRefusal",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.HoistedIteratorPositive",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.HoistedIteratorRefusal",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    }
+  ],
+  "generated_compile_observations": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_exit": 1,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-HoistedIteratorPositive",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-default-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_exit": 1,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-HoistedIteratorPositive",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_exit": 1,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-HoistedIteratorPositive",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_exit": 1,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-HoistedIteratorPositive",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jarde_unusable_outputs": [],
+  "compile_failures_remain_observations": true,
+  "checker": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py",
+    "bytes": 35349,
+    "sha256": "a05acce687bf0e22bfab9eb8ae00520d53a006b740732f4b0041182ce72a464a"
+  }
+}

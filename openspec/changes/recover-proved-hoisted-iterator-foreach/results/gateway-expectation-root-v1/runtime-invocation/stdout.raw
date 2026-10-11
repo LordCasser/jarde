@@ -1,0 +1,2 @@
+report keys ['anonymous_interface_projection', 'bridge_proofs', 'class', 'coverage', 'declaration', 'diagnostics', 'direct_override_proofs', 'enum_switch_proofs', 'execution', 'fields', 'initializer_proof', 'integer_constant_projections', 'limits', 'member_family', 'methods', 'nested_annotation_family', 'nested_enum_family', 'outcome', 'stages', 'text', 'usage', 'view']
+{"status": "passed_fixed_gateway_cases_only", "commands": 15, "comparisons": 6, "target_absent": true}

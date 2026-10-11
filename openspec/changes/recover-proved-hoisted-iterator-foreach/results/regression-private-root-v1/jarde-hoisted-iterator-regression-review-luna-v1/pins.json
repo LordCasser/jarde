@@ -1,0 +1,86 @@
+{
+  "schema": "private-hoisted-iterator-regression-review-luna-v1",
+  "files": [
+    {
+      "role": "production_base",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1738662,
+      "sha256": "df113e368d9eb8762abbe269ee3a58421cb0b7b5a01e64154a068dbd34cfe28a"
+    },
+    {
+      "role": "patch",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.patch",
+      "bytes": 19383,
+      "sha256": "ea67f5ee745ebeb7b4a95e395ff6bf0045a329176979663c7e193c57ddd1decf"
+    },
+    {
+      "role": "full_candidate",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.candidate",
+      "bytes": 1756013,
+      "sha256": "658daf1504679a098337496ed9bae3da45f4b693ee4480a28f53debcddd63299"
+    },
+    {
+      "role": "pinned_upstream_class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    {
+      "role": "upstream_javap",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "bytes": 8494,
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    {
+      "role": "scope_class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-scope/v8-debug/Scope.class",
+      "bytes": 1101,
+      "sha256": "a93fdc7ff141daf5860c15106fb39ac860958cc8bb39ff44707ba36ac56a3d53"
+    },
+    {
+      "role": "scope_source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-scope/Scope.java",
+      "bytes": 3021,
+      "sha256": "12313eacdff5b1b0e11d5fe2f8497d8fdfd2464a4ee8b615cd6929384f2ffeac"
+    },
+    {
+      "role": "scope_readme",
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-scope/README.md",
+      "bytes": 7829,
+      "sha256": "3104bac76f6f7434608a7d49492325940114144408d5b3d2da7134a9c7f766a8"
+    },
+    {
+      "role": "same_ir_raw",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 91032,
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"
+    },
+    {
+      "role": "prior_candidate_pins",
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/pins.json",
+      "bytes": 3101,
+      "sha256": "e915f49587a5e3965b3dee5902da86f047fbd528eb1d8400bc05383c78e6f682"
+    }
+  ],
+  "facts": {
+    "candidate_test_patch": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regression-prep-luna-v2/build.rs.tests.patch",
+      "bytes": 19383,
+      "sha256": "ea67f5ee745ebeb7b4a95e395ff6bf0045a329176979663c7e193c57ddd1decf"
+    },
+    "candidate_prefix_equal_to_base_before_test_module": true,
+    "candidate_test_module_only_diff": true,
+    "expected_actual_method": "cf11.UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+    "observed_upstream_bytecode": [
+      "BCI 28 invokeinterface List.iterator; BCI 33 ASTORE 5 initializes slot 5",
+      "BCI 35 ALOAD 5; BCI 37 hasNext; BCI 42 conditional branch (header block starts at BCI 35)",
+      "BCI 45 ALOAD 5; BCI 47 next; BCI 52 checkcast String; BCI 55 ASTORE 6",
+      "BCI 97 is the inner body join/backedge point; same-IR trace reports three None uses there"
+    ],
+    "observed_scope_reuse_bytecode": [
+      "Scope.reuse(ZI)I: slot 3 reads at BCI 8 are in LVT c range [8,10)",
+      "slot 3 reads at BCI 17 are in LVT d range [17,19); names/ranges are disjoint and therefore two LocalVariable identities"
+    ],
+    "review_status": "static only; candidate not compiled or run"
+  }
+}
