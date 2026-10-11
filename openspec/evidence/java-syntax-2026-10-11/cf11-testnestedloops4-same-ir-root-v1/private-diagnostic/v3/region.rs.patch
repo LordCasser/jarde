@@ -1,0 +1,303 @@
+--- region.rs.base
++++ region.rs.candidate
+@@ -53,6 +53,19 @@
+ use crate::facts::{CompareOp, ConstantValue, Operation};
+ use crate::normal_flow::NormalFlowView;
+ use crate::stop::{StopReason, charge, poll};
++
++#[cfg(test)]
++macro_rules! cf11_diag {
++    ($at_bci:expr, $($arg:tt)*) => {{
++        if std::env::var_os("JRE_CF11_DIAGNOSTIC").is_some() {
++            eprintln!("CF11_TRACE at_bci={} {}", $at_bci, format_args!($($arg)*));
++        }
++    }};
++}
++#[cfg(not(test))]
++macro_rules! cf11_diag {
++    ($at_bci:expr, $($arg:tt)*) => {{}};
++}
+ 
+ /// Why one region could only be kept as bytecode.
+ #[derive(Clone, Debug, Eq, PartialEq)]
+@@ -2732,11 +2745,13 @@
+     ///   is the block this entry starts at is the body of that loop. The proved body-branch path
+     ///   permits exactly its first entry; every other such entry stops before descending.
+     fn region_at(&mut self, start: &CanonicalBlockId, frame: &Frame) -> Result<Run, StopReason> {
++        cf11_diag!(start.bci(), "region_enter depth={} frame={:?} visited={:?}", self.depth, frame, self.visited);
+         let reentered = self.view.index_of(start).is_some_and(|node| {
+             frame.own_loop == Some(node)
+                 && (!frame.allow_own_loop_entry || self.visited.contains(&node))
+         });
+         if self.depth >= MAX_REGION_DEPTH || reentered {
++            cf11_diag!(start.bci(), "region_entry_refused depth={} reentered={} frame={:?} visited={:?}", self.depth, reentered, frame, self.visited);
+             // Which of the two refused the entry is part of the diagnosis: "the input nests too
+             // deeply" and "the walk is back inside a structure it is already building" are
+             // different facts about the run, and a stop must not name the one that did not happen.
+@@ -2751,6 +2766,7 @@
+         }
+         self.depth += 1;
+         let walked = self.region_at_inner(start, frame);
++        cf11_diag!(start.bci(), "region_return depth={} frame={:?} result={:?}", self.depth, frame, walked);
+         self.depth -= 1;
+         walked
+     }
+@@ -3422,6 +3438,16 @@
+                                     && target.continue_target == *join
+                             })
+                         });
++                    cf11_diag!(
++                        branch.bci(),
++                        "branch_bci={} frame={:?} raw_ipdom={:?} filtered_post_join={:?} successors={:?}",
++                        branch_bci,
++                        frame,
++                        self.view.immediate_post_dominator(node)
++                            .and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
++                        post_join.and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
++                        successors.iter().map(|successor| successor.bci()).collect::<Vec<_>>(),
++                    );
+                     // A branch inside a switch arm can finish either at the switch's local
+                     // join or at the enclosing loop's exit. The method-wide post-dominator is
+                     // then the loop exit, but it is not the join of this Java `if`.
+@@ -3679,10 +3705,36 @@
+                     //
+                     // A branch whose **two** successors are both the join states no arm at all and
+                     // keeps the refusal below.
++                    cf11_diag!(
++                        branch.bci(),
++                        "candidate_state branch_bci={} then={:?} else={:?} loop_bridge={:?} fragmented={:?} post_or_bridge={:?} continue_target={:?} ladder={:?} in_loop_successor={:?} selected_join={:?} shared_join={:?}",
++                        branch_bci,
++                        then_node.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        else_node.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        loop_bridge_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        fragmented_handler_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        post_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        continue_target_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        ladder_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        in_loop_successor_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        join_node.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                        shared_join.and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
++                    );
+                     let forward_then = shared_join.is_none()
+                         && self.forward_join(node, then_node, else_node, frame);
+                     let forward_else = shared_join.is_none()
+                         && self.forward_join(node, else_node, then_node, frame);
++                    cf11_diag!(
++                        branch.bci(),
++                        "forward_join branch_bci={} forward_then={} forward_else={} join={:?} frame_boundary={:?} then_preds={:?} else_preds={:?}",
++                        branch_bci,
++                        forward_then,
++                        forward_else,
++                        join_node.and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
++                        frame.boundary.and_then(|boundary| self.view.id_of(boundary).map(CanonicalBlockId::bci)),
++                        then_node.map(|n| self.view.predecessors(n).into_iter().filter_map(|p| self.view.id_of(p).map(CanonicalBlockId::bci)).collect::<Vec<_>>()),
++                        else_node.map(|n| self.view.predecessors(n).into_iter().filter_map(|p| self.view.id_of(p).map(CanonicalBlockId::bci)).collect::<Vec<_>>()),
++                    );
+                     if std::env::var_os("JRE_JOIN_PROBE").is_some() {
+                         eprintln!(
+                             "P3JOIN branch={} ipdom={:?} then={:?} else={:?} ft={forward_then} fe={forward_else} frame_boundary={:?}",
+@@ -3788,6 +3840,8 @@
+                                 )?;
+                             }
+                             if !continued {
++                                cf11_diag!(branch.bci(), "refusal one_arm_continuation branch_bci={} join={:?} arm_start={:?} arm_next={:?} arm_run={:?} arm_frame={:?}", branch_bci,
++                                    join.as_ref().map(CanonicalBlockId::bci), walk.bci(), arm_next.as_ref().map(CanonicalBlockId::bci), arm_run, arm_frame);
+                                 self.unclosed_tail_at.get_or_insert(branch.bci());
+                                 let reason = FallbackReason::ArmsDoNotMeet {
+                                     block_bci: branch.bci(),
+@@ -3862,6 +3916,10 @@
+                     if (join_node.is_some() && then_node == join_node && else_node == join_node)
+                         || (forward_then && forward_else)
+                     {
++                        cf11_diag!(branch.bci(), "refusal_both_empty_or_forward branch_bci={} then={:?} else={:?} join={:?} forward_then={} forward_else={}", branch_bci,
++                            then_node.and_then(|n| self.view.id_of(n).map(CanonicalBlockId::bci)),
++                            else_node.and_then(|n| self.view.id_of(n).map(CanonicalBlockId::bci)),
++                            join_node.and_then(|n| self.view.id_of(n).map(CanonicalBlockId::bci)), forward_then, forward_else);
+                         let reason = FallbackReason::ArmsDoNotMeet {
+                             block_bci: branch.bci(),
+                         };
+@@ -4144,6 +4202,13 @@
+                         false
+                     };
+                     if !then_loop || !else_loop || !then_continued || !else_continued {
++                        cf11_diag!(branch.bci(), "refusal_arm_runs branch_bci={} join={:?} then_loop={} else_loop={} then_continued={} else_continued={} then_next={:?} else_next={:?} then_run={:?} else_run={:?} then_elected={:?} else_elected={:?} shared_latch_elected={} continuing_join_elected={}", branch_bci,
++                            join.as_ref().map(CanonicalBlockId::bci), then_loop, else_loop, then_continued, else_continued,
++                            then_next.as_ref().map(CanonicalBlockId::bci), else_next.as_ref().map(CanonicalBlockId::bci),
++                            then_run, else_run,
++                            then_node.and_then(|n| self.view.id_of(n).map(CanonicalBlockId::bci)),
++                            else_node.and_then(|n| self.view.id_of(n).map(CanonicalBlockId::bci)),
++                            shared_latch_elected, continuing_join_elected);
+                         let entered: Vec<_> = self
+                             .visited
+                             .difference(&before_arms)
+@@ -4272,6 +4337,9 @@
+                             // leaves the method, which is the early-return leaf the tree states.
+                             && !ladder_elected
+                         {
++                            cf11_diag!(branch.bci(), "refusal_final_arm_reachability branch_bci={} join={:?} then_meets={} else_meets={} both_end={} ladder_elected={} shared_latch_elected={} then_next={:?} else_next={:?} then_run={:?} else_run={:?}", branch_bci,
++                                join.as_ref().map(CanonicalBlockId::bci), then_meets, else_meets, both_end, ladder_elected, shared_latch_elected,
++                                then_next.as_ref().map(CanonicalBlockId::bci), else_next.as_ref().map(CanonicalBlockId::bci), then_run, else_run);
+                             let reason = FallbackReason::ArmsDoNotMeet {
+                                 block_bci: branch.bci(),
+                             };
+@@ -15776,6 +15844,160 @@
+ #[cfg(test)]
+ mod tests {
+     use super::*;
++
++    #[test]
++    fn cf11_nested_loops_same_ir_diagnostic() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::budget::Limits;
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        const CLASS: &[u8] = include_bytes!(
++            "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops4.class"
++        );
++        assert_eq!(CLASS.len(), 602);
++        let mut budget = Budget::new(Limits {
++            input_bytes: 1 << 20,
++            archive_entries: 100,
++            entry_bytes: 1 << 20,
++            read_bytes: 1 << 20,
++            class_bytes: 1 << 20,
++            attribute_bytes: 1 << 20,
++            code_bytes: 1 << 20,
++            result_items: 1 << 20,
++            output_bytes: 1 << 20,
++            class_headers: 100,
++            method_bodies: 100,
++            ir_items: 1 << 20,
++            ir_edges: 1 << 20,
++            analysis_steps: 1 << 20,
++            normalization_clones: 1 << 20,
++            nested_depth: 32,
++            dependency_depth: 32,
++            elapsed_millis: u64::MAX,
++        });
++        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
++            .expect("frozen adapted TestNestedLoops4 class opens");
++        let definition = PhysicalDefinitionId {
++            location: PhysicalClassLocation::StandaloneRoot {
++                snapshot: snapshot.id().clone(),
++            },
++            class_bytes: ClassBytesId {
++                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
++                length: u64::try_from(CLASS.len()).expect("class bytes fit u64"),
++            },
++            variant: PhysicalVariant::Base,
++        };
++        let domain = LoadDomain {
++            loader: LoaderId("app".to_owned()),
++            parent_loader: None,
++            delegation: DelegationPolicy::ParentFirst,
++            roots: vec![LoadRoot::StandaloneClass {
++                snapshot: snapshot.id().clone(),
++            }],
++            module_mode: ModuleMode::ClassPath,
++            external_override: RuntimeUncertainty::None,
++            runtime_transformation: RuntimeUncertainty::None,
++        };
++        let analysis = analyze_method_ir(
++            &[snapshot.clone()],
++            &MethodAnalysisRequest {
++                environment: ResolutionEnvironment {
++                    runtime: RuntimeView {
++                        physical: PhysicalView {
++                            snapshot: snapshot.id().clone(),
++                            scope: PhysicalScope::SnapshotAll,
++                        },
++                        profile: RuntimeProfile {
++                            java_release: 8,
++                            multi_release: MultiReleasePolicy::Disabled,
++                            layout: LayoutMode::Generic,
++                        },
++                        load_domain: domain.clone(),
++                    },
++                    domains: vec![domain],
++                    providers: Vec::new(),
++                },
++                method: PhysicalMethodId {
++                    owner: definition,
++                    name: JvmBytes(b"testFor".to_vec()),
++                    descriptor: JvmBytes(b"()I".to_vec()),
++                },
++                stages: AnalysisStage::ALL.to_vec(),
++            },
++            &mut budget,
++        )
++        .expect("Reader analyzes the exact real testFor class method");
++        let ir = analysis.ir();
++        let canonical = ir.canonical().expect("same IR has canonical CFG");
++        let ssa = ir.ssa().expect("same IR has SSA");
++        let code = ir.code().expect("same IR has decoded code");
++        let pool = ir.constant_pool();
++        let operations = Operations::of(code, pool);
++        let view = NormalFlowView::build(canonical, &mut budget)
++            .expect("same canonical CFG projects to normal flow");
++
++        eprintln!("CF11_CLASS bytes={} blake3={} physical_method=testFor()I", CLASS.len(), blake3::hash(CLASS).to_hex());
++        eprintln!("CF11_CANONICAL blocks={} edges={} unreachable={:?}", canonical.blocks().len(), canonical.edges().len(), canonical.unreachable());
++        for edge in canonical.edges() {
++            eprintln!("CF11_EDGE {:?} {:?} -> {:?}", edge.kind(), edge.from(), edge.to());
++        }
++        for (node, id) in view.ids().iter().enumerate() {
++            let bci_vec = |nodes: Vec<usize>| nodes.into_iter().filter_map(|n| view.id_of(n).map(CanonicalBlockId::bci)).collect::<Vec<_>>();
++            let loop_fact = view.loop_entered_at(node).map(|loop_of| (
++                loop_of.blocks().iter().filter_map(|n| view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(),
++                loop_of.latches().iter().filter_map(|n| view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(),
++                loop_of.is_irreducible(),
++            ));
++            let dominators = view.ids().iter().enumerate().filter_map(|(d, candidate)| view.dominates(d, node).then_some(candidate.bci())).collect::<Vec<_>>();
++            let ipdom = view.immediate_post_dominator(node).and_then(|next| view.id_of(next).map(CanonicalBlockId::bci));
++            eprintln!("CF11_NODE index={} id={:?} preds={:?} succs={:?} dominators={:?} ipdom={:?} natural_loop={:?}",
++                node, id, bci_vec(view.predecessors(node)), bci_vec(view.successors(node)), dominators, ipdom, loop_fact);
++        }
++        eprintln!("CF11_SSA_TABLE {:#?}", ssa);
++        for block in ssa.blocks() {
++            for instruction in block.instructions() {
++                eprintln!("CF11_INSN block={:?} bci={} opcode={} reads={:?} writes={:?} operation={:?}",
++                    block.block(), instruction.bci(), instruction.opcode(), instruction.reads(), instruction.writes(), operations.get(instruction.bci()));
++            }
++        }
++        let chains = crate::concat::plan_four_conditional_strings(
++            ssa,
++            canonical,
++            &operations,
++            &crate::build::FieldCopies::default(),
++            &mut budget,
++        )
++        .expect("string-concat planning leaves this loop method unchanged");
++        let recovered = recover(
++            canonical,
++            &view,
++            ssa,
++            &operations,
++            pool,
++            &chains,
++            &crate::init::Sites::empty(),
++            code,
++            Some(false),
++            false,
++            &crate::pass::JAVA_8,
++            &mut budget,
++        )
++        .expect("real method region walk completes");
++        eprintln!("CF11_RECOVERY structured={} fallbacks={:?} regions={:#?} claimed={:?}", recovered.is_structured(), recovered.fallbacks(), recovered.regions, recovered.claimed);
++        assert!(recovered.fallbacks().iter().any(|reason| matches!(reason, FallbackReason::ArmsDoNotMeet { block_bci: 10 })),
++            "the captured frozen baseline reports the same branch-10 refusal: {:?}", recovered.fallbacks());
++    }
+ 
+     #[test]
+     fn range_end_transfer_rejects_competing_entries_and_exits() {

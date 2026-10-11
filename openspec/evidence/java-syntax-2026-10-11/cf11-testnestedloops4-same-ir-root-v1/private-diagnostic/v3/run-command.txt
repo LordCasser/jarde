@@ -1,0 +1,1 @@
+JRE_CF11_DIAGNOSTIC=1 cargo test -p jarde-java --lib region::tests::cf11_nested_loops_same_ir_diagnostic -- --exact --nocapture --test-threads=1

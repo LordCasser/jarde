@@ -1,0 +1,158 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1/0.stderr.raw",
+    "archived": "v1/0.stderr.raw",
+    "bytes": 5447,
+    "sha256": "f3aae303fcd202da284a022311f044b7ecdce746b7d8a96994b5d9345760549e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1/0.stdout.raw",
+    "archived": "v1/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1/1.stderr.raw",
+    "archived": "v1/1.stderr.raw",
+    "bytes": 52,
+    "sha256": "4c473056611ec6f0c3e151e4f49ac523f96ea575fb90ce785e38bdaaf0892f0e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1/1.stdout.raw",
+    "archived": "v1/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1/execution.json",
+    "archived": "v1/execution.json",
+    "bytes": 2273656,
+    "sha256": "5ef2b7d2942795907c88cde79b374ffc988126cd5d33597e8f44331893e0e9db"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1.py",
+    "archived": "runner/jarde-cf11-testnestedloops4-diagnostic-root-v1.py",
+    "bytes": 4439,
+    "sha256": "cf15c5fd94d6f3f2c49623ca5aab4bc0f4921b2c75ae0f2e76ff3787f5643839"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1.stdout",
+    "archived": "runner/jarde-cf11-testnestedloops4-diagnostic-root-v1.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v1.stderr",
+    "archived": "runner/jarde-cf11-testnestedloops4-diagnostic-root-v1.stderr",
+    "bytes": 266,
+    "sha256": "49b7c2dc006c8a10ad3b6b1ad5315fb897f1d6fb4d662b9cbffdbc068f4bebdd"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2/0.stderr.raw",
+    "archived": "v2/0.stderr.raw",
+    "bytes": 217951,
+    "sha256": "65cbb79489195b05bc73caefcab24dc064eaf54b3165e5db1da9ae1e2f4dcdb0"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2/0.stdout.raw",
+    "archived": "v2/0.stdout.raw",
+    "bytes": 178,
+    "sha256": "415475c520225effc659854cc2793524c32300e3cd4275ed02a9fb4d533fdef5"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2/1.stderr.raw",
+    "archived": "v2/1.stderr.raw",
+    "bytes": 52,
+    "sha256": "a5d0124948b78c5522163ae2dc9483414fe84654ca53715bd431e3f56a1cbd10"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2/1.stdout.raw",
+    "archived": "v2/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2/execution.json",
+    "archived": "v2/execution.json",
+    "bytes": 2273836,
+    "sha256": "a861b50306e81f0290897cc53aef2c6803506dcc0ca9ae06306e2ed440ca1c55"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2.py",
+    "archived": "runner/jarde-cf11-testnestedloops4-diagnostic-root-v2.py",
+    "bytes": 4439,
+    "sha256": "ade16f521964fdf6d9c53912424b916607ee7e3bc91bcc8f9c3028ebdf0e151f"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2.stdout",
+    "archived": "runner/jarde-cf11-testnestedloops4-diagnostic-root-v2.stdout",
+    "bytes": 237,
+    "sha256": "ca68bb7493ea39f14cb9f0078ed2d40e7c956dcc1226b7da8f15ba5736918156"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-root-v2.stderr",
+    "archived": "runner/jarde-cf11-testnestedloops4-diagnostic-root-v2.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v2/region.rs.patch",
+    "archived": "private-diagnostic/v2/region.rs.patch",
+    "bytes": 17640,
+    "sha256": "231fc11e4f1046339ede1154fcb0c9416e22b4afa9f80d9869fd19696edc79bc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v2/pins.json",
+    "archived": "private-diagnostic/v2/pins.json",
+    "bytes": 1585,
+    "sha256": "b7d0f3bff0aca5ceb9d3edebadc05ecf8f54c83868abdd1970cf9d43a4d7d926"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v2/review.md",
+    "archived": "private-diagnostic/v2/review.md",
+    "bytes": 2231,
+    "sha256": "1e15f3b6c9bd5f8b45d4dd491f04200cbae7d4f69725bf0f397414d42adf8c5e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v2/run-command.txt",
+    "archived": "private-diagnostic/v2/run-command.txt",
+    "bytes": 145,
+    "sha256": "f76fcbdb7b88393a558f26e7affa405f9394c61531545ceec66ae41047e9ddc6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v3/region.rs.patch",
+    "archived": "private-diagnostic/v3/region.rs.patch",
+    "bytes": 17648,
+    "sha256": "ca141914c285aff27a5de327d851a7815b2620ae4eacf7a27c189581dba06d18"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v3/pins.json",
+    "archived": "private-diagnostic/v3/pins.json",
+    "bytes": 1585,
+    "sha256": "9916ca9cd5ba23d26798ab66a10cd9346e5a03f74661c540a1621e32a6359958"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v3/review.md",
+    "archived": "private-diagnostic/v3/review.md",
+    "bytes": 2549,
+    "sha256": "b6a9c1fe5bde4b99a783a699ccf1f23925b414eff77c20aeb6997d9993ede31e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v3/run-command.txt",
+    "archived": "private-diagnostic/v3/run-command.txt",
+    "bytes": 145,
+    "sha256": "f76fcbdb7b88393a558f26e7affa405f9394c61531545ceec66ae41047e9ddc6"
+  },
+  {
+    "source": "/private/tmp/jarde-computed-for-closure-clean-audit-root-v1/execution.json",
+    "archived": "clean-main-before-diagnostic.json",
+    "bytes": 31948,
+    "sha256": "d82efe8c1884026a7b420cf428bdb6ca80ada2df85e4bfb817875d5e7c3d0a25"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-archive-root-v1.py",
+    "archived": "archive-and-check.py",
+    "bytes": 4830,
+    "sha256": "46af71c26311a44e16c51366e4108c0f28ccb8f4a1b34fb1d3c2a1f338543456"
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-jadx-loop-exit-review-luna-v1/research.md",
+    "archived": "jadx-source-review/v1/research.md",
+    "sha256": "31ffdf2002c1133c479228d0d1d063e7e4379a5b29383e59f4c2e5eefe08d55e",
+    "bytes": 4308
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-jadx-loop-exit-review-luna-v2/research.md",
+    "archived": "jadx-source-review/v2/research.md",
+    "sha256": "a64da294f340d005fff1f196fc74b7f9e282f5d56df1c7d377bb3080609d998b",
+    "bytes": 4752
+  },
+  {
+    "reference_source": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java",
+    "sha256": "a77bedda10bdb0d36f3979c27c1fc9471da726b36f34ae14d505f6f659c6b13e",
+    "bytes": 27681
+  },
+  {
+    "reference_source": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java",
+    "sha256": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515",
+    "bytes": 14587
+  }
+]

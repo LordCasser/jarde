@@ -1,0 +1,1 @@
+{"status": "passed_same_real_IR_diagnostic_only", "restored": true, "target_absent": true, "marker_counts": {"CF11_CLASS": 1, "CF11_EDGE": 19, "CF11_NODE": 15, "CF11_SSA_TABLE": 1, "CF11_INSN": 40, "CF11_TRACE": 23, "CF11_RECOVERY": 1}}

@@ -1,0 +1,30 @@
+{
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "base_bytes": 877214,
+  "base_sha256": "b1330dfab9e71076f72e7ed5d0dfd963833075a0dd26e33401d3ba01f57e7ce5",
+  "candidate_path": "/private/tmp/jarde-cf11-testnestedloops4-diagnostic-luna-v3/region.rs.candidate",
+  "candidate_bytes": 890600,
+  "candidate_sha256": "202f7638c7934898e68725f3c83e1e3b86d1c585173f8590c3a1672144611017",
+  "class_path": "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops4.class",
+  "class_bytes": 602,
+  "class_sha256": "8152aa6a52958eff721ff237f8783dca4572764ac750cc2de909b31ef6c036b5",
+  "javap_path": "/private/tmp/jarde-cf11-testnestedloops4-baseline-root-v1/legs/javac23-original/javap.txt",
+  "javap_sha256": "5ab4bddacbddd619f4db15dfc8da37ac3e616bea72094c93c1deeab0ae93ef33",
+  "test_name": "cf11_nested_loops_same_ir_diagnostic",
+  "toolchain_run": "none",
+  "patch_bytes": 17648,
+  "version": "private-diagnostic-v3",
+  "additional_source_pins": {
+    "ssa_api": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    "normal_flow_api": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/normal_flow.rs",
+      "bytes": 37236,
+      "sha256": "8945a6d45b36acfb46066954ece0ec0ec50ad310987fad7155b586d7be2cf3ee"
+    }
+  },
+  "patch_sha256": "ca141914c285aff27a5de327d851a7815b2620ae4eacf7a27c189581dba06d18"
+}
