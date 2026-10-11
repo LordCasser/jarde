@@ -12,4 +12,4 @@
 
 - [x] 3.1 root用5GiB free/target1GiB一秒守卫完成fmt/CI同范围Clippy/相关测试，冻结CLI/meta/source/test/class pins；原/JADX/Jarde完整五fixture六方法default/all重编运行，条件锚与原/JADX一致、全BCI来源；其余控制正文/map/失败分类同明确基线。
 - [x] 3.2 OpenSpec strict实际通过，产品提交推送并独立接受自身精确CI全部job/step/双seed/实际测试名和live/Git pins；不能借类型片或后续文档CI，失败raw保留。
-- [ ] 3.3 root更新verification-root/71账本/handoff、提交推送全部授权修改，实际核main/origin同与全worktree clean/无待合入或占用分支，cargo清理并保留CLI/class/source/raw，不宣称整CF12或长期目标完成。
+- [x] 3.3 root更新verification-root/71账本/handoff、提交推送全部授权修改，实际核main/origin同与全worktree clean/无待合入或占用分支，cargo清理并保留CLI/class/source/raw，不宣称整CF12或长期目标完成。

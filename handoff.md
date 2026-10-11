@@ -1,6 +1,6 @@
 # HANDOFF — jarde 主线接续入口
 
-当前断点：conditional 产品6476b56c357443ef17318891b12142f509977234已提交推送，自身CI38096105240已扩展包装器独立接受4jobs/52steps、两seed各359targets/3422/0/97，任务 **6/7**，最后clean交付待本轮文档提交。target不存在。CF12十上游类已有实际对照，新增五类中3类Jarde default/all同原、2类结构拒绝；接下来优先两个结构join，私有四artifact/13项准备好，常量名gate正式计划13项仍未应用。
+当前断点：conditional 产品6476b56c357443ef17318891b12142f509977234已提交推送，自身CI38096105240已独立接受4jobs/52steps、两seed各359targets/3422/0/97，任务 **7/7**。验收证据提交69cff3bd299feb71a820917be866db05b63b57dc的实际clean audit接受15worktrees全clean/14辅助detached main祖先，本地与真实远端仅main、main=origin、无target。关闭文档推送后继续final audit。CF12十上游类已有实际对照，新增五类中3类Jarde default/all同原、2类结构拒绝；优先两个结构continuation，常量名gate正式计划13项仍未应用。
 
 用户明确继续在当前聊天推进。以本地JADX **71验收单元/612测试文件**为清单，逐片追平后再探索；root负责架构、OpenSpec、真实源码/JADX/Jarde整类对照及对抗验收，确定性私有稿交Luna。窄片成功不增加整单元完成数。
 
@@ -41,3 +41,5 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 2026-10-11 root新增 CF12完整分母巡查：十个上游类此前只观测五类，剩余五类现已实际direct+render+full replay与独立核验，32整类命令/15行，6个Jarde profile一致、4编译失败，JADX4类一致/1类check失败；13方法map对/238UTF8段。TestSwitch4 Jarde保留off++旧值实跑正确，JADX2234误值；FTCase2 JADX warning虽导致JUnit失败，但check与68输入同原。具体缺口锁定Switch2的早返回与共享continuation、FTCase2的outer if/switch尾语句，内部细因还需受控诊断；无需为已通过的副作用排序添加机制。完整证据[remaining observations](openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/README.md)，cf12_complete始终false；不把跨版本各片拼成已通过产品。当前仍优先结构里程碑，常量名gate规划保留未应用。
 
 2026-10-11 conditional自身CI准确日志已接受（详results/own-product-ci-root-v1），不是仅GitHub状态绿；两次原v5验收失败（JDK路径表示/公开test名脱敏）与最终包装器真实exit0、Luna审查均保留。接下来的大颗粒规划私稿在remaining证据/private-openspec-draft-luna-v1，root-review已纠正因果/预算位置并要求复用现有DAG证明补join/terminal见证，禁止猜测修复。需先clean交付，再实际OpenSpec创建/受控内部诊断，不直接应用私稿。
+
+conditional clean交付7/7 checkpoint：69cff3bd299feb71a820917be866db05b63b57dc，free 45672148992bytes，execution SHA4f2b6adc61135bfdbe4d1c9df46232a3e3dbe9df20c059d16c8e97efb676c490；见 [clean audit](openspec/changes/recover-proved-conditional-switch-fallthrough/results/clean-delivery-checkpoint-root-v1/execution.json)。持续目标active，下一步按实际拒绝路径规划两个结构缺口。
