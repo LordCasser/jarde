@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-constructor-conditional-own-ci-preflight-root-v1.py", line 6, in <module>
+    ex,meta,local=v.verify_workspace(product,v.EXPECTED_WORKSPACE,ci)
+                  ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-constructor-conditional-own-ci-verifier-root-v1.py", line 280, in verify_workspace
+    need(recorded_outcomes == parsed_outcomes,
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         f'workspace batch {offset} recorded named outcomes differ from parsed raw outcomes')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-constructor-conditional-own-ci-verifier-root-v1.py", line 59, in need
+    raise ValueError(message)
+ValueError: workspace batch 8 recorded named outcomes differ from parsed raw outcomes

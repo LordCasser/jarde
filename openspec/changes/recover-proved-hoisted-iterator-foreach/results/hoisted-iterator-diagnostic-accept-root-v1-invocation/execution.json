@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-diagnostic-accept-root-v2.py",
+    "--execution",
+    "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/execution.json",
+    "--runner",
+    "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1.py",
+    "--out",
+    "/private/tmp/jarde-hoisted-iterator-diagnostic-accepted-root-v1"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T19:06:16.846069+00:00",
+  "finished_at": "2026-10-11T19:06:18.328646+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-diagnostic-accept-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-diagnostic-accept-root-v1/stderr.raw",
+      "bytes": 71,
+      "sha256": "21bc8b7025043521f575bfd1a9c00ad408721f65194e8a3e78458db98f6aabd5"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "private-static-syntax-review-v2",
+  "rust_parser": "not run by instruction",
+  "lexical_delimiters": "passed",
+  "logger_call_arity": {
+    "passed": true,
+    "calls": 19,
+    "arguments_per_call": 4,
+    "trailing_comma_allowed": true
+  },
+  "candidate_sha256": "201d332eec9593c0ad45a9efe804684c6ca875336b03f1afd637ce59e967de04",
+  "candidate_bytes": 1749201,
+  "notes": "Static lexical check only; does not establish Rust parsing, typing or compilation."
+}

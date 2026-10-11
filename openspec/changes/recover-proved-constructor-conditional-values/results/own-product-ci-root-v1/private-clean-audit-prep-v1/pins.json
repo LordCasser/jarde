@@ -1,0 +1,88 @@
+{
+  "schema": "jarde-constructor-conditional-clean-main-audit-prep-luna-v1",
+  "scope": "private audit preparation; never executed; no Git/GH/Cargo/network/shared writes",
+  "hash_algorithm": "SHA-256",
+  "prepared_audit_ast_parse": "passed with ast.parse only; audit script not executed; top-level nodes=45",
+  "expected_cli_identity": {
+    "final_path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "mode": "0o555",
+    "state_at_prep": "final destination absent; frozen v6 candidate at separate path exists and matches this identity"
+  },
+  "runtime_inputs": {
+    "expected_head": "required full lowercase 40-character commit argument; deliberately not embedded",
+    "expected_build_receipt_sha256": "required full lowercase SHA-256 argument; final receipt not yet present"
+  },
+  "future_required_outputs": [
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "state": "not present at preparation time; required when audit runs"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+      "state": "not present at preparation time; required when audit runs"
+    }
+  ],
+  "source_closure_count": 4727,
+  "focused_build_receipt_sha256": "4e3260ecfd829cc3ab139552918cc5fc2e119f259338aa3a400b77e37c91ad67",
+  "sources": [
+    {
+      "role": "template",
+      "path": "/private/tmp/jarde-for-condition-clean-main-audit-prep-luna-v3/clean-main-audit.py",
+      "bytes": 13541,
+      "sha256": "aaeb3a58f567ab0b388cc8f86315d0c99609653bf147c12de461f107f980f5ba",
+      "mode": "0o644"
+    },
+    {
+      "role": "prepared_audit",
+      "path": "/private/tmp/jarde-constructor-conditional-clean-main-audit-prep-luna-v1/constructor-conditional-clean-main-audit.py",
+      "bytes": 16991,
+      "sha256": "54593be5e2916c1b8a2a53bfa1d7aeba3e549a8a3c38be1b5f509e18f4dc9d6e",
+      "mode": "0o644"
+    },
+    {
+      "role": "final_build_runner",
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1.py",
+      "bytes": 5843,
+      "sha256": "7bf3a61aec009aaa629efad18fe8e177b25d0e3b828de135d52eba498ea5c2c3",
+      "mode": "0o555"
+    },
+    {
+      "role": "guard_helper",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "mode": "0o644"
+    },
+    {
+      "role": "target_scan_helper",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "mode": "0o644"
+    },
+    {
+      "role": "focused_build_receipt",
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v6/execution.json",
+      "bytes": 3049978,
+      "sha256": "4e3260ecfd829cc3ab139552918cc5fc2e119f259338aa3a400b77e37c91ad67",
+      "mode": "0o644"
+    },
+    {
+      "role": "candidate_cli_v6",
+      "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v6",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+      "mode": "0o555"
+    }
+  ],
+  "prepared_artifacts": [
+    {
+      "role": "prepared_review",
+      "path": "/private/tmp/jarde-constructor-conditional-clean-main-audit-prep-luna-v1/review.md",
+      "bytes": 2848,
+      "sha256": "074ababb52a6662fedb82da211224c280451314bdd7e07067746f549d70de9bf"
+    }
+  ]
+}

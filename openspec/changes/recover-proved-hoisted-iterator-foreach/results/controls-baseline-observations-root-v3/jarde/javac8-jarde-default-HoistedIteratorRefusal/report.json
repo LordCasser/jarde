@@ -1,0 +1,1598 @@
+{
+  "anonymous_interface_projection": {
+    "state": "absent"
+  },
+  "bridge_proofs": [],
+  "class": {
+    "class_bytes": {
+      "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+      "length": 1181
+    },
+    "location": {
+      "kind": "standalone_root",
+      "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+    },
+    "variant": {
+      "kind": "base"
+    }
+  },
+  "coverage": {
+    "artifact_structural": {
+      "scanned": [
+        {
+          "end": 1,
+          "label": "navigation_candidates",
+          "start": 0
+        },
+        {
+          "end": 2,
+          "label": "class_methods",
+          "start": 0
+        },
+        {
+          "end": 2,
+          "label": "class_source_bodies",
+          "start": 0
+        }
+      ],
+      "skipped": [],
+      "state": "complete_within_schema",
+      "uninterpreted_extensions": []
+    },
+    "dynamic_analysis": {
+      "scanned": [],
+      "skipped": [],
+      "state": "not_requested",
+      "uninterpreted_extensions": []
+    },
+    "runtime_resolution": {
+      "scanned": [],
+      "skipped": [],
+      "state": "not_requested",
+      "uninterpreted_extensions": []
+    }
+  },
+  "declaration": {
+    "annotation_attributes": [],
+    "annotation_refusals": [],
+    "annotation_uses": [],
+    "declaration": "public final class HoistedIteratorRefusal extends java.lang.Object",
+    "generic_refusal": null,
+    "generic_signature": null,
+    "item": {
+      "binding": {
+        "kind": "standalone_root"
+      },
+      "declaration": {
+        "access_flags": 49,
+        "interfaces": [],
+        "super_class": {
+          "escaped": "java/lang/Object",
+          "raw": [
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116
+          ],
+          "utf16": [
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116
+          ]
+        },
+        "this_class": {
+          "escaped": "cf11/HoistedIteratorRefusal",
+          "raw": [
+            99,
+            102,
+            49,
+            49,
+            47,
+            72,
+            111,
+            105,
+            115,
+            116,
+            101,
+            100,
+            73,
+            116,
+            101,
+            114,
+            97,
+            116,
+            111,
+            114,
+            82,
+            101,
+            102,
+            117,
+            115,
+            97,
+            108
+          ],
+          "utf16": [
+            99,
+            102,
+            49,
+            49,
+            47,
+            72,
+            111,
+            105,
+            115,
+            116,
+            101,
+            100,
+            73,
+            116,
+            101,
+            114,
+            97,
+            116,
+            111,
+            114,
+            82,
+            101,
+            102,
+            117,
+            115,
+            97,
+            108
+          ]
+        }
+      },
+      "definition": {
+        "class_bytes": {
+          "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+          "length": 1181
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "member_table": null
+    },
+    "name": "HoistedIteratorRefusal"
+  },
+  "diagnostics": [],
+  "direct_override_proofs": [],
+  "enum_switch_proofs": [],
+  "execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 1030,
+      "archive_entries": 0,
+      "attribute_bytes": 975,
+      "class_bytes": 2362,
+      "class_headers": 1,
+      "code_bytes": 59,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 0,
+      "input_bytes": 1181,
+      "ir_edges": 93,
+      "ir_items": 1086,
+      "method_bodies": 2,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 2832,
+      "read_bytes": 1181,
+      "result_items": 9
+    }
+  },
+  "fields": [],
+  "initializer_proof": {
+    "kind": "not_applicable"
+  },
+  "integer_constant_projections": [],
+  "limits": {
+    "analysis_steps": 4194304,
+    "archive_entries": 65536,
+    "attribute_bytes": 67108864,
+    "class_bytes": 67108864,
+    "class_headers": 4096,
+    "code_bytes": 16777216,
+    "dependency_depth": 8,
+    "elapsed_millis": 30000,
+    "entry_bytes": 67108864,
+    "input_bytes": 67108864,
+    "ir_edges": 4194304,
+    "ir_items": 4194304,
+    "method_bodies": 4096,
+    "nested_depth": 4,
+    "normalization_clones": 1048576,
+    "output_bytes": 16777216,
+    "read_bytes": 67108864,
+    "result_items": 65536
+  },
+  "member_family": {
+    "state": "absent"
+  },
+  "methods": [
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public HoistedIteratorRefusal()",
+      "item": {
+        "access_flags": 1,
+        "body": {
+          "content_span": {
+            "length": 47,
+            "start": 852
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "()V",
+          "raw": [
+            40,
+            41,
+            86
+          ],
+          "utf16": [
+            40,
+            41,
+            86
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+              "length": 1181
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 0,
+        "name": {
+          "escaped": "<init>",
+          "raw": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ],
+          "utf16": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ]
+        }
+      },
+      "markers": [],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 23,
+              "archive_entries": 0,
+              "attribute_bytes": 703,
+              "class_bytes": 2362,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 0,
+              "entry_bytes": 0,
+              "input_bytes": 1181,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1181,
+              "read_bytes": 1181,
+              "result_items": 7
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "standalone_class",
+                        "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 0,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "name": [
+                  60,
+                  105,
+                  110,
+                  105,
+                  116,
+                  62
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                    "length": 1181
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 201,
+              "text_digest": "16558b41f9732a34edefe98f07a84c8b"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "contains_statements",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 2 statement(s), 2 segment(s), 201 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_constructor_prologue",
+              "message": "the body is an instance initializer and its prologue is written under init@1 as `super`: the call at BCI 1 names `java/lang/Object`, and the class that declares this constructor is `cf11/HoistedIteratorRefusal`",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a constructor",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 163,
+              "archive_entries": 0,
+              "attribute_bytes": 703,
+              "class_bytes": 2362,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 1,
+              "entry_bytes": 0,
+              "input_bytes": 1181,
+              "ir_edges": 2,
+              "ir_items": 77,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1382,
+              "read_bytes": 1181,
+              "result_items": 7
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "<init>()V",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "structured",
+          "regions": [],
+          "representation": "java",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 187,
+                "origin": {
+                  "derived": [
+                    {
+                      "bci": 0,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          41,
+                          86
+                        ],
+                        "name": [
+                          60,
+                          105,
+                          110,
+                          105,
+                          116,
+                          62
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                            "length": 1181
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    }
+                  ],
+                  "primary": {
+                    "bci": 1,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        60,
+                        105,
+                        110,
+                        105,
+                        116,
+                        62
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                          "length": 1181
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 174
+              },
+              {
+                "end": 199,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 4,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        60,
+                        105,
+                        110,
+                        105,
+                        116,
+                        62
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                          "length": 1181
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 187
+              }
+            ]
+          },
+          "syntax_status": "unchecked",
+          "text": "// @method <init>()V\n// @declaration a constructor of `cf11.HoistedIteratorRefusal`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    return;\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": []
+      },
+      "text": "    public HoistedIteratorRefusal() {\n        // @method <init>()V\n        // @declaration a constructor of `cf11.HoistedIteratorRefusal`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public static int sumWithWrittenGap(java.util.List values)",
+      "item": {
+        "access_flags": 9,
+        "body": {
+          "content_span": {
+            "length": 250,
+            "start": 913
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "(Ljava/util/List;)I",
+          "raw": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            117,
+            116,
+            105,
+            108,
+            47,
+            76,
+            105,
+            115,
+            116,
+            59,
+            41,
+            73
+          ],
+          "utf16": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            117,
+            116,
+            105,
+            108,
+            47,
+            76,
+            105,
+            115,
+            116,
+            59,
+            41,
+            73
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            117,
+            116,
+            105,
+            108,
+            47,
+            76,
+            105,
+            115,
+            116,
+            59,
+            41,
+            73
+          ],
+          "name": [
+            115,
+            117,
+            109,
+            87,
+            105,
+            116,
+            104,
+            87,
+            114,
+            105,
+            116,
+            116,
+            101,
+            110,
+            71,
+            97,
+            112
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+              "length": 1181
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 1,
+        "name": {
+          "escaped": "sumWithWrittenGap",
+          "raw": [
+            115,
+            117,
+            109,
+            87,
+            105,
+            116,
+            104,
+            87,
+            114,
+            105,
+            116,
+            116,
+            101,
+            110,
+            71,
+            97,
+            112
+          ],
+          "utf16": [
+            115,
+            117,
+            109,
+            87,
+            105,
+            116,
+            104,
+            87,
+            114,
+            105,
+            116,
+            116,
+            101,
+            110,
+            71,
+            97,
+            112
+          ]
+        }
+      },
+      "markers": [
+        "// jarde: not recovered: the recovery run for `sumWithWrittenGap(Ljava/util/List;)I` produced no statement (explanation only); the artifact's own comment lines are below",
+        "// jarde: generic Signature projection refused for `sumWithWrittenGap(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof"
+      ],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 369,
+              "archive_entries": 0,
+              "attribute_bytes": 959,
+              "class_bytes": 2362,
+              "class_headers": 1,
+              "code_bytes": 59,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 0,
+              "input_bytes": 1181,
+              "ir_edges": 89,
+              "ir_items": 916,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1382,
+              "read_bytes": 1181,
+              "result_items": 8
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "standalone_class",
+                        "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 1,
+              "method": {
+                "descriptor": [
+                  40,
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  117,
+                  116,
+                  105,
+                  108,
+                  47,
+                  76,
+                  105,
+                  115,
+                  116,
+                  59,
+                  41,
+                  73
+                ],
+                "name": [
+                  115,
+                  117,
+                  109,
+                  87,
+                  105,
+                  116,
+                  104,
+                  87,
+                  114,
+                  105,
+                  116,
+                  116,
+                  101,
+                  110,
+                  71,
+                  97,
+                  112
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                    "length": 1181
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 382,
+              "text_digest": "4fc629eea94c9c4e94c4b4bc2111ed35"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "explanation_only",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_region_uncovered_blocks",
+              "message": "3 live block(s) are reachable only through edges the normal-flow view leaves out: [13, 22, 44]",
+              "provenance": null,
+              "severity": "warning"
+            },
+            {
+              "code": "jre_recovery_produced",
+              "message": "2 region(s), 1 statement(s), 1 segment(s), 382 byte(s) written from 5 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 942,
+              "archive_entries": 0,
+              "attribute_bytes": 959,
+              "class_bytes": 2362,
+              "class_headers": 1,
+              "code_bytes": 59,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 0,
+              "input_bytes": 1181,
+              "ir_edges": 93,
+              "ir_items": 1086,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1764,
+              "read_bytes": 1181,
+              "result_items": 8
+            }
+          },
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "sumWithWrittenGap(Ljava/util/List;)I",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "fallback",
+          "regions": [],
+          "representation": "mixed",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 380,
+                "origin": {
+                  "derived": [
+                    {
+                      "bci": 13,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          76,
+                          106,
+                          97,
+                          118,
+                          97,
+                          47,
+                          117,
+                          116,
+                          105,
+                          108,
+                          47,
+                          76,
+                          105,
+                          115,
+                          116,
+                          59,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          115,
+                          117,
+                          109,
+                          87,
+                          105,
+                          116,
+                          104,
+                          87,
+                          114,
+                          105,
+                          116,
+                          116,
+                          101,
+                          110,
+                          71,
+                          97,
+                          112
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                            "length": 1181
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    },
+                    {
+                      "bci": 22,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          76,
+                          106,
+                          97,
+                          118,
+                          97,
+                          47,
+                          117,
+                          116,
+                          105,
+                          108,
+                          47,
+                          76,
+                          105,
+                          115,
+                          116,
+                          59,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          115,
+                          117,
+                          109,
+                          87,
+                          105,
+                          116,
+                          104,
+                          87,
+                          114,
+                          105,
+                          116,
+                          116,
+                          101,
+                          110,
+                          71,
+                          97,
+                          112
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                            "length": 1181
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    },
+                    {
+                      "bci": 44,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          76,
+                          106,
+                          97,
+                          118,
+                          97,
+                          47,
+                          117,
+                          116,
+                          105,
+                          108,
+                          47,
+                          76,
+                          105,
+                          115,
+                          116,
+                          59,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          115,
+                          117,
+                          109,
+                          87,
+                          105,
+                          116,
+                          104,
+                          87,
+                          114,
+                          105,
+                          116,
+                          116,
+                          101,
+                          110,
+                          71,
+                          97,
+                          112
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                            "length": 1181
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    },
+                    {
+                      "bci": 47,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          76,
+                          106,
+                          97,
+                          118,
+                          97,
+                          47,
+                          117,
+                          116,
+                          105,
+                          108,
+                          47,
+                          76,
+                          105,
+                          115,
+                          116,
+                          59,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          115,
+                          117,
+                          109,
+                          87,
+                          105,
+                          116,
+                          104,
+                          87,
+                          114,
+                          105,
+                          116,
+                          116,
+                          101,
+                          110,
+                          71,
+                          97,
+                          112
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                            "length": 1181
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    },
+                    {
+                      "bci": 50,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          76,
+                          106,
+                          97,
+                          118,
+                          97,
+                          47,
+                          117,
+                          116,
+                          105,
+                          108,
+                          47,
+                          76,
+                          105,
+                          115,
+                          116,
+                          59,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          115,
+                          117,
+                          109,
+                          87,
+                          105,
+                          116,
+                          104,
+                          87,
+                          114,
+                          105,
+                          116,
+                          116,
+                          101,
+                          110,
+                          71,
+                          97,
+                          112
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                            "length": 1181
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    }
+                  ],
+                  "primary": {
+                    "bci": 0,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        106,
+                        97,
+                        118,
+                        97,
+                        47,
+                        117,
+                        116,
+                        105,
+                        108,
+                        47,
+                        76,
+                        105,
+                        115,
+                        116,
+                        59,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        115,
+                        117,
+                        109,
+                        87,
+                        105,
+                        116,
+                        104,
+                        87,
+                        114,
+                        105,
+                        116,
+                        116,
+                        101,
+                        110,
+                        71,
+                        97,
+                        112
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278",
+                          "length": 1181
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 203
+              }
+            ]
+          },
+          "syntax_status": "not_java",
+          "text": "// @method sumWithWrittenGap(Ljava/util/List;)I\n// @declaration a static method of `cf11.HoistedIteratorRefusal`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 13 22 44 47 50\n    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": [
+          []
+        ]
+      },
+      "text": "    // jarde: generic Signature projection refused for `sumWithWrittenGap(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof\n    public static int sumWithWrittenGap(java.util.List values) {\n        // jarde: not recovered: the recovery run for `sumWithWrittenGap(Ljava/util/List;)I` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method sumWithWrittenGap(Ljava/util/List;)I\n        // @declaration a static method of `cf11.HoistedIteratorRefusal`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 0 13 22 44 47 50\n        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [
+          []
+        ],
+        "refusals": [],
+        "return_uses": []
+      }
+    }
+  ],
+  "nested_annotation_family": {
+    "state": "absent"
+  },
+  "nested_enum_family": {
+    "state": "absent"
+  },
+  "outcome": "performed",
+  "stages": [
+    "raw_facts",
+    "raw_cfg",
+    "legacy_normalization",
+    "canonical_cfg",
+    "frame",
+    "ssa"
+  ],
+  "text": "// jarde: presentation of `cf11/HoistedIteratorRefusal` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage cf11;\n\npublic final class HoistedIteratorRefusal extends java.lang.Object {\n    public HoistedIteratorRefusal() {\n        // @method <init>()V\n        // @declaration a constructor of `cf11.HoistedIteratorRefusal`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    // jarde: generic Signature projection refused for `sumWithWrittenGap(Ljava/util/List;)I`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof\n    public static int sumWithWrittenGap(java.util.List values) {\n        // jarde: not recovered: the recovery run for `sumWithWrittenGap(Ljava/util/List;)I` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method sumWithWrittenGap(Ljava/util/List;)I\n        // @declaration a static method of `cf11.HoistedIteratorRefusal`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 0 13 22 44 47 50\n        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n    }\n}\n",
+  "usage": {
+    "analysis_steps": 1030,
+    "archive_entries": 0,
+    "attribute_bytes": 975,
+    "class_bytes": 2362,
+    "class_headers": 1,
+    "code_bytes": 59,
+    "dependency_depth": 0,
+    "elapsed_millis": 3,
+    "entry_bytes": 0,
+    "input_bytes": 1181,
+    "ir_edges": 93,
+    "ir_items": 1086,
+    "method_bodies": 2,
+    "nested_depth": 0,
+    "normalization_clones": 0,
+    "output_bytes": 2832,
+    "read_bytes": 1181,
+    "result_items": 9
+  },
+  "view": {
+    "scope": {
+      "kind": "snapshot_all"
+    },
+    "snapshot": "8b5527b2235405d447f1da29085a89d1e5ad37170b13514d0843aad851640278"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "status": "accepted_same_ir_diagnostic_observation_only",
+  "execution_schema": "hoisted-iterator-same-ir-diagnostic-root-v3",
+  "candidate_schema": "jarde-hoisted-iterator-same-ir-diagnostic-candidate-v3",
+  "candidate_status": "private static diagnostic candidate; unapplied, uncompiled, and unrun",
+  "phi_use_expansion_observed": true,
+  "phi_use_expansion_facts": {
+    "block_97_local_5_phi": "V22 inputs [V37, V37, V37], uses [], replaced_by V12",
+    "header_block_35_local_5_phi": "V12 inputs [V37, Itself], uses [], replaced_by V37",
+    "scope": "observed SSA expansion only; no later next/effect/Builder gate claim"
+  },
+  "execution_sha256": "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87",
+  "runner_sha256": "5750646b4c1703cb6bbd5884b7f40a5d531a9627f576d20b45df00ebd4a75def",
+  "final_build_receipt_sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2",
+  "raw_streams": [
+    {
+      "name": "0.stderr.raw",
+      "bytes": 91032,
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a"
+    },
+    {
+      "name": "0.stdout.raw",
+      "bytes": 233,
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"
+    },
+    {
+      "name": "1.stderr.raw",
+      "bytes": 52,
+      "sha256": "5ed21954ce9ec808a11c9b6eab1387deeb2a781f68599d85c3e093d959ddde54"
+    },
+    {
+      "name": "1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_closure_count": 4727,
+  "scope": "One exact ignored diagnostic plus clean; this does not establish a successful foreach candidate or later ownership gate.",
+  "first_refusals": {
+    "inner_test_bci_42": "iterator_value_and_phi_use_ownership",
+    "outer_test_bci_13": "body_first_not_initialized_declaration"
+  }
+}

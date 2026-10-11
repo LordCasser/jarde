@@ -1,0 +1,437 @@
+{
+  "status": "accepted_controls_observation_with_preserved_gaps",
+  "execution_sha256": "e17a697a4790c7bb3b54128e241997e13a3d4f36a36ea0af057a3f4f16a0f37c",
+  "checker_sha256": "11077bc4ed1b68bc841f0ca6a39b4201060ce34a6981912a750554e022207a4b",
+  "commands": 43,
+  "raw_streams": 86,
+  "dynamic_source_closure_files": 4727,
+  "clean_target_after_capture": true,
+  "original_runtime_legs": 2,
+  "oracle_lines": 15,
+  "jadx_runtime_legs": [
+    {
+      "label": "javac8-jadx-default-run",
+      "matches_original_oracle": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "matches_original_oracle": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "matches_original_oracle": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "matches_original_oracle": false,
+      "stdout_sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+    }
+  ],
+  "jadx_written_gap_exception_contrast": [
+    {
+      "label": "javac8-jadx-default-run",
+      "original_case": "written-gap-iterator-throws-before-write|result=0|exception=none|trace=values.iterator();",
+      "actual_case": "written-gap-iterator-throws-before-write|result=1|exception=none|trace=values.iterator();",
+      "difference": "iterator() throws before the protected write; recovered output reports seen=1 while the original reports seen=0"
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "original_case": "written-gap-iterator-throws-before-write|result=0|exception=none|trace=values.iterator();",
+      "actual_case": "written-gap-iterator-throws-before-write|result=1|exception=none|trace=values.iterator();",
+      "difference": "iterator() throws before the protected write; recovered output reports seen=1 while the original reports seen=0"
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "original_case": "written-gap-iterator-throws-before-write|result=0|exception=none|trace=values.iterator();",
+      "actual_case": "written-gap-iterator-throws-before-write|result=1|exception=none|trace=values.iterator();",
+      "difference": "iterator() throws before the protected write; recovered output reports seen=1 while the original reports seen=0"
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "original_case": "written-gap-iterator-throws-before-write|result=0|exception=none|trace=values.iterator();",
+      "actual_case": "written-gap-iterator-throws-before-write|result=1|exception=none|trace=values.iterator();",
+      "difference": "iterator() throws before the protected write; recovered output reports seen=1 while the original reports seen=0"
+    }
+  ],
+  "jarde_generated_compile_failures": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "fa26a7229e8a0b9becf19cb60b350104da827fc5c01aa52bce52a3126485ad45"
+    },
+    {
+      "label": "javac8-jarde-default-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "fa26a7229e8a0b9becf19cb60b350104da827fc5c01aa52bce52a3126485ad45"
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "8bbffbd15a5141722fbc1d826bfb4259535ec56f118cf06aab48a53c27a7e7b7"
+    },
+    {
+      "label": "javac8-jarde-all-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "8bbffbd15a5141722fbc1d826bfb4259535ec56f118cf06aab48a53c27a7e7b7"
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "7228802021c8377141181e3a40b9a87a6070098a1359fbef9bc71e202260284b"
+    },
+    {
+      "label": "javac23-jarde-default-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "7228802021c8377141181e3a40b9a87a6070098a1359fbef9bc71e202260284b"
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "fe9e4f4e025d6ad491c04396db3a555577a9f0fb29c601f246061ba6c6e6650f"
+    },
+    {
+      "label": "javac23-jarde-all-isolated-HoistedIteratorRefusal",
+      "compile_exit": 1,
+      "runtime_exit": null,
+      "stderr_sha256": "fe9e4f4e025d6ad491c04396db3a555577a9f0fb29c601f246061ba6c6e6650f"
+    }
+  ],
+  "jarde_positive_isolated_runtime_legs": [
+    {
+      "label": "javac8-jarde-default-isolated-HoistedIteratorPositive",
+      "same_source_runner_and_refusal_target_present": true,
+      "matches_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+    },
+    {
+      "label": "javac8-jarde-all-isolated-HoistedIteratorPositive",
+      "same_source_runner_and_refusal_target_present": true,
+      "matches_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+    },
+    {
+      "label": "javac23-jarde-default-isolated-HoistedIteratorPositive",
+      "same_source_runner_and_refusal_target_present": true,
+      "matches_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+    },
+    {
+      "label": "javac23-jarde-all-isolated-HoistedIteratorPositive",
+      "same_source_runner_and_refusal_target_present": true,
+      "matches_original": true,
+      "stdout_sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+    }
+  ],
+  "jarde_method_maps_checked": 20,
+  "default_all_parity_rows": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.HoistedIteratorPositive",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.HoistedIteratorRefusal",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.HoistedIteratorPositive",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.HoistedIteratorRefusal",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    }
+  ],
+  "original_physical_method_counts": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.HoistedIteratorPositive",
+      "method_count": 3,
+      "methods": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "instruction_bci_count": 3
+        },
+        {
+          "method_index": 1,
+          "name": "sumNested",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "instruction_bci_count": 32
+        },
+        {
+          "method_index": 2,
+          "name": "body",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)I",
+          "instruction_bci_count": 10
+        }
+      ]
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.HoistedIteratorRefusal",
+      "method_count": 2,
+      "methods": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "instruction_bci_count": 3
+        },
+        {
+          "method_index": 1,
+          "name": "sumWithWrittenGap",
+          "descriptor": "(Ljava/util/List;)I",
+          "instruction_bci_count": 30
+        }
+      ]
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.HoistedIteratorPositive",
+      "method_count": 3,
+      "methods": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "instruction_bci_count": 3
+        },
+        {
+          "method_index": 1,
+          "name": "sumNested",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "instruction_bci_count": 32
+        },
+        {
+          "method_index": 2,
+          "name": "body",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)I",
+          "instruction_bci_count": 10
+        }
+      ]
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.HoistedIteratorRefusal",
+      "method_count": 2,
+      "methods": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "instruction_bci_count": 3
+        },
+        {
+          "method_index": 1,
+          "name": "sumWithWrittenGap",
+          "descriptor": "(Ljava/util/List;)I",
+          "instruction_bci_count": 30
+        }
+      ]
+    }
+  ],
+  "source_map_gaps": [
+    {
+      "label": "javac8-jarde-default-HoistedIteratorRefusal",
+      "method": "sumWithWrittenGap(Ljava/util/List;)I",
+      "code_length": 54,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-HoistedIteratorRefusal",
+      "method": "sumWithWrittenGap(Ljava/util/List;)I",
+      "code_length": 54,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-HoistedIteratorRefusal",
+      "method": "sumWithWrittenGap(Ljava/util/List;)I",
+      "code_length": 54,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-HoistedIteratorRefusal",
+      "method": "sumWithWrittenGap(Ljava/util/List;)I",
+      "code_length": 54,
+      "missing_physical_bcis": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        14,
+        19,
+        23,
+        28,
+        31,
+        33,
+        34,
+        36,
+        39,
+        40,
+        41,
+        48,
+        49,
+        51,
+        52,
+        53
+      ]
+    }
+  ],
+  "source_shapes": [
+    {
+      "label": "javac8-jarde-default-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "while_count": 2,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac8-jarde-all-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "while_count": 2,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac8-jarde-default-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "while_count": 0,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac8-jarde-all-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "while_count": 0,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac23-jarde-default-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "while_count": 2,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac23-jarde-all-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "while_count": 2,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac23-jarde-default-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "while_count": 0,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    },
+    {
+      "label": "javac23-jarde-all-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "while_count": 0,
+      "for_count": 0,
+      "generic_refusal_marker_count": 1
+    }
+  ],
+  "scope_note": "Positive isolated compile/runtime uses the frozen original Refusal class and Runner alongside generated Positive; it does not establish a generated Refusal runtime. The 8 generated compile failures have no runtime and remain baseline observations."
+}

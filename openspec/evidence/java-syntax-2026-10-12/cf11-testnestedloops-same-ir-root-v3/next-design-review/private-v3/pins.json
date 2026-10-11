@@ -1,0 +1,65 @@
+{
+  "schema": "jarde-cf11-foreach-declaration-next-design-v3",
+  "status": "private read-only architecture review; no implementation or rerun",
+  "sources": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "role": "iterable_for_each_candidate, declarations planner, placement validation, Builder::declare_at"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458",
+      "role": "slot-to-LocalVariable mapping at BCI"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/names.rs",
+      "sha256": "c56af18c7f25694a02f49385251857d1deb14288524636b4a38e8047c648953a",
+      "role": "LocalVariable identity"
+    }
+  ],
+  "baseline": {
+    "execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    },
+    "original_class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "generated_source": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+    }
+  },
+  "same_ir_observation": {
+    "raw_stderr": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "sha256": "dd853ee46eff134645137cf80380d27418e9d64701c9ae9f53b7195785b1c850"
+    },
+    "raw_stdout": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3/0.stdout.raw",
+      "sha256": "2f10b007bd24789bdbe6f51dbbcf27b40225e971f83e6b96d43dfb06801bcb50"
+    },
+    "test_summary": "1 passed, 0 failed, 0 ignored",
+    "events": [
+      {
+        "test_bci": 42,
+        "path": [1, 1],
+        "body_first": "Declare",
+        "refusal": "post_entry_candidate_proof_incomplete",
+        "stage": "iterator_declaration_before_init"
+      },
+      {
+        "test_bci": 13,
+        "path": [1],
+        "body_first": "Assign",
+        "refusal": "body_first_not_initialized_declaration"
+      }
+    ]
+  },
+  "prior_static_review": {
+    "path": "/private/tmp/jarde-cf11-foreach-next-design-luna-v2/analysis.md",
+    "scope": "Object iteratorElement header and preserved cast body; generic refusal remains separate"
+  }
+}

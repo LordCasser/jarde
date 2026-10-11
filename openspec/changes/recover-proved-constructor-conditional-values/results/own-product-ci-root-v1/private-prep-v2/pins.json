@@ -1,0 +1,62 @@
+{
+  "schema": "constructor-conditional-own-ci-verifier-prep-v2",
+  "status": "private_candidate_static_parse_only",
+  "candidate": {
+    "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+    "bytes": 48571,
+    "sha256": "ac511e1560c5da57fca5fcf4d37e837b726b4e20f2327014b9f29394870f0d1e"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/candidate.patch",
+    "bytes": 5630,
+    "sha256": "9c3fcdd6f9bd24ec8ae83b97c6baca2ff4cffc58611b0a1569730171d4287eda"
+  },
+  "review": {
+    "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/README.md",
+    "bytes": 1324,
+    "sha256": "844914fdd7ce08f07dd213c1776c33fd9c65847fae5756f6db93605cfd1f09ce"
+  },
+  "inputs": {
+    "v1_candidate": {
+      "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v1/verify-own-ci.py",
+      "bytes": 45100,
+      "sha256": "bdd1945f2a6341bdc98da6c764ee95c22c109be36fc0eac1ef7a7cf39ef2bb1d"
+    },
+    "v1_pins": {
+      "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v1/pins.json",
+      "bytes": 5348,
+      "sha256": "75c4428d18e6800ff65163748ecea175097805167455f6ff05f0f8a329db229b"
+    },
+    "accepted_batch_observation_helper": {
+      "path": "/private/tmp/jarde-constructor-conditional-local-workspace-accept-root-v1.py",
+      "bytes": 31531,
+      "sha256": "fe721af1a54f3437810c52487ce07e3487f2604f5ecdf2b1897d4b32ba86085d"
+    },
+    "preflight_stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-own-ci-preflight-root-v1/stderr.raw",
+      "bytes": 881,
+      "sha256": "f89f93e5aba4d376489cb7b7c99e8ed8e4cc92e77384c169c17452f8035df8a9"
+    },
+    "current_workspace_runner": {
+      "path": "/private/tmp/jarde-constructor-conditional-workspace-root-v1.py",
+      "bytes": 27700,
+      "sha256": "81484f984cdf909980b7dab25ee38ac560de0a1fa6028dc912b82ca05e0f0606"
+    },
+    "basic_ci_parser": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "bytes": 43302,
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca"
+    }
+  },
+  "static_checks": {
+    "candidate_python_ast": "passed",
+    "diff_review": "only batch outcome comparison replaced and validating helper added",
+    "candidate_verifier_execution": "not run"
+  },
+  "behavioral_constraints": [
+    "convenience state ignored is compared to normalized parsed state only",
+    "raw_line is compared in full against original captured stdout line in order",
+    "summary raw lines/counts and aggregate totals remain checked",
+    "all unrelated verification logic is byte-for-byte retained relative to v1 except inserted helper and replaced comparison"
+  ]
+}

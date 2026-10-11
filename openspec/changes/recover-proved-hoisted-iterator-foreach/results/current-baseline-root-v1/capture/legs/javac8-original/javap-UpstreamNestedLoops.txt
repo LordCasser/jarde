@@ -1,0 +1,185 @@
+Classfile /private/tmp/jarde-hoisted-iterator-current-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class
+  Last modified 2026-10-12; size 1219 bytes
+  MD5 checksum 29107ed2c40e539ad6255c44c0a02ccd
+  Compiled from "UpstreamNestedLoops.java"
+public class cf11.UpstreamNestedLoops
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #13.#38        // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #39.#40        // java/util/List.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #41.#42        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #41.#43        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = Class              #44            // java/lang/String
+   #6 = Methodref          #5.#45         // java/lang/String.equals:(Ljava/lang/Object;)Z
+   #7 = Methodref          #5.#46         // java/lang/String.length:()I
+   #8 = InterfaceMethodref #39.#47        // java/util/List.add:(Ljava/lang/Object;)Z
+   #9 = InterfaceMethodref #39.#48        // java/util/List.remove:(Ljava/lang/Object;)Z
+  #10 = InterfaceMethodref #39.#49        // java/util/List.size:()I
+  #11 = InterfaceMethodref #39.#50        // java/util/List.clear:()V
+  #12 = Class              #51            // cf11/UpstreamNestedLoops
+  #13 = Class              #52            // java/lang/Object
+  #14 = Utf8               <init>
+  #15 = Utf8               ()V
+  #16 = Utf8               Code
+  #17 = Utf8               LineNumberTable
+  #18 = Utf8               LocalVariableTable
+  #19 = Utf8               this
+  #20 = Utf8               Lcf11/UpstreamNestedLoops;
+  #21 = Utf8               test
+  #22 = Utf8               (Ljava/util/List;Ljava/util/List;)V
+  #23 = Utf8               s2
+  #24 = Utf8               Ljava/lang/String;
+  #25 = Utf8               s1
+  #26 = Utf8               l1
+  #27 = Utf8               Ljava/util/List;
+  #28 = Utf8               l2
+  #29 = Utf8               LocalVariableTypeTable
+  #30 = Utf8               Ljava/util/List<Ljava/lang/String;>;
+  #31 = Utf8               StackMapTable
+  #32 = Class              #53            // java/util/Iterator
+  #33 = Class              #44            // java/lang/String
+  #34 = Utf8               Signature
+  #35 = Utf8               (Ljava/util/List<Ljava/lang/String;>;Ljava/util/List<Ljava/lang/String;>;)V
+  #36 = Utf8               SourceFile
+  #37 = Utf8               UpstreamNestedLoops.java
+  #38 = NameAndType        #14:#15        // "<init>":()V
+  #39 = Class              #54            // java/util/List
+  #40 = NameAndType        #55:#56        // iterator:()Ljava/util/Iterator;
+  #41 = Class              #53            // java/util/Iterator
+  #42 = NameAndType        #57:#58        // hasNext:()Z
+  #43 = NameAndType        #59:#60        // next:()Ljava/lang/Object;
+  #44 = Utf8               java/lang/String
+  #45 = NameAndType        #61:#62        // equals:(Ljava/lang/Object;)Z
+  #46 = NameAndType        #63:#64        // length:()I
+  #47 = NameAndType        #65:#62        // add:(Ljava/lang/Object;)Z
+  #48 = NameAndType        #66:#62        // remove:(Ljava/lang/Object;)Z
+  #49 = NameAndType        #67:#64        // size:()I
+  #50 = NameAndType        #68:#15        // clear:()V
+  #51 = Utf8               cf11/UpstreamNestedLoops
+  #52 = Utf8               java/lang/Object
+  #53 = Utf8               java/util/Iterator
+  #54 = Utf8               java/util/List
+  #55 = Utf8               iterator
+  #56 = Utf8               ()Ljava/util/Iterator;
+  #57 = Utf8               hasNext
+  #58 = Utf8               ()Z
+  #59 = Utf8               next
+  #60 = Utf8               ()Ljava/lang/Object;
+  #61 = Utf8               equals
+  #62 = Utf8               (Ljava/lang/Object;)Z
+  #63 = Utf8               length
+  #64 = Utf8               ()I
+  #65 = Utf8               add
+  #66 = Utf8               remove
+  #67 = Utf8               size
+  #68 = Utf8               clear
+{
+  public cf11.UpstreamNestedLoops();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/UpstreamNestedLoops;
+
+  public void test(java.util.List<java.lang.String>, java.util.List<java.lang.String>);
+    descriptor: (Ljava/util/List;Ljava/util/List;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=7, args_size=3
+         0: aload_1
+         1: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         6: astore_3
+         7: aload_3
+         8: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        13: ifeq          103
+        16: aload_3
+        17: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        22: checkcast     #5                  // class java/lang/String
+        25: astore        4
+        27: aload_2
+        28: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        33: astore        5
+        35: aload         5
+        37: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        42: ifeq          100
+        45: aload         5
+        47: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        52: checkcast     #5                  // class java/lang/String
+        55: astore        6
+        57: aload         4
+        59: aload         6
+        61: invokevirtual #6                  // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        64: ifeq          97
+        67: aload         4
+        69: invokevirtual #7                  // Method java/lang/String.length:()I
+        72: iconst_5
+        73: if_icmpne     88
+        76: aload_2
+        77: aload         4
+        79: invokeinterface #8,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+        84: pop
+        85: goto          97
+        88: aload_1
+        89: aload         6
+        91: invokeinterface #9,  2            // InterfaceMethod java/util/List.remove:(Ljava/lang/Object;)Z
+        96: pop
+        97: goto          35
+       100: goto          7
+       103: aload_2
+       104: invokeinterface #10,  1           // InterfaceMethod java/util/List.size:()I
+       109: ifle          118
+       112: aload_1
+       113: invokeinterface #11,  1           // InterfaceMethod java/util/List.clear:()V
+       118: return
+      LineNumberTable:
+        line 7: 0
+        line 8: 27
+        line 9: 57
+        line 10: 67
+        line 11: 76
+        line 13: 88
+        line 16: 97
+        line 17: 100
+        line 18: 103
+        line 19: 112
+        line 21: 118
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           57      40     6    s2   Ljava/lang/String;
+           27      73     4    s1   Ljava/lang/String;
+            0     119     0  this   Lcf11/UpstreamNestedLoops;
+            0     119     1    l1   Ljava/util/List;
+            0     119     2    l2   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0     119     1    l1   Ljava/util/List<Ljava/lang/String;>;
+            0     119     2    l2   Ljava/util/List<Ljava/lang/String;>;
+      StackMapTable: number_of_entries = 7
+        frame_type = 252 /* append */
+          offset_delta = 7
+          locals = [ class java/util/Iterator ]
+        frame_type = 253 /* append */
+          offset_delta = 27
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 252 /* append */
+          offset_delta = 52
+          locals = [ class java/lang/String ]
+        frame_type = 250 /* chop */
+          offset_delta = 8
+        frame_type = 249 /* chop */
+          offset_delta = 2
+        frame_type = 250 /* chop */
+          offset_delta = 2
+        frame_type = 14 /* same */
+    Signature: #35                          // (Ljava/util/List<Ljava/lang/String;>;Ljava/util/List<Ljava/lang/String;>;)V
+}
+SourceFile: "UpstreamNestedLoops.java"

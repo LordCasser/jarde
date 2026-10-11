@@ -1,0 +1,1 @@
+{"status": "accepted", "product_commit": "c956050611f63a06f57caf0b1280238e81faeb80", "run_id": 38163820457, "jobs": 4, "steps": 52, "target_count": 361, "batch_count": 95, "source_closure_count_at_start": 4727, "workspace_totals": [[3473, 0, 97], [3473, 0, 97]], "required_tests": 12, "masked_public_labels": 2}

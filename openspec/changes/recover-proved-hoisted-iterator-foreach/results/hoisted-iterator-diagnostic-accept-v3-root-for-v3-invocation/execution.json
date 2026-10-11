@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-diagnostic-accept-root-v3.py",
+    "--execution",
+    "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/execution.json",
+    "--runner",
+    "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3.py",
+    "--out",
+    "/private/tmp/jarde-hoisted-iterator-diagnostic-accepted-root-v3",
+    "--expected-execution-sha256",
+    "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87",
+    "--expected-schema",
+    "hoisted-iterator-same-ir-diagnostic-root-v3",
+    "--expected-candidate-schema",
+    "jarde-hoisted-iterator-same-ir-diagnostic-candidate-v3",
+    "--expected-candidate-status",
+    "private static diagnostic candidate; unapplied, uncompiled, and unrun"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T19:08:33.869355+00:00",
+  "finished_at": "2026-10-11T19:08:34.297258+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-diagnostic-accept-v3-root-for-v3/stdout.raw",
+      "bytes": 1846,
+      "sha256": "6cb6f4c6f950090012455dfcc37d867504030f00d52d9a653f9eb034ae0ac252"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-diagnostic-accept-v3-root-for-v3/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

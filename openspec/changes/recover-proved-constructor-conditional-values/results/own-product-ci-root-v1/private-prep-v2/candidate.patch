@@ -1,0 +1,81 @@
+--- /private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v1/verify-own-ci.py
++++ /private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py
+@@ -168,6 +168,62 @@
+     return commands, expected
+ 
+ 
++def check_recorded_batch_observations(row: dict, observed: list[dict], ci, workspace: Path) -> None:
++    """Cross-check normalized runner fields and every raw line against captured stdout."""
++    expected_outcomes = [outcome for target in observed for outcome in target['outcomes']]
++    raw_stdout = verify_stream(row['streams']['stdout'], workspace)
++    cleaned_lines = [ci.clean(line).strip()
++                     for line in raw_stdout.decode('utf-8', errors='replace').splitlines()]
++    actual_outcome_lines = [line for line in cleaned_lines if ci.OUTCOME_RE.fullmatch(line)]
++    actual_summary_lines = [line for line in cleaned_lines
++                            if line.startswith('test result: ok.') or line.startswith('test result: FAILED.')]
++    recorded_outcomes = row.get('named_test_outcomes')
++    need(isinstance(recorded_outcomes, list) and len(recorded_outcomes) == len(expected_outcomes),
++         f"batch {row.get('index')} named outcome record count differs from raw test blocks")
++    need(row.get('named_test_outcome_count') == len(expected_outcomes),
++         f"batch {row.get('index')} named outcome count field differs from raw test blocks")
++    for actual, (expected_name, expected_state) in zip(recorded_outcomes, expected_outcomes):
++        need(isinstance(actual, dict) and actual.get('name') == expected_name,
++             f"batch {row.get('index')} named test differs from raw test blocks")
++        state = actual.get('status')
++        need(state in ('ok', 'ignored', 'FAILED'),
++             f"batch {row.get('index')} has an unknown named test state")
++        expected_simple_state = 'ignored' if expected_state.startswith('ignored') else expected_state
++        need(state == expected_simple_state,
++             f"batch {row.get('index')} named test status differs from raw test blocks")
++        raw_line = actual.get('raw_line')
++        need(isinstance(raw_line, str), f"batch {row.get('index')} named test omits its raw line")
++        match = ci.OUTCOME_RE.fullmatch(ci.clean(raw_line).strip())
++        need(match is not None and match.group(1) == expected_name and
++             ('ignored' if match.group(2).startswith('ignored') else match.group(2)) == expected_simple_state,
++             f"batch {row.get('index')} named test raw line differs from its parsed identity/state")
++
++    recorded_outcome_lines = [ci.clean(item['raw_line']).strip() for item in recorded_outcomes]
++    need(recorded_outcome_lines == actual_outcome_lines,
++         f"batch {row.get('index')} stored named outcomes omit/reorder/change raw stdout lines")
++
++    summaries = row.get('observed_summaries')
++    need(isinstance(summaries, list) and len(summaries) == len(observed),
++         f"batch {row.get('index')} summary rows do not match executed target count")
++    for summary, target in zip(summaries, observed):
++        counts = target['counts']
++        need(summary.get('status') == ('ok' if counts[1] == 0 else 'FAILED') and
++             [summary.get('passed'), summary.get('failed'), summary.get('ignored')] == list(counts),
++             f"batch {row.get('index')} stored summary counts differ from raw target summary")
++        raw_line = summary.get('raw_line')
++        need(isinstance(raw_line, str), f"batch {row.get('index')} summary omits its raw line")
++        match = ci.SUMMARY_RE.fullmatch(ci.clean(raw_line).strip())
++        need(match is not None and tuple(map(int, match.groups()[1:4])) == counts and
++             match.group(1) == summary['status'],
++             f"batch {row.get('index')} summary raw line differs from its parsed counts/state")
++    recorded_summary_lines = [ci.clean(item['raw_line']).strip() for item in summaries]
++    need(recorded_summary_lines == actual_summary_lines,
++         f"batch {row.get('index')} stored summaries omit/reorder/change raw stdout lines")
++    totals = [sum(target['counts'][i] for target in observed) for i in range(3)]
++    need(row.get('summary_test_totals') == totals,
++         f"batch {row.get('index')} aggregate totals differ from raw target summaries")
++
++
+ def verify_workspace(product: str, workspace: Path, ci):
+     workspace = workspace.resolve(strict=True)
+     need(workspace.is_dir(), 'workspace receipt directory is invalid')
+@@ -274,14 +330,7 @@
+              f'workspace batch {offset} observed named outcomes differ from its raw record')
+         need(row.get('exit_code') == 0 and row.get('guard_stop') is None,
+              f'workspace batch {offset} failed or hit a guard')
+-        recorded_outcomes = [(item.get('name'), item.get('status'))
+-                             for item in row.get('named_test_outcomes', [])]
+-        parsed_outcomes = [outcome for target in observed for outcome in target['outcomes']]
+-        need(recorded_outcomes == parsed_outcomes,
+-             f'workspace batch {offset} recorded named outcomes differ from parsed raw outcomes')
+-        batch_totals = [sum(target['counts'][i] for target in observed) for i in range(3)]
+-        need(row.get('summary_test_totals') == batch_totals,
+-             f'workspace batch {offset} recorded totals differ from parsed raw outcomes')
++        check_recorded_batch_observations(row, observed, ci, workspace)
+         observations.extend(observed)
+     keys = [item['key'] for item in observations]
+     need(len(keys) == len(set(keys)) and set(keys) == set(inventory),

@@ -1,0 +1,227 @@
+{
+  "schema": "cf11-target-full-source-capture-v2",
+  "status": "command-error",
+  "package": "cf11",
+  "classes": [
+    "cf11.HoistedIteratorPositive",
+    "cf11.HoistedIteratorRefusal"
+  ],
+  "runner_class": "cf11.Runner",
+  "inputs_manifest": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+    "bytes": 674,
+    "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+  },
+  "inputs_manifest_path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+  "input_entries": {
+    "package": "cf11",
+    "source_level": "Java 8",
+    "target_classes": [
+      {
+        "class": "cf11.HoistedIteratorPositive",
+        "source": "HoistedIteratorPositive.java",
+        "bytes": 522,
+        "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+      },
+      {
+        "class": "cf11.HoistedIteratorRefusal",
+        "source": "HoistedIteratorRefusal.java",
+        "bytes": 577,
+        "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+      }
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2/legs/javac8-original/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "collector-error",
+      "started_at": "2026-10-11T19:03:06.078608+00:00",
+      "error_type": "RuntimeError",
+      "error": "5 GiB free-space guard before command 1: 4430757888"
+    }
+  ],
+  "original_compile_rows": [],
+  "javap": [],
+  "jadx": {},
+  "jadx_compile_rows": [],
+  "jarde_profiles": [],
+  "jarde_compile_rows": [],
+  "build_receipt": {
+    "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+    "bytes": 1528893,
+    "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+  },
+  "build_receipt_cli_binding": {
+    "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "mode": "0o555"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+  },
+  "cli_mode": "0o555",
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "peak_target_sampled": true
+  },
+  "collector_config": {
+    "inputs_dir": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs",
+    "inputs_manifest": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+    "out": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2",
+    "cli": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "cli_sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "build_receipt": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+    "build_receipt_sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2",
+    "receipt_cli_object": "candidate_cli",
+    "receipt_status_key": "status",
+    "receipt_accepted_value": "passed_candidate_build_only",
+    "receipt_mode_key": "mode",
+    "jdk_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jadx_jar": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "jadx_jar_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "guard": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scanner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "classfile_parser": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "classfile_parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "source_tool_pins_before": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+      "bytes": 674,
+      "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+      "bytes": 1528893,
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorPositive.java",
+      "bytes": 522,
+      "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorRefusal.java",
+      "bytes": 577,
+      "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    }
+  ],
+  "last_error": {
+    "label": "javac8-original-compile",
+    "type": "RuntimeError",
+    "message": "5 GiB free-space guard before command 1: 4430757888"
+  }
+}

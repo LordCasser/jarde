@@ -1,0 +1,3245 @@
+{
+  "schema": "cf11-target-full-source-capture-v2",
+  "status": "observed",
+  "package": "cf11",
+  "classes": [
+    "cf11.HoistedIteratorPositive",
+    "cf11.HoistedIteratorRefusal"
+  ],
+  "runner_class": "cf11.Runner",
+  "inputs_manifest": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+    "bytes": 674,
+    "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+  },
+  "inputs_manifest_path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+  "input_entries": {
+    "package": "cf11",
+    "source_level": "Java 8",
+    "target_classes": [
+      {
+        "class": "cf11.HoistedIteratorPositive",
+        "source": "HoistedIteratorPositive.java",
+        "bytes": 522,
+        "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+      },
+      {
+        "class": "cf11.HoistedIteratorRefusal",
+        "source": "HoistedIteratorRefusal.java",
+        "bytes": 577,
+        "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+      }
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:10.505147+00:00",
+      "duration_seconds": 1.0151944999815896,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033433600,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac8-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:11.521381+00:00",
+      "duration_seconds": 1.0149440829991363,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033404928,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/2.stdout.raw",
+          "bytes": 2275,
+          "sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac8-original-javap-HoistedIteratorPositive",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes",
+        "cf11.HoistedIteratorPositive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:12.537551+00:00",
+      "duration_seconds": 1.0147042500320822,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033388544,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/3.stdout.raw",
+          "bytes": 8008,
+          "sha256": "528504606e6128b9701da6d2fbe3045eb0cb902cd0fd73a1970b368978fc8a01"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac8-original-javap-HoistedIteratorRefusal",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes",
+        "cf11.HoistedIteratorRefusal"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:13.553103+00:00",
+      "duration_seconds": 1.0084533750195988,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033355776,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/4.stdout.raw",
+          "bytes": 6602,
+          "sha256": "25186e22ed240e713bd46833203afb720c71fa7caaf892423a534e9855560cba"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:14.562777+00:00",
+      "duration_seconds": 1.0155872500035912,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033310720,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/5.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/5.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac23-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:15.579075+00:00",
+      "duration_seconds": 1.0153879160061479,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20032663552,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/6.stdout.raw",
+          "bytes": 2275,
+          "sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "javac23-original-javap-HoistedIteratorPositive",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes",
+        "cf11.HoistedIteratorPositive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:16.595709+00:00",
+      "duration_seconds": 1.0087227499461733,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033216512,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/7.stdout.raw",
+          "bytes": 8161,
+          "sha256": "51e9c648752631287c1fdd86c013b326eb6e65bf17fc9479484cc274e6a03651"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "javac23-original-javap-HoistedIteratorRefusal",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes",
+        "cf11.HoistedIteratorRefusal"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:17.605520+00:00",
+      "duration_seconds": 1.002681375015527,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033196032,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/8.stdout.raw",
+          "bytes": 6721,
+          "sha256": "0f61a186f3194bfe9f884efc57ba9302ad9ce2fa832ffcc73d18e214e2c25a37"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:18.609632+00:00",
+      "duration_seconds": 1.012412083975505,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20033101824,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/9.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "jadx-default",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jadx/default",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:19.622905+00:00",
+      "duration_seconds": 1.0120153750176542,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20100083712,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/10.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:20.636635+00:00",
+      "duration_seconds": 1.0121818329789676,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20067627008,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/11.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:21.649632+00:00",
+      "duration_seconds": 1.0121992910280824,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20054970368,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/12.stdout.raw",
+          "bytes": 2275,
+          "sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:22.663248+00:00",
+      "duration_seconds": 1.0021477920236066,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20034879488,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/13.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/13.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:23.666334+00:00",
+      "duration_seconds": 1.0119817499653436,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 20020346880,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/14.stdout.raw",
+          "bytes": 2275,
+          "sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "jadx-none",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jadx/none",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:24.679702+00:00",
+      "duration_seconds": 1.0121218750136904,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19995836416,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/15.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:25.693445+00:00",
+      "duration_seconds": 1.0120882079936564,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19976331264,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/16.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:26.706660+00:00",
+      "duration_seconds": 1.0121780409826897,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19988652032,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/17.stdout.raw",
+          "bytes": 2275,
+          "sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:27.720344+00:00",
+      "duration_seconds": 1.0081105830031447,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19845742592,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/18.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/18.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:28.729384+00:00",
+      "duration_seconds": 1.0074517079629004,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19768950784,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/19.stdout.raw",
+          "bytes": 2275,
+          "sha256": "350cb58e8f106104f24e495e0156cad8950aa6aecf4bfc13929c89ab4827faeb"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "javac8-jarde-default-HoistedIteratorPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/HoistedIteratorPositive.class",
+        "--class",
+        "cf11.HoistedIteratorPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:29.738392+00:00",
+      "duration_seconds": 1.0129680830286816,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19768848384,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/20.stdout.raw",
+          "bytes": 53738,
+          "sha256": "0618ab0b6c4cbfa08d9578b69923e3dd708351df710495515c9818310ff2ab9e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/20.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "javac8-jarde-all-HoistedIteratorPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/HoistedIteratorPositive.class",
+        "--class",
+        "cf11.HoistedIteratorPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:30.753811+00:00",
+      "duration_seconds": 1.0124292500549927,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19768561664,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/21.stdout.raw",
+          "bytes": 55674,
+          "sha256": "a26d6a9a60b1d1c0aced0105903c2a50835b879c1b6de114d96f41a59bd08838"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/21.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "label": "javac8-jarde-default-HoistedIteratorRefusal-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/HoistedIteratorRefusal.class",
+        "--class",
+        "cf11.HoistedIteratorRefusal",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:31.768515+00:00",
+      "duration_seconds": 1.0040621669613756,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19768328192,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/22.stdout.raw",
+          "bytes": 21388,
+          "sha256": "c6697455261130448e096b1716404750405784351398beb8e5ca9735fe780a9a"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/22.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "label": "javac8-jarde-all-HoistedIteratorRefusal-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/HoistedIteratorRefusal.class",
+        "--class",
+        "cf11.HoistedIteratorRefusal",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:32.774369+00:00",
+      "duration_seconds": 1.0125296249752864,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19768238080,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/23.stdout.raw",
+          "bytes": 22463,
+          "sha256": "44bced6841381e1cbb588b277b7d7f8c4f30a9a8fad340eabff5cb97e18c5f88"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/23.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "label": "javac23-jarde-default-HoistedIteratorPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/HoistedIteratorPositive.class",
+        "--class",
+        "cf11.HoistedIteratorPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:33.789385+00:00",
+      "duration_seconds": 1.0127668749773875,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19768066048,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/24.stdout.raw",
+          "bytes": 53733,
+          "sha256": "9717e6388b0db61aee7d6736922730c61947ec2e75fb7f321357e733dbcdca22"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/24.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "label": "javac23-jarde-all-HoistedIteratorPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/HoistedIteratorPositive.class",
+        "--class",
+        "cf11.HoistedIteratorPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:34.806041+00:00",
+      "duration_seconds": 1.0124020829680376,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19767816192,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/25.stdout.raw",
+          "bytes": 55674,
+          "sha256": "43ddbaf6660919242b672d52cc35de46b84ba7a47d7cbb382e6a53ecea26c21a"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/25.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 26,
+      "label": "javac23-jarde-default-HoistedIteratorRefusal-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/HoistedIteratorRefusal.class",
+        "--class",
+        "cf11.HoistedIteratorRefusal",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:35.820922+00:00",
+      "duration_seconds": 1.012298459012527,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19767562240,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/26.stdout.raw",
+          "bytes": 21388,
+          "sha256": "634ef7c0d35343d8f9d3cb88e4ef88c7b963d3dc586b04417c47402ea2d7a0cd"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/26.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 27,
+      "label": "javac23-jarde-all-HoistedIteratorRefusal-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/HoistedIteratorRefusal.class",
+        "--class",
+        "cf11.HoistedIteratorRefusal",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:36.835167+00:00",
+      "duration_seconds": 1.0064629160333425,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19767390208,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/27.stdout.raw",
+          "bytes": 22463,
+          "sha256": "dc11295184c7a632418871520e6a1a62d610980c8d57493b5ad41db6f25ce6f2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/27.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 28,
+      "label": "javac8-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-combined/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:37.843858+00:00",
+      "duration_seconds": 1.002265624993015,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19767308288,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/28.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/28.stderr.raw",
+          "bytes": 195,
+          "sha256": "fa26a7229e8a0b9becf19cb60b350104da827fc5c01aa52bce52a3126485ad45"
+        }
+      }
+    },
+    {
+      "index": 29,
+      "label": "javac8-jarde-default-isolated-HoistedIteratorPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:38.848275+00:00",
+      "duration_seconds": 1.011748582997825,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19765891072,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/29.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/29.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 30,
+      "label": "javac8-jarde-default-isolated-HoistedIteratorPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:39.861217+00:00",
+      "duration_seconds": 1.0130408749682829,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19765882880,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/30.stdout.raw",
+          "bytes": 2275,
+          "sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/30.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 31,
+      "label": "javac8-jarde-default-isolated-HoistedIteratorRefusal-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorRefusal/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorRefusal/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorRefusal/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:40.876265+00:00",
+      "duration_seconds": 1.0041495829937048,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19765870592,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/31.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/31.stderr.raw",
+          "bytes": 195,
+          "sha256": "fa26a7229e8a0b9becf19cb60b350104da827fc5c01aa52bce52a3126485ad45"
+        }
+      }
+    },
+    {
+      "index": 32,
+      "label": "javac8-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-combined/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:41.882927+00:00",
+      "duration_seconds": 1.0127419169875793,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19765850112,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/32.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/32.stderr.raw",
+          "bytes": 191,
+          "sha256": "8bbffbd15a5141722fbc1d826bfb4259535ec56f118cf06aab48a53c27a7e7b7"
+        }
+      }
+    },
+    {
+      "index": 33,
+      "label": "javac8-jarde-all-isolated-HoistedIteratorPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:42.898449+00:00",
+      "duration_seconds": 1.0053303339518607,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19765809152,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/33.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/33.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 34,
+      "label": "javac8-jarde-all-isolated-HoistedIteratorPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:43.905679+00:00",
+      "duration_seconds": 1.0118506670114584,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19765456896,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/34.stdout.raw",
+          "bytes": 2275,
+          "sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/34.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 35,
+      "label": "javac8-jarde-all-isolated-HoistedIteratorRefusal-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorRefusal/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorRefusal/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorRefusal/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:44.920549+00:00",
+      "duration_seconds": 1.0123148749698885,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19755290624,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/35.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/35.stderr.raw",
+          "bytes": 191,
+          "sha256": "8bbffbd15a5141722fbc1d826bfb4259535ec56f118cf06aab48a53c27a7e7b7"
+        }
+      }
+    },
+    {
+      "index": 36,
+      "label": "javac23-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-combined/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:45.935480+00:00",
+      "duration_seconds": 1.0230521250050515,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19749093376,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/36.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/36.stderr.raw",
+          "bytes": 439,
+          "sha256": "7228802021c8377141181e3a40b9a87a6070098a1359fbef9bc71e202260284b"
+        }
+      }
+    },
+    {
+      "index": 37,
+      "label": "javac23-jarde-default-isolated-HoistedIteratorPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:46.963583+00:00",
+      "duration_seconds": 1.0162083330214955,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19740688384,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/37.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/37.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 38,
+      "label": "javac23-jarde-default-isolated-HoistedIteratorPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:47.981109+00:00",
+      "duration_seconds": 1.0103840840165503,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19653640192,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/38.stdout.raw",
+          "bytes": 2275,
+          "sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/38.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 39,
+      "label": "javac23-jarde-default-isolated-HoistedIteratorRefusal-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorRefusal/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorRefusal/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorRefusal/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:48.994288+00:00",
+      "duration_seconds": 1.0063102080021054,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19654430720,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/39.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/39.stderr.raw",
+          "bytes": 439,
+          "sha256": "7228802021c8377141181e3a40b9a87a6070098a1359fbef9bc71e202260284b"
+        }
+      }
+    },
+    {
+      "index": 40,
+      "label": "javac23-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-combined/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:50.002641+00:00",
+      "duration_seconds": 1.006288249976933,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19649359872,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/40.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/40.stderr.raw",
+          "bytes": 435,
+          "sha256": "fe9e4f4e025d6ad491c04396db3a555577a9f0fb29c601f246061ba6c6e6650f"
+        }
+      }
+    },
+    {
+      "index": 41,
+      "label": "javac23-jarde-all-isolated-HoistedIteratorPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:51.011192+00:00",
+      "duration_seconds": 1.0089562080102041,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19649253376,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/41.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/41.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 42,
+      "label": "javac23-jarde-all-isolated-HoistedIteratorPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:52.021588+00:00",
+      "duration_seconds": 1.0124519580276683,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19649249280,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/42.stdout.raw",
+          "bytes": 2275,
+          "sha256": "d785d6e818f4c66780362f43cb524dd412ffd57d8d5b63f9e1e15c3136132240"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/42.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 43,
+      "label": "javac23-jarde-all-isolated-HoistedIteratorRefusal-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorRefusal/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorRefusal/empty-paths",
+        "-d",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorRefusal/classes",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+        "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T19:07:53.036988+00:00",
+      "duration_seconds": 1.0037699999520555,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 19638743040,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/43.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/raw/43.stderr.raw",
+          "bytes": 435,
+          "sha256": "fe9e4f4e025d6ad491c04396db3a555577a9f0fb29c601f246061ba6c6e6650f"
+        }
+      }
+    }
+  ],
+  "original_compile_rows": [
+    {
+      "label": "javac8-original",
+      "compile_command": "javac8-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+          "bytes": 522,
+          "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+          "bytes": 577,
+          "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1256,
+          "sha256": "64dbfafde77c82c559bc672b60053d956029985dee6173c0be72998540bb4f75"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1181,
+          "sha256": "f60615207ab299c41bee6b9e59e47435f91369b3e0eff08441a05404e1df9bb7"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/classes/cf11/Runner.class",
+          "bytes": 4807,
+          "sha256": "15a419d3a97d5de0cfd2b8c88ffb1648c88f20db877d91c5cac9a83c3a22fa0b"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-original",
+      "compile_command": "javac23-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+          "bytes": 522,
+          "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+          "bytes": 577,
+          "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1250,
+          "sha256": "29b7a5904bd4382d806f317356fbe405254ec97840df76561e440f4cdb8fde98"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1175,
+          "sha256": "f9f312f0e0526c7d6af92818c2fe8d90ec0e0032557428682262464c34410d4a"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/classes/cf11/Runner.class",
+          "bytes": 4798,
+          "sha256": "fac05f37a9e3f8028f26d758db2f08a4f3a7e002c125bf5810f203341ab963a3"
+        }
+      ],
+      "runtime_comparison": null
+    }
+  ],
+  "javap": [
+    {
+      "class": "cf11.HoistedIteratorPositive",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-HoistedIteratorPositive",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/javap-HoistedIteratorPositive.txt",
+        "bytes": 8008,
+        "sha256": "528504606e6128b9701da6d2fbe3045eb0cb902cd0fd73a1970b368978fc8a01"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.HoistedIteratorRefusal",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-HoistedIteratorRefusal",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-original/javap-HoistedIteratorRefusal.txt",
+        "bytes": 6602,
+        "sha256": "25186e22ed240e713bd46833203afb720c71fa7caaf892423a534e9855560cba"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.HoistedIteratorPositive",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-HoistedIteratorPositive",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/javap-HoistedIteratorPositive.txt",
+        "bytes": 8161,
+        "sha256": "51e9c648752631287c1fdd86c013b326eb6e65bf17fc9479484cc274e6a03651"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.HoistedIteratorRefusal",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-HoistedIteratorRefusal",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-original/javap-HoistedIteratorRefusal.txt",
+        "bytes": 6721,
+        "sha256": "0f61a186f3194bfe9f884efc57ba9302ad9ce2fa832ffcc73d18e214e2c25a37"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jadx": {
+    "version_command": "jadx-version",
+    "version_exit": 0,
+    "version_stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+    "version_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jar_pin": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/for-condition-controls.jar",
+      "bytes": 2733,
+      "sha256": "c7a2751c4810632de8488cd9ca86961acbc61358be96ade3ecde0f587b2ff8b5"
+    },
+    "jar_entries": [
+      "cf11.HoistedIteratorPositive",
+      "cf11.HoistedIteratorRefusal"
+    ],
+    "profiles": {
+      "default": {
+        "command": "jadx-default",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jadx/default/sources/cf11/HoistedIteratorPositive.java",
+            "bytes": 614,
+            "sha256": "2ff761e2c729243287cb12a367f27b7cfa51b8f426b51f91583791df487e2fd1"
+          },
+          {
+            "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jadx/default/sources/cf11/HoistedIteratorRefusal.java",
+            "bytes": 532,
+            "sha256": "78f92a71469693fad148514c9590a035486fb081ad2350999154afcaf407be2f"
+          }
+        ],
+        "names": [
+          "HoistedIteratorPositive.java",
+          "HoistedIteratorRefusal.java"
+        ],
+        "packages": [
+          "cf11",
+          "cf11"
+        ],
+        "exact_target_sources": true
+      },
+      "none": {
+        "command": "jadx-none",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jadx/none/sources/cf11/HoistedIteratorPositive.java",
+            "bytes": 614,
+            "sha256": "2ff761e2c729243287cb12a367f27b7cfa51b8f426b51f91583791df487e2fd1"
+          },
+          {
+            "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jadx/none/sources/cf11/HoistedIteratorRefusal.java",
+            "bytes": 532,
+            "sha256": "78f92a71469693fad148514c9590a035486fb081ad2350999154afcaf407be2f"
+          }
+        ],
+        "names": [
+          "HoistedIteratorPositive.java",
+          "HoistedIteratorRefusal.java"
+        ],
+        "packages": [
+          "cf11",
+          "cf11"
+        ],
+        "exact_target_sources": true
+      }
+    }
+  },
+  "jadx_compile_rows": [
+    {
+      "label": "javac8-jadx-default",
+      "compile_command": "javac8-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorPositive.java",
+          "bytes": 614,
+          "sha256": "2ff761e2c729243287cb12a367f27b7cfa51b8f426b51f91583791df487e2fd1"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorRefusal.java",
+          "bytes": 532,
+          "sha256": "78f92a71469693fad148514c9590a035486fb081ad2350999154afcaf407be2f"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1256,
+          "sha256": "8b92b38fc93ac25b16779ddef66eba973801e891b3356b3879b24c9efb5a505b"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1075,
+          "sha256": "27b6b21489d3d7cf1cf2ccd8a90d7fc78d8df744993e362286612a3d5fed882e"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-default/classes/cf11/Runner.class",
+          "bytes": 4807,
+          "sha256": "15a419d3a97d5de0cfd2b8c88ffb1648c88f20db877d91c5cac9a83c3a22fa0b"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": false
+      }
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_command": "javac23-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorPositive.java",
+          "bytes": 614,
+          "sha256": "2ff761e2c729243287cb12a367f27b7cfa51b8f426b51f91583791df487e2fd1"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-default/HoistedIteratorRefusal.java",
+          "bytes": 532,
+          "sha256": "78f92a71469693fad148514c9590a035486fb081ad2350999154afcaf407be2f"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1250,
+          "sha256": "cee34743f952c07849619de342ecc6a7295c80b0af0c4351366c2e25f6a7bf9c"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1069,
+          "sha256": "48fe154cbc14bc93b623a6876cc93588e60968ae0ab83c45e8697ebfb5524587"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-default/classes/cf11/Runner.class",
+          "bytes": 4798,
+          "sha256": "fac05f37a9e3f8028f26d758db2f08a4f3a7e002c125bf5810f203341ab963a3"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": false
+      }
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_command": "javac8-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorPositive.java",
+          "bytes": 614,
+          "sha256": "2ff761e2c729243287cb12a367f27b7cfa51b8f426b51f91583791df487e2fd1"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorRefusal.java",
+          "bytes": 532,
+          "sha256": "78f92a71469693fad148514c9590a035486fb081ad2350999154afcaf407be2f"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1256,
+          "sha256": "8b92b38fc93ac25b16779ddef66eba973801e891b3356b3879b24c9efb5a505b"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1075,
+          "sha256": "27b6b21489d3d7cf1cf2ccd8a90d7fc78d8df744993e362286612a3d5fed882e"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jadx-none/classes/cf11/Runner.class",
+          "bytes": 4807,
+          "sha256": "15a419d3a97d5de0cfd2b8c88ffb1648c88f20db877d91c5cac9a83c3a22fa0b"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": false
+      }
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_command": "javac23-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorPositive.java",
+          "bytes": 614,
+          "sha256": "2ff761e2c729243287cb12a367f27b7cfa51b8f426b51f91583791df487e2fd1"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/jadx-none/HoistedIteratorRefusal.java",
+          "bytes": 532,
+          "sha256": "78f92a71469693fad148514c9590a035486fb081ad2350999154afcaf407be2f"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1250,
+          "sha256": "cee34743f952c07849619de342ecc6a7295c80b0af0c4351366c2e25f6a7bf9c"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1069,
+          "sha256": "48fe154cbc14bc93b623a6876cc93588e60968ae0ab83c45e8697ebfb5524587"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jadx-none/classes/cf11/Runner.class",
+          "bytes": 4798,
+          "sha256": "fac05f37a9e3f8028f26d758db2f08a4f3a7e002c125bf5810f203341ab963a3"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": false
+      }
+    }
+  ],
+  "jarde_profiles": [
+    {
+      "label": "javac8-jarde-default-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-HoistedIteratorPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "0618ab0b6c4cbfa08d9578b69923e3dd708351df710495515c9818310ff2ab9e",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorPositive/report.json",
+        "bytes": 170209,
+        "sha256": "88f10238f6c17be59cf192fec2b2ca29ef1a5f9ddfcc5f6e032142528b46f038"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "bytes": 2268,
+        "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3486,
+          "archive_entries": 0,
+          "attribute_bytes": 1188,
+          "class_bytes": 2512,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 11,
+          "entry_bytes": 0,
+          "input_bytes": 1256,
+          "ir_edges": 99,
+          "ir_items": 1708,
+          "method_bodies": 3,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3734,
+          "read_bytes": 1256,
+          "result_items": 14
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-HoistedIteratorPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "a26d6a9a60b1d1c0aced0105903c2a50835b879c1b6de114d96f41a59bd08838",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorPositive/report.json",
+        "bytes": 174771,
+        "sha256": "5101a393bf5db41fc6c5c2f06545d21078457046c1231db88fa2c377b6466fd1"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "bytes": 2268,
+        "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3486,
+          "archive_entries": 0,
+          "attribute_bytes": 1188,
+          "class_bytes": 2512,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 1256,
+          "ir_edges": 99,
+          "ir_items": 1719,
+          "method_bodies": 3,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3734,
+          "read_bytes": 1256,
+          "result_items": 14
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-HoistedIteratorRefusal-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "c6697455261130448e096b1716404750405784351398beb8e5ca9735fe780a9a",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorRefusal/report.json",
+        "bytes": 48632,
+        "sha256": "1f355592f869bec69270dca38097e4353fe5566c01abce1a731e8e3f14c2a4a1"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "bytes": 1589,
+        "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1030,
+          "archive_entries": 0,
+          "attribute_bytes": 975,
+          "class_bytes": 2362,
+          "class_headers": 1,
+          "code_bytes": 59,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 1181,
+          "ir_edges": 93,
+          "ir_items": 1086,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2832,
+          "read_bytes": 1181,
+          "result_items": 9
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-HoistedIteratorRefusal-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "44bced6841381e1cbb588b277b7d7f8c4f30a9a8fad340eabff5cb97e18c5f88",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorRefusal/report.json",
+        "bytes": 50996,
+        "sha256": "61c540c4deb2788472d77d4d7a27c0c626427552314897af914891333d7286ee"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "bytes": 1589,
+        "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1030,
+          "archive_entries": 0,
+          "attribute_bytes": 975,
+          "class_bytes": 2362,
+          "class_headers": 1,
+          "code_bytes": 59,
+          "dependency_depth": 0,
+          "elapsed_millis": 2,
+          "entry_bytes": 0,
+          "input_bytes": 1181,
+          "ir_edges": 93,
+          "ir_items": 1092,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2832,
+          "read_bytes": 1181,
+          "result_items": 9
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-HoistedIteratorPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "9717e6388b0db61aee7d6736922730c61947ec2e75fb7f321357e733dbcdca22",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorPositive/report.json",
+        "bytes": 170204,
+        "sha256": "0a6825965d63faf6d56836c7439d398d105452a6e106e91acc60fb7c43cedcf3"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "bytes": 2268,
+        "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3484,
+          "archive_entries": 0,
+          "attribute_bytes": 1188,
+          "class_bytes": 2500,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 1250,
+          "ir_edges": 99,
+          "ir_items": 1708,
+          "method_bodies": 3,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3728,
+          "read_bytes": 1250,
+          "result_items": 14
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-HoistedIteratorPositive",
+      "class": "cf11.HoistedIteratorPositive",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-HoistedIteratorPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "43ddbaf6660919242b672d52cc35de46b84ba7a47d7cbb382e6a53ecea26c21a",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorPositive/report.json",
+        "bytes": 174771,
+        "sha256": "f9c0f0985c9c0cd6904babacaabae02c74b0c7f273d798c7161c2c561dcf80d1"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+        "bytes": 2268,
+        "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3484,
+          "archive_entries": 0,
+          "attribute_bytes": 1188,
+          "class_bytes": 2500,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 1250,
+          "ir_edges": 99,
+          "ir_items": 1719,
+          "method_bodies": 3,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3728,
+          "read_bytes": 1250,
+          "result_items": 14
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-HoistedIteratorRefusal-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "634ef7c0d35343d8f9d3cb88e4ef88c7b963d3dc586b04417c47402ea2d7a0cd",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorRefusal/report.json",
+        "bytes": 48632,
+        "sha256": "734d39b070f5d3bc1061742289d35d670a9db1716361fa99d36da02bee18e80d"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "bytes": 1589,
+        "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1028,
+          "archive_entries": 0,
+          "attribute_bytes": 975,
+          "class_bytes": 2350,
+          "class_headers": 1,
+          "code_bytes": 59,
+          "dependency_depth": 0,
+          "elapsed_millis": 2,
+          "entry_bytes": 0,
+          "input_bytes": 1175,
+          "ir_edges": 93,
+          "ir_items": 1086,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2826,
+          "read_bytes": 1175,
+          "result_items": 9
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-HoistedIteratorRefusal",
+      "class": "cf11.HoistedIteratorRefusal",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-HoistedIteratorRefusal-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "dc11295184c7a632418871520e6a1a62d610980c8d57493b5ad41db6f25ce6f2",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorRefusal/report.json",
+        "bytes": 50996,
+        "sha256": "76a7619d587e6beab74837c494b814a9a27dac242ab643034f60e853e18a86e8"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+        "bytes": 1589,
+        "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1028,
+          "archive_entries": 0,
+          "attribute_bytes": 975,
+          "class_bytes": 2350,
+          "class_headers": 1,
+          "code_bytes": 59,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 1175,
+          "ir_edges": 93,
+          "ir_items": 1092,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2826,
+          "read_bytes": 1175,
+          "result_items": 9
+        }
+      }
+    }
+  ],
+  "jarde_compile_rows": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_command": "javac8-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-combined/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1137,
+          "sha256": "ec71371030046522b4b3cad1a57b476ba21685bf1fb77a0f7180000fba08c000"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-HoistedIteratorPositive",
+      "compile_command": "javac8-jarde-default-isolated-HoistedIteratorPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-default-isolated-HoistedIteratorPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+          "bytes": 577,
+          "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1137,
+          "sha256": "ec71371030046522b4b3cad1a57b476ba21685bf1fb77a0f7180000fba08c000"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1181,
+          "sha256": "f60615207ab299c41bee6b9e59e47435f91369b3e0eff08441a05404e1df9bb7"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-default-isolated-HoistedIteratorPositive/classes/cf11/Runner.class",
+          "bytes": 4807,
+          "sha256": "15a419d3a97d5de0cfd2b8c88ffb1648c88f20db877d91c5cac9a83c3a22fa0b"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-default-isolated-HoistedIteratorRefusal",
+      "compile_command": "javac8-jarde-default-isolated-HoistedIteratorRefusal-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+          "bytes": 522,
+          "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_command": "javac8-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-combined/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1137,
+          "sha256": "ec71371030046522b4b3cad1a57b476ba21685bf1fb77a0f7180000fba08c000"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-HoistedIteratorPositive",
+      "compile_command": "javac8-jarde-all-isolated-HoistedIteratorPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-all-isolated-HoistedIteratorPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+          "bytes": 577,
+          "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1137,
+          "sha256": "ec71371030046522b4b3cad1a57b476ba21685bf1fb77a0f7180000fba08c000"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1181,
+          "sha256": "f60615207ab299c41bee6b9e59e47435f91369b3e0eff08441a05404e1df9bb7"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac8-jarde-all-isolated-HoistedIteratorPositive/classes/cf11/Runner.class",
+          "bytes": 4807,
+          "sha256": "15a419d3a97d5de0cfd2b8c88ffb1648c88f20db877d91c5cac9a83c3a22fa0b"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-all-isolated-HoistedIteratorRefusal",
+      "compile_command": "javac8-jarde-all-isolated-HoistedIteratorRefusal-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac8-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+          "bytes": 522,
+          "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_command": "javac23-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-combined/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1131,
+          "sha256": "0c8365e4372785ceb1e428576345567f5ce660da3fe6c7d0e5607ef8b69b9c1c"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-HoistedIteratorPositive",
+      "compile_command": "javac23-jarde-default-isolated-HoistedIteratorPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-default-isolated-HoistedIteratorPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+          "bytes": 577,
+          "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1131,
+          "sha256": "0c8365e4372785ceb1e428576345567f5ce660da3fe6c7d0e5607ef8b69b9c1c"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1175,
+          "sha256": "f9f312f0e0526c7d6af92818c2fe8d90ec0e0032557428682262464c34410d4a"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-default-isolated-HoistedIteratorPositive/classes/cf11/Runner.class",
+          "bytes": 4798,
+          "sha256": "fac05f37a9e3f8028f26d758db2f08a4f3a7e002c125bf5810f203341ab963a3"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-default-isolated-HoistedIteratorRefusal",
+      "compile_command": "javac23-jarde-default-isolated-HoistedIteratorRefusal-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-default-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+          "bytes": 522,
+          "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_command": "javac23-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-combined/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1131,
+          "sha256": "0c8365e4372785ceb1e428576345567f5ce660da3fe6c7d0e5607ef8b69b9c1c"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-HoistedIteratorPositive",
+      "compile_command": "javac23-jarde-all-isolated-HoistedIteratorPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-all-isolated-HoistedIteratorPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorPositive/HoistedIteratorPositive.java",
+          "bytes": 2268,
+          "sha256": "36a640ade44b90f0214afdaca1e3007f62b691bf00524ee9eb69b1d0964ad60d"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorRefusal.java",
+          "bytes": 577,
+          "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [
+        "cf11/HoistedIteratorPositive.class",
+        "cf11/HoistedIteratorRefusal.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorPositive.class",
+          "bytes": 1131,
+          "sha256": "0c8365e4372785ceb1e428576345567f5ce660da3fe6c7d0e5607ef8b69b9c1c"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/classes/cf11/HoistedIteratorRefusal.class",
+          "bytes": 1175,
+          "sha256": "f9f312f0e0526c7d6af92818c2fe8d90ec0e0032557428682262464c34410d4a"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/legs/javac23-jarde-all-isolated-HoistedIteratorPositive/classes/cf11/Runner.class",
+          "bytes": 4798,
+          "sha256": "fac05f37a9e3f8028f26d758db2f08a4f3a7e002c125bf5810f203341ab963a3"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-all-isolated-HoistedIteratorRefusal",
+      "compile_command": "javac23-jarde-all-isolated-HoistedIteratorRefusal-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/jarde/javac23-jarde-all-HoistedIteratorRefusal/HoistedIteratorRefusal.java",
+          "bytes": 1589,
+          "sha256": "a43800c4c34a9330022ccb554ca3b08ce6a8061ae8fca2d8000c214f1e8d8e88"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/HoistedIteratorPositive.java",
+          "bytes": 522,
+          "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+        },
+        {
+          "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/inputs/Runner.java",
+          "bytes": 4253,
+          "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    }
+  ],
+  "build_receipt": {
+    "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+    "bytes": 1528893,
+    "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+  },
+  "build_receipt_cli_binding": {
+    "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "mode": "0o555"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+  },
+  "cli_mode": "0o555",
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "peak_target_sampled": true
+  },
+  "collector_config": {
+    "inputs_dir": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs",
+    "inputs_manifest": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+    "out": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3",
+    "cli": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+    "cli_sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "build_receipt": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+    "build_receipt_sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2",
+    "receipt_cli_object": "candidate_cli",
+    "receipt_status_key": "status",
+    "receipt_accepted_value": "passed_candidate_build_only",
+    "receipt_mode_key": "mode",
+    "jdk_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jadx_jar": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "jadx_jar_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "guard": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scanner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "classfile_parser": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "classfile_parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "source_tool_pins_before": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+      "bytes": 674,
+      "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+      "bytes": 1528893,
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorPositive.java",
+      "bytes": 522,
+      "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorRefusal.java",
+      "bytes": 577,
+      "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    }
+  ],
+  "source_tool_pins_after": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+      "bytes": 674,
+      "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+      "bytes": 1528893,
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorPositive.java",
+      "bytes": 522,
+      "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorRefusal.java",
+      "bytes": 577,
+      "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    }
+  ],
+  "source_tool_inputs_unchanged": true,
+  "actual_command_count": 43
+}

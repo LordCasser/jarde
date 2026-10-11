@@ -1,0 +1,1 @@
+{"status": "postflight_integrity_failure", "collector_exit_code": 1, "checker_exit_code": 1, "checker_status": null, "actual_command_count": 1, "raw_stream_count": 0, "compile_failures": [], "source_closure_count": 4727, "source_pins_unchanged": true, "frozen_inputs_unchanged": true, "target_absent_after": true}

@@ -1,0 +1,62 @@
+{
+  "schema": "hoisted-iterator-controls-acceptance-prep-v1",
+  "candidate_files": [
+    {
+      "path": "README.md",
+      "bytes": 3875,
+      "sha256": "69a7eefc0db90cdddacb12d70ee0d79054bb2a4373fd92a71b540c482945d491"
+    },
+    {
+      "path": "accept-controls.py",
+      "bytes": 18276,
+      "sha256": "4bae688e423024c1bc6cc197a70f4dd30cc446d4d23ddc81d1fe5254bc418e74"
+    }
+  ],
+  "evidence_inputs": {
+    "execution.json": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/execution.json",
+      "sha256": "e17a697a4790c7bb3b54128e241997e13a3d4f36a36ea0af057a3f4f16a0f37c"
+    },
+    "checker-root-v7.json": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3/checker-root-v7.json",
+      "sha256": "11077bc4ed1b68bc841f0ca6a39b4201060ce34a6981912a750554e022207a4b"
+    },
+    "launcher-receipt.json": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3-launcher-receipt.json",
+      "sha256": "35afb6103f8d772d6d296215b37c1eae5ed34ffe8d4881133d8b3d43d4f64dc8"
+    },
+    "launcher-script.py": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v3.py",
+      "sha256": "a8d21744440df202a24a49597be9bf63511d524c7dbc3fb0eacb865b5fb36164"
+    },
+    "invocation-receipt.json": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-controls-baseline-root-v3/execution.json",
+      "sha256": "c1815bb5069ddac669f81b8db772c4be805b4e1603feb623bf08765cd0a46a1a"
+    },
+    "input-manifest.json": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+      "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+    },
+    "frozen-input-pins.json": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/frozen-inputs-pins.json",
+      "sha256": "d47c6bb37722458709e524bdb3b03c332fea5e4b7297546790fb66bf22287334"
+    },
+    "final-cli": {
+      "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+    },
+    "final-build.json": {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    "source-closure-helper.py": {
+      "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+      "sha256": "ac511e1560c5da57fca5fcf4d37e837b726b4e20f2327014b9f29394870f0d1e"
+    },
+    "checker-tool.py": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py",
+      "sha256": "a05acce687bf0e22bfab9eb8ae00520d53a006b740732f4b0041182ce72a464a"
+    }
+  },
+  "checks": "Python AST parse only; accept-controls.py intentionally not run during preparation."
+}

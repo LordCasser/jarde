@@ -1,0 +1,12 @@
+hoisted iterator controls acceptance failed: 'runtime_exit'
+Traceback (most recent call last):
+  File "/private/tmp/jarde-hoisted-iterator-controls-accept-root-v2.py", line 236, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/private/tmp/jarde-hoisted-iterator-controls-accept-root-v2.py", line 164, in main
+    need(all(r['runtime_exit'] is None for r in failures), 'failed Jarde compile unexpectedly has runtime')
+         ^^^
+  File "/private/tmp/jarde-hoisted-iterator-controls-accept-root-v2.py", line 164, in <genexpr>
+    need(all(r['runtime_exit'] is None for r in failures), 'failed Jarde compile unexpectedly has runtime')
+             ~^^^^^^^^^^^^^^^^
+KeyError: 'runtime_exit'

@@ -1,0 +1,94 @@
+{
+  "schema": "constructor-conditional-own-ci-verifier-prep-v1",
+  "status": "private_candidate_static_parse_only",
+  "candidate": {
+    "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v1/verify-own-ci.py",
+    "bytes": 45100,
+    "sha256": "bdd1945f2a6341bdc98da6c764ee95c22c109be36fc0eac1ef7a7cf39ef2bb1d"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v1/candidate.patch",
+    "bytes": 61076,
+    "sha256": "fef95b9ee3567a8c68165f3eb9d1efbf6e0229970743fe02c094438db8d8910a"
+  },
+  "review": {
+    "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v1/README.md",
+    "bytes": 3769,
+    "sha256": "cb0bbc895cd254093475c674182da2db8a2fef60c1f76b3b95150fd96b43991b"
+  },
+  "source_inputs": {
+    "v4_verifier": {
+      "path": "/private/tmp/jarde-for-condition-next-round-luna-v1/jarde-for-condition-ci-verifier-luna-v4.py",
+      "bytes": 33867,
+      "sha256": "cc82f638e0292196020bee8422e62dc033c371565a7afc38c56d2b971e0df673"
+    },
+    "basic_ci_parser": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "bytes": 43302,
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca"
+    },
+    "capture_collector": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+      "bytes": 6778,
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3"
+    },
+    "current_workspace_runner": {
+      "path": "/private/tmp/jarde-constructor-conditional-workspace-root-v1.py",
+      "bytes": 27700,
+      "sha256": "81484f984cdf909980b7dab25ee38ac560de0a1fa6028dc912b82ca05e0f0606"
+    },
+    "current_final_build_runner": {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1.py",
+      "bytes": 5843,
+      "sha256": "7bf3a61aec009aaa629efad18fe8e177b25d0e3b828de135d52eba498ea5c2c3"
+    },
+    "current_focused_runner": {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v6.py",
+      "bytes": 5637,
+      "sha256": "5895c7024985d737ad7fa9b8f8bbd8c55371d87d5bf1c46d02458b6d38df574b"
+    },
+    "current_focused_receipt": {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v6/execution.json",
+      "bytes": 3049978,
+      "sha256": "4e3260ecfd829cc3ab139552918cc5fc2e119f259338aa3a400b77e37c91ad67"
+    }
+  },
+  "static_checks": {
+    "candidate_python_ast": "passed",
+    "workspace_runner_python_ast": "passed",
+    "required_names_extracted_without_execution": 12,
+    "required_names": [
+      "conditional_constructor_positive_all_evidence_reports_four_exact_methods",
+      "conditional_constructor_public_late_stop_and_precancel_publish_atomically",
+      "conditional_constructor_public_reports_agree_across_evidence_selections",
+      "conditional_constructor_range_excluding_all_new_bcis_keeps_summary_and_text",
+      "conditional_sites_are_not_presented_when_the_final_body_is_explanation_only",
+      "field::tests::conditional_new_receipt_counts_only_one_method_local_direct_new",
+      "field::tests::conditional_new_receipt_rejects_derived_primary_and_derived_only_candidate_anchors",
+      "init::tests::actual_independent_branch_effect_stays_on_the_existing_statement_path",
+      "init::tests::actual_local_conditional_new_has_its_local_store_as_the_single_consumer",
+      "init::tests::actual_nested_conditional_constructor_arms_do_not_become_one_two_way_site",
+      "init::tests::actual_shared_field_return_keeps_dup_outside_the_new_expression",
+      "init::tests::conditional_constructor_output_has_one_live_stack_phi_and_one_join_consumer"
+    ],
+    "candidate_verifier_execution": "not run"
+  },
+  "workspace_receipt_observation_at_prep": {
+    "path": "/private/tmp/jarde-constructor-conditional-workspace-root-v1/execution.json",
+    "status_when_read": "running",
+    "source_closure_count_at_start": 4727,
+    "metadata_target_count": 361,
+    "planned_batch_count": 95,
+    "receipt_sha256_intentionally_not_pinned_while_mutating": true
+  },
+  "design_constraints": [
+    "The selected product commit and CI run ID are required command parameters.",
+    "The full source/include/fixture closure is independently reconstructed and compared with workspace start count, before/after pins, product Git blobs, and live bytes.",
+    "Metadata independently derives the complete target inventory and batch plan; observed values are checked as 361 targets and 95 batches. Closure count is dynamically checked, not a copied expected-source field.",
+    "The exact 12 constructor tests come from the pinned current workspace runner AST, then local and both CI-seed named outcomes are checked.",
+    "All four CI jobs and every recorded step, including MSRV, supply chain, and fuzz, must complete successfully.",
+    "The focused v6 receipt and CLI bytes are bound to the final clean build receipt and final CLI.",
+    "Old for-condition template references are runner provenance only, not current focused or source-closure evidence.",
+    "Only Python AST parsing and AST literal extraction were performed; candidate verifier was not run."
+  ]
+}

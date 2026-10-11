@@ -1,0 +1,129 @@
+{
+  "schema": "jarde-hoisted-iterator-design-adversarial-luna-v1",
+  "scope": "private read-only adversarial architecture review; no shared writes or Git/Cargo/JDK/JADX/CLI/network execution",
+  "hash_algorithm": "SHA-256",
+  "reviewed_artifacts": [
+    "proposal.md",
+    "design.md",
+    "specs/java8-recovery/spec.md",
+    "tasks.md",
+    ".openspec.yaml",
+    "verification-root.md"
+  ],
+  "source_files": [
+    "crates/jarde-java/src/build.rs",
+    "crates/jarde-java/src/reuse.rs"
+  ],
+  "runtime_oracles_read": [
+    "accepted same-IR v3 candidate diagnostic (limited to first refusal)",
+    "accepted old whole-class CF11 baseline and generated source"
+  ],
+  "claims_limit": "No post-declaration-gate result or current-candidate runtime behavior is inferred; pins are read-time evidence only.",
+  "sources": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/.openspec.yaml",
+      "bytes": 40,
+      "sha256": "1dfdca412094f24473d8b842866201ec26f200b29b17064b03f1e4982c35a7b9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/proposal.md",
+      "bytes": 1943,
+      "sha256": "765a9b52722cc28ea9a59027b64d6af203747d5932770c3365e2338273ebb800"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "bytes": 3933,
+      "sha256": "a182172b5c0b9f08fc8224b10c0a99b0ca466d5827935bbe4efea4be11a52a78"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md",
+      "bytes": 2367,
+      "sha256": "8f4bf5676c929c3bce0a279643fc622b21d7e138d35d62df883b504462bcd80a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "bytes": 2657,
+      "sha256": "19dfa1880a8ad17f6f1eaf9b97f3b8bc4956be766f8343b5afcea8857f86540c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/verification-root.md",
+      "bytes": 1944,
+      "sha256": "dd2f68f66e53c7933aa6299db84e8c787c75e4eee78290b0d647afc3c914edb1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "bytes": 49833,
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/README.md",
+      "bytes": 1311,
+      "sha256": "be3277b2d7631517db77de6f1edfc27bae07bd06d877134132d21bde7efe1a5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/root-acceptance.json",
+      "bytes": 1287,
+      "sha256": "ee98cbf4368b284d3346e90c9775132eb6519666e59b26fa1f03bee6a94eb69d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/actual/0.stderr.raw",
+      "bytes": 6664,
+      "sha256": "dd853ee46eff134645137cf80380d27418e9d64701c9ae9f53b7195785b1c850"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/declaration-ownership-review/analysis.md",
+      "bytes": 8570,
+      "sha256": "0ea00131cfaee5880fcbc0794fe34176a16a8524f33034313894f2444c9d6aa2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/root-acceptance-invocation/execution.json",
+      "bytes": 816,
+      "sha256": "04479c3180dd3874a98b64747687de36589cfb2b506625bf369f64a54fddb609"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/same-ir-static-root-review.md",
+      "bytes": 538,
+      "sha256": "543e001e1681458ace5758d565a474ecc924610b39cac073401bde749003c5c9"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "bytes": 8494,
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "bytes": 1964,
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+      "bytes": 180360,
+      "sha256": "8bb714b7c2bcef014db446d5501a4902832a66ea52eecb00d66d9a889c2fe76a"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-design-adversarial-luna-v1/analysis.md",
+      "bytes": 13136,
+      "sha256": "cc92f41924a29605db98e761a8c32d8be33605d813cfe385b9543932e7ec94fb"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-design-adversarial-luna-v1/review.md",
+      "bytes": 13136,
+      "sha256": "cc92f41924a29605db98e761a8c32d8be33605d813cfe385b9543932e7ec94fb"
+    }
+  ]
+}

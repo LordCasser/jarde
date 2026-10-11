@@ -1,0 +1,29 @@
+{
+  "schema": "hoisted-iterator-controls-frozen-input-pins-v1",
+  "source_prep": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-prep-luna-v1",
+    "pins_sha256": "0cc41006d33b502d12f87fee084942bc79d516f7c5a5662b461fcbe02ba36279"
+  },
+  "files": {
+    "HoistedIteratorPositive.java": {
+      "bytes": 522,
+      "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50",
+      "mode": "0o444"
+    },
+    "HoistedIteratorRefusal.java": {
+      "bytes": 577,
+      "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66",
+      "mode": "0o444"
+    },
+    "Runner.java": {
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01",
+      "mode": "0o444"
+    },
+    "manifest.json": {
+      "bytes": 674,
+      "sha256": "1a223793236d1d2f3ad828d601deff0a7e7f1679290f3e8bfd99a7b97313ec89",
+      "mode": "0o444"
+    }
+  }
+}

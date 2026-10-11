@@ -1,0 +1,181 @@
+{
+  "schema": "jarde-hoisted-iterator-same-ir-diagnostic-candidate-v3",
+  "status": "private static diagnostic candidate; unapplied, uncompiled, and unrun",
+  "scope": {
+    "class": "cf11/UpstreamNestedLoops",
+    "method_name": "test",
+    "method_descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+    "loops": [
+      {
+        "test_bci": 13,
+        "path": [
+          1
+        ],
+        "role": "outer negative control; retain early Assign refusal"
+      },
+      {
+        "test_bci": 42,
+        "path": [
+          1,
+          1
+        ],
+        "role": "inner candidate; owner-only diagnostic continuation; always force refuse before rewrite"
+      }
+    ],
+    "test_path": "facade::same_class_generic_call_inventory_tests::frozen_upstream_nested_loops_foreach_candidate_diagnostic",
+    "environment_opt_in": "JARDE_FOREACH_CANDIDATE_DIAGNOSTIC"
+  },
+  "candidate_files": [
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/build.rs.candidate",
+      "sha256": "b7aa470b0721d09867833e4f61d05748c2a4ba0603fa44f0487f9a3d00c4933b"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/facade.rs.candidate",
+      "sha256": "719c8c3253437cbf1d33719b897c90d7a6773e757fe72242be0aa4ae28ac050f"
+    }
+  ],
+  "patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/candidate.patch",
+    "sha256": "a8bdef57d2892cadf0165721f38ec3b6e720db315aceea5e96cbe041282c4c45"
+  },
+  "base_source_pins": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "role": "current unchanged base; candidate is private copy"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b",
+      "role": "same real Engine::class_source test harness base"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458",
+      "role": "LocalVariable mapping via variable_at(slot, BCI)"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/names.rs",
+      "sha256": "c56af18c7f25694a02f49385251857d1deb14288524636b4a38e8047c648953a",
+      "role": "LocalVariable identity API"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a",
+      "role": "SsaValue uses/def/replaced_by, Phi inputs and effect fact accessors"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/canonical.rs",
+      "sha256": "79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86",
+      "role": "canonical throw/effect APIs read-only review"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/model.rs",
+      "sha256": "af42d1e8fe142f996ac2eb845831f1324455710b81db49885b67cc11d9559d02",
+      "role": "PhysicalMethodId name/descriptor fields"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "sha256": "19dfa1880a8ad17f6f1eaf9b97f3b8bc4956be766f8343b5afcea8857f86540c",
+      "role": "current accepted diagnostic task context"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "sha256": "a182172b5c0b9f08fc8224b10c0a99b0ca466d5827935bbe4efea4be11a52a78",
+      "role": "accepted change design"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md",
+      "sha256": "8f4bf5676c929c3bce0a279643fc622b21d7e138d35d62df883b504462bcd80a",
+      "role": "accepted behavior scope"
+    }
+  ],
+  "prior_candidate": {
+    "directory": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v4",
+    "pins_sha256": "4ca5e39d9e7788836bb7f89881942076f899ff54027bd67fa31d543dcc64d37c",
+    "build_candidate_sha256": "fe7ec5c8892b09f2095468db15f2af29baaec250cf9db66f17144fb5906f835a",
+    "facade_candidate_sha256": "719c8c3253437cbf1d33719b897c90d7a6773e757fe72242be0aa4ae28ac050f",
+    "patch_sha256": "0928a300d9a187295f8947dd795e012b49f8b7db2b6b43447e7494a9df3798bc"
+  },
+  "frozen_input": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+    "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+    "baseline_execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    }
+  },
+  "prior_diagnostic": {
+    "runner": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3.py",
+      "sha256": "056a8c41fa5bb22806ad9bf50eaf6b9268dea7889cdc3601a0d64e43c81f3dda"
+    },
+    "execution": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3/execution.json",
+      "sha256": "53ff3e460616632733dea68e54794ac10d4d2f054191e2afa7fa5860166b134e"
+    },
+    "observed_raw_stderr_sha256": "dd853ee46eff134645137cf80380d27418e9d64701c9ae9f53b7195785b1c850",
+    "observed_inner_first_refusal": "test_bci=42, path=[1,1], stage=iterator_declaration_before_init",
+    "observed_outer_first_refusal": "test_bci=13, path=[1], gate=body_first_not_initialized_declaration"
+  },
+  "diagnostic_safety": {
+    "only_method_and_loop_logs": true,
+    "only_inner_loop_may_continue": true,
+    "owner_bypass_requires_same_local_identity_and_emitted_visible_plan_owner": true,
+    "incomplete_placement_refuses": true,
+    "no_fabricated_declaration_index": true,
+    "force_refusal_before_rewrite_or_caller_removal": true,
+    "target_execution_or_generated_foreach": false
+  },
+  "validation": {
+    "rust_parser_or_compiler": "not run by instruction",
+    "lexical_delimiter_check": "passed",
+    "logger_call_arity_check": "passed; every call has four arguments; trailing commas handled",
+    "phi_trace_lexical_scope_check": "passed; trace variables and logger marker share diagnostic_scope block",
+    "cargo_jdk_jadx_cli_git": "not run"
+  },
+  "diagnostic_delta": {
+    "event": "phi_use_expansion",
+    "seed": "local value written at iterator init store BCI 33 (selected dynamically from the frozen method SSA instruction)",
+    "records": "all matching Phi rows in blocks reached through None-use and replaced_by edges; recursively traced Phi outputs, Value inputs and replacement targets; SsaValue uses; instruction consumers with opcode/read/write and same-block effect facts",
+    "does_not": "classify dead/live, relax iterator_value_and_phi_use_ownership, or generate a foreach",
+    "root_v1_execution": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/execution.json",
+      "sha256": "40eee52fea7659b3e438229e4ce68f56a751f80c3bf88946be784a67d8e18236"
+    },
+    "root_v1_raw_stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v1/0.stderr.raw",
+      "sha256": "4a24afb4d22cc86945e612d62c5c5ba7994957f25cb7231bce3fd63fd78dd6d9"
+    },
+    "v2_expansion_status": "unrun; no downstream Phi findings claimed"
+  },
+  "private_review_files": [
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/README.md",
+      "sha256": "bed1eb741225a89e22a058bb8c62de99ff210507915c84ea1813f7d52c5eb5fd"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/helper-review.md",
+      "sha256": "120261bc4ba4c3318f2a099515413a57c51c718c0e58be298f49e6214adc8b4f"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/runner-plan.md",
+      "sha256": "92052308885cd35567890661d814b95351a4c058bd22c90a412b94cef2d3a2ef"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/syntax-review.json",
+      "sha256": "a579d0e7b9c9fbc4ed631d719c0e3ca9f2579ae08e8ed7574ee29e171be86a94"
+    },
+    {
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/static_check.py",
+      "sha256": "655fe4806a67ce1a31c7d9622baaa81ffd2801007e7b67e2af881daed457d137"
+    }
+  ],
+  "predecessor_review": {
+    "v2_candidate_sha256": "201d332eec9593c0ad45a9efe804684c6ca875336b03f1afd637ce59e967de04",
+    "v2_pins_sha256": "4605ca97f35a660b7c4c70732acec214f418d0544c1cf30fdc89e236a7f96d14",
+    "finding": "v2 delimiter and logger-arity checks did not check lexical scope; logger referenced trace variables declared in a previous if block",
+    "v3_change": "move only phi_use_expansion logger into the diagnostic_scope block that declares the trace variables"
+  }
+}

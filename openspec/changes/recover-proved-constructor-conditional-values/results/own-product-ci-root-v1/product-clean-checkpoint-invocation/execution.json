@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-constructor-conditional-clean-main-audit-root-v1.py",
+    "/private/tmp/jarde-constructor-conditional-product-clean-main-root-v1",
+    "c956050611f63a06f57caf0b1280238e81faeb80",
+    "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T18:33:11.139160+00:00",
+  "finished_at": "2026-10-11T18:33:17.669699+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-product-clean-main-root-v1/stdout.raw",
+      "bytes": 211,
+      "sha256": "4a8aa98fb155738945549e465e92b3db54b5a2e56d3855371c5e73a6890cfb3a"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-product-clean-main-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

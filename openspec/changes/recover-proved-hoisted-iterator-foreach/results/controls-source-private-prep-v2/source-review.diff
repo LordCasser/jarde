@@ -1,0 +1,12 @@
+--- /private/tmp/jarde-hoisted-iterator-controls-prep-luna-v1/manifest.json
++++ /private/tmp/jarde-hoisted-iterator-controls-source-prep-luna-v2/manifest.json
+@@ -18,7 +18,7 @@
+   "runner": {
+     "class": "cf11.Runner",
+     "source": "Runner.java",
+-    "bytes": 4152,
+-    "sha256": "809bcdf022f096c620b3366adaec531759f603bf672149ee2abc55ecf5346f0a"
++    "bytes": 4253,
++    "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+   }
+ }

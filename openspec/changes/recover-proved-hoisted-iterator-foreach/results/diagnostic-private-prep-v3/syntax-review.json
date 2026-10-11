@@ -1,0 +1,16 @@
+{
+  "schema": "private-static-syntax-review-v3",
+  "rust_parser": "not run by instruction",
+  "lexical_delimiters": "passed",
+  "logger_call_arity": {
+    "passed": true,
+    "calls": 19,
+    "arguments_per_call": 4,
+    "trailing_comma_allowed": true
+  },
+  "phi_trace_lexical_scope": "passed; trace variables and event marker are within same matched diagnostic_scope block",
+  "v2_scope_coverage": "not checked; v2 static scan missed this compile-time scope defect",
+  "candidate_sha256": "b7aa470b0721d09867833e4f61d05748c2a4ba0603fa44f0487f9a3d00c4933b",
+  "candidate_bytes": 1749201,
+  "notes": "Focused lexical checks only; does not establish Rust parsing, name resolution, typing or compilation."
+}

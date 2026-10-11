@@ -12,6 +12,6 @@
 ## 3. 完整验收与主线交付
 
 - [x] 3.1 冻结完整输入闭包的新CLI，实跑固定与控制双JDK完整三方并root独立接受。验收：所有成功生成类按原source完整重编执行、exit/stdout/stderr/对象身份同oracle；失败raw保留，JADX差异单列，default/all与方法成员身份/来源准确，不借旧CLI结果。
-- [ ] 3.2 完成fresh全工作区及必要lint/规范。验收：从target不存在开始按实际metadata全部目标恰好一次，named outcomes独立核；fmt/CI同范围Clippy/global OpenSpec strict通过，default Rust stack/5GiB free/target1GiB一秒守卫且结束clean。
-- [ ] 3.3 提交推送产品并接受其自身CI。验收：确切product head/run全部jobs/steps/双seed目标与本地同输入闭包，失败修复后用新产品自身CI，不借前片绿灯。
+- [x] 3.2 完成fresh全工作区及必要lint/规范。验收：从target不存在开始按实际metadata全部目标恰好一次，named outcomes独立核；fmt/CI同范围Clippy/global OpenSpec strict通过，default Rust stack/5GiB free/target1GiB一秒守卫且结束clean。
+- [x] 3.3 提交推送产品并接受其自身CI。验收：确切product head/run全部jobs/steps/双seed目标与本地同输入闭包，失败修复后用新产品自身CI，不借前片绿灯。
 - [ ] 3.4 更新verification/固定账本/handoff并交付干净main。验收：实际HEAD=main=origin/main、仅main、所有aux worktree detached干净main祖先无target/分支占用；整个CF11/71剩余范围和普通Site发布/foreach/generic独立债务明确，关闭docs推送后按真实HEAD最终audit。

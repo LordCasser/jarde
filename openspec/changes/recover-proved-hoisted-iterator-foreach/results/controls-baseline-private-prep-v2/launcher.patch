@@ -1,0 +1,60 @@
+--- /private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v1/run_controls_baseline.py
++++ /private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/run_controls_baseline.py
+@@ -10,12 +10,12 @@
+ import sys
+ 
+ ROOT = Path('/Users/lordcasser/workspace/projects/jarde')
+-PREP = Path('/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v1')
++PREP = Path('/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2')
+ INPUTS = PREP / 'inputs'
+ INPUT_MANIFEST = INPUTS / 'manifest.json'
+ INPUT_PINS = PREP / 'frozen-inputs-pins.json'
+-INPUT_PINS_SHA256 = '3ad0e3460cda630a93f56d57a0e64b7b0e72499824db557b84eddb7ea9f8a4b5'
+-SOURCE_PREP = Path('/private/tmp/jarde-hoisted-iterator-controls-prep-luna-v1')
++INPUT_PINS_SHA256 = 'd47c6bb37722458709e524bdb3b03c332fea5e4b7297546790fb66bf22287334'
++SOURCE_PREP = Path('/private/tmp/jarde-hoisted-iterator-controls-source-prep-luna-v2')
+ SOURCE_PREP_PINS = SOURCE_PREP / 'pins.json'
+ BASELINE_CONFIG_RECEIPT = Path('/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/execution.json')
+ BASELINE_CONFIG_SHA256 = 'a7791a753850c636aa0c2d5fee5cce5b0a79434ef539eb486f5f4c8499f56951'
+@@ -30,9 +30,9 @@
+ SOURCE_CLOSURE_HELPER = Path('/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py')
+ SOURCE_CLOSURE_HELPER_SHA256 = 'ac511e1560c5da57fca5fcf4d37e837b726b4e20f2327014b9f29394870f0d1e'
+ SOURCE_COUNT = 4727
+-OUT = Path('/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v1')
++OUT = Path('/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2')
+ CHECKED = OUT / 'checker-root-v7.json'
+-LAUNCH_RECEIPT = Path('/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v1-launcher-receipt.json')
++LAUNCH_RECEIPT = Path('/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2-launcher-receipt.json')
+ EXPECTED_TARGETS = ['cf11.HoistedIteratorPositive', 'cf11.HoistedIteratorRefusal']
+ EXPECTED_SOURCES = ['HoistedIteratorPositive.java', 'HoistedIteratorRefusal.java', 'Runner.java']
+ 
+@@ -69,10 +69,19 @@
+ 
+ 
+ def validate_inputs() -> dict:
+-    require_pin(SOURCE_PREP_PINS, '0cc41006d33b502d12f87fee084942bc79d516f7c5a5662b461fcbe02ba36279',
++    require_pin(SOURCE_PREP_PINS, 'db7f68454d199b9c6fb802732e6cb181129aed6c5129f9099ac0d5beddfbb376',
+                 'prepared controls source pins')
+     prep_pins = load_json(SOURCE_PREP_PINS)
++    if (SOURCE_PREP_PINS.stat().st_mode & 0o777) != 0o444:
++        raise SystemExit('source-prep pins are not immutable (0444)')
++    for name, pin in prep_pins['files'].items():
++        path = SOURCE_PREP / name
++        if (not path.is_file() or path.stat().st_size != pin['bytes'] or sha_file(path) != pin['sha256']
++                or (path.stat().st_mode & 0o777) != 0o444):
++            raise SystemExit(f'source-prep file differs from immutable pins: {path}')
+     require_pin(INPUT_PINS, INPUT_PINS_SHA256, 'frozen control-input pins')
++    if (INPUT_PINS.stat().st_mode & 0o777) != 0o444:
++        raise SystemExit('frozen input pins are not immutable (0444)')
+     frozen = load_json(INPUT_PINS)
+     require_pin(INPUT_MANIFEST, frozen['files']['manifest.json']['sha256'], 'frozen input manifest')
+     manifest = load_json(INPUT_MANIFEST)
+@@ -234,7 +243,7 @@
+         status = 'capture_checked_with_quality_gaps'
+ 
+     receipt = {
+-        'schema': 'hoisted-iterator-controls-baseline-launch-receipt-v1',
++        'schema': 'hoisted-iterator-controls-baseline-launch-receipt-v2',
+         'collector_argv': argv, 'collector_exit_code': collector.returncode,
+         'checker_argv': checker_argv, 'checker_exit_code': checker.returncode if checker else None,
+         'checker_skip_reason': checker_skip_reason, 'checker_status': checker_status,

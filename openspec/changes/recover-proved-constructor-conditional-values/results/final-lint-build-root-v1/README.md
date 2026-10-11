@@ -1,0 +1,1 @@
+Root 实际执行并独立接受最终 fmt、CI 同范围 Clippy、OpenSpec strict 353/0、CLI build、clean。全部4727输入与focused v6/fresh workspace/live恒同；默认Rust stack、5GiB free/target1GiB守卫。最终CLI与实际双JDK运行的v6候选字节一致，target不存在。见actual/root-acceptance.json与完整raw。

@@ -1,0 +1,210 @@
+{
+  "status": "accepted_clean_owned_aux_checkout_candidates",
+  "rows": [
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "status",
+            "--ignored",
+            "--porcelain=v1",
+            "--untracked-files=all"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "stdout": "b3a01e24c86755dfe9a356f4ffc72636194eda70\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            "HEAD",
+            "main"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "status",
+            "--ignored",
+            "--porcelain=v1",
+            "--untracked-files=all"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "stdout": "b3a01e24c86755dfe9a356f4ffc72636194eda70\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            "HEAD",
+            "main"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "status",
+            "--ignored",
+            "--porcelain=v1",
+            "--untracked-files=all"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "stdout": "b3a01e24c86755dfe9a356f4ffc72636194eda70\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            "HEAD",
+            "main"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "status",
+            "--ignored",
+            "--porcelain=v1",
+            "--untracked-files=all"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "stdout": "698a219ec580819e12af487c4c8a3771e9baaa85\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            "HEAD",
+            "main"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "target_exists": false,
+      "fuzz_target_exists": false
+    }
+  ],
+  "free_bytes_before": 4968398848
+}

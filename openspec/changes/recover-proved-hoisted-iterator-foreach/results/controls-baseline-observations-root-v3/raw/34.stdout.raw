@@ -1,0 +1,15 @@
+nested-two-by-two|result=14|bodyCalls=4|exception=none|trace=outer.iterator();outer.hasNext();outer.next();inner.iterator();inner.hasNext();inner.next();inner.hasNext();inner.next();inner.hasNext();outer.hasNext();outer.next();inner.iterator();inner.hasNext();inner.next();inner.hasNext();inner.next();inner.hasNext();outer.hasNext();
+outer-empty|result=0|bodyCalls=0|exception=none|trace=outer.iterator();outer.hasNext();
+inner-empty-reentered|result=0|bodyCalls=0|exception=none|trace=outer.iterator();outer.hasNext();outer.next();inner.iterator();inner.hasNext();outer.hasNext();outer.next();inner.iterator();inner.hasNext();outer.hasNext();
+null-outer|result=-1|bodyCalls=0|exception=java.lang.NullPointerException|trace=
+null-inner|result=-1|bodyCalls=0|exception=java.lang.NullPointerException|trace=outer.iterator();outer.hasNext();outer.next();
+throw-inner-iterator|result=-1|bodyCalls=0|exception=java.lang.IllegalStateException|trace=outer.iterator();outer.hasNext();outer.next();inner.iterator();
+throw-inner-hasNext|result=-1|bodyCalls=0|exception=java.lang.IllegalStateException|trace=outer.iterator();outer.hasNext();outer.next();inner.iterator();inner.hasNext();
+throw-inner-next|result=-1|bodyCalls=0|exception=java.lang.IllegalStateException|trace=outer.iterator();outer.hasNext();outer.next();inner.iterator();inner.hasNext();inner.next();
+throw-outer-iterator|result=-1|bodyCalls=0|exception=java.lang.IllegalStateException|trace=outer.iterator();
+throw-outer-hasNext|result=-1|bodyCalls=0|exception=java.lang.IllegalStateException|trace=outer.iterator();outer.hasNext();
+throw-outer-next|result=-1|bodyCalls=0|exception=java.lang.IllegalStateException|trace=outer.iterator();outer.hasNext();outer.next();
+wrong-element-cast|result=-1|bodyCalls=1|exception=java.lang.ClassCastException|trace=outer.iterator();outer.hasNext();outer.next();inner.iterator();inner.hasNext();inner.next();inner.hasNext();inner.next();
+written-gap-normal|result=7|exception=none|trace=values.iterator();values.hasNext();values.next();values.hasNext();values.next();values.hasNext();
+written-gap-iterator-throws-before-write|result=0|exception=none|trace=values.iterator();
+written-gap-hasNext-throws-after-write|result=1|exception=none|trace=values.iterator();values.hasNext();

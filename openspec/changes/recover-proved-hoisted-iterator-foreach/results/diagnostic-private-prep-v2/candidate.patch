@@ -1,0 +1,806 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -39,6 +39,72 @@
+ 
+ use std::cell::OnceCell;
+ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
++
++// Temporary explicit opt-in for one frozen TestNestedLoops same-IR diagnostic run.
++fn foreach_candidate_diagnostic_enabled() -> bool {
++    std::env::var_os("JARDE_FOREACH_CANDIDATE_DIAGNOSTIC").is_some()
++}
++
++fn foreach_candidate_loop_body(kind: &StmtKind) -> Option<&[Stmt]> {
++    match kind {
++        StmtKind::While { body, .. }
++        | StmtKind::DoWhile { body, .. }
++        | StmtKind::For { body, .. }
++        | StmtKind::ForEach { body, .. } => Some(body.as_slice()),
++        _ => None,
++    }
++}
++
++fn foreach_candidate_statement_kind(statement: Option<&Stmt>) -> &'static str {
++    let Some(statement) = statement else {
++        return "none";
++    };
++    match &statement.kind {
++        StmtKind::Declare { .. } => "Declare",
++        StmtKind::Assign { .. } => "Assign",
++        StmtKind::Expr(_) => "Expr",
++        StmtKind::FieldAssign { .. } => "FieldAssign",
++        StmtKind::IndexAssign { .. } => "IndexAssign",
++        StmtKind::ConstructorCall { .. } => "ConstructorCall",
++        StmtKind::Return { .. } => "Return",
++        StmtKind::Break { .. } => "Break",
++        StmtKind::Continue { .. } => "Continue",
++        StmtKind::Throw { .. } => "Throw",
++        StmtKind::Assert { .. } => "Assert",
++        StmtKind::If { .. } => "If",
++        StmtKind::While { .. } => "While",
++        StmtKind::For { .. } => "For",
++        StmtKind::ForEach { .. } => "ForEach",
++        StmtKind::DoWhile { .. } => "DoWhile",
++        StmtKind::Switch { .. } => "Switch",
++        StmtKind::Try { .. } => "Try",
++        StmtKind::Synchronized { .. } => "Synchronized",
++        StmtKind::Fallback { .. } => "Fallback",
++    }
++}
++
++fn foreach_candidate_diagnostic_scope(
++    enabled: bool,
++    declaring_class: Option<&str>,
++    physical_method: Option<&jarde_reader::model::PhysicalMethodId>,
++    test_bci: u32,
++    path: &[u32],
++) -> bool {
++    enabled
++        && declaring_class == Some("cf11/UpstreamNestedLoops")
++        && physical_method.is_some_and(|method| {
++            method.name.0.as_slice() == b"test"
++                && method.descriptor.0.as_slice() == b"(Ljava/util/List;Ljava/util/List;)V"
++        })
++        && ((test_bci == 13 && path.len() == 1 && path[0] == 1)
++            || (test_bci == 42 && path.len() == 2 && path[0] == 1 && path[1] == 1))
++}
++
++fn log_foreach_candidate(scope: bool, event: &str, test_bci: u32, detail: &str) {
++    if scope && foreach_candidate_diagnostic_enabled() {
++        eprintln!("JARDE_FOREACH_CANDIDATE event={event} test_bci={test_bci} {detail}");
++    }
++}
+ 
+ #[cfg(test)]
+ use jarde_jvm::method_ir::SsaUse;
+@@ -8075,6 +8141,7 @@
+         budget,
+     )?;
+     let mut builder = Builder {
++        physical_method: inputs.physical_method,
+         canonical,
+         ssa,
+         code: inputs.code,
+@@ -9202,6 +9269,7 @@
+ }
+ 
+ struct Builder<'a> {
++    physical_method: Option<&'a jarde_reader::model::PhysicalMethodId>,
+     canonical: &'a CanonicalCfg,
+     ssa: &'a SsaTable,
+     code: &'a MethodCodeFacts,
+@@ -18985,8 +19053,45 @@
+             None
+         };
+         let iterable_projected = if for_header.is_none() && tests.len() == 1 {
+-            self.iterable_for_each_candidate(first_test_bci, &kind, body)?
++            let diagnostic_scope = foreach_candidate_diagnostic_scope(
++                foreach_candidate_diagnostic_enabled(),
++                self.declaring_class,
++                self.physical_method,
++                first_test_bci,
++                path,
++            );
++            log_foreach_candidate(
++                diagnostic_scope,
++                "attempt",
++                first_test_bci,
++                &format!(
++                    "header_bci={} path={path:?} form={form:?} tests={} for_header=false body_first={}",
++                    header_bci,
++                    tests.len(),
++                    foreach_candidate_statement_kind(
++                        foreach_candidate_loop_body(&kind).and_then(|body| body.first()),
++                    ),
++                ),
++            );
++            match self.iterable_for_each_candidate(first_test_bci, &kind, body, path) {
++                Ok(candidate) => candidate,
++                Err(reason) => {
++                    log_foreach_candidate(diagnostic_scope, "stopped", first_test_bci, "reason=StopReason");
++                    return Err(reason);
++                }
++            }
+         } else {
++            log_foreach_candidate(
++                false,
++                "skipped",
++                first_test_bci,
++                &format!(
++                    "header_bci={} path={path:?} form={form:?} tests={} for_header={} reason=loop_eligibility",
++                    header_bci,
++                    tests.len(),
++                    for_header.is_some(),
++                ),
++            );
+             None
+         };
+         let (kind, origin) = if let Some((kind, origin, removed_element, declarations)) = projected
+@@ -21226,24 +21331,52 @@
+         test_bci: u32,
+         kind: &StmtKind,
+         regions: &[Region],
++        path: &[u32],
+     ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
++        let diagnostic_scope = foreach_candidate_diagnostic_scope(
++            foreach_candidate_diagnostic_enabled(),
++            self.declaring_class,
++            self.physical_method,
++            test_bci,
++            path,
++        );
+         let StmtKind::While { cond, body, .. } = kind else {
++            log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=loop_kind_not_while");
+             return Ok(None);
+         };
+-        if self.profile.java_release < 8
+-            || !matches!(&cond.kind, ExprKind::Call { name, args, .. }
+-                if name == "hasNext" && args.is_empty())
+-            || !matches!(self.operations.get(cond.origin.primary().bci()),
+-                Some(Operation::Invoke(target))
+-                    if target.kind() == InvokeKind::Interface
+-                        && target.is_interface_reference()
+-                        && target.owner() == "java/util/Iterator"
+-                        && target.name() == "hasNext"
+-                        && target.descriptor() == "()Z")
+-            || !body
+-                .first()
+-                .is_some_and(|stmt| matches!(stmt.kind, StmtKind::Declare { value: Some(_), .. }))
++        if self.profile.java_release < 8 {
++            log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=profile_release_before_8");
++            return Ok(None);
++        }
++        if !matches!(&cond.kind, ExprKind::Call { name, args, .. }
++            if name == "hasNext" && args.is_empty())
+         {
++            log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=condition_not_zero_arg_hasNext_call");
++            return Ok(None);
++        }
++        if !matches!(self.operations.get(cond.origin.primary().bci()),
++            Some(Operation::Invoke(target))
++                if target.kind() == InvokeKind::Interface
++                    && target.is_interface_reference()
++                    && target.owner() == "java/util/Iterator"
++                    && target.name() == "hasNext"
++                    && target.descriptor() == "()Z")
++        {
++            log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=hasNext_not_exact_iterator_interface_invoke");
++            return Ok(None);
++        }
++        if !body
++            .first()
++            .is_some_and(|stmt| matches!(stmt.kind, StmtKind::Declare { value: Some(_), .. }))
++        {
++            log_foreach_candidate(diagnostic_scope, 
++                "refused",
++                test_bci,
++                &format!(
++                    "gate=body_first_not_initialized_declaration statement={}",
++                    foreach_candidate_statement_kind(body.first()),
++                ),
++            );
+             return Ok(None);
+         }
+         poll(self.budget, Some(test_bci))?;
+@@ -21271,10 +21404,13 @@
+             Some(test_bci),
+         )?;
+ 
++        let mut proof_stage: &'static str = "loop_and_test_ast";
+         let candidate = (|| {
++            proof_stage = "loop_kind_and_condition_ast";
+             let StmtKind::While { label, cond, body } = kind else {
+                 return None;
+             };
++            proof_stage = "has_next_receiver_ast";
+             let ExprKind::Call {
+                 receiver: Some(test_receiver),
+                 name: test_name,
+@@ -21283,15 +21419,18 @@
+             else {
+                 return None;
+             };
++            proof_stage = "iterator_local_ast";
+             let ExprKind::Local(iterator_name) = &test_receiver.kind else {
+                 return None;
+             };
+             if test_name != "hasNext" || !test_args.is_empty() {
+                 return None;
+             }
++            proof_stage = "body_binding_shape";
+             let [binding, ..] = body.as_slice() else {
+                 return None;
+             };
++            proof_stage = "initialized_binding_declaration";
+             let StmtKind::Declare {
+                 name: binding_name,
+                 value: Some(binding_value),
+@@ -21300,6 +21439,7 @@
+             else {
+                 return None;
+             };
++            proof_stage = "binding_value_call_or_cast";
+             let (next, inline_cast_bci) = match &binding_value.kind {
+                 ExprKind::Call { .. } => (binding_value, None),
+                 ExprKind::Cast { value, .. } if matches!(value.kind, ExprKind::Call { .. }) => {
+@@ -21307,6 +21447,7 @@
+                 }
+                 _ => return None,
+             };
++            proof_stage = "next_call_ast";
+             let ExprKind::Call {
+                 receiver: Some(next_receiver),
+                 name: next_name,
+@@ -21315,12 +21456,14 @@
+             else {
+                 return None;
+             };
++            proof_stage = "next_method_and_iterator_name";
+             if next_name != "next"
+                 || !next_args.is_empty()
+                 || !matches!(&next_receiver.kind, ExprKind::Local(name) if name == iterator_name)
+             {
+                 return None;
+             }
++            proof_stage = "iterator_initialization_search";
+             let (init_index, init_stmt, iterable) =
+                 self.stmts
+                     .iter()
+@@ -21347,16 +21490,266 @@
+                         (name == iterator_name && call_name == "iterator" && args.is_empty())
+                             .then_some((index, stmt, receiver.as_ref()))
+                     })?;
++            proof_stage = "iterable_local_ast";
+             let ExprKind::Local(iterable_name) = &iterable.kind else {
+                 return None;
+             };
++            proof_stage = "iterable_presented_reference_type";
+             let Some(Type::Reference(iterable_type)) = &iterable.presented else {
+                 return None;
+             };
++            proof_stage = "iterator_declaration_before_init";
+             let declaration_index = self.stmts[..init_index].iter().rposition(|stmt| {
+                 matches!(&stmt.kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. }
+                     if name == iterator_name && (ty == "java.util.Iterator" || ty == "Iterator"))
+-            })?;
++            });
++            let init_bci_for_diagnostic = match &init_stmt.kind {
++                StmtKind::Assign { value, .. }
++                | StmtKind::Declare { value: Some(value), .. } => Some(value.origin.primary().bci()),
++                _ => None,
++            };
++            let init_store_bci = init_stmt.origin.primary().bci();
++            let test_load_bci = test_receiver.origin.primary().bci();
++            let next_load_bci = next_receiver.origin.primary().bci();
++            let init_slot = match self.operations.get(init_store_bci) {
++                Some(Operation::Store { slot }) => Some(*slot),
++                _ => None,
++            };
++            let init_variable = init_slot.and_then(|slot| self.reuse.variable_at(slot, init_store_bci));
++            let test_variable = match self.operations.get(test_load_bci) {
++                Some(Operation::Load { slot }) => self.reuse.variable_at(*slot, test_load_bci),
++                _ => None,
++            };
++            let next_variable = match self.operations.get(next_load_bci) {
++                Some(Operation::Load { slot }) => self.reuse.variable_at(*slot, next_load_bci),
++                _ => None,
++            };
++            let placement = init_variable.and_then(|variable| self.declarations.placements.get(&variable));
++            let owner = match placement {
++                Some(DeclarationPlacement::Local { owner })
++                | Some(DeclarationPlacement::Elevated { owner })
++                | Some(DeclarationPlacement::Incomplete { owner }) => Some(owner),
++                None => None,
++            };
++            let owner_visible = owner.is_some_and(|owner| path.starts_with(owner));
++            let emitted = init_variable.is_some_and(|variable| self.declared.contains(&variable));
++            let owner_at_region = match placement {
++                Some(DeclarationPlacement::Elevated { owner }) => self
++                    .declarations
++                    .at_region
++                    .get(owner)
++                    .is_some_and(|items| items.iter().any(|item| Some(item.variable) == init_variable)),
++                _ => false,
++            };
++            let planned_at_regions = init_variable.map(|variable| {
++                self.declarations
++                    .at_region
++                    .iter()
++                    .flat_map(|(region, items)| {
++                        items.iter().filter_map(move |item| {
++                            (item.variable == variable).then_some((region, item.at, &item.ty))
++                        })
++                    })
++                    .collect::<Vec<_>>()
++            }).unwrap_or_default();
++            let owner_consumed = match placement {
++                Some(DeclarationPlacement::Local { .. }) => owner_visible && emitted,
++                Some(DeclarationPlacement::Elevated { .. }) => owner_visible && emitted && owner_at_region,
++                Some(DeclarationPlacement::Incomplete { .. }) | None => false,
++            };
++            if diagnostic_scope {
++                let has_next_bci = cond.origin.primary().bci();
++                let next_bci_for_diagnostic = next.origin.primary().bci();
++                let next_store_bci = binding.origin.primary().bci();
++                let mut diagnostic_bcis = vec![
++                    init_store_bci,
++                    test_load_bci,
++                    has_next_bci,
++                    test_bci,
++                    next_load_bci,
++                    next_bci_for_diagnostic,
++                    next_store_bci,
++                ];
++                diagnostic_bcis.extend(init_bci_for_diagnostic);
++                diagnostic_bcis.extend(inline_cast_bci);
++                diagnostic_bcis.sort_unstable();
++                diagnostic_bcis.dedup();
++                let mut value_ids = Vec::new();
++                let instruction_rows = diagnostic_bcis
++                    .iter()
++                    .map(|bci| {
++                        self.instructions.get(bci).map(|instruction| {
++                            value_ids.extend(instruction.reads().iter().map(|(_, value)| *value));
++                            value_ids.extend(instruction.writes().iter().map(|(_, value)| *value));
++                            (
++                                *bci,
++                                self.block_of.get(bci),
++                                instruction.opcode(),
++                                instruction.reads(),
++                                instruction.writes(),
++                            )
++                        })
++                    })
++                    .collect::<Vec<_>>();
++                let header = self.block_of.get(&test_bci);
++                let mut phi_rows = Vec::new();
++                if let (Some(header), Some(slot)) = (header, init_slot) {
++                    for phi in self.ssa.phis().iter().filter(|phi| {
++                        phi.block() == header && phi.slot() == Slot::Local(slot)
++                    }) {
++                        value_ids.push(phi.value());
++                        for input in phi.inputs() {
++                            if let PhiInput::Value(value) = input {
++                                value_ids.push(*value);
++                            }
++                        }
++                        phi_rows.push((phi.value(), phi.inputs(), self.ssa.value(phi.value())));
++                    }
++                }
++                let value_rows = value_ids
++                    .iter()
++                    .map(|value| (*value, self.ssa.value(*value)))
++                    .collect::<Vec<_>>();
++                // Expand only values carried through the iterator's phi-use blocks. This records
++                // the real downstream phi inputs/replacements/uses and instruction consumers
++                // without changing or interpreting the ownership proof.
++                let mut phi_trace_values = self
++                    .instructions
++                    .get(&init_store_bci)
++                    .into_iter()
++                    .flat_map(|instruction| instruction.writes().iter())
++                    .filter_map(|(slot, value)| {
++                        (Some(*slot) == init_slot.map(Slot::Local)).then_some(*value)
++                    })
++                    .collect::<Vec<_>>();
++                let mut phi_trace_blocks = Vec::new();
++                loop {
++                    let previous_value_count = phi_trace_values.len();
++                    let previous_block_count = phi_trace_blocks.len();
++                    let values = phi_trace_values.clone();
++                    for value in values {
++                        if let Some(replaced_by) = self.ssa.value(value).replaced_by()
++                            && !phi_trace_values.contains(&replaced_by)
++                        {
++                            phi_trace_values.push(replaced_by);
++                        }
++                        for use_ in self.ssa.value(value).uses() {
++                            if use_.bci().is_none() && !phi_trace_blocks.contains(use_.block()) {
++                                phi_trace_blocks.push(use_.block().clone());
++                            }
++                        }
++                    }
++                    let blocks = phi_trace_blocks.clone();
++                    for phi in self.ssa.phis().iter().filter(|phi| {
++                        blocks.iter().any(|block| block == phi.block())
++                    }) {
++                        if !phi_trace_values.contains(&phi.value()) {
++                            phi_trace_values.push(phi.value());
++                        }
++                        for input in phi.inputs() {
++                            if let PhiInput::Value(value) = input
++                                && !phi_trace_values.contains(value)
++                            {
++                                phi_trace_values.push(*value);
++                            }
++                        }
++                    }
++                    if previous_value_count == phi_trace_values.len()
++                        && previous_block_count == phi_trace_blocks.len()
++                    {
++                        break;
++                    }
++                }
++                let phi_trace_rows = self
++                    .ssa
++                    .phis()
++                    .iter()
++                    .filter(|phi| phi_trace_blocks.iter().any(|block| block == phi.block()))
++                    .map(|phi| {
++                        (
++                            phi.block(),
++                            phi.slot(),
++                            phi.value(),
++                            phi.inputs(),
++                            self.ssa.value(phi.value()),
++                        )
++                    })
++                    .collect::<Vec<_>>();
++                let phi_trace_value_rows = phi_trace_values
++                    .iter()
++                    .map(|value| (*value, self.ssa.value(*value)))
++                    .collect::<Vec<_>>();
++                let mut phi_trace_consumers = Vec::new();
++                for value in &phi_trace_values {
++                    for use_ in self.ssa.value(*value).uses() {
++                        let instruction = use_.bci().and_then(|bci| {
++                            self.instructions.get(&bci).map(|instruction| {
++                                (bci, instruction.opcode(), instruction.reads(), instruction.writes())
++                            })
++                        });
++                        let effect = use_.bci().and_then(|bci| {
++                            self.ssa.effects().instructions().iter().find(|effect| {
++                                effect.bci() == bci && effect.block() == use_.block()
++                            })
++                        });
++                        phi_trace_consumers.push((*value, use_, instruction, effect));
++                    }
++                }
++                let effect_rows = diagnostic_bcis
++                    .iter()
++                    .map(|bci| {
++                        (
++                            *bci,
++                            self.ssa.effects().instructions().iter().find(|effect| {
++                                effect.bci() == *bci
++                                    && Some(effect.block()) == self.block_of.get(bci)
++                            }),
++                        )
++                    })
++                    .collect::<Vec<_>>();
++                log_foreach_candidate(
++                    diagnostic_scope,
++                    "same_ir_snapshot",
++                    test_bci,
++                    &format!(
++                        "path={path:?} bcis={diagnostic_bcis:?} init_slot={init_slot:?} init_local={init_variable:?} test_local={test_variable:?} next_local={next_variable:?} owner={owner:?} placement={placement:?} owner_at_region={owner_at_region} declared={emitted} planned_at_regions={planned_at_regions:?} instructions={instruction_rows:?} phis={phi_rows:?} values_with_uses={value_rows:?} effects={effect_rows:?}"
++                    ),
++                );
++            }
++            if diagnostic_scope {
++                log_foreach_candidate(
++                    diagnostic_scope,
++                    "phi_use_expansion",
++                    test_bci,
++                    &format!(
++                        "seed_store_bci={init_store_bci} seed_slot={init_slot:?} traced_blocks={phi_trace_blocks:?} phis_block={phi_trace_rows:?} phi_values={phi_trace_value_rows:?} consumers={phi_trace_consumers:?}"
++                    ),
++                );
++                log_foreach_candidate(
++                    diagnostic_scope,
++                    "owner_facts",
++                    test_bci,
++                    &format!(
++                        "path={path:?} init_index={init_index} init_bci={init_bci_for_diagnostic:?} init_store_bci={init_store_bci} init_slot={init_slot:?} init_local={init_variable:?} test_local={test_variable:?} next_local={next_variable:?} placement={placement:?} owner={owner:?} owner_visible={owner_visible} emitted={emitted} owner_at_region={owner_at_region} planned_at_regions={planned_at_regions:?}",
++                    ),
++                );
++            }
++            let diagnostic_owner_bypass = diagnostic_scope
++                && test_bci == 42
++                && path.len() == 2
++                && path[0] == 1
++                && path[1] == 1
++                && declaration_index.is_none()
++                && owner_consumed
++                && init_variable == test_variable
++                && init_variable == next_variable;
++            if declaration_index.is_none() && !diagnostic_owner_bypass {
++                return None;
++            }
++            if diagnostic_owner_bypass {
++                proof_stage = "iterator_declaration_ancestor_owner_diagnostic_bypass";
++            }
++            proof_stage = "preheader_side_effect_and_alias_exclusion";
+             if self.stmts[init_index + 1..]
+                 .iter()
+                 .any(|stmt| match &stmt.kind {
+@@ -21375,19 +21768,16 @@
+             }) {
+                 return None;
+             }
++            proof_stage = "init_expression_and_store_bci";
+             let init_bci = match &init_stmt.kind {
+                 StmtKind::Assign { value, .. }
+-                | StmtKind::Declare {
+-                    value: Some(value), ..
+-                } => value.origin.primary().bci(),
++                | StmtKind::Declare { value: Some(value), .. } => value.origin.primary().bci(),
+                 _ => return None,
+             };
+-            let init_store_bci = init_stmt.origin.primary().bci();
+             let has_next_bci = cond.origin.primary().bci();
+             let next_bci = next.origin.primary().bci();
+             let next_store_bci = binding.origin.primary().bci();
+-            let test_load_bci = test_receiver.origin.primary().bci();
+-            let next_load_bci = next_receiver.origin.primary().bci();
++            proof_stage = "exact_call_predicate";
+             let exact_call = |bci, owner, name, descriptor| {
+                 matches!(self.operations.get(bci), Some(Operation::Invoke(target))
+                     if target.kind() == InvokeKind::Interface
+@@ -21396,6 +21786,7 @@
+                         && target.name() == name
+                         && target.descriptor() == descriptor)
+             };
++            proof_stage = "iterator_owner_resolution";
+             let iterable_owner = match self.operations.get(init_bci) {
+                 Some(Operation::Invoke(target))
+                     if target.kind() == InvokeKind::Interface
+@@ -21407,6 +21798,7 @@
+                 }
+                 _ => return None,
+             };
++            proof_stage = "source_type_owner_compatibility";
+             let source_matches_owner = match iterable_owner {
+                 "java/lang/Iterable" => {
+                     iterable_type == "java.lang.Iterable" || iterable_type == "Iterable"
+@@ -21415,6 +21807,7 @@
+                 "java/util/Collection" => iterable_type == "java.util.Collection",
+                 _ => false,
+             };
++            proof_stage = "exact_interface_call_owners_and_descriptors";
+             if !source_matches_owner
+                 || !exact_call(
+                     init_bci,
+@@ -21432,6 +21825,7 @@
+             {
+                 return None;
+             }
++            proof_stage = "instruction_and_stack_result_accessors";
+             let instruction = |bci| self.instructions.get(&bci).copied();
+             let stack_result = |instruction: &SsaInstruction| {
+                 instruction
+@@ -21439,12 +21833,14 @@
+                     .iter()
+                     .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+             };
++            proof_stage = "iterator_store_slot";
+             let Some(Operation::Store {
+                 slot: iterator_slot,
+             }) = self.operations.get(init_store_bci)
+             else {
+                 return None;
+             };
++            proof_stage = "iterator_load_and_next_store_slots";
+             if !matches!(self.operations.get(test_load_bci), Some(Operation::Load { slot }) if slot == iterator_slot)
+                 || !matches!(self.operations.get(next_load_bci), Some(Operation::Load { slot }) if slot == iterator_slot)
+                 || !matches!(
+@@ -21454,6 +21850,7 @@
+             {
+                 return None;
+             }
++            proof_stage = "iterator_store_ssa_value";
+             let iterator_value =
+                 instruction(init_store_bci)?
+                     .writes()
+@@ -21461,12 +21858,14 @@
+                     .find_map(|(slot, value)| {
+                         (*slot == Slot::Local(*iterator_slot)).then_some(*value)
+                     })?;
++            proof_stage = "iterator_init_result_single_use";
+             let init_result = stack_result(instruction(init_bci)?)?;
+             if self.ssa.value(init_result).uses().len() != 1
+                 || self.ssa.value(init_result).uses()[0].bci() != Some(init_store_bci)
+             {
+                 return None;
+             }
++            proof_stage = "header_block_purity";
+             let header = self.block_of.get(&test_bci)?;
+             if self
+                 .ssa
+@@ -21479,6 +21878,7 @@
+             {
+                 return None;
+             }
++            proof_stage = "next_block_purity";
+             let next_block = self.block_of.get(&next_bci)?;
+             if self
+                 .ssa
+@@ -21491,10 +21891,12 @@
+             {
+                 return None;
+             }
+-            let phi =
+-                self.ssa.phis().iter().find(|phi| {
+-                    phi.block() == header && phi.slot() == Slot::Local(*iterator_slot)
+-                })?;
++            proof_stage = "header_iterator_phi_lookup";
++            let phi = self
++                .ssa
++                .phis()
++                .iter()
++                .find(|phi| phi.block() == header && phi.slot() == Slot::Local(*iterator_slot))?;
+             let resolves = |mut value| {
+                 for _ in 0..=self.ssa.phis().len() {
+                     if value == iterator_value {
+@@ -21507,6 +21909,7 @@
+                 }
+                 false
+             };
++            proof_stage = "iterator_phi_input_and_replacement_proof";
+             if phi.inputs().len() < 2
+                 || phi
+                     .inputs()
+@@ -21531,21 +21934,25 @@
+             {
+                 return None;
+             }
++            proof_stage = "iterator_local_read_accessors";
+             let local_use = |bci| {
+                 instruction(bci)?.reads().iter().find_map(|(slot, value)| {
+                     (*slot == Slot::Local(*iterator_slot)).then_some(*value)
+                 })
+             };
++            proof_stage = "has_next_receiver_stack_operands";
+             let test_operands = stack_operands(instruction(has_next_bci)?);
+             let [(_, test_receiver_value)] = test_operands.as_slice() else {
+                 return None;
+             };
++            proof_stage = "has_next_and_next_receiver_local_ssa_identity";
+             if !resolves(local_use(test_load_bci)?)
+                 || !resolves(local_use(next_load_bci)?)
+                 || *test_receiver_value != stack_result(instruction(test_load_bci)?)?
+             {
+                 return None;
+             }
++            proof_stage = "next_receiver_stack_operands";
+             let next_operands = stack_operands(instruction(next_bci)?);
+             let [(_, next_receiver_value)] = next_operands.as_slice() else {
+                 return None;
+@@ -21553,6 +21960,7 @@
+             if *next_receiver_value != stack_result(instruction(next_load_bci)?)? {
+                 return None;
+             }
++            proof_stage = "iterator_value_and_phi_use_ownership";
+             for value in [iterator_value, phi.value()] {
+                 if self.ssa.value(value).uses().iter().any(|use_| {
+                     ![Some(test_load_bci), Some(next_load_bci)].contains(&use_.bci())
+@@ -21566,6 +21974,7 @@
+                     return None;
+                 }
+             }
++            proof_stage = "next_result_store_consumer";
+             let next_result = stack_result(instruction(next_bci)?)?;
+             let next_consumer = inline_cast_bci.unwrap_or(next_store_bci);
+             if self.ssa.value(next_result).uses().len() != 1
+@@ -21573,18 +21982,14 @@
+             {
+                 return None;
+             }
++            proof_stage = "inline_or_body_cast_shape_and_ssa_ownership";
+             if let Some(cast_bci) = inline_cast_bci {
++                let cast_result = stack_result(instruction(cast_bci)?)?;
+                 if !matches!(
+                     self.operations.get(cast_bci),
+                     Some(Operation::CheckCast { .. })
+-                ) || self
+-                    .ssa
+-                    .value(stack_result(instruction(cast_bci)?)?)
+-                    .uses()
+-                    .len()
+-                    != 1
+-                    || self.ssa.value(stack_result(instruction(cast_bci)?)?).uses()[0].bci()
+-                        != Some(next_store_bci)
++                ) || self.ssa.value(cast_result).uses().len() != 1
++                    || self.ssa.value(cast_result).uses()[0].bci() != Some(next_store_bci)
+                 {
+                     return None;
+                 }
+@@ -21627,11 +22032,13 @@
+                     return None;
+                 }
+             }
++            proof_stage = "effect_and_handler_accessors";
+             let effect = |bci| {
+                 self.ssa.effects().instructions().iter().find(|effect| {
+                     effect.bci() == bci && Some(effect.block()) == self.block_of.get(&bci)
+                 })
+             };
++            proof_stage = "exception_handler_equivalence";
+             let handlers = effect(has_next_bci)?.handlers();
+             if effect(init_bci)?.handlers() != handlers
+                 || effect(next_bci)?.handlers() != handlers
+@@ -21658,12 +22065,29 @@
+                 body.to_vec(),
+                 next_bci,
+                 origin,
+-                vec![declaration_index, init_index],
++                declaration_index.into_iter().chain(std::iter::once(init_index)).collect(),
+             ))
+         })();
+         let Some((label, iterable, mut body, next_bci, origin, remove)) = candidate else {
++            log_foreach_candidate(diagnostic_scope, 
++                "refused",
++                test_bci,
++                &format!(
++                    "gate=post_entry_candidate_proof_incomplete stage={proof_stage}",
++                ),
++            );
+             return Ok(None);
+         };
++        if diagnostic_scope {
++            log_foreach_candidate(
++                diagnostic_scope,
++                "proof_complete_diagnostic_only",
++                test_bci,
++                &format!("next_bci={next_bci}; forced_refusal_before_rewrite=true"),
++            );
++            return Ok(None);
++        }
++        log_foreach_candidate(diagnostic_scope, "proof_complete", test_bci, "stage=ready_to_rewrite");
+         let mut base = format!("iteratorElement{next_bci}");
+         let name = loop {
+             let candidate = self.names.free_name_with(&base, || {
+@@ -21689,18 +22113,24 @@
+             ..
+         }) = body.first_mut()
+         else {
++            log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=proved_body_binding_changed_before_rewrite");
+             return Ok(None);
+         };
+         let next = match &mut value.kind {
+             ExprKind::Call { .. } => value,
+             ExprKind::Cast { value, .. } => value.as_mut(),
+-            _ => return Ok(None),
++            _ => {
++                log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=proved_binding_not_call_or_cast");
++                return Ok(None);
++            }
+         };
+         if next.origin.primary().bci() != next_bci {
++            log_foreach_candidate(diagnostic_scope, "refused", test_bci, "gate=proved_next_bci_changed_before_rewrite");
+             return Ok(None);
+         }
+         *next = Expr::new(ExprKind::Local(name.clone()), next.origin.clone())
+             .presenting(Type::Reference("java.lang.Object".to_owned()));
++        log_foreach_candidate(diagnostic_scope, "projected", test_bci, &format!("next_bci={next_bci}"));
+         Ok(Some((
+             StmtKind::ForEach {
+                 label,
+@@ -36720,6 +37150,7 @@
+             }
+         }
+         Builder {
++            physical_method: None,
+             canonical,
+             ssa,
+             code,

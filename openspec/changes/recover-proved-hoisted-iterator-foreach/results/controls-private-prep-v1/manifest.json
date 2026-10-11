@@ -1,0 +1,24 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.HoistedIteratorPositive",
+      "source": "HoistedIteratorPositive.java",
+      "bytes": 522,
+      "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+    },
+    {
+      "class": "cf11.HoistedIteratorRefusal",
+      "source": "HoistedIteratorRefusal.java",
+      "bytes": 577,
+      "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 4152,
+    "sha256": "809bcdf022f096c620b3366adaec531759f603bf672149ee2abc55ecf5346f0a"
+  }
+}

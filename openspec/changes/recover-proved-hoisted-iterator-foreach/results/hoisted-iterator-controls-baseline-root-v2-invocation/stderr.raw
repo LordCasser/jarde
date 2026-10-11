@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py", line 182, in <module>
+    if __name__=='__main__': raise SystemExit(main())
+                                              ~~~~^^
+  File "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py", line 115, in main
+    row=compile_case(jdk+'-original',list(copied.values())+[runner],jdk); execution['original_compile_rows'].append(row)
+  File "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py", line 99, in compile_case
+    comp,_,_=rec.run(label+'-compile',[leg['tools']['javac'],*flags,'-proc:none','-g','-classpath',empty,'-sourcepath',empty,'-d',classes_dir,*srcs],leg['home'])
+             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py", line 27, in run
+    row.update(self.guard.run_command(index,argv,env)); row.update(label=label,java_home=str(home),state='observed')
+               ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", line 311, in run_command
+    raise RuntimeError(f"5 GiB free-space guard before command {index}: {free_start}")
+RuntimeError: 5 GiB free-space guard before command 1: 4430757888
+CF11 observation verification failed: capture incomplete or input pins changed
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py", line 401, in <module>
+    try: main()
+         ~~~~^^
+  File "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py", line 399, in main
+    p=argparse.ArgumentParser(description=__doc__); p.add_argument('--execution',type=Path,required=True); p.add_argument('--out',type=Path,required=True); a=p.parse_args(); out=a.out.resolve(); need(not out.exists(),'refuse overwrite '+str(out)); result=verify(a); result['checker']=pin(Path(__file__).resolve()); out.parent.mkdir(parents=True,exist_ok=True); out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8'); print(json.dumps({'status':result['status'],'execution':result['execution'],'out':str(out)}))
+                                                                                                                                                                                                                                                               ~~~~~~^^^
+  File "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py", line 216, in verify
+    need(run.get('status')=='observed' and run.get('source_tool_inputs_unchanged') is True,'capture incomplete or input pins changed')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py", line 10, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: capture incomplete or input pins changed

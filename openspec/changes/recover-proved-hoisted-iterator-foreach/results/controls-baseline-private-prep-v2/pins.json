@@ -1,0 +1,143 @@
+{
+  "schema": "hoisted-iterator-controls-baseline-prep-v2",
+  "status": "immutable_inputs_manifest_repaired_launcher_ast_checked_not_run",
+  "previous_v1_failure": {
+    "execution.json": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-controls-baseline-root-v1/execution.json",
+      "bytes": 817,
+      "sha256": "23f7ec9ac7304d15b0c728105e7a56ec1b0b3e24c95deb09ffc3466dd8e1f130"
+    },
+    "stdout.raw": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-controls-baseline-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.raw": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-controls-baseline-root-v1/stderr.raw",
+      "bytes": 143,
+      "sha256": "dbeb353d84a83e446b6f84501a25090819f84f01bc04f7e856530486da63ad15"
+    },
+    "exit_code": 1,
+    "collector_started": false
+  },
+  "source_prep_dir": "/private/tmp/jarde-hoisted-iterator-controls-source-prep-luna-v2",
+  "baseline_inputs_dir": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs",
+  "launcher": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/run_controls_baseline.py",
+    "bytes": 14964,
+    "sha256": "bef7a0ef4bf0527df136d95af975aa47ca0d3d01b9322099e1ac3fef1446cdb6"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/launcher.patch",
+    "bytes": 3737,
+    "sha256": "e423de51bafb35629595c78de06e7503a2b0679868b54d307b446fe27daa5348"
+  },
+  "review": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/README.md",
+    "bytes": 2055,
+    "sha256": "14b03a450c23334f0dad433497b16870cebd09d9193d7bb44e0ab04ab7d7bed9"
+  },
+  "source_review": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-source-prep-luna-v2/source-review.md",
+    "bytes": 2618,
+    "sha256": "8692cef907f6c8af456001bccbe3f1c6d0303bc1fb19b309e90cff0029dae238"
+  },
+  "source_review_diff": {
+    "path": "/private/tmp/jarde-hoisted-iterator-controls-source-prep-luna-v2/source-review.diff",
+    "bytes": 463,
+    "sha256": "bfe0f53cf10a8460fdc28bee857da3be842d084e2a51d0f226cabb0bec95e1ff"
+  },
+  "inputs": {
+    "source_prep_pins": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-source-prep-luna-v2/pins.json",
+      "bytes": 1612,
+      "sha256": "db7f68454d199b9c6fb802732e6cb181129aed6c5129f9099ac0d5beddfbb376"
+    },
+    "frozen_input_pins": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/frozen-inputs-pins.json",
+      "bytes": 924,
+      "sha256": "d47c6bb37722458709e524bdb3b03c332fea5e4b7297546790fb66bf22287334"
+    },
+    "input_manifest": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/manifest.json",
+      "bytes": 674,
+      "sha256": "bf6edfcdcd33e192a02b225e81b4ea1045b9bd9ba4bb700980d81f837ffe3cbb"
+    },
+    "positive_source": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorPositive.java",
+      "bytes": 522,
+      "sha256": "5ed670809786a43863e019f86a6d7520d55ea987f3086b882f34932ae76eae50"
+    },
+    "refusal_source": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/HoistedIteratorRefusal.java",
+      "bytes": 577,
+      "sha256": "4f115eaa0f0d05e8bb41f12520e5e5eca24c9898f973c365f6eab222f9bffd66"
+    },
+    "runner_source": {
+      "path": "/private/tmp/jarde-hoisted-iterator-controls-baseline-prep-luna-v2/inputs/Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    },
+    "collector": {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    "checker_v7": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py",
+      "bytes": 35349,
+      "sha256": "a05acce687bf0e22bfab9eb8ae00520d53a006b740732f4b0041182ce72a464a"
+    },
+    "baseline_config": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/execution.json",
+      "bytes": 546303,
+      "sha256": "a7791a753850c636aa0c2d5fee5cce5b0a79434ef539eb486f5f4c8499f56951"
+    },
+    "final_cli": {
+      "path": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241"
+    },
+    "final_build_receipt": {
+      "path": "/private/tmp/jarde-constructor-conditional-final-lint-build-root-v1/execution.json",
+      "bytes": 1528893,
+      "sha256": "90ecba1b52177d7dfae590679603e4624c4e56a42ae2b58d0616d7078c1f46e2"
+    },
+    "source_closure_helper": {
+      "path": "/private/tmp/jarde-constructor-conditional-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+      "bytes": 48571,
+      "sha256": "ac511e1560c5da57fca5fcf4d37e837b726b4e20f2327014b9f29394870f0d1e"
+    }
+  },
+  "source_manifest_agreement": {
+    "targets": [
+      "cf11.HoistedIteratorPositive",
+      "cf11.HoistedIteratorRefusal"
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 4253,
+      "sha256": "4242d1581924041defdc25301cb8c740565ea77cb7cb46e9f444cc03c6a5ac01"
+    },
+    "all_sources_identical_to_source_prep": true,
+    "source_modes": "0444",
+    "manifest_mode": "0444"
+  },
+  "run_contract": {
+    "out": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2",
+    "launcher_receipt": "/private/tmp/jarde-hoisted-iterator-controls-baseline-root-v2-launcher-receipt.json",
+    "command_count": "derived from actual execution",
+    "compilation_success_count": "not prefilled",
+    "compile_failures": "retained as actual per-row results and surfaced in launcher receipt",
+    "root_target_must_be_absent_before_and_after": true
+  },
+  "static_checks": {
+    "python_ast": "passed",
+    "source_bytes_vs_manifest": "passed",
+    "source_prep_vs_frozen_input": "passed",
+    "input_modes": "passed",
+    "v2_launcher_execution": "not run",
+    "toolchain_execution": "not run"
+  }
+}

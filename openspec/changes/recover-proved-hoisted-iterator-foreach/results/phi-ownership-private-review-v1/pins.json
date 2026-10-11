@@ -1,0 +1,206 @@
+{
+  "schema": "private-hoisted-iterator-phi-ownership-review-v1",
+  "status": "static architecture review; no product edit or toolchain run",
+  "actual_diagnostic": {
+    "started_at": "2026-10-11T18:58:09.141352+00:00",
+    "finished_at": "2026-10-11T18:58:50.161043+00:00",
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "jarde",
+          "--lib",
+          "--all-features",
+          "--locked",
+          "facade::same_class_generic_call_inventory_tests::frozen_upstream_nested_loops_foreach_candidate_diagnostic",
+          "--",
+          "--ignored",
+          "--exact",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 320749435
+      },
+      {
+        "argv": [
+          "cargo",
+          "clean"
+        ],
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 320749435
+      }
+    ],
+    "restore_verified": true,
+    "target_absent_after": true,
+    "observed": {
+      "method": "cf11/UpstreamNestedLoops.test(Ljava/util/List;Ljava/util/List;)V",
+      "init_test_next_bcis": [
+        33,
+        35,
+        45
+      ],
+      "local_variable": "LocalVariable { slot: 5, index: 0 }",
+      "placement": "Elevated { owner: [1] }",
+      "first_refusal": "iterator_value_and_phi_use_ownership",
+      "iterator_value": "V37",
+      "header_phi": {
+        "block_bci": 35,
+        "slot": "Local(5)",
+        "value": "V12",
+        "inputs": [
+          "V37",
+          "Itself"
+        ],
+        "uses": 0,
+        "replaced_by": "V37"
+      },
+      "downstream_phi": {
+        "block_bci": 97,
+        "slot": "Local(5)",
+        "value": "V22",
+        "inputs": [
+          "V37",
+          "V37",
+          "V37"
+        ],
+        "uses": 0,
+        "replaced_by": "V12"
+      },
+      "iterator_none_uses_by_block": {
+        "35": 1,
+        "97": 3
+      },
+      "other_phi_control": {
+        "block_bci": 97,
+        "slot": "Local(6)",
+        "value": "V23",
+        "inputs": [
+          "V43",
+          "V43",
+          "V43"
+        ],
+        "uses": 0,
+        "replaced_by": "V43"
+      }
+    }
+  },
+  "files": [
+    {
+      "name": "analysis",
+      "path": "/private/tmp/jarde-hoisted-iterator-phi-ownership-review-luna-v1/analysis.md",
+      "sha256": "b721b77b2bce46b72408754d63f5e21fb19eb125375934922b8e00b19beec686",
+      "bytes": 8217
+    },
+    {
+      "name": "production_build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "bytes": 1728202
+    },
+    {
+      "name": "ssa.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a",
+      "bytes": 158622
+    },
+    {
+      "name": "reuse.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458",
+      "bytes": 49833
+    },
+    {
+      "name": "canonical.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/canonical.rs",
+      "sha256": "79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86",
+      "bytes": 135508
+    },
+    {
+      "name": "frozen_class",
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "bytes": 1213
+    },
+    {
+      "name": "baseline_execution",
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435",
+      "bytes": 81267
+    },
+    {
+      "name": "root_v3_execution",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/execution.json",
+      "sha256": "da1c03997a49c91ee0df2efe985da9f1d38f11376a6c2ce2ad53cb83fe6c9b87",
+      "bytes": 1536678
+    },
+    {
+      "name": "root_v3_raw_stderr",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "sha256": "e7dab0e2391276eaae14bee45e326ac526f9f337fd975c7db458ac492286815a",
+      "bytes": 91032
+    },
+    {
+      "name": "root_v3_runner",
+      "path": "/private/tmp/jarde-hoisted-iterator-same-ir-diagnostic-root-v3.py",
+      "sha256": "5750646b4c1703cb6bbd5884b7f40a5d531a9627f576d20b45df00ebd4a75def",
+      "bytes": 24217
+    },
+    {
+      "name": "accepted_design",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/design.md",
+      "sha256": "a182172b5c0b9f08fc8224b10c0a99b0ca466d5827935bbe4efea4be11a52a78",
+      "bytes": 3933
+    },
+    {
+      "name": "accepted_tasks",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/tasks.md",
+      "sha256": "19dfa1880a8ad17f6f1eaf9b97f3b8bc4956be766f8343b5afcea8857f86540c",
+      "bytes": 2657
+    },
+    {
+      "name": "accepted_spec",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-hoisted-iterator-foreach/specs/java8-recovery/spec.md",
+      "sha256": "8f4bf5676c929c3bce0a279643fc622b21d7e138d35d62df883b504462bcd80a",
+      "bytes": 2367
+    },
+    {
+      "name": "actual_v3_candidate_build",
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/build.rs.candidate",
+      "sha256": "b7aa470b0721d09867833e4f61d05748c2a4ba0603fa44f0487f9a3d00c4933b",
+      "bytes": 1749201
+    },
+    {
+      "name": "actual_v3_candidate_patch",
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/candidate.patch",
+      "sha256": "a8bdef57d2892cadf0165721f38ec3b6e720db315aceea5e96cbe041282c4c45",
+      "bytes": 36401
+    },
+    {
+      "name": "actual_v3_candidate_pins",
+      "path": "/private/tmp/jarde-hoisted-iterator-diagnostic-prep-luna-v3/pins.json",
+      "sha256": "7b8d7d63a4cbbebf4bc764c798d7b0fb92c1e2c03935477fcf4bdc6e6f72d9f7",
+      "bytes": 9005
+    }
+  ],
+  "source_review_lines": {
+    "SsaUse/SsaValue/SsaPhi_accessors": "crates/jarde-jvm/src/ssa.rs:206-300",
+    "SsaTable_accessors": "crates/jarde-jvm/src/ssa.rs:477-518",
+    "SsaTable_replace": "crates/jarde-jvm/src/ssa.rs:1822-1940",
+    "iterator_candidate": "crates/jarde-java/src/build.rs:21224 onward",
+    "array_candidate": "crates/jarde-java/src/build.rs:21720 onward",
+    "bounded_resolves_and_iterator_phi_gate": "crates/jarde-java/src/build.rs:21494-21568",
+    "array_phi_gates": "crates/jarde-java/src/build.rs:22016-22125",
+    "reuse_representative": "crates/jarde-java/src/reuse.rs:319-327",
+    "reuse_boundary_walk": "crates/jarde-java/src/reuse.rs:765-835",
+    "reuse_trivial_phi_outputs": "crates/jarde-java/src/reuse.rs:837-886"
+  },
+  "validation": {
+    "markdown_review": "written",
+    "sha_pins": "verified for every listed file",
+    "cargo_rust_java_jadx_cli_git_network": "not run"
+  }
+}

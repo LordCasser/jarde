@@ -1,0 +1,77 @@
+{
+  "schema": "cf11-testnestedloops-root-baseline-frozen-inputs-v1",
+  "source_prep": "/private/tmp/jarde-cf11-testnestedloops-input-luna-v3",
+  "source_prep_pins_sha256": "d09a4acb1e4a5a0789e06643028f53b1aa3103a2c5ea15287710e81d65c2273b",
+  "upstream_source": {
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+    "bytes": 876,
+    "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e"
+  },
+  "method_slice": {
+    "name": "TestCls.test(List<String>, List<String>)",
+    "start_byte_in_source": 279,
+    "end_byte_exclusive_in_source": 573,
+    "bytes": 294,
+    "sha256": "a0b9999d8687d5ec6ac4676d68abf84d4f1de14ebc6146fb2048d3e1735d23ce",
+    "exact_in_upstream": true,
+    "exact_in_wrapper": true
+  },
+  "input_files": [
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1",
+      "mode": "0o444",
+      "manifest_entry": {
+        "class": "cf11.UpstreamNestedLoops",
+        "source": "UpstreamNestedLoops.java",
+        "bytes": 371,
+        "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+      }
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/Runner.java",
+      "bytes": 1348,
+      "sha256": "f4c99e837599440588b54df0bb2eaaac45f0ae76db1ddeddbb789c90ff527379",
+      "mode": "0o444",
+      "manifest_entry": {
+        "class": "cf11.Runner",
+        "source": "Runner.java",
+        "bytes": 1348,
+        "sha256": "f4c99e837599440588b54df0bb2eaaac45f0ae76db1ddeddbb789c90ff527379"
+      }
+    }
+  ],
+  "provenance_files": [
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/pins.json",
+      "bytes": 1805,
+      "sha256": "d09a4acb1e4a5a0789e06643028f53b1aa3103a2c5ea15287710e81d65c2273b",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/README.md",
+      "bytes": 1485,
+      "sha256": "09ca1e63ba16d9d81c6092cdc26b0dd6ed5f1587d09d08e45eb9d275386a8345",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/test-method.slice",
+      "bytes": 294,
+      "sha256": "a0b9999d8687d5ec6ac4676d68abf84d4f1de14ebc6146fb2048d3e1735d23ce",
+      "mode": "0o444"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/provenance/TestNestedLoops.java",
+      "bytes": 876,
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+      "mode": "0o444"
+    }
+  ],
+  "manifest_file": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-inputs-root-v1/manifest.json",
+    "bytes": 457,
+    "sha256": "1227d9a427465af6249753fbf7139c710de2fe15138b1710b389602616e3cf59",
+    "mode": "0o444"
+  }
+}

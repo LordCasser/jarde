@@ -1,0 +1,7 @@
+# TestNestedLoops frozen-input preparation
+
+This private input set wraps the exact `TestCls.test(List<String>, List<String>)` method slice from the upstream JADX integration test as `cf11.UpstreamNestedLoops`. The method bytes, including its signature and original indentation, are copied unchanged; only the JUnit imports, test harness, and nested `TestCls` owner were removed. `test-method.slice` preserves the extracted byte sequence separately for review.
+
+`Runner` exercises empty and unmatched lists; a five-character match that mutates `l2`; a non-five-character match that mutates `l1` while more outer elements remain; a two-element case where removing the first element leaves one element for the later `l1.clear()` cleanup; null first/second lists; and a null element. Each call catches `Throwable` and prints the observed exception class plus both final list values, so the collector records the runtime behavior instead of treating a predicted `ConcurrentModificationException` as an oracle. The cleanup case makes the remaining element's clearing effect visible when execution reaches it.
+
+The manifest has one target top-level class and the ordinary `Runner` top-level class, matching collector v3's exact-manifest schema. No generated helper or anonymous class is declared in the sources. No JDK, compiler, JADX, CLI, or Git command was run, and no shared file was changed. Runtime output and any mutation-related exception remain to be captured by the root collector.

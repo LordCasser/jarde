@@ -1,0 +1,66 @@
+{
+  "artifact": "TestNestedLoops static source review",
+  "scope": "read-only source analysis; no Git, Atlas, Java/JADX/Jarde toolchain execution",
+  "files": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+      "lines": ["10-29", "32-40"],
+      "role": "fixed fixture and assertions"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe",
+      "lines": ["21222-21248", "21274-21376", "21391-21433", "21435-21642", "21644-21715"],
+      "role": "Jarde iterable foreach candidate proof and rewrite"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/signature.rs",
+      "sha256": "f3c6dcbd0ef448bcb7bd737e8ae63d961f9330b1e1121053f6188c396adb015c",
+      "lines": ["356-380", "438-519"],
+      "role": "method Signature erasure proof and stated scope boundary"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/classfile.rs",
+      "sha256": "73aa3e4befe33690c70d0fa05373f88d47d3bc23a33072b623e4096cdd354b3e",
+      "lines": ["2490-2502", "3015-3025"],
+      "role": "raw Signature attribute capture"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+      "lines": ["5432-5474", "5523-5577", "5731-5898", "5902-5912"],
+      "role": "source-level method Signature projection path"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_iterable_foreach.rs",
+      "sha256": "edb0255845558529aac999d974614579f770eb134dad70f1461c90b729d92af3",
+      "lines": ["122-169", "241-293"],
+      "role": "existing iterable foreach acceptance/refusal and execution tests"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java",
+      "sha256": "a77bedda10bdb0d36f3979c27c1fc9471da726b36f34ae14d505f6f659c6b13e",
+      "lines": ["61-98", "187-245"],
+      "role": "JADX loop region construction"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java",
+      "sha256": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515",
+      "lines": ["260-378"],
+      "role": "JADX iterator pattern recognition and iterable element type adjustment"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/codegen/RegionGen.java",
+      "sha256": "8b80ef618487e38cb09a2bbd81b70de0dd096996a321a0c9dcf55e1dc011d4ee",
+      "lines": ["187-209"],
+      "role": "JADX foreach source rendering"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/debuginfo/DebugInfoAttachVisitor.java",
+      "sha256": "01c43bcac6eb6805f4d24a3c65defcda4da356f475a6f56ba3f41b6e98d51572",
+      "lines": ["153-182"],
+      "role": "JADX local-variable debug Signature parsing and type validation"
+    }
+  ]
+}

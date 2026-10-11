@@ -1,0 +1,1 @@
+{"status": "completed_same_ir_diagnostic_only", "error": null, "diagnostic_test_summary": {"passed": 1, "failed": 0, "ignored": 0}, "restore_verified": true, "source_pins_match_before": true, "target_absent_after": true, "commands": 2}

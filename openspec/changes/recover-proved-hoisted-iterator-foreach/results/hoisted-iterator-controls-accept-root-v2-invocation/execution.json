@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-controls-accept-root-v2.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T19:14:30.613870+00:00",
+  "finished_at": "2026-10-11T19:14:31.598067+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-controls-accept-root-v2/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/hoisted-iterator-controls-accept-root-v2/stderr.raw",
+      "bytes": 719,
+      "sha256": "b137db1a53505a06ae4df392147c67b529e31c5da6724f3189080b812e6c4223"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}
