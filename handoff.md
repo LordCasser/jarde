@@ -1,6 +1,6 @@
 # HANDOFF — jarde 主线接续入口
 
-当前断点：conditional 产品6476b56c357443ef17318891b12142f509977234已提交推送，自身CI38096105240已独立接受4jobs/52steps、两seed各359targets/3422/0/97，任务 **7/7**。验收证据提交69cff3bd299feb71a820917be866db05b63b57dc的实际clean audit接受15worktrees全clean/14辅助detached main祖先，本地与真实远端仅main、main=origin、无target。关闭文档推送后继续final audit。CF12十上游类已有实际对照，新增五类中3类Jarde default/all同原、2类结构拒绝；优先两个结构continuation，常量名gate正式计划13项仍未应用。
+当前断点：conditional 窄片已完成7/7，产品6476b56c357443ef17318891b12142f509977234自身CI38096105240独立接受；关闭提交0f6cf4ca320676b0b36d9c219b24587f373a059b已推送，私有final audit再次接受15worktrees全clean/14辅助detached祖先/仅main/main=origin/无target。下一项 `recover-proved-switch-continuations` 已用实际OpenSpec CLI创建四份中文artifact并strict通过，13任务中2/13仅完成前置与只读baseline（199Git/live pins、277inventory files）；FT2与Switch2内部拒绝待真实临时诊断，生产没有改动。常量名gate独立13项排队。
 
 用户明确继续在当前聊天推进。以本地JADX **71验收单元/612测试文件**为清单，逐片追平后再探索；root负责架构、OpenSpec、真实源码/JADX/Jarde整类对照及对抗验收，确定性私有稿交Luna。窄片成功不增加整单元完成数。
 
@@ -43,3 +43,5 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 2026-10-11 conditional自身CI准确日志已接受（详results/own-product-ci-root-v1），不是仅GitHub状态绿；两次原v5验收失败（JDK路径表示/公开test名脱敏）与最终包装器真实exit0、Luna审查均保留。接下来的大颗粒规划私稿在remaining证据/private-openspec-draft-luna-v1，root-review已纠正因果/预算位置并要求复用现有DAG证明补join/terminal见证，禁止猜测修复。需先clean交付，再实际OpenSpec创建/受控内部诊断，不直接应用私稿。
 
 conditional clean交付7/7 checkpoint：69cff3bd299feb71a820917be866db05b63b57dc，free 45672148992bytes，execution SHA4f2b6adc61135bfdbe4d1c9df46232a3e3dbe9df20c059d16c8e97efb676c490；见 [clean audit](openspec/changes/recover-proved-conditional-switch-fallthrough/results/clean-delivery-checkpoint-root-v1/execution.json)。持续目标active，下一步按实际拒绝路径规划两个结构缺口。
+
+下一结构里程碑：[proposal](openspec/changes/recover-proved-switch-continuations/proposal.md)、[design](openspec/changes/recover-proved-switch-continuations/design.md)、[tasks](openspec/changes/recover-proved-switch-continuations/tasks.md)。root已读取实际apply指令及全部context，用户持续自主实现授权有效，无需重新批准规划。Luna只准备private临时diagnostic候选；root守卫实跑后移除插桩，再依据真实路径派发两个私有实现候选。
