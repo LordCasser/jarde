@@ -1,0 +1,10 @@
+{
+  "status": "static_flow_observed_not_same_ir",
+  "facade_debug_locals": "src/facade.rs:41781",
+  "ordinary_lvt_debug_projection": "name/slot/start/end copied with DebugLocal::over; descriptor and generic signature copied together only unique LVT key and singleton same-key LVTT",
+  "scope": "Atlas scoped structural symbol plus actual source tail; not a Rust dataflow result",
+  "atlas_version": "1.6.1",
+  "atlas_dataflow_available": false,
+  "same_ir_executed": false,
+  "current_free_bytes": 2883809280
+}

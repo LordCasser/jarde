@@ -1,0 +1,51 @@
+{
+  "schema": "cf11-local-type-debt-observation-prep-v2",
+  "status": "private observation-only candidate; unapplied, uncompiled, unrun",
+  "source_closure": {
+    "path": "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace_runner.py",
+    "sha256": "63e52b55fe5d20d5f2ece98ac80676ccdb2de8dfd33d7199b688e075fb1e9673",
+    "base_pin_count": 4744,
+    "candidate_pin_count": 4745,
+    "candidate_fixture_path": "openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+    "candidate_fixture_sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93"
+  },
+  "base_files": {
+    "crates/jarde-java/src/build.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/build.rs.orig",
+      "bytes": 1766688,
+      "sha256": "3bce6972b9b8516a270725148e8e3e662b9dce09ff86c11207c6bb3b124d20f7"
+    },
+    "tests/p3_hoisted_iterator_foreach.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/p3_hoisted_iterator_foreach.rs.orig",
+      "bytes": 21697,
+      "sha256": "076f28a6330c6ee2ad1b83e23fe4ea73965a85caee17aefee3033b778d08b7d5"
+    }
+  },
+  "candidate_files": {
+    "crates/jarde-java/src/build.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/build.rs.candidate",
+      "bytes": 1771078,
+      "sha256": "04dca0fb225041ea7a2d6068e6fef3d9dba04abbf0c33da0f31384fe8aa00276"
+    },
+    "tests/p3_hoisted_iterator_foreach.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/p3_hoisted_iterator_foreach.rs.candidate",
+      "bytes": 22860,
+      "sha256": "526a0c36a34378b662b135dfa732c5297818c2b5e8eff2648683613ceb3053aa"
+    }
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/observation.patch",
+    "bytes": 7337,
+    "sha256": "4c1461aa0e3777ec41935ab578a9ba80a456af67a016ce1df6efebb60aca68c5"
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/run_observation.py",
+    "bytes": 8293,
+    "sha256": "b5db19efd34771f61fd13177dba90687574a8fd0924ef00c440a26567d9bf032"
+  },
+  "fixture": {
+    "path": "openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+    "bytes": 1483,
+    "sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93"
+  }
+}

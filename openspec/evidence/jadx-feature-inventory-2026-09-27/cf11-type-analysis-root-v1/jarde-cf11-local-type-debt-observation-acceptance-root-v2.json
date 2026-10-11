@@ -1,0 +1,19 @@
+{
+  "schema": "cf11-local-type-debt-observation-acceptance-v1",
+  "status": "failed",
+  "scope": "diagnostic same-IR observation only; never a product-fix or correctness acceptance",
+  "created_at": "2026-10-11T22:59:41.088561+00:00",
+  "run_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v2/execution.json",
+    "expected_sha256": "020670da4514acf3fdf24ea602ad0299f1e3bc901372dafa223239dc0be98a82"
+  },
+  "invocation_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v2/execution.json",
+    "expected_sha256": "c86ff804d039e7f14f13a475c46d86640c4d086b13d1ca0ea976bf08fd0b7ce4"
+  },
+  "failures": [
+    "real resource guard stopped/failed the test command",
+    "IndexError: list index out of range"
+  ],
+  "facts": {}
+}

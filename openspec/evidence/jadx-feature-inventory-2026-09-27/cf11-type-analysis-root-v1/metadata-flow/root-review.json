@@ -1,0 +1,10 @@
+{
+  "root_review": "Confirmed descriptor drops at facade.rs ordinary LVT mapping; reader retains raw descriptor. DebugLocal already has separate descriptor/generic_signature storage. No mechanism decision until actual same-IR writers/phi/consumers and all metadata consumers reviewed.",
+  "report_sha256": "24e48197b16f7d76a33d6854077d4c35954654fe75386ca73e7e8fbe4fa7a528",
+  "root_source_checks": [
+    "src/facade.rs:41824",
+    "crates/jarde-java/src/names.rs:359"
+  ],
+  "type_diagnostic_executed": false,
+  "source_edits": false
+}

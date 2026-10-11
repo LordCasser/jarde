@@ -1,0 +1,36 @@
+{
+  "schema": "cf11-local-type-debt-observation-acceptance-prep-v2",
+  "status": "prepared_not_executed_fixed_failed_run_diagnostic_only",
+  "base_v1": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v1/accept_observation.py",
+    "sha256": "d1de661706853a92790200bb10877c024645145fc743ca1300eb664f9198b772"
+  },
+  "acceptor": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v2/accept_observation.py",
+    "sha256": "8c14fc622f8d9fe984fe0a998c8536bb2b61e8b1ae5bd80b41668e012e72daae"
+  },
+  "run_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v2/execution.json",
+    "sha256": "020670da4514acf3fdf24ea602ad0299f1e3bc901372dafa223239dc0be98a82"
+  },
+  "invocation_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v2/execution.json",
+    "sha256": "c86ff804d039e7f14f13a475c46d86640c4d086b13d1ca0ea976bf08fd0b7ce4"
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/run_observation.py",
+    "sha256": "b5db19efd34771f61fd13177dba90687574a8fd0924ef00c440a26567d9bf032"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/observation.patch",
+    "sha256": "4c1461aa0e3777ec41935ab578a9ba80a456af67a016ce1df6efebb60aca68c5"
+  },
+  "fix": "facts.fixture_sha256 now reads FIXTURE_SHA256; no other acceptance logic changed",
+  "expected_guard_failure": {
+    "observed_after_exit": true,
+    "free_bytes": 5352644608,
+    "minimum_free_bytes": 5368709120
+  },
+  "expected_acceptor_status": "failed",
+  "expected_acceptor_exit_code": 1
+}

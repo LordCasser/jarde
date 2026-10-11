@@ -1,0 +1,71 @@
+{
+  "schema": "jarde-cf11-testnestedloops-signature-analysis-v1",
+  "class": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+    "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+  },
+  "javap_javac23": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+    "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+  },
+  "baseline_jarde_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+    "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+  },
+  "baseline_jadx_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/jadx/default/sources/cf11/UpstreamNestedLoops.java",
+    "sha256": "9518a70f41c96e8b6e48b877e418e9c0fa6a52a803cc58c7e301d47d23568b3c"
+  },
+  "same_ir_diagnostic_v3_stderr": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/actual/0.stderr.raw",
+    "sha256": "dd853ee46eff134645137cf80380d27418e9d64701c9ae9f53b7195785b1c850"
+  },
+  "raw_list_control_baseline": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+    "sha256": "16d6b289696a64fe2aa8771f86d7a10bc23d53ec22d3b40df5bd566b58612e3b"
+  },
+  "raw_list_control_candidate": {
+    "path": "/private/tmp/jarde-iterator-assignment-controls-candidate-root-v1/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+    "sha256": "0060143a4aaa0b2bcc89d1d411df3e227aa89e561857b27bf88ead649b6511c7"
+  },
+  "atlas": {
+    "project": "/Users/lordcasser/workspace/projects/jarde",
+    "scopes": [
+      "crates/jarde-reader/src/classfile.rs",
+      "crates/jarde-reader/src/signature.rs",
+      "crates/jarde-java/src/names.rs",
+      "crates/jarde-java/src/build.rs",
+      "src/facade.rs",
+      "src/class_source.rs"
+    ]
+  },
+  "execution": "read-only; no toolchain or acceptance run",
+  "current_candidate_testnestedloops_source": {
+    "path": "/private/tmp/jarde-iterator-assignment-fixed-candidate-root-v1/capture/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+    "sha256": "d293e7b8298090c2c4c5810ffd2af390820b04e1c9f4106d3cf0397243e639a6"
+  },
+  "current_candidate_testnestedloops_report": {
+    "path": "/private/tmp/jarde-iterator-assignment-fixed-candidate-root-v1/capture/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+    "sha256": "3d26ecba66b414e2a9585092fb6e0a9998c7838c8b2575fb430a454e977c8730"
+  },
+  "current_candidate_capture": {
+    "path": "/private/tmp/jarde-iterator-assignment-fixed-candidate-root-v1/capture/execution.json",
+    "sha256": "556892704f6aece8b403a609a3cb383587a0dad951159da5f4898037207a3228"
+  },
+  "current_candidate_baseline_source": {
+    "path": "/private/tmp/jarde-hoisted-iterator-current-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+    "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+  },
+  "current_candidate_baseline_javap": {
+    "path": "/private/tmp/jarde-hoisted-iterator-current-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+    "sha256": "984ac3a9a21272dcfad6763938bd3deb913e288109c34bd581a9e7f4ac8bc13f"
+  },
+  "javap_javac8": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac8-original/javap-UpstreamNestedLoops.txt",
+    "sha256": "eb50c59550def1b9c03788474b234b0454642d27f1e0c807edbbbb95f9f25732"
+  },
+  "generated_source_diff": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops-signature-analysis-luna-v1/generated-source.diff",
+    "sha256": "8f491bfb799f073e7dcc37eb48fff6a12c1ad176220ddc13fdd5cbcfa894e8fd"
+  }
+}

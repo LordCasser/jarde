@@ -1,0 +1,33 @@
+--- /private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v2/accept_observation.py	2026-10-12 06:59:27
++++ /private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v3/accept_observation.py	2026-10-12 07:00:28
+@@ -8,7 +8,7 @@
+ PREP = Path('/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2')
+ RUN = Path('/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v2')
+ INVOCATION = Path('/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v2')
+-OUT_DEFAULT = Path('/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v1/acceptance.json')
++OUT_DEFAULT = Path('/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v3/acceptance.json')
+ RUN_EXEC = RUN / 'execution.json'
+ INV_EXEC = INVOCATION / 'execution.json'
+ RUN_EXEC_SHA256 = '020670da4514acf3fdf24ea602ad0299f1e3bc901372dafa223239dc0be98a82'
+@@ -216,12 +216,18 @@
+               'raw test stream does not contain exactly the requested named test outcome', failures)
+         check(any(line.startswith('test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out;')
+                   for line in test_stdout), 'raw test summary is not one pass and three filtered tests', failures)
+-        event_kinds = [re.search(r'JARDE_LOCAL_TYPE event=([a-z_]+)', line).group(1)
+-                       for line in test_diag if re.search(r'JARDE_LOCAL_TYPE event=([a-z_]+)', line)]
++        parsed_events = []
++        for line in test_diag:
++            match = re.search(r'JARDE_LOCAL_TYPE event=([a-z_]+)(?:\s|$)', line)
++            if match:
++                parsed_events.append((match.group(1), line))
++        event_kinds = [kind for kind, _ in parsed_events]
+         expected_kinds = ['begin', 'lvt', 'local', 'access', 'access', 'access', 'phi_summary', 'phi', 'end']
+         check(event_kinds == expected_kinds, 'diagnostic event sequence/count differs or begin→phi_summary→end is incomplete', failures)
+         check(len(api_lines) == 1, 'expected exactly one public API result record', failures)
+-        by_kind = {kind: [line for line in test_diag if f'event={kind} ' in line] for kind in set(event_kinds)}
++        by_kind = {}
++        for kind, line in parsed_events:
++            by_kind.setdefault(kind, []).append(line)
+         begin = by_kind.get('begin', [''])[0]
+         lvt = by_kind.get('lvt', [''])[0]
+         local = by_kind.get('local', [''])[0]

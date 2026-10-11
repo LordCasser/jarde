@@ -1,0 +1,77 @@
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m libc v0.2.189
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m zerocopy v0.8.57
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m rustix v1.1.4
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m fastrand v2.5.0
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m quick-error v1.2.3
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m rusty-fork v0.3.1
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m rand v0.9.5
+[1m[92m   Compiling[0m rand_xorshift v0.4.0
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m unarray v0.1.4
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m proptest v1.11.0
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 39.42s
+[1m[92m     Running[0m tests/p3_hoisted_iterator_foreach.rs (target/debug/deps/p3_hoisted_iterator_foreach-c7ba2fc8ed535eaf)
+JARDE_LOCAL_TYPE event=begin class=cf11/CF11OuterAssignmentTarget method=noCastAssign descriptor=(Ljava/util/List;)Ljava/lang/Object;
+JARDE_LOCAL_TYPE event=lvt slot=1 name="target" range=Some((3, 31)) descriptor=None boundary_identity=Some((3, 2, 30, Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 })))
+JARDE_LOCAL_TYPE event=local identity=LocalVariable { slot: 1, index: 0 } chosen=Some(Type(Reference("java.lang.String"))) access_count=3
+JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([0]) bci=2 read=None written=Some("id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]") stored=Some("id=ValueId(4) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(2) }]") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 2, opcode: 76, reads: [(Stack(0), ValueId(4))], writes: [(Local(1), ValueId(5))] })
+JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([1, 0]) bci=25 read=None written=Some("id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\"app\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]") stored=Some("id=ValueId(12) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\"app\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 20 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 19, path: [] }, bci: Some(25) }]") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 25, opcode: 76, reads: [(Stack(0), ValueId(12))], writes: [(Local(1), ValueId(13))] })
+JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([2]) bci=29 read=Some("id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }]") written=None stored=None operation=Some(Load { slot: 1 }) instruction=Some(SsaInstruction { bci: 29, opcode: 43, reads: [(Local(1), ValueId(2))], writes: [(Stack(0), ValueId(14))] })
+JARDE_LOCAL_TYPE event=phi_summary slot=1 count=1
+JARDE_LOCAL_TYPE event=phi block=CanonicalBlockId { bci: 10, path: [] } slot=Local(1) value=id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }] inputs=["id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]", "id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\"app\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]"]
+JARDE_LOCAL_TYPE event=end
+JARDE_LOCAL_TYPE_PUBLIC method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId("1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075") }, class_bytes: ClassBytesId { digest: Digest("1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075"), length: 1483 }, variant: Base }, name: JvmBytes([110, 111, 67, 97, 115, 116, 65, 115, 115, 105, 103, 110]), descriptor: JvmBytes([40, 76, 106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116, 59, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59]) } outcome=Produced representation=Java quality=Structured text="// @method noCastAssign(Ljava/util/List;)Ljava/lang/Object;\n// @declaration a static method of `cf11.CF11OuterAssignmentTarget`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    java.lang.String target;\n    java.util.Iterator iterator;\n    target = \"seed\";\n    iterator = values.iterator();\n    while (iterator.hasNext()) {\n        target = iterator.next();\n    }\n    return target;\n}\n"

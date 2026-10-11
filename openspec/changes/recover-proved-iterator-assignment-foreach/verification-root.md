@@ -1,6 +1,6 @@
 # 保留既有赋值的 foreach 投影验收
 
-当前6/8，永久最小改写已应用，1.1/1.2/2.1/2.2已接受；完整类独立核验和全量交付尚待。
+当前6/8，永久最小改写、完整类三方对照与全部本地验收已接受；产品73adae72的自身CI独立验收及干净主线交付尚待。以下按实际节点保留历史观察，较早的“尚待”不覆盖后续实际接受记录。
 
 同IR三请求 outer13/path[1]、next17/cast22/store25全既有proof成功后强制None；恢复4732原字节、test1/0/0/clean及独立accept-v3实际exit0。无slot/name推定身份。详[diagnostic](results/outer-assignment-diagnostic-root-v1/README.md)。
 

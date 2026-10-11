@@ -1,0 +1,198 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -691,6 +691,106 @@
+     selected.map(|(_, source_name)| source_name)
+ }
+ 
++fn local_type_diagnostic_scope(
++    declaring_class: Option<&str>,
++    physical_method: Option<&jarde_reader::model::PhysicalMethodId>,
++) -> bool {
++    std::env::var_os("JARDE_LOCAL_TYPE_DIAGNOSTIC").is_some()
++        && declaring_class == Some("cf11/CF11OuterAssignmentTarget")
++        && physical_method.is_some_and(|method| {
++            method.name.0.as_slice() == b"noCastAssign"
++                && method.descriptor.0.as_slice() == b"(Ljava/util/List;)Ljava/lang/Object;"
++        })
++}
++
++fn diagnostic_value(ssa: &SsaTable, value: ValueId) -> String {
++    let value_data = ssa.value(value);
++    format!(
++        "id={value:?} ty={:?} def={:?} replaced_by={:?} consumers={:?}",
++        value_data.ty(),
++        value_data.def(),
++        value_data.replaced_by(),
++        value_data.uses(),
++    )
++}
++
++fn log_local_type_diagnostic(
++    enabled: bool,
++    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
++    debug_locals: &[DebugLocal],
++    ssa: &SsaTable,
++    operations: &Operations,
++    reuse: &reuse::Plan,
++    decided: &BTreeMap<LocalVariable, Decided>,
++) {
++    if !enabled {
++        return;
++    }
++    eprintln!("JARDE_LOCAL_TYPE event=begin class=cf11/CF11OuterAssignmentTarget method=noCastAssign descriptor=(Ljava/util/List;)Ljava/lang/Object;");
++    for local in debug_locals.iter().filter(|local| local.slot() == 1) {
++        let range = local.range();
++        let probes = range.map(|(start, end)| {
++            (
++                start,
++                start.saturating_sub(1),
++                end.saturating_sub(1),
++                reuse.variable_at(local.slot(), start.saturating_sub(1)),
++                reuse.variable_at(local.slot(), start),
++                reuse.variable_at(local.slot(), end.saturating_sub(1)),
++            )
++        });
++        eprintln!(
++            "JARDE_LOCAL_TYPE event=lvt slot={} name={:?} range={range:?} descriptor={:?} boundary_identity={probes:?}",
++            local.slot(),
++            local.name(),
++            local.descriptor().map(|descriptor| String::from_utf8_lossy(descriptor).into_owned()),
++        );
++    }
++    for (variable, accesses) in uses.iter().filter(|(variable, _)| variable.slot() == 1) {
++        eprintln!(
++            "JARDE_LOCAL_TYPE event=local identity={variable:?} chosen={:?} access_count={}",
++            decided.get(variable),
++            accesses.len(),
++        );
++        for access in accesses {
++            let instruction = ssa
++                .blocks()
++                .iter()
++                .flat_map(|block| block.instructions())
++                .find(|instruction| instruction.bci() == access.bci);
++            let identity_at_bci = reuse.variable_at(variable.slot(), access.bci);
++            let read = access.read.map(|value| diagnostic_value(ssa, value));
++            let written = access.written.map(|value| diagnostic_value(ssa, value));
++            let stored = access.stored.map(|value| diagnostic_value(ssa, value));
++            eprintln!(
++                "JARDE_LOCAL_TYPE event=access identity={variable:?} identity_at_bci={identity_at_bci:?} path={:?} bci={} read={read:?} written={written:?} stored={stored:?} operation={:?} instruction={instruction:?}",
++                access.path,
++                access.bci,
++                operations.get(access.bci),
++            );
++        }
++    }
++    let local_phis = ssa.phis().iter().filter(|phi| phi.slot() == Slot::Local(1)).collect::<Vec<_>>();
++    eprintln!("JARDE_LOCAL_TYPE event=phi_summary slot=1 count={}", local_phis.len());
++    for phi in local_phis {
++        let value = diagnostic_value(ssa, phi.value());
++        let inputs = phi
++            .inputs()
++            .iter()
++            .map(|input| match input {
++                PhiInput::Value(value) => format!("{}", diagnostic_value(ssa, *value)),
++                PhiInput::Itself => "Itself".to_owned(),
++            })
++            .collect::<Vec<_>>();
++        eprintln!(
++            "JARDE_LOCAL_TYPE event=phi block={:?} slot={:?} value={value} inputs={inputs:?}",
++            phi.block(),
++            phi.slot(),
++        );
++    }
++    eprintln!("JARDE_LOCAL_TYPE event=end");
++}
++
+ /// Plans where each local variable's declaration is written, and what type every variable's uses
+ /// are presented with.
+ ///
+@@ -717,6 +817,7 @@
+     debug_locals: &[DebugLocal],
+     code: &MethodCodeFacts,
+     sites: &init::Sites,
++    diagnostic: bool,
+     budget: &mut Budget,
+ ) -> Result<Declarations, StopReason> {
+     let paths = region_paths(regions);
+@@ -766,6 +867,15 @@
+         &short_circuit_booleans,
+         budget,
+     )?;
++    log_local_type_diagnostic(
++        diagnostic,
++        &uses,
++        debug_locals,
++        ssa,
++        operations,
++        reuse,
++        &decided,
++    );
+     let generic_locals = prove_debug_generic_locals(
+         debug_locals,
+         &uses,
+@@ -8061,6 +8171,7 @@
+         inputs.debug_locals,
+         inputs.code,
+         inputs.sites,
++        local_type_diagnostic_scope(inputs.declaring_class, inputs.physical_method),
+         budget,
+     )?;
+     let local_assignments = prove_local_assignments(
+@@ -34117,6 +34228,7 @@
+             &debug_locals,
+             code,
+             &sites,
++            false,
+             &mut budget,
+         )
+         .expect("fixture declaration ownership plan");
+@@ -37770,6 +37882,7 @@
+             &[],
+             code,
+             sites,
++            false,
+             setup_budget,
+         )
+         .expect("the fixture declaration plan completes");
+--- a/tests/p3_hoisted_iterator_foreach.rs
++++ b/tests/p3_hoisted_iterator_foreach.rs
+@@ -15,6 +15,9 @@
+ );
+ const OUTER_ASSIGNMENT_FIXTURE: &[u8] =
+     include_bytes!("fixtures/p3-iterator-assignment/CF11OuterAssignmentTarget.class");
++const LITERAL_SEEDED_OBJECT_TYPE_DEBT_FIXTURE: &[u8] = include_bytes!(
++    "../openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class"
++);
+ const INTERNAL_CLASS: &str = "cf11/UpstreamNestedLoops";
+ const METHOD: &str = "test";
+ const DESCRIPTOR: &str = "(Ljava/util/List;Ljava/util/List;)V";
+@@ -587,3 +590,28 @@
+         }
+     }
+ }
++
++#[test]
++fn literal_seeded_object_type_debt_same_ir_diagnostic() {
++    let snapshot = Engine::new()
++        .open(
++            ArtifactInput::bytes(LITERAL_SEEDED_OBJECT_TYPE_DEBT_FIXTURE.to_vec()),
++            &mut task_budget(&[]).expect("bounded literal-seeded fixture-open budget"),
++        )
++        .expect("the frozen Java 8 literal-seeded Object controls open");
++    let request = outer_assignment_request(&snapshot);
++    let report = source_complete(&snapshot, &request, &RecoveryEvidenceRequest::all());
++    let (method, body) = named_method(
++        &report,
++        "noCastAssign",
++        "(Ljava/util/List;)Ljava/lang/Object;",
++    );
++    eprintln!(
++        "JARDE_LOCAL_TYPE_PUBLIC method={:?} outcome={:?} representation={:?} quality={:?} text={:?}",
++        method.item.identity,
++        body.outcome,
++        body.representation,
++        body.quality,
++        body.text,
++    );
++}

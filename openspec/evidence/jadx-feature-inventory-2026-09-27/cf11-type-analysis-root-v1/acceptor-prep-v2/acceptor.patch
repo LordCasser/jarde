@@ -1,0 +1,11 @@
+--- /private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v1/accept_observation.py	2026-10-12 06:57:42
++++ /private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v2/accept_observation.py	2026-10-12 06:59:27
+@@ -310,7 +310,7 @@
+                       'target_limit_bytes': TARGET_LIMIT, 'peak_target_bytes': command.get('peak_target_bytes')},
+             'source_closure': {'before_count': len(before), 'during_count': len(during), 'after_count': len(after),
+                                'changed_during': changed, 'fixture_path': FIXTURE_REL,
+-                               'fixture_sha256': FIXTURE_SHA,
++                               'fixture_sha256': FIXTURE_SHA256,
+                                'before_map_sha256': sha_bytes(json.dumps(before, sort_keys=True, separators=(',', ':')).encode()),
+                                'during_map_sha256': sha_bytes(json.dumps(during, sort_keys=True, separators=(',', ':')).encode()),
+                                'after_equals_before': after == before},

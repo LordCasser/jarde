@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v2/accept_observation.py",
+    "--out",
+    "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v2.json"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T22:59:41.051917+00:00",
+  "finished_at": "2026-10-11T22:59:41.104079+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-invocation-root-v2/stdout.raw",
+      "bytes": 297,
+      "sha256": "4e44247fbce9e61307c07fa429cb51937b6b08529e28d8e971dc09ad3ce61bfc"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

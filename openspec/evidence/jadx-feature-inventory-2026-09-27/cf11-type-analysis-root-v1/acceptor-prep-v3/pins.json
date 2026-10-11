@@ -1,0 +1,42 @@
+{
+  "schema": "cf11-local-type-debt-observation-acceptance-prep-v3",
+  "status": "prepared_not_executed_fixed_failed_run_diagnostic_only",
+  "base_v2": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v2/accept_observation.py",
+    "sha256": "8c14fc622f8d9fe984fe0a998c8536bb2b61e8b1ae5bd80b41668e012e72daae"
+  },
+  "acceptor": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v3/accept_observation.py",
+    "sha256": "86ba71a701b2c66c74a73c8565acef920b44ec1578af3008ee69b9dd0750461d"
+  },
+  "root_v2_acceptance_failure": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v2.json",
+    "sha256": "ed4bedde6906100545ff7a41d6b6975daaebc1bb5daf1f68c88aa479b35cc52c",
+    "schema": "cf11-local-type-debt-observation-acceptance-v1",
+    "status": "failed",
+    "failures": [
+      "real resource guard stopped/failed the test command",
+      "IndexError: list index out of range"
+    ],
+    "facts": {}
+  },
+  "run_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v2/execution.json",
+    "sha256": "020670da4514acf3fdf24ea602ad0299f1e3bc901372dafa223239dc0be98a82"
+  },
+  "invocation_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v2/execution.json",
+    "sha256": "c86ff804d039e7f14f13a475c46d86640c4d086b13d1ca0ea976bf08fd0b7ce4"
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/run_observation.py",
+    "sha256": "b5db19efd34771f61fd13177dba90687574a8fd0924ef00c440a26567d9bf032"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/observation.patch",
+    "sha256": "4c1461aa0e3777ec41935ab578a9ba80a456af67a016ce1df6efebb60aca68c5"
+  },
+  "narrow_fix": "Group diagnostic rows by regex-parsed exact event token; event=end without trailing space is retained.",
+  "expected_output_status": "failed",
+  "expected_output_exit_code": 1
+}

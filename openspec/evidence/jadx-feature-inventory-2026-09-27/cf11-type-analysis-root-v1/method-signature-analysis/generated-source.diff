@@ -1,0 +1,22 @@
+--- Jarde-baseline/UpstreamNestedLoops.java
++++ Jarde-current-candidate/UpstreamNestedLoops.java
+@@ -16,15 +16,12 @@
+         // @method test(Ljava/util/List;Ljava/util/List;)V
+         // @declaration an instance method of `cf11.UpstreamNestedLoops`, member flags 0x0001
+         // recovered from bytecode; presentation is not claimed to compile
+-        java.util.Iterator local3;
+-        local3 = l1.iterator();
+         java.lang.String s1;
+         java.util.Iterator local5;
+-        while (local3.hasNext()) {
+-            s1 = (java.lang.String) local3.next();
+-            local5 = l2.iterator();
+-            while (local5.hasNext()) {
+-                java.lang.String s2 = (java.lang.String) local5.next();
++        for (java.lang.Object iteratorElement17 : l1) {
++            s1 = (java.lang.String) iteratorElement17;
++            for (java.lang.Object iteratorElement47 : l2) {
++                java.lang.String s2 = (java.lang.String) iteratorElement47;
+                 if (s1.equals((java.lang.Object) s2)) {
+                     if (s1.length() == 5) {
+                         l2.add((java.lang.Object) s1);
