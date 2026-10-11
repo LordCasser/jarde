@@ -1,0 +1,33 @@
+{
+  "schema": "cf11-outer-assignment-probe-prep-v4",
+  "status": "private candidate and patch; unapplied, uncompiled, unrun",
+  "base": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+    "bytes": 1766219,
+    "sha256": "b3b9f75205add71234fd6f1854312e4b74ffafb5bda9e44a0c8fd3399259692c"
+  },
+  "v3_candidate": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v3/build.rs.candidate",
+    "bytes": 1773207,
+    "sha256": "09d15f14fd5f2ed0b0674bfbffc21721bd46f30cb6541d04f795056393426a3a"
+  },
+  "candidate": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v4/build.rs.candidate",
+    "bytes": 1773208,
+    "sha256": "a7c34732cb051d77c8ab3f512fa384a3ec4bc066c3cbde7e136c606a1c5b432c"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v4/diagnostic.patch",
+    "bytes": 15222,
+    "sha256": "9b2fbe2354913462f2c81f981adeacd53a7fac763d060974345bec760297123e"
+  },
+  "diff_proof": {
+    "replacement_count_in_v3": 1,
+    "replacement_count_in_v4": 1,
+    "v3_bytes": 1773207,
+    "v4_bytes": 1773208,
+    "reversal_reproduces_v3_byte_for_byte": true,
+    "changed_expression_before": "(*bci, self.operations.get(bci))",
+    "changed_expression_after": "(*bci, self.operations.get(*bci))"
+  }
+}

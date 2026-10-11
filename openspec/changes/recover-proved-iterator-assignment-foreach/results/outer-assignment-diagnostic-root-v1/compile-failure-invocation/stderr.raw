@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1.py", line 49, in <module>
+    assert c['exit_code']==0 and c['guard_stop'] is None
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

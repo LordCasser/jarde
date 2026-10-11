@@ -1,0 +1,170 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/0.stderr.raw",
+    "archive": "actual/0.stderr.raw",
+    "bytes": 9786,
+    "sha256": "64f0d8498191039ac6992e2a11361cb1070cc5d1f93dbaf003d9e62827ba3753"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/0.stdout.raw",
+    "archive": "actual/0.stdout.raw",
+    "bytes": 194,
+    "sha256": "ae63c11491ad8f399a900dee28e1148309c66627e505af6a6d5bba8d50b8247a"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/1.stderr.raw",
+    "archive": "actual/1.stderr.raw",
+    "bytes": 52,
+    "sha256": "eea432a10fac9dc28f1db9a1739693cb237ff36b9f811fa0c270b5674447e46e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/1.stdout.raw",
+    "archive": "actual/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/diagnostic.patch",
+    "archive": "actual/diagnostic.patch",
+    "bytes": 15222,
+    "sha256": "9b2fbe2354913462f2c81f981adeacd53a7fac763d060974345bec760297123e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/execution.json",
+    "archive": "actual/execution.json",
+    "bytes": 2286466,
+    "sha256": "581ee2a06b144ef9ba3cc622bc213344d58b25312aa8d898fcf83411488ef811"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v2/execution.json",
+    "archive": "invocation/execution.json",
+    "bytes": 774,
+    "sha256": "27c6b6ff8d29f0153fcb442e84daea0385b3dd82cdcb06a7f912d1bdf4fed438"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v2/stderr.raw",
+    "archive": "invocation/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v2/stdout.raw",
+    "archive": "invocation/stdout.raw",
+    "bytes": 132,
+    "sha256": "eaad2ce6a151b729942e0444e9c516fd2a62be62200bd510b4efddd466e10da4"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-probe-acceptance-invocation-root-v1/execution.json",
+    "archive": "acceptance-invocation/execution.json",
+    "bytes": 1256,
+    "sha256": "df2904898077d054225884d28635348488ce76a4e8dde68b6fcf20f1fe6fccdf"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-probe-acceptance-invocation-root-v1/stderr.raw",
+    "archive": "acceptance-invocation/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-probe-acceptance-invocation-root-v1/stdout.raw",
+    "archive": "acceptance-invocation/stdout.raw",
+    "bytes": 140,
+    "sha256": "e284766879905c9073b930c77000ad547b712b52a2b5c5c2b1cec740eb7046b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1/0.stderr.raw",
+    "archive": "compile-failure/0.stderr.raw",
+    "bytes": 4063,
+    "sha256": "c00fd4cf8d561ff7525214d78a39e9a58a84341967b5d411e855872b39e0ab04"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1/0.stdout.raw",
+    "archive": "compile-failure/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1/1.stderr.raw",
+    "archive": "compile-failure/1.stderr.raw",
+    "bytes": 52,
+    "sha256": "c89ed1bab795ff5e6e0eb1fe3cd51c59b8ca2f5c46b634a35b984baea7057592"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1/1.stdout.raw",
+    "archive": "compile-failure/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1/diagnostic.patch",
+    "archive": "compile-failure/diagnostic.patch",
+    "bytes": 15221,
+    "sha256": "d421525374c3f2e51dc401eaab3497e191cf41a5e5209fbdcf0cb77d552de99e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1/execution.json",
+    "archive": "compile-failure/execution.json",
+    "bytes": 2286481,
+    "sha256": "3b78d7a5ef70e5f7333efb91d207b323baa0f0d69958838db59b44e90faf55d4"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v1/execution.json",
+    "archive": "compile-failure-invocation/execution.json",
+    "bytes": 774,
+    "sha256": "f4bcda8743eee29045734becbb30460573969fd9cc29021d8c7dd20f65db80f5"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v1/stderr.raw",
+    "archive": "compile-failure-invocation/stderr.raw",
+    "bytes": 255,
+    "sha256": "79ad977321786e31f85ac0a2499d1f2e7aacc1eb90d6c05b527c6930ae387984"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v1/stdout.raw",
+    "archive": "compile-failure-invocation/stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-acceptance-root-v1.json",
+    "archive": "acceptance.json",
+    "bytes": 7329,
+    "sha256": "5322191f98953cf6a0e92fb5dbc81dee903eec85da3d996ce504bf72fd63e077"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2.py",
+    "archive": "runner.py",
+    "bytes": 5536,
+    "sha256": "f20147b935af8f85825c93084e02d17e60bfb652407b02f6e264422915abaf39"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v1.py",
+    "archive": "compile-failure-runner.py",
+    "bytes": 5598,
+    "sha256": "0ef9f5801f437362c727eed65903a02ab99a9d90906ae04407aba084fb5f6ede"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-probe-accept-prep-luna-v1/accept-v3.py",
+    "archive": "accept.py",
+    "bytes": 13968,
+    "sha256": "39a1867279e503e5c0d638ab114e0adaf02a2ee7a2c0f47e8378700be7a472a0"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v4/pins.json",
+    "archive": "private-pins.json",
+    "bytes": 1316,
+    "sha256": "fdfe96fe17a2c278ea3246a76df5268a2542a2a71cfa054f52c045f9ce7b7258"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-probe-prep-luna-v4/diagnostic.patch",
+    "archive": "private.patch",
+    "bytes": 15222,
+    "sha256": "9b2fbe2354913462f2c81f981adeacd53a7fac763d060974345bec760297123e"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-outer-assignment-arch-review-luna-v1.md",
+    "archive": "architecture-review-luna.md",
+    "bytes": 7596,
+    "sha256": "fcd7fc5da0c7cabd1ce31ab15e0b371bd1aeaae71dc506aea5474d6e4a89c21f"
+  }
+]

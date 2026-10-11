@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-outer-probe-accept-prep-luna-v1/accept-v3.py",
+    "--receipt",
+    "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/execution.json",
+    "--receipt-sha256",
+    "581ee2a06b144ef9ba3cc622bc213344d58b25312aa8d898fcf83411488ef811",
+    "--candidate-sha256",
+    "a7c34732cb051d77c8ab3f512fa384a3ec4bc066c3cbde7e136c606a1c5b432c",
+    "--patch-sha256",
+    "9b2fbe2354913462f2c81f981adeacd53a7fac763d060974345bec760297123e",
+    "--out",
+    "/private/tmp/jarde-cf11-outer-assignment-same-ir-acceptance-root-v1.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T21:39:13.216913+00:00",
+  "finished_at": "2026-10-11T21:39:15.538770+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-outer-probe-acceptance-invocation-root-v1/stdout.raw",
+      "bytes": 140,
+      "sha256": "e284766879905c9073b930c77000ad547b712b52a2b5c5c2b1cec740eb7046b6"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-outer-probe-acceptance-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

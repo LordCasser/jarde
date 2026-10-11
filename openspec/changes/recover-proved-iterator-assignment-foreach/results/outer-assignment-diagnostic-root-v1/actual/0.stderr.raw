@@ -1,0 +1,79 @@
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m libc v0.2.189
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rustix v1.1.4
+[1m[92m   Compiling[0m zerocopy v0.8.57
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m fastrand v2.5.0
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m quick-error v1.2.3
+[1m[92m   Compiling[0m rusty-fork v0.3.1
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m rand_xorshift v0.4.0
+[1m[92m   Compiling[0m rand v0.9.5
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m unarray v0.1.4
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m proptest v1.11.0
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 41.43s
+[1m[92m     Running[0m tests/p3_hoisted_iterator_foreach.rs (target/debug/deps/p3_hoisted_iterator_foreach-c7ba2fc8ed535eaf)
+JARDE_FOREACH_CANDIDATE event=attempt test_bci=13 path=[1] header_test_ast_bci=8 body_first_ast_kind=Assign
+JARDE_FOREACH_CANDIDATE event=outer_binding_ast test_bci=13 statement_bci=25 target_name_from_ast="s1" statement_kind=Assign { name: "s1", value: Expr { kind: Cast { ty: Reference("java.lang.String"), value: Expr { kind: Call { receiver: Some(Expr { kind: Local("local3"), origin: OriginSet { primary: Origin { bci: 16, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.util.Iterator")) }), name: "next", args: [] }, origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.Object")) } }, origin: OriginSet { primary: Origin { bci: 22, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.String")) } } expression_kind=Cast { ty: Reference("java.lang.String"), value: Expr { kind: Call { receiver: Some(Expr { kind: Local("local3"), origin: OriginSet { primary: Origin { bci: 16, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.util.Iterator")) }), name: "next", args: [] }, origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.Object")) } } expression_origin_bci=22 next_expression_bci=17 inline_cast_bci=Some(22)
+JARDE_FOREACH_CANDIDATE event=outer_binding_ir test_bci=13 operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: "java/util/Iterator", name: "next", descriptor: "()Ljava/lang/Object;", interface_reference: true }))), (22, Some(CheckCast { ty: "java/lang/String" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted
+JARDE_FOREACH_CANDIDATE event=proof_complete_diagnostic_only test_bci=13 next_bci=17 forced_refusal_before_name_allocation_rewrite_or_list_removal=true
+JARDE_FOREACH_CANDIDATE event=attempt test_bci=13 path=[1] header_test_ast_bci=8 body_first_ast_kind=Assign
+JARDE_FOREACH_CANDIDATE event=outer_binding_ast test_bci=13 statement_bci=25 target_name_from_ast="s1" statement_kind=Assign { name: "s1", value: Expr { kind: Cast { ty: Reference("java.lang.String"), value: Expr { kind: Call { receiver: Some(Expr { kind: Local("local3"), origin: OriginSet { primary: Origin { bci: 16, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.util.Iterator")) }), name: "next", args: [] }, origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.Object")) } }, origin: OriginSet { primary: Origin { bci: 22, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.String")) } } expression_kind=Cast { ty: Reference("java.lang.String"), value: Expr { kind: Call { receiver: Some(Expr { kind: Local("local3"), origin: OriginSet { primary: Origin { bci: 16, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.util.Iterator")) }), name: "next", args: [] }, origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.Object")) } } expression_origin_bci=22 next_expression_bci=17 inline_cast_bci=Some(22)
+JARDE_FOREACH_CANDIDATE event=outer_binding_ir test_bci=13 operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: "java/util/Iterator", name: "next", descriptor: "()Ljava/lang/Object;", interface_reference: true }))), (22, Some(CheckCast { ty: "java/lang/String" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted
+JARDE_FOREACH_CANDIDATE event=proof_complete_diagnostic_only test_bci=13 next_bci=17 forced_refusal_before_name_allocation_rewrite_or_list_removal=true
+JARDE_FOREACH_CANDIDATE event=attempt test_bci=13 path=[1] header_test_ast_bci=8 body_first_ast_kind=Assign
+JARDE_FOREACH_CANDIDATE event=outer_binding_ast test_bci=13 statement_bci=25 target_name_from_ast="s1" statement_kind=Assign { name: "s1", value: Expr { kind: Cast { ty: Reference("java.lang.String"), value: Expr { kind: Call { receiver: Some(Expr { kind: Local("local3"), origin: OriginSet { primary: Origin { bci: 16, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.util.Iterator")) }), name: "next", args: [] }, origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.Object")) } }, origin: OriginSet { primary: Origin { bci: 22, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.String")) } } expression_kind=Cast { ty: Reference("java.lang.String"), value: Expr { kind: Call { receiver: Some(Expr { kind: Local("local3"), origin: OriginSet { primary: Origin { bci: 16, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.util.Iterator")) }), name: "next", args: [] }, origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference("java.lang.Object")) } } expression_origin_bci=22 next_expression_bci=17 inline_cast_bci=Some(22)
+JARDE_FOREACH_CANDIDATE event=outer_binding_ir test_bci=13 operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: "java/util/Iterator", name: "next", descriptor: "()Ljava/lang/Object;", interface_reference: true }))), (22, Some(CheckCast { ty: "java/lang/String" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted
+JARDE_FOREACH_CANDIDATE event=proof_complete_diagnostic_only test_bci=13 next_bci=17 forced_refusal_before_name_allocation_rewrite_or_list_removal=true

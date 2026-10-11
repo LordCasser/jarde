@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T21:37:40.273670+00:00",
+  "finished_at": "2026-10-11T21:38:26.287556+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v2/stdout.raw",
+      "bytes": 132,
+      "sha256": "eaad2ce6a151b729942e0444e9c516fd2a62be62200bd510b4efddd466e10da4"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-same-ir-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

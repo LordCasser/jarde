@@ -1,0 +1,126 @@
+{
+  "actual_patch_sha256": "9b2fbe2354913462f2c81f981adeacd53a7fac763d060974345bec760297123e",
+  "build_restored": true,
+  "candidate_sha256": "a7c34732cb051d77c8ab3f512fa384a3ec4bc066c3cbde7e136c606a1c5b432c",
+  "cross_request_consistency": {
+    "inline_cast_bci": true,
+    "next_expression_bci": true,
+    "operation_and_instruction_rows": true,
+    "statementBCI": true,
+    "targetName_from_AST": true
+  },
+  "diagnostic_event_count": 12,
+  "entries": [
+    {
+      "entry": 1,
+      "events": [
+        "attempt",
+        "outer_binding_ast",
+        "outer_binding_ir",
+        "proof_complete_diagnostic_only"
+      ],
+      "identity_note": "AST name and IR operation rows are diagnostic facts; they do not identify a LocalVariable",
+      "inline_cast_bci": "Some(22)",
+      "next_expression_bci": 17,
+      "operation_and_instruction_rows": [
+        "operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: \"java/util/Iterator\", name: \"next\", descriptor: \"()Ljava/lang/Object;\", interface_reference: true }))), (22, Some(CheckCast { ty: \"java/lang/String\" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted"
+      ],
+      "refusal_stage": null,
+      "statementBCI": 25,
+      "store_rows": [
+        "operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: \"java/util/Iterator\", name: \"next\", descriptor: \"()Ljava/lang/Object;\", interface_reference: true }))), (22, Some(CheckCast { ty: \"java/lang/String\" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted"
+      ],
+      "targetName_from_AST": "\"s1\"",
+      "terminal_detail": "next_bci=17 forced_refusal_before_name_allocation_rewrite_or_list_removal=true",
+      "terminal_event": "proof_complete_diagnostic_only"
+    },
+    {
+      "entry": 2,
+      "events": [
+        "attempt",
+        "outer_binding_ast",
+        "outer_binding_ir",
+        "proof_complete_diagnostic_only"
+      ],
+      "identity_note": "AST name and IR operation rows are diagnostic facts; they do not identify a LocalVariable",
+      "inline_cast_bci": "Some(22)",
+      "next_expression_bci": 17,
+      "operation_and_instruction_rows": [
+        "operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: \"java/util/Iterator\", name: \"next\", descriptor: \"()Ljava/lang/Object;\", interface_reference: true }))), (22, Some(CheckCast { ty: \"java/lang/String\" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted"
+      ],
+      "refusal_stage": null,
+      "statementBCI": 25,
+      "store_rows": [
+        "operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: \"java/util/Iterator\", name: \"next\", descriptor: \"()Ljava/lang/Object;\", interface_reference: true }))), (22, Some(CheckCast { ty: \"java/lang/String\" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted"
+      ],
+      "targetName_from_AST": "\"s1\"",
+      "terminal_detail": "next_bci=17 forced_refusal_before_name_allocation_rewrite_or_list_removal=true",
+      "terminal_event": "proof_complete_diagnostic_only"
+    },
+    {
+      "entry": 3,
+      "events": [
+        "attempt",
+        "outer_binding_ast",
+        "outer_binding_ir",
+        "proof_complete_diagnostic_only"
+      ],
+      "identity_note": "AST name and IR operation rows are diagnostic facts; they do not identify a LocalVariable",
+      "inline_cast_bci": "Some(22)",
+      "next_expression_bci": 17,
+      "operation_and_instruction_rows": [
+        "operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: \"java/util/Iterator\", name: \"next\", descriptor: \"()Ljava/lang/Object;\", interface_reference: true }))), (22, Some(CheckCast { ty: \"java/lang/String\" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted"
+      ],
+      "refusal_stage": null,
+      "statementBCI": 25,
+      "store_rows": [
+        "operations=[(17, Some(Invoke(CallTarget { kind: Interface, owner: \"java/util/Iterator\", name: \"next\", descriptor: \"()Ljava/lang/Object;\", interface_reference: true }))), (22, Some(CheckCast { ty: \"java/lang/String\" })), (25, Some(Store { slot: 4 }))] instructions=[(17, Some((185, [(Stack(0), ValueId(31))], [(Stack(0), ValueId(32))]))), (22, Some((192, [(Stack(0), ValueId(32))], [(Stack(0), ValueId(33))]))), (25, Some((58, [(Stack(0), ValueId(33))], [(Local(4), ValueId(34))])))] slot_to_target_identity=not_emitted"
+      ],
+      "targetName_from_AST": "\"s1\"",
+      "terminal_detail": "next_bci=17 forced_refusal_before_name_allocation_rewrite_or_list_removal=true",
+      "terminal_event": "proof_complete_diagnostic_only"
+    }
+  ],
+  "entry_count": 3,
+  "live_git_clean": true,
+  "minimum_free_bytes_after": 15494291456,
+  "named_test": "nested_inner_iterator_projects_without_changing_outer_loop_or_binding",
+  "peak_target_bytes": 327621731,
+  "product_commit": "993e9f8c0f413bb7c31538e6f7c2c92a742e7af4",
+  "raw_streams": {
+    "0": {
+      "stderr": {
+        "bytes": 9786,
+        "path": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/0.stderr.raw",
+        "sha256": "64f0d8498191039ac6992e2a11361cb1070cc5d1f93dbaf003d9e62827ba3753"
+      },
+      "stdout": {
+        "bytes": 194,
+        "path": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/0.stdout.raw",
+        "sha256": "ae63c11491ad8f399a900dee28e1148309c66627e505af6a6d5bba8d50b8247a"
+      }
+    },
+    "1": {
+      "stderr": {
+        "bytes": 52,
+        "path": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/1.stderr.raw",
+        "sha256": "eea432a10fac9dc28f1db9a1739693cb237ff36b9f811fa0c270b5674447e46e"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "/private/tmp/jarde-cf11-outer-assignment-same-ir-root-v2/1.stdout.raw",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "receipt_sha256": "581ee2a06b144ef9ba3cc622bc213344d58b25312aa8d898fcf83411488ef811",
+  "schema": "cf11-outer-assignment-same-ir-acceptance-v3",
+  "source_pin_count": 4732,
+  "status": "accepted_diagnostic_only",
+  "target_absent": true,
+  "test_outcome": {
+    "failed": 0,
+    "ignored": 0,
+    "passed": 1
+  }
+}
