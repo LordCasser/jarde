@@ -19,3 +19,5 @@ Luna privatev3生产只改既有三个binding match，支持首句Assign inline 
 Fresh第二轮全量已独立接受：96批362targets、3481/0/97、3578named及20required、4744源码恒同，99cmd198raw、defaultstack/5-1GiB guard，唯一terminal clean可释放空间且已成功。详[完整工作区](results/full-workspace-candidate-root-v2/README.md)。最终fmt/CI Clippy/global strict/freshCLI已启动，尚未接受，因此3.2不先勾。
 
 3.2实际接受：fresh全量独立验收后最终5命令与accept-final实际exit0；fmt/当前CI完整Clippy/global strict355-0、CLI与runtime冻结候选字节一致、4744输入恒同、clean target absent，详[最终本地验收](results/final-validation-candidate-root-v1/README.md)。3.3产品自身CI和3.4干净主线尚待。
+
+产品73adae72c6d89e8eba0a34e3cd92fe81e899cb3e已实际commit/push main；自身CI38181427452四任务运行，尚未捕获/独立接受，3.3保持未勾选。当前产品提交后source workspace clean/target absent只是一时点，不冒充CI后的最终clean交付。
