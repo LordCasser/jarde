@@ -1,0 +1,21 @@
+{
+  "schema": "cf11-current-comparison-archive-pins-root-v1",
+  "artifacts": [
+    {
+      "path": "openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/captures.tar.gz",
+      "bytes": 1053134,
+      "sha256": "55cee407ff58768b1f3cea35d203b7ad450199eca5cc2257e5b2d3e9d6f801d2"
+    },
+    {
+      "path": "openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/tooling.tar.gz",
+      "bytes": 51534,
+      "sha256": "41896faf398fabd02487e363b82a6259a7f448885190003d71421591dbb0f782"
+    },
+    {
+      "path": "openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/focused-v6-execution.json.gz",
+      "bytes": 894528,
+      "sha256": "43e0f6e35a3baebe2096ef3cd6046e3c8d21a3e107fb6433ea7554d8d1bd50f9",
+      "uncompressed_sha256": "d99d6cafb0401ebe64f9e598d41a3b95606cb050b0dc5fff9964f1db879871b1"
+    }
+  ]
+}

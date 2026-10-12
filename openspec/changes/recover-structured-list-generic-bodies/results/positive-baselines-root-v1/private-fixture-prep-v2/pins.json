@@ -1,0 +1,119 @@
+{
+  "schema": "cf11-structured-list-controls-v2-pins",
+  "files": {
+    "combined/src/cf11/UpstreamNestedLoops.java": {
+      "bytes": 4584,
+      "sha256": "f0892724e5cf5c7bf629dfe41efa263471e5ec125dfac0c757bd8a88c4984880"
+    },
+    "combined/src/cf11/Runner.java": {
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+    },
+    "isolated-string/src/cf11/DistinctStringFixture.java": {
+      "bytes": 732,
+      "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+    },
+    "isolated-string/src/cf11/Runner.java": {
+      "bytes": 1435,
+      "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+    },
+    "isolated-integer/src/cf11/DistinctIntegerFixture.java": {
+      "bytes": 739,
+      "sha256": "4045da7d2745cb40bdbd4779c06c0916728ae8c45658a658c8abf9077a6e4949"
+    },
+    "isolated-integer/src/cf11/Runner.java": {
+      "bytes": 1553,
+      "sha256": "7344b21e1a6a39d53c9ef3dca5ab43da7fb90a7c4d8c607f3bb0085d736667a3"
+    },
+    "README.md": {
+      "bytes": 5478,
+      "sha256": "122f41cbf1a672d69e57a454b4332a30db76d8db0048c3a5663c32bb4ac565b7"
+    },
+    "manifest.json": {
+      "bytes": 1322,
+      "sha256": "63f082196521188f047b39b9adb4a135dd6ba0d3f1e9f8aa57a3a3a19d5af95b"
+    },
+    "derive_isolated.py": {
+      "bytes": 2852,
+      "sha256": "06d74e7110f0cc7d9502c6924d353a898bd4b7d19d2e6b0389724a45ff827ef2"
+    },
+    "validate_fixture.py": {
+      "bytes": 5247,
+      "sha256": "6a3325988463f3f14999c7193d4308b81312103c7cc49f210041df1f67024689"
+    }
+  },
+  "v1_sources": {
+    "src/cf11/UpstreamNestedLoops.java": {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-prep-luna-v1/src/cf11/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+    },
+    "src/cf11/Runner.java": {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-prep-luna-v1/src/cf11/Runner.java",
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+    },
+    "pins.json": {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-prep-luna-v1/pins.json",
+      "bytes": 2100,
+      "sha256": "eb53a60aa31d048ce3a2e09256f2f6e860bf49c7e85f9f0252a441b975646af7"
+    }
+  },
+  "planning_artifacts": {
+    "proposal.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/proposal.md",
+      "bytes": 2297,
+      "sha256": "12d35ba320cbff07bc4fd813eab752446d178e281c3d48b5df233259532316d1"
+    },
+    "design.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/design.md",
+      "bytes": 7047,
+      "sha256": "b76d02a085dc07b040ed8fa1d46fe23822a6675a33676b95cffa13f3a953551b"
+    },
+    "specs/java8-recovery/spec.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/specs/java8-recovery/spec.md",
+      "bytes": 3086,
+      "sha256": "7fa94bac6d0534048eced4f52c33a332b19857c11a591e345e66aa0bb00d562e"
+    },
+    "tasks.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/tasks.md",
+      "bytes": 2855,
+      "sha256": "af6924f2960f5cc626ad380f372427d31024383a99c66dd8e9b2eb0f06c8f119"
+    },
+    "verification-root.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/verification-root.md",
+      "bytes": 1134,
+      "sha256": "5eeb25d9601737a203ac8ee8cca231638242bc61582234ae21343fb7d5aaac9c"
+    },
+    "baseline-input-UpstreamNestedLoops.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/inputs/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    },
+    "baseline-input-Runner.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/inputs/Runner.java",
+      "bytes": 1348,
+      "sha256": "f4c99e837599440588b54df0bb2eaaac45f0ae76db1ddeddbb789c90ff527379"
+    }
+  },
+  "isolated_generation": {
+    "script": "derive_isolated.py",
+    "source": "/private/tmp/jarde-cf11-structured-list-controls-prep-luna-v1/src/cf11/UpstreamNestedLoops.java",
+    "source_sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236",
+    "methods": {
+      "renamed": {
+        "v1_char_start": 700,
+        "v1_char_end_exclusive": 1224,
+        "extracted_method_bytes": 524,
+        "extracted_method_sha256": "f4d9f185f65236a687fe2d8148d3f778ff599077d1be8481e8420c3fd297fb3b"
+      },
+      "numbers": {
+        "v1_char_start": 1299,
+        "v1_char_end_exclusive": 1829,
+        "extracted_method_bytes": 530,
+        "extracted_method_sha256": "315d47d529cccb0067d733174a460ad659f1bf56ac455364b4b8d5e97bd43e7d"
+      }
+    },
+    "effect_instrumentation": "increment fixture counter directly after add/remove/clear; method args and call ordering unchanged"
+  }
+}

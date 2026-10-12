@@ -1,0 +1,54 @@
+{
+  "schema": "cf11-comparison-checker-actual-invocations-root-v1",
+  "status": "observed",
+  "commands": [
+    {
+      "version": "v1",
+      "argv": [
+        "python3",
+        "-B",
+        "/private/tmp/jarde-cf11-structured-list-current-comparison-accept-prep-luna-v1/accept_current_comparisons.py",
+        "--out",
+        "/private/tmp/jarde-cf11-structured-list-current-comparison-acceptance-recapture-root-v1.json"
+      ],
+      "started_utc": "2026-10-12T05:35:21.358289+00:00",
+      "exit_code": 1,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/invocation/v1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/invocation/v1.stderr.raw",
+          "bytes": 81,
+          "sha256": "b07eba024cbf182a77241d4495a571c452a472c6c1ebbe80ac96ff3ad31a3628"
+        }
+      }
+    },
+    {
+      "version": "v2",
+      "argv": [
+        "python3",
+        "-B",
+        "/private/tmp/jarde-cf11-structured-list-current-comparison-accept-prep-luna-v2/accept_current_comparisons.py",
+        "--out",
+        "/private/tmp/jarde-cf11-structured-list-current-comparison-acceptance-recapture-root-v2.json"
+      ],
+      "started_utc": "2026-10-12T05:35:21.412836+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/invocation/v2.stdout.raw",
+          "bytes": 252,
+          "sha256": "74abf99ad6175d265d745fb8029716689776be54f48f0c40d206112fe67cc28c"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/current-comparison-observation-root-v1/invocation/v2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

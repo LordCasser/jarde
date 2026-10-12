@@ -1,0 +1,28 @@
+[
+  {
+    "path": "/private/tmp/jarde-cf11-clippy-fix-root-v1",
+    "execution_sha256": "a5cbb8f18ac2fed8e5f68360af328cb543872932e2d15f567c568fc82af29f39",
+    "status": "failed",
+    "exit_codes": [
+      0,
+      101
+    ],
+    "clean_exit": 0,
+    "target_absent": true,
+    "source_count": 4815,
+    "source_stable": true
+  },
+  {
+    "path": "/private/tmp/jarde-cf11-clippy-fix-root-v2",
+    "execution_sha256": "c99bc1ceb2e806625e7bb2def48d1db08ad58cd48f358bf3ea9bcbd282da46c1",
+    "status": "passed",
+    "exit_codes": [
+      0,
+      0
+    ],
+    "clean_exit": 0,
+    "target_absent": true,
+    "source_count": 4815,
+    "source_stable": true
+  }
+]

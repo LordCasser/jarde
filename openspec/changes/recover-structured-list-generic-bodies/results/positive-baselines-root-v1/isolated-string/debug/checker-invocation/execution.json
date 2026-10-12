@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-cf11-structured-list-controls-observation-checker-root-v1/check_controls.py",
+    "--execution",
+    "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/execution.json",
+    "--out",
+    "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-observation-root-v1.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T04:16:16.687737+00:00",
+  "finished_at": "2026-10-12T04:16:16.896905+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-accept-invocation-root-v1/stdout.raw",
+      "bytes": 351,
+      "sha256": "26fafa080ed4e64adb2606c88a62d285276b43cdb5eb69cfe130f5822af5bb9e"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-accept-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

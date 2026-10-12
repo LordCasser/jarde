@@ -1,0 +1,208 @@
+Classfile /private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctIntegerFixture.class
+  Last modified 2026-10-12; size 1326 bytes
+  MD5 checksum 4746f39b78f988b03d4d1ab2b59d5d70
+  Compiled from "DistinctIntegerFixture.java"
+public class cf11.DistinctIntegerFixture
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #14.#41        // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #42.#43        // java/util/List.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #44.#45        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #44.#46        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = Class              #47            // java/lang/Integer
+   #6 = Methodref          #5.#48         // java/lang/Integer.equals:(Ljava/lang/Object;)Z
+   #7 = Methodref          #5.#49         // java/lang/Integer.intValue:()I
+   #8 = InterfaceMethodref #42.#50        // java/util/List.add:(Ljava/lang/Object;)Z
+   #9 = Fieldref           #13.#51        // cf11/DistinctIntegerFixture.effects:I
+  #10 = InterfaceMethodref #42.#52        // java/util/List.remove:(Ljava/lang/Object;)Z
+  #11 = InterfaceMethodref #42.#53        // java/util/List.size:()I
+  #12 = InterfaceMethodref #42.#54        // java/util/List.clear:()V
+  #13 = Class              #55            // cf11/DistinctIntegerFixture
+  #14 = Class              #56            // java/lang/Object
+  #15 = Utf8               effects
+  #16 = Utf8               I
+  #17 = Utf8               <init>
+  #18 = Utf8               ()V
+  #19 = Utf8               Code
+  #20 = Utf8               LineNumberTable
+  #21 = Utf8               LocalVariableTable
+  #22 = Utf8               this
+  #23 = Utf8               Lcf11/DistinctIntegerFixture;
+  #24 = Utf8               numbers
+  #25 = Utf8               (Ljava/util/List;Ljava/util/List;)V
+  #26 = Utf8               option
+  #27 = Utf8               Ljava/lang/Integer;
+  #28 = Utf8               value
+  #29 = Utf8               selected
+  #30 = Utf8               Ljava/util/List;
+  #31 = Utf8               available
+  #32 = Utf8               LocalVariableTypeTable
+  #33 = Utf8               Ljava/util/List<Ljava/lang/Integer;>;
+  #34 = Utf8               StackMapTable
+  #35 = Class              #57            // java/util/Iterator
+  #36 = Class              #47            // java/lang/Integer
+  #37 = Utf8               Signature
+  #38 = Utf8               (Ljava/util/List<Ljava/lang/Integer;>;Ljava/util/List<Ljava/lang/Integer;>;)V
+  #39 = Utf8               SourceFile
+  #40 = Utf8               DistinctIntegerFixture.java
+  #41 = NameAndType        #17:#18        // "<init>":()V
+  #42 = Class              #58            // java/util/List
+  #43 = NameAndType        #59:#60        // iterator:()Ljava/util/Iterator;
+  #44 = Class              #57            // java/util/Iterator
+  #45 = NameAndType        #61:#62        // hasNext:()Z
+  #46 = NameAndType        #63:#64        // next:()Ljava/lang/Object;
+  #47 = Utf8               java/lang/Integer
+  #48 = NameAndType        #65:#66        // equals:(Ljava/lang/Object;)Z
+  #49 = NameAndType        #67:#68        // intValue:()I
+  #50 = NameAndType        #69:#66        // add:(Ljava/lang/Object;)Z
+  #51 = NameAndType        #15:#16        // effects:I
+  #52 = NameAndType        #70:#66        // remove:(Ljava/lang/Object;)Z
+  #53 = NameAndType        #71:#68        // size:()I
+  #54 = NameAndType        #72:#18        // clear:()V
+  #55 = Utf8               cf11/DistinctIntegerFixture
+  #56 = Utf8               java/lang/Object
+  #57 = Utf8               java/util/Iterator
+  #58 = Utf8               java/util/List
+  #59 = Utf8               iterator
+  #60 = Utf8               ()Ljava/util/Iterator;
+  #61 = Utf8               hasNext
+  #62 = Utf8               ()Z
+  #63 = Utf8               next
+  #64 = Utf8               ()Ljava/lang/Object;
+  #65 = Utf8               equals
+  #66 = Utf8               (Ljava/lang/Object;)Z
+  #67 = Utf8               intValue
+  #68 = Utf8               ()I
+  #69 = Utf8               add
+  #70 = Utf8               remove
+  #71 = Utf8               size
+  #72 = Utf8               clear
+{
+  public static int effects;
+    descriptor: I
+    flags: ACC_PUBLIC, ACC_STATIC
+
+  public cf11.DistinctIntegerFixture();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/DistinctIntegerFixture;
+
+  public void numbers(java.util.List<java.lang.Integer>, java.util.List<java.lang.Integer>);
+    descriptor: (Ljava/util/List;Ljava/util/List;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=7, args_size=3
+         0: aload_1
+         1: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         6: astore_3
+         7: aload_3
+         8: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        13: ifeq          119
+        16: aload_3
+        17: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        22: checkcast     #5                  // class java/lang/Integer
+        25: astore        4
+        27: aload_2
+        28: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        33: astore        5
+        35: aload         5
+        37: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        42: ifeq          116
+        45: aload         5
+        47: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        52: checkcast     #5                  // class java/lang/Integer
+        55: astore        6
+        57: aload         4
+        59: aload         6
+        61: invokevirtual #6                  // Method java/lang/Integer.equals:(Ljava/lang/Object;)Z
+        64: ifeq          113
+        67: aload         4
+        69: invokevirtual #7                  // Method java/lang/Integer.intValue:()I
+        72: iconst_5
+        73: if_icmpne     96
+        76: aload_2
+        77: aload         4
+        79: invokeinterface #8,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+        84: pop
+        85: getstatic     #9                  // Field effects:I
+        88: iconst_1
+        89: iadd
+        90: putstatic     #9                  // Field effects:I
+        93: goto          113
+        96: aload_1
+        97: aload         6
+        99: invokeinterface #10,  2           // InterfaceMethod java/util/List.remove:(Ljava/lang/Object;)Z
+       104: pop
+       105: getstatic     #9                  // Field effects:I
+       108: iconst_1
+       109: iadd
+       110: putstatic     #9                  // Field effects:I
+       113: goto          35
+       116: goto          7
+       119: aload_2
+       120: invokeinterface #11,  1           // InterfaceMethod java/util/List.size:()I
+       125: ifle          142
+       128: aload_1
+       129: invokeinterface #12,  1           // InterfaceMethod java/util/List.clear:()V
+       134: getstatic     #9                  // Field effects:I
+       137: iconst_1
+       138: iadd
+       139: putstatic     #9                  // Field effects:I
+       142: return
+      LineNumberTable:
+        line 9: 0
+        line 10: 27
+        line 11: 57
+        line 12: 67
+        line 13: 76
+        line 14: 85
+        line 16: 96
+        line 17: 105
+        line 20: 113
+        line 21: 116
+        line 22: 119
+        line 23: 128
+        line 24: 134
+        line 26: 142
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           57      56     6 option   Ljava/lang/Integer;
+           27      89     4 value   Ljava/lang/Integer;
+            0     143     0  this   Lcf11/DistinctIntegerFixture;
+            0     143     1 selected   Ljava/util/List;
+            0     143     2 available   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0     143     1 selected   Ljava/util/List<Ljava/lang/Integer;>;
+            0     143     2 available   Ljava/util/List<Ljava/lang/Integer;>;
+      StackMapTable: number_of_entries = 7
+        frame_type = 252 /* append */
+          offset_delta = 7
+          locals = [ class java/util/Iterator ]
+        frame_type = 253 /* append */
+          offset_delta = 27
+          locals = [ class java/lang/Integer, class java/util/Iterator ]
+        frame_type = 252 /* append */
+          offset_delta = 60
+          locals = [ class java/lang/Integer ]
+        frame_type = 250 /* chop */
+          offset_delta = 16
+        frame_type = 249 /* chop */
+          offset_delta = 2
+        frame_type = 250 /* chop */
+          offset_delta = 2
+        frame_type = 22 /* same */
+    Signature: #38                          // (Ljava/util/List<Ljava/lang/Integer;>;Ljava/util/List<Ljava/lang/Integer;>;)V
+}
+SourceFile: "DistinctIntegerFixture.java"

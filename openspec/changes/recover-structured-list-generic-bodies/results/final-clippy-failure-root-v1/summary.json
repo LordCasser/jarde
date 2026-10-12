@@ -1,0 +1,18 @@
+{
+  "status": "failed_clippy",
+  "execution_sha256": "86df1e755d042da9d8c59bd1460ab3942cf7a81f27eb807a167ebc589b98e736",
+  "command_exit_codes": [
+    0,
+    101,
+    0
+  ],
+  "source_pin_count": 4822,
+  "target_absent": true,
+  "cleanup_status": "passed",
+  "errors": [
+    "iter_cloned_collect in report.rs effect_read_slots/effect_write_slots"
+  ],
+  "source_before_report_sha256": "daac53cc1e2ebea8be0068ffc1f5791f653e2cbc33ff4aae0732e399d9dd338f",
+  "source_after_minimal_fix_report_sha256": "ecf8c4cb10199555ae756cc3754a8a7dfe0cbc4255e7acd6280f94aea51903fb",
+  "next": "Fresh focused/workspace/CLI/matrix/final validation required for the changed source; prior tests are historical evidence."
+}

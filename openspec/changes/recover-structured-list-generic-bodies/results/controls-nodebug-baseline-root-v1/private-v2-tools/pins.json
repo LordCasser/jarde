@@ -1,0 +1,92 @@
+{
+  "artifacts": {
+    "README.md": {
+      "bytes": 1775,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v2/README.md",
+      "sha256": "c9b636baa1ebbe80dab17ef90edd2acc12dc5ad53718d7af1474bce622e2ee1e"
+    },
+    "check_controls.py": {
+      "bytes": 36054,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v2/check_controls.py",
+      "sha256": "536f2fcda63ead364a312e73ff9997ed022bf7267c9b37a20146ea4bb841f99d"
+    },
+    "collect_controls.py": {
+      "bytes": 17675,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v2/collect_controls.py",
+      "sha256": "626ffb194c24cc856abdf98f36f8f7b85b181a93c725fd1bdfcae4389e665647"
+    }
+  },
+  "baseline_tools": {
+    "checker_v1": {
+      "bytes": 35890,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v1/check_controls.py",
+      "sha256": "57a84c28638e7b0eadfd342010f637e4d59ede68a61ba59701486fc5ce0d6940"
+    },
+    "collector_v1": {
+      "bytes": 17675,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v1/collect_controls.py",
+      "sha256": "626ffb194c24cc856abdf98f36f8f7b85b181a93c725fd1bdfcae4389e665647"
+    }
+  },
+  "capture": {
+    "bytes": 80015,
+    "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/execution.json",
+    "sha256": "f12ecc1e117dc284ff1144039af61b7516f50ac8f464c774c8b3bb14797b2220",
+    "source_debug": "none"
+  },
+  "change": {
+    "only_checker_change": "recognize exact StackMapTable: number_of_entries = <decimal digits> as an exception table terminator"
+  },
+  "failed_v1_checker_invocation": {
+    "execution.json": {
+      "bytes": 1081,
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-accept-invocation-root-v1/execution.json",
+      "sha256": "2d8a555604f5ca69b67382a81609b94e48e783e4616a17adad8e852a6eabe89c"
+    },
+    "stderr.raw": {
+      "bytes": 2358,
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-accept-invocation-root-v1/stderr.raw",
+      "sha256": "582d93726e3c4a26381263f0b97bee7749613de84ccac856278e746f9da2fe2c"
+    },
+    "stdout.raw": {
+      "bytes": 0,
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-accept-invocation-root-v1/stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "handler_fixture": {
+    "exception_table": [
+      {
+        "catch_type": "java/lang/RuntimeException",
+        "end_pc": 47,
+        "handler_pc": 50,
+        "start_pc": 0
+      }
+    ],
+    "method": "handled(Ljava/util/List;Ljava/util/List;)V",
+    "owner": "cf11/UpstreamNestedLoops",
+    "source_sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+  },
+  "no_debug_javap": {
+    "javac23_javap": {
+      "bytes": 28841,
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "sha256": "2d4872ffe01cd3940864cdf59e6373cca2756008f95dc4ea3fa0a7777fc2fcc3"
+    },
+    "javac8_javap": {
+      "bytes": 28876,
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/javap-UpstreamNestedLoops.txt",
+      "sha256": "228c68f08861980845f27d8665c3b6abc6d5f06f430964c9535d77e4f0c65c09"
+    }
+  },
+  "schema": "cf11-structured-list-nodebug-tooling-v2-pins-v1",
+  "scope": "private checker parser adaptation; existing capture only; no product/behavior acceptance",
+  "status": "prepared_not_executed",
+  "validation": {
+    "AST_parse": true,
+    "JDK_Cargo_Git_network_shared_edits": false,
+    "exception_table_sets_equal_between_JDKs": true,
+    "full_checker_or_collector_execution": false,
+    "javac8_javac23_all_method_tables_crosschecked": true
+  }
+}

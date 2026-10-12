@@ -1,0 +1,30 @@
+{
+  "scope": "read-only architecture reference; not a current defect or implementation acceptance",
+  "files": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/blocks/BlockExceptionHandler.java",
+      "bytes": 24387,
+      "sha256": "8b9d781640274e4f8e9a51aea6ee0936076bef6e41b46ea559791dc633dce35a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/ProcessTryCatchRegions.java",
+      "bytes": 4389,
+      "sha256": "0a382bc7e189742410b7a1b93f90703f60dfd7cc1256e06ddca4da0ccff6225d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestTryCatchInLoop.java",
+      "bytes": 868,
+      "sha256": "9fc7c99bf968ffbfb948bf5dca186f36c1d923ee9c4600f8d86ff85899003830"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 969855,
+      "sha256": "c905af706bda527881fa99e6a3f1e771164d676900a5c57c1dd154bb9fb63eaa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/normal_flow.rs",
+      "bytes": 37236,
+      "sha256": "8945a6d45b36acfb46066954ece0ec0ec50ad310987fad7155b586d7be2cf3ee"
+    }
+  ]
+}

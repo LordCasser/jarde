@@ -1,0 +1,6 @@
+integer-isolated-empty|exception=none|left=[]|right=[]|effects=0
+integer-isolated-add-cme|exception=java.util.ConcurrentModificationException|left=[5, 8]|right=[5, 9, 5]|effects=1
+integer-isolated-remove-object-cme|exception=java.util.ConcurrentModificationException|left=[7, 8]|right=[4]|effects=1
+integer-isolated-null-element|exception=java.lang.NullPointerException|left=[null]|right=[1]|effects=0
+integer-isolated-null-list|exception=java.lang.NullPointerException|left=null|right=[1]|effects=0
+integer-isolated-heap-pollution|exception=java.lang.ClassCastException|left=[1, 2, not-an-integer]|right=[9]|effects=0

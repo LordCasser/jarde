@@ -1,0 +1,2042 @@
+{
+  "schema": "cf11-target-full-source-capture-v2",
+  "status": "observed",
+  "package": "cf11",
+  "classes": [
+    "cf11.DistinctStringFixture"
+  ],
+  "runner_class": "cf11.Runner",
+  "inputs_manifest": {
+    "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/manifest.json",
+    "bytes": 519,
+    "sha256": "421a3fb34b09e9fb82387c48cb1c3b4b48623668fb6892fa7f125e6ce2bf86ca"
+  },
+  "inputs_manifest_path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/manifest.json",
+  "input_entries": {
+    "schema": "cf11-structured-list-frozen-inputs-root-v1",
+    "package": "cf11",
+    "source_level": "Java 8",
+    "target_classes": [
+      {
+        "class": "cf11.DistinctStringFixture",
+        "source": "DistinctStringFixture.java",
+        "bytes": 732,
+        "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+      }
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 1435,
+      "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:25.209743+00:00",
+      "duration_seconds": 1.010358957981225,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614550528,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac8-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:26.222060+00:00",
+      "duration_seconds": 1.011815875011962,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614509568,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/2.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac8-original-javap-DistinctStringFixture",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes",
+        "cf11.DistinctStringFixture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:27.236948+00:00",
+      "duration_seconds": 1.0154060409986414,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614468608,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/3.stdout.raw",
+          "bytes": 9293,
+          "sha256": "1c4e75f8945680fb07d2a1f18b9db6937a735644cc0624fd16be60af752f99d4"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:28.257930+00:00",
+      "duration_seconds": 1.0169698750250973,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614398976,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/4.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/4.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac23-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:29.277962+00:00",
+      "duration_seconds": 1.0182762500480749,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614378496,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/5.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac23-original-javap-DistinctStringFixture",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes",
+        "cf11.DistinctStringFixture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:30.298364+00:00",
+      "duration_seconds": 1.014327124983538,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614358016,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/6.stdout.raw",
+          "bytes": 9435,
+          "sha256": "bcf833a8638e571c454c82b9c516b5eecc799af28dd991cacae9394623afdf18"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:31.316951+00:00",
+      "duration_seconds": 1.009469042008277,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614337536,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/7.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "jadx-default",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jadx/default",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:32.328771+00:00",
+      "duration_seconds": 1.0108902920037508,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614304768,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/8.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-default/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-default/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:33.345684+00:00",
+      "duration_seconds": 1.01038408302702,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614288384,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/9.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:34.360102+00:00",
+      "duration_seconds": 1.009758000029251,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614267904,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/10.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-default/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-default/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:35.374464+00:00",
+      "duration_seconds": 1.0115332499844953,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614243328,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/11.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/11.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:36.388516+00:00",
+      "duration_seconds": 1.011139667010866,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614239232,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/12.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "jadx-none",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jadx/none",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:37.404843+00:00",
+      "duration_seconds": 1.0108719159616157,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614198272,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/13.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/13.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-none/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-none/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:38.422032+00:00",
+      "duration_seconds": 1.0089180830400437,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18614181888,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/14.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:39.435830+00:00",
+      "duration_seconds": 1.0057970409980044,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18613071872,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/15.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-none/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-none/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:40.442872+00:00",
+      "duration_seconds": 1.0069717079750262,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18613002240,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/16.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/16.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:41.450942+00:00",
+      "duration_seconds": 1.0075834579765797,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18612912128,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/17.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "javac8-jarde-default-DistinctStringFixture-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+        "--class",
+        "cf11.DistinctStringFixture",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:42.460494+00:00",
+      "duration_seconds": 1.0039336670306511,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18613280768,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/18.stdout.raw",
+          "bytes": 66848,
+          "sha256": "af61ae5608e29506e0fbfee00541945d4df78634688aaf34956933af5f2c6fcd"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "javac8-jarde-all-DistinctStringFixture-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+        "--class",
+        "cf11.DistinctStringFixture",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:43.468042+00:00",
+      "duration_seconds": 1.0078862499794923,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18612834304,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/19.stdout.raw",
+          "bytes": 69108,
+          "sha256": "17f270febeb51201c0b2326c53fb7cf0d0534cd560ee59d6cac62e4b6378f3bb"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "javac23-jarde-default-DistinctStringFixture-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+        "--class",
+        "cf11.DistinctStringFixture",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:44.478503+00:00",
+      "duration_seconds": 1.0063601669971831,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18612445184,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/20.stdout.raw",
+          "bytes": 66842,
+          "sha256": "0b5953d995aa03d33205c0888958fd519ae69ab638991f9192671dcf93f1516c"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/20.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "javac23-jarde-all-DistinctStringFixture-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+        "--class",
+        "cf11.DistinctStringFixture",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:45.495790+00:00",
+      "duration_seconds": 1.0088410840253346,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18612023296,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/21.stdout.raw",
+          "bytes": 69108,
+          "sha256": "c59a0daa146360a2b0827d972278e384948b4b33130be889f5484ca97d64fb92"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/21.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "label": "javac8-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-default-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-default-DistinctStringFixture/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:46.513554+00:00",
+      "duration_seconds": 1.0075845830142498,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611712000,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/22.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/22.stderr.raw",
+          "bytes": 267,
+          "sha256": "24b8e201c4f0fe7ae378532c4b176df4ca8909518f2af9d0997cc69bb474f36d"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "label": "javac8-jarde-default-combined-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-default-combined/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:47.522260+00:00",
+      "duration_seconds": 1.0068815000122413,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611580928,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/23.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/23.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "label": "javac8-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-all-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-all-DistinctStringFixture/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:48.530732+00:00",
+      "duration_seconds": 1.0069090000470169,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18604490752,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/24.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/24.stderr.raw",
+          "bytes": 263,
+          "sha256": "cff1ca7a1028eb3562d03089e75e020c284e0be7b86bccd933054aa77b120e9f"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "label": "javac8-jarde-all-combined-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-all-combined/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:49.539066+00:00",
+      "duration_seconds": 1.003389874997083,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611830784,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/25.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/25.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 26,
+      "label": "javac23-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-default-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-default-DistinctStringFixture/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:50.545975+00:00",
+      "duration_seconds": 1.0026800829800777,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611679232,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/26.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/26.stderr.raw",
+          "bytes": 511,
+          "sha256": "04b871445b185f19d2a2256d26ad26b7c30b5e819c519d61174fb104ed8d95d7"
+        }
+      }
+    },
+    {
+      "index": 27,
+      "label": "javac23-jarde-default-combined-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-default-combined/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:51.550336+00:00",
+      "duration_seconds": 1.0084562079864554,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611798016,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/27.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/27.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 28,
+      "label": "javac23-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-all-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-all-DistinctStringFixture/DistinctStringFixture.java",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:52.566815+00:00",
+      "duration_seconds": 1.0120304169831797,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611781632,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/28.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/28.stderr.raw",
+          "bytes": 507,
+          "sha256": "d729d3f975c616c79ff939ca30994902c2d94b4bbd37f566c55fe60797d0265d"
+        }
+      }
+    },
+    {
+      "index": 29,
+      "label": "javac23-jarde-all-combined-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-all-combined/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:15:53.580289+00:00",
+      "duration_seconds": 1.0074237920343876,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18611691520,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/29.stdout.raw",
+          "bytes": 532,
+          "sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/raw/29.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "original_compile_rows": [
+    {
+      "label": "javac8-original",
+      "compile_command": "javac8-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/DistinctStringFixture.java",
+          "bytes": 732,
+          "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1316,
+          "sha256": "c3674e0c5627ee5af62132dcb246b8a3c347f05fe8c71692ef46a91e1c6982d8"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes/cf11/Runner.class",
+          "bytes": 2835,
+          "sha256": "4c356e296488a4bf8408c5a8348a21e3607a7c3d34f4ea45d822742aabdf5511"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-original",
+      "compile_command": "javac23-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/DistinctStringFixture.java",
+          "bytes": 732,
+          "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1310,
+          "sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/Runner.class",
+          "bytes": 2823,
+          "sha256": "3c567615584e6b888db47639375a05d67a113440ed85ba2e545158e2373d22ce"
+        }
+      ],
+      "runtime_comparison": null
+    }
+  ],
+  "javap": [
+    {
+      "class": "cf11.DistinctStringFixture",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-DistinctStringFixture",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/javap-DistinctStringFixture.txt",
+        "bytes": 9293,
+        "sha256": "1c4e75f8945680fb07d2a1f18b9db6937a735644cc0624fd16be60af752f99d4"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.DistinctStringFixture",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-DistinctStringFixture",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/javap-DistinctStringFixture.txt",
+        "bytes": 9435,
+        "sha256": "bcf833a8638e571c454c82b9c516b5eecc799af28dd991cacae9394623afdf18"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jadx": {
+    "version_command": "jadx-version",
+    "version_exit": 0,
+    "version_stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+    "version_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jar_pin": {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/for-condition-controls.jar",
+      "bytes": 1472,
+      "sha256": "4718f21cb0b832c0e682821ae5cfef6739ce82ec90aacb1769f5ba57876eb485"
+    },
+    "jar_entries": [
+      "cf11.DistinctStringFixture"
+    ],
+    "profiles": {
+      "default": {
+        "command": "jadx-default",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jadx/default/sources/cf11/DistinctStringFixture.java",
+            "bytes": 813,
+            "sha256": "f7e40d80d9dd88e413ced4d403d04cf01fa8f742fd420c52eb6069db3cd14fa3"
+          }
+        ],
+        "names": [
+          "DistinctStringFixture.java"
+        ],
+        "packages": [
+          "cf11"
+        ],
+        "exact_target_sources": true
+      },
+      "none": {
+        "command": "jadx-none",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jadx/none/sources/cf11/DistinctStringFixture.java",
+            "bytes": 813,
+            "sha256": "f7e40d80d9dd88e413ced4d403d04cf01fa8f742fd420c52eb6069db3cd14fa3"
+          }
+        ],
+        "names": [
+          "DistinctStringFixture.java"
+        ],
+        "packages": [
+          "cf11"
+        ],
+        "exact_target_sources": true
+      }
+    }
+  },
+  "jadx_compile_rows": [
+    {
+      "label": "javac8-jadx-default",
+      "compile_command": "javac8-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-default/DistinctStringFixture.java",
+          "bytes": 813,
+          "sha256": "f7e40d80d9dd88e413ced4d403d04cf01fa8f742fd420c52eb6069db3cd14fa3"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-default/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1316,
+          "sha256": "6590b7445de80783ea2d6f3ef457f86a79555f63d7d3b608d76c6eb661934729"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-default/classes/cf11/Runner.class",
+          "bytes": 2835,
+          "sha256": "4c356e296488a4bf8408c5a8348a21e3607a7c3d34f4ea45d822742aabdf5511"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_command": "javac23-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-default/DistinctStringFixture.java",
+          "bytes": 813,
+          "sha256": "f7e40d80d9dd88e413ced4d403d04cf01fa8f742fd420c52eb6069db3cd14fa3"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-default/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1310,
+          "sha256": "f568ceb374f80a1302940a62ab213d15eee5343048aa1e97de9a0d47362a7067"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-default/classes/cf11/Runner.class",
+          "bytes": 2823,
+          "sha256": "3c567615584e6b888db47639375a05d67a113440ed85ba2e545158e2373d22ce"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_command": "javac8-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-none/DistinctStringFixture.java",
+          "bytes": 813,
+          "sha256": "f7e40d80d9dd88e413ced4d403d04cf01fa8f742fd420c52eb6069db3cd14fa3"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-none/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1316,
+          "sha256": "6590b7445de80783ea2d6f3ef457f86a79555f63d7d3b608d76c6eb661934729"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jadx-none/classes/cf11/Runner.class",
+          "bytes": 2835,
+          "sha256": "4c356e296488a4bf8408c5a8348a21e3607a7c3d34f4ea45d822742aabdf5511"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_command": "javac23-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/jadx-none/DistinctStringFixture.java",
+          "bytes": 813,
+          "sha256": "f7e40d80d9dd88e413ced4d403d04cf01fa8f742fd420c52eb6069db3cd14fa3"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-none/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1310,
+          "sha256": "f568ceb374f80a1302940a62ab213d15eee5343048aa1e97de9a0d47362a7067"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jadx-none/classes/cf11/Runner.class",
+          "bytes": 2823,
+          "sha256": "3c567615584e6b888db47639375a05d67a113440ed85ba2e545158e2373d22ce"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    }
+  ],
+  "jarde_profiles": [
+    {
+      "label": "javac8-jarde-default-DistinctStringFixture",
+      "class": "cf11.DistinctStringFixture",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-DistinctStringFixture-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "af61ae5608e29506e0fbfee00541945d4df78634688aaf34956933af5f2c6fcd",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-default-DistinctStringFixture/report.json",
+        "bytes": 237017,
+        "sha256": "3a7483633078d61061c0c56f490aacb5b6eb97a0e06645849cac29f6aeb50279"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-default-DistinctStringFixture/DistinctStringFixture.java",
+        "bytes": 2336,
+        "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 17027,
+          "archive_entries": 0,
+          "attribute_bytes": 1257,
+          "class_bytes": 2632,
+          "class_headers": 1,
+          "code_bytes": 148,
+          "dependency_depth": 0,
+          "elapsed_millis": 43,
+          "entry_bytes": 0,
+          "input_bytes": 1316,
+          "ir_edges": 245,
+          "ir_items": 2657,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4506,
+          "read_bytes": 1316,
+          "result_items": 11
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-DistinctStringFixture",
+      "class": "cf11.DistinctStringFixture",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-DistinctStringFixture-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "17f270febeb51201c0b2326c53fb7cf0d0534cd560ee59d6cac62e4b6378f3bb",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-all-DistinctStringFixture/report.json",
+        "bytes": 242347,
+        "sha256": "cefdb8bb22544b845735150098b91924153c277965a77593059eb02db1236cf2"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-all-DistinctStringFixture/DistinctStringFixture.java",
+        "bytes": 2336,
+        "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 17027,
+          "archive_entries": 0,
+          "attribute_bytes": 1257,
+          "class_bytes": 2632,
+          "class_headers": 1,
+          "code_bytes": 148,
+          "dependency_depth": 0,
+          "elapsed_millis": 6,
+          "entry_bytes": 0,
+          "input_bytes": 1316,
+          "ir_edges": 245,
+          "ir_items": 2671,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4506,
+          "read_bytes": 1316,
+          "result_items": 11
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-DistinctStringFixture",
+      "class": "cf11.DistinctStringFixture",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-DistinctStringFixture-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "0b5953d995aa03d33205c0888958fd519ae69ab638991f9192671dcf93f1516c",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-default-DistinctStringFixture/report.json",
+        "bytes": 237011,
+        "sha256": "ec33e2906e0ff5f57feb14542d3491cb7d15c628c7ff56a53dba521c8a8be48c"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-default-DistinctStringFixture/DistinctStringFixture.java",
+        "bytes": 2336,
+        "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 17025,
+          "archive_entries": 0,
+          "attribute_bytes": 1257,
+          "class_bytes": 2620,
+          "class_headers": 1,
+          "code_bytes": 148,
+          "dependency_depth": 0,
+          "elapsed_millis": 5,
+          "entry_bytes": 0,
+          "input_bytes": 1310,
+          "ir_edges": 245,
+          "ir_items": 2657,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4500,
+          "read_bytes": 1310,
+          "result_items": 11
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-DistinctStringFixture",
+      "class": "cf11.DistinctStringFixture",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-DistinctStringFixture-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "c59a0daa146360a2b0827d972278e384948b4b33130be889f5484ca97d64fb92",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-all-DistinctStringFixture/report.json",
+        "bytes": 242347,
+        "sha256": "c85e55d7881ee1bf430c8d9aeeedaafac2b67868f5b718673d8be7faff96b1a0"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-all-DistinctStringFixture/DistinctStringFixture.java",
+        "bytes": 2336,
+        "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 17025,
+          "archive_entries": 0,
+          "attribute_bytes": 1257,
+          "class_bytes": 2620,
+          "class_headers": 1,
+          "code_bytes": 148,
+          "dependency_depth": 0,
+          "elapsed_millis": 5,
+          "entry_bytes": 0,
+          "input_bytes": 1310,
+          "ir_edges": 245,
+          "ir_items": 2671,
+          "method_bodies": 2,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4500,
+          "read_bytes": 1310,
+          "result_items": 11
+        }
+      }
+    }
+  ],
+  "jarde_compile_rows": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_command": "javac8-jarde-default-combined-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-default-combined-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-default-DistinctStringFixture/DistinctStringFixture.java",
+          "bytes": 2336,
+          "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-default-combined/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1260,
+          "sha256": "05096c00fee1e4bd161fec92ea8e5eb54338e6d8e92c17068f03855ca7de1059"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-default-combined/classes/cf11/Runner.class",
+          "bytes": 2835,
+          "sha256": "4c356e296488a4bf8408c5a8348a21e3607a7c3d34f4ea45d822742aabdf5511"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_command": "javac8-jarde-all-combined-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-all-combined-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac8-jarde-all-DistinctStringFixture/DistinctStringFixture.java",
+          "bytes": 2336,
+          "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-all-combined/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1260,
+          "sha256": "05096c00fee1e4bd161fec92ea8e5eb54338e6d8e92c17068f03855ca7de1059"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-jarde-all-combined/classes/cf11/Runner.class",
+          "bytes": 2835,
+          "sha256": "4c356e296488a4bf8408c5a8348a21e3607a7c3d34f4ea45d822742aabdf5511"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_command": "javac23-jarde-default-combined-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-default-combined-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-default-DistinctStringFixture/DistinctStringFixture.java",
+          "bytes": 2336,
+          "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-default-combined/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1245,
+          "sha256": "541037676ba9e59a1baa057d802f7297092275dd539b74002b4f94aeb7581464"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-default-combined/classes/cf11/Runner.class",
+          "bytes": 2823,
+          "sha256": "3c567615584e6b888db47639375a05d67a113440ed85ba2e545158e2373d22ce"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_command": "javac23-jarde-all-combined-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-all-combined-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/jarde/javac23-jarde-all-DistinctStringFixture/DistinctStringFixture.java",
+          "bytes": 2336,
+          "sha256": "7962b97757eac3845fe009ef46a6a303b411e514c6f470296098e518105f9ec9"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+          "bytes": 1435,
+          "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+        }
+      ],
+      "class_paths": [
+        "cf11/DistinctStringFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-all-combined/classes/cf11/DistinctStringFixture.class",
+          "bytes": 1245,
+          "sha256": "541037676ba9e59a1baa057d802f7297092275dd539b74002b4f94aeb7581464"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-jarde-all-combined/classes/cf11/Runner.class",
+          "bytes": 2823,
+          "sha256": "3c567615584e6b888db47639375a05d67a113440ed85ba2e545158e2373d22ce"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    }
+  ],
+  "build_receipt": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "bytes": 2310750,
+    "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+  },
+  "build_receipt_cli_binding": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "bytes": 61486096,
+    "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "mode": "0o555"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "bytes": 61486096,
+    "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95"
+  },
+  "cli_mode": "0o555",
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "peak_target_sampled": true
+  },
+  "collector_config": {
+    "inputs_dir": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1",
+    "inputs_manifest": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/manifest.json",
+    "out": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1",
+    "cli": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "cli_sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "build_receipt": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "build_receipt_sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+    "receipt_cli_object": "candidate_cli",
+    "receipt_status_key": "status",
+    "receipt_accepted_value": "passed_candidate_build_only",
+    "receipt_mode_key": "mode",
+    "jdk_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jadx_jar": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "jadx_jar_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "guard": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scanner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "classfile_parser": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "classfile_parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "source_tool_pins_before": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/manifest.json",
+      "bytes": 519,
+      "sha256": "421a3fb34b09e9fb82387c48cb1c3b4b48623668fb6892fa7f125e6ce2bf86ca"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+      "bytes": 61486096,
+      "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+      "bytes": 2310750,
+      "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/DistinctStringFixture.java",
+      "bytes": 732,
+      "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/Runner.java",
+      "bytes": 1435,
+      "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+    }
+  ],
+  "source_tool_pins_after": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/manifest.json",
+      "bytes": 519,
+      "sha256": "421a3fb34b09e9fb82387c48cb1c3b4b48623668fb6892fa7f125e6ce2bf86ca"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+      "bytes": 61486096,
+      "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+      "bytes": 2310750,
+      "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/DistinctStringFixture.java",
+      "bytes": 732,
+      "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/Runner.java",
+      "bytes": 1435,
+      "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+    }
+  ],
+  "source_tool_inputs_unchanged": true,
+  "actual_command_count": 29
+}

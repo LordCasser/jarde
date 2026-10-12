@@ -1,0 +1,1614 @@
+{
+  "schema": "cf11-six-baseline-observation-summary-v1",
+  "status": "verified_saved_baseline_observations",
+  "product_acceptance": false,
+  "task1_2_complete": false,
+  "acceptance_scope": "saved baseline evidence integrity and cross-capture consistency only",
+  "capture_count": 6,
+  "actual_command_count": 166,
+  "raw_stream_count": 332,
+  "oracle_label_sets": {
+    "combined": [
+      "baseline-both-empty",
+      "baseline-five-character-match-add",
+      "baseline-non-five-match-remove",
+      "baseline-null-element",
+      "baseline-null-first-list",
+      "baseline-null-second-list",
+      "baseline-remove-continues-and-clears",
+      "baseline-unmatched",
+      "explicit-cast-object-boundary",
+      "integer-nested-add-positive",
+      "parameter-reassignment",
+      "raw-alias-heap-pollution",
+      "raw-list-method-control",
+      "remove-object-and-index-overloads",
+      "renamed-string-positive",
+      "try-catch-handler",
+      "wildcard-null-write"
+    ],
+    "string": [
+      "string-isolated-add-cme",
+      "string-isolated-empty",
+      "string-isolated-null-element",
+      "string-isolated-null-list",
+      "string-isolated-remove-object-cme"
+    ],
+    "integer": [
+      "integer-isolated-add-cme",
+      "integer-isolated-empty",
+      "integer-isolated-heap-pollution",
+      "integer-isolated-null-element",
+      "integer-isolated-null-list",
+      "integer-isolated-remove-object-cme"
+    ]
+  },
+  "oracle_label_counts": {
+    "combined": 17,
+    "string": 5,
+    "integer": 6,
+    "distinct_union": 28
+  },
+  "oracle_labels_match_exact_v2_fixture_sets": true,
+  "four_way_original_oracle_equality": {
+    "combined": {
+      "labels": [
+        "baseline-both-empty",
+        "baseline-unmatched",
+        "baseline-five-character-match-add",
+        "baseline-non-five-match-remove",
+        "baseline-remove-continues-and-clears",
+        "baseline-null-first-list",
+        "baseline-null-second-list",
+        "baseline-null-element",
+        "renamed-string-positive",
+        "integer-nested-add-positive",
+        "explicit-cast-object-boundary",
+        "raw-list-method-control",
+        "raw-alias-heap-pollution",
+        "parameter-reassignment",
+        "wildcard-null-write",
+        "try-catch-handler",
+        "remove-object-and-index-overloads"
+      ],
+      "stdout_sha256": "50ea25f5e9f74bc8d69b3dc945cd9ba006ef9a615a9e149c73e64c33f70f6231",
+      "javac8_javac23_debug_none_equal": true
+    },
+    "string": {
+      "labels": [
+        "string-isolated-empty",
+        "string-isolated-add-cme",
+        "string-isolated-remove-object-cme",
+        "string-isolated-null-element",
+        "string-isolated-null-list"
+      ],
+      "stdout_sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6",
+      "javac8_javac23_debug_none_equal": true
+    },
+    "integer": {
+      "labels": [
+        "integer-isolated-empty",
+        "integer-isolated-add-cme",
+        "integer-isolated-remove-object-cme",
+        "integer-isolated-null-element",
+        "integer-isolated-null-list",
+        "integer-isolated-heap-pollution"
+      ],
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "javac8_javac23_debug_none_equal": true
+    }
+  },
+  "positive_recompile_run_pairs": 32,
+  "combined_failed_compile_groups": 24,
+  "combined_no_runtime_failures_preserved": true,
+  "combined_handler_source_map_gap_count_per_debug_mode": 4,
+  "blake3_dependency": {
+    "package_root": "/private/tmp/jarde-fingerprint-python-v1",
+    "module_path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+    "version_distribution": "blake3-1.0.8.dist-info",
+    "file_count": 10,
+    "files_before": [
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+        "bytes": 107,
+        "sha256": "8b919729adf98380edfe138af0e98214663eeb10edce64c01a57a9485bffd27b"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.pyi",
+        "bytes": 844,
+        "sha256": "c6a209ff734485754ee80aa6c877b59d978797d942ce101a9b4264ba8eee7d85"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/blake3.cpython-314-darwin.so",
+        "bytes": 798672,
+        "sha256": "b5e6725f5e386e09cad620ade8a8f1b0cd69b8ef36467f2c2206f7f0477e3575"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/py.typed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/INSTALLER",
+        "bytes": 4,
+        "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/METADATA",
+        "bytes": 4646,
+        "sha256": "7a13df9a5f920ba2cd797e57d8a415c9987556ed32c5419e50e50471d06decaa"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/RECORD",
+        "bytes": 842,
+        "sha256": "25f229b3e64d6bb9d90cdf2a6752325eebe8792f06e61d4ec51a03434e41d825"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/REQUESTED",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/WHEEL",
+        "bytes": 104,
+        "sha256": "d4fbf288fbdc27de150fee6accb5ef0b18932a5b6407daf9757310d68b70f0f8"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/licenses/LICENSE",
+        "bytes": 18674,
+        "sha256": "f1d7009e06288836c56e3b5d421b3b17f83572b780d49d70ded7b7945198a5e5"
+      }
+    ],
+    "files_after_import": [
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+        "bytes": 107,
+        "sha256": "8b919729adf98380edfe138af0e98214663eeb10edce64c01a57a9485bffd27b"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.pyi",
+        "bytes": 844,
+        "sha256": "c6a209ff734485754ee80aa6c877b59d978797d942ce101a9b4264ba8eee7d85"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/blake3.cpython-314-darwin.so",
+        "bytes": 798672,
+        "sha256": "b5e6725f5e386e09cad620ade8a8f1b0cd69b8ef36467f2c2206f7f0477e3575"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/py.typed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/INSTALLER",
+        "bytes": 4,
+        "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/METADATA",
+        "bytes": 4646,
+        "sha256": "7a13df9a5f920ba2cd797e57d8a415c9987556ed32c5419e50e50471d06decaa"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/RECORD",
+        "bytes": 842,
+        "sha256": "25f229b3e64d6bb9d90cdf2a6752325eebe8792f06e61d4ec51a03434e41d825"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/REQUESTED",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/WHEEL",
+        "bytes": 104,
+        "sha256": "d4fbf288fbdc27de150fee6accb5ef0b18932a5b6407daf9757310d68b70f0f8"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/licenses/LICENSE",
+        "bytes": 18674,
+        "sha256": "f1d7009e06288836c56e3b5d421b3b17f83572b780d49d70ded7b7945198a5e5"
+      }
+    ],
+    "files_after": [
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+        "bytes": 107,
+        "sha256": "8b919729adf98380edfe138af0e98214663eeb10edce64c01a57a9485bffd27b"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.pyi",
+        "bytes": 844,
+        "sha256": "c6a209ff734485754ee80aa6c877b59d978797d942ce101a9b4264ba8eee7d85"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/blake3.cpython-314-darwin.so",
+        "bytes": 798672,
+        "sha256": "b5e6725f5e386e09cad620ade8a8f1b0cd69b8ef36467f2c2206f7f0477e3575"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/py.typed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/INSTALLER",
+        "bytes": 4,
+        "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/METADATA",
+        "bytes": 4646,
+        "sha256": "7a13df9a5f920ba2cd797e57d8a415c9987556ed32c5419e50e50471d06decaa"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/RECORD",
+        "bytes": 842,
+        "sha256": "25f229b3e64d6bb9d90cdf2a6752325eebe8792f06e61d4ec51a03434e41d825"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/REQUESTED",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/WHEEL",
+        "bytes": 104,
+        "sha256": "d4fbf288fbdc27de150fee6accb5ef0b18932a5b6407daf9757310d68b70f0f8"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/licenses/LICENSE",
+        "bytes": 18674,
+        "sha256": "f1d7009e06288836c56e3b5d421b3b17f83572b780d49d70ded7b7945198a5e5"
+      }
+    ],
+    "pins_sha256": "812b78d1700c5a6c1f4a876fd3081664d2d3f3cac9dde92823b278d11fbd21b4",
+    "files_unchanged": true
+  },
+  "captures": [
+    {
+      "key": "combined_debug",
+      "family": "combined",
+      "compiler_debug_info": "debug",
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-observation-acceptance-root-v1.json",
+        "bytes": 8685,
+        "sha256": "82de37a0188041ace6531b97016deaffe49c29fb03dce5039ba3cadd90c16a38"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/execution.json",
+        "bytes": 78440,
+        "sha256": "8ba9d8e21a3f79dde06744f1f342b5dcc53171a2549f0abae667998d3a652481"
+      },
+      "command_count": 25,
+      "raw_stream_count": 50,
+      "source_tool_pin_count": 18,
+      "source_tool_pins_stable_and_live": true,
+      "old_product_cli_identical": true,
+      "original_oracle_labels": [
+        "baseline-both-empty",
+        "baseline-unmatched",
+        "baseline-five-character-match-add",
+        "baseline-non-five-match-remove",
+        "baseline-remove-continues-and-clears",
+        "baseline-null-first-list",
+        "baseline-null-second-list",
+        "baseline-null-element",
+        "renamed-string-positive",
+        "integer-nested-add-positive",
+        "explicit-cast-object-boundary",
+        "raw-list-method-control",
+        "raw-alias-heap-pollution",
+        "parameter-reassignment",
+        "wildcard-null-write",
+        "try-catch-handler",
+        "remove-object-and-index-overloads"
+      ],
+      "original_oracle_stdout_sha256": "50ea25f5e9f74bc8d69b3dc945cd9ba006ef9a615a9e149c73e64c33f70f6231",
+      "default_all_stable": true,
+      "compile_observation": {
+        "negative_compile_groups": 12,
+        "jadx_failures": 4,
+        "jarde_failures": 8,
+        "all_runtime_absent": true
+      },
+      "rendered_class_fingerprints": [
+        {
+          "label": "javac8-jarde-default-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac8",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 4781,
+            "sha256": "63a7b03de161f8d4612e1f847234bef6a4687b2a541e1021bb4f265fcd9abddf"
+          },
+          "physical_class_blake3": "dd04c0c819dc751c233217305af73bd3c56d2740c9950f1ad591cb6b1a1d01a0",
+          "physical_class_length": 4781,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 451
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac8",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 4781,
+            "sha256": "63a7b03de161f8d4612e1f847234bef6a4687b2a541e1021bb4f265fcd9abddf"
+          },
+          "physical_class_blake3": "dd04c0c819dc751c233217305af73bd3c56d2740c9950f1ad591cb6b1a1d01a0",
+          "physical_class_length": 4781,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 451
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac23",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 4763,
+            "sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7"
+          },
+          "physical_class_blake3": "ef560beb5f7193fe11158803c372da79480c3e6d9f78a005e4bd2e76491ba272",
+          "physical_class_length": 4763,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 451
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac23",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 4763,
+            "sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7"
+          },
+          "physical_class_blake3": "ef560beb5f7193fe11158803c372da79480c3e6d9f78a005e4bd2e76491ba272",
+          "physical_class_length": 4763,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 451
+        }
+      ],
+      "source_map_gaps": [
+        {
+          "label": "javac8-jarde-default-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 4353,
+            "length": 228
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 4353,
+            "length": 228
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 4335,
+            "length": 228
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 4335,
+            "length": 228
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        }
+      ],
+      "no_debug_javap": []
+    },
+    {
+      "key": "combined_none",
+      "family": "combined",
+      "compiler_debug_info": "none",
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-observation-root-v2.json",
+        "bytes": 8713,
+        "sha256": "37e6c2233e1c5b9e373ec32d342aa03fb75d9b84de5c0ffd3534b278b1d5ec95"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/execution.json",
+        "bytes": 80015,
+        "sha256": "f12ecc1e117dc284ff1144039af61b7516f50ac8f464c774c8b3bb14797b2220"
+      },
+      "command_count": 25,
+      "raw_stream_count": 50,
+      "source_tool_pin_count": 18,
+      "source_tool_pins_stable_and_live": true,
+      "old_product_cli_identical": true,
+      "original_oracle_labels": [
+        "baseline-both-empty",
+        "baseline-unmatched",
+        "baseline-five-character-match-add",
+        "baseline-non-five-match-remove",
+        "baseline-remove-continues-and-clears",
+        "baseline-null-first-list",
+        "baseline-null-second-list",
+        "baseline-null-element",
+        "renamed-string-positive",
+        "integer-nested-add-positive",
+        "explicit-cast-object-boundary",
+        "raw-list-method-control",
+        "raw-alias-heap-pollution",
+        "parameter-reassignment",
+        "wildcard-null-write",
+        "try-catch-handler",
+        "remove-object-and-index-overloads"
+      ],
+      "original_oracle_stdout_sha256": "50ea25f5e9f74bc8d69b3dc945cd9ba006ef9a615a9e149c73e64c33f70f6231",
+      "default_all_stable": true,
+      "compile_observation": {
+        "negative_compile_groups": 12,
+        "jadx_failures": 4,
+        "jarde_failures": 8,
+        "all_runtime_absent": true
+      },
+      "rendered_class_fingerprints": [
+        {
+          "label": "javac8-jarde-default-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac8",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 2760,
+            "sha256": "4e257f82a27b2155d5b20e1a31ff35868b6a05b9a3ff08b3c88212c2ee9563ff"
+          },
+          "physical_class_blake3": "fa46c7946967fb57dd40d3c7993118426bd06c4d38430a2b0b920e7af85599f9",
+          "physical_class_length": 2760,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 450
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac8",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 2760,
+            "sha256": "4e257f82a27b2155d5b20e1a31ff35868b6a05b9a3ff08b3c88212c2ee9563ff"
+          },
+          "physical_class_blake3": "fa46c7946967fb57dd40d3c7993118426bd06c4d38430a2b0b920e7af85599f9",
+          "physical_class_length": 2760,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 450
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac23",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 2742,
+            "sha256": "aa797bd552ced726c8e4c9028dad63bc8de8e6c462ae79130f0a58fd036866fe"
+          },
+          "physical_class_blake3": "d6296dd506e2b1ff97828cee2daefee76c926d578f08d2d6c472c726ba89ded3",
+          "physical_class_length": 2742,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 450
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamNestedLoops",
+          "class": "cf11.UpstreamNestedLoops",
+          "jdk": "javac23",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+            "bytes": 2742,
+            "sha256": "aa797bd552ced726c8e4c9028dad63bc8de8e6c462ae79130f0a58fd036866fe"
+          },
+          "physical_class_blake3": "d6296dd506e2b1ff97828cee2daefee76c926d578f08d2d6c472c726ba89ded3",
+          "physical_class_length": 2742,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 11,
+          "source_map_origin_count": 450
+        }
+      ],
+      "source_map_gaps": [
+        {
+          "label": "javac8-jarde-default-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 2580,
+            "length": 102
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 2580,
+            "length": 102
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 2562,
+            "length": 102
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamNestedLoops",
+          "name": "handled",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+          "access_flags": 1,
+          "method_index": 9,
+          "code_span": {
+            "start": 2562,
+            "length": 102
+          },
+          "exception_table": [
+            {
+              "start_pc": 0,
+              "end_pc": 47,
+              "handler_pc": 50,
+              "catch_type": "java/lang/RuntimeException"
+            }
+          ],
+          "instruction_bcis": [
+            0,
+            1,
+            6,
+            7,
+            8,
+            13,
+            16,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            47,
+            50,
+            51,
+            54,
+            55,
+            56,
+            59
+          ],
+          "source_origin_bci_count": 6,
+          "source_origin_records": 6,
+          "missing_physical_bcis": [
+            1,
+            6,
+            8,
+            13,
+            17,
+            22,
+            25,
+            27,
+            28,
+            30,
+            35,
+            36,
+            39,
+            40,
+            41,
+            44,
+            51,
+            54,
+            55,
+            56
+          ],
+          "physical_coverage_complete": false,
+          "quality": "fallback"
+        }
+      ],
+      "no_debug_javap": [
+        {
+          "jdk": "javac8",
+          "class": "cf11.UpstreamNestedLoops",
+          "javap_sha256": "228c68f08861980845f27d8665c3b6abc6d5f06f430964c9535d77e4f0c65c09",
+          "debug_tables_absent": true,
+          "signature_present": true
+        },
+        {
+          "jdk": "javac23",
+          "class": "cf11.UpstreamNestedLoops",
+          "javap_sha256": "2d4872ffe01cd3940864cdf59e6373cca2756008f95dc4ea3fa0a7777fc2fcc3",
+          "debug_tables_absent": true,
+          "signature_present": true
+        }
+      ]
+    },
+    {
+      "key": "string_debug",
+      "family": "string",
+      "compiler_debug_info": "debug",
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-observation-root-v1.json",
+        "bytes": 5404,
+        "sha256": "e0a04f85aa30c0d4e11fc554c4e406db80bb5df51ca511b2cdf279d013cf6909"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/execution.json",
+        "bytes": 84748,
+        "sha256": "c390188dd6c26a489fb35901a794094522ac3f3935461a7fd30fa60c4200e5bb"
+      },
+      "command_count": 29,
+      "raw_stream_count": 58,
+      "source_tool_pin_count": 18,
+      "source_tool_pins_stable_and_live": true,
+      "old_product_cli_identical": true,
+      "original_oracle_labels": [
+        "string-isolated-empty",
+        "string-isolated-add-cme",
+        "string-isolated-remove-object-cme",
+        "string-isolated-null-element",
+        "string-isolated-null-list"
+      ],
+      "original_oracle_stdout_sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6",
+      "default_all_stable": true,
+      "compile_observation": {
+        "positive_compile_run_pairs": 8,
+        "all_passed_and_oracle_equal": true
+      },
+      "rendered_class_fingerprints": [
+        {
+          "label": "javac8-jarde-default-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac8",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 1316,
+            "sha256": "c3674e0c5627ee5af62132dcb246b8a3c347f05fe8c71692ef46a91e1c6982d8"
+          },
+          "physical_class_blake3": "c51c67c1bcd1ff136a679afe78da784d1f6671dd39b2b6388503f4abc9302115",
+          "physical_class_length": 1316,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac8-jarde-all-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac8",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 1316,
+            "sha256": "c3674e0c5627ee5af62132dcb246b8a3c347f05fe8c71692ef46a91e1c6982d8"
+          },
+          "physical_class_blake3": "c51c67c1bcd1ff136a679afe78da784d1f6671dd39b2b6388503f4abc9302115",
+          "physical_class_length": 1316,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-default-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac23",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 1310,
+            "sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028"
+          },
+          "physical_class_blake3": "4e162dc5a31a38caf1073c527a5299237474d2504f083beb98533f1f804f246d",
+          "physical_class_length": 1310,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-all-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac23",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 1310,
+            "sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028"
+          },
+          "physical_class_blake3": "4e162dc5a31a38caf1073c527a5299237474d2504f083beb98533f1f804f246d",
+          "physical_class_length": 1310,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        }
+      ],
+      "source_map_gaps": [],
+      "no_debug_javap": []
+    },
+    {
+      "key": "integer_debug",
+      "family": "integer",
+      "compiler_debug_info": "debug",
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-observation-root-v1.json",
+        "bytes": 5416,
+        "sha256": "5d8bfad117d01a103a471d6238217a3e71ebc19d77c965d9e4d2e85a15d0833f"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/execution.json",
+        "bytes": 85052,
+        "sha256": "427b788ee55cc8bcfc7802c564e12e3c1addb370881030930232e444b764589d"
+      },
+      "command_count": 29,
+      "raw_stream_count": 58,
+      "source_tool_pin_count": 18,
+      "source_tool_pins_stable_and_live": true,
+      "old_product_cli_identical": true,
+      "original_oracle_labels": [
+        "integer-isolated-empty",
+        "integer-isolated-add-cme",
+        "integer-isolated-remove-object-cme",
+        "integer-isolated-null-element",
+        "integer-isolated-null-list",
+        "integer-isolated-heap-pollution"
+      ],
+      "original_oracle_stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "default_all_stable": true,
+      "compile_observation": {
+        "positive_compile_run_pairs": 8,
+        "all_passed_and_oracle_equal": true
+      },
+      "rendered_class_fingerprints": [
+        {
+          "label": "javac8-jarde-default-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac8",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 1326,
+            "sha256": "f21647bcfafd5502b5c9830149c46ba7f2071b5157b44f6a9c22d70cd8cb41e5"
+          },
+          "physical_class_blake3": "bd46fd089f80bafe0dc5c7204b95c2a0e24a6f9aba7fa30d3289c3e8834f30ba",
+          "physical_class_length": 1326,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac8-jarde-all-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac8",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 1326,
+            "sha256": "f21647bcfafd5502b5c9830149c46ba7f2071b5157b44f6a9c22d70cd8cb41e5"
+          },
+          "physical_class_blake3": "bd46fd089f80bafe0dc5c7204b95c2a0e24a6f9aba7fa30d3289c3e8834f30ba",
+          "physical_class_length": 1326,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-default-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac23",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 1320,
+            "sha256": "276f83ce80f41b44a8435ff3bc96bb2391e34fb92edb1a8371ffef1eeaa39a12"
+          },
+          "physical_class_blake3": "f0e6b862f473d21c32dfb05048d8d98aa0d9a843b5ce49dd2910c9330873f2d7",
+          "physical_class_length": 1320,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-all-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac23",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 1320,
+            "sha256": "276f83ce80f41b44a8435ff3bc96bb2391e34fb92edb1a8371ffef1eeaa39a12"
+          },
+          "physical_class_blake3": "f0e6b862f473d21c32dfb05048d8d98aa0d9a843b5ce49dd2910c9330873f2d7",
+          "physical_class_length": 1320,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        }
+      ],
+      "source_map_gaps": [],
+      "no_debug_javap": []
+    },
+    {
+      "key": "string_none",
+      "family": "string",
+      "compiler_debug_info": "none",
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-observation-root-v1.json",
+        "bytes": 5432,
+        "sha256": "228a5d8cfb138045ed44591b590553e01335e387115493d4cdd51c5f9f74ecd7"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/execution.json",
+        "bytes": 86323,
+        "sha256": "cf34030ef6667d338b06b35200b398aec4e166a3c918ad50f93fa28a69d524d1"
+      },
+      "command_count": 29,
+      "raw_stream_count": 58,
+      "source_tool_pin_count": 18,
+      "source_tool_pins_stable_and_live": true,
+      "old_product_cli_identical": true,
+      "original_oracle_labels": [
+        "string-isolated-empty",
+        "string-isolated-add-cme",
+        "string-isolated-remove-object-cme",
+        "string-isolated-null-element",
+        "string-isolated-null-list"
+      ],
+      "original_oracle_stdout_sha256": "ca4dd6cf6e305d7914bd7f6fbd9d94c9c3af74000c84bf76ca31c0089d2c2cb6",
+      "default_all_stable": true,
+      "compile_observation": {
+        "positive_compile_run_pairs": 8,
+        "all_passed_and_oracle_equal": true
+      },
+      "rendered_class_fingerprints": [
+        {
+          "label": "javac8-jarde-default-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac8",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 865,
+            "sha256": "a22cc5d06b49b408f03f46091757eab8b419bede717bb0f4af5dea13da2d196d"
+          },
+          "physical_class_blake3": "932cfb000d83bd4fc36c3a98ff731dc6e3e5aed1c8750b65954d3d84c876a041",
+          "physical_class_length": 865,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac8-jarde-all-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac8",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 865,
+            "sha256": "a22cc5d06b49b408f03f46091757eab8b419bede717bb0f4af5dea13da2d196d"
+          },
+          "physical_class_blake3": "932cfb000d83bd4fc36c3a98ff731dc6e3e5aed1c8750b65954d3d84c876a041",
+          "physical_class_length": 865,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-default-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac23",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 859,
+            "sha256": "d9c502841e93af1dc006eadc3dd3b4ff544782692ac22bc10348e1c7ae597eff"
+          },
+          "physical_class_blake3": "a6383c1feedf9907c8e927a7939ac7bece91f3a5f7f0eba5b29a522b93559226",
+          "physical_class_length": 859,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-all-DistinctStringFixture",
+          "class": "cf11.DistinctStringFixture",
+          "jdk": "javac23",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+            "bytes": 859,
+            "sha256": "d9c502841e93af1dc006eadc3dd3b4ff544782692ac22bc10348e1c7ae597eff"
+          },
+          "physical_class_blake3": "a6383c1feedf9907c8e927a7939ac7bece91f3a5f7f0eba5b29a522b93559226",
+          "physical_class_length": 859,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        }
+      ],
+      "source_map_gaps": [],
+      "no_debug_javap": [
+        {
+          "jdk": "javac8",
+          "class": "cf11.DistinctStringFixture",
+          "javap_sha256": "f23e7f9434aba32d2d9e76408700bbfae931e23be93722d6cd785b277d19db31",
+          "debug_tables_absent": true,
+          "signature_present": true
+        },
+        {
+          "jdk": "javac23",
+          "class": "cf11.DistinctStringFixture",
+          "javap_sha256": "26451ee0186cce5efcb1dce9481874315cc8025023ca28e6aee71f509371576d",
+          "debug_tables_absent": true,
+          "signature_present": true
+        }
+      ]
+    },
+    {
+      "key": "integer_none",
+      "family": "integer",
+      "compiler_debug_info": "none",
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-observation-root-v1.json",
+        "bytes": 5444,
+        "sha256": "468af6b6f336e5f43e6987059e2f866c28cf056407de37e3586aeadf5dfab27d"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/execution.json",
+        "bytes": 86622,
+        "sha256": "186dbaf1973d3d11f07a3d1adb0468083615efbd6444aa6ac01c574c0520899f"
+      },
+      "command_count": 29,
+      "raw_stream_count": 58,
+      "source_tool_pin_count": 18,
+      "source_tool_pins_stable_and_live": true,
+      "old_product_cli_identical": true,
+      "original_oracle_labels": [
+        "integer-isolated-empty",
+        "integer-isolated-add-cme",
+        "integer-isolated-remove-object-cme",
+        "integer-isolated-null-element",
+        "integer-isolated-null-list",
+        "integer-isolated-heap-pollution"
+      ],
+      "original_oracle_stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "default_all_stable": true,
+      "compile_observation": {
+        "positive_compile_run_pairs": 8,
+        "all_passed_and_oracle_equal": true
+      },
+      "rendered_class_fingerprints": [
+        {
+          "label": "javac8-jarde-default-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac8",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 871,
+            "sha256": "b5272cb959631b37277530eb8e8b8e09bc0629ed1e3c97eeb67df23f4af3c7ca"
+          },
+          "physical_class_blake3": "eaa83a4e2bd7ec45256883ae38eb75a32713d658a12d77df69912ed05d7b0ecf",
+          "physical_class_length": 871,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac8-jarde-all-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac8",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 871,
+            "sha256": "b5272cb959631b37277530eb8e8b8e09bc0629ed1e3c97eeb67df23f4af3c7ca"
+          },
+          "physical_class_blake3": "eaa83a4e2bd7ec45256883ae38eb75a32713d658a12d77df69912ed05d7b0ecf",
+          "physical_class_length": 871,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-default-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac23",
+          "mode": "default",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 865,
+            "sha256": "4d3c31db3ad346494b90dee59f99438f47c57af8dbe4719ebf12df052d2e783c"
+          },
+          "physical_class_blake3": "c38ffeaa5549510dfb0bd37ddeb299142cb276e49364681086e7137c994c6f84",
+          "physical_class_length": 865,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        },
+        {
+          "label": "javac23-jarde-all-DistinctIntegerFixture",
+          "class": "cf11.DistinctIntegerFixture",
+          "jdk": "javac23",
+          "mode": "all",
+          "physical_class": {
+            "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctIntegerFixture.class",
+            "bytes": 865,
+            "sha256": "4d3c31db3ad346494b90dee59f99438f47c57af8dbe4719ebf12df052d2e783c"
+          },
+          "physical_class_blake3": "c38ffeaa5549510dfb0bd37ddeb299142cb276e49364681086e7137c994c6f84",
+          "physical_class_length": 865,
+          "report_class_identity_exact": true,
+          "method_item_owner_exact": true,
+          "raw_recovery_method_identity_exact": true,
+          "source_map_origin_owner_exact": true,
+          "method_count": 2,
+          "source_map_origin_count": 89
+        }
+      ],
+      "source_map_gaps": [],
+      "no_debug_javap": [
+        {
+          "jdk": "javac8",
+          "class": "cf11.DistinctIntegerFixture",
+          "javap_sha256": "9a996c2944fe5ceb03ddc34c6ec2c537e200ad2d6d46e51602a6e4d2c0e05e04",
+          "debug_tables_absent": true,
+          "signature_present": true
+        },
+        {
+          "jdk": "javac23",
+          "class": "cf11.DistinctIntegerFixture",
+          "javap_sha256": "5ce017effe0a30290e5bc19e4f6b54d80b79d4652afb88f545f04d120e313696",
+          "debug_tables_absent": true,
+          "signature_present": true
+        }
+      ]
+    }
+  ],
+  "remaining_limitations": [
+    "This summary does not establish the missing stopping or negative-SSA attribution.",
+    "No product behavior is accepted by these baseline observations."
+  ]
+}

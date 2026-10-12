@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-focused-root-v8/execution.json",
+      "bytes": 4279097,
+      "sha256": "a1ac7f3f4e87cc14b5bff60dbae2951f686105f59c3ebb84150255f7788d2f2f",
+      "archive": "execution.json.gz",
+      "compressed_bytes": 887721,
+      "compressed_sha256": "7c239fb46f23ad91a0782ed0c92dd96a1c9274c980c5313e824d47c0e43a5908"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-focused-root-v8/2.stdout.raw",
+      "bytes": 956,
+      "sha256": "49a1e45e7b097312189b0d48fcba07bb325871100c93d8edd6f01e8deced0203",
+      "archive": "2.stdout.raw.gz",
+      "compressed_bytes": 496,
+      "compressed_sha256": "8de7895c7c72d4476cf0f23222798bf5ea5f64cf3c04c7791b8cc78626ecc2a4"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-focused-root-v8/2.stderr.raw",
+      "bytes": 4267,
+      "sha256": "42ae6ea8d19c769a7edf37e2d0fca9beafbed5ce8e6042df7414d30bc6fb786a",
+      "archive": "2.stderr.raw.gz",
+      "compressed_bytes": 1324,
+      "compressed_sha256": "a86f0f6630575fdfdbe82c89f650ed0cc98cf826157b321e8cd234105c7e196a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-focused-root-v8/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive": "3.stdout.raw.gz",
+      "compressed_bytes": 20,
+      "compressed_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-focused-root-v8/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "452da47ba7c2dc707747007cebe7d9bb49593ace84d9bc05e4f10ceb3aba1503",
+      "archive": "3.stderr.raw.gz",
+      "compressed_bytes": 69,
+      "compressed_sha256": "300fb761c8381de6fdadc0a4ed837a679265e333972aeb407696e8fb91843836"
+    }
+  ]
+}

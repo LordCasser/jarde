@@ -1,19 +1,33 @@
 # Jarde 接续入口
 
-继续在当前聊天。产品锚点 `5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e`；OpenSpec `recover-proved-local-reference-write-compatibility` 当前 8/8。本片确切产品自身CI、本地完整验收和fa12d5499已推送文档HEAD的fresh clean-main audit均实际通过。关闭文档f12668ed0推送后外置final audit已真实通过，源码输入4784一致。整体持续目标保持active，继续CF11。
+持续目标保持 active，用户要求继续在当前聊天推进。按固定 JADX **71 语法单元 / 612 测试文件**的账本完成大颗粒 MVP，再探索双方尚未覆盖的情况。组件测试通过不能直接增加整体完成数。
 
-## 已有事实
+## 当前唯一交付项
 
-[verification](openspec/changes/recover-proved-local-reference-write-compatibility/verification-root.md) 记录 fmt、当前 CI Clippy、global strict 356/0、CLI build、clean 成功；fresh 本地工作区 96 批/363 targets/3489-0-97/3586具名结果；4784 来源闭包已验收。CLI SHA-256 `4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95`。自身 [CI 38197592542](https://github.com/LordCasser/jarde/actions/runs/38197592542) 已真实成功4jobs/52steps，root独立verifier v5实际exit0、逐目标核双seed与本地具名结果、绑定确切产品和最终CLI。见[验收记录](openspec/changes/recover-proved-local-reference-write-compatibility/results/own-product-ci-root-v1/README.md)。原v4验收器NameError失败保留；fresh main审计已通过；见[检查点](openspec/changes/recover-proved-local-reference-write-compatibility/results/clean-main-checkpoint-root-v1/README.md)。
+OpenSpec [recover-structured-list-generic-bodies](openspec/changes/recover-structured-list-generic-bodies/tasks.md) 当前 **7/9**。结构化 void 正文的物理 census、List 参数真实用途证明和泛型声明/调用正文事务已经实现；复用现有 AST/精确 argument edits，不新增 solver、pass 或公共 carrier。永久测试覆盖 String/Integer、inner option、null add、控制反例、三 profile、来源和停止。详见 [verification-root.md](openspec/changes/recover-structured-list-generic-bodies/verification-root.md)。
 
-本片fa12d5499 fresh audit核main/15 checkouts/14辅助detached干净且无target；物理目录仍保留。final audit已真实核f12668ed0，后续当前change交付时仍需按新真实HEAD独立fresh audit。空闲磁盘≥5 GiB、target≤1 GiB、守卫间隔1秒、default stack、最后 clean。共享 Git/Cargo/rustfmt/JDK/JADX/CLI 由 root 独占，Luna 只做私有准备或只读审计；勿并行构建或改共享工作树。
+**本轮本地验收起点是 e9e3a0ec27e5bf7698bdf4817ff08d38bcb63374，交付提交以当前 Git 与下述自身 CI 记录为准。** 用户授权提交推送；3.3 尚未闭合，当前产品自身 CI、最终主线审计仍待完成。旧产品锚点 5f5fb2c6、旧 CI 38197592542 和 f12668ed0 的最终审计仅证明前一项，不能用于关闭当前项。
 
-## 当前项：CF11 结构化List泛型里程碑
+## 最新有效源码与本地证据
 
-新OpenSpec [recover-structured-list-generic-bodies](openspec/changes/recover-structured-list-generic-bodies/tasks.md) 当前1/9，proposal/design/spec/tasks通过strict validate。固定71/612不变。诊断v3实际测试/clean0、源码恢复；原采集器因把UsageSnapshot当结构比较失败保留。root独立acceptor实际exit0接受45BCI/13blocks/21Phi/两槽6读无写的完整三profile观察、物理cast22/52及add79/remove91，只有usage数值不同；泛型candidate仍None，不是实现通过。见[观察](openspec/changes/recover-structured-list-generic-bodies/results/structured-observation-root-v1/README.md)。
+最终 Clippy 曾发现 report.rs 两处 iter_cloned_collect 和 class_source.rs 一个 unneeded_wildcard_pattern，root 已作等价写法修正。当前 report.rs SHA ecf8c4cb10199555ae756cc3754a8a7dfe0cbc4255e7acd6280f94aea51903fb；class_source.rs SHA 16e7a07f5f133f948a5d88ea467e397f9685a18e56cd8a4734792d6efbfaa1bb。失败与后续 Clippy 通过分别保留于当前 change 的 final-clippy-failure-root-v1 / clippy-preflight-root-v2。
 
-Root实测Java8/23平台泛型契约，并确认已有ClassSourceMethodAst、精确argument-edits和overlay事务可复用；不新增RecoveryRequest泛型carrier或全局删Objectcast。Luna `/root/cf11_generic_binding_review` 正在私有实现完整结构化候选+参数用途+调用绑定；`/root/cf11_list_controls` 私有构造原本合法近邻控制。root尚未应用生产候选，下一步审查私有patch/controls、串行真实原/JADX/Jarde双profile双JDK整类对照。实际final audit在 `/private/tmp/jarde-local-reference-write-clean-main-audit-final-root-v2/execution.json`，对应f12668ed0已接受；后续docs提交不等同新的audit。
+最新 focused-root-v12 已实际通过八命令：API 7 passed/1 ignored、jarde-java 375 passed、reader census 1 passed、P5 fingerprint 5 passed/1 ignored、fmt/build/finally clean 0；4822 输入闭包前后相同。receipt SHA 74350dfc154c2fd77aa8a9636dd8d29b301eb119e167be56a0f18af011996a73。冻结 CLI `/private/tmp/jarde-cf11-structured-list-candidate-cli-root-v4`，61920032 bytes、0555、SHA d3d15d3dd875bc79410298e3ed1e56010fc39c1849e97dc893cadb49d8c65e6f。归档见 [focused-census-and-registration-root-v12](openspec/changes/recover-structured-list-generic-bodies/results/focused-census-and-registration-root-v12/README.md)。旧 CLI/root-v11 证据对应旧来源，不覆盖当前源码。
 
-## 证据入口
+## 运行中的门禁与下一步
 
-[任务](openspec/changes/recover-proved-local-reference-write-compatibility/tasks.md)、[本地验收](openspec/changes/recover-proved-local-reference-write-compatibility/results/final-validation-candidate-root-v1/README.md)。失败原样保留：批53断言/记录器错误见[记录](openspec/changes/recover-proved-local-reference-write-compatibility/results/full-workspace-failed-root-v1/README.md)，磁盘停止见[记录](openspec/changes/recover-proved-local-reference-write-compatibility/results/full-workspace-resource-stop-root-v2/README.md)，计费断言见[记录](openspec/changes/recover-proved-local-reference-write-compatibility/results/full-workspace-billing-failure-root-v3/README.md)；后续诊断断言与紧预算失败见[记录](openspec/changes/recover-proved-local-reference-write-compatibility/results/final-diagnostic-focus-root-v1/failed-capture/execution.json)。债务仅从[独立账本](openspec/completion-review.md)拆分处理。
+全工作区 **session18940 已 exit0**。fresh workspace-root-v3 正常 passed，195 命令全部 0，无 guard stop；两组 seed 各 96 批/364 targets/3502 passed/0 failed/98 ignored，4822 来源一致、finally clean 0、target absent。execution SHA 3c2b8d52b4f1927091ea273b2503e371f066efcf64e62c944c5cdfa4cd08a7ba；独立 acceptance SHA 56d4bf06a166e2074da8951ad37f66fc2df165c045983b17ad6c21657373a461。root 两个解析路径实际通过，归档见 [full-workspace-accepted-root-v3](openspec/changes/recover-structured-list-generic-bodies/results/full-workspace-accepted-root-v3/README.md)。
+
+最终本地门禁 **session49761 已 exit0**：fmt/当前 CI Clippy/global strict357-0/CLI rebuild/exact clean 五命令0，新CLI字节恒同、4822来源一致、target absent，root独立 accept-final.py exit0。final receipt SHA 3cf03577eea64a7d19f1164cbc2da3d322686c7eb5d5baca3dd50f1e22286b04，acceptance SHA f91f3ab30fea420d4d39ba1662d1cb9ef229b64aaef4af9359ef3ae29d43ad0c；见 [最终门禁](openspec/changes/recover-structured-list-generic-bodies/results/final-validation-root-v2/README.md)。3.2 已关闭。
+
+新 CLI v4 的整类对照 **session6599 已 exit0**，root 独立 checker 接受12份/352命令/704raw/80成功运行对/24控制编译失败无runtime/41 oracle labels。新 CLI 精确停止两调用实际4/0；collector因方法name读取层级错误failed，root独立接受其完整raw且保留原失败状态。见 [整类及停止归档](openspec/changes/recover-structured-list-generic-bodies/results/final-comparison-cli-v4-root-v1/README.md)。3.1/3.2均已关闭，当前没有 Jarde 运行工具链，target absent。下一步提交推送确切产品并验收该HEAD自身CI（3.3）；最后文档推送、only main/14aux detached/全部干净无target/主线祖先的实际finalHEAD外置审计（3.4）。旧矩阵空间失败没有拼接，71/612和整CF11完成数不增。
+
+## 工具和资源约束
+
+root 独占共享 Git/Cargo/rustfmt/JDK/JADX/CLI；Luna 仅只读或私有准备，不改共享源码，不运行工具链，不创建分支/worktree。外部命令最低 5 GiB 可用空间、target 上限 1 GiB、1 秒进程组守卫、default Rust stack、最终 exact cargo clean。现有构建仍运行时不得清 target 或并行运行其他工具链。/tmp 清理只移除可再生成缓存或做保留字节的历史去重，当前依赖与独有样本保留。
+
+## 后续大颗粒方向
+
+循环体 try/catch 是下一项，当前仅架构侦察，**没有新基线或实现验收**。见 [架构范围](openspec/changes/recover-loop-body-try-catch/architecture-scout-root-2026-10-12.md) 和 [JADX 算法差异](openspec/changes/recover-loop-body-try-catch/jadx-algorithm-review-root-2026-10-12.md)。优先核现有 proved_loop_catch_joins 的具体拒绝条件，不删除 CFG 边强制归约；DV.plainFor/while 与 foreach 的 protected-local SSA 拒绝必须分别归因。私有基线包 `/private/tmp/jarde-loop-body-catch-baseline-prep-luna-v3` 已经 root 阅读，仍待串行运行 debug/none 新整类对照与 Q-i/Q-ii/Q-iii 同次事实。
+
+历史验收与架构债务分别保留在各 change 的 results 和 [completion-review.md](openspec/completion-review.md)，不能混入当前产品改动扩大范围。

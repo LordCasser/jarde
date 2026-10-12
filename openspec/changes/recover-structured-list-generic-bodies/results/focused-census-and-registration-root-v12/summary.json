@@ -1,0 +1,27 @@
+{
+  "status": "passed_initial_product_validation",
+  "receipt_sha256": "74350dfc154c2fd77aa8a9636dd8d29b301eb119e167be56a0f18af011996a73",
+  "commands": 8,
+  "exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "source_pin_count": 4822,
+  "source_manifest_stable": true,
+  "cli_freeze": {
+    "source_binary": "/Users/lordcasser/workspace/projects/jarde/target/debug/jarde-cli",
+    "path": "/private/tmp/jarde-cf11-structured-list-candidate-cli-root-v4",
+    "bytes": 61920032,
+    "sha256": "d3d15d3dd875bc79410298e3ed1e56010fc39c1849e97dc893cadb49d8c65e6f",
+    "mode": "0o555"
+  },
+  "cleanup": "passed",
+  "target_absent": true,
+  "complete_cli_matrix_acceptance": "pending"
+}

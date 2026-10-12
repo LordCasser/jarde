@@ -1,0 +1,26 @@
+{
+  "summary.json": {
+    "bytes": 1026,
+    "sha256": "907c8757b10fd15eb85848762b43f69b518fb25a7b4ea1a271046c0b87b4005a"
+  },
+  "65.stdout.raw": {
+    "bytes": 83701,
+    "sha256": "b00410bd4285f59d547415224991647fbf5073029658d2481f371b749b665c51"
+  },
+  "README.md": {
+    "bytes": 1203,
+    "sha256": "ba5bd54e4175f26995a8148cca781a8a73a5d719fa20b3ee4241c055a550ba2b"
+  },
+  "65.stderr.raw": {
+    "bytes": 575,
+    "sha256": "78e93f8f492819c219a765f84dc9e139e3d1b0d487e5d7886cc5fc53787d856a"
+  },
+  "capture.tar.gz": {
+    "bytes": 1148925,
+    "sha256": "586825de1cde1481ec233670f9974a026fdcc9f76beea3d1cb60452a7b26b620"
+  },
+  "tooling.tar.gz": {
+    "bytes": 22712,
+    "sha256": "93ae14b7630d5e35ba2e2bbd4c5183985950fb156650d01e4fa01704949e3225"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "status": "reviewed_baseline_observation_checker_only",
+  "change": "Expose missing physical BCIs/quality per method and top-level gaps instead of asserting product acceptance. Root baseline acceptance independently requires every structured positive map complete; negative fallback incomplete is explicit independent pre-existing debt. All map origins still physically legal and UTF8 valid; no source/product edits.",
+  "checker_sha256": "d338d6ae9b4bec67f9b2fa76db0f71dc04ea7d75c82f7155805bb8ba6975c51b"
+}

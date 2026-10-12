@@ -1,0 +1,22 @@
+{
+  "schema": "cf11-structured-list-final-acceptance-v2",
+  "status": "accepted_local_final_validation_only",
+  "focused_receipt_sha256": "74350dfc154c2fd77aa8a9636dd8d29b301eb119e167be56a0f18af011996a73",
+  "workspace_receipt_sha256": "3c2b8d52b4f1927091ea273b2503e371f066efcf64e62c944c5cdfa4cd08a7ba",
+  "source_pin_count": 4822,
+  "workspace_target_count": 364,
+  "candidate_cli_byte_identical": true,
+  "target_absent": true,
+  "scope": "Local validation only; not CI or product completion acceptance.",
+  "final_receipt_sha256": "3cf03577eea64a7d19f1164cbc2da3d322686c7eb5d5baca3dd50f1e22286b04",
+  "acceptance_sha256": "f91f3ab30fea420d4d39ba1662d1cb9ef229b64aaef4af9359ef3ae29d43ad0c",
+  "global_strict": {
+    "passed": 357,
+    "failed": 0,
+    "items": 357
+  },
+  "archive": {
+    "bytes": 436165,
+    "sha256": "5c470513e5857f9af55533286754d1b41a5127c3b49a6504b79b41acb5854fbd"
+  }
+}

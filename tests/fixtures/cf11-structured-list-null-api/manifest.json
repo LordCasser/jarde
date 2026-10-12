@@ -1,0 +1,25 @@
+{
+  "schema": "cf11-structured-list-null-add-frozen-inputs-luna-v1",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.NullStringListFixture",
+      "source": "NullStringListFixture.java",
+      "bytes": 731,
+      "sha256": "4a14c7410bcaf80e1c35617b0d03dc7030b7ca9f08e6748b8832529135377594"
+    },
+    {
+      "class": "cf11.NullIntegerListFixture",
+      "source": "NullIntegerListFixture.java",
+      "bytes": 739,
+      "sha256": "32cb0739e073760b856eefef7616119891ecc42169571542e5a6ec9e43c33441"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 2066,
+    "sha256": "18d97b19cbc3650657f34e481e4acf96679a5e93fd3560270bd0806f15124037"
+  }
+}

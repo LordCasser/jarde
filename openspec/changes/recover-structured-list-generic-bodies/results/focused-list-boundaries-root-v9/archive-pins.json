@@ -1,0 +1,7 @@
+{
+  "schema": "cf11-focused-v9-archive-pins-root-v1",
+  "archive_bytes": 1051702,
+  "archive_sha256": "d9764a02448b25a0f66f01bcf16c60a4ed3343c3e3b354800799715c02e2ec8f",
+  "receipt_sha256": "38c778201ed6166c690d96c96183954882a23e28c0b43864f7bc3c9908c7c917",
+  "cli_sha256": "bf9757a42d70cb01909466595baa4ecfdbfed7cd585527e008944290ce7736b9"
+}

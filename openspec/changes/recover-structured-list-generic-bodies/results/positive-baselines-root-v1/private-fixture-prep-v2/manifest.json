@@ -1,0 +1,19 @@
+{
+  "schema": "cf11-structured-list-controls-v2",
+  "source_level": "Java 8",
+  "combined": {
+    "package": "cf11",
+    "target_classes": [{"class": "cf11.UpstreamNestedLoops", "source": "UpstreamNestedLoops.java"}],
+    "runner": {"class": "cf11.Runner", "source": "Runner.java"},
+    "oracle_cases": 17
+  },
+  "isolated_positive_fixtures": [
+    {"package": "cf11", "class": "cf11.DistinctStringFixture", "source": "DistinctStringFixture.java", "runner": "cf11.Runner", "runner_source": "Runner.java", "method": "renamed", "element_type": "java.lang.String", "oracle_cases": 5},
+    {"package": "cf11", "class": "cf11.DistinctIntegerFixture", "source": "DistinctIntegerFixture.java", "runner": "cf11.Runner", "runner_source": "Runner.java", "method": "numbers", "element_type": "java.lang.Integer", "oracle_cases": 6}
+  ],
+  "total_distinct_oracle_cases": 28,
+  "expected_generic_projection_success_methods": ["combined.test", "combined.renamed", "combined.numbers", "combined.castBoundary", "isolated-string.renamed", "isolated-integer.numbers"],
+  "expected_generic_projection_refusal_methods": ["combined.rawAliasEscape", "combined.reassigned", "combined.wildcardNull", "combined.handled", "combined.indexOverload"],
+  "raw_path_controls": ["combined.rawLists"],
+  "validation_status": "content_only_not_compiled"
+}

@@ -1,0 +1,161 @@
+Classfile /private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/DistinctIntegerFixture.class
+  Last modified 2026-10-12; size 871 bytes
+  MD5 checksum 64871dbf0a18d688c5d90a6060163320
+public class cf11.DistinctIntegerFixture
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #14.#27        // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #28.#29        // java/util/List.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #30.#31        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #30.#32        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = Class              #33            // java/lang/Integer
+   #6 = Methodref          #5.#34         // java/lang/Integer.equals:(Ljava/lang/Object;)Z
+   #7 = Methodref          #5.#35         // java/lang/Integer.intValue:()I
+   #8 = InterfaceMethodref #28.#36        // java/util/List.add:(Ljava/lang/Object;)Z
+   #9 = Fieldref           #13.#37        // cf11/DistinctIntegerFixture.effects:I
+  #10 = InterfaceMethodref #28.#38        // java/util/List.remove:(Ljava/lang/Object;)Z
+  #11 = InterfaceMethodref #28.#39        // java/util/List.size:()I
+  #12 = InterfaceMethodref #28.#40        // java/util/List.clear:()V
+  #13 = Class              #41            // cf11/DistinctIntegerFixture
+  #14 = Class              #42            // java/lang/Object
+  #15 = Utf8               effects
+  #16 = Utf8               I
+  #17 = Utf8               <init>
+  #18 = Utf8               ()V
+  #19 = Utf8               Code
+  #20 = Utf8               numbers
+  #21 = Utf8               (Ljava/util/List;Ljava/util/List;)V
+  #22 = Utf8               StackMapTable
+  #23 = Class              #43            // java/util/Iterator
+  #24 = Class              #33            // java/lang/Integer
+  #25 = Utf8               Signature
+  #26 = Utf8               (Ljava/util/List<Ljava/lang/Integer;>;Ljava/util/List<Ljava/lang/Integer;>;)V
+  #27 = NameAndType        #17:#18        // "<init>":()V
+  #28 = Class              #44            // java/util/List
+  #29 = NameAndType        #45:#46        // iterator:()Ljava/util/Iterator;
+  #30 = Class              #43            // java/util/Iterator
+  #31 = NameAndType        #47:#48        // hasNext:()Z
+  #32 = NameAndType        #49:#50        // next:()Ljava/lang/Object;
+  #33 = Utf8               java/lang/Integer
+  #34 = NameAndType        #51:#52        // equals:(Ljava/lang/Object;)Z
+  #35 = NameAndType        #53:#54        // intValue:()I
+  #36 = NameAndType        #55:#52        // add:(Ljava/lang/Object;)Z
+  #37 = NameAndType        #15:#16        // effects:I
+  #38 = NameAndType        #56:#52        // remove:(Ljava/lang/Object;)Z
+  #39 = NameAndType        #57:#54        // size:()I
+  #40 = NameAndType        #58:#18        // clear:()V
+  #41 = Utf8               cf11/DistinctIntegerFixture
+  #42 = Utf8               java/lang/Object
+  #43 = Utf8               java/util/Iterator
+  #44 = Utf8               java/util/List
+  #45 = Utf8               iterator
+  #46 = Utf8               ()Ljava/util/Iterator;
+  #47 = Utf8               hasNext
+  #48 = Utf8               ()Z
+  #49 = Utf8               next
+  #50 = Utf8               ()Ljava/lang/Object;
+  #51 = Utf8               equals
+  #52 = Utf8               (Ljava/lang/Object;)Z
+  #53 = Utf8               intValue
+  #54 = Utf8               ()I
+  #55 = Utf8               add
+  #56 = Utf8               remove
+  #57 = Utf8               size
+  #58 = Utf8               clear
+{
+  public static int effects;
+    descriptor: I
+    flags: ACC_PUBLIC, ACC_STATIC
+
+  public cf11.DistinctIntegerFixture();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void numbers(java.util.List<java.lang.Integer>, java.util.List<java.lang.Integer>);
+    descriptor: (Ljava/util/List;Ljava/util/List;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=7, args_size=3
+         0: aload_1
+         1: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         6: astore_3
+         7: aload_3
+         8: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        13: ifeq          119
+        16: aload_3
+        17: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        22: checkcast     #5                  // class java/lang/Integer
+        25: astore        4
+        27: aload_2
+        28: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        33: astore        5
+        35: aload         5
+        37: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        42: ifeq          116
+        45: aload         5
+        47: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        52: checkcast     #5                  // class java/lang/Integer
+        55: astore        6
+        57: aload         4
+        59: aload         6
+        61: invokevirtual #6                  // Method java/lang/Integer.equals:(Ljava/lang/Object;)Z
+        64: ifeq          113
+        67: aload         4
+        69: invokevirtual #7                  // Method java/lang/Integer.intValue:()I
+        72: iconst_5
+        73: if_icmpne     96
+        76: aload_2
+        77: aload         4
+        79: invokeinterface #8,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+        84: pop
+        85: getstatic     #9                  // Field effects:I
+        88: iconst_1
+        89: iadd
+        90: putstatic     #9                  // Field effects:I
+        93: goto          113
+        96: aload_1
+        97: aload         6
+        99: invokeinterface #10,  2           // InterfaceMethod java/util/List.remove:(Ljava/lang/Object;)Z
+       104: pop
+       105: getstatic     #9                  // Field effects:I
+       108: iconst_1
+       109: iadd
+       110: putstatic     #9                  // Field effects:I
+       113: goto          35
+       116: goto          7
+       119: aload_2
+       120: invokeinterface #11,  1           // InterfaceMethod java/util/List.size:()I
+       125: ifle          142
+       128: aload_1
+       129: invokeinterface #12,  1           // InterfaceMethod java/util/List.clear:()V
+       134: getstatic     #9                  // Field effects:I
+       137: iconst_1
+       138: iadd
+       139: putstatic     #9                  // Field effects:I
+       142: return
+      StackMapTable: number_of_entries = 7
+        frame_type = 252 /* append */
+          offset_delta = 7
+          locals = [ class java/util/Iterator ]
+        frame_type = 253 /* append */
+          offset_delta = 27
+          locals = [ class java/lang/Integer, class java/util/Iterator ]
+        frame_type = 252 /* append */
+          offset_delta = 60
+          locals = [ class java/lang/Integer ]
+        frame_type = 250 /* chop */
+          offset_delta = 16
+        frame_type = 249 /* chop */
+          offset_delta = 2
+        frame_type = 250 /* chop */
+          offset_delta = 2
+        frame_type = 22 /* same */
+    Signature: #26                          // (Ljava/util/List<Ljava/lang/Integer;>;Ljava/util/List<Ljava/lang/Integer;>;)V
+}

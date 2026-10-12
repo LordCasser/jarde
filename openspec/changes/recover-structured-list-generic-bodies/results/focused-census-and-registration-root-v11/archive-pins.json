@@ -1,0 +1,18 @@
+{
+  "summary.json": {
+    "bytes": 3191,
+    "sha256": "34e1450047e17c0f0aed0e0b2c759b84f2d81212ac3114f0628ce07c75856d25"
+  },
+  "README.md": {
+    "bytes": 1697,
+    "sha256": "933363cde436dc537170850f976d1ed2827f08ff7d15f5c5b31cf4e5122e31bb"
+  },
+  "captures.tar.gz": {
+    "bytes": 1822128,
+    "sha256": "94bb7b1bfc21f0673b80e5a3f4014ea2ddb83e77835d822a82774e086e806922"
+  },
+  "tooling.tar.gz": {
+    "bytes": 23898,
+    "sha256": "3178d692a28eff509ee4d89c7932f1e174f52178e040930a7e9f5f1fde8cbfc1"
+  }
+}

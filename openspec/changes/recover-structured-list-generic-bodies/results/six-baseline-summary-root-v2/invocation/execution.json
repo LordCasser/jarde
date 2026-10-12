@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-cf11-structured-list-baseline-summary-checker-root-v2/summarize_baselines.py",
+    "--out",
+    "/private/tmp/jarde-cf11-structured-list-baseline-summary-root-v2.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T04:41:38.068181+00:00",
+  "finished_at": "2026-10-12T04:41:38.565048+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-structured-list-baseline-summary-invocation-root-v2/stdout.raw",
+      "bytes": 205,
+      "sha256": "292960c33174a837765d1fa4935c58e646637452953f51bdef615dc6f266b540"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-structured-list-baseline-summary-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

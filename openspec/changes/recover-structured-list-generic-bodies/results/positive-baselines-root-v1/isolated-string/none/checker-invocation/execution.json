@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py",
+    "--execution",
+    "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/execution.json",
+    "--out",
+    "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-observation-root-v1.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T04:20:29.354844+00:00",
+  "finished_at": "2026-10-12T04:20:29.568133+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-accept-invocation-root-v1/stdout.raw",
+      "bytes": 367,
+      "sha256": "5f1448b2fe231578d2d603868394d61a02db41bd2368ae83829fef4f22fa49dd"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-accept-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

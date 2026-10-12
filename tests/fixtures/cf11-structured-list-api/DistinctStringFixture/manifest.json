@@ -1,0 +1,19 @@
+{
+  "schema": "cf11-structured-list-frozen-inputs-root-v1",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.DistinctStringFixture",
+      "source": "DistinctStringFixture.java",
+      "bytes": 732,
+      "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 1435,
+    "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+  }
+}

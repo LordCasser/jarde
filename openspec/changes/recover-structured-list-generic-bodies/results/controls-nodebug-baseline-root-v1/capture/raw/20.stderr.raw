@@ -1,0 +1,8 @@
+/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java:200: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 UpstreamNestedLoops
+注: 某些输入文件使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+1 个错误

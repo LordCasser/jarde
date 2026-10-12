@@ -1,0 +1,30 @@
+{
+  "schema": "cf11-structured-list-inner-option-boundary-luna-v2",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.DistinctIntegerFixture",
+      "source": "DistinctIntegerFixture.java",
+      "bytes": 740,
+      "sha256": "067ae158526955a9d04830bd019f54da00699238a184c35b31590c5e4c611191"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 2637,
+    "sha256": "233080b4a54895b362eb572d0ceb1c8e1a9a204efb60e23346d2723b02096f11"
+  },
+  "controls": [
+    "the six isolated-Integer controls from root-v1 remain unchanged",
+    "identity probe uses distinct new Integer(5) references so the add branch executes"
+  ],
+  "expected_identity_observation": {
+    "exception": "java.util.ConcurrentModificationException",
+    "right": "[5, 5]",
+    "addedSameAsInner": true,
+    "addedSameAsOuter": false
+  },
+  "source_edit_from_isolated_integer_v1": "available.add(value) -> available.add(option)"
+}

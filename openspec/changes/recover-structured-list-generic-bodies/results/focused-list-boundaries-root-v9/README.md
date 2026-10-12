@@ -1,0 +1,11 @@
+# v9 实际 List 边界验证
+
+root审查私有initializer库存补丁后应用：Declare init和Assign复用同一库存与statement/value BCI、cast type及lexical scopes，不新增实体或pass。v8实际inner通过、仅预算计数断言旧值失败，root按实际25299更新并保留失败；同时保留调用key校验，去掉unused变量。v4 runner源码与v3相同，只fresh测试源pin及4822元数据。
+
+本轮六条命令全部exit0：HEAD/fmt、7公开API通过1ignored、371 library测试通过、CLI build、finallyclean。公开回归含三profile/raw物理来源、String/Integer、inner element、Null、raw/alias/参数写/wildcard/重载/handler泛型拒绝、precancel和实测最终证明阶段lateStop。原始map按RecoveryReport.text校验，与投影Method.text区分。全部4822源码输入前后逐byte一致，无资源停止，峰值target747983549 bytes，最后target absent/defaultstack。runner实际退出0。
+
+CLI freeze root-v2为61924480 bytes，SHA bf9757a42d70cb01909466595baa4ecfdbfed7cd585527e008944290ce7736b9、mode0555。receipt SHA38c778201ed6166c690d96c96183954882a23e28c0b43864f7bc3c9908c7c917。此为focused验证，尚不证明fresh全workspace/自身CI/最终main交付；六家族12份最终整类对照正在执行。
+
+只读反例归因原稿保留于压缩档。root按原classfile独立重读alias的aload_1→astore_3、参数reassigned的astore_1、对象/索引两个remove BCI，以及handler exception_count=1，与javap和报告相符。物理null-cast变体未另实测，审查确认Null/aconst_null唯一SSA门不接受Cast child；不把该控制误称为已跑过。handler explanation_only与局部生命期债务独立于泛型拒绝。
+
+所有原始receipt/raw/工具/审计来源原样归档，外置路径不改写。capture.tar.gz按archive-pins核压缩byte identity；旧v7/v8失败单列，不能合并成通过。

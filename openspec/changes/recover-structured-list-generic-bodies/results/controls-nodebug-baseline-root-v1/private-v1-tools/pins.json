@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "README.md": {
+      "bytes": 1278,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v1/README.md",
+      "sha256": "fad4dde8565c6866f92a80c4c5c653cb2754e607922dd674405d57ac0e018056"
+    },
+    "check_controls.py": {
+      "bytes": 35890,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v1/check_controls.py",
+      "sha256": "57a84c28638e7b0eadfd342010f637e4d59ede68a61ba59701486fc5ce0d6940"
+    },
+    "collect_controls.py": {
+      "bytes": 17675,
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-prep-luna-v1/collect_controls.py",
+      "sha256": "626ffb194c24cc856abdf98f36f8f7b85b181a93c725fd1bdfcae4389e665647"
+    }
+  },
+  "base_artifacts": {
+    "collector_v3": {
+      "bytes": 17400,
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    "collector_v3_pins": {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/pins.json",
+      "sha256": "04b6091d4243be7e66fe0146a1bcd3351e298660f109269b1f8e64b6e8f1bb82"
+    },
+    "handler_checker_v6": {
+      "bytes": 35542,
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-observation-checker-prep-luna-v1/check_controls.py",
+      "sha256": "d29a82b959a20810700182eb64789f3c22a8ca6b7def49c3b6972d39ba7c126a"
+    }
+  },
+  "compiler_debug_mode": {
+    "choices": [
+      "debug",
+      "none"
+    ],
+    "debug_argv": "-g",
+    "default": "debug",
+    "none_argv": "-g:none",
+    "option": "--source-debug",
+    "receipt_fields": [
+      "compiler_debug_info",
+      "collector_config.source_debug"
+    ]
+  },
+  "handler_fixture": {
+    "exception_table": [
+      {
+        "catch_type": "java/lang/RuntimeException",
+        "end_pc": 47,
+        "handler_pc": 50,
+        "start_pc": 0
+      }
+    ],
+    "method": "handled(Ljava/util/List;Ljava/util/List;)V",
+    "owner": "cf11/UpstreamNestedLoops",
+    "source_sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+  },
+  "schema": "cf11-structured-list-nodebug-tooling-pins-v1",
+  "scope": "private collector/checker preparation; no product or behavior acceptance",
+  "status": "prepared_not_executed",
+  "validation": {
+    "AST_parse": true,
+    "JDK_Cargo_Git_network_shared_edits": false,
+    "collector_or_checker_execution": false,
+    "synthetic_expected_argv_debug_and_none": true
+  }
+}

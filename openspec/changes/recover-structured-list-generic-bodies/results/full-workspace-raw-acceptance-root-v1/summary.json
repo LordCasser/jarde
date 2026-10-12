@@ -1,0 +1,51 @@
+{
+  "schema": "cf11-structured-list-full-workspace-acceptance-v3",
+  "status": "accepted_local_workspace_only",
+  "not_ci_or_product_release_acceptance": true,
+  "execution_sha256": "a230c1a4de86c3d92cc55799bd36be586eacbcffae81f1b5ee8b3df6e01d52c8",
+  "execution_runner_status": "failed",
+  "execution_runner_error": "RuntimeError: required workspace tests did not pass by exact name: ['diagnose_late_analysis_stop_phase_without_assuming_raw_map_is_empty']",
+  "runner_bookkeeping": {
+    "status": "failed_only_at_required_name_summary",
+    "exact_error": "RuntimeError: required workspace tests did not pass by exact name: ['diagnose_late_analysis_stop_phase_without_assuming_raw_map_is_empty']",
+    "sole_misclassified_name": "diagnose_late_analysis_stop_phase_without_assuming_raw_map_is_empty",
+    "correct_outcome": "ignored"
+  },
+  "raw_execution_result": "all_same_run_targets_passed",
+  "execution_aggregate_totals_were_unwritten": true,
+  "focused_receipt_sha256": "0a2acef11bc45b2614d98b282e42842859d9502c4d211643c294db429dc31e83",
+  "source_pin_count": 4822,
+  "target_count": 364,
+  "batch_count_per_seed": 96,
+  "seeds": [
+    "5350648285461741569",
+    "5350648285461741570"
+  ],
+  "target_associated_suite_count_per_seed": {
+    "5350648285461741569": 364,
+    "5350648285461741570": 364
+  },
+  "matched_focused_gates_per_seed": {
+    "5350648285461741569": {
+      "structured_list_generic_bodies": "7 passed / 1 ignored",
+      "jarde_java_lib": "375 passed",
+      "reader_census": "passed once",
+      "p5_corpus_fingerprint": "5 passed / 1 ignored"
+    },
+    "5350648285461741570": {
+      "structured_list_generic_bodies": "7 passed / 1 ignored",
+      "jarde_java_lib": "375 passed",
+      "reader_census": "passed once",
+      "p5_corpus_fingerprint": "5 passed / 1 ignored"
+    }
+  },
+  "test_totals": {
+    "passed": 7004,
+    "failed": 0,
+    "ignored": 196,
+    "target_summary_count": 728,
+    "named_test_outcome_count": 7200
+  },
+  "raw_stream_count": 390,
+  "target_absent": true
+}

@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1227,
+      "sha256": "0bd215cf005c187a64d9587ff333032d167c3ef41c140a805f6c6072fa8808da"
+    },
+    {
+      "path": "batch.json",
+      "bytes": 39996,
+      "sha256": "cf7c08909d8daed4ee7f3e2095af86bf2ed9e1040361494f600b00473d4bf363"
+    },
+    {
+      "path": "captures.tar.gz",
+      "bytes": 1431866,
+      "sha256": "8b5d700ef077503ec6c3bc3e7963e315cbda73d97b709456a1e7bd44e73e4cb7"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "status": "actual_workspace_failure",
+  "receipt_status": "failed",
+  "receipt_error": "RuntimeError: batch 65 summary/artifact cardinality mismatch",
+  "failed_command_index": 65,
+  "failed_command_exit": 101,
+  "failed_guard_stop": null,
+  "actual_completed_test_summaries_in_failed_batch": [
+    {
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 1,
+      "raw_line": "test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.53s"
+    },
+    {
+      "status": "ok",
+      "passed": 29,
+      "failed": 0,
+      "ignored": 1,
+      "raw_line": "test result: ok. 29 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.09s"
+    },
+    {
+      "status": "FAILED",
+      "passed": 4,
+      "failed": 1,
+      "ignored": 1,
+      "raw_line": "test result: FAILED. 4 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+    }
+  ],
+  "source_closure_unchanged": true,
+  "cleanup_status": "passed",
+  "target_absent": true
+}

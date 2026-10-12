@@ -1,0 +1,14 @@
+{
+  "schema": "cf11-workspace-postrun-bookkeeping-observation-v1",
+  "status": "all_commands_zero_independent_target_acceptance_pending",
+  "execution_sha256": "a230c1a4de86c3d92cc55799bd36be586eacbcffae81f1b5ee8b3df6e01d52c8",
+  "execution_status": "failed",
+  "execution_error": "RuntimeError: required workspace tests did not pass by exact name: ['diagnose_late_analysis_stop_phase_without_assuming_raw_map_is_empty']",
+  "commands": 195,
+  "batch_count_per_seed": 96,
+  "source_pin_count": 4822,
+  "source_pins_before_after_equal": true,
+  "cleanup_status": "passed",
+  "target_absent": true,
+  "scope": "Only command terminal outcomes and preserved capture; not a green runner or full-target acceptance."
+}

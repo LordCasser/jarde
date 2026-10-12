@@ -1,0 +1,2072 @@
+{
+  "status": "accepted_same_run_physical_and_ssa_observations",
+  "scope": "Code/SSA/effects/operations plus physical javap Signature supplement; not a workspace or product delivery pass",
+  "capture_sha256": "f040abf94090707c54ee1721de0f854f8a600f0701154f29707b58f4b34745ad",
+  "review_parser_sha256": "ed7c46b2a4fee55444f141394e10fc11e9beae7b6aef94ce2824832103755f4c",
+  "root_acceptor_sha256": "6cf3d8973860dfc82f1f2c20e3197a9811b6b8c8642fcbbac9f2db40caba6d34",
+  "restored_source_count": 4822,
+  "events": [
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "test",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 45,
+      "ssa_values": 57,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 88,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 103,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 112,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "renamed",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 45,
+      "ssa_values": 57,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 88,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 103,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 112,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "numbers",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 45,
+      "ssa_values": 57,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 88,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 103,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 112,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "castBoundary",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 39,
+      "ssa_values": 54,
+      "physical_cast_bcis": [
+        26,
+        60
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 31,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 75,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "rawLists",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 41,
+      "ssa_values": 51,
+      "physical_cast_bcis": [],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 24,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 61,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 70,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 79,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "rawAliasEscape",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 33,
+      "ssa_values": 39,
+      "physical_cast_bcis": [
+        27,
+        69
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 2,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 44,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "reassigned",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 22,
+      "ssa_values": 24,
+      "physical_cast_bcis": [
+        24
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 1,
+          "opcode": 76,
+          "reads": [],
+          "writes": [
+            {
+              "slot": 1,
+              "value": 8
+            }
+          ]
+        },
+        {
+          "bci": 2,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 8
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 29,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "wildcardNull",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 24,
+      "ssa_values": 25,
+      "physical_cast_bcis": [
+        22
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 35,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "handled",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 26,
+      "ssa_values": 41,
+      "physical_cast_bcis": [
+        22
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "controls",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "indexOverload",
+      "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+      "code_instructions": 17,
+      "ssa_values": 17,
+      "physical_cast_bcis": [],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 1,
+          "opcode": 45,
+          "reads": [
+            {
+              "slot": 3,
+              "value": 3
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 8,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 9,
+          "opcode": 21,
+          "reads": [
+            {
+              "slot": 4,
+              "value": 4
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 17,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 18,
+          "opcode": 45,
+          "reads": [
+            {
+              "slot": 3,
+              "value": 3
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "fixed",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "test",
+      "class_path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class",
+      "class_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "code_instructions": 45,
+      "ssa_values": 57,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 88,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 103,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 112,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "fixed",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "test",
+      "class_path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class",
+      "class_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "code_instructions": 45,
+      "ssa_values": 57,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 88,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 103,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 112,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "fixed",
+      "class": "cf11/UpstreamNestedLoops",
+      "method": "test",
+      "class_path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class",
+      "class_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "code_instructions": 45,
+      "ssa_values": 57,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 88,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 103,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 112,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "distinct",
+      "class": "cf11/DistinctStringFixture",
+      "method": "renamed",
+      "class_path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture.class",
+      "class_sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028",
+      "code_instructions": 57,
+      "ssa_values": 66,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 96,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 119,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 128,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "distinct",
+      "class": "cf11/DistinctIntegerFixture",
+      "method": "numbers",
+      "class_path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture.class",
+      "class_sha256": "276f83ce80f41b44a8435ff3bc96bb2391e34fb92edb1a8371ffef1eeaa39a12",
+      "code_instructions": 57,
+      "ssa_values": 66,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 96,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 119,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 128,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "inner",
+      "class": "cf11/DistinctIntegerFixture",
+      "method": "numbers",
+      "class_path": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.class",
+      "class_sha256": "935d0c2aed93723ee59b0c407dec4e999c4bc11a8593b07765f122f5f9761d2d",
+      "code_instructions": 57,
+      "ssa_values": 66,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 96,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 119,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 128,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "null",
+      "class": "cf11/NullStringListFixture",
+      "method": "strings",
+      "class_path": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.class",
+      "class_sha256": "ac8681e77fe2f641a24da40be401871aa3008fdf970d8d83cea1ecbf9a5d44d6",
+      "code_instructions": 57,
+      "ssa_values": 66,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 95,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 118,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 127,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    },
+    {
+      "label": "null",
+      "class": "cf11/NullIntegerListFixture",
+      "method": "integers",
+      "class_path": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.class",
+      "class_sha256": "4433d50823d9ba85a6a2838d7460197676860eb1201b01bb227c8314705a866b",
+      "code_instructions": 57,
+      "ssa_values": 66,
+      "physical_cast_bcis": [
+        22,
+        52
+      ],
+      "formal_accesses": [
+        {
+          "bci": 0,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 27,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 76,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 95,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 118,
+          "opcode": 44,
+          "reads": [
+            {
+              "slot": 2,
+              "value": 2
+            }
+          ],
+          "writes": []
+        },
+        {
+          "bci": 127,
+          "opcode": 43,
+          "reads": [
+            {
+              "slot": 1,
+              "value": 1
+            }
+          ],
+          "writes": []
+        }
+      ]
+    }
+  ],
+  "wildcard_signature_javap": {
+    "path": "/private/tmp/jarde-cf11-structured-list-current-controls-debug-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+    "sha256": "be9ab52548fd4088dc7248591bfcf200058ca178e02e6c16bbda2085da44d760",
+    "signature": "(Ljava/util/List<+Ljava/lang/Number;>;Ljava/util/List<Ljava/lang/Number;>;)V"
+  },
+  "reader_census_independent_attribution": {
+    "status": "independently_attributed_added_fixture_delta",
+    "parser_path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469",
+    "before": [
+      1133,
+      4995,
+      473,
+      3048,
+      10
+    ],
+    "added": [
+      7,
+      23,
+      1,
+      93,
+      0
+    ],
+    "after": [
+      1140,
+      5018,
+      474,
+      3141,
+      10
+    ],
+    "methods": [
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture.class",
+        "class_sha256": "276f83ce80f41b44a8435ff3bc96bb2391e34fb92edb1a8371ffef1eeaa39a12",
+        "owner": "cf11/DistinctIntegerFixture",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture.class",
+        "class_sha256": "276f83ce80f41b44a8435ff3bc96bb2391e34fb92edb1a8371ffef1eeaa39a12",
+        "owner": "cf11/DistinctIntegerFixture",
+        "method": "numbers",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 143,
+        "instruction_count": 57,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 119
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 116
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 113
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 96
+          },
+          {
+            "bci": 93,
+            "opcode": 167,
+            "target": 113
+          },
+          {
+            "bci": 113,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 116,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 125,
+            "opcode": 158,
+            "target": 142
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture.class",
+        "class_sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028",
+        "owner": "cf11/DistinctStringFixture",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture.class",
+        "class_sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028",
+        "owner": "cf11/DistinctStringFixture",
+        "method": "renamed",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 143,
+        "instruction_count": 57,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 119
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 116
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 113
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 96
+          },
+          {
+            "bci": 93,
+            "opcode": 167,
+            "target": 113
+          },
+          {
+            "bci": 113,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 116,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 125,
+            "opcode": 158,
+            "target": 142
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class",
+        "class_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class",
+        "class_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "test",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 119,
+        "instruction_count": 45,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 103
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 100
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 97
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 88
+          },
+          {
+            "bci": 85,
+            "opcode": 167,
+            "target": 97
+          },
+          {
+            "bci": 97,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 100,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 109,
+            "opcode": 158,
+            "target": 118
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "test",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 119,
+        "instruction_count": 45,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 103
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 100
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 97
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 88
+          },
+          {
+            "bci": 85,
+            "opcode": 167,
+            "target": 97
+          },
+          {
+            "bci": 97,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 100,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 109,
+            "opcode": 158,
+            "target": 118
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "renamed",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 119,
+        "instruction_count": 45,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 103
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 100
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 97
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 88
+          },
+          {
+            "bci": 85,
+            "opcode": 167,
+            "target": 97
+          },
+          {
+            "bci": 97,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 100,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 109,
+            "opcode": 158,
+            "target": 118
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "numbers",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 119,
+        "instruction_count": 45,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 103
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 100
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 97
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 88
+          },
+          {
+            "bci": 85,
+            "opcode": 167,
+            "target": 97
+          },
+          {
+            "bci": 97,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 100,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 109,
+            "opcode": 158,
+            "target": 118
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "castBoundary",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 99,
+        "instruction_count": 39,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 98
+          },
+          {
+            "bci": 46,
+            "opcode": 153,
+            "target": 95
+          },
+          {
+            "bci": 72,
+            "opcode": 153,
+            "target": 92
+          },
+          {
+            "bci": 92,
+            "opcode": 167,
+            "target": 39
+          },
+          {
+            "bci": 95,
+            "opcode": 167,
+            "target": 7
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "rawLists",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 102,
+        "instruction_count": 41,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 101
+          },
+          {
+            "bci": 39,
+            "opcode": 153,
+            "target": 98
+          },
+          {
+            "bci": 58,
+            "opcode": 153,
+            "target": 95
+          },
+          {
+            "bci": 95,
+            "opcode": 167,
+            "target": 32
+          },
+          {
+            "bci": 98,
+            "opcode": 167,
+            "target": 7
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "rawAliasEscape",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 86,
+        "instruction_count": 33,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 17,
+            "opcode": 153,
+            "target": 44
+          },
+          {
+            "bci": 41,
+            "opcode": 167,
+            "target": 10
+          },
+          {
+            "bci": 59,
+            "opcode": 153,
+            "target": 85
+          },
+          {
+            "bci": 82,
+            "opcode": 167,
+            "target": 52
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "reassigned",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 50,
+        "instruction_count": 22,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 15,
+            "opcode": 153,
+            "target": 49
+          },
+          {
+            "bci": 46,
+            "opcode": 167,
+            "target": 9
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "wildcardNull",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 56,
+        "instruction_count": 24,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 55
+          },
+          {
+            "bci": 52,
+            "opcode": 167,
+            "target": 7
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "handled",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 60,
+        "instruction_count": 26,
+        "handler_count": 1,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 47
+          },
+          {
+            "bci": 44,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 47,
+            "opcode": 167,
+            "target": 59
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+        "class_sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7",
+        "owner": "cf11/UpstreamNestedLoops",
+        "method": "indexOverload",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;Ljava/lang/Integer;I)V",
+        "code_bytes": 34,
+        "instruction_count": 17,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.class",
+        "class_sha256": "935d0c2aed93723ee59b0c407dec4e999c4bc11a8593b07765f122f5f9761d2d",
+        "owner": "cf11/DistinctIntegerFixture",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.class",
+        "class_sha256": "935d0c2aed93723ee59b0c407dec4e999c4bc11a8593b07765f122f5f9761d2d",
+        "owner": "cf11/DistinctIntegerFixture",
+        "method": "numbers",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 143,
+        "instruction_count": 57,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 119
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 116
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 113
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 96
+          },
+          {
+            "bci": 93,
+            "opcode": 167,
+            "target": 113
+          },
+          {
+            "bci": 113,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 116,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 125,
+            "opcode": 158,
+            "target": 142
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.class",
+        "class_sha256": "4433d50823d9ba85a6a2838d7460197676860eb1201b01bb227c8314705a866b",
+        "owner": "cf11/NullIntegerListFixture",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.class",
+        "class_sha256": "4433d50823d9ba85a6a2838d7460197676860eb1201b01bb227c8314705a866b",
+        "owner": "cf11/NullIntegerListFixture",
+        "method": "integers",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 142,
+        "instruction_count": 57,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 118
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 115
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 112
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 95
+          },
+          {
+            "bci": 92,
+            "opcode": 167,
+            "target": 112
+          },
+          {
+            "bci": 112,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 115,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 124,
+            "opcode": 158,
+            "target": 141
+          }
+        ],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.class",
+        "class_sha256": "ac8681e77fe2f641a24da40be401871aa3008fdf970d8d83cea1ecbf9a5d44d6",
+        "owner": "cf11/NullStringListFixture",
+        "method": "<init>",
+        "descriptor": "()V",
+        "code_bytes": 5,
+        "instruction_count": 3,
+        "handler_count": 0,
+        "branch_targets": [],
+        "subroutines": 0
+      },
+      {
+        "class_path": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.class",
+        "class_sha256": "ac8681e77fe2f641a24da40be401871aa3008fdf970d8d83cea1ecbf9a5d44d6",
+        "owner": "cf11/NullStringListFixture",
+        "method": "strings",
+        "descriptor": "(Ljava/util/List;Ljava/util/List;)V",
+        "code_bytes": 142,
+        "instruction_count": 57,
+        "handler_count": 0,
+        "branch_targets": [
+          {
+            "bci": 13,
+            "opcode": 153,
+            "target": 118
+          },
+          {
+            "bci": 42,
+            "opcode": 153,
+            "target": 115
+          },
+          {
+            "bci": 64,
+            "opcode": 153,
+            "target": 112
+          },
+          {
+            "bci": 73,
+            "opcode": 160,
+            "target": 95
+          },
+          {
+            "bci": 92,
+            "opcode": 167,
+            "target": 112
+          },
+          {
+            "bci": 112,
+            "opcode": 167,
+            "target": 35
+          },
+          {
+            "bci": 115,
+            "opcode": 167,
+            "target": 7
+          },
+          {
+            "bci": 124,
+            "opcode": 158,
+            "target": 141
+          }
+        ],
+        "subroutines": 0
+      }
+    ]
+  }
+}

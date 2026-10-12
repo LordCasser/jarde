@@ -1,0 +1,52 @@
+{
+  "schema": "cf11-structured-list-full-workspace-acceptance-v2",
+  "status": "accepted_local_workspace_only",
+  "not_ci_or_product_release_acceptance": true,
+  "execution_sha256": "3c2b8d52b4f1927091ea273b2503e371f066efcf64e62c944c5cdfa4cd08a7ba",
+  "focused_receipt_sha256": "74350dfc154c2fd77aa8a9636dd8d29b301eb119e167be56a0f18af011996a73",
+  "source_pin_count": 4822,
+  "target_count": 364,
+  "batch_count_per_seed": 96,
+  "seeds": [
+    "5350648285461741569",
+    "5350648285461741570"
+  ],
+  "target_associated_suite_count_per_seed": {
+    "5350648285461741569": 364,
+    "5350648285461741570": 364
+  },
+  "matched_focused_gates_per_seed": {
+    "5350648285461741569": {
+      "structured_list_generic_bodies": "7 passed / 1 ignored",
+      "jarde_java_lib": "375 passed",
+      "reader_census": "passed once",
+      "p5_corpus_fingerprint": "5 passed / 1 ignored"
+    },
+    "5350648285461741570": {
+      "structured_list_generic_bodies": "7 passed / 1 ignored",
+      "jarde_java_lib": "375 passed",
+      "reader_census": "passed once",
+      "p5_corpus_fingerprint": "5 passed / 1 ignored"
+    }
+  },
+  "test_totals": {
+    "passed": 7004,
+    "failed": 0,
+    "ignored": 196,
+    "target_summary_count": 728,
+    "named_test_outcome_count": 7200
+  },
+  "raw_stream_count": 390,
+  "target_absent": true,
+  "root_two_parser_execution_sha256": "7c5732db96a6f3b43baff0928a304bb23e0a31b16f30a5f9e458c817da563c06",
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/full-workspace-accepted-root-v3/capture-and-tooling.tar.gz",
+    "bytes": 2455469,
+    "sha256": "539dcb5c1df1200273831658994fbd461400b413b05fed5d410a667d94955e96"
+  },
+  "tooling": {
+    "workspace_runner_sha256": "91f8065cf3ab9cb0d8ad13e45d3ea5851f89547c738c8699db9ad1d004d136ca",
+    "workspace_acceptor_sha256": "09d478dcfac1aa6df1335b0ef86b90a5b17315051c563167d73a32072ed9019d",
+    "own_ci_verifier_sha256": "27af3f0f7d8534223392fb50bd72318fd462e80b6526994d458d02354bf2e17e"
+  }
+}

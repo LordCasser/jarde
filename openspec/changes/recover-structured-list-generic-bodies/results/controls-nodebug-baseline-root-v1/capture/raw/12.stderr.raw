@@ -1,0 +1,11 @@
+/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-none/UpstreamNestedLoops.java:89: 错误: 对于add(Integer), 找不到合适的方法
+            list.add(it.next());
+                ^
+    方法 Collection.add(String)不适用
+      (参数不匹配; Integer无法转换为String)
+    方法 List.add(String)不适用
+      (参数不匹配; Integer无法转换为String)
+注: 某些输入文件使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+1 个错误

@@ -1,0 +1,6 @@
+{
+  "packaging_command_exit": 1,
+  "failure": "Final progress print reused the archive variable for a task-prefix string and called .stat(); all artifact/task writes had already completed",
+  "independent_archive_hash_and_inner_receipts_verified": true,
+  "local_validation_and_acceptance_unchanged": true
+}

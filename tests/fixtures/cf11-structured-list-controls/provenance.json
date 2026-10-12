@@ -1,0 +1,29 @@
+{
+  "schema": "cf11-negative-api-copied-frozen-inputs-root-v1",
+  "inputs": [
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "destination": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class",
+      "bytes": 4763,
+      "sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/UpstreamNestedLoops.java",
+      "destination": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/Runner.java",
+      "destination": "tests/fixtures/cf11-structured-list-controls/Runner.java",
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/manifest.json",
+      "destination": "tests/fixtures/cf11-structured-list-controls/manifest.json",
+      "bytes": 458,
+      "sha256": "a5a6cda2d7e936b23150340278d4103901be8b16dddad47be8cb0c8828611e00"
+    }
+  ]
+}

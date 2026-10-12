@@ -1136,6 +1136,156 @@
       "path": "tests/fixtures/cf08-two-level-effectful/cf08twolvl/VerifierRunner.java"
     },
     {
+      "blake3": "f0e6b862f473d21c32dfb05048d8d98aa0d9a843b5ce49dd2910c9330873f2d7",
+      "bytes": 1320,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture.class"
+    },
+    {
+      "blake3": "5209c04482ee788cac0f0fb08aef2b194153ca5cfd8e8183c8f51cc8646ca652",
+      "bytes": 739,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture/DistinctIntegerFixture.java"
+    },
+    {
+      "blake3": "af5e3a3f8adf3045c9898390b5943b641fb86651b883ce391737ddaa9fdd99d9",
+      "bytes": 1553,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture/Runner.java"
+    },
+    {
+      "blake3": "7d08878a84be53b15fa22c9ae8634401c5199bf162065ef178f04044661a5997",
+      "bytes": 521,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture/manifest.json"
+    },
+    {
+      "blake3": "4e162dc5a31a38caf1073c527a5299237474d2504f083beb98533f1f804f246d",
+      "bytes": 1310,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture.class"
+    },
+    {
+      "blake3": "277c7ec6fc7304be05f775ac9cbc07481be9229186c676ec06cd2fb073401624",
+      "bytes": 732,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture/DistinctStringFixture.java"
+    },
+    {
+      "blake3": "23b3c2b8183c06166429723c128f248e36c66cde18f515e388c066e5ae78545d",
+      "bytes": 1435,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture/Runner.java"
+    },
+    {
+      "blake3": "22b4d951d9865186736585fed1d22889497dd5238433981245218abba8d935aa",
+      "bytes": 519,
+      "path": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture/manifest.json"
+    },
+    {
+      "blake3": "f4a80e41ceb462c7080feebb621b75b63babd3ee1e62d661f42cb13de5e84182",
+      "bytes": 1213,
+      "path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class"
+    },
+    {
+      "blake3": "e1eb83bc75469fee42b66039a220a13902025fba7bc75b0f5e0a385e87c69751",
+      "bytes": 1348,
+      "path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops/Runner.java"
+    },
+    {
+      "blake3": "4e8be531809ef39b24d8007bc69114d3fe1afcbd5f9eaaa9d2b4d0a17ba0f230",
+      "bytes": 371,
+      "path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops/UpstreamNestedLoops.java"
+    },
+    {
+      "blake3": "ad536e2d63cc8949b3ed63c60525517fbb0dd1921fe89a162360f66273e13f7c",
+      "bytes": 457,
+      "path": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops/manifest.json"
+    },
+    {
+      "blake3": "e3a4c53f8b3f8e790e45246ea17852c38ec572bd8c02ef08f28bb2cd29d56b88",
+      "bytes": 4237,
+      "path": "tests/fixtures/cf11-structured-list-api/provenance.json"
+    },
+    {
+      "blake3": "78efe7f6cfba76ae8e9ddea409b862fcd6a61c89ce130487364a663d0b880845",
+      "bytes": 4728,
+      "path": "tests/fixtures/cf11-structured-list-controls/Runner.java"
+    },
+    {
+      "blake3": "ef560beb5f7193fe11158803c372da79480c3e6d9f78a005e4bd2e76491ba272",
+      "bytes": 4763,
+      "path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class"
+    },
+    {
+      "blake3": "f0a6ab7346b444965e0825f080b4b8e28acf510ce93908d453e652675f40a884",
+      "bytes": 4543,
+      "path": "tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.java"
+    },
+    {
+      "blake3": "b77c2d616e871e438eed94f965726c0454187c57af9ecf62da490f169cb9f785",
+      "bytes": 458,
+      "path": "tests/fixtures/cf11-structured-list-controls/manifest.json"
+    },
+    {
+      "blake3": "082926c618c6b528f99d2ed16dda7dd8327e66ac72c9630711eba13c9e741d14",
+      "bytes": 1349,
+      "path": "tests/fixtures/cf11-structured-list-controls/provenance.json"
+    },
+    {
+      "blake3": "bf32c59a0ef40da35e2af33c7aec19c636f6c4058b646178dc4ae48d87cff532",
+      "bytes": 1320,
+      "path": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.class"
+    },
+    {
+      "blake3": "f93bbc75f73d772b3b3c8309f0fa60f33527e42ca742fb07db366be16773bd6c",
+      "bytes": 740,
+      "path": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.java"
+    },
+    {
+      "blake3": "c3c610d4229138e8a3e2450561b4e995cb78b193cb910680f023ebc5a2bdd58d",
+      "bytes": 2637,
+      "path": "tests/fixtures/cf11-structured-list-inner-option/Runner.java"
+    },
+    {
+      "blake3": "62677c740d6f4eb881d31a916dbf34dcc04ceabf25bfb0a485890902e998724e",
+      "bytes": 987,
+      "path": "tests/fixtures/cf11-structured-list-inner-option/manifest.json"
+    },
+    {
+      "blake3": "b71f3e32ca29b86e16d942879c68a65f2fe1e8103d97d37892c8157052513ab1",
+      "bytes": 1370,
+      "path": "tests/fixtures/cf11-structured-list-inner-option/provenance.json"
+    },
+    {
+      "blake3": "3c2ade8c88b528a1761b3a17e4bebe0b632634e9d212cf3e665530664ee4b2f2",
+      "bytes": 1320,
+      "path": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.class"
+    },
+    {
+      "blake3": "3b12fa981dd231c59f0c689ff5164a544375cdf36c7c61d9383b91fc89aea9af",
+      "bytes": 739,
+      "path": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.java"
+    },
+    {
+      "blake3": "36493f7b96ec21cc3f1433fbee4e6ae89a6ea682d4117f75cbc888962e02d4f4",
+      "bytes": 1309,
+      "path": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.class"
+    },
+    {
+      "blake3": "f102f68ca462a20cd067e8a2da8d7051c7b969247784ce8c0386167f91f966b6",
+      "bytes": 731,
+      "path": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.java"
+    },
+    {
+      "blake3": "0b137886bcb6eec2d643eb415f502e94f9aa693fcc873cb4da3c521d7c30f160",
+      "bytes": 2066,
+      "path": "tests/fixtures/cf11-structured-list-null-api/Runner.java"
+    },
+    {
+      "blake3": "2bf2f4709bf66f289c1c89e4a9f1c8ecaa37cf1e40cd9c008f0125a3045ec8b9",
+      "bytes": 737,
+      "path": "tests/fixtures/cf11-structured-list-null-api/manifest.json"
+    },
+    {
+      "blake3": "bfd94ca676456605fb1295580b1fe393f8094595218e4bc57f45685b6e95d61e",
+      "bytes": 1978,
+      "path": "tests/fixtures/cf11-structured-list-null-api/provenance.json"
+    },
+    {
       "blake3": "bd224b424b0f2b7d9a9566c51f62909b45887c230075b70c2ac080f25ec157f9",
       "bytes": 248,
       "path": "tests/fixtures/class-annotation-uses/src/BoundaryRunner.java"

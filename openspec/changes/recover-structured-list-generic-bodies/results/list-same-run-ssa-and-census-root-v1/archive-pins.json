@@ -1,0 +1,22 @@
+{
+  "summary.json": {
+    "bytes": 48206,
+    "sha256": "2f5be83c0b07187528ac3cb509f11ba371b576965a54ea2c95b9a37da7ea46cf"
+  },
+  "controls-javap.txt": {
+    "bytes": 38717,
+    "sha256": "be9ab52548fd4088dc7248591bfcf200058ca178e02e6c16bbda2085da44d760"
+  },
+  "README.md": {
+    "bytes": 3823,
+    "sha256": "5df457c0f5a2c9f10faa3070653dce48eb5d7af8b70c3ca7bffc2c468a2b6c6f"
+  },
+  "captures.tar.gz": {
+    "bytes": 3442228,
+    "sha256": "3f82b2e362f01d03a0b3af317e3ff00b844850db38c444c930bcbeed89b37f65"
+  },
+  "tooling.tar.gz": {
+    "bytes": 793614,
+    "sha256": "f2f98c09e1985de88674a9ca636aa8519e8769bb6ffdb78cd592ed5d2c2c1a65"
+  }
+}

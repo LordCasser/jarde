@@ -1,0 +1,17 @@
+baseline-both-empty|exception=none|left=[]|right=[]|effects=0
+baseline-unmatched|exception=none|left=[]|right=[right]|effects=0
+baseline-five-character-match-add|exception=java.util.ConcurrentModificationException|left=[abcde, later]|right=[abcde, tail, abcde]|effects=0
+baseline-non-five-match-remove|exception=java.util.ConcurrentModificationException|left=[later, tail]|right=[four]|effects=0
+baseline-remove-continues-and-clears|exception=none|left=[]|right=[four]|effects=0
+baseline-null-first-list|exception=java.lang.NullPointerException|left=null|right=[value]|effects=0
+baseline-null-second-list|exception=java.lang.NullPointerException|left=[value]|right=null|effects=0
+baseline-null-element|exception=java.lang.NullPointerException|left=[null]|right=[value]|effects=0
+renamed-string-positive|exception=java.util.ConcurrentModificationException|left=[alpha, later]|right=[alpha, tail, alpha]|effects=0
+integer-nested-add-positive|exception=java.util.ConcurrentModificationException|left=[5, 8]|right=[5, 9, 5]|effects=0
+explicit-cast-object-boundary|exception=java.util.ConcurrentModificationException|left=[same]|right=[same, same]|effects=1
+raw-list-method-control|exception=java.util.ConcurrentModificationException|left=[]|right=[two, two]|effects=1
+raw-alias-heap-pollution|exception=java.lang.ClassCastException|left=[kept, 7]|right=[7]|effects=1
+parameter-reassignment|exception=java.util.ConcurrentModificationException|left=[original]|right=[replacement, replacement]|effects=1
+wildcard-null-write|exception=java.util.ConcurrentModificationException|left=[3, null]|right=[3]|effects=1
+try-catch-handler|exception=none|left=[one, two]|right=[]|effects=1
+remove-object-and-index-overloads|exception=none|left=[4]|right=[9, 5]|effects=1

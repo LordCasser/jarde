@@ -1,0 +1,1909 @@
+{
+  "schema": "cf11-target-full-source-capture-v2",
+  "status": "observed",
+  "package": "cf11",
+  "classes": [
+    "cf11.UpstreamNestedLoops"
+  ],
+  "runner_class": "cf11.Runner",
+  "compiler_debug_info": "none",
+  "inputs_manifest": {
+    "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/manifest.json",
+    "bytes": 458,
+    "sha256": "a5a6cda2d7e936b23150340278d4103901be8b16dddad47be8cb0c8828611e00"
+  },
+  "inputs_manifest_path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/manifest.json",
+  "input_entries": {
+    "package": "cf11",
+    "source_level": "Java 8",
+    "target_classes": [
+      {
+        "class": "cf11.UpstreamNestedLoops",
+        "source": "UpstreamNestedLoops.java",
+        "bytes": 4543,
+        "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+      }
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:18.465936+00:00",
+      "duration_seconds": 1.0083575830212794,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18590707712,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/1.stderr.raw",
+          "bytes": 137,
+          "sha256": "b5d767584a350877b5e1e0c20b0583f8e008d39faac2d1deb565e398805f725f"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac8-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:19.477114+00:00",
+      "duration_seconds": 1.0102763749891892,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18590400512,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/2.stdout.raw",
+          "bytes": 1753,
+          "sha256": "50ea25f5e9f74bc8d69b3dc945cd9ba006ef9a615a9e149c73e64c33f70f6231"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac8-original-javap-UpstreamNestedLoops",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes",
+        "cf11.UpstreamNestedLoops"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:20.488591+00:00",
+      "duration_seconds": 1.0078263750183396,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18589147136,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/3.stdout.raw",
+          "bytes": 28876,
+          "sha256": "228c68f08861980845f27d8665c3b6abc6d5f06f430964c9535d77e4f0c65c09"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:21.499784+00:00",
+      "duration_seconds": 1.0044729170040227,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18587664384,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/4.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/4.stderr.raw",
+          "bytes": 380,
+          "sha256": "c67d380714b4e1403eb7d03bc2e5c32de04d856fa6837146c621218d54758131"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac23-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:22.505286+00:00",
+      "duration_seconds": 1.004066082998179,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18586447872,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/5.stdout.raw",
+          "bytes": 1753,
+          "sha256": "50ea25f5e9f74bc8d69b3dc945cd9ba006ef9a615a9e149c73e64c33f70f6231"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac23-original-javap-UpstreamNestedLoops",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes",
+        "cf11.UpstreamNestedLoops"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:23.512979+00:00",
+      "duration_seconds": 1.0095494590350427,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18585010176,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/6.stdout.raw",
+          "bytes": 28841,
+          "sha256": "2d4872ffe01cd3940864cdf59e6373cca2756008f95dc4ea3fa0a7777fc2fcc3"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:24.523999+00:00",
+      "duration_seconds": 1.0079697500332259,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18585042944,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/7.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "jadx-default",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jadx/default",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:25.535184+00:00",
+      "duration_seconds": 1.0094620829913765,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18584928256,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/8.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jadx-default/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-default/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:26.549620+00:00",
+      "duration_seconds": 1.0068659999524243,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18583597056,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/9.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/9.stderr.raw",
+          "bytes": 658,
+          "sha256": "d9b5ee816c4d1751d383071f54be676c1f541f148aaa4a5ffbafeafaeb00f576"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jadx-default/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-default/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:27.558872+00:00",
+      "duration_seconds": 1.004491666040849,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18582528000,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/10.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/10.stderr.raw",
+          "bytes": 729,
+          "sha256": "43dd601eeea7cb41cbe83557e722c79bfbff47441991e166065002b5a4dd1858"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "jadx-none",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jadx/none",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:28.566086+00:00",
+      "duration_seconds": 1.004583082976751,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18578051072,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/11.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jadx-none/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-none/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:29.573043+00:00",
+      "duration_seconds": 1.0070945830084383,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18574069760,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/12.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/12.stderr.raw",
+          "bytes": 655,
+          "sha256": "75d48eafc54d63a70e5be94e95967ddbcb9217611cc4acd57f237aa130b57fb8"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jadx-none/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-none/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:30.583131+00:00",
+      "duration_seconds": 1.0061383750289679,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18572034048,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/13.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/13.stderr.raw",
+          "bytes": 726,
+          "sha256": "130ad1f4a35de54fefa500aceb580a8822a02494bb343e962f77fb2584db38cd"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "javac8-jarde-default-UpstreamNestedLoops-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+        "--class",
+        "cf11.UpstreamNestedLoops",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:31.590660+00:00",
+      "duration_seconds": 1.0048939579864964,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18570379264,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/14.stdout.raw",
+          "bytes": 336629,
+          "sha256": "ed87192bb015ad58ba8403daf225f9d85da9077c625562ed8c9efb04766c556e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "javac8-jarde-all-UpstreamNestedLoops-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+        "--class",
+        "cf11.UpstreamNestedLoops",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:32.609552+00:00",
+      "duration_seconds": 1.0074942499632016,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18568466432,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/15.stdout.raw",
+          "bytes": 347774,
+          "sha256": "781011e0e8a0362ad2ce007b9b9bb82ef1b33a4b46bb901246304279edbd28ff"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "javac23-jarde-default-UpstreamNestedLoops-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+        "--class",
+        "cf11.UpstreamNestedLoops",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:33.626126+00:00",
+      "duration_seconds": 1.0048662920016795,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18564399104,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/16.stdout.raw",
+          "bytes": 336628,
+          "sha256": "25319f6c4887ccddbd1a0fac07237334511b854fbf7a2e1a0a688ebf9fd7f3e2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "javac23-jarde-all-UpstreamNestedLoops-render",
+      "argv": [
+        "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+        "--class",
+        "cf11.UpstreamNestedLoops",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:34.637834+00:00",
+      "duration_seconds": 1.0079773340257816,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18558509056,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/17.stdout.raw",
+          "bytes": 347770,
+          "sha256": "0fc20266d568277a1f9381ef165886af40b35fcd539370a2b41c3ff2ea35d8fc"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "javac8-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-default-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:35.658793+00:00",
+      "duration_seconds": 1.008300707966555,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18558238720,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/18.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/18.stderr.raw",
+          "bytes": 438,
+          "sha256": "991b2b0e32823ff9e9d57ca7f5b0487c52958fff349e557989fe6ec207e682db"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "javac8-jarde-default-isolated-UpstreamNestedLoops-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-default-isolated-UpstreamNestedLoops/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-default-isolated-UpstreamNestedLoops/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-default-isolated-UpstreamNestedLoops/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:36.668495+00:00",
+      "duration_seconds": 1.0070940839941613,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18558750720,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/19.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/19.stderr.raw",
+          "bytes": 438,
+          "sha256": "991b2b0e32823ff9e9d57ca7f5b0487c52958fff349e557989fe6ec207e682db"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "javac8-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-all-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:37.676983+00:00",
+      "duration_seconds": 1.0025105840177275,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18562134016,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/20.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/20.stderr.raw",
+          "bytes": 434,
+          "sha256": "87cb575f8b4af1300f81804550612431edaacfd657d8e3b34822aaf33caadea7"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "javac8-jarde-all-isolated-UpstreamNestedLoops-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-all-isolated-UpstreamNestedLoops/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-all-isolated-UpstreamNestedLoops/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-jarde-all-isolated-UpstreamNestedLoops/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:38.680927+00:00",
+      "duration_seconds": 1.007235583034344,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18561863680,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/21.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/21.stderr.raw",
+          "bytes": 434,
+          "sha256": "87cb575f8b4af1300f81804550612431edaacfd657d8e3b34822aaf33caadea7"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "label": "javac23-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-default-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:39.689872+00:00",
+      "duration_seconds": 1.00924483302515,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18551812096,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/22.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/22.stderr.raw",
+          "bytes": 682,
+          "sha256": "41589b270a1117093aa57e7f7aac29f9718f140209b068f17220b9ba8d8a31c8"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "label": "javac23-jarde-default-isolated-UpstreamNestedLoops-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-default-isolated-UpstreamNestedLoops/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-default-isolated-UpstreamNestedLoops/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-default-isolated-UpstreamNestedLoops/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:40.701067+00:00",
+      "duration_seconds": 1.0071122499648482,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18531266560,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/23.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/23.stderr.raw",
+          "bytes": 682,
+          "sha256": "41589b270a1117093aa57e7f7aac29f9718f140209b068f17220b9ba8d8a31c8"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "label": "javac23-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-all-combined/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:41.709884+00:00",
+      "duration_seconds": 1.003535749972798,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18514604032,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/24.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/24.stderr.raw",
+          "bytes": 678,
+          "sha256": "1a078ca321c55f9823a47df047bb16340ad0f625ffb277cf02d084c10f2dc2cd"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "label": "javac23-jarde-all-isolated-UpstreamNestedLoops-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g:none",
+        "-classpath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-all-isolated-UpstreamNestedLoops/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-all-isolated-UpstreamNestedLoops/empty-paths",
+        "-d",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-jarde-all-isolated-UpstreamNestedLoops/classes",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-12T04:18:42.715094+00:00",
+      "duration_seconds": 1.007424833951518,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 18492346368,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/25.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/raw/25.stderr.raw",
+          "bytes": 678,
+          "sha256": "1a078ca321c55f9823a47df047bb16340ad0f625ffb277cf02d084c10f2dc2cd"
+        }
+      }
+    }
+  ],
+  "original_compile_rows": [
+    {
+      "label": "javac8-original",
+      "compile_command": "javac8-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+          "bytes": 4543,
+          "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/Runner.class",
+          "bytes": 5922,
+          "sha256": "ae7ebede3cb92e7299ca97366210b45f60611413f806bda3d59a6edd9fb5446d"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops.class",
+          "bytes": 2760,
+          "sha256": "4e257f82a27b2155d5b20e1a31ff35868b6a05b9a3ff08b3c88212c2ee9563ff"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-original",
+      "compile_command": "javac23-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+          "bytes": 4543,
+          "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [
+        "cf11/Runner.class",
+        "cf11/UpstreamNestedLoops.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/Runner.class",
+          "bytes": 5514,
+          "sha256": "77493e03a1eaa1c2596f395117451e8e97f3f17da16411fd29a964cac4aed017"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+          "bytes": 2742,
+          "sha256": "aa797bd552ced726c8e4c9028dad63bc8de8e6c462ae79130f0a58fd036866fe"
+        }
+      ],
+      "runtime_comparison": null
+    }
+  ],
+  "javap": [
+    {
+      "class": "cf11.UpstreamNestedLoops",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-UpstreamNestedLoops",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac8-original/javap-UpstreamNestedLoops.txt",
+        "bytes": 28876,
+        "sha256": "228c68f08861980845f27d8665c3b6abc6d5f06f430964c9535d77e4f0c65c09"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.UpstreamNestedLoops",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-UpstreamNestedLoops",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+        "bytes": 28841,
+        "sha256": "2d4872ffe01cd3940864cdf59e6373cca2756008f95dc4ea3fa0a7777fc2fcc3"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jadx": {
+    "version_command": "jadx-version",
+    "version_exit": 0,
+    "version_stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+    "version_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jar_pin": {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/for-condition-controls.jar",
+      "bytes": 2900,
+      "sha256": "2c690857774b6c672d71e0b880e06b40f254fdad3f091cef0c67aa7710741761"
+    },
+    "jar_entries": [
+      "cf11.UpstreamNestedLoops"
+    ],
+    "profiles": {
+      "default": {
+        "command": "jadx-default",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jadx/default/sources/cf11/UpstreamNestedLoops.java",
+            "bytes": 3580,
+            "sha256": "b9bcf72a51194a973c006ddb2c3080f945ee6a07b1a60acc33fde668ea097409"
+          }
+        ],
+        "names": [
+          "UpstreamNestedLoops.java"
+        ],
+        "packages": [
+          "cf11"
+        ],
+        "exact_target_sources": true
+      },
+      "none": {
+        "command": "jadx-none",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jadx/none/sources/cf11/UpstreamNestedLoops.java",
+            "bytes": 3580,
+            "sha256": "b9bcf72a51194a973c006ddb2c3080f945ee6a07b1a60acc33fde668ea097409"
+          }
+        ],
+        "names": [
+          "UpstreamNestedLoops.java"
+        ],
+        "packages": [
+          "cf11"
+        ],
+        "exact_target_sources": true
+      }
+    }
+  },
+  "jadx_compile_rows": [
+    {
+      "label": "javac8-jadx-default",
+      "compile_command": "javac8-jadx-default-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-default/UpstreamNestedLoops.java",
+          "bytes": 3580,
+          "sha256": "b9bcf72a51194a973c006ddb2c3080f945ee6a07b1a60acc33fde668ea097409"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_command": "javac23-jadx-default-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-default/UpstreamNestedLoops.java",
+          "bytes": 3580,
+          "sha256": "b9bcf72a51194a973c006ddb2c3080f945ee6a07b1a60acc33fde668ea097409"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_command": "javac8-jadx-none-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-none/UpstreamNestedLoops.java",
+          "bytes": 3580,
+          "sha256": "b9bcf72a51194a973c006ddb2c3080f945ee6a07b1a60acc33fde668ea097409"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_command": "javac23-jadx-none-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/jadx-none/UpstreamNestedLoops.java",
+          "bytes": 3580,
+          "sha256": "b9bcf72a51194a973c006ddb2c3080f945ee6a07b1a60acc33fde668ea097409"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    }
+  ],
+  "jarde_profiles": [
+    {
+      "label": "javac8-jarde-default-UpstreamNestedLoops",
+      "class": "cf11.UpstreamNestedLoops",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-UpstreamNestedLoops-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "ed87192bb015ad58ba8403daf225f9d85da9077c625562ed8c9efb04766c556e",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-default-UpstreamNestedLoops/report.json",
+        "bytes": 1244908,
+        "sha256": "0f1ed64905de8d22aaf772dfd418bf0b10a03427043947f7b4ed09a83e6d48a3"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "bytes": 11344,
+        "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 70922,
+          "archive_entries": 0,
+          "attribute_bytes": 4248,
+          "class_bytes": 5520,
+          "class_headers": 1,
+          "code_bytes": 849,
+          "dependency_depth": 0,
+          "elapsed_millis": 18,
+          "entry_bytes": 0,
+          "input_bytes": 2760,
+          "ir_edges": 1327,
+          "ir_items": 15250,
+          "method_bodies": 11,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 21451,
+          "read_bytes": 2760,
+          "result_items": 45
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-UpstreamNestedLoops",
+      "class": "cf11.UpstreamNestedLoops",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-UpstreamNestedLoops-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "781011e0e8a0362ad2ce007b9b9bb82ef1b33a4b46bb901246304279edbd28ff",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/report.json",
+        "bytes": 1271506,
+        "sha256": "ca8208fbcefd849ca1f585911ba86f243daa3e4869334517b24e41151d3583ac"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "bytes": 11344,
+        "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 70922,
+          "archive_entries": 0,
+          "attribute_bytes": 4248,
+          "class_bytes": 5520,
+          "class_headers": 1,
+          "code_bytes": 849,
+          "dependency_depth": 0,
+          "elapsed_millis": 30,
+          "entry_bytes": 0,
+          "input_bytes": 2760,
+          "ir_edges": 1327,
+          "ir_items": 15313,
+          "method_bodies": 11,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 21451,
+          "read_bytes": 2760,
+          "result_items": 45
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-UpstreamNestedLoops",
+      "class": "cf11.UpstreamNestedLoops",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-UpstreamNestedLoops-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "25319f6c4887ccddbd1a0fac07237334511b854fbf7a2e1a0a688ebf9fd7f3e2",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+        "bytes": 1244907,
+        "sha256": "7c13128edf334c20426d1a5bb07f09e1996dcae195abbf53931bd0a97d5a8507"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "bytes": 11344,
+        "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 70868,
+          "archive_entries": 0,
+          "attribute_bytes": 4248,
+          "class_bytes": 5484,
+          "class_headers": 1,
+          "code_bytes": 849,
+          "dependency_depth": 0,
+          "elapsed_millis": 22,
+          "entry_bytes": 0,
+          "input_bytes": 2742,
+          "ir_edges": 1327,
+          "ir_items": 15250,
+          "method_bodies": 11,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 21433,
+          "read_bytes": 2742,
+          "result_items": 45
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-UpstreamNestedLoops",
+      "class": "cf11.UpstreamNestedLoops",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-UpstreamNestedLoops-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "0fc20266d568277a1f9381ef165886af40b35fcd539370a2b41c3ff2ea35d8fc",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-all-UpstreamNestedLoops/report.json",
+        "bytes": 1271502,
+        "sha256": "c53f1dc3897660b884037a8932c9625d094af6b06cb793f62f449d32ff4d5f7c"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+        "bytes": 11344,
+        "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 70868,
+          "archive_entries": 0,
+          "attribute_bytes": 4248,
+          "class_bytes": 5484,
+          "class_headers": 1,
+          "code_bytes": 849,
+          "dependency_depth": 0,
+          "elapsed_millis": 23,
+          "entry_bytes": 0,
+          "input_bytes": 2742,
+          "ir_edges": 1327,
+          "ir_items": 15313,
+          "method_bodies": 11,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 21433,
+          "read_bytes": 2742,
+          "result_items": 45
+        }
+      }
+    }
+  ],
+  "jarde_compile_rows": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_command": "javac8-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-UpstreamNestedLoops",
+      "compile_command": "javac8-jarde-default-isolated-UpstreamNestedLoops-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_command": "javac8-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-UpstreamNestedLoops",
+      "compile_command": "javac8-jarde-all-isolated-UpstreamNestedLoops-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac8-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_command": "javac23-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-UpstreamNestedLoops",
+      "compile_command": "javac23-jarde-default-isolated-UpstreamNestedLoops-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_command": "javac23-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-UpstreamNestedLoops",
+      "compile_command": "javac23-jarde-all-isolated-UpstreamNestedLoops-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/jarde/javac23-jarde-all-UpstreamNestedLoops/UpstreamNestedLoops.java",
+          "bytes": 11344,
+          "sha256": "6c36a73fa5f2bf11eb697efb32e551d9f23711aec0d6131ef559337dbc52d5ed"
+        },
+        {
+          "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/inputs/Runner.java",
+          "bytes": 4728,
+          "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    }
+  ],
+  "build_receipt": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "bytes": 2310750,
+    "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+  },
+  "build_receipt_cli_binding": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "bytes": 61486096,
+    "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "mode": "0o555"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "bytes": 61486096,
+    "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95"
+  },
+  "cli_mode": "0o555",
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "peak_target_sampled": true
+  },
+  "collector_config": {
+    "inputs_dir": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1",
+    "inputs_manifest": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/manifest.json",
+    "source_debug": "none",
+    "out": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1",
+    "cli": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "cli_sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "build_receipt": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "build_receipt_sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+    "receipt_cli_object": "candidate_cli",
+    "receipt_status_key": "status",
+    "receipt_accepted_value": "passed_candidate_build_only",
+    "receipt_mode_key": "mode",
+    "jdk_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jadx_jar": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "jadx_jar_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "guard": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scanner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "classfile_parser": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "classfile_parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "source_tool_pins_before": [
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/collect_controls.py",
+      "bytes": 17675,
+      "sha256": "626ffb194c24cc856abdf98f36f8f7b85b181a93c725fd1bdfcae4389e665647"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/manifest.json",
+      "bytes": 458,
+      "sha256": "a5a6cda2d7e936b23150340278d4103901be8b16dddad47be8cb0c8828611e00"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+      "bytes": 61486096,
+      "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+      "bytes": 2310750,
+      "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/Runner.java",
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+    }
+  ],
+  "source_tool_pins_after": [
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/collect_controls.py",
+      "bytes": 17675,
+      "sha256": "626ffb194c24cc856abdf98f36f8f7b85b181a93c725fd1bdfcae4389e665647"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/manifest.json",
+      "bytes": 458,
+      "sha256": "a5a6cda2d7e936b23150340278d4103901be8b16dddad47be8cb0c8828611e00"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+      "bytes": 61486096,
+      "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+      "bytes": 2310750,
+      "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-structured-list-controls-inputs-root-v1/Runner.java",
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba"
+    }
+  ],
+  "source_tool_inputs_unchanged": true,
+  "actual_command_count": 25
+}

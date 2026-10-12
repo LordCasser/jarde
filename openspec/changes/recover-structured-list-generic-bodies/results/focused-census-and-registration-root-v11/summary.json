@@ -1,0 +1,163 @@
+{
+  "status": "root_accepted_focused_components_and_cli_freeze",
+  "execution_sha256": "0a2acef11bc45b2614d98b282e42842859d9502c4d211643c294db429dc31e83",
+  "schema": "cf11-structured-list-focused-run-v4",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "structured_list_generic_bodies",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "--locked",
+        "repository_class_fixtures_validate_without_false_target_rejections",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 5,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 6,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "index": 7,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "validation": {
+    "structured_list_generic_bodies": {
+      "summaries": [
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 1
+        }
+      ],
+      "named_test_count": 8,
+      "all_tests_passed": true
+    },
+    "jarde_java_lib": {
+      "summaries": [
+        {
+          "status": "ok",
+          "passed": 375,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "named_test_count": 375,
+      "all_tests_passed": true
+    },
+    "jarde_reader_census": {
+      "summaries": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "named_test_count": 1,
+      "all_tests_passed": true
+    },
+    "p5_corpus_fingerprint": {
+      "summaries": [
+        {
+          "status": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 1
+        }
+      ],
+      "named_test_count": 6,
+      "all_tests_passed": true
+    }
+  },
+  "cli_freeze": {
+    "source_binary": "/Users/lordcasser/workspace/projects/jarde/target/debug/jarde-cli",
+    "path": "/private/tmp/jarde-cf11-structured-list-candidate-cli-root-v3",
+    "bytes": 61924480,
+    "sha256": "45b5fd1ef637d8879254743d51ea5ce66ec5400558b023e65a7448a9d596de09",
+    "mode": "0o555"
+  },
+  "source_count": 4822,
+  "source_unchanged": true,
+  "target_absent": true,
+  "full_workspace_accepted": false,
+  "own_ci_accepted": false
+}

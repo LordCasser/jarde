@@ -1,0 +1,156 @@
+{
+  "source_map_gaps": [],
+  "all_method_physical_coverage_complete": true,
+  "schema": "cf11-target-full-source-observation-v2",
+  "status": "verified_observation_capture",
+  "compiler_debug_info": "none",
+  "rendered_class_digest_validation": "BLAKE3 shape and location/owner/default-all consistency only; physical files separately SHA256 pinned; no independent BLAKE3 recomputation",
+  "behavioral_acceptance": "not_claimed",
+  "behavior_mismatches": [],
+  "execution": {
+    "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/execution.json",
+    "bytes": 86622,
+    "sha256": "186dbaf1973d3d11f07a3d1adb0468083615efbd6444aa6ac01c574c0520899f"
+  },
+  "actual_command_count": 29,
+  "raw_stream_count": 58,
+  "classes": [
+    "cf11.DistinctIntegerFixture"
+  ],
+  "original_oracle": {
+    "exit_code": 0,
+    "stdout_nonempty": true,
+    "stderr_empty": true,
+    "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jdk8_jdk23_equal": true
+  },
+  "jarde_method_maps_checked": 8,
+  "default_all": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.DistinctIntegerFixture",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.DistinctIntegerFixture",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    }
+  ],
+  "generated_compile_observations": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/DistinctIntegerFixture.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "0b5c5b91fbda5ade2704697a3df5818d7884f51914df886492a0f32c374f6329",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jarde_unusable_outputs": [],
+  "compile_failures_remain_observations": true,
+  "checker": {
+    "path": "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py",
+    "bytes": 35890,
+    "sha256": "57a84c28638e7b0eadfd342010f637e4d59ede68a61ba59701486fc5ce0d6940"
+  }
+}

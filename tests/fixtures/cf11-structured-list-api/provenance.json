@@ -1,0 +1,77 @@
+{
+  "schema": "cf11-structured-list-permanent-fixture-pins-v1",
+  "inputs": [
+    {
+      "source": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "destination": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    {
+      "source": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/frozen-inputs/UpstreamNestedLoops.java",
+      "destination": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    },
+    {
+      "source": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/frozen-inputs/Runner.java",
+      "destination": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops/Runner.java",
+      "bytes": 1348,
+      "sha256": "f4c99e837599440588b54df0bb2eaaac45f0ae76db1ddeddbb789c90ff527379"
+    },
+    {
+      "source": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/frozen-inputs/manifest.json",
+      "destination": "tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops/manifest.json",
+      "bytes": 457,
+      "sha256": "1227d9a427465af6249753fbf7139c710de2fe15138b1710b389602616e3cf59"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctStringFixture.class",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture.class",
+      "bytes": 1310,
+      "sha256": "6d374b3207996b70e7a137cbbe3309d808046d4335bb52c190195f80c27fe028"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/DistinctStringFixture.java",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture/DistinctStringFixture.java",
+      "bytes": 732,
+      "sha256": "d58ebc30ceb7c9f3b1d686539ec55438195320b02812a2f657f9bad69b3a9e64"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/inputs/Runner.java",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture/Runner.java",
+      "bytes": 1435,
+      "sha256": "b563d473d8e64cf808a43c7abf302e2128cb74658bd70952505c0397ead51ef4"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-string-inputs-root-v1/manifest.json",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctStringFixture/manifest.json",
+      "bytes": 519,
+      "sha256": "421a3fb34b09e9fb82387c48cb1c3b4b48623668fb6892fa7f125e6ce2bf86ca"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/legs/javac23-original/classes/cf11/DistinctIntegerFixture.class",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture.class",
+      "bytes": 1320,
+      "sha256": "276f83ce80f41b44a8435ff3bc96bb2391e34fb92edb1a8371ffef1eeaa39a12"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/inputs/DistinctIntegerFixture.java",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture/DistinctIntegerFixture.java",
+      "bytes": 739,
+      "sha256": "4045da7d2745cb40bdbd4779c06c0916728ae8c45658a658c8abf9077a6e4949"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/inputs/Runner.java",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture/Runner.java",
+      "bytes": 1553,
+      "sha256": "7344b21e1a6a39d53c9ef3dca5ab43da7fb90a7c4d8c607f3bb0085d736667a3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-isolated-integer-inputs-root-v1/manifest.json",
+      "destination": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture/manifest.json",
+      "bytes": 521,
+      "sha256": "b71c7be8612d4e3acf2684dda9358f9327e03d447ba6de5369ffcee50d0cf90e"
+    }
+  ]
+}

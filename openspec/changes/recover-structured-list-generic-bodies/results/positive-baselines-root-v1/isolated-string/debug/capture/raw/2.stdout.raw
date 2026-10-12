@@ -1,0 +1,5 @@
+string-isolated-empty|exception=none|left=[]|right=[]|effects=0
+string-isolated-add-cme|exception=java.util.ConcurrentModificationException|left=[abcde, later]|right=[abcde, tail, abcde]|effects=1
+string-isolated-remove-object-cme|exception=java.util.ConcurrentModificationException|left=[later, tail]|right=[four]|effects=1
+string-isolated-null-element|exception=java.lang.NullPointerException|left=[null]|right=[value]|effects=0
+string-isolated-null-list|exception=java.lang.NullPointerException|left=null|right=[value]|effects=0

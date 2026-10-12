@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "path": "summary.json",
+      "bytes": 2018,
+      "sha256": "638d99f2f718d9bc4c71b6f547ce187b104be8dd9e0d2562f4ac169bbfe3c130"
+    },
+    {
+      "path": "accepted-workspace-checker.py",
+      "bytes": 25576,
+      "sha256": "bd56f4ee0fca6deba5544782286a60da3252a6480ffae490b6e9aaadc414548e"
+    },
+    {
+      "path": "acceptance.tar.gz",
+      "bytes": 162963,
+      "sha256": "318ac35edee804f625ea9addd60c780fd9d6beb89620058d76682b9c939fc746"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1413,
+      "sha256": "b5236ef76babd46393cb26a19af42e195469621e71321670ec23bd03c2d8e06c"
+    }
+  ]
+}

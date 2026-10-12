@@ -1,0 +1,25 @@
+{
+  "schema": "cf11-final-comparison-archive-pins-v1",
+  "artifacts": {
+    "summary.json": {
+      "bytes": 130831,
+      "sha256": "4f81c2d43049b470d6b3f2dad734557d019739864da90d83c2c9e28ba7a441f4"
+    },
+    "late-stop-execution.json": {
+      "bytes": 2112,
+      "sha256": "986d5c47bdd2529e3639e97b8d35b53b1609d1964120f71e92786c8ac33d95ea"
+    },
+    "README.md": {
+      "bytes": 2381,
+      "sha256": "93c8dcf2a07f3fde04c8ba024aa71b655c33332cf8075aa0a5ef027888983e33"
+    },
+    "captures.tar.gz": {
+      "bytes": 1612852,
+      "sha256": "a8e6eec0781ea90cdf4ade54478f38d32fb431ea48a1c1843e39ed4bbc0b5d04"
+    },
+    "tooling.tar.gz": {
+      "bytes": 128463,
+      "sha256": "41c2221d7a6186b3593d0b64da5d8861b421fec99d2a7aa36fff885df5328810"
+    }
+  }
+}

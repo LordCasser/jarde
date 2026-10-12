@@ -1,0 +1,306 @@
+{
+  "schema": "cf11-six-baseline-summary-preparation-pins-v2",
+  "status": "prepared_not_executed",
+  "artifacts": {
+    "README.md": {
+      "path": "/private/tmp/jarde-cf11-structured-list-baseline-summary-prep-luna-v2/README.md",
+      "bytes": 1558,
+      "sha256": "739f97aa4c45d61b138eebc8204395bd728b137779e7bfe89699c3df521bb1b7"
+    },
+    "summarize_baselines.py": {
+      "path": "/private/tmp/jarde-cf11-structured-list-baseline-summary-prep-luna-v2/summarize_baselines.py",
+      "bytes": 33943,
+      "sha256": "423e08b7617a49270fdf69e7bab2afb54810ce91c9690b3c7a80cd83d3c366cb"
+    }
+  },
+  "captures": {
+    "combined_debug": {
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-observation-acceptance-root-v1.json",
+        "bytes": 8685,
+        "sha256": "82de37a0188041ace6531b97016deaffe49c29fb03dce5039ba3cadd90c16a38"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-baseline-root-v1/execution.json",
+        "bytes": 78440,
+        "sha256": "8ba9d8e21a3f79dde06744f1f342b5dcc53171a2549f0abae667998d3a652481"
+      }
+    },
+    "combined_none": {
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-observation-root-v2.json",
+        "bytes": 8713,
+        "sha256": "37e6c2233e1c5b9e373ec32d342aa03fb75d9b84de5c0ffd3534b278b1d5ec95"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-controls-nodebug-baseline-root-v1/execution.json",
+        "bytes": 80015,
+        "sha256": "f12ecc1e117dc284ff1144039af61b7516f50ac8f464c774c8b3bb14797b2220"
+      }
+    },
+    "string_debug": {
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-observation-root-v1.json",
+        "bytes": 5404,
+        "sha256": "e0a04f85aa30c0d4e11fc554c4e406db80bb5df51ca511b2cdf279d013cf6909"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-baseline-root-v1/execution.json",
+        "bytes": 84748,
+        "sha256": "c390188dd6c26a489fb35901a794094522ac3f3935461a7fd30fa60c4200e5bb"
+      }
+    },
+    "integer_debug": {
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-observation-root-v1.json",
+        "bytes": 5416,
+        "sha256": "5d8bfad117d01a103a471d6238217a3e71ebc19d77c965d9e4d2e85a15d0833f"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-baseline-root-v1/execution.json",
+        "bytes": 85052,
+        "sha256": "427b788ee55cc8bcfc7802c564e12e3c1addb370881030930232e444b764589d"
+      }
+    },
+    "string_none": {
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-observation-root-v1.json",
+        "bytes": 5432,
+        "sha256": "228a5d8cfb138045ed44591b590553e01335e387115493d4cdd51c5f9f74ecd7"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-string-nodebug-baseline-root-v1/execution.json",
+        "bytes": 86323,
+        "sha256": "cf34030ef6667d338b06b35200b398aec4e166a3c918ad50f93fa28a69d524d1"
+      }
+    },
+    "integer_none": {
+      "observation": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-observation-root-v1.json",
+        "bytes": 5444,
+        "sha256": "468af6b6f336e5f43e6987059e2f866c28cf056407de37e3586aeadf5dfab27d"
+      },
+      "execution": {
+        "path": "/private/tmp/jarde-cf11-structured-list-isolated-integer-nodebug-baseline-root-v1/execution.json",
+        "bytes": 86622,
+        "sha256": "186dbaf1973d3d11f07a3d1adb0468083615efbd6444aa6ac01c574c0520899f"
+      }
+    }
+  },
+  "blake3_dependency": {
+    "package_root": "/private/tmp/jarde-fingerprint-python-v1",
+    "module_path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+    "version_distribution": "blake3-1.0.8.dist-info",
+    "file_count": 10,
+    "files_before_import": [
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+        "bytes": 107,
+        "sha256": "8b919729adf98380edfe138af0e98214663eeb10edce64c01a57a9485bffd27b"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.pyi",
+        "bytes": 844,
+        "sha256": "c6a209ff734485754ee80aa6c877b59d978797d942ce101a9b4264ba8eee7d85"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/blake3.cpython-314-darwin.so",
+        "bytes": 798672,
+        "sha256": "b5e6725f5e386e09cad620ade8a8f1b0cd69b8ef36467f2c2206f7f0477e3575"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/py.typed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/INSTALLER",
+        "bytes": 4,
+        "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/METADATA",
+        "bytes": 4646,
+        "sha256": "7a13df9a5f920ba2cd797e57d8a415c9987556ed32c5419e50e50471d06decaa"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/RECORD",
+        "bytes": 842,
+        "sha256": "25f229b3e64d6bb9d90cdf2a6752325eebe8792f06e61d4ec51a03434e41d825"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/REQUESTED",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/WHEEL",
+        "bytes": 104,
+        "sha256": "d4fbf288fbdc27de150fee6accb5ef0b18932a5b6407daf9757310d68b70f0f8"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/licenses/LICENSE",
+        "bytes": 18674,
+        "sha256": "f1d7009e06288836c56e3b5d421b3b17f83572b780d49d70ded7b7945198a5e5"
+      }
+    ],
+    "files_after_import": [
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+        "bytes": 107,
+        "sha256": "8b919729adf98380edfe138af0e98214663eeb10edce64c01a57a9485bffd27b"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.pyi",
+        "bytes": 844,
+        "sha256": "c6a209ff734485754ee80aa6c877b59d978797d942ce101a9b4264ba8eee7d85"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/blake3.cpython-314-darwin.so",
+        "bytes": 798672,
+        "sha256": "b5e6725f5e386e09cad620ade8a8f1b0cd69b8ef36467f2c2206f7f0477e3575"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/py.typed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/INSTALLER",
+        "bytes": 4,
+        "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/METADATA",
+        "bytes": 4646,
+        "sha256": "7a13df9a5f920ba2cd797e57d8a415c9987556ed32c5419e50e50471d06decaa"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/RECORD",
+        "bytes": 842,
+        "sha256": "25f229b3e64d6bb9d90cdf2a6752325eebe8792f06e61d4ec51a03434e41d825"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/REQUESTED",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/WHEEL",
+        "bytes": 104,
+        "sha256": "d4fbf288fbdc27de150fee6accb5ef0b18932a5b6407daf9757310d68b70f0f8"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/licenses/LICENSE",
+        "bytes": 18674,
+        "sha256": "f1d7009e06288836c56e3b5d421b3b17f83572b780d49d70ded7b7945198a5e5"
+      }
+    ],
+    "files_after_check": [
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.py",
+        "bytes": 107,
+        "sha256": "8b919729adf98380edfe138af0e98214663eeb10edce64c01a57a9485bffd27b"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/__init__.pyi",
+        "bytes": 844,
+        "sha256": "c6a209ff734485754ee80aa6c877b59d978797d942ce101a9b4264ba8eee7d85"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/blake3.cpython-314-darwin.so",
+        "bytes": 798672,
+        "sha256": "b5e6725f5e386e09cad620ade8a8f1b0cd69b8ef36467f2c2206f7f0477e3575"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3/py.typed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/INSTALLER",
+        "bytes": 4,
+        "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/METADATA",
+        "bytes": 4646,
+        "sha256": "7a13df9a5f920ba2cd797e57d8a415c9987556ed32c5419e50e50471d06decaa"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/RECORD",
+        "bytes": 842,
+        "sha256": "25f229b3e64d6bb9d90cdf2a6752325eebe8792f06e61d4ec51a03434e41d825"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/REQUESTED",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/WHEEL",
+        "bytes": 104,
+        "sha256": "d4fbf288fbdc27de150fee6accb5ef0b18932a5b6407daf9757310d68b70f0f8"
+      },
+      {
+        "path": "/private/tmp/jarde-fingerprint-python-v1/blake3-1.0.8.dist-info/licenses/LICENSE",
+        "bytes": 18674,
+        "sha256": "f1d7009e06288836c56e3b5d421b3b17f83572b780d49d70ded7b7945198a5e5"
+      }
+    ],
+    "files_unchanged": true
+  },
+  "expected": {
+    "capture_count": 6,
+    "commands": 166,
+    "raw_streams": 332,
+    "oracle_labels": {
+      "combined": 17,
+      "string": 5,
+      "integer": 6,
+      "distinct": 28
+    },
+    "exact_oracle_label_sets": {
+      "combined": [
+        "baseline-both-empty",
+        "baseline-five-character-match-add",
+        "baseline-non-five-match-remove",
+        "baseline-null-element",
+        "baseline-null-first-list",
+        "baseline-null-second-list",
+        "baseline-remove-continues-and-clears",
+        "baseline-unmatched",
+        "explicit-cast-object-boundary",
+        "integer-nested-add-positive",
+        "parameter-reassignment",
+        "raw-alias-heap-pollution",
+        "raw-list-method-control",
+        "remove-object-and-index-overloads",
+        "renamed-string-positive",
+        "try-catch-handler",
+        "wildcard-null-write"
+      ],
+      "string": [
+        "string-isolated-add-cme",
+        "string-isolated-empty",
+        "string-isolated-null-element",
+        "string-isolated-null-list",
+        "string-isolated-remove-object-cme"
+      ],
+      "integer": [
+        "integer-isolated-add-cme",
+        "integer-isolated-empty",
+        "integer-isolated-heap-pollution",
+        "integer-isolated-null-element",
+        "integer-isolated-null-list",
+        "integer-isolated-remove-object-cme"
+      ]
+    },
+    "positive_isolated_compile_run_pairs": 32,
+    "combined_failed_compile_groups": 24,
+    "handler_source_map_gaps_per_combined_mode": 4,
+    "product_acceptance": false,
+    "task1_2_complete": false,
+    "remaining_product_evidence": "stopping and negative-SSA attribution"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "status": "observed_raw_body_and_map_equal_no_projection",
+  "cli": {
+    "path": "/private/tmp/jarde-cf11-structured-list-candidate-cli-root-v2",
+    "bytes": 61924480,
+    "sha256": "bf9757a42d70cb01909466595baa4ecfdbfed7cd585527e008944290ce7736b9"
+  },
+  "input": {
+    "path": "/private/tmp/jarde-cf11-structured-list-final-fixed-debug-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+    "bytes": 1213,
+    "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+  },
+  "command": {
+    "index": 0,
+    "argv": [
+      "/private/tmp/jarde-cf11-structured-list-candidate-cli-root-v2",
+      "class-source",
+      "--input",
+      "/private/tmp/jarde-cf11-structured-list-final-fixed-debug-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "--class",
+      "cf11.UpstreamNestedLoops",
+      "--policy",
+      "single-class",
+      "--release",
+      "8",
+      "--format",
+      "json",
+      "--budget",
+      "analysis_steps=32531"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-12T05:55:46.443017+00:00",
+    "duration_seconds": 1.013057625037618,
+    "exit_code": 4,
+    "guard_stop": null,
+    "peak_target_bytes": 0,
+    "free_bytes_after": 17729765376,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": null,
+    "streams": {
+      "stdout": {
+        "path": "/private/tmp/jarde-cf11-structured-list-final-late-stop-cli-root-v2/0.stdout.raw",
+        "bytes": 54587,
+        "sha256": "55135106ffe3689d503030e10ca639bbdebf0f7b15e7cf0233be8d676efd3221"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-cf11-structured-list-final-late-stop-cli-root-v2/0.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "analysis_steps": 25299,
+  "raw_text_and_map_equal_full": true
+}

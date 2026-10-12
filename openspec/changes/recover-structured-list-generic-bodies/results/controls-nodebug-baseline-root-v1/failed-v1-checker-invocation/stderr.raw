@@ -1,0 +1,20 @@
+CF11 observation verification failed: javap exception-table row malformed for handled(Ljava/util/List;Ljava/util/List;)V: '      StackMapTable: number_of_entries = 4'
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py", line 407, in <module>
+    try: main()
+         ~~~~^^
+  File "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py", line 405, in main
+    p=argparse.ArgumentParser(description=__doc__); p.add_argument('--execution',type=Path,required=True); p.add_argument('--out',type=Path,required=True); a=p.parse_args(); out=a.out.resolve(); need(not out.exists(),'refuse overwrite '+str(out)); result=verify(a); result['checker']=pin(Path(__file__).resolve()); out.parent.mkdir(parents=True,exist_ok=True); out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8'); print(json.dumps({'status':result['status'],'execution':result['execution'],'out':str(out)}))
+                                                                                                                                                                                                                                                               ~~~~~~^^^
+  File "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py", line 344, in verify
+    rows=verify_class(parser,doc,originals[(jdk,cls)],javaps[(jdk,cls)],
+                      cls.replace('.','/'),source_entry['sha256'])
+  File "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py", line 142, in verify_class
+    javap_table=javap_exception_table(javap,name,desc,expected_owner.split('/')[-1])
+  File "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py", line 116, in javap_exception_table
+    need(match is not None,f'javap exception-table row malformed for {name}{desc}: {line!r}')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-cf11-structured-list-nodebug-tooling-root-v1/check_controls.py", line 13, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: javap exception-table row malformed for handled(Ljava/util/List;Ljava/util/List;)V: '      StackMapTable: number_of_entries = 4'
