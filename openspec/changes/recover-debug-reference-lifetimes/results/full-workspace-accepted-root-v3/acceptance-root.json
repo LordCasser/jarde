@@ -1,0 +1,163 @@
+{
+  "schema": "ordered-field-full-workspace-acceptance-v2",
+  "status": "accepted_local_workspace_only",
+  "not_ci_or_product_release_acceptance": true,
+  "execution_sha256": "f3ef8761467bca849881ddcea9a8369583689652c7341907c61fe3126239e3b8",
+  "focused_receipt_sha256": "88804a94660ddbbbd2186247044f4c4af3e3535c69680617963324a2b6c2cd26",
+  "runtime_matrix_cli_references": {
+    "debug": {
+      "receipt": {
+        "path": "/private/tmp/jarde-reference-prefix-candidate-debug-root-v1/execution.json",
+        "sha256": "4c0593380d27be965b553866ac7b6fed17f7cfc586126bb6f7afe8be46a8e501"
+      },
+      "cli": {
+        "path": "/private/tmp/jarde-reference-prefix-combined-focused-run-root-v6/candidate-cli",
+        "bytes": 62562992,
+        "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+      }
+    },
+    "none": {
+      "receipt": {
+        "path": "/private/tmp/jarde-reference-prefix-candidate-none-root-v1/execution.json",
+        "sha256": "d0bc8b2c01655d8ce4468b6565546663afa25796bc63c33c428ff44bb5de0093"
+      },
+      "cli": {
+        "path": "/private/tmp/jarde-reference-prefix-combined-focused-run-root-v6/candidate-cli",
+        "bytes": 62562992,
+        "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+      }
+    }
+  },
+  "source_pin_count": 4860,
+  "target_count": 365,
+  "batch_count_per_seed": 96,
+  "seeds": [
+    "5350648285461741569",
+    "5350648285461741570"
+  ],
+  "target_associated_suite_count_per_seed": {
+    "5350648285461741569": 365,
+    "5350648285461741570": 365
+  },
+  "matched_focused_gates_per_seed": {
+    "5350648285461741569": {
+      "jarde_java_lib": "at least 390 passed, zero failed",
+      "p3_patterns": "92 passed",
+      "ordered_field_named_outcomes": "7 exact passing outcomes",
+      "required_named_test_count": 38,
+      "required_named_test_groups": {
+        "raw_alias_lvt": 4,
+        "protected_prefix_loop": 6,
+        "ordinary_try_prefix_loop": 2,
+        "structured_list_fullclass": 1
+      },
+      "reader_census": "passed once",
+      "p5_corpus_fingerprint": "5 passed / 1 ignored"
+    },
+    "5350648285461741570": {
+      "jarde_java_lib": "at least 390 passed, zero failed",
+      "p3_patterns": "92 passed",
+      "ordered_field_named_outcomes": "7 exact passing outcomes",
+      "required_named_test_count": 38,
+      "required_named_test_groups": {
+        "raw_alias_lvt": 4,
+        "protected_prefix_loop": 6,
+        "ordinary_try_prefix_loop": 2,
+        "structured_list_fullclass": 1
+      },
+      "reader_census": "passed once",
+      "p5_corpus_fingerprint": "5 passed / 1 ignored"
+    }
+  },
+  "required_named_test_outcomes_by_seed": {
+    "5350648285461741569": {
+      "same_name_lvt_sources_split_into_exact_typed_independent_names": "ok",
+      "corpus_files_match_the_recorded_fingerprint": "ok",
+      "every_acceptance_row_is_indexed_against_existing_corpus": "ok",
+      "every_dimension_is_carried_by_existing_corpus": "ok",
+      "the_indexed_rows_are_the_rows_the_acceptance_table_names": "ok",
+      "the_manifest_matches_its_rendered_classification": "ok",
+      "raw_alias_escape_reference_lifetimes_match_default_all_and_source_origins": "ok",
+      "build::tests::raw_alias_escape_full_reuse_plan_stops_atomically_during_lvt_matching": "ok",
+      "build::tests::raw_alias_escape_reference_lifetimes_keep_types_names_and_local_owners": "ok",
+      "build::tests::raw_alias_escape_rejects_ambiguous_or_incomplete_lvt_rows_atomically": "ok",
+      "build::tests::raw_alias_escape_without_lvt_keeps_the_existing_unnamed_split": "ok",
+      "build::tests::reference_load_rejects_caught_parameter_alias_from_real_handler_ssa": "ok",
+      "build::tests::same_block_reference_load_is_presented_outside_try_for_fixed_dv_variants": "ok",
+      "concat::ordered_field_budget_tests::a_physical_handler_row_split_across_the_field_chain_keeps_the_refusal": "ok",
+      "concat::ordered_field_budget_tests::an_unclaimed_field_read_cannot_complete_the_concat_refusal": "ok",
+      "concat::ordered_field_budget_tests::short_budget_and_precancel_stop_inside_field_certificate_before_owner_commit": "ok",
+      "region::finite_loop_catch_tests::retry_proof_budget_used_minus_one_and_precancel_stop_inside_the_proof": "ok",
+      "region::finite_loop_catch_tests::retry_proof_rejects_mutated_physical_and_transfer_evidence": "ok",
+      "region::protected_prefix_loop_tests::candidate_named_row_scope_is_bound_to_the_current_real_sites_and_range": "ok",
+      "region::protected_prefix_loop_tests::candidate_row_binding_stops_without_publishing_a_partial_scope": "ok",
+      "region::protected_prefix_loop_tests::effect_suffix_inside_try_refuses_prefix_loop_and_restores_full_state": "ok",
+      "region::protected_prefix_loop_tests::handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once": "ok",
+      "region::protected_prefix_loop_tests::late_prefix_loop_child_stop_restores_all_walker_state": "ok",
+      "region::protected_prefix_loop_tests::real_resource_guard_region_is_rejected_by_candidate_collector": "ok",
+      "report::generic_void_parameter_census_tests::complete_fixed_void_census_keeps_phi_and_every_formal_read": "ok",
+      "report::generic_void_parameter_census_tests::fixed_census_refuses_physical_inventory_and_operation_disagreements": "ok",
+      "report::generic_void_parameter_census_tests::fixed_read_is_not_unread_when_the_invoke_target_is_unknown": "ok",
+      "report::generic_void_parameter_census_tests::real_parameter_reassignment_and_handler_facts_refuse_the_list_census": "ok",
+      "cancellation_during_the_selected_recovery_commits_no_partial_region_or_source_map": "ok",
+      "ordinary_try_prefix_loop_keeps_default_all_output_and_every_physical_origin": "ok",
+      "a_field_backed_object_append_pins_the_conversion_and_keeps_origins": "ok",
+      "a_verified_chain_is_written_once_with_its_operands_in_the_order_it_read_them": "ok",
+      "ordered_field_candidate_rejects_static_receiver_call_and_duplicated_result": "ok",
+      "ordered_field_concat_pre_cancel_publishes_no_partial_owner": "ok",
+      "ordered_field_concat_short_ir_budget_stops_without_partial_owner": "ok",
+      "retry_v2_exc_same_payload_proves_field_append_tail_error_value_flow_on_all_lanes": "ok",
+      "v3_instance_field_concats_are_recovered_in_all_four_compiler_lanes": "ok",
+      "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections": "ok"
+    },
+    "5350648285461741570": {
+      "same_name_lvt_sources_split_into_exact_typed_independent_names": "ok",
+      "corpus_files_match_the_recorded_fingerprint": "ok",
+      "every_acceptance_row_is_indexed_against_existing_corpus": "ok",
+      "every_dimension_is_carried_by_existing_corpus": "ok",
+      "the_indexed_rows_are_the_rows_the_acceptance_table_names": "ok",
+      "the_manifest_matches_its_rendered_classification": "ok",
+      "raw_alias_escape_reference_lifetimes_match_default_all_and_source_origins": "ok",
+      "build::tests::raw_alias_escape_full_reuse_plan_stops_atomically_during_lvt_matching": "ok",
+      "build::tests::raw_alias_escape_reference_lifetimes_keep_types_names_and_local_owners": "ok",
+      "build::tests::raw_alias_escape_rejects_ambiguous_or_incomplete_lvt_rows_atomically": "ok",
+      "build::tests::raw_alias_escape_without_lvt_keeps_the_existing_unnamed_split": "ok",
+      "build::tests::reference_load_rejects_caught_parameter_alias_from_real_handler_ssa": "ok",
+      "build::tests::same_block_reference_load_is_presented_outside_try_for_fixed_dv_variants": "ok",
+      "concat::ordered_field_budget_tests::a_physical_handler_row_split_across_the_field_chain_keeps_the_refusal": "ok",
+      "concat::ordered_field_budget_tests::an_unclaimed_field_read_cannot_complete_the_concat_refusal": "ok",
+      "concat::ordered_field_budget_tests::short_budget_and_precancel_stop_inside_field_certificate_before_owner_commit": "ok",
+      "region::finite_loop_catch_tests::retry_proof_budget_used_minus_one_and_precancel_stop_inside_the_proof": "ok",
+      "region::finite_loop_catch_tests::retry_proof_rejects_mutated_physical_and_transfer_evidence": "ok",
+      "region::protected_prefix_loop_tests::candidate_named_row_scope_is_bound_to_the_current_real_sites_and_range": "ok",
+      "region::protected_prefix_loop_tests::candidate_row_binding_stops_without_publishing_a_partial_scope": "ok",
+      "region::protected_prefix_loop_tests::effect_suffix_inside_try_refuses_prefix_loop_and_restores_full_state": "ok",
+      "region::protected_prefix_loop_tests::handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once": "ok",
+      "region::protected_prefix_loop_tests::late_prefix_loop_child_stop_restores_all_walker_state": "ok",
+      "region::protected_prefix_loop_tests::real_resource_guard_region_is_rejected_by_candidate_collector": "ok",
+      "report::generic_void_parameter_census_tests::complete_fixed_void_census_keeps_phi_and_every_formal_read": "ok",
+      "report::generic_void_parameter_census_tests::fixed_census_refuses_physical_inventory_and_operation_disagreements": "ok",
+      "report::generic_void_parameter_census_tests::fixed_read_is_not_unread_when_the_invoke_target_is_unknown": "ok",
+      "report::generic_void_parameter_census_tests::real_parameter_reassignment_and_handler_facts_refuse_the_list_census": "ok",
+      "cancellation_during_the_selected_recovery_commits_no_partial_region_or_source_map": "ok",
+      "ordinary_try_prefix_loop_keeps_default_all_output_and_every_physical_origin": "ok",
+      "a_field_backed_object_append_pins_the_conversion_and_keeps_origins": "ok",
+      "a_verified_chain_is_written_once_with_its_operands_in_the_order_it_read_them": "ok",
+      "ordered_field_candidate_rejects_static_receiver_call_and_duplicated_result": "ok",
+      "ordered_field_concat_pre_cancel_publishes_no_partial_owner": "ok",
+      "ordered_field_concat_short_ir_budget_stops_without_partial_owner": "ok",
+      "retry_v2_exc_same_payload_proves_field_append_tail_error_value_flow_on_all_lanes": "ok",
+      "v3_instance_field_concats_are_recovered_in_all_four_compiler_lanes": "ok",
+      "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections": "ok"
+    }
+  },
+  "test_totals": {
+    "passed": 7094,
+    "failed": 0,
+    "ignored": 196,
+    "target_summary_count": 730,
+    "named_test_outcome_count": 7290
+  },
+  "raw_stream_count": 390,
+  "target_absent": true
+}

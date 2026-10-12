@@ -1,0 +1,19 @@
+{
+  "schema": "jarde-accepted-run-archive-pins-v1",
+  "accepted_state": "accepted_focused_component_only",
+  "kind": "focused",
+  "archive": {
+    "path": "/private/tmp/jarde-reference-prefix-focused-v11-archive-root-v1/capture.tar.gz",
+    "bytes": 1569331,
+    "sha256": "19978d4b973a33f7eb7c7ae0d292a450daab0919cf37cf6e621e27c46d469829"
+  },
+  "manifest": {
+    "member": "archive-manifest.json",
+    "bytes": 27354,
+    "sha256": "ea0c7663a9a73960b790feecf34673b1d9b314b7a31e4ace33120bb55cf3a920"
+  },
+  "member_count_excluding_manifest": 53,
+  "source_snapshot_count": 15,
+  "command_count": 12,
+  "raw_stream_count": 24
+}

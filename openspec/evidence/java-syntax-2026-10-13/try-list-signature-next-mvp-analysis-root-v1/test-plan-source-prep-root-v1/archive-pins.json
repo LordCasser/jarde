@@ -1,0 +1,42 @@
+{
+  "status": "root_reviewed_uncompiled_static_preparation_only",
+  "relocated_files": [
+    {
+      "path": "plan.md",
+      "bytes": 7845,
+      "sha256": "c11af9aa16b5748ea3d71571c67d6cb5762e6b7d289d21091ef2a3e15f91741e",
+      "origin": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/plan.md"
+    },
+    {
+      "path": "pins.json",
+      "bytes": 8629,
+      "sha256": "cbd9bde3b54c46d368fe8ef82348eaf2d454cd12947e05bb4b5b9d0d2770d9de",
+      "origin": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/pins.json"
+    },
+    {
+      "path": "root-review.json",
+      "bytes": 551,
+      "sha256": "1328e5f552bf0fce31b3dedfdf633909b0345ae8bcc3a94507219edeb57f3cdd",
+      "origin": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/root-review.json"
+    },
+    {
+      "path": "sources/manifest.json",
+      "bytes": 1396,
+      "sha256": "b14c72a07e3be07faff3daab83169283dfd65c316e094ff058bb092bd16ef7bc",
+      "origin": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/sources/manifest.json"
+    },
+    {
+      "path": "sources/UpstreamNestedLoops.java",
+      "bytes": 7402,
+      "sha256": "edc6d5ab7258ad79eb13cc0163c042dcdc885dd3d3d160829a098a8b5d98a1ed",
+      "origin": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/sources/UpstreamNestedLoops.java"
+    },
+    {
+      "path": "sources/Runner.java",
+      "bytes": 12187,
+      "sha256": "89fa41371a704225b9bc7bb2797ab3b4deb5879ad91c4935620d334576b1b287",
+      "origin": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/sources/Runner.java"
+    }
+  ],
+  "not_new_OpenSpec_or_implementation_or_runtime": true
+}

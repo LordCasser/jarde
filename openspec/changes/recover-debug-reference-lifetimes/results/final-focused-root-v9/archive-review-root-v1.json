@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "archive": {
+    "bytes": 2588469,
+    "sha256": "5bd5e1b429dbe0a4fb7e3ae6a088a8d2ef74e8d23e331919c3e78c6fd8059ce5"
+  },
+  "members_reopened": 69,
+  "fresh_cli_pin": {
+    "path": "/private/tmp/jarde-reference-prefix-final-focused-run-root-v9/candidate-cli",
+    "bytes": 62562992,
+    "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+  },
+  "source_count": 4860,
+  "test_totals": [
+    667,
+    0,
+    2
+  ],
+  "not_workspace_ci_or_release": true
+}

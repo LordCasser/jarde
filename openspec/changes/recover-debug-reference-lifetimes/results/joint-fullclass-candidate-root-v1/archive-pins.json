@@ -1,0 +1,63 @@
+{
+  "acceptance_states": {
+    "boundary_root": "passed",
+    "candidate_v4_verifier_observation": "observed_tool_failure",
+    "candidate_v5": "passed",
+    "focused_v6_execution": "commands_passed_pending_independent_acceptance",
+    "focused_v7_execution": "failed"
+  },
+  "archive": {
+    "bytes": 4683949,
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-debug-reference-lifetimes/results/joint-fullclass-candidate-root-v1/capture.tar.gz",
+    "sha256": "b958133beba3dd9a52b5f2934736ad8801c1df32eb0abee6c51e02ef85cfc40a"
+  },
+  "archive_reopened_and_each_member_verified": true,
+  "manifest_member": {
+    "bytes": 212188,
+    "path": "capture-manifest.json",
+    "sha256": "7ae2d86dca2aec9a6eb1e1d191997ccd09e275e6c38b184cd8d7810433bb3874"
+  },
+  "member_count_excluding_manifest": 389,
+  "member_count_including_manifest": 390,
+  "schema": "jarde-reference-prefix-durable-archive-acceptance-v2",
+  "source_snapshots_v6": [
+    {
+      "bytes": 1053629,
+      "path": "crates/jarde-java/src/region.rs",
+      "sha256": "690128fc792763beda7ea3a98331bf2e72ce943e5bb0bbe63c3c2f99366e376f",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "status": "included"
+    },
+    {
+      "bytes": 74785,
+      "path": "crates/jarde-java/src/reuse.rs",
+      "sha256": "2c0422f720bfaf45e12d10d2327b4cded12d3db3f86cd63cd744dfdbbc88ac08",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "status": "included"
+    },
+    {
+      "bytes": 8361,
+      "path": "crates/jarde-java/tests/ordinary_try_prefix_loop.rs",
+      "sha256": "0b896c5f1296a93b51f1c3b7cf1efa6041a22cd59b467c7dc6b5fb4899e65906",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/ordinary_try_prefix_loop.rs",
+      "status": "included"
+    },
+    {
+      "bytes": 26513,
+      "path": "crates/jarde-java/src/region/protected_prefix_loop_tests.rs",
+      "sha256": "195f0c4dab184a076f25c73690c4292550f8a366d6a29e0aacd080f7879c8549",
+      "source_path": "/private/tmp/jarde-protected-prefix-tests-audit-luna-v1/base.rs",
+      "status": "included"
+    }
+  ],
+  "source_snapshots_v7": [
+    {
+      "bytes": 28147,
+      "path": "crates/jarde-java/src/region/protected_prefix_loop_tests.rs",
+      "sha256": "961114251fff25c3eb0e95fb91a413b00e1d2300fb5addd3c24df0d0855ec0fd",
+      "source_path": "/private/tmp/jarde-protected-prefix-negative-neighbors-luna-v2/base.rs",
+      "status": "included"
+    }
+  ],
+  "status": "accepted"
+}

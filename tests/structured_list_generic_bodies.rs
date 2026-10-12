@@ -620,3 +620,80 @@ fn diagnose_late_analysis_stop_phase_without_assuming_raw_map_is_empty() {
         }
     }
 }
+
+#[test]
+fn raw_alias_escape_reference_lifetimes_match_default_all_and_source_origins() {
+    let default = performed(CONTROLS, "cf11/UpstreamNestedLoops");
+    let all = match report_with(
+        CONTROLS,
+        "cf11/UpstreamNestedLoops",
+        Some(&RecoveryEvidenceRequest::all()),
+        &mut task_budget(&[]).unwrap(),
+    ) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("unexpected all-evidence result: {other:?}"),
+    };
+
+    assert!(matches!(
+        &default.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert!(matches!(&all.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(
+        default.methods.len(),
+        11,
+        "the whole class keeps all 11 methods"
+    );
+    assert_eq!(default.methods.len(), all.methods.len());
+    assert_eq!(
+        default.text, all.text,
+        "default and all preserve the full class text"
+    );
+    for (default_method, all_method) in default.methods.iter().zip(&all.methods) {
+        assert_eq!(
+            default_method.item.name.raw().0,
+            all_method.item.name.raw().0,
+            "method order and identities are stable across evidence selection"
+        );
+        assert_eq!(default_method.text, all_method.text);
+    }
+
+    let default_method = method(&default, b"rawAliasEscape");
+    let all_method = method(&all, b"rawAliasEscape");
+    let default_raw = raw_body(default_method);
+    let all_raw = raw_body(all_method);
+    assert_eq!(default_method.text, all_method.text);
+    assert_eq!(default_raw.text, all_raw.text);
+    assert_eq!(default_raw.source_map, all_raw.source_map);
+
+    assert!(
+        default_raw
+            .text
+            .contains("java.lang.Integer value = (java.lang.Integer) local4.next();"),
+        "the first reused slot keeps its Integer type and cast in the loop declaration: {}",
+        default_raw.text
+    );
+    assert!(
+        default_raw
+            .text
+            .contains("java.lang.String value_2 = (java.lang.String) local4.next();"),
+        "the second reused slot keeps its String type, cast and stable collision suffix in the loop declaration: {}",
+        default_raw.text
+    );
+    assert!(default_raw.text.contains("escaped = target;"));
+    assert!(
+        default_raw
+            .text
+            .contains("escaped.add((java.lang.Object) value)"),
+        "the escaped raw List alias and Object insertion remain visible: {}",
+        default_raw.text
+    );
+    assert!(
+        default_raw.text.contains("(java.lang.Integer)")
+            && default_raw.text.contains("(java.lang.String)"),
+        "both original checkcasts remain in raw recovery: {}",
+        default_raw.text
+    );
+    assert_utf8_source_map(default_raw);
+    assert_bcis_are_mapped(default_raw, &[30, 35, 72, 77]);
+}

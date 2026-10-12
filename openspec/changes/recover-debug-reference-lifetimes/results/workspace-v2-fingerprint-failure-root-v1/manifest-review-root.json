@@ -1,0 +1,15 @@
+{
+  "status": "minimal_manifest_applied_pending_fresh_p5",
+  "actual_main_head": "845cfdc8d3b2ccd2904a0fca8d9f020391c29623",
+  "private_pins_base_revision_note": "7e93 content ancestry, not actual current checkout head",
+  "old_count": 2193,
+  "new_count": 2197,
+  "added": [
+    "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.class",
+    "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.java",
+    "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class",
+    "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.java"
+  ],
+  "old_rows_and_classification_unchanged": true,
+  "blake3_source": "actual Rust failure output; fresh P5 independent recomputation still pending"
+}

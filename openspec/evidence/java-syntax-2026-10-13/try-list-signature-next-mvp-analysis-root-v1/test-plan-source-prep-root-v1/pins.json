@@ -1,0 +1,193 @@
+{
+  "schema": "jarde-ordinary-try-list-mvp-test-plan-v2",
+  "status": "uncompiled source-only preparation",
+  "no_toolchain_executed": true,
+  "sources": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-13/try-list-signature-next-mvp-analysis-root-v1/README.md",
+      "bytes": 1906,
+      "sha256": "812a12b450b338a320c1db877b9936084fc58dd12084a8a9ce8fb102d60407c6",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf11-structured-list-controls/Runner.java",
+      "bytes": 4728,
+      "sha256": "c298bd27bb1af0e7258322c18683489fef6c61be0b4ed5b2ab0f07ffbeb114ba",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf11-structured-list-controls/manifest.json",
+      "bytes": 458,
+      "sha256": "a5a6cda2d7e936b23150340278d4103901be8b16dddad47be8cb0c8828611e00",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/structured_list_generic_bodies.rs",
+      "bytes": 25763,
+      "sha256": "676b89c11ee4d9cb6880d6d966f9172d169d91ee3449ed6e77d6fc7c0d0e4a33",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 671291,
+      "sha256": "4435bbb34d6f09583d0071eae2a3e8e9f7fe69b775ce22cb91b9cea8745a9a74",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region/protected_prefix_loop_tests.rs",
+      "bytes": 36166,
+      "sha256": "3c038c64a1d50d85c079a161ef6030eadedcfc0e81d91b3fcdf6897b0bfafec6",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 736716,
+      "sha256": "16e7a07f5f133f948a5d88ea467e397f9685a18e56cd8a4734792d6efbfaa1bb",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "bytes": 1961810,
+      "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_loop_try_handler_entry.rs",
+      "bytes": 9049,
+      "sha256": "9112b52b15512035263e821b3994ef113dd3cc98be3a70a187a6878ab2f0f01d",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_typed_catch.rs",
+      "bytes": 19645,
+      "sha256": "f7840971550b12d8cdaeb88009e0f4ffac6d02d76092442f26e62fcc274e9736",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_try.rs",
+      "bytes": 11329,
+      "sha256": "d05e8e1888da3a6b40129233de3982b810a5ff0b43ea689fef748840010ed5d5",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_twr_enclosing_catch.rs",
+      "bytes": 16844,
+      "sha256": "a581354a0920fb4b7ace1c47a3e5f50b63ac9f0313cfcc5c8c8d92a806f509c1",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_local_reference_write_compatibility.rs",
+      "bytes": 25246,
+      "sha256": "15ccb58125953f37110e44d3855741995a25f42f46d8c325795bc20b0c9869ee",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/proposal.md",
+      "bytes": 2297,
+      "sha256": "12d35ba320cbff07bc4fd813eab752446d178e281c3d48b5df233259532316d1",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/design.md",
+      "bytes": 7047,
+      "sha256": "b76d02a085dc07b040ed8fa1d46fe23822a6675a33676b95cffa13f3a953551b",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-protected-prefix-loop-sequences/proposal.md",
+      "bytes": 2451,
+      "sha256": "e4a62de58e5cb8e04755e41dc37ef6b8e5f083458b3e84ad867a2f6c47b96647",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/completion-review.md",
+      "bytes": 37749,
+      "sha256": "1abe1aba17f0a3dcccd0843d81a00a29ca6043b957f8fd5efc403a08849f8a45",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+      "bytes": 876,
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestIterableForEach4.java",
+      "bytes": 577,
+      "sha256": "328bf3492599a00c4f3cd82d1525a8d28e3267cebaa6a43cf701c63c38d48d4a",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestTryCatchInLoop.java",
+      "bytes": 868,
+      "sha256": "9fc7c99bf968ffbfb948bf5dca186f36c1d923ee9c4600f8d86ff85899003830",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestLoopRestore.java",
+      "bytes": 389,
+      "sha256": "8deece8b5316a0179f9ce83a229e51f705171dbf00fb9754d20265ec04f2b324",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestLoopInTryCatch2.java",
+      "bytes": 1140,
+      "sha256": "2cfcd72c922bc7c384ff0c2762f525e6751a21384bfa37de639856f67fe80f7f",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestLoopInTryCatch.java",
+      "bytes": 1540,
+      "sha256": "20ece2978d792360ea2bf02f9ba320c2d20f97f563de53d0947026bfb71c66fc",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchFinally3.java",
+      "bytes": 1215,
+      "sha256": "d61f1f6b7c092af2e5d947c8def626887cb0dc8adb40d6c68dec3be96f432acd",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/generics/TestGenericsInArgs.java",
+      "bytes": 1130,
+      "sha256": "d7002c18bbd710136c3f4239af8fee6d118019a54cef0db8bb2b8b23f9519e52",
+      "role": "read-only source/reference"
+    },
+    {
+      "path": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/README.md",
+      "bytes": 654,
+      "sha256": "b1c75b56c7195bca67fc69861d4fe1791fd5a8fb50dda2117d5d9bbcbf5e4676",
+      "role": "private plan"
+    },
+    {
+      "path": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/plan.md",
+      "bytes": 7845,
+      "sha256": "c11af9aa16b5748ea3d71571c67d6cb5762e6b7d289d21091ef2a3e15f91741e",
+      "role": "private plan"
+    },
+    {
+      "path": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/sources/UpstreamNestedLoops.java",
+      "bytes": 7402,
+      "sha256": "edc6d5ab7258ad79eb13cc0163c042dcdc885dd3d3d160829a098a8b5d98a1ed",
+      "role": "private uncompiled candidate"
+    },
+    {
+      "path": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/sources/Runner.java",
+      "bytes": 12187,
+      "sha256": "89fa41371a704225b9bc7bb2797ab3b4deb5879ad91c4935620d334576b1b287",
+      "role": "private uncompiled candidate"
+    },
+    {
+      "path": "/private/tmp/jarde-ordinary-try-list-mvp-test-plan-luna-v2/sources/manifest.json",
+      "bytes": 1396,
+      "sha256": "b14c72a07e3be07faff3daab83169283dfd65c316e094ff058bb092bd16ef7bc",
+      "role": "private source manifest"
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+{
+  "status": "all_members_reopened_and_exact",
+  "archive": {
+    "bytes": 2098905,
+    "sha256": "8582684fac15bee4c404de229c74d06fd0b0cf9450308069a46b0b9ead56c5f0"
+  },
+  "members": 242,
+  "failed_workspace_status": "failed",
+  "failed_workspace_has_final_clean": true,
+  "positive_acceptance": {
+    "status": "accepted_eight_whole_classes_two_jdks",
+    "verifier": {
+      "path": "/private/tmp/jarde-same-name-reference-accept-root-v1.py",
+      "bytes": 8157,
+      "sha256": "51dd51c2f5a65d2ece32a0d20f34576f4ad2da9af6e0d31f1e66f9c8540081a1"
+    },
+    "cli": {
+      "path": "/private/tmp/jarde-reference-prefix-final-focused-run-root-v9/candidate-cli",
+      "bytes": 62562992,
+      "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+    },
+    "probe_receipt": {
+      "path": "/private/tmp/jarde-same-name-reference-debug-probe-run-root-v1/execution.json",
+      "bytes": 2151873,
+      "sha256": "b0f3fa81f618a1b8e0981876a7049a1d68a1146f3cee84c0a0a1157d4bf845ba"
+    },
+    "runtime_receipt": {
+      "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/execution.json",
+      "bytes": 2153326,
+      "sha256": "d42214d2a4e20b4b4912a9e287f31e8d1638d303c6451232ced81782c3aa3c24"
+    },
+    "inputs": {
+      "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/inputs.json",
+      "bytes": 6107,
+      "sha256": "be719c8162a4b562cbf2b8e80f1086924dc7ec9b51af3ff7983c71a008853741"
+    },
+    "source_closure_count": 4860,
+    "tool_pins": [
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      }
+    ],
+    "results": [
+      {
+        "jdk": "javac8",
+        "class": "ListThenMap",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/ListThenMap.class",
+          "bytes": 1251,
+          "sha256": "1e3b6cf8585bede9f65ca36bee2ba8b69615000db4c12a415965194112e20672"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac8/sources/ListThenMap.java",
+          "bytes": 1640,
+          "sha256": "f892c4b05c470684ec4e5899ead4256512a2381eef9271d7fc42e72b9b24bb8e"
+        },
+        "physical_origins_checked": 64,
+        "oracle_utf8": "3\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/1.stdout.raw",
+            "bytes": 2,
+            "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/1.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/6.stdout.raw",
+            "bytes": 2,
+            "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/6.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac8",
+        "class": "MapThenBuilder",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/MapThenBuilder.class",
+          "bytes": 1311,
+          "sha256": "50be9d068cd00920823c4e4797a48afa717f63cc4f2a7c8315b95c5c99922066"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac8/sources/MapThenBuilder.java",
+          "bytes": 1617,
+          "sha256": "7e470a0679052f5c397dc08babdbc9401cadf276b68a9df6359565497e0351ca"
+        },
+        "physical_origins_checked": 52,
+        "oracle_utf8": "6:6\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/2.stdout.raw",
+            "bytes": 4,
+            "sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/2.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/7.stdout.raw",
+            "bytes": 4,
+            "sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/7.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac8",
+        "class": "StringThenQueue",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/StringThenQueue.class",
+          "bytes": 1305,
+          "sha256": "075e2113ee99b0d904d8f3fa51631a988c933224913ab1f5a9b81ff08ca8f818"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac8/sources/StringThenQueue.java",
+          "bytes": 1667,
+          "sha256": "1f01d0ed4e2195f3dc3cb8a45d9700c6c729c56f12e65d118d28c5951c3fb803"
+        },
+        "physical_origins_checked": 53,
+        "oracle_utf8": "1: q !\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/3.stdout.raw",
+            "bytes": 7,
+            "sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/3.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/8.stdout.raw",
+            "bytes": 7,
+            "sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/8.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac8",
+        "class": "BuilderThenArray",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac8/BuilderThenArray.class",
+          "bytes": 982,
+          "sha256": "1d787536afec33f390f4ffc8584500083366f27447fad2fba75cc7004b335687"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac8/sources/BuilderThenArray.java",
+          "bytes": 1590,
+          "sha256": "be7df15fcbd5231898a318e0445764edb2719e8479a5159811c8413f03e6c825"
+        },
+        "physical_origins_checked": 49,
+        "oracle_utf8": "abc\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/4.stdout.raw",
+            "bytes": 4,
+            "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/4.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/9.stdout.raw",
+            "bytes": 4,
+            "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/9.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac23",
+        "class": "ListThenMap",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/ListThenMap.class",
+          "bytes": 1251,
+          "sha256": "47cf0bf7aad079fbdd155b776e20a6d8d847d9953b3440df935c55c4ac68aaad"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac23/sources/ListThenMap.java",
+          "bytes": 1640,
+          "sha256": "f892c4b05c470684ec4e5899ead4256512a2381eef9271d7fc42e72b9b24bb8e"
+        },
+        "physical_origins_checked": 64,
+        "oracle_utf8": "3\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/10.stdout.raw",
+            "bytes": 2,
+            "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/10.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/15.stdout.raw",
+            "bytes": 2,
+            "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/15.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac23",
+        "class": "MapThenBuilder",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/MapThenBuilder.class",
+          "bytes": 1311,
+          "sha256": "368cf563c854b8d71ab682a5fed5cddb7b3351702c0517af15aa564da79eecd9"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac23/sources/MapThenBuilder.java",
+          "bytes": 1617,
+          "sha256": "7e470a0679052f5c397dc08babdbc9401cadf276b68a9df6359565497e0351ca"
+        },
+        "physical_origins_checked": 52,
+        "oracle_utf8": "6:6\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/11.stdout.raw",
+            "bytes": 4,
+            "sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/11.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/16.stdout.raw",
+            "bytes": 4,
+            "sha256": "61fa747f2e802dccdefeee66ae39bfd79c81f4134b77765c6db7738f454644ff"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/16.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac23",
+        "class": "StringThenQueue",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/StringThenQueue.class",
+          "bytes": 1305,
+          "sha256": "865e0f43fe3c274fc97791049a6d880024c8aa9bc1870e2f84f90d91737ea593"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac23/sources/StringThenQueue.java",
+          "bytes": 1667,
+          "sha256": "1f01d0ed4e2195f3dc3cb8a45d9700c6c729c56f12e65d118d28c5951c3fb803"
+        },
+        "physical_origins_checked": 53,
+        "oracle_utf8": "1: q !\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/12.stdout.raw",
+            "bytes": 7,
+            "sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/12.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/17.stdout.raw",
+            "bytes": 7,
+            "sha256": "6e82000615fa1a0f5490cb005af0204b928b6652906fdff235829792b7354dad"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/17.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "jdk": "javac23",
+        "class": "BuilderThenArray",
+        "original": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/debug/same-name/javac23/BuilderThenArray.class",
+          "bytes": 982,
+          "sha256": "6ae9e87e68c1ce07e43b0a113c620696b8d860a04a485af2865a0291eed628d2"
+        },
+        "generated_source": {
+          "path": "/private/tmp/jarde-same-name-reference-debug-runtime-prep-root-v1/javac23/sources/BuilderThenArray.java",
+          "bytes": 1590,
+          "sha256": "be7df15fcbd5231898a318e0445764edb2719e8479a5159811c8413f03e6c825"
+        },
+        "physical_origins_checked": 49,
+        "oracle_utf8": "abc\n",
+        "original_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/13.stdout.raw",
+            "bytes": 4,
+            "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/13.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_runtime": {
+          "stdout": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/18.stdout.raw",
+            "bytes": 4,
+            "sha256": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb"
+          },
+          "stderr": {
+            "path": "/private/tmp/jarde-same-name-reference-debug-runtime-run-root-v1/raw/18.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "scope": "16 actual CLI commands; 2 isolated unedited whole-class compile batches; 8 original and 8 generated executions byte-equal; 3 methods each; 17/10 larger runtime matrices remain separately recorded; no new JADX runtime claim"
+  }
+}

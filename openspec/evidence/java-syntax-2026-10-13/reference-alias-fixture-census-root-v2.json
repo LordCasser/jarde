@@ -1,0 +1,42 @@
+{
+  "status": "actual_javac_and_javap_observed_new_exact_type_fixture_pending_ssa_test",
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.java",
+    "bytes": 335,
+    "sha256": "cc01af11d356d84cecb6c321fc49393329121fe82767ee8ed9a598bcb87b7aab"
+  },
+  "class": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class",
+    "bytes": 761,
+    "sha256": "da5c6a2a8094a9922c086e696c1dfc55db22752ee53f41ce23b5f183c1f28f9f"
+  },
+  "compile_and_javap_receipt": {
+    "path": "/private/tmp/jarde-reference-alias-boundary-exact-typed-run-root-v1/execution.json",
+    "sha256": "f7099392ac80ea8955e3cbb4dfcf101bbaf7e4c37c4aa836ffca77996e2db3f1"
+  },
+  "observed_stores": [
+    4,
+    12
+  ],
+  "observed_old_value_load": 5,
+  "observed_consume": 13,
+  "observed_lvt": [
+    5,
+    17
+  ],
+  "new_census": [
+    1164,
+    5160,
+    501,
+    3279,
+    10
+  ],
+  "census_delta_from_prior_alias_fixture": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "purpose": "String.toString returns a named reference in the decoded descriptor while the previously loaded Integer remains on stack across the second Store; no production type inference widened. Exact SSA types and alias-gate refusal remain assertions for the next actual test."
+}

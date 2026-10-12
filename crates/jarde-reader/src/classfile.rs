@@ -12250,7 +12250,12 @@ mod tests {
             // Loop-body-catch patrol/load/retry fixtures add 15 classes, 63 Code bodies,
             // 27 handlers and 130 branch/switch targets. Ordered-field-concat fixtures add
             // eight classes, 76 Code bodies and eight targets. Neither adds a subroutine.
-            (1163, 5157, 501, 3279, 10),
+            // ReferenceAliasBoundary adds one javac 23 --release 8 class and three
+            // straight-line Code bodies; independently counted from Code bytes and javap.
+            // Protected-prefix-loop negative neighbors add one javac 23 --release 8
+            // class, three Code bodies, two handlers and five direct branch targets; no jsr.
+            // Independently measured from actual Code bytes and accepted javap.
+            (1165, 5163, 503, 3284, 10),
             "fixture population changed: re-measure these counts"
         );
     }

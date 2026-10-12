@@ -1,0 +1,158 @@
+{
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 1340799,
+    "sha256": "cb8a6a650e2fab0539eb6c3bb6af840f742c60a805fdab13a0b5fae3d9b335e9"
+  },
+  "actual_members": 27,
+  "members": [
+    {
+      "path": "failure/execution.json",
+      "bytes": 2127905,
+      "sha256": "1af99d4021a170bb93de7ddf6fde82936c96159c3590f3fa6ba1bed54b0bce18"
+    },
+    {
+      "path": "failure/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failure/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failure/raw/2.stderr.raw",
+      "bytes": 2009,
+      "sha256": "2d6890f5c1302f6647c1cb46342549652c808948c7db5818c74458b5571332eb"
+    },
+    {
+      "path": "failure/raw/2.stdout.raw",
+      "bytes": 42241,
+      "sha256": "5dd33069c9cc3f2fa748d13518a1eea27c2ca1ac23adfb89563b23a969be479e"
+    },
+    {
+      "path": "failure/raw/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "7732abb060d4d9bebf8193d4092ef36326b9d47013a4b0ecabb00e297f53c444"
+    },
+    {
+      "path": "failure/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failure/sources/build.rs",
+      "bytes": 1834594,
+      "sha256": "708299a5c79f858296ab0f6e4c18fe559abab6d2719e9d91308a34553a67a62d"
+    },
+    {
+      "path": "failure/sources/names.rs",
+      "bytes": 53184,
+      "sha256": "60d29e36a57b3f3d94d76d759006afcd88ec5172082269776ea4276cb3beed20"
+    },
+    {
+      "path": "failure/sources/reuse.rs",
+      "bytes": 66965,
+      "sha256": "284ddd4849fb11d20b964e1c49b7ae13b97fd42fd97b84cb3bb0ab3bd494f545"
+    },
+    {
+      "path": "fixtures/ReferenceAliasBoundary.class",
+      "bytes": 692,
+      "sha256": "c4f3556e593576aa233be2a50d0a9d6f37bcbfc561be4a690daca05ae074ba57"
+    },
+    {
+      "path": "fixtures/ReferenceAliasBoundary.java",
+      "bytes": 324,
+      "sha256": "d19cca9baba0824374f4f7391ef27ee623951eed566b2e3664400a80ad0fbc01"
+    },
+    {
+      "path": "fixtures/UpstreamNestedLoops.class",
+      "bytes": 4763,
+      "sha256": "ee3ae7f552a398606b512ec496bf70a3341937b5add1b23c276183b635ff04f7"
+    },
+    {
+      "path": "fixtures/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+    },
+    {
+      "path": "root-validation.json",
+      "bytes": 693,
+      "sha256": "5ef77733d51bc261ba53cab703c9fa250fb26b5d6fe24074b8d348c880a026e9"
+    },
+    {
+      "path": "tools/focused-runner.py",
+      "bytes": 4549,
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f"
+    },
+    {
+      "path": "trace/execution.json",
+      "bytes": 2125993,
+      "sha256": "e8fa57e98f134552fd4b21bfa79a8ecf2675f23a3142c8108e61f70138e072b3"
+    },
+    {
+      "path": "trace/raw/1.stderr.raw",
+      "bytes": 2507,
+      "sha256": "6463dba5c2666d2852f30099fcf3551489df3090c76324bae1cd6b55ff00a8f4"
+    },
+    {
+      "path": "trace/raw/1.stdout.raw",
+      "bytes": 330,
+      "sha256": "1d599d87d947827f7b0e163954a30b66751bf0cb960cfa6ae2e43a5529d3887f"
+    },
+    {
+      "path": "trace/raw/2.stderr.raw",
+      "bytes": 52,
+      "sha256": "461a63c862f49288c10a15e3b48b35bedda72b3441453acb82419fb748886af7"
+    },
+    {
+      "path": "trace/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "trace/tools/base-reuse.rs",
+      "bytes": 67492,
+      "sha256": "174f219bd0aa498016dfc7760eeab113afeb7a58e79bbd74d9ed57bbb4b1970f"
+    },
+    {
+      "path": "trace/tools/candidate-reuse.rs",
+      "bytes": 67719,
+      "sha256": "a0577c01b8588146f728c53c3a484e0a61d0c859b23ad0077c7ff57e418c98bb"
+    },
+    {
+      "path": "trace/tools/commands.json",
+      "bytes": 229,
+      "sha256": "d27489f48dd1e7a98056d0af26537007a013feb7ff1f981e231b8a09024c5447"
+    },
+    {
+      "path": "trace/tools/pins.json",
+      "bytes": 164,
+      "sha256": "7dbbd01b779ae3d8359b3930de869b8fa6271f524971e24eef3ec44fe77257af"
+    },
+    {
+      "path": "trace/tools/run.py",
+      "bytes": 800,
+      "sha256": "eb2c87c84cbf7119d01e1e90f657b6ecdce5ff89ee98edf723da0a98e6f85e14"
+    }
+  ],
+  "root_validation": {
+    "status": "accepted_diagnostic_not_product_acceptance",
+    "failed_library_result": {
+      "passed": 395,
+      "failed": 8,
+      "ignored": 0
+    },
+    "same_ir_trace": [
+      "JARDE_LVT_OWNER_TRACE rows=[(32, 41, \"value\"), (74, 82, \"value\")] reads=[33] owners={30: 0, 33: 0, 72: 1} ranges=[(0, 72), (72, 4294967295)]"
+    ],
+    "trace_assertion_remained_failed": 101,
+    "sources_restored": true,
+    "source_pin_count": 4856,
+    "target_absent": true,
+    "duplicate_fixture_removed_after_failure": true,
+    "failure_execution_sha256": "1af99d4021a170bb93de7ddf6fde82936c96159c3590f3fa6ba1bed54b0bce18",
+    "trace_execution_sha256": "e8fa57e98f134552fd4b21bfa79a8ecf2675f23a3142c8108e61f70138e072b3"
+  }
+}

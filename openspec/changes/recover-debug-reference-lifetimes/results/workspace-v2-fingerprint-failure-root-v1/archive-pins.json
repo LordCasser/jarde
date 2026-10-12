@@ -1,0 +1,17 @@
+{
+  "schema": "jarde-workspace-v2-failure-archive-pins-v1",
+  "status": "archived_failed_observation",
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-debug-reference-lifetimes/results/workspace-v2-fingerprint-failure-root-v1/capture.tar.gz",
+    "bytes": 1283235,
+    "sha256": "262c12762a6061a7ad47a144121dc8d2094bd6f15b7babce787eeca601030719"
+  },
+  "manifest": {
+    "member": "archive-manifest.json",
+    "bytes": 67876,
+    "sha256": "87f8c8302a8ff476cd5d02a12195a448c6dc55c734abf72d0c0e975454b44170"
+  },
+  "member_count_excluding_manifest": 146,
+  "raw_stream_count": 134,
+  "acceptance_claim": "failed workspace v2 evidence only; not a complete passing run"
+}

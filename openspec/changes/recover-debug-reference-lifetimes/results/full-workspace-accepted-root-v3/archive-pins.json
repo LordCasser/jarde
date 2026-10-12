@@ -1,0 +1,19 @@
+{
+  "schema": "jarde-accepted-run-archive-pins-v1",
+  "accepted_state": "accepted_local_workspace_only",
+  "kind": "workspace",
+  "archive": {
+    "path": "/private/tmp/jarde-reference-prefix-workspace-v3-archive-root-v1/capture.tar.gz",
+    "bytes": 3232329,
+    "sha256": "3b3f45e9b0daade6ee1b5d47e660abec73605db38dc2f562d8079efc21357ef5"
+  },
+  "manifest": {
+    "member": "archive-manifest.json",
+    "bytes": 268548,
+    "sha256": "7e717262ea20e8f1b98fcaba67fc6c891fb7dbdf49ac2c619fbdf164c62264aa"
+  },
+  "member_count_excluding_manifest": 418,
+  "source_snapshot_count": 15,
+  "command_count": 195,
+  "raw_stream_count": 390
+}

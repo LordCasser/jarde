@@ -1,0 +1,86 @@
+{
+  "status": "all_members_reopened_and_exact",
+  "archive": {
+    "bytes": 1236922,
+    "sha256": "40d3513c4fb28464042af80edcabf02c43853b3f539a2caf1f98dd82b350b6ca"
+  },
+  "members": 48,
+  "focused_acceptance": {
+    "status": "accepted_focused_component_only",
+    "not_workspace_ci_or_release": true,
+    "verifier": {
+      "path": "/private/tmp/jarde-reference-prefix-accept-focused-root-v10.py",
+      "bytes": 3346,
+      "sha256": "b3669a3651a27180f54b93be08e68c24f1a71da0e57365b393c49751a4487bab"
+    },
+    "workspace_protocol": {
+      "path": "/private/tmp/jarde-reference-prefix-workspace-prep-luna-v4/workspace_runner.py",
+      "bytes": 57645,
+      "sha256": "691e7c073c202ff7782ec8323f0a8c1892ad8748fd55c6d952515f9809736c22"
+    },
+    "execution": {
+      "path": "/private/tmp/jarde-reference-prefix-final-focused-run-root-v10/execution.json",
+      "bytes": 2141748,
+      "sha256": "f3961291383c99025fc980481a78f3b851bd5ff0e488e6755ac949d73c2851fb"
+    },
+    "command_spec": {
+      "path": "/private/tmp/jarde-reference-prefix-final-focused-prep-root-v10/commands.json",
+      "bytes": 2511,
+      "sha256": "e979474577f85504a5301cda0ba9888eace4b4b3f51a4df2d5fde27283a1f99f"
+    },
+    "source_count": 4860,
+    "totals": {
+      "passed": 675,
+      "failed": 0,
+      "ignored": 2
+    },
+    "named_gates": [
+      "build::tests::raw_alias_escape_full_reuse_plan_stops_atomically_during_lvt_matching",
+      "build::tests::raw_alias_escape_reference_lifetimes_keep_types_names_and_local_owners",
+      "build::tests::raw_alias_escape_rejects_ambiguous_or_incomplete_lvt_rows_atomically",
+      "build::tests::raw_alias_escape_without_lvt_keeps_the_existing_unnamed_split",
+      "cancellation_during_the_selected_recovery_commits_no_partial_region_or_source_map",
+      "ordinary_try_prefix_loop_keeps_default_all_output_and_every_physical_origin",
+      "raw_alias_escape_reference_lifetimes_match_default_all_and_source_origins",
+      "region::protected_prefix_loop_tests::candidate_named_row_scope_is_bound_to_the_current_real_sites_and_range",
+      "region::protected_prefix_loop_tests::candidate_row_binding_stops_without_publishing_a_partial_scope",
+      "region::protected_prefix_loop_tests::effect_suffix_inside_try_refuses_prefix_loop_and_restores_full_state",
+      "region::protected_prefix_loop_tests::handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once",
+      "region::protected_prefix_loop_tests::late_prefix_loop_child_stop_restores_all_walker_state",
+      "region::protected_prefix_loop_tests::real_resource_guard_region_is_rejected_by_candidate_collector",
+      "same_name_lvt_sources_split_into_exact_typed_independent_names"
+    ],
+    "cli": {
+      "path": "/private/tmp/jarde-reference-prefix-final-focused-run-root-v10/candidate-cli",
+      "bytes": 62562992,
+      "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+    },
+    "runtime_cli_refs": {
+      "debug": {
+        "receipt": {
+          "path": "/private/tmp/jarde-reference-prefix-candidate-debug-root-v1/execution.json",
+          "sha256": "4c0593380d27be965b553866ac7b6fed17f7cfc586126bb6f7afe8be46a8e501"
+        },
+        "cli": {
+          "path": "/private/tmp/jarde-reference-prefix-combined-focused-run-root-v6/candidate-cli",
+          "bytes": 62562992,
+          "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+        }
+      },
+      "none": {
+        "receipt": {
+          "path": "/private/tmp/jarde-reference-prefix-candidate-none-root-v1/execution.json",
+          "sha256": "d0bc8b2c01655d8ce4468b6565546663afa25796bc63c33c428ff44bb5de0093"
+        },
+        "cli": {
+          "path": "/private/tmp/jarde-reference-prefix-combined-focused-run-root-v6/candidate-cli",
+          "bytes": 62562992,
+          "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+        }
+      }
+    },
+    "peak_target_bytes": 863554997,
+    "strict": "360 passed / 0 failed",
+    "target_absent": true
+  }
+}

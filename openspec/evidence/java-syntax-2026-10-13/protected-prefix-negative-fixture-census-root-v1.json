@@ -1,0 +1,58 @@
+{
+  "status": "actual_javac_javap_and_class_bytes_counted_pending_IR_negative_tests",
+  "fixture_source": {
+    "path": "/private/tmp/jarde-protected-prefix-negative-compile-prep-root-v1/Negative.java",
+    "bytes": 734,
+    "sha256": "cf6a4b337f43d89d1a362d5f0077aae11ab0bf2175f66b7cde19422c1e5e3b0e"
+  },
+  "fixture_class": {
+    "path": "/private/tmp/jarde-protected-prefix-negative-compile-prep-root-v1/classes/Negative.class",
+    "bytes": 1026,
+    "sha256": "f15e25e3da8ab7a686ac057fa8b6542756c7a62f1a818572b9073316da91c489"
+  },
+  "execution": {
+    "path": "/private/tmp/jarde-protected-prefix-negative-compile-run-root-v1/execution.json",
+    "bytes": 2128119,
+    "sha256": "c682788cb68449aa71419fb48016b5e5de28c9b0c6cdee9d414aca8cfec1aa35"
+  },
+  "addition": [
+    1,
+    3,
+    2,
+    5,
+    0
+  ],
+  "methods": [
+    {
+      "name": "<init>",
+      "descriptor": "()V",
+      "code_length": 5,
+      "handlers": 0,
+      "branch_bcis": [],
+      "jsr_bcis": []
+    },
+    {
+      "name": "directReturnAfterLoop",
+      "descriptor": "(Ljava/util/List;)I",
+      "code_length": 31,
+      "handlers": 1,
+      "branch_bcis": [
+        13,
+        23
+      ],
+      "jsr_bcis": []
+    },
+    {
+      "name": "stateWriteInsideTryAfterLoop",
+      "descriptor": "(Ljava/util/List;)V",
+      "code_length": 47,
+      "handlers": 1,
+      "branch_bcis": [
+        13,
+        23,
+        34
+      ],
+      "jsr_bcis": []
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "status": "root_reopened_all_archive_members_and_pins",
+  "member_count": 54,
+  "raw_count": 24,
+  "source_snapshots": 15,
+  "archive_sha256": "19978d4b973a33f7eb7c7ae0d292a450daab0919cf37cf6e621e27c46d469829",
+  "execution_sha256": "88804a94660ddbbbd2186247044f4c4af3e3535c69680617963324a2b6c2cd26",
+  "acceptance_sha256": "cc2b0d38499a61378b650f9676652863dda43fcf5309cbbd9633f02cac9e4b20",
+  "no_workspace_or_CI_claim": true
+}

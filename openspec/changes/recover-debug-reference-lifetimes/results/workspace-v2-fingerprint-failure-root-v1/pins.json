@@ -1,0 +1,23 @@
+{
+  "base_revision": "7e93eb30647338dd8a6ddfc9994392f23457aa3e",
+  "shared_sources": {
+    "tests/fixtures/corpus-fingerprint.json": "063f1e661db28ca94e5ce727e329f0b20065ad076dbdb242bf0cdc60a65ba5a8",
+    "tests/p5_corpus_fingerprint.rs": "a4e6cdc81120b4c9016ad5778f49c0b7da86ef9e98bb2ce36954eb4413a618b4"
+  },
+  "new_fixture_sha256": {
+    "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.class": "f15e25e3da8ab7a686ac057fa8b6542756c7a62f1a818572b9073316da91c489",
+    "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.java": "cf6a4b337f43d89d1a362d5f0077aae11ab0bf2175f66b7cde19422c1e5e3b0e",
+    "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class": "da5c6a2a8094a9922c086e696c1dfc55db22752ee53f41ce23b5f183c1f28f9f",
+    "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.java": "cc01af11d356d84cecb6c321fc49393329121fe82767ee8ed9a598bcb87b7aab"
+  },
+  "raw_failure": {
+    "path": "/private/tmp/jarde-reference-prefix-full-workspace-run-root-v2/65.stdout.raw",
+    "sha256": "f92362ca2db82452ba59ad2584290816f424099ad2b571990e4ba3e76bcd6286"
+  },
+  "private_files": {
+    "base.json": "063f1e661db28ca94e5ce727e329f0b20065ad076dbdb242bf0cdc60a65ba5a8",
+    "candidate.json": "be677275ac72c0cb57d9702314d73cdd40f343459f468f28bda666be5d55c09a",
+    "patch.diff": "3d50d7d6e579cdff0ddd873b523d991dc69381c51e952b2e7be83fcce69826fc",
+    "report.md": "be880211839ff88c17de235256123f658745ba3ae2ba28c793070cb5e8ff9c7d"
+  }
+}

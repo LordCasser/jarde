@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "archive_sha256": "b958133beba3dd9a52b5f2934736ad8801c1df32eb0abee6c51e02ef85cfc40a",
+  "members_reopened": 390,
+  "candidate_raw_streams": 164,
+  "roles": {
+    "passed-boundary-acceptance-receipt": 1,
+    "passed-candidate-acceptance-receipt": 1,
+    "observed-v4-verifier-tool-failure": 1,
+    "pinned-tool-or-prep-source": 21,
+    "receipt": 4,
+    "raw-stream": 178,
+    "capture-source-report-or-input": 72,
+    "original-class-or-jar-evidence": 50,
+    "command-spec": 1,
+    "failed-run-receipt": 4,
+    "failed-run-raw-stream": 36,
+    "exact-failed-source-or-pins": 6,
+    "failed-source-receipt": 3,
+    "v7-test-source-audit-prep-artifact": 5,
+    "v6-source-snapshot-current-matching-manifest": 3,
+    "v6-exact-source-snapshot-from-old-base": 1,
+    "v7-exact-source-snapshot-matching-receipt": 1,
+    "command-spec-pin": 1
+  },
+  "acceptance_states": {
+    "boundary_root": "passed",
+    "candidate_v4_verifier_observation": "observed_tool_failure",
+    "candidate_v5": "passed",
+    "focused_v6_execution": "commands_passed_pending_independent_acceptance",
+    "focused_v7_execution": "failed"
+  },
+  "all_exact_snapshots_included": true
+}

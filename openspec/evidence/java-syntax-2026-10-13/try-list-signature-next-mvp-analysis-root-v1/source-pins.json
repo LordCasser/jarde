@@ -1,0 +1,182 @@
+{
+  "schema": "jarde-em20-next-mvp-static-analysis-v2",
+  "inspection": "read-only source/tests/docs; no build/test/toolchain",
+  "private_report_sha256": "76c079868b9c2cd91ff8024c41b370c4bc12976891a8bb0dfb59a93e774b927d",
+  "sources": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 671291,
+      "sha256": "4435bbb34d6f09583d0071eae2a3e8e9f7fe69b775ce22cb91b9cea8745a9a74"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 736716,
+      "sha256": "16e7a07f5f133f948a5d88ea467e397f9685a18e56cd8a4734792d6efbfaa1bb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "bytes": 1961810,
+      "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region/protected_prefix_loop_tests.rs",
+      "bytes": 36166,
+      "sha256": "3c038c64a1d50d85c079a161ef6030eadedcfc0e81d91b3fcdf6897b0bfafec6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/structured_list_generic_bodies.rs",
+      "bytes": 25763,
+      "sha256": "676b89c11ee4d9cb6880d6d966f9172d169d91ee3449ed6e77d6fc7c0d0e4a33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_loop_try_handler_entry.rs",
+      "bytes": 9049,
+      "sha256": "9112b52b15512035263e821b3994ef113dd3cc98be3a70a187a6878ab2f0f01d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_typed_catch.rs",
+      "bytes": 19645,
+      "sha256": "f7840971550b12d8cdaeb88009e0f4ffac6d02d76092442f26e62fcc274e9736"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_try.rs",
+      "bytes": 11329,
+      "sha256": "d05e8e1888da3a6b40129233de3982b810a5ff0b43ea689fef748840010ed5d5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_twr_enclosing_catch.rs",
+      "bytes": 16844,
+      "sha256": "a581354a0920fb4b7ace1c47a3e5f50b63ac9f0313cfcc5c8c8d92a806f509c1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.java",
+      "bytes": 4543,
+      "sha256": "f0114ff1752aede3a2b19df1887fedb289c6d08b63a84b1913a86eb1d2cbb236"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/completion-review.md",
+      "bytes": 36182,
+      "sha256": "5a5c2b6b61ae13eb21140e97baf635433dc92e4f6f5f1df021afafbdb8641ca8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/proposal.md",
+      "bytes": 2297,
+      "sha256": "12d35ba320cbff07bc4fd813eab752446d178e281c3d48b5df233259532316d1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/design.md",
+      "bytes": 7047,
+      "sha256": "b76d02a085dc07b040ed8fa1d46fe23822a6675a33676b95cffa13f3a953551b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-protected-prefix-loop-sequences/proposal.md",
+      "bytes": 2451,
+      "sha256": "e4a62de58e5cb8e04755e41dc37ef6b8e5f083458b3e84ad867a2f6c47b96647"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/positive-baselines-root-v1/private-fixture-prep-v2/manifest.json",
+      "bytes": 1322,
+      "sha256": "63f082196521188f047b39b9adb4a135dd6ba0d3f1e9f8aa57a3a3a19d5af95b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-structured-list-generic-bodies/results/six-baseline-summary-root-v2/README.md",
+      "bytes": 1625,
+      "sha256": "fc47d1daabf4e010517ccdc247cfc62f45d9302c8c02f08a6fda1a4a667107a4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+      "bytes": 876,
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestIterableForEach4.java",
+      "bytes": 577,
+      "sha256": "328bf3492599a00c4f3cd82d1525a8d28e3267cebaa6a43cf701c63c38d48d4a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestTryCatchInLoop.java",
+      "bytes": 868,
+      "sha256": "9fc7c99bf968ffbfb948bf5dca186f36c1d923ee9c4600f8d86ff85899003830"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestLoopRestore.java",
+      "bytes": 389,
+      "sha256": "8deece8b5316a0179f9ce83a229e51f705171dbf00fb9754d20265ec04f2b324"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestLoopInTryCatch2.java",
+      "bytes": 1140,
+      "sha256": "2cfcd72c922bc7c384ff0c2762f525e6751a21384bfa37de639856f67fe80f7f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestLoopInTryCatch.java",
+      "bytes": 1540,
+      "sha256": "20ece2978d792360ea2bf02f9ba320c2d20f97f563de53d0947026bfb71c66fc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchFinally3.java",
+      "bytes": 1215,
+      "sha256": "d61f1f6b7c092af2e5d947c8def626887cb0dc8adb40d6c68dec3be96f432acd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/generics/TestGenericsInArgs.java",
+      "bytes": 1130,
+      "sha256": "d7002c18bbd710136c3f4239af8fee6d118019a54cef0db8bb2b8b23f9519e52"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/SignatureProcessor.java",
+      "bytes": 10880,
+      "sha256": "cbca1176bfd47bffefd9168136d19feeb7e6a429947c7c6234983f3cf1bd53b8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java",
+      "bytes": 14587,
+      "sha256": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/ProcessTryCatchRegions.java",
+      "bytes": 4389,
+      "sha256": "0a382bc7e189742410b7a1b93f90703f60dfd7cc1256e06ddca4da0ccff6225d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/regions/loops/ForEachLoop.java",
+      "bytes": 1298,
+      "sha256": "e16fba634dbc7dda08e6a69e5a0263953f0a5b1ffdae4d12272a2bab458a8321"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/debuginfo/DebugInfoAttachVisitor.java",
+      "bytes": 6019,
+      "sha256": "01c43bcac6eb6805f4d24a3c65defcda4da356f475a6f56ba3f41b6e98d51572"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/debuginfo/DebugInfoApplyVisitor.java",
+      "bytes": 7840,
+      "sha256": "5c77a28c903c29fe98d328aa9d25b5a911a9a9fa56b4a831b0ad2cf7d04a70f5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/InitCodeVariables.java",
+      "bytes": 3543,
+      "sha256": "97cbe40981ef70ac4ca0f8fb65c828ed4d4cde38bffc164caa42de93c060c2e3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/instructions/args/CodeVar.java",
+      "bytes": 2457,
+      "sha256": "f03cf37d6b73c6fc51330dae53850078b6f50aaf3080a38d83aec55b49ddfefc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/nodes/utils/TypeUtils.java",
+      "bytes": 12549,
+      "sha256": "fb86a2fe9f91cc7e0ef34fe22674f10cdb9f015c7a43de05c02bc9c3b28ee84c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/nodes/utils/MethodUtils.java",
+      "bytes": 5214,
+      "sha256": "670ba72161a14c5ec71200684fabb1788bebb94b27144822459f9bb25105e007"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/MethodInvokeVisitor.java",
+      "bytes": 15416,
+      "sha256": "60ee5bd34ad003d48c85bc622f7ac160f4a197acb894999140fcedf1914129ff"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 ## What Changes
 
-- 在现有引用生命周期拆分证明成功后，把非空、互不重叠的 LVT 读取范围和名称一一匹配到已有 SSA 身份；初始化 store 的身份继续由 SSA 决定。
+- 在现有引用生命周期拆分证明成功后，把非空、互不重叠的 LVT 范围和名称一一匹配到已有 SSA 身份；读取按已证明owner匹配，无读取身份另核唯一真实初始化Store与row起点的decoded邻接，初始化store的身份仍由SSA决定。
 - 保留无 LVT 路径、参数/resource/CFG/alias/预算拒绝条件及现有全局名称冲突后缀。
 - 固定双 JDK、真实 `-g`/`-g:none` 的完整类对照；保留 raw List 别名、检查转换、ClassCastException、集合状态及副作用。
 - 外层 try/foreach 的 `handled()` 区域缺口另行处理。本项局部改善不能关闭完整类运行门或增加整 CF11/71/612 完成数。

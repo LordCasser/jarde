@@ -1,0 +1,36 @@
+--- a/tests/fixtures/corpus-fingerprint.json
++++ b/tests/fixtures/corpus-fingerprint.json
+@@ -6361,6 +6361,16 @@
+       "path": "tests/fixtures/p3-primitive-conversions/v8/PrimitiveConversions.class"
+     },
+     {
++      "blake3": "592d8c1d5e9e00852271fe3ea16524884864a7af56ded896029618d5e9c04348",
++      "bytes": 1026,
++      "path": "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.class"
++    },
++    {
++      "blake3": "9f5d6c68b386ad0001686da10af734fc88300b6b1d06b37744fe3b39031950c8",
++      "bytes": 734,
++      "path": "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.java"
++    },
++    {
+       "blake3": "106f605183cf2d2a10d6d53d65f6d4473825c583db63707b95aea21563df5c63",
+       "bytes": 1658,
+       "path": "tests/fixtures/p3-receiver-grouping/Baseline.java"
+@@ -6374,6 +6384,16 @@
+       "blake3": "5e16d691d1ef6700ba20c66879d42ce401558efba3cf69c64bbcbdabc8e1c071",
+       "bytes": 1038,
+       "path": "tests/fixtures/p3-receiver-grouping/v8/ReceiverGrouping.class"
++    },
++    {
++      "blake3": "aa36c31f04efcb09bd84163b06593b06406e1980cfb10ce70b9bee43977e3f6a",
++      "bytes": 761,
++      "path": "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class"
++    },
++    {
++      "blake3": "6e23fc2d81a7a3f8ea7494b074d4bc752ec508cd4cd1ec66b55092c82756ef79",
++      "bytes": 335,
++      "path": "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.java"
+     },
+     {
+       "blake3": "3d207f72c109778cefbe7dae97f64bf1bd4a3bbb9019368fbb2c065ed80ec06f",

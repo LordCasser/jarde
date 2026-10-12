@@ -1,0 +1,17 @@
+{
+  "actual_predecessor_failure": {
+    "session": 90716,
+    "exit_code": 1,
+    "reason": "p3_patterns exact 91-test stale gate"
+  },
+  "source_test_count": 92,
+  "source_sha256": "fb4b0a2a656d52652575c3bc5b7f493e118dfe2cd1d0e95d9aa7f90db04bce21",
+  "raw_commands": [
+    86,
+    182
+  ],
+  "raw_source_named_set_equal": true,
+  "change": "only four p3_patterns count/report literals 91 to 92; same original pinned runner and all other gates",
+  "old_sha256": "77b8bb3b4afd0b04bad31b82e5e7ec49c8efee046955340ce9b4c9393f88896b",
+  "new_sha256": "5f24f35d27d50a5fca7b128247a3bc094f2109de958af875cf9128a886105c79"
+}

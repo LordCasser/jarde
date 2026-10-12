@@ -1,0 +1,9 @@
+{
+  "status": "reviewed_exact_private_tool_pin_fix_not_product_change",
+  "v1_actual_attempt_exit_code": 1,
+  "v1_error": "pinned v4 tool changed: pins.json",
+  "actual_cause": "v1 hardcoded pins.json SHA transcription error; v4 tool unchanged",
+  "v1_script_sha256": "3cbf7c5bce96dca17c3244dfca456b675009162a910c0f7cf4dbdda4482ff4ec",
+  "v2_script_sha256": "771341d6736cc49da1314dff6f7292dfc17c85af4ffc72085105b26bd686a33e",
+  "actual_v4_pins_sha256": "5d0d2315e2e08adf94d57808a821c6419a6ca4aecc69ff00031d82ccb6643e49"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "root_reviewed_private_uncompiled_prep_only",
+  "source_reference_pins_verified": 31,
+  "original_oracle_call_lines_preserved": 17,
+  "v1_overload_and_wrong_output_injection_fixed": true,
+  "String_Integer_cases": [
+    "both_branches",
+    "empty",
+    "null",
+    "iterator/hasNext/next/add RuntimeException and Error"
+  ],
+  "nested_loop_topology": "pending actual same-run Region and compile/runtime proof; not decided from source",
+  "no_new_OpenSpec_or_product_implementation": true,
+  "candidate_java_not_compiled_or_run": true
+}

@@ -1,0 +1,23 @@
+{
+  "status": "actual_current_reader_census_and_alias_boundary_tests_passed",
+  "source": "final-focused-root-v9/acceptance-root-v9.json",
+  "reader_tests": [
+    178,
+    0,
+    0
+  ],
+  "java_library_tests": [
+    410,
+    0,
+    0
+  ],
+  "corpus_counts": {
+    "classes": 1165,
+    "Code": 5163,
+    "handlers": 503,
+    "branch_targets": 3284,
+    "jsr": 10
+  },
+  "historical_receipts_unchanged": true,
+  "not_workspace_ci_or_release": true
+}

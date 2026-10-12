@@ -1,0 +1,10 @@
+{
+  "status": "root_full_source_preexecution_review",
+  "origin": "Luna private preparation in directory named root-v1; independently read and reviewed by root",
+  "v1_executed": false,
+  "static_bug": "missing import gzip before gzip.GzipFile; caught before execution",
+  "exact_v2_fix": "single import gzip",
+  "v1_sha256": "3ca39294c1036c03f75ed313b1e2d810728cfac3e28f64dfb93c9759ad2f2c0a",
+  "v2_sha256": "1b2f092d21ddf58ab19ac713f70450942ff08bba882729e92e932922a7de3ac1",
+  "workspace_schema_cross_review": "references list / source_pins_before-after / cleanup observed; future receipt acceptance still pending"
+}

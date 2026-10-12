@@ -63,6 +63,7 @@
 //! for, is `Other` as well: this layer never invents the symbol an instruction names.
 
 use std::collections::BTreeMap;
+use std::ops::Bound::{Excluded, Unbounded};
 
 use jarde_reader::classfile::{
     CpEntryFacts, CpEntryKind, DescriptorKind, ImmediateValue, InstructionFact,
@@ -102,6 +103,14 @@ impl Operations {
     /// What the instruction at one bytecode index does, when this run decoded one there.
     pub(crate) fn get(&self, bci: u32) -> Option<&Operation> {
         self.operations.get(&bci)
+    }
+
+    /// The next decoded instruction after one BCI, if this body has one.
+    pub(crate) fn next_bci(&self, bci: u32) -> Option<u32> {
+        self.operations
+            .range((Excluded(bci), Unbounded))
+            .next()
+            .map(|(&next, _)| next)
     }
 
     /// Every decoded operation, in BCI order.

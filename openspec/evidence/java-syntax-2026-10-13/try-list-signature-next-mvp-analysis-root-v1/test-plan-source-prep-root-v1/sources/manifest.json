@@ -1,0 +1,33 @@
+{
+  "schema": "jarde-ordinary-try-list-mvp-source-candidates-v2",
+  "status": "source-only, not compiled; no classfile identity is asserted",
+  "base_fixture_manifest": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/cf11-structured-list-controls/manifest.json",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.UpstreamNestedLoops",
+      "source": "UpstreamNestedLoops.java",
+      "candidate_methods": [
+        "tryStringBranch",
+        "tryIntegerBranch",
+        "tryStringRemovePrefix",
+        "tryStringNested",
+        "tryStringUnknownCall"
+      ]
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "role": "existing 17-case Runner rows retained, plus typed success/empty/null/branch, exception-injection, prefix, nested-topology, and unknown-call traces"
+  },
+  "invariants": [
+    "all original full-class methods retained before appended candidates",
+    "candidate source is not hand-edited generated decompiler output",
+    "nested-loop protected shape is pending actual Region/source proof",
+    "runtime oracle remains freshly compiled original candidate source",
+    "TraceList has one unambiguous constructor; failure injection is configured after construction on the list that receives the operation",
+    "original 17 oracle output rows precede all candidate trace rows"
+  ]
+}

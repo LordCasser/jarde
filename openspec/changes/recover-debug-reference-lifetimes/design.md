@@ -12,9 +12,9 @@
 
 ## Decisions
 
-1. **先证明身份，再匹配调试记录。** 保留 exact reference type、`reference_values_stay_before_boundaries`、`owned_definition_split` 与 canonical normal-flow 条件。私有 helper 返回与 typed split 相同的 names-plus-Split 形状；无记录时仍是 unnamed identities。有记录时将每个读取的 LVT interval 匹配到已证明的 `Split.by_bci` 身份。所有读取各有唯一 row，每个 row 与身份一一对应、非空互不重叠，且范围顺序与定义顺序一致。每个身份必须有读取证据。初始化 store 的 slot5 BCI30/72 在 row [32,41)/[74,82) 之前是正常编译产物，归属继续由 SSA 决定。
+1. **先证明身份，再匹配调试记录。** 保留 exact reference type、`reference_values_stay_before_boundaries`、`owned_definition_split` 与 canonical normal-flow 条件。私有 helper 返回与 typed split 相同的 names-plus-Split 形状；无记录时仍是 unnamed identities。有记录时将每个读取的 LVT interval 匹配到已证明的 `Split.by_bci` 身份。所有读取各有唯一 row，每个 row 与身份一一对应、非空互不重叠、完整落在对应身份范围内，且范围顺序与定义顺序一致。root实际同次IR补充确认第二个String循环变量没有aload读取：reads=[33]，by_bci={30:0,33:0,72:1}。因此不能要求每个身份都有读取；无读取的身份只有在唯一已证明的真实Store紧邻该row起点（下一decoded instruction BCI恰等于row.start），且row完全落在该身份范围时，才允许附加名称。该约束来自物理decoded位置和既有SSA身份，不按最近store或名称猜测。保留真实checkcast及初始化效果。初始化 store 的 slot5 BCI30/72 在 row [32,41)/[74,82) 之前是正常编译产物，归属继续由 SSA 决定。
 
-2. **名称在完整证明后发布。** 匹配失败返回现有 refusal/fallback，不发布部分 split。参数、resource、未知/等同类型、缺失访问、克隆/不可达块、未支持边、逆向跨生命周期流、歧义 phi 和 stale reference 的门不变。新增遍历仍用既有 budget poll/charge；不依赖 optional evidence 选择。可复用现有有界匹配，不为查表引入通用框架。
+2. **名称在完整证明后发布。** 匹配失败返回现有 refusal/fallback，不发布部分 split。参数、resource、未知/等同类型、缺失访问、克隆/不可达块、未支持边、逆向跨生命周期流、歧义 phi 和 stale reference 的门不变。新增遍历仍用既有 budget poll/charge；不依赖 optional evidence 选择。可复用现有有界匹配，不为查表引入通用框架。unused身份的物理邻接查询复用Operations的已解码BCI有序表，不重读bytecode、不新增索引，不按opcode猜宽度；逐项核真实Store槽位、唯一owner及范围，新增工作仍计费。
 
 3. **复用现有声明和命名。** 两个身份进入现有 declaration placement，各自落在对应循环作用域。NameTable 全局 taken-set 允许第二个 `value` 变成 `value_2`；这足够解决类型冲突。直接按名称拆分会误信 debug table；仅移除 records guard 会丢失调试名称；改用 LVT-only `split()` 的同块 store_producing 无法替代现有跨块所有权证明，均不采用。
 
@@ -33,3 +33,5 @@
 ## Migration Plan
 
 root 固化新基线和此设计，Luna 仅在私有副本准备实现 patch 与永久反例；root 审查后独占共享源码和工具链。运行前至少5GiB可用、target至多1GiB、1秒进程组守卫，默认 Rust stack，finally exact cargo clean。门禁通过后提交推送确切产品，接受自身 CI，再更新交接；失败保留证据并修真实原因。
+
+2026-10-13 实施反馈：v6实际lib 395成功/8失败；测试预算默认全零造成的中止与真实unused身份拒绝分别处理。root同次诊断保持原失败断言，准确观察reads=[33]及第二身份仅store72，source恢复/finally clean；见后续results归档。完整类和其他门不缩减，当前任务仍1/6。

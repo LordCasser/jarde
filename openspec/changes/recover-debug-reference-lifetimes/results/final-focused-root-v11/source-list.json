@@ -1,0 +1,20 @@
+{
+  "schema": "jarde-accepted-run-source-list-v1",
+  "paths": [
+    "crates/jarde-java/src/build.rs",
+    "crates/jarde-java/src/decode.rs",
+    "crates/jarde-java/src/names.rs",
+    "crates/jarde-java/src/region.rs",
+    "crates/jarde-java/src/reuse.rs",
+    "crates/jarde-reader/src/classfile.rs",
+    "crates/jarde-java/src/region/protected_prefix_loop_tests.rs",
+    "crates/jarde-java/tests/ordinary_try_prefix_loop.rs",
+    "tests/p3_reference_slot_lifetimes.rs",
+    "tests/structured_list_generic_bodies.rs",
+    "tests/fixtures/corpus-fingerprint.json",
+    "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.class",
+    "tests/fixtures/p3-protected-prefix-loop-negatives/Negative.java",
+    "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class",
+    "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.java"
+  ]
+}

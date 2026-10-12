@@ -1,0 +1,65 @@
+{
+  "status": "accepted_focused_component_only",
+  "not_workspace_ci_or_product_release": true,
+  "execution": {
+    "path": "/private/tmp/jarde-reference-prefix-final-focused-run-root-v9/execution.json",
+    "bytes": 2140319,
+    "sha256": "e1999d6445882dbe699aed4d91cf3364a601665b259712ced982cbcdf8d9a7e4"
+  },
+  "source_count": 4860,
+  "commands_including_final_clean": 10,
+  "test_totals": [
+    667,
+    0,
+    2
+  ],
+  "required_named_test_groups": {
+    "raw_alias_lvt": 4,
+    "protected_prefix_loop": 6,
+    "ordinary_try_prefix_loop": 2,
+    "structured_list_fullclass": 1
+  },
+  "all_raw_streams_reopened": true,
+  "exact_current_ci_clippy": true,
+  "strict": [
+    360,
+    0
+  ],
+  "default_stack": true,
+  "guard_limits": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "interval_seconds": 1
+  },
+  "target_absent": true,
+  "fresh_cli": {
+    "path": "/private/tmp/jarde-reference-prefix-final-focused-run-root-v9/candidate-cli",
+    "bytes": 62562992,
+    "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+  },
+  "fresh_cli_bytes_match_independently_accepted_17_and_10_scene_matrices": true,
+  "runtime_references": {
+    "debug": {
+      "receipt": {
+        "path": "/private/tmp/jarde-reference-prefix-candidate-debug-root-v1/execution.json",
+        "sha256": "4c0593380d27be965b553866ac7b6fed17f7cfc586126bb6f7afe8be46a8e501"
+      },
+      "cli": {
+        "path": "/private/tmp/jarde-reference-prefix-combined-focused-run-root-v6/candidate-cli",
+        "bytes": 62562992,
+        "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+      }
+    },
+    "none": {
+      "receipt": {
+        "path": "/private/tmp/jarde-reference-prefix-candidate-none-root-v1/execution.json",
+        "sha256": "d0bc8b2c01655d8ce4468b6565546663afa25796bc63c33c428ff44bb5de0093"
+      },
+      "cli": {
+        "path": "/private/tmp/jarde-reference-prefix-combined-focused-run-root-v6/candidate-cli",
+        "bytes": 62562992,
+        "sha256": "fe00fa7f0edc587a4e85bcc1136bd4397738c2a9df632432a2e79a8221c8bdd6"
+      }
+    }
+  }
+}

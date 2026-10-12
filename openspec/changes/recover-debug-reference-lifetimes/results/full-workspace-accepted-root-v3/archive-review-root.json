@@ -1,0 +1,16 @@
+{
+  "status": "accepted_local_workspace_only",
+  "archive_sha256": "3b3f45e9b0daade6ee1b5d47e660abec73605db38dc2f562d8079efc21357ef5",
+  "reopened_members": 419,
+  "raw_stream_count": 390,
+  "commands": 195,
+  "source_snapshot_count": 15,
+  "source_closure_count": 4860,
+  "workspace_totals": [
+    7094,
+    0,
+    196
+  ],
+  "target_peak_bytes": 870316666,
+  "target_absent": true
+}

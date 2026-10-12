@@ -1,0 +1,54 @@
+{
+  "status": "independently_measured_fixture_delta",
+  "old_fixture_count": 1163,
+  "live_fixture_count": 1164,
+  "unchanged_old_fixture_sha256_count": 1163,
+  "new_fixture": "tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class",
+  "new_fixture_bytes": 692,
+  "new_fixture_sha256": "c4f3556e593576aa233be2a50d0a9d6f37bcbfc561be4a690daca05ae074ba57",
+  "methods": [
+    {
+      "name": "<init>",
+      "descriptor": "()V",
+      "code_bytes": 5,
+      "handlers": 0
+    },
+    {
+      "name": "consume",
+      "descriptor": "(Ljava/lang/Object;Ljava/lang/Object;)V",
+      "code_bytes": 9,
+      "handlers": 0
+    },
+    {
+      "name": "aliasSurvivesLaterStore",
+      "descriptor": "()V",
+      "code_bytes": 14,
+      "handlers": 0
+    }
+  ],
+  "javap_path": "/private/tmp/jarde-reference-alias-boundary-root-v1/1.stdout.raw",
+  "javap_sha256": "dcc29105f0d59e3eb0cd7831befa23185013818fbbec4d5e231bb924f75b553e",
+  "javap_instruction_count": 17,
+  "added_counts": {
+    "classes": 1,
+    "code_bodies": 3,
+    "handlers": 0,
+    "branch_targets": 0,
+    "subroutines": 0
+  },
+  "prior_census": [
+    1163,
+    5157,
+    501,
+    3279,
+    10
+  ],
+  "new_census": [
+    1164,
+    5160,
+    501,
+    3279,
+    10
+  ],
+  "parser_note": "Earlier private audit attempts failed before writing: interface cursor increment, then incorrect guessed instruction count 18; actual javap has 17 instructions."
+}
