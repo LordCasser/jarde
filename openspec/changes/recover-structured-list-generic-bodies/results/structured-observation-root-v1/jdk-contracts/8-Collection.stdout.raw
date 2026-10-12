@@ -1,0 +1,251 @@
+Classfile jar:file:/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar!/java/util/Collection.class
+  Last modified 2024-10-9; size 1892 bytes
+  MD5 checksum 2580efc8f9895019a5ba7aff3e319fc5
+  Compiled from "Collection.java"
+public interface java.util.Collection<E extends java.lang.Object> extends java.lang.Iterable<E>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+Constant pool:
+   #1 = Methodref          #58.#59        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+   #2 = InterfaceMethodref #10.#60        // java/util/Collection.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #61.#62        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #61.#63        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = InterfaceMethodref #64.#65        // java/util/function/Predicate.test:(Ljava/lang/Object;)Z
+   #6 = InterfaceMethodref #61.#66        // java/util/Iterator.remove:()V
+   #7 = Methodref          #67.#68        // java/util/Spliterators.spliterator:(Ljava/util/Collection;I)Ljava/util/Spliterator;
+   #8 = InterfaceMethodref #10.#69        // java/util/Collection.spliterator:()Ljava/util/Spliterator;
+   #9 = Methodref          #70.#71        // java/util/stream/StreamSupport.stream:(Ljava/util/Spliterator;Z)Ljava/util/stream/Stream;
+  #10 = Class              #72            // java/util/Collection
+  #11 = Class              #73            // java/lang/Object
+  #12 = Class              #74            // java/lang/Iterable
+  #13 = Utf8               size
+  #14 = Utf8               ()I
+  #15 = Utf8               isEmpty
+  #16 = Utf8               ()Z
+  #17 = Utf8               contains
+  #18 = Utf8               (Ljava/lang/Object;)Z
+  #19 = Utf8               iterator
+  #20 = Utf8               ()Ljava/util/Iterator;
+  #21 = Utf8               Signature
+  #22 = Utf8               ()Ljava/util/Iterator<TE;>;
+  #23 = Utf8               toArray
+  #24 = Utf8               ()[Ljava/lang/Object;
+  #25 = Utf8               ([Ljava/lang/Object;)[Ljava/lang/Object;
+  #26 = Utf8               <T:Ljava/lang/Object;>([TT;)[TT;
+  #27 = Utf8               add
+  #28 = Utf8               (TE;)Z
+  #29 = Utf8               remove
+  #30 = Utf8               containsAll
+  #31 = Utf8               (Ljava/util/Collection;)Z
+  #32 = Utf8               (Ljava/util/Collection<*>;)Z
+  #33 = Utf8               addAll
+  #34 = Utf8               (Ljava/util/Collection<+TE;>;)Z
+  #35 = Utf8               removeAll
+  #36 = Utf8               removeIf
+  #37 = Utf8               (Ljava/util/function/Predicate;)Z
+  #38 = Utf8               Code
+  #39 = Utf8               LineNumberTable
+  #40 = Utf8               StackMapTable
+  #41 = Class              #75            // java/util/Iterator
+  #42 = Utf8               (Ljava/util/function/Predicate<-TE;>;)Z
+  #43 = Utf8               retainAll
+  #44 = Utf8               clear
+  #45 = Utf8               ()V
+  #46 = Utf8               equals
+  #47 = Utf8               hashCode
+  #48 = Utf8               spliterator
+  #49 = Utf8               ()Ljava/util/Spliterator;
+  #50 = Utf8               ()Ljava/util/Spliterator<TE;>;
+  #51 = Utf8               stream
+  #52 = Utf8               ()Ljava/util/stream/Stream;
+  #53 = Utf8               ()Ljava/util/stream/Stream<TE;>;
+  #54 = Utf8               parallelStream
+  #55 = Utf8               <E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Iterable<TE;>;
+  #56 = Utf8               SourceFile
+  #57 = Utf8               Collection.java
+  #58 = Class              #76            // java/util/Objects
+  #59 = NameAndType        #77:#78        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #60 = NameAndType        #19:#20        // iterator:()Ljava/util/Iterator;
+  #61 = Class              #75            // java/util/Iterator
+  #62 = NameAndType        #79:#16        // hasNext:()Z
+  #63 = NameAndType        #80:#81        // next:()Ljava/lang/Object;
+  #64 = Class              #82            // java/util/function/Predicate
+  #65 = NameAndType        #83:#18        // test:(Ljava/lang/Object;)Z
+  #66 = NameAndType        #29:#45        // remove:()V
+  #67 = Class              #84            // java/util/Spliterators
+  #68 = NameAndType        #48:#85        // spliterator:(Ljava/util/Collection;I)Ljava/util/Spliterator;
+  #69 = NameAndType        #48:#49        // spliterator:()Ljava/util/Spliterator;
+  #70 = Class              #86            // java/util/stream/StreamSupport
+  #71 = NameAndType        #51:#87        // stream:(Ljava/util/Spliterator;Z)Ljava/util/stream/Stream;
+  #72 = Utf8               java/util/Collection
+  #73 = Utf8               java/lang/Object
+  #74 = Utf8               java/lang/Iterable
+  #75 = Utf8               java/util/Iterator
+  #76 = Utf8               java/util/Objects
+  #77 = Utf8               requireNonNull
+  #78 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #79 = Utf8               hasNext
+  #80 = Utf8               next
+  #81 = Utf8               ()Ljava/lang/Object;
+  #82 = Utf8               java/util/function/Predicate
+  #83 = Utf8               test
+  #84 = Utf8               java/util/Spliterators
+  #85 = Utf8               (Ljava/util/Collection;I)Ljava/util/Spliterator;
+  #86 = Utf8               java/util/stream/StreamSupport
+  #87 = Utf8               (Ljava/util/Spliterator;Z)Ljava/util/stream/Stream;
+{
+  public abstract int size();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean isEmpty();
+    descriptor: ()Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean contains(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract java.util.Iterator<E> iterator();
+    descriptor: ()Ljava/util/Iterator;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #22                          // ()Ljava/util/Iterator<TE;>;
+
+  public abstract java.lang.Object[] toArray();
+    descriptor: ()[Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract <T extends java.lang.Object> T[] toArray(T[]);
+    descriptor: ([Ljava/lang/Object;)[Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #26                          // <T:Ljava/lang/Object;>([TT;)[TT;
+
+  public abstract boolean add(E);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #28                          // (TE;)Z
+
+  public abstract boolean remove(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean containsAll(java.util.Collection<?>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #32                          // (Ljava/util/Collection<*>;)Z
+
+  public abstract boolean addAll(java.util.Collection<? extends E>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #34                          // (Ljava/util/Collection<+TE;>;)Z
+
+  public abstract boolean removeAll(java.util.Collection<?>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #32                          // (Ljava/util/Collection<*>;)Z
+
+  public boolean removeIf(java.util.function.Predicate<? super E>);
+    descriptor: (Ljava/util/function/Predicate;)Z
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_1
+         1: invokestatic  #1                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         4: pop
+         5: iconst_0
+         6: istore_2
+         7: aload_0
+         8: invokeinterface #2,  1            // InterfaceMethod iterator:()Ljava/util/Iterator;
+        13: astore_3
+        14: aload_3
+        15: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        20: ifeq          49
+        23: aload_1
+        24: aload_3
+        25: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        30: invokeinterface #5,  2            // InterfaceMethod java/util/function/Predicate.test:(Ljava/lang/Object;)Z
+        35: ifeq          14
+        38: aload_3
+        39: invokeinterface #6,  1            // InterfaceMethod java/util/Iterator.remove:()V
+        44: iconst_1
+        45: istore_2
+        46: goto          14
+        49: iload_2
+        50: ireturn
+      LineNumberTable:
+        line 410: 0
+        line 411: 5
+        line 412: 7
+        line 413: 14
+        line 414: 23
+        line 415: 38
+        line 416: 44
+        line 419: 49
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 14
+          locals = [ int, class java/util/Iterator ]
+        frame_type = 34 /* same */
+    Signature: #42                          // (Ljava/util/function/Predicate<-TE;>;)Z
+
+  public abstract boolean retainAll(java.util.Collection<?>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #32                          // (Ljava/util/Collection<*>;)Z
+
+  public abstract void clear();
+    descriptor: ()V
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean equals(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract int hashCode();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public java.util.Spliterator<E> spliterator();
+    descriptor: ()Ljava/util/Spliterator;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: invokestatic  #7                  // Method java/util/Spliterators.spliterator:(Ljava/util/Collection;I)Ljava/util/Spliterator;
+         5: areturn
+      LineNumberTable:
+        line 562: 0
+    Signature: #50                          // ()Ljava/util/Spliterator<TE;>;
+
+  public java.util.stream.Stream<E> stream();
+    descriptor: ()Ljava/util/stream/Stream;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokeinterface #8,  1            // InterfaceMethod spliterator:()Ljava/util/Spliterator;
+         6: iconst_0
+         7: invokestatic  #9                  // Method java/util/stream/StreamSupport.stream:(Ljava/util/Spliterator;Z)Ljava/util/stream/Stream;
+        10: areturn
+      LineNumberTable:
+        line 581: 0
+    Signature: #53                          // ()Ljava/util/stream/Stream<TE;>;
+
+  public java.util.stream.Stream<E> parallelStream();
+    descriptor: ()Ljava/util/stream/Stream;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokeinterface #8,  1            // InterfaceMethod spliterator:()Ljava/util/Spliterator;
+         6: iconst_1
+         7: invokestatic  #9                  // Method java/util/stream/StreamSupport.stream:(Ljava/util/Spliterator;Z)Ljava/util/stream/Stream;
+        10: areturn
+      LineNumberTable:
+        line 602: 0
+    Signature: #53                          // ()Ljava/util/stream/Stream<TE;>;
+}
+Signature: #55                          // <E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Iterable<TE;>;
+SourceFile: "Collection.java"

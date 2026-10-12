@@ -1,0 +1,345 @@
+Classfile jar:file:/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/jre/lib/rt.jar!/java/util/List.class
+  Last modified 2024-10-9; size 2599 bytes
+  MD5 checksum 55f737754006ac517ecaeaaa2e7f542f
+  Compiled from "List.java"
+public interface java.util.List<E extends java.lang.Object> extends java.util.Collection<E>
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+Constant pool:
+    #1 = Methodref          #82.#83       // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+    #2 = InterfaceMethodref #11.#84       // java/util/List.listIterator:()Ljava/util/ListIterator;
+    #3 = InterfaceMethodref #85.#86       // java/util/ListIterator.hasNext:()Z
+    #4 = InterfaceMethodref #85.#87       // java/util/ListIterator.next:()Ljava/lang/Object;
+    #5 = InterfaceMethodref #88.#89       // java/util/function/UnaryOperator.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+    #6 = InterfaceMethodref #85.#90       // java/util/ListIterator.set:(Ljava/lang/Object;)V
+    #7 = InterfaceMethodref #11.#91       // java/util/List.toArray:()[Ljava/lang/Object;
+    #8 = Methodref          #92.#93       // java/util/Arrays.sort:([Ljava/lang/Object;Ljava/util/Comparator;)V
+    #9 = Class              #94           // java/util/Spliterator
+   #10 = Methodref          #95.#96       // java/util/Spliterators.spliterator:(Ljava/util/Collection;I)Ljava/util/Spliterator;
+   #11 = Class              #97           // java/util/List
+   #12 = Class              #98           // java/lang/Object
+   #13 = Class              #99           // java/util/Collection
+   #14 = Utf8               size
+   #15 = Utf8               ()I
+   #16 = Utf8               isEmpty
+   #17 = Utf8               ()Z
+   #18 = Utf8               contains
+   #19 = Utf8               (Ljava/lang/Object;)Z
+   #20 = Utf8               iterator
+   #21 = Utf8               ()Ljava/util/Iterator;
+   #22 = Utf8               Signature
+   #23 = Utf8               ()Ljava/util/Iterator<TE;>;
+   #24 = Utf8               toArray
+   #25 = Utf8               ()[Ljava/lang/Object;
+   #26 = Utf8               ([Ljava/lang/Object;)[Ljava/lang/Object;
+   #27 = Utf8               <T:Ljava/lang/Object;>([TT;)[TT;
+   #28 = Utf8               add
+   #29 = Utf8               (TE;)Z
+   #30 = Utf8               remove
+   #31 = Utf8               containsAll
+   #32 = Utf8               (Ljava/util/Collection;)Z
+   #33 = Utf8               (Ljava/util/Collection<*>;)Z
+   #34 = Utf8               addAll
+   #35 = Utf8               (Ljava/util/Collection<+TE;>;)Z
+   #36 = Utf8               (ILjava/util/Collection;)Z
+   #37 = Utf8               (ILjava/util/Collection<+TE;>;)Z
+   #38 = Utf8               removeAll
+   #39 = Utf8               retainAll
+   #40 = Utf8               replaceAll
+   #41 = Utf8               (Ljava/util/function/UnaryOperator;)V
+   #42 = Utf8               Code
+   #43 = Utf8               LineNumberTable
+   #44 = Utf8               StackMapTable
+   #45 = Class              #100          // java/util/ListIterator
+   #46 = Utf8               (Ljava/util/function/UnaryOperator<TE;>;)V
+   #47 = Utf8               sort
+   #48 = Utf8               (Ljava/util/Comparator;)V
+   #49 = Class              #97           // java/util/List
+   #50 = Class              #101          // java/util/Comparator
+   #51 = Class              #102          // "[Ljava/lang/Object;"
+   #52 = Utf8               (Ljava/util/Comparator<-TE;>;)V
+   #53 = Utf8               clear
+   #54 = Utf8               ()V
+   #55 = Utf8               equals
+   #56 = Utf8               hashCode
+   #57 = Utf8               get
+   #58 = Utf8               (I)Ljava/lang/Object;
+   #59 = Utf8               (I)TE;
+   #60 = Utf8               set
+   #61 = Utf8               (ILjava/lang/Object;)Ljava/lang/Object;
+   #62 = Utf8               (ITE;)TE;
+   #63 = Utf8               (ILjava/lang/Object;)V
+   #64 = Utf8               (ITE;)V
+   #65 = Utf8               indexOf
+   #66 = Utf8               (Ljava/lang/Object;)I
+   #67 = Utf8               lastIndexOf
+   #68 = Utf8               listIterator
+   #69 = Utf8               ()Ljava/util/ListIterator;
+   #70 = Utf8               ()Ljava/util/ListIterator<TE;>;
+   #71 = Utf8               (I)Ljava/util/ListIterator;
+   #72 = Utf8               (I)Ljava/util/ListIterator<TE;>;
+   #73 = Utf8               subList
+   #74 = Utf8               (II)Ljava/util/List;
+   #75 = Utf8               (II)Ljava/util/List<TE;>;
+   #76 = Utf8               spliterator
+   #77 = Utf8               ()Ljava/util/Spliterator;
+   #78 = Utf8               ()Ljava/util/Spliterator<TE;>;
+   #79 = Utf8               <E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/util/Collection<TE;>;
+   #80 = Utf8               SourceFile
+   #81 = Utf8               List.java
+   #82 = Class              #103          // java/util/Objects
+   #83 = NameAndType        #104:#105     // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+   #84 = NameAndType        #68:#69       // listIterator:()Ljava/util/ListIterator;
+   #85 = Class              #100          // java/util/ListIterator
+   #86 = NameAndType        #106:#17      // hasNext:()Z
+   #87 = NameAndType        #107:#108     // next:()Ljava/lang/Object;
+   #88 = Class              #109          // java/util/function/UnaryOperator
+   #89 = NameAndType        #110:#105     // apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   #90 = NameAndType        #60:#111      // set:(Ljava/lang/Object;)V
+   #91 = NameAndType        #24:#25       // toArray:()[Ljava/lang/Object;
+   #92 = Class              #112          // java/util/Arrays
+   #93 = NameAndType        #47:#113      // sort:([Ljava/lang/Object;Ljava/util/Comparator;)V
+   #94 = Utf8               java/util/Spliterator
+   #95 = Class              #114          // java/util/Spliterators
+   #96 = NameAndType        #76:#115      // spliterator:(Ljava/util/Collection;I)Ljava/util/Spliterator;
+   #97 = Utf8               java/util/List
+   #98 = Utf8               java/lang/Object
+   #99 = Utf8               java/util/Collection
+  #100 = Utf8               java/util/ListIterator
+  #101 = Utf8               java/util/Comparator
+  #102 = Utf8               [Ljava/lang/Object;
+  #103 = Utf8               java/util/Objects
+  #104 = Utf8               requireNonNull
+  #105 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #106 = Utf8               hasNext
+  #107 = Utf8               next
+  #108 = Utf8               ()Ljava/lang/Object;
+  #109 = Utf8               java/util/function/UnaryOperator
+  #110 = Utf8               apply
+  #111 = Utf8               (Ljava/lang/Object;)V
+  #112 = Utf8               java/util/Arrays
+  #113 = Utf8               ([Ljava/lang/Object;Ljava/util/Comparator;)V
+  #114 = Utf8               java/util/Spliterators
+  #115 = Utf8               (Ljava/util/Collection;I)Ljava/util/Spliterator;
+{
+  public abstract int size();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean isEmpty();
+    descriptor: ()Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean contains(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract java.util.Iterator<E> iterator();
+    descriptor: ()Ljava/util/Iterator;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #23                          // ()Ljava/util/Iterator<TE;>;
+
+  public abstract java.lang.Object[] toArray();
+    descriptor: ()[Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract <T extends java.lang.Object> T[] toArray(T[]);
+    descriptor: ([Ljava/lang/Object;)[Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #27                          // <T:Ljava/lang/Object;>([TT;)[TT;
+
+  public abstract boolean add(E);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #29                          // (TE;)Z
+
+  public abstract boolean remove(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean containsAll(java.util.Collection<?>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #33                          // (Ljava/util/Collection<*>;)Z
+
+  public abstract boolean addAll(java.util.Collection<? extends E>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #35                          // (Ljava/util/Collection<+TE;>;)Z
+
+  public abstract boolean addAll(int, java.util.Collection<? extends E>);
+    descriptor: (ILjava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #37                          // (ILjava/util/Collection<+TE;>;)Z
+
+  public abstract boolean removeAll(java.util.Collection<?>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #33                          // (Ljava/util/Collection<*>;)Z
+
+  public abstract boolean retainAll(java.util.Collection<?>);
+    descriptor: (Ljava/util/Collection;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #33                          // (Ljava/util/Collection<*>;)Z
+
+  public void replaceAll(java.util.function.UnaryOperator<E>);
+    descriptor: (Ljava/util/function/UnaryOperator;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: aload_1
+         1: invokestatic  #1                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         4: pop
+         5: aload_0
+         6: invokeinterface #2,  1            // InterfaceMethod listIterator:()Ljava/util/ListIterator;
+        11: astore_2
+        12: aload_2
+        13: invokeinterface #3,  1            // InterfaceMethod java/util/ListIterator.hasNext:()Z
+        18: ifeq          42
+        21: aload_2
+        22: aload_1
+        23: aload_2
+        24: invokeinterface #4,  1            // InterfaceMethod java/util/ListIterator.next:()Ljava/lang/Object;
+        29: invokeinterface #5,  2            // InterfaceMethod java/util/function/UnaryOperator.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+        34: invokeinterface #6,  2            // InterfaceMethod java/util/ListIterator.set:(Ljava/lang/Object;)V
+        39: goto          12
+        42: return
+      LineNumberTable:
+        line 410: 0
+        line 411: 5
+        line 412: 12
+        line 413: 21
+        line 415: 42
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 12
+          locals = [ class java/util/ListIterator ]
+        frame_type = 29 /* same */
+    Signature: #46                          // (Ljava/util/function/UnaryOperator<TE;>;)V
+
+  public void sort(java.util.Comparator<? super E>);
+    descriptor: (Ljava/util/Comparator;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=8, args_size=2
+         0: aload_0
+         1: invokeinterface #7,  1            // InterfaceMethod toArray:()[Ljava/lang/Object;
+         6: astore_2
+         7: aload_2
+         8: aload_1
+         9: invokestatic  #8                  // Method java/util/Arrays.sort:([Ljava/lang/Object;Ljava/util/Comparator;)V
+        12: aload_0
+        13: invokeinterface #2,  1            // InterfaceMethod listIterator:()Ljava/util/ListIterator;
+        18: astore_3
+        19: aload_2
+        20: astore        4
+        22: aload         4
+        24: arraylength
+        25: istore        5
+        27: iconst_0
+        28: istore        6
+        30: iload         6
+        32: iload         5
+        34: if_icmpge     65
+        37: aload         4
+        39: iload         6
+        41: aaload
+        42: astore        7
+        44: aload_3
+        45: invokeinterface #4,  1            // InterfaceMethod java/util/ListIterator.next:()Ljava/lang/Object;
+        50: pop
+        51: aload_3
+        52: aload         7
+        54: invokeinterface #6,  2            // InterfaceMethod java/util/ListIterator.set:(Ljava/lang/Object;)V
+        59: iinc          6, 1
+        62: goto          30
+        65: return
+      LineNumberTable:
+        line 477: 0
+        line 478: 7
+        line 479: 12
+        line 480: 19
+        line 481: 44
+        line 482: 51
+        line 480: 59
+        line 484: 65
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 30
+          locals = [ class java/util/List, class java/util/Comparator, class "[Ljava/lang/Object;", class java/util/ListIterator, class "[Ljava/lang/Object;", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 34
+    Signature: #52                          // (Ljava/util/Comparator<-TE;>;)V
+
+  public abstract void clear();
+    descriptor: ()V
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract boolean equals(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract int hashCode();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract E get(int);
+    descriptor: (I)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #59                          // (I)TE;
+
+  public abstract E set(int, E);
+    descriptor: (ILjava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #62                          // (ITE;)TE;
+
+  public abstract void add(int, E);
+    descriptor: (ILjava/lang/Object;)V
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #64                          // (ITE;)V
+
+  public abstract E remove(int);
+    descriptor: (I)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #59                          // (I)TE;
+
+  public abstract int indexOf(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract int lastIndexOf(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+
+  public abstract java.util.ListIterator<E> listIterator();
+    descriptor: ()Ljava/util/ListIterator;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #70                          // ()Ljava/util/ListIterator<TE;>;
+
+  public abstract java.util.ListIterator<E> listIterator(int);
+    descriptor: (I)Ljava/util/ListIterator;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #72                          // (I)Ljava/util/ListIterator<TE;>;
+
+  public abstract java.util.List<E> subList(int, int);
+    descriptor: (II)Ljava/util/List;
+    flags: ACC_PUBLIC, ACC_ABSTRACT
+    Signature: #75                          // (II)Ljava/util/List<TE;>;
+
+  public java.util.Spliterator<E> spliterator();
+    descriptor: ()Ljava/util/Spliterator;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: bipush        16
+         3: invokestatic  #10                 // Method java/util/Spliterators.spliterator:(Ljava/util/Collection;I)Ljava/util/Spliterator;
+         6: areturn
+      LineNumberTable:
+        line 732: 0
+    Signature: #78                          // ()Ljava/util/Spliterator<TE;>;
+}
+Signature: #79                          // <E:Ljava/lang/Object;>Ljava/lang/Object;Ljava/util/Collection<TE;>;
+SourceFile: "List.java"

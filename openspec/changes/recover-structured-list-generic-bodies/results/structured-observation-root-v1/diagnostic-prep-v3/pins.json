@@ -1,0 +1,20 @@
+{
+  "schema": "cf11-structured-void-generic-diagnostic-prep-v3",
+  "source_base_sha256": {
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "crates/jarde-java/src/report.rs": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+  },
+  "source_candidate_sha256": {
+    "src/class_source.rs": "bb45f4f2b8d6b18ece95b51d045ad340e0125d6f2bf60816e0a7d096301c7af1",
+    "crates/jarde-java/src/report.rs": "c96ab6583f3a8ff5b9f0af8e7e9176ed10db9ca0802aa283369ffa9b64ea2629"
+  },
+  "artifacts_sha256": {
+    "diagnostic.patch": "cf9ad80f96b20949b505f047871652f562a4540f9c76115175dc94feba6e2665",
+    "run_diagnostic.py": "ad947cdc0082278cba7903b593a2ff6e6b0724b46c711c799a01c079025b4555",
+    "runplan.md": "d79ae3b0699e79b379266394e337b50aab0dd998f468da36a9a26bfd4b28e39d",
+    "README.md": "811c683b223b1f0cdfaa69297d2c2fa0b81dcdbda9607dcca52cac5c9636a0d2"
+  },
+  "source_closure": "dynamic closure.source_paths() before/during/after; no fixed count",
+  "fixed_test": "nested_iterators_project_and_preserve_the_outer_assignment_and_cast",
+  "fixture_sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+}

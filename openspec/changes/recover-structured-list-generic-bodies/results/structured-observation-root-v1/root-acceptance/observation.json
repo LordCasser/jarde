@@ -1,0 +1,305 @@
+{
+  "schema": "cf11-method-signature-observation-acceptance-v1",
+  "status": "observation_bundle_verified_for_manual_review",
+  "product_acceptance": false,
+  "generic_binding_claim": false,
+  "execution_receipt": {
+    "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/execution.json",
+    "sha256": "574b52134506de807a12bcc193780e4a7b9027d8448abf8ea94e00c391b7be90",
+    "original_status": "failed",
+    "original_error": "AssertionError('detailed Code/Program/SSA facts differ by request profile')",
+    "workspace_head_observed": "f12668ed0dc022fee42a69bc9723427eece33d31"
+  },
+  "pinned_inputs": {
+    "runner": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diag-prep-luna-v3/run_diagnostic.py",
+      "sha256": "ad947cdc0082278cba7903b593a2ff6e6b0724b46c711c799a01c079025b4555"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diag-prep-luna-v3/diagnostic.patch",
+      "sha256": "cf9ad80f96b20949b505f047871652f562a4540f9c76115175dc94feba6e2665"
+    },
+    "closure_helper": {
+      "path": "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace_runner.py",
+      "sha256": "63e52b55fe5d20d5f2ece98ac80676ccdb2de8dfd33d7199b688e075fb1e9673"
+    },
+    "base_source_pins": {
+      "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+      "crates/jarde-java/src/report.rs": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    },
+    "candidate_source_pins": {
+      "src/class_source.rs": "bb45f4f2b8d6b18ece95b51d045ad340e0125d6f2bf60816e0a7d096301c7af1",
+      "crates/jarde-java/src/report.rs": "c96ab6583f3a8ff5b9f0af8e7e9176ed10db9ca0802aa283369ffa9b64ea2629"
+    },
+    "fixture": {
+      "path": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+      "present_in_dynamic_source_closure": true
+    }
+  },
+  "workspace_source_closure": {
+    "count": 4784,
+    "live_before_after_equal": true,
+    "during_only_injected_files_changed": [
+      "crates/jarde-java/src/report.rs",
+      "src/class_source.rs"
+    ]
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_hoisted_iterator_foreach",
+        "nested_iterators_project_and_preserve_the_outer_assignment_and_cast",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 355004024,
+      "free_bytes_after": 10384621568,
+      "stdout": {
+        "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/0.stdout.raw",
+        "bytes": 192,
+        "sha256": "b34c28db04f0b8a99e9074bac82d13fb11f71984cba6d0207e33acb4238e0083"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/0.stderr.raw",
+        "bytes": 390792,
+        "sha256": "e62c7e1cb102aae400510da3324d144ef89967b32de3f4b0a5526df17f5a5ba6"
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 355004024,
+      "free_bytes_after": 10731724800,
+      "stdout": {
+        "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/1.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/1.stderr.raw",
+        "bytes": 52,
+        "sha256": "031444011a527a6b913e1682a8778c23d68c94c084969480a4b5b23594d03dc8"
+      }
+    }
+  ],
+  "restore_and_cleanup": {
+    "restored_exactly": true,
+    "cleanup_passed": true,
+    "target_absent": true,
+    "rust_stack": "default (RUST_MIN_STACK removed from child environment)"
+  },
+  "raw_streams": {
+    "0.stdout.raw": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/0.stdout.raw",
+      "bytes": 192,
+      "sha256": "b34c28db04f0b8a99e9074bac82d13fb11f71984cba6d0207e33acb4238e0083"
+    },
+    "0.stderr.raw": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/0.stderr.raw",
+      "bytes": 390792,
+      "sha256": "e62c7e1cb102aae400510da3324d144ef89967b32de3f4b0a5526df17f5a5ba6"
+    },
+    "1.stdout.raw": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "1.stderr.raw": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-run-root-v3/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "031444011a527a6b913e1682a8778c23d68c94c084969480a4b5b23594d03dc8"
+    }
+  },
+  "diagnostic_groups": {
+    "attempts": [
+      1,
+      2,
+      3
+    ],
+    "events_per_attempt": [
+      "ssa_input",
+      "structured_facts",
+      "ssa_reject",
+      "parsed",
+      "terminal"
+    ],
+    "first_rejection_source_line": 9191,
+    "terminal_state": "refused",
+    "terminal_reason": "unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types"
+  },
+  "structured_fact_keys": [
+    "code_bci_set",
+    "code_facts",
+    "code_handlers",
+    "code_last",
+    "code_operands",
+    "code_stop",
+    "effects_only_rows",
+    "instruction_census",
+    "operation_last",
+    "operations",
+    "parameter_accesses",
+    "parameter_types",
+    "program_last_root",
+    "program_tree",
+    "ssa_only_rows",
+    "ssa_table"
+  ],
+  "counter_snapshots_by_attempt": {
+    "1": {
+      "input_bytes": 0,
+      "archive_entries": 0,
+      "entry_bytes": 0,
+      "read_bytes": 1213,
+      "class_bytes": 2426,
+      "attribute_bytes": 1133,
+      "code_bytes": 124,
+      "result_items": 8,
+      "output_bytes": 1411,
+      "class_headers": 1,
+      "method_bodies": 2,
+      "ir_items": 77,
+      "ir_edges": 2,
+      "analysis_steps": 157,
+      "normalization_clones": 0,
+      "nested_depth": 0,
+      "dependency_depth": 0,
+      "elapsed_millis": 6
+    },
+    "2": {
+      "input_bytes": 0,
+      "archive_entries": 0,
+      "entry_bytes": 0,
+      "read_bytes": 1213,
+      "class_bytes": 2426,
+      "attribute_bytes": 1133,
+      "code_bytes": 124,
+      "result_items": 8,
+      "output_bytes": 1411,
+      "class_headers": 1,
+      "method_bodies": 2,
+      "ir_items": 80,
+      "ir_edges": 2,
+      "analysis_steps": 157,
+      "normalization_clones": 0,
+      "nested_depth": 0,
+      "dependency_depth": 0,
+      "elapsed_millis": 0
+    },
+    "3": {
+      "input_bytes": 0,
+      "archive_entries": 0,
+      "entry_bytes": 0,
+      "read_bytes": 1213,
+      "class_bytes": 2426,
+      "attribute_bytes": 1133,
+      "code_bytes": 124,
+      "result_items": 8,
+      "output_bytes": 1411,
+      "class_headers": 1,
+      "method_bodies": 2,
+      "ir_items": 78,
+      "ir_edges": 2,
+      "analysis_steps": 157,
+      "normalization_clones": 0,
+      "nested_depth": 0,
+      "dependency_depth": 0,
+      "elapsed_millis": 0
+    }
+  },
+  "counter_differences_by_field": {
+    "ir_items": {
+      "1": 77,
+      "2": 80,
+      "3": 78
+    },
+    "elapsed_millis": {
+      "1": 6,
+      "2": 0,
+      "3": 0
+    }
+  },
+  "non_budget_structural_facts_equal": true,
+  "normalized_structural_sha256": "1d02661ac79799e48124a4914511034f63cf66daa6fa8058d053ea86dcd765d1",
+  "physical_instruction_census": {
+    "code": 45,
+    "operands": 45,
+    "operations": 45,
+    "ssa_rows": 45,
+    "effects_rows": 45,
+    "unique_bcis": 45,
+    "parameter_slots": [
+      1,
+      2
+    ],
+    "parameter_access_rows": 6,
+    "parameter_slots_read": [
+      1,
+      2
+    ],
+    "parameter_writes": 0
+  },
+  "manual_review_snippets": {
+    "add_remove_ast_calls": [
+      {
+        "name": "add",
+        "call_bci": 79,
+        "ast_origins": [
+          79
+        ],
+        "fragment": "Expr { kind: Call { receiver: Some(Expr { kind: Local(\"l2\"), origin: OriginSet { primary: Origin { bci: 76, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.util.List\")) }), name: \"add\", args: [Expr { kind: Cast { ty: Reference(\"java.lang.Object\"), value: Expr { kind: Local(\"s1\"), origin: OriginSet { primary: Origin { bci: 77, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.lang.String\")) } }, origin: OriginSet { primary: Origin { bci: 77, method: None, cp: None, provenance: Direct }, derived: [Origin { bci: 79, method: None, cp: None, provenance: Derived }] }, presented: Some(Reference(\"java.lang.Object\")) }] }, origin: OriginSet { primary: Origin { bci: 79, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Boolean) }"
+      },
+      {
+        "name": "remove",
+        "call_bci": 91,
+        "ast_origins": [
+          91
+        ],
+        "fragment": "Expr { kind: Call { receiver: Some(Expr { kind: Local(\"l1\"), origin: OriginSet { primary: Origin { bci: 88, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.util.List\")) }), name: \"remove\", args: [Expr { kind: Cast { ty: Reference(\"java.lang.Object\"), value: Expr { kind: Local(\"s2\"), origin: OriginSet { primary: Origin { bci: 89, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.lang.String\")) } }, origin: OriginSet { primary: Origin { bci: 89, method: None, cp: None, provenance: Direct }, derived: [Origin { bci: 91, method: None, cp: None, provenance: Derived }] }, presented: Some(Reference(\"java.lang.Object\")) }] }, origin: OriginSet { primary: Origin { bci: 91, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Boolean) }"
+      }
+    ],
+    "physical_checkcast_ast_nodes": [
+      {
+        "physical_checkcast_bcis": [
+          22
+        ],
+        "ast_origins": [
+          22
+        ],
+        "fragment": "Expr { kind: Cast { ty: Reference(\"java.lang.String\"), value: Expr { kind: Local(\"iteratorElement17\"), origin: OriginSet { primary: Origin { bci: 17, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.lang.Object\")) } }, origin: OriginSet { primary: Origin { bci: 22, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.lang.String\")) }"
+      },
+      {
+        "physical_checkcast_bcis": [
+          52
+        ],
+        "ast_origins": [
+          52
+        ],
+        "fragment": "Expr { kind: Cast { ty: Reference(\"java.lang.String\"), value: Expr { kind: Local(\"iteratorElement47\"), origin: OriginSet { primary: Origin { bci: 47, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.lang.Object\")) } }, origin: OriginSet { primary: Origin { bci: 52, method: None, cp: None, provenance: Direct }, derived: [] }, presented: Some(Reference(\"java.lang.String\")) }"
+      }
+    ],
+    "physical_checkcast_bcis": [
+      22,
+      52
+    ]
+  },
+  "review_limits": [
+    "The original runner receipt remains failed because its byte-for-byte assertion included resource counters.",
+    "This acceptor preserves and reports every UsageSnapshot field; only the snapshot block is excluded from structural equality.",
+    "This verifies observation integrity and cross-request structural consistency only; it does not accept a product fix or prove generic binding.",
+    "The erased java/util/List.add(Object) reference does not by itself prove the generic E-to-source-type substitution."
+  ]
+}

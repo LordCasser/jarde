@@ -1,0 +1,132 @@
+{
+  "schema": "cf11-local-jdk-list-contract-observation-v1",
+  "status": "captured_read_only_class_declarations",
+  "commands": [
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "java.util.List"
+      ],
+      "started_at": "2026-10-12T03:50:29.106625+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/8-List.stdout.raw",
+          "bytes": 15263,
+          "sha256": "f8af2de61afbe2f5624eb134e4f593f89888abfcca21264fe0b716dc00845ad5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/8-List.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "java.util.Collection"
+      ],
+      "started_at": "2026-10-12T03:50:29.346591+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/8-Collection.stdout.raw",
+          "bytes": 11317,
+          "sha256": "5291f3eca6a10903bad99a34e827b7d7df60c661a4cde20e4a4db6d8314d5e2d"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/8-Collection.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "java.util.Iterator"
+      ],
+      "started_at": "2026-10-12T03:50:29.457552+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/8-Iterator.stdout.raw",
+          "bytes": 4879,
+          "sha256": "2fb240da01464cc187e8ee0077e48bc7049eda77590979088c716025d555518b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/8-Iterator.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "java.util.List"
+      ],
+      "started_at": "2026-10-12T03:50:29.565594+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/23-List.stdout.raw",
+          "bytes": 57127,
+          "sha256": "f2669e4e4ae0aa9ce310f115102c73e0331b329b7a5dd2fb27381bbe7a91534b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/23-List.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "java.util.Collection"
+      ],
+      "started_at": "2026-10-12T03:50:29.820579+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/23-Collection.stdout.raw",
+          "bytes": 15924,
+          "sha256": "af3e70b27641e21e6a4cbb85743276b1d9988085d6c54f6912ceb17476b6a763"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/23-Collection.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "java.util.Iterator"
+      ],
+      "started_at": "2026-10-12T03:50:29.951250+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/23-Iterator.stdout.raw",
+          "bytes": 6127,
+          "sha256": "35134c14fa9e04006f9bc48a15e6947c1ce51deea78d579a8689d559f7945bc9"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-cf11-list-contracts-root-v1/23-Iterator.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

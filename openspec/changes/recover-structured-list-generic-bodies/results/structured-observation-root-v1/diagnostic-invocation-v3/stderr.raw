@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf11-structured-void-generic-diag-prep-luna-v3/run_diagnostic.py", line 148, in <module>
+    if __name__=='__main__': raise SystemExit(main())
+                                              ~~~~^^
+  File "/private/tmp/jarde-cf11-structured-void-generic-diag-prep-luna-v3/run_diagnostic.py", line 112, in main
+    assert len(structured_facts)==1,'detailed Code/Program/SSA facts differ by request profile'
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: detailed Code/Program/SSA facts differ by request profile

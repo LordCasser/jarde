@@ -1,0 +1,330 @@
+--- a/src/class_source.rs
++++ b/src/class_source.rs
+@@ -5496,6 +5496,17 @@
+     unproved_this_delegate_bci: Option<u32>,
+     budget: &mut Budget,
+ ) -> Result<SignatureProjection> {
++    let diagnostic_attempt = if std::env::var_os("JARDE_METHOD_SIGNATURE_DIAGNOSTIC").is_some()
++        && class_internal == b"cf11/UpstreamNestedLoops"
++        && member.name.raw().0 == b"test"
++        && member.descriptor.raw().0 == b"(Ljava/util/List;Ljava/util/List;)V"
++    {
++        static NEXT_ATTEMPT: std::sync::atomic::AtomicU64 =
++            std::sync::atomic::AtomicU64::new(1);
++        Some(NEXT_ATTEMPT.fetch_add(1, std::sync::atomic::Ordering::Relaxed))
++    } else {
++        None
++    };
+     let shells = attribute_shells(member, b"Signature");
+     if shells.is_empty() {
+         return Err(Error::unsupported(
+@@ -5575,6 +5586,15 @@
+             class_scope,
+             budget,
+         )?;
++        if let Some(attempt) = diagnostic_attempt {
++            eprintln!(
++                "JARDE_METHOD_SIGNATURE event=parsed attempt={attempt} class=cf11/UpstreamNestedLoops method=test descriptor=(Ljava/util/List;Ljava/util/List;)V signature_hex={} parsed={parsed:?} class_scope={class_scope:?} erasure={erasure:?} candidate={candidate:?} same_class_body_proof_present={} staged_declaration_present={} staged_marker_count={}",
++                raw.iter().map(|byte| format!("{byte:02x}")).collect::<String>(),
++                projection.same_class_generic_body_proof.is_some(),
++                projection.declaration.is_some(),
++                projection.markers.len(),
++            );
++        }
+         let no_body_generic = matches!(record.outcome, ClassSourceOutcome::NoBody)
+             && !parsed.type_parameters.is_empty();
+         let class_scope_constructor = name == b"<init>"
+@@ -5900,19 +5920,39 @@
+         Ok(MethodProjection::Declaration(declaration, raw, proof))
+     })();
+     match result {
+-        Ok(MethodProjection::Deferred) => Ok(SignatureProjection::DeferredSameClass),
++        Ok(MethodProjection::Deferred) => {
++            if let Some(attempt) = diagnostic_attempt {
++                eprintln!("JARDE_METHOD_SIGNATURE event=terminal attempt={attempt} state=deferred_same_class");
++            }
++            Ok(SignatureProjection::DeferredSameClass)
++        }
+         Ok(MethodProjection::Declaration(declaration, signature, proof)) => {
+             let proof = if same_class == SameClassBinding::Proven {
+                 format!("{proof}; same-class call binding proved")
+             } else {
+                 proof.to_owned()
+             };
+-            projection
++            let publish = projection
+                 .project_generic(record, declaration, &signature, &proof, budget)
+-                .map(|()| SignatureProjection::Settled)
+-        }
+-        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
++                .map(|()| SignatureProjection::Settled);
++            if let Some(attempt) = diagnostic_attempt {
++                match &publish {
++                    Ok(_) => eprintln!("JARDE_METHOD_SIGNATURE event=terminal attempt={attempt} state=declaration_published"),
++                    Err(error) => eprintln!("JARDE_METHOD_SIGNATURE event=terminal attempt={attempt} state=declaration_publish_refused error={error}"),
++                }
++            }
++            publish
++        }
++        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
++            if let Some(attempt) = diagnostic_attempt {
++                eprintln!("JARDE_METHOD_SIGNATURE event=terminal attempt={attempt} state=stopped error={error}");
++            }
++            Err(error)
++        }
+         Err(error) => {
++            if let Some(attempt) = diagnostic_attempt {
++                eprintln!("JARDE_METHOD_SIGNATURE event=terminal attempt={attempt} state=refused stage=project_method_signature_with_state error={error}");
++            }
+             projection.enum_constructor_signature_erasure_refused =
+                 projection.enum_constructor_source_tail.is_recognized()
+                     && matches!(
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -8981,10 +8981,86 @@
+     request: &RecoveryRequest<'_>,
+     budget: &mut Budget,
+ ) -> Result<Option<GenericReturnCandidate>, StopReason> {
++    let diagnostic_attempt = if std::env::var_os("JARDE_METHOD_SIGNATURE_DIAGNOSTIC").is_some()
++        && request.facts.method().name() == "test"
++        && request.facts.method().descriptor() == "(Ljava/util/List;Ljava/util/List;)V"
++        && request
++            .facts
++            .method()
++            .declaring_class()
++            .is_some_and(|class| class.name() == "cf11/UpstreamNestedLoops")
++    {
++        static NEXT_ATTEMPT: std::sync::atomic::AtomicU64 =
++            std::sync::atomic::AtomicU64::new(1);
++        Some(NEXT_ATTEMPT.fetch_add(1, std::sync::atomic::Ordering::Relaxed))
++    } else {
++        None
++    };
++    macro_rules! reject_none {
++        () => {{
++            if let Some(attempt) = diagnostic_attempt {
++                eprintln!("JARDE_METHOD_SIGNATURE event=ssa_reject attempt={attempt} rejected_line={}", line!());
++            }
++            return Ok(None);
++        }};
++    }
+     let Some(code) = request.ir.code() else {
+-        return Ok(None);
++        reject_none!();
+     };
+     let parameter_types = request.facts.method().parameter_types();
++    if let Some(attempt) = diagnostic_attempt {
++        eprintln!(
++            "JARDE_METHOD_SIGNATURE event=ssa_input attempt={attempt} class=cf11/UpstreamNestedLoops method=test descriptor=(Ljava/util/List;Ljava/util/List;)V program_ragged={} program_statements={} program_nodes={} code_instructions={} code_stopped={} code_exception_handlers={} ssa_blocks={} ssa_block_instruction_counts={:?} ssa_phi_count={} operation_count={} method_parameter_count={}",
++            program.ragged,
++            program.statements,
++            program.stmts.len(),
++            code.instructions.len(),
++            code.stopped_at.is_some(),
++            code.exception_handler_count,
++            ssa.blocks().len(),
++            ssa.blocks().iter().map(|block| block.instructions().len()).collect::<Vec<_>>(),
++            ssa.phis().len(),
++            operations.iter().count(),
++            parameter_types.len(),
++        );
++        let code_bcis = code.instructions.iter().map(|item| item.bci).collect::<std::collections::BTreeSet<_>>();
++        let ssa_rows = ssa.blocks().iter().flat_map(|block| {
++            block.instructions().iter().map(move |instruction| {
++                (instruction.bci(), block.block(), instruction.opcode(), instruction.reads(), instruction.writes())
++            })
++        }).collect::<Vec<_>>();
++        let effect_rows = ssa.effects().instructions().iter().map(|effect| {
++            (effect.bci(), effect.block(), effect.opcode(), effect.locals_read(), effect.locals_written(), effect.handlers())
++        }).collect::<Vec<_>>();
++        let instruction_census = code.instructions.iter().zip(code.operands()).map(|(raw, operand)| {
++            let matching_ssa = ssa_rows.iter().filter(|row| row.0 == raw.bci).collect::<Vec<_>>();
++            let matching_effects = effect_rows.iter().filter(|row| row.0 == raw.bci).collect::<Vec<_>>();
++            (raw.bci, raw.opcode, operand.effective_opcode, raw.constant_pool_index,
++                matching_ssa, matching_effects, operations.get(raw.bci))
++        }).collect::<Vec<_>>();
++        let ssa_only = ssa_rows.iter().filter(|row| !code_bcis.contains(&row.0)).collect::<Vec<_>>();
++        let effects_only = effect_rows.iter().filter(|row| !code_bcis.contains(&row.0)).collect::<Vec<_>>();
++        let parameter_slots = parameter_types.keys().copied().collect::<std::collections::BTreeSet<_>>();
++        let parameter_accesses = ssa_rows.iter().filter_map(|row| {
++            let reads = row.3.iter().filter_map(|(slot, value)| match slot {
++                Slot::Local(index) if parameter_slots.contains(index) => Some((*slot, *value)),
++                _ => None,
++            }).collect::<Vec<_>>();
++            let writes = row.4.iter().filter_map(|(slot, value)| match slot {
++                Slot::Local(index) if parameter_slots.contains(index) => Some((*slot, *value)),
++                _ => None,
++            }).collect::<Vec<_>>();
++            (!reads.is_empty() || !writes.is_empty()).then_some((row.0, row.1, row.2, reads, writes))
++        }).collect::<Vec<_>>();
++        let operation_rows = operations.iter().collect::<Vec<_>>();
++        eprintln!(
++            "JARDE_METHOD_SIGNATURE event=structured_facts attempt={attempt} code_operands={} code_handlers={:?} code_stop={:?} code_facts={:?} code_last={:?} operation_last={:?} program_tree={:?} program_last_root={:?} parameter_types={:?} parameter_accesses={:?} instruction_census={:?} code_bci_set={:?} ssa_only_rows={:?} effects_only_rows={:?} operations={:?} ssa_table={:?}",
++            code.operands().len(), code.exception_handlers, code.stopped_at, code,
++            code.instructions.last(), operation_rows.last(), program.stmts, program.stmts.last(),
++            parameter_types, parameter_accesses, instruction_census, code_bcis, ssa_only,
++            effects_only, operation_rows, ssa,
++        );
++    }
+     crate::stop::poll(budget, None)?;
+     crate::stop::charge(
+         budget,
+@@ -8995,7 +9071,7 @@
+         None,
+     )?;
+     if program.ragged || program.stmts.is_empty() {
+-        return Ok(None);
++        reject_none!();
+     }
+     if matches!(program.stmts[0].kind, StmtKind::Return { value: None }) {
+         if program.statements != 1
+@@ -9008,7 +9084,7 @@
+             || !ssa.phis().is_empty()
+             || ssa.blocks()[0].instructions().len() != 1
+         {
+-            return Ok(None);
++            reject_none!();
+         }
+         crate::stop::charge(
+             budget,
+@@ -9020,7 +9096,7 @@
+         let instruction = &ssa.blocks()[0].instructions()[0];
+         let mut body_operations = operations.iter();
+         let Some((operation_bci, Operation::Return)) = body_operations.next() else {
+-            return Ok(None);
++            reject_none!();
+         };
+         let effects = ssa.effects().instructions();
+         if body_operations.next().is_some()
+@@ -9038,7 +9114,7 @@
+                     && !effect.may_throw()
+                     && effect.handlers().is_empty())
+         {
+-            return Ok(None);
++            reject_none!();
+         }
+         let mut parameters = Vec::with_capacity(parameter_types.len());
+         for slot in parameter_types.keys() {
+@@ -9049,7 +9125,7 @@
+                 None,
+             )?;
+             let Some(name) = names.whole(*slot) else {
+-                return Ok(None);
++                reject_none!();
+             };
+             parameters.push((*slot, name.text().to_owned()));
+         }
+@@ -9088,7 +9164,7 @@
+         let Some(unread_parameter_slots) =
+             generic_void_unread_parameter_slots(code, ssa, &parameter_slots, budget)?
+         else {
+-            return Ok(None);
++            reject_none!();
+         };
+         let mut parameters = Vec::with_capacity(parameter_types.len());
+         for slot in parameter_types.keys() {
+@@ -9100,7 +9176,7 @@
+                 None,
+             )?;
+             let Some(name) = names.whole(*slot) else {
+-                return Ok(None);
++                reject_none!();
+             };
+             parameters.push((*slot, name.text().to_owned()));
+         }
+@@ -9112,7 +9188,7 @@
+         }));
+     }
+     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
+-        return Ok(None);
++        reject_none!();
+     };
+     if matches!(value.kind, ExprKind::NewArray { .. }) {
+         return generic_array_creation_return_candidate(
+@@ -9239,7 +9315,7 @@
+                 value: GenericReturnValue::TypedFunctional { target },
+             }));
+         }
+-        return Ok(None);
++        reject_none!();
+     }
+     if matches!(value.kind, ExprKind::Null) {
+         if program.statements != 1
+@@ -9252,7 +9328,7 @@
+             || !ssa.phis().is_empty()
+             || ssa.blocks()[0].instructions().len() != 2
+         {
+-            return Ok(None);
++            reject_none!();
+         }
+         crate::stop::charge(
+             budget,
+@@ -9267,16 +9343,16 @@
+             unreachable!("SSA instruction count checked above")
+         };
+         let Some((Slot::Stack(pushed_slot), pushed_value)) = ssa_push.writes().first() else {
+-            return Ok(None);
++            reject_none!();
+         };
+         let mut body_operations = operations.iter();
+         let Some((push_operation_bci, Operation::Push(ConstantValue::Null))) =
+             body_operations.next()
+         else {
+-            return Ok(None);
++            reject_none!();
+         };
+         let Some((return_operation_bci, Operation::Return)) = body_operations.next() else {
+-            return Ok(None);
++            reject_none!();
+         };
+         let effects = ssa.effects().instructions();
+         if body_operations.next().is_some()
+@@ -9315,7 +9391,7 @@
+                     && !return_effect.may_throw()
+                     && return_effect.handlers().is_empty())
+         {
+-            return Ok(None);
++            reject_none!();
+         }
+         crate::stop::poll(budget, Some(returned.bci))?;
+         return Ok(Some(GenericReturnCandidate {
+@@ -9332,7 +9408,7 @@
+             None,
+         )?;
+         let Some(name) = names.whole(*slot) else {
+-            return Ok(None);
++            reject_none!();
+         };
+         parameters.push((*slot, name.text().to_owned()));
+     }
+@@ -9348,7 +9424,7 @@
+             )?;
+             crate::stop::poll(budget, Some(instruction.bci()))?;
+             if instruction.writes().iter().any(|(slot, _)| matches!(slot, Slot::Local(index) if parameter_types.contains_key(index))) {
+-                return Ok(None);
++                reject_none!();
+             }
+             if matches!(instruction.opcode(), 0x99..=0xa6 | 0xc6..=0xc7) {
+                 branch_bcis.insert(instruction.bci());
+@@ -9367,7 +9443,7 @@
+                         .insert(instruction.bci(), slot)
+                         .is_some_and(|old| old != slot)
+                 {
+-                    return Ok(None);
++                    reject_none!();
+                 }
+             }
+         }
+@@ -9534,10 +9610,10 @@
+                 local(when_true, false),
+                 local(when_false, false),
+             ) else {
+-                return Ok(None);
++                reject_none!();
+             };
+             if parameter_types.get(&test) != Some(&Type::Boolean) {
+-                return Ok(None);
++                reject_none!();
+             }
+             GenericReturnValue::Conditional {
+                 test,

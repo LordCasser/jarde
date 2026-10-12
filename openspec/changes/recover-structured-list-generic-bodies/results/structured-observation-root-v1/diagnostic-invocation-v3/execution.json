@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-structured-void-generic-diag-prep-luna-v3/run_diagnostic.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-12T03:41:55.289247+00:00",
+  "finished_at": "2026-10-12T03:42:46.029195+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-invocation-root-v3/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-structured-void-generic-diagnostic-invocation-root-v3/stderr.raw",
+      "bytes": 576,
+      "sha256": "072851f040f3b3a37c89f54ce512d3fe1a629be20779ec26258158aeb3215ed1"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}
