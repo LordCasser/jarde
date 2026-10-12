@@ -1,6 +1,6 @@
 ## Why
 
-当前 CLI 完整类基线及固定四方法的同次 Q-i/Q-ii/Q-iii 已实际接受观察，见 [instrumentation.md](instrumentation.md)。普通 catch 的 terminal 分支所有权与 foreach 的 try 外引用写呈现为两个实际门；无限 retry 两变体及八lane同次树另确认 catch 重入自身 try 导致根树内重复 owner。JADX 当前有限 loopCatch 仍把 throw 移出 try 导致异常逃逸，retry 正确。方案已在 [design.md](design.md) 收敛为既有认证、Walker 与 reference Load 证明的局部扩展；尚无产品实现验收。固定 DF.loopFinally 的 handler51 缺口独立闭合之前，完整 DF 验收仍开放。
+当前 CLI 完整类基线及固定四方法的同次 Q-i/Q-ii/Q-iii 已实际接受观察，见 [instrumentation.md](instrumentation.md)。普通 catch 的 terminal 分支所有权与 foreach 的 try 外引用写呈现为两个实际门；无限 retry 两变体及八lane同次树另确认 catch 重入自身 try 导致根树内重复 owner。JADX 当前有限 loopCatch 仍把 throw 移出 try 导致异常逃逸，retry 正确。方案已在 [design.md](design.md) 收敛为既有认证、Walker 与 reference Load 证明的局部扩展；尚无产品实现验收。固定 DF.loopFinally 的 handler51 质量差距独立记录，当前 javac 错误实际仅为 loopCatch 缺返回；完整 DF 验收由实际编译/运行决定。
 
 取证：[loop-body-catch-patrol](../../evidence/java-syntax-2026-10-05/loop-body-catch-patrol/README.md)（变体矩阵 + jadx 错码对照）。
 

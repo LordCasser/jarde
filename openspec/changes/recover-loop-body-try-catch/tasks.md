@@ -6,7 +6,7 @@
 ## 2. 实现
 
 - [ ] 2.1 在现有普通 catch 认证补齐 finite terminal-body 证明，由同一次事实供 join/scope/coverage/induction 使用；并在现有 Walker 证明 retry header/exit 的不同边界，复用 Endless/Try/LoopBreak/LoopContinue。保持原 CFG/异常派发/来源与停止计费；不得删边、禁用 overlap 或放宽 fragmented 特化门。
-- [ ] 2.2 对照组零回退：无 try、已完整支持的 try-finally、fragmented-loop-catches fixture 文本不变。固定 DF.loopFinally 当前另有 handler51 uncovered，单独分析和处理，保留完整类失败与后续成功证据；不得删除方法或修补生成源码满足3.1。
+- [ ] 2.2 对照组零回退：无 try、循环内 try-finally、fragmented-loop-catches fixture 文本不变。固定 DF.loopFinally 的 handler51 uncovered 独立记录，不能从此诊断推断 javac 失败；保留完整类真实编译/运行证据，不得删除方法或修补生成源码满足3.1。
 - [ ] 2.3 在现有 presented_reference_store_value 仅为同 block、单消费、无间隔效果的实际 reference Load 复用呈现证明，保留 constructor/call protected-arm 门和全读 SSA/phi/词法 owner 门；完成 foreach，不能以准确拒绝关闭三形。
 
 ## 3. 验证
