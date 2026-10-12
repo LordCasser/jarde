@@ -1,0 +1,1337 @@
+{
+  "schema": "local-reference-write-clean-main-audit-luna-v2",
+  "utc": "2026-10-12T03:40:11.287168+00:00",
+  "expected_product_commit": "5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e",
+  "expected_docs_head": "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+  "input_receipt_paths": {
+    "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+    "/private/tmp/jarde-local-reference-write-full-workspace-root-v5/execution.json": "923cc716390d9e7c081060a29edc33fd7f45aa3b53ebb770a0c370f342fd4322",
+    "/private/tmp/jarde-local-reference-write-full-workspace-acceptance-root-v5.json": "d98fe4a58486817342a5193f2121b46cbf1b7aad276dfde070d496cc2a5d2df4",
+    "/private/tmp/jarde-local-reference-write-final-validation-root-v1/execution.json": "c1428340fae7e2d2a6282f5959d8815763c81153e52375ff935846efb5ec2657",
+    "/private/tmp/jarde-local-reference-write-final-accept-invocation-root-v1/stdout.raw": "36af3e2acf043addecdfc157744598bc26c2e177457c658f91c2282fbc030602",
+    "/private/tmp/jarde-local-reference-write-own-ci-acceptance-root-v2.json": "c1306764d338ef6e12f6a3d4d08606616c281f1ab123f0898108f0b24b49bf04"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "0.stdout.raw",
+          "bytes": 41,
+          "sha256": "dc16b57333765525534a404ffd938ea1ad3327e063850686e380d83c9572b0d1"
+        },
+        "stderr": {
+          "path": "0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "1.stdout.raw",
+          "bytes": 41,
+          "sha256": "dc16b57333765525534a404ffd938ea1ad3327e063850686e380d83c9572b0d1"
+        },
+        "stderr": {
+          "path": "1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "2.stdout.raw",
+          "bytes": 41,
+          "sha256": "dc16b57333765525534a404ffd938ea1ad3327e063850686e380d83c9572b0d1"
+        },
+        "stderr": {
+          "path": "2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "3.stdout.raw",
+          "bytes": 5,
+          "sha256": "6403203dd5a0867eb14d104ee8a73730bd72dd9ad92e78d996a6dba0a5dcfc01"
+        },
+        "stderr": {
+          "path": "3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "for-each-ref",
+        "--format=%(refname:short)",
+        "refs/heads"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "4.stdout.raw",
+          "bytes": 5,
+          "sha256": "6403203dd5a0867eb14d104ee8a73730bd72dd9ad92e78d996a6dba0a5dcfc01"
+        },
+        "stderr": {
+          "path": "4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "5.stdout.raw",
+          "bytes": 40,
+          "sha256": "aa84c950746bc55c9eba0d0ba9d7c01d04b89cd26fc9a3e7201d06021980794b"
+        },
+        "stderr": {
+          "path": "5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "origin"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "6.stdout.raw",
+          "bytes": 57,
+          "sha256": "e7d8a44d5f13fa23a967388cc7d5f95b8efaf4b4cdeabe970801b008173e6871"
+        },
+        "stderr": {
+          "path": "6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e",
+        "fa12d5499e14115c039d75d7880dfc2d01aba94e"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "7.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "8.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "9.stdout.raw",
+          "bytes": 37287309,
+          "sha256": "bccbfb64fbbb90529e90d2bee04fb9afee71d7e2ff210208aee0ceb41ef6ad37"
+        },
+        "stderr": {
+          "path": "9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "fa12d5499e14115c039d75d7880dfc2d01aba94e"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "10.stdout.raw",
+          "bytes": 37306389,
+          "sha256": "29a89e040589f79653d9133efe331bec4183a90085517a420beba8a1071cbc30"
+        },
+        "stderr": {
+          "path": "10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "hash-object",
+        "--no-filters",
+        "--stdin-paths"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "11.stdout.raw",
+          "bytes": 196144,
+          "sha256": "97eddc8d8f93f334e4b6611088f0caba456e07bc08b4947470786ac3f49a6ad5"
+        },
+        "stderr": {
+          "path": "11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "stdin": {
+        "bytes": 409825,
+        "sha256": "7a47c03a19fafd2ee5ef83a0aa197255ca6460f9e43fe182b9a17d13c8e61a4f"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "12.stdout.raw",
+          "bytes": 1899,
+          "sha256": "225a93a02b64d2ac390d196271fec0402dae9556020f37e59550b3e24a88b68c"
+        },
+        "stderr": {
+          "path": "12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "13.stdout.raw",
+          "bytes": 220,
+          "sha256": "8023730c36793d3a848326d47a21acf7b7f8f9498108ee8d7818e9bf9f10e9c4"
+        },
+        "stderr": {
+          "path": "13.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "14.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "15.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "16.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "17.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "18.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "19.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "20.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "20.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "21.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "21.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "22.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "22.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "23.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "23.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "24.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "24.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "25.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "25.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "26.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "26.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "27.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "27.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "28.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "28.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "29.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "29.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "30.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "30.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "31.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "31.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "698a219ec580819e12af487c4c8a3771e9baaa85",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "32.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "32.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "33.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "33.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "34.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "34.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "35.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "35.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "36.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "36.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "37.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "37.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "38.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "38.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "39.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "39.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "40.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "40.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--ignored",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "41.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "41.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+        "main"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "42.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "42.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "audit_script_sha256": "6d09cc6f0fa056f59fb55f004223825152051624a21960ce197b90f3e4ee1c69",
+  "pinned_worktree_policy": "recorded without attempting unlock, removal, or protection bypass",
+  "status": "accepted_clean_main",
+  "head": "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+  "main": "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+  "origin_main": "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+  "branch": "main",
+  "local_branches": [
+    "main"
+  ],
+  "origin_url": "https://github.com/LordCasser/jarde.git",
+  "remote_heads": [
+    "fa12d5499e14115c039d75d7880dfc2d01aba94e\trefs/heads/main"
+  ],
+  "product_commit_is_ancestor_of_docs_head": true,
+  "docs_head_is_ancestor_of_main": true,
+  "worktree_count": 15,
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "fa12d5499e14115c039d75d7880dfc2d01aba94e",
+      "branch": "refs/heads/main",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 8,
+      "ignored_status_sha256": "9c0281a63d5411757e769a36a79056b4331fa5c74660b5808f973963695e4022",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "clean": true,
+      "status_change_count": 0,
+      "ignored_entry_count": 0,
+      "ignored_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    }
+  ],
+  "free_bytes": 18579001344,
+  "audit_raw_stream_count": 86,
+  "final_build_receipt_raw_stream_count": 10,
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "bytes": 61486096,
+    "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "mode": "0o555"
+  },
+  "candidate_build_cli_path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+  "candidate_build_and_final_cli_byte_identical": true,
+  "final_acceptance_sha256": "36af3e2acf043addecdfc157744598bc26c2e177457c658f91c2282fbc030602",
+  "ci_capture_receipt": {
+    "path": "/private/tmp/jarde-local-reference-write-own-ci-capture-root-v1/capture-execution-root-v2.json",
+    "sha256": "fcbbae420236fed3b77acea0e59fbbe96fa182d0e79d4fda862a4b52a5f33136",
+    "run_id": 38197592542
+  },
+  "own_ci_acceptance": {
+    "path": "/private/tmp/jarde-local-reference-write-own-ci-acceptance-root-v2.json",
+    "sha256": "c1306764d338ef6e12f6a3d4d08606616c281f1ab123f0898108f0b24b49bf04",
+    "schema": "local-reference-write-own-ci-acceptance-v3",
+    "status": "accepted_local_own_ci_observation",
+    "product_commit": "5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e",
+    "all_local_and_both_ci_seed_named_outcomes_compared": true,
+    "evidence": {
+      "capture": "/private/tmp/jarde-local-reference-write-own-ci-capture-root-v1",
+      "capture_execution_sha256": "fcbbae420236fed3b77acea0e59fbbe96fa182d0e79d4fda862a4b52a5f33136",
+      "candidate_build_receipt": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+      "candidate_build_receipt_sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+      "workspace_execution": "/private/tmp/jarde-local-reference-write-full-workspace-root-v5/execution.json",
+      "workspace_execution_sha256": "923cc716390d9e7c081060a29edc33fd7f45aa3b53ebb770a0c370f342fd4322",
+      "workspace_acceptance_sha256": "d98fe4a58486817342a5193f2121b46cbf1b7aad276dfde070d496cc2a5d2df4",
+      "workspace_metadata": "/private/tmp/jarde-local-reference-write-full-workspace-root-v5/metadata.json",
+      "workspace_metadata_sha256": "0599d5c3928b33c7c8239ad65263acfe569bee0d05a90a44f2e532d8eb4a1bfc",
+      "workspace_named_manifest": "/private/tmp/jarde-local-reference-write-full-workspace-acceptance-root-v5.json",
+      "workspace_named_manifest_sha256": "d98fe4a58486817342a5193f2121b46cbf1b7aad276dfde070d496cc2a5d2df4",
+      "final_build_record": "/private/tmp/jarde-local-reference-write-final-validation-root-v1/execution.json",
+      "final_build_record_sha256": "c1428340fae7e2d2a6282f5959d8815763c81153e52375ff935846efb5ec2657",
+      "final_cli": {
+        "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+        "bytes": 61486096,
+        "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+        "mode": "0o555",
+        "byte_identical_to_candidate_build": true
+      }
+    }
+  },
+  "cli_build_receipt": {
+    "path": "/private/tmp/jarde-local-reference-write-final-validation-root-v1/execution.json",
+    "sha256": "c1428340fae7e2d2a6282f5959d8815763c81153e52375ff935846efb5ec2657",
+    "schema": "local-reference-write-final-lint-build-root-v2",
+    "source_pin_count": 4784,
+    "source_manifest_sha256": "d39912891c4efa2d63e8bd2870a5c9687f59d88a4c1425da9a414e692a029d35",
+    "builder_path": "/private/tmp/jarde-local-reference-write-full-validation-prep-luna-v4/final-build-runner.py",
+    "builder_sha256": "c7525a6b8ad0853204944a09e3d8fb6a58fcfd87287aad12d86adde3e4aaff68",
+    "workspace_runner_path": "/private/tmp/jarde-local-reference-write-full-validation-prep-luna-v4/workspace_runner.py",
+    "workspace_runner_sha256": "8f427510b3bb30d6c32c02cb3fd063ee87d441a8c9e51f0f43516f84f7e64911",
+    "guard_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scan_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scan_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "candidate_build_receipt_sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+    "workspace_receipt_sha256": "923cc716390d9e7c081060a29edc33fd7f45aa3b53ebb770a0c370f342fd4322",
+    "workspace_acceptance_sha256": "d98fe4a58486817342a5193f2121b46cbf1b7aad276dfde070d496cc2a5d2df4",
+    "final_acceptance_path": "/private/tmp/jarde-local-reference-write-final-accept-invocation-root-v1/stdout.raw",
+    "final_acceptance_sha256": "36af3e2acf043addecdfc157744598bc26c2e177457c658f91c2282fbc030602",
+    "workspace_acceptor_path": "/private/tmp/jarde-local-reference-write-full-validation-prep-luna-v4/accept_workspace.py",
+    "workspace_acceptor_sha256": "e263e38230c4a95bcd40f21746f9e4060a06182bf57f196b30edb3c7ac454ef3",
+    "final_acceptor_path": "/private/tmp/jarde-local-reference-write-full-validation-prep-luna-v4/accept-final.py",
+    "final_acceptor_sha256": "3a7c461e15f2166ed482194ee0af7809d69da0107bf9d41f60c74f189f2b494d"
+  },
+  "git_source_pin_count": 4784,
+  "product_tree_raw_sha256": "bccbfb64fbbb90529e90d2bee04fb9afee71d7e2ff210208aee0ceb41ef6ad37",
+  "product_tree_command_argv": [
+    "git",
+    "ls-tree",
+    "-r",
+    "-z",
+    "5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e"
+  ],
+  "docs_tree_raw_sha256": "29a89e040589f79653d9133efe331bec4183a90085517a420beba8a1071cbc30",
+  "docs_tree_command_argv": [
+    "git",
+    "ls-tree",
+    "-r",
+    "-z",
+    "fa12d5499e14115c039d75d7880dfc2d01aba94e"
+  ],
+  "git_blob_oid_match_count": 4784,
+  "git_hash_object_command_argv": [
+    "git",
+    "hash-object",
+    "--no-filters",
+    "--stdin-paths"
+  ],
+  "git_hash_object_stdin_bytes": 409825,
+  "git_hash_object_stdin_sha256": "7a47c03a19fafd2ee5ef83a0aa197255ca6460f9e43fe182b9a17d13c8e61a4f"
+}

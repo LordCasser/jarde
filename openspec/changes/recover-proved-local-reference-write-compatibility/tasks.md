@@ -13,4 +13,4 @@
 - [x] 3.1 root新CLI完整类双JDK对照并独立验收。验收：未手修生成类编译运行的值、状态、异常/效果顺序同原；JADX差异与Jarde仍拒绝边界单列；准确CLI字节及来源绑定。实际debug97/none101命令、专门checker root-v2 exit0、每profile四条目标整类29行编译/运行同原；其它全生成combined失败与12 refusal map gaps/profile单列，不扩大行为接受范围。
 - [x] 3.2 fresh全工作区、fmt/当前CI Clippy/global strict、冻结最终CLI。验收：真实targets/named outcomes与源码闭包完整核验、5GiB free/target1GiB一秒守卫/default stack/finally clean；失败不得拼接为成功。
 - [x] 3.3 提交推送确切产品、独立验收其自身CI。验收：确切head/run四jobs/全部steps和双seed具名结果与本地/CLI绑定，不借前片或文档CI。
-- [ ] 3.4 更新账本/verification/handoff并交付干净main。验收：文档推送后按真实HEAD核main/origin/remote仅main、aux detached干净祖先、全部无target；关闭后另作外置最终audit，不预写未知SHA，CF11/71/612不增。
+- [x] 3.4 更新账本/verification/handoff并交付干净main。验收：文档推送后按真实HEAD核main/origin/remote仅main、aux detached干净祖先、全部无target；关闭后另作外置最终audit，不预写未知SHA，CF11/71/612不增。
