@@ -171,15 +171,79 @@ const DIFFERENT_NAME_DEBUG: &[(&str, &[u8], &str, bool)] = &[
     debug_case!("different-name", javac23, DequeThenBuilder, true),
 ];
 
-const SAME_NAME_DEBUG: &[(&str, &[u8], &str, bool)] = &[
-    debug_case!("same-name", javac8, ListThenMap, false),
-    debug_case!("same-name", javac8, MapThenBuilder, false),
-    debug_case!("same-name", javac8, StringThenQueue, false),
-    debug_case!("same-name", javac8, BuilderThenArray, false),
-    debug_case!("same-name", javac23, ListThenMap, false),
-    debug_case!("same-name", javac23, MapThenBuilder, false),
-    debug_case!("same-name", javac23, StringThenQueue, false),
-    debug_case!("same-name", javac23, BuilderThenArray, false),
+macro_rules! same_name_case {
+    ($jdk:ident, $class:ident, $first:literal, $second:literal) => {
+        (
+            stringify!($class),
+            include_bytes!(concat!(
+                "fixtures/p3-reference-slot-lifetimes/debug/same-name/",
+                stringify!($jdk),
+                "/",
+                stringify!($class),
+                ".class"
+            )),
+            include_str!(concat!(
+                "fixtures/p3-reference-slot-lifetimes/debug/same-name/",
+                stringify!($jdk),
+                "/",
+                stringify!($class),
+                ".baseline.java"
+            )),
+            $first,
+            $second,
+        )
+    };
+}
+
+const SAME_NAME_DEBUG: &[(&str, &[u8], &str, &str, &str)] = &[
+    same_name_case!(
+        javac8,
+        ListThenMap,
+        "java.util.ArrayList",
+        "java.util.HashMap"
+    ),
+    same_name_case!(
+        javac8,
+        MapThenBuilder,
+        "java.util.HashMap",
+        "java.lang.StringBuilder"
+    ),
+    same_name_case!(
+        javac8,
+        StringThenQueue,
+        "java.lang.String",
+        "java.util.ArrayDeque"
+    ),
+    same_name_case!(
+        javac8,
+        BuilderThenArray,
+        "java.lang.StringBuilder",
+        "char[]"
+    ),
+    same_name_case!(
+        javac23,
+        ListThenMap,
+        "java.util.ArrayList",
+        "java.util.HashMap"
+    ),
+    same_name_case!(
+        javac23,
+        MapThenBuilder,
+        "java.util.HashMap",
+        "java.lang.StringBuilder"
+    ),
+    same_name_case!(
+        javac23,
+        StringThenQueue,
+        "java.lang.String",
+        "java.util.ArrayDeque"
+    ),
+    same_name_case!(
+        javac23,
+        BuilderThenArray,
+        "java.lang.StringBuilder",
+        "char[]"
+    ),
 ];
 
 const NEGATIVE_CASES: &[(&str, &[u8], &str)] = &[
@@ -311,16 +375,165 @@ fn different_name_lvt_sources_remain_byte_for_byte_unchanged() {
     }
 }
 
-#[test]
-fn same_name_lvt_sources_keep_their_existing_failure_verbatim() {
-    assert_eq!(SAME_NAME_DEBUG.len(), 8);
-    for (name, bytes, baseline, complete) in SAME_NAME_DEBUG {
-        assert!(!*complete);
-        let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
+fn replace_once(source: &str, old: &str, new: &str) -> String {
+    assert_eq!(
+        source.matches(old).count(),
+        1,
+        "expected one frozen source segment: {old}"
+    );
+    source.replacen(old, new, 1)
+}
+
+fn same_name_expected(name: &str, baseline: &str) -> String {
+    match name {
+        "ListThenMap" => {
+            let expected = replace_once(
+                baseline,
+                "        v = new java.util.HashMap();",
+                "        java.util.HashMap v_2 = new java.util.HashMap();",
+            );
+            let expected = replace_once(&expected, "        v.put(", "        v_2.put(");
+            replace_once(
+                &expected,
+                "return v.size() + ((java.lang.Integer) v.get(",
+                "return v_2.size() + ((java.lang.Integer) v_2.get(",
+            )
+        }
+        "MapThenBuilder" => {
+            let expected = replace_once(
+                baseline,
+                "        v = new java.lang.StringBuilder();",
+                "        java.lang.StringBuilder v_2 = new java.lang.StringBuilder();",
+            );
+            let expected = replace_once(&expected, "        v.append(", "        v_2.append(");
+            replace_once(&expected, "return v.toString();", "return v_2.toString();")
+        }
+        "StringThenQueue" => {
+            let expected = replace_once(
+                baseline,
+                "        v = new java.util.ArrayDeque();",
+                "        java.util.ArrayDeque v_2 = new java.util.ArrayDeque();",
+            );
+            let expected = replace_once(
+                &expected,
+                "        v.add((java.lang.Object) x);\n        v.add((java.lang.Object) \"!\");",
+                "        v_2.add((java.lang.Object) x);\n        v_2.add((java.lang.Object) \"!\");",
+            );
+            replace_once(
+                &expected,
+                "(java.lang.String) v.removeFirst()).append((java.lang.String) v.removeLast())",
+                "(java.lang.String) v_2.removeFirst()).append((java.lang.String) v_2.removeLast())",
+            )
+        }
+        "BuilderThenArray" => {
+            let expected = replace_once(
+                baseline,
+                "        java.lang.StringBuilder v;",
+                "        char[] v_2;",
+            );
+            let expected = replace_once(
+                &expected,
+                "        v = new java.lang.StringBuilder(x);",
+                "        java.lang.StringBuilder v = new java.lang.StringBuilder(x);",
+            );
+            let expected = replace_once(
+                &expected,
+                "        v = new char[n];",
+                "        v_2 = new char[n];",
+            );
+            let expected = replace_once(
+                &expected,
+                "            v[i] = x.charAt(i);",
+                "            v_2[i] = x.charAt(i);",
+            );
+            replace_once(
+                &expected,
+                "        // @bytecode 47\n        // the parameter 0 of the invocation at BCI 44 is declared `char[]` presents `java.lang.StringBuilder` but the invocation requires `char[]` and this layer has no safe reference conversion evidence",
+                "        return new java.lang.String(v_2);",
+            )
+        }
+        _ => panic!("no typed split expectation for {name}"),
+    }
+}
+
+fn assert_three_method_evidence(
+    essential: &ClassSourceReport,
+    all: &ClassSourceReport,
+    name: &str,
+) {
+    assert_eq!(essential.methods.len(), 3, "{name}: essential methods");
+    assert_eq!(all.methods.len(), 3, "{name}: full-evidence methods");
+    assert!(
+        all.methods.iter().all(|method| method.markers.is_empty()),
+        "{name}: {:?}",
+        all.methods
+    );
+    for (left, right) in essential.methods.iter().zip(&all.methods) {
+        assert_eq!(left.item, right.item, "{name}: member identity changed");
+        let identity = left.item.identity.clone();
+        let (
+            ClassSourceOutcome::Recovered { report: left, .. },
+            ClassSourceOutcome::Recovered { report: right, .. },
+        ) = (&left.outcome, &right.outcome)
+        else {
+            panic!("{name}: all three methods remain recovered");
+        };
         assert_eq!(
-            report.text, *baseline,
-            "{name}: preserved same-name result changed"
+            left.text, right.text,
+            "{name}: method source differs by evidence selection"
         );
+        assert!(
+            !right.source_map.segments().is_empty(),
+            "{name}: method source map is present"
+        );
+        for segment in right.source_map.segments() {
+            for origin in
+                std::iter::once(segment.origin().primary()).chain(segment.origin().derived().iter())
+            {
+                assert_eq!(
+                    origin.method(),
+                    Some(&identity),
+                    "{name}: source map crossed methods"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn same_name_lvt_sources_split_into_exact_typed_independent_names() {
+    assert_eq!(SAME_NAME_DEBUG.len(), 8);
+    for (name, bytes, baseline, first_type, second_type) in SAME_NAME_DEBUG {
+        let expected = same_name_expected(name, baseline);
+        if *name == "BuilderThenArray" {
+            assert!(
+                expected.contains("java.lang.StringBuilder v = new java.lang.StringBuilder(x);")
+            );
+            assert!(expected.contains("char[] v_2;"));
+            assert!(expected.contains("return new java.lang.String(v_2);"));
+        } else {
+            let first_declaration = if *name == "StringThenQueue" {
+                "java.lang.String v = x.trim();".to_owned()
+            } else {
+                format!("{first_type} v = new {first_type}();")
+            };
+            assert!(
+                expected.contains(&first_declaration),
+                "{name}: first typed declaration"
+            );
+            assert!(
+                expected.contains(&format!("{second_type} v_2 = new {second_type}();")),
+                "{name}: independent second typed declaration"
+            );
+        }
+        let essential = recover(bytes, name, &RecoveryEvidenceRequest::essential());
+        let all = recover(bytes, name, &RecoveryEvidenceRequest::all());
+        assert_eq!(
+            essential.text, expected,
+            "{name}: essential full-class source"
+        );
+        assert_eq!(all.text, expected, "{name}: all-evidence full-class source");
+        assert_three_method_evidence(&essential, &all, name);
     }
 }
 

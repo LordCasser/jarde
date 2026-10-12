@@ -1167,6 +1167,35 @@ mod tests {
     }
 
     #[test]
+    fn repeated_raw_names_in_a_split_use_the_existing_collision_suffix() {
+        let table = NameTable::build(
+            0,
+            6,
+            &[
+                SlotEvidence::Unnamed,
+                SlotEvidence::Unnamed,
+                SlotEvidence::Unnamed,
+                SlotEvidence::Unnamed,
+                SlotEvidence::Unnamed,
+                SlotEvidence::Split(vec![Some("value".to_owned()), Some("value".to_owned())]),
+            ],
+        );
+        let first = LocalVariable::new(5, 0);
+        let second = LocalVariable::new(5, 1);
+        assert_eq!(table.text(first), Some("value"));
+        assert_eq!(table.text(second), Some("value_2"));
+        assert_eq!(table.name(first).and_then(RenderedName::raw), Some("value"));
+        assert_eq!(
+            table.name(second).and_then(RenderedName::raw),
+            Some("value")
+        );
+        assert_eq!(
+            table.name(second).and_then(RenderedName::aliased),
+            Some(AliasReason::Collision)
+        );
+    }
+
+    #[test]
     fn a_table_that_states_no_split_still_states_one_variable() {
         // The two shapes a "split" that is not one takes: fewer than two names states nothing about
         // the slot, and the slot keeps the one ordinal-named variable it had (P3 3.4 declines to

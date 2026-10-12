@@ -9,6 +9,14 @@
 
 同时发现 JADX 1.5.6 在该合法 raw-alias 源码上消去别名、保留 `List<String>` 声明，输出 `target.add(Integer)`，default/rename-none 双 JDK 编译均失败。JADX 作为参考臂仍须核源码契约；当前实现应拒绝未闭合的 alias 用途，不能照搬这个错误。所有失败原样保留，新泛型实现尚未通过本片验收。
 
+## 2026-10-13 上述两项的联合候选验收（交付仍待全量门）
+
+[引用生命周期与外层 try 联合证据](changes/recover-debug-reference-lifetimes/results/joint-fullclass-candidate-root-v1/README.md)已由 root 实际接受：双 JDK、debug/none、default/all 的 8 条未手修 Jarde 整类运行各 17 场景逐字同原，11 方法与物理来源完整；另 8 条 Jarde 整类运行各 10 异常边界场景亦同原。上文两项旧缺陷已在该候选上消除，不再把 raw 签名拒绝误记成正文失败。JADX 同输入的 raw alias 编译失败仍作为失败对照保留。
+
+两项各 5/6。workspace-v3 的命令已完成，execution receipt `/private/tmp/jarde-reference-prefix-full-workspace-run-root-v3/execution.json`（SHA256 `f3ef8761467bca849881ddcea9a8369583689652c7341907c61fe3126239e3b8`）记录 7094 passed / 0 failed / 196 ignored、每 seed 3547/0/98、96 batches / 365 targets、4860 source pins 与 finally cargo clean；root 已[独立验收并归档](changes/recover-debug-reference-lifetimes/results/full-workspace-accepted-root-v3/README.md)。2.3 仍未完成，候选产品提交/push、本次自身 CI 和真实最终 HEAD clean-main 均尚未发生或验收。历史 workspace-v1 的旧同名 LVT 失败要求已按 8 个实际同名整类对照修正；workspace-v2 只因本次 4 个新增夹具未登记指纹而失败，见[原始失败观察及最小清单差异](changes/recover-debug-reference-lifetimes/results/workspace-v2-fingerprint-failure-root-v1/README.md)。这些失败不拼接为成功。CF11 / CF18 / 71 / 612 完成计数不变。
+
+`handled` 的参数泛型投影仍是独立下一 MVP：[本地 JADX 测试与算法分析](evidence/java-syntax-2026-10-13/try-list-signature-next-mvp-analysis-root-v1/README.md)。复用已证明的 ordinary try/foreach envelope 和现有 List 用途 census，按精确元素类型统一处理，至少验收 String/Integer；不去掉 raw alias、参数重赋值或重载歧义等既有拒绝门，不把局部 marker 消失当完整类成功。
+
 **最新裁决：按约定的四项外部判据，T1–T4 本轮闭环确认完成；三项归档保留。** 本次重新审阅 `f4d1044`、`2895bc4`、`5c35cbf` 的实现并复跑关键门禁，没有重开已通过的原反例。同时新复现 T5：已接受的 `append(int)` 消费 `char` 表达式时仍丢失数值转换，原类与产物可编译但值不同。T5 单独登记后续修正，不能把本轮关闭扩大为 concat 转换契约已无缺口。并行导出与性能专项仍各 0/22。
 
 ## 第四轮：本轮关闭判据及独立复跑

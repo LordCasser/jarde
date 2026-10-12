@@ -18,22 +18,23 @@
 //!
 //! * a **read** of the slot belongs to the record whose range contains the read's own BCI — a read
 //!   happens while the variable is in scope, which is exactly what the range states;
-//! * a **write** belongs to the record whose in-range reads read the value that write stored — the
-//!   store and the loads that consume it are one value chain, so the load's position decides the
-//!   store's variable even where the store's own BCI is outside every record.
+//! * a **write** belongs to the identity its SSA value owner already proves. A read usually ties that
+//!   identity to its record; an identity with no local read can be named only when its unique Store
+//!   is immediately followed by the row's start in the decoded instruction table.
 //!
 //! The LVT split is taken only when that assignment is **complete and unambiguous**: every read sits
-//! inside exactly one record's range, and every write's value is read by the in-range reads of
-//! exactly one record. When neither proof applies, the slot remains **one** variable. The LVT path
-//! declines these shapes rather than guessing which record names the storage location:
+//! inside exactly one sorted row, and every row fits the corresponding proven identity range. An
+//! unread identity also needs the exact Store boundary above. When neither proof applies, the slot
+//! remains **one** variable. The LVT path declines these shapes rather than guessing which record
+//! names the storage location:
 //!
 //! * one record for the slot, or several that all state the *same* name: one variable, that name;
 //! * ranges that overlap, a record that states no range, or names this run cannot place: one
 //!   variable, **no** name — neither record's spelling is the truth about the whole storage location,
 //!   so the ordinal name is written instead (P3 3.1's rule, kept where the evidence is not enough);
-//! * a read outside every range, or a write whose value no in-range read consumes: the same. A store
-//!   this run cannot trace to a load is not a store it can place, and placing it wrongly would write
-//!   one variable's name for another's value.
+//! * a read outside every row, a row that crosses its identity range, or an unread identity whose
+//!   unique Store is not immediately before the row start: the same. The row cannot name a value this
+//!   run cannot place, and placing it wrongly would write one variable's name for another's value.
 //!
 //! The slot a guarded statement declares in its own header (P3 2.4) is never split: `try (T n = …)`
 //! writes that declaration, so the header's slot stays one variable and the guard keeps its own rule
@@ -178,7 +179,7 @@ pub(crate) fn plan(
             resources,
             budget,
         )? {
-            plan.evidence[index] = SlotEvidence::Split(vec![None; segments]);
+            plan.evidence[index] = SlotEvidence::Split(segments);
             plan.splits.insert(slot, split);
             continue;
         }
@@ -688,8 +689,8 @@ fn array_retype_split(
 }
 
 /// Split reference lifetimes whose exact source types differ, reusing the same definition owner
-/// proof as array retyping. This narrower extension requires a complete normal CFG and no LVT:
-/// the debug-table path continues to own every recorded source name.
+/// proof as array retyping. LVT rows may name the proven identities only after every read maps
+/// one-to-one to a row in definition order. The complete normal CFG proof remains authoritative.
 #[allow(clippy::too_many_arguments)]
 fn reference_retype_split(
     ssa: &SsaTable,
@@ -701,18 +702,19 @@ fn reference_retype_split(
     accesses: Option<&Accesses>,
     resources: &BTreeSet<u16>,
     budget: &mut Budget,
-) -> Result<Option<(usize, Split)>, StopReason> {
-    if slot < parameters
-        || resources.contains(&slot)
-        || !records.is_empty()
-        || !canonical.unreachable().is_empty()
-    {
+) -> Result<Option<(Vec<Option<String>>, Split)>, StopReason> {
+    if slot < parameters || resources.contains(&slot) || !canonical.unreachable().is_empty() {
         return Ok(None);
     }
     let Some(accesses) = accesses else {
         return Ok(None);
     };
     if accesses.reads.is_empty() || accesses.writes.len() < 2 {
+        return Ok(None);
+    }
+    // The owner proof creates exactly one segment per distinct write BCI. Rows that cannot
+    // correspond one-to-one are known refusals and should retain the old no-scan cost.
+    if !records.is_empty() && records.len() != accesses.writes.len() {
         return Ok(None);
     }
     for block in ssa.blocks() {
@@ -754,8 +756,170 @@ fn reference_retype_split(
     if !reference_values_stay_before_boundaries(ssa, operations, &definitions, budget)? {
         return Ok(None);
     }
-    owned_definition_split(ssa, accesses, definitions, Some(canonical), budget)
-        .map(|split| split.map(|split| (split.ranges.len(), split)))
+    let Some(split) = owned_definition_split(ssa, accesses, definitions, Some(canonical), budget)?
+    else {
+        return Ok(None);
+    };
+    if records.is_empty() {
+        return Ok(Some((vec![None; split.ranges.len()], split)));
+    }
+    let Some(names) = reference_split_names(
+        records,
+        accesses.reads.iter().map(|read| read.bci),
+        &accesses.writes,
+        Some(operations),
+        &split,
+        budget,
+    )?
+    else {
+        return Ok(None);
+    };
+    Ok(Some((names, split)))
+}
+
+/// Attach LVT names only when rows and proven SSA identities agree exactly. Every read must be
+/// inside its SSA owner's row, and every row must fit that identity's range. An unread identity is
+/// named only when its one proven Store is the immediately preceding decoded instruction.
+fn reference_split_names(
+    records: &[&DebugLocal],
+    read_bcis: impl IntoIterator<Item = u32>,
+    writes: &[Access],
+    operations: Option<&Operations>,
+    split: &Split,
+    budget: &mut Budget,
+) -> Result<Option<Vec<Option<String>>>, StopReason> {
+    let segments = split.ranges.len();
+    if records.is_empty() {
+        return Ok(Some(vec![None; segments]));
+    }
+    if records.len() != segments {
+        return Ok(None);
+    }
+
+    // The BTreeMap gives a deterministic (start, end) order without an extra sorting pass. Charge
+    // each insertion and ordered visit; its tree work follows the same per-item accounting used for
+    // existing BTreeMap-backed analysis. Duplicate intervals cannot identify distinct owners.
+    let mut row_map = BTreeMap::new();
+    for record in records {
+        let at = record.range().map(|(start, _)| start);
+        poll(budget, at)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+        let Some((start, end)) = record.range() else {
+            return Ok(None);
+        };
+        if start >= end
+            || row_map
+                .insert((start, end), record.name().to_string())
+                .is_some()
+        {
+            return Ok(None);
+        }
+    }
+
+    let mut rows = Vec::with_capacity(segments);
+    let mut previous_end = None;
+    for ((start, end), name) in row_map {
+        poll(budget, Some(start))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(start),
+        )?;
+        if previous_end.is_some_and(|end| end > start) {
+            return Ok(None);
+        }
+        previous_end = Some(end);
+        rows.push((start, end, name));
+    }
+
+    let mut rows_with_reads = vec![false; segments];
+    for read_bci in read_bcis {
+        poll(budget, Some(read_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(read_bci),
+        )?;
+        let Some(owner) = split.by_bci.get(&read_bci).copied() else {
+            return Ok(None);
+        };
+        let index = usize::from(owner);
+        let Some((start, end, _)) = rows.get(index) else {
+            return Ok(None);
+        };
+        if read_bci < *start || read_bci >= *end {
+            return Ok(None);
+        }
+        rows_with_reads[index] = true;
+    }
+    // A missing read cannot establish the row's identity. The narrow exception uses the already
+    // proved store owner and the decoded instruction table: no opcode-width estimate or LVT-only
+    // guess can make a different store qualify. Do not scan stores on the ordinary all-read path.
+    let writes_per_owner = if rows_with_reads.iter().any(|has_read| !has_read) {
+        let mut writes_per_owner = vec![Vec::new(); segments];
+        for write in writes {
+            poll(budget, Some(write.bci))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(write.bci),
+            )?;
+            let Some(owner) = split.by_bci.get(&write.bci).copied() else {
+                return Ok(None);
+            };
+            let index = usize::from(owner);
+            let Some(owner_writes) = writes_per_owner.get_mut(index) else {
+                return Ok(None);
+            };
+            owner_writes.push(write);
+        }
+        Some(writes_per_owner)
+    } else {
+        None
+    };
+
+    let mut names = Vec::with_capacity(segments);
+    for (index, ((start, end, name), has_read)) in rows.into_iter().zip(rows_with_reads).enumerate()
+    {
+        poll(budget, Some(start))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(start),
+        )?;
+        let Some((identity_start, identity_end)) = split.ranges.get(index).copied() else {
+            return Ok(None);
+        };
+        if start < identity_start || end > identity_end {
+            return Ok(None);
+        }
+        if !has_read {
+            let Some(operations) = operations else {
+                return Ok(None);
+            };
+            let Some(writes_per_owner) = writes_per_owner.as_ref() else {
+                return Ok(None);
+            };
+            let owner_writes = writes_per_owner[index].as_slice();
+            if owner_writes.len() != 1 {
+                return Ok(None);
+            }
+            let write = owner_writes[0];
+            let is_matching_store = matches!(
+                operations.get(write.bci),
+                Some(Operation::Store { slot }) if *slot == write.slot
+            );
+            if !is_matching_store || operations.next_bci(write.bci) != Some(start) {
+                return Ok(None);
+            }
+        }
+        names.push(Some(name));
+    }
+    Ok(Some(names))
 }
 
 /// A local read can move an older reference onto the operand stack, where a later local write
@@ -1313,5 +1477,535 @@ fn store_producing(ssa: &SsaTable, read: &Access) -> Option<u32> {
     match in_use {
         Some((held, Some(bci))) if held == read.value => Some(bci),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod reference_split_name_tests {
+    use super::*;
+
+    fn fixture() -> (Vec<DebugLocal>, Vec<u32>, Split) {
+        let records = vec![
+            DebugLocal::over(5, "value", 32, 41),
+            DebugLocal::over(5, "value", 74, 82),
+        ];
+        let read_bcis = vec![35, 77];
+        let split = Split {
+            by_bci: BTreeMap::from([(30, 0), (35, 0), (72, 1), (77, 1)]),
+            ranges: vec![(0, 72), (72, u32::MAX)],
+        };
+        (records, read_bcis, split)
+    }
+
+    fn test_budget(analysis_steps: u64) -> Budget {
+        Budget::new(jarde_reader::budget::Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        })
+    }
+
+    const REFERENCE_ALIAS_BOUNDARY_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-reference-alias-boundary/ReferenceAliasBoundary.class"
+    );
+    const RAW_ALIAS_ESCAPE_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class"
+    );
+
+    fn analyze_reference_method(
+        class: &[u8],
+        name: &[u8],
+        descriptor: &[u8],
+        java_release: u16,
+    ) -> jarde_jvm::method_ir::MethodIrAnalysis {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        let mut budget = test_budget(1 << 20);
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .expect("actual alias-boundary class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: u64::try_from(class.len()).expect("class length fits u64"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(name.to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method,
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        analyze_method_ir(&[snapshot], &request, &mut budget)
+            .expect("actual method completes SSA analysis")
+    }
+
+    fn analyze_reference_alias_boundary() -> jarde_jvm::method_ir::MethodIrAnalysis {
+        analyze_reference_method(
+            REFERENCE_ALIAS_BOUNDARY_CLASS,
+            b"aliasSurvivesLaterStore",
+            b"()V",
+            8,
+        )
+    }
+
+    fn reference_alias_debug_locals(
+        code: &jarde_reader::classfile::MethodCodeFacts,
+    ) -> Vec<DebugLocal> {
+        let jarde_reader::classfile::LocalDebugTable::Read(records) = code.debug() else {
+            return Vec::new();
+        };
+        records
+            .iter()
+            .map(|record| {
+                DebugLocal::over(
+                    record.slot,
+                    record.name_lossy(),
+                    record.start_bci,
+                    record.end_bci,
+                )
+            })
+            .collect()
+    }
+
+    #[test]
+    fn actual_alias_surviving_a_later_store_is_refused_by_the_ssa_gate_and_plan() {
+        use crate::ast::Type;
+
+        let analysis = analyze_reference_alias_boundary();
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("actual canonical graph");
+        let ssa = ir.ssa().expect("actual SSA");
+        let code = ir.code().expect("actual bytecode facts");
+        let operations = Operations::of(code, ir.constant_pool());
+        let slot = accesses(ssa).remove(&0).expect("slot 0 accesses");
+        assert_eq!(
+            slot.writes
+                .iter()
+                .map(|write| write.bci)
+                .collect::<Vec<_>>(),
+            vec![4, 12],
+            "javac emits the two reference stores in bytecode order"
+        );
+        assert_eq!(
+            slot.reads.iter().map(|read| read.bci).collect::<Vec<_>>(),
+            vec![5],
+            "the first value is loaded before the second store and consumed by the call"
+        );
+        let definitions = slot
+            .writes
+            .iter()
+            .map(|write| {
+                (
+                    write.bci,
+                    write.value,
+                    crate::build::reference_lifetime_type(ssa, &operations, write.value)
+                        .expect("each actual store has an exact reference type"),
+                )
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            definitions
+                .iter()
+                .map(|(_, _, ty)| ty.clone())
+                .collect::<Vec<_>>(),
+            vec![
+                Type::Reference("java.lang.Integer".to_owned()),
+                Type::Reference("java.lang.String".to_owned()),
+            ]
+        );
+        let mut alias_budget = test_budget(1 << 20);
+        assert!(
+            !reference_values_stay_before_boundaries(
+                ssa,
+                &operations,
+                &definitions,
+                &mut alias_budget,
+            )
+            .unwrap(),
+            "the value loaded at BCI 5 remains on the operand stack for the call at BCI 13"
+        );
+
+        let declaration = ir.declaration().expect("actual method declaration");
+        let mut region_budget = test_budget(1 << 20);
+        let normal = crate::normal_flow::NormalFlowView::build(canonical, &mut region_budget)
+            .expect("actual normal-flow view");
+        let regions = crate::region::recover(
+            canonical,
+            &normal,
+            ssa,
+            &operations,
+            ir.constant_pool(),
+            &crate::concat::Plan::empty(),
+            &crate::init::Sites::empty(),
+            code,
+            Some(declaration.access_flags() & 0x0020 != 0),
+            false,
+            &crate::pass::JAVA_8,
+            &mut region_budget,
+        )
+        .expect("actual method regions")
+        .regions;
+        let debug = reference_alias_debug_locals(code);
+        assert_eq!(
+            debug
+                .iter()
+                .filter(|record| record.slot() == 0)
+                .map(DebugLocal::range)
+                .collect::<Vec<_>>(),
+            vec![Some((5, 17))],
+            "one actual LVT row deliberately makes a two-row candidate impossible"
+        );
+        let resources = BTreeSet::new();
+        let plan_for = |debug: &[DebugLocal]| {
+            let mut plan_budget = test_budget(1 << 20);
+            plan(
+                ssa,
+                canonical,
+                &operations,
+                &regions,
+                code.max_locals,
+                declaration.parameter_slots(),
+                debug,
+                &resources,
+                &mut plan_budget,
+            )
+            .expect("the complete reuse plan refuses safely")
+        };
+        let actual_lvt_plan = plan_for(&debug);
+        assert!(
+            !actual_lvt_plan.splits.contains_key(&0),
+            "the actual one-row table must not publish a split identity"
+        );
+
+        let no_lvt_plan = plan_for(&[]);
+        assert!(
+            !no_lvt_plan.splits.contains_key(&0),
+            "the complete no-LVT path must still reject the surviving alias"
+        );
+
+        let matching_lvt = [
+            DebugLocal::over(0, "first", 5, 12),
+            DebugLocal::over(0, "second", 13, 17),
+        ];
+        assert_eq!(matching_lvt.len(), slot.writes.len());
+        let matching_lvt_plan = plan_for(&matching_lvt);
+        assert!(
+            !matching_lvt_plan.splits.contains_key(&0),
+            "matching non-overlapping rows must not bypass the actual alias refusal"
+        );
+    }
+
+    #[test]
+    fn actual_unused_raw_alias_identity_requires_exact_store_boundary_and_owner() {
+        let analysis = analyze_reference_method(
+            RAW_ALIAS_ESCAPE_CLASS,
+            b"rawAliasEscape",
+            b"(Ljava/util/List;Ljava/util/List;)V",
+            23,
+        );
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("actual canonical graph");
+        let ssa = ir.ssa().expect("actual SSA");
+        let code = ir.code().expect("actual bytecode facts");
+        let operations = Operations::of(code, ir.constant_pool());
+        let slot = accesses(ssa).remove(&5).expect("actual slot-5 accesses");
+        assert_eq!(
+            slot.reads.iter().map(|read| read.bci).collect::<Vec<_>>(),
+            vec![33],
+            "the actual second foreach identity has no local load"
+        );
+        assert_eq!(
+            slot.writes
+                .iter()
+                .map(|write| write.bci)
+                .collect::<Vec<_>>(),
+            vec![30, 72]
+        );
+        let definitions = slot
+            .writes
+            .iter()
+            .map(|write| {
+                (
+                    write.bci,
+                    write.value,
+                    crate::build::reference_lifetime_type(ssa, &operations, write.value)
+                        .expect("actual store has an exact reference type"),
+                )
+            })
+            .collect::<Vec<_>>();
+        let mut split_budget = test_budget(1 << 20);
+        let split =
+            owned_definition_split(ssa, &slot, definitions, Some(canonical), &mut split_budget)
+                .expect("actual ownership proof completes")
+                .expect("actual owner split is proven");
+        assert_eq!(split.ranges, vec![(0, 72), (72, u32::MAX)]);
+
+        let records = reference_alias_debug_locals(code)
+            .into_iter()
+            .filter(|record| record.slot() == 5)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            records.iter().map(DebugLocal::range).collect::<Vec<_>>(),
+            vec![Some((32, 41)), Some((74, 82))]
+        );
+        let run_names = |rows: &[DebugLocal], reads: &[Access], writes: &[Access]| {
+            let rows = rows.iter().collect::<Vec<_>>();
+            let mut budget = test_budget(1 << 20);
+            reference_split_names(
+                &rows,
+                reads.iter().map(|read| read.bci),
+                writes,
+                Some(&operations),
+                &split,
+                &mut budget,
+            )
+        };
+        assert_eq!(
+            run_names(&records, &slot.reads, &slot.writes).unwrap(),
+            Some(vec![Some("value".to_owned()), Some("value".to_owned())])
+        );
+
+        let non_adjacent = [records[0].clone(), DebugLocal::over(5, "value", 75, 82)];
+        assert_eq!(
+            run_names(&non_adjacent, &slot.reads, &slot.writes).unwrap(),
+            None,
+            "the unread identity cannot be named by a nearby but non-adjacent row"
+        );
+
+        let crosses_identity_range = [DebugLocal::over(5, "value", 32, 73), records[1].clone()];
+        assert_eq!(
+            run_names(&crosses_identity_range, &[], &slot.writes).unwrap(),
+            None,
+            "an unread row cannot extend across the next proven identity boundary"
+        );
+
+        let mut wrong_slot = slot.writes.clone();
+        wrong_slot[1].slot = 6;
+        assert_eq!(
+            run_names(&records, &slot.reads, &wrong_slot).unwrap(),
+            None,
+            "the decoded Store must write the same local slot as the proof input"
+        );
+
+        let multiple_owner_writes = [slot.writes[0], slot.writes[1], slot.writes[1]];
+        assert_eq!(
+            run_names(&records, &slot.reads, &multiple_owner_writes).unwrap(),
+            None,
+            "an unread identity with multiple candidate owner writes is ambiguous"
+        );
+    }
+
+    #[test]
+    fn same_name_rows_match_proven_read_identities_and_leave_initial_stores_to_ssa() {
+        let (records, read_bcis, split) = fixture();
+        let records = records.iter().collect::<Vec<_>>();
+        let mut budget = test_budget(100);
+        assert_eq!(
+            reference_split_names(
+                &records,
+                read_bcis.iter().copied(),
+                &[],
+                None,
+                &split,
+                &mut budget,
+            )
+            .unwrap(),
+            Some(vec![Some("value".to_owned()), Some("value".to_owned())])
+        );
+        assert_eq!(split.by_bci.get(&30), Some(&0));
+        assert_eq!(split.by_bci.get(&72), Some(&1));
+        assert!(records[0].range().unwrap().0 > 30);
+        assert!(records[1].range().unwrap().0 > 72);
+    }
+
+    #[test]
+    fn no_lvt_keeps_the_existing_unnamed_identity_split() {
+        let (_, read_bcis, split) = fixture();
+        let mut budget = test_budget(0);
+        assert_eq!(
+            reference_split_names(
+                &[],
+                read_bcis.iter().copied(),
+                &[],
+                None,
+                &split,
+                &mut budget,
+            )
+            .unwrap(),
+            Some(vec![None, None])
+        );
+        assert_eq!(budget.usage().analysis_steps, 0);
+    }
+
+    #[test]
+    fn malformed_or_incomplete_lvt_mapping_refuses_without_guessing() {
+        let (mut records, read_bcis, split) = fixture();
+        let reject = |rows: &[DebugLocal]| {
+            let rows = rows.iter().collect::<Vec<_>>();
+            let mut budget = test_budget(100);
+            assert_eq!(
+                reference_split_names(
+                    &rows,
+                    read_bcis.iter().copied(),
+                    &[],
+                    None,
+                    &split,
+                    &mut budget,
+                )
+                .unwrap(),
+                None
+            );
+        };
+        reject(&[records[0].clone(), DebugLocal::over(5, "value", 40, 82)]);
+        reject(&[records[0].clone(), DebugLocal::over(5, "value", 74, 74)]);
+        reject(&[
+            DebugLocal::over(5, "first", 32, 41),
+            DebugLocal::over(5, "second", 32, 41),
+        ]);
+        reject(&records[..1]);
+        records.push(DebugLocal::over(5, "extra", 90, 100));
+        reject(&records);
+        reject(&[
+            DebugLocal::over(5, "value", 0, 20),
+            DebugLocal::over(5, "value", 20, 30),
+        ]);
+        let no_second_read = read_bcis[..1].iter().copied();
+        let rows = records[..2].iter().collect::<Vec<_>>();
+        let mut budget = test_budget(100);
+        assert_eq!(
+            reference_split_names(&rows, no_second_read, &[], None, &split, &mut budget).unwrap(),
+            None
+        );
+    }
+
+    #[test]
+    fn valid_rows_and_reads_are_accepted_when_input_order_is_reversed() {
+        let (records, read_bcis, split) = fixture();
+        let records = records.iter().rev().collect::<Vec<_>>();
+        let read_bcis = read_bcis.iter().rev().copied();
+        let mut budget = test_budget(100);
+        assert_eq!(
+            reference_split_names(&records, read_bcis, &[], None, &split, &mut budget).unwrap(),
+            Some(vec![Some("value".to_owned()), Some("value".to_owned())])
+        );
+    }
+
+    #[test]
+    fn a_debug_row_cannot_override_the_proven_read_owner() {
+        let (records, read_bcis, mut split) = fixture();
+        let records = records.iter().collect::<Vec<_>>();
+        split.by_bci.insert(read_bcis[1], 0);
+        let mut budget = test_budget(100);
+        assert_eq!(
+            reference_split_names(
+                &records,
+                read_bcis.iter().copied(),
+                &[],
+                None,
+                &split,
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "the debug row cannot override the owner already proved for the read"
+        );
+    }
+
+    #[test]
+    fn matching_budget_stop_and_cancellation_publish_no_partial_names() {
+        let (records, read_bcis, split) = fixture();
+        let records = records.iter().collect::<Vec<_>>();
+        let mut stopped = test_budget(3);
+        assert!(matches!(
+            reference_split_names(
+                &records,
+                read_bcis.iter().copied(),
+                &[],
+                None,
+                &split,
+                &mut stopped,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        assert_eq!(stopped.usage().analysis_steps, 3);
+
+        let mut cancelled = test_budget(100);
+        cancelled.cancellation_token().cancel();
+        assert!(matches!(
+            reference_split_names(
+                &records,
+                read_bcis.iter().copied(),
+                &[],
+                None,
+                &split,
+                &mut cancelled,
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+        assert_eq!(cancelled.usage().analysis_steps, 0);
     }
 }

@@ -34288,6 +34288,7 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::names::{AliasReason, SlotEvidence};
 
     #[test]
     fn boolean_iinc_cannot_justify_a_cross_catch_java_declaration() {
@@ -34872,6 +34873,316 @@ mod tests {
     const LOCAL_REFERENCE_WRITE_HANDLER_CLASS: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11HandlerWriteControl.class"
     );
+    const RAW_ALIAS_ESCAPE_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class"
+    );
+
+    #[test]
+    fn raw_alias_escape_reference_lifetimes_keep_types_names_and_local_owners() {
+        let context = iterator_test_context(
+            RAW_ALIAS_ESCAPE_CLASS,
+            "rawAliasEscape",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            23,
+        );
+        let debug_rows =
+            iterator_test_debug_locals(context.analysis.ir().code().expect("target code"))
+                .into_iter()
+                .filter(|local| local.slot() == 5)
+                .collect::<Vec<_>>();
+        assert_eq!(
+            debug_rows
+                .iter()
+                .map(|local| local.range())
+                .collect::<Vec<_>>(),
+            vec![Some((32, 41)), Some((74, 82))]
+        );
+        assert!(debug_rows[0].range().unwrap().0 > 30);
+        assert!(debug_rows[1].range().unwrap().0 > 72);
+        let first = context
+            .reuse
+            .variable_at(5, 30)
+            .expect("first init store identity");
+        let second = context
+            .reuse
+            .variable_at(5, 72)
+            .expect("second init store identity");
+        assert_ne!(first, second);
+        assert_eq!(first.index(), 0);
+        assert_eq!(second.index(), 1);
+        assert_eq!(
+            context.reuse.evidence().get(5),
+            Some(&SlotEvidence::Split(vec![
+                Some("value".to_owned()),
+                Some("value".to_owned()),
+            ]))
+        );
+        assert_eq!(context.names.text(first), Some("value"));
+        assert_eq!(context.names.text(second), Some("value_2"));
+        assert_eq!(
+            context.names.name(second).and_then(RenderedName::aliased),
+            Some(AliasReason::Collision)
+        );
+        assert_eq!(
+            context.declarations.decided.get(&first),
+            Some(&Decided::Type(Type::Reference(
+                "java.lang.Integer".to_owned()
+            )))
+        );
+        assert_eq!(
+            context.declarations.decided.get(&second),
+            Some(&Decided::Type(Type::Reference(
+                "java.lang.String".to_owned()
+            )))
+        );
+        let (
+            DeclarationPlacement::Local { owner: first_owner },
+            DeclarationPlacement::Local {
+                owner: second_owner,
+            },
+        ) = (
+            context
+                .declarations
+                .placements
+                .get(&first)
+                .expect("first declaration placement"),
+            context
+                .declarations
+                .placements
+                .get(&second)
+                .expect("second declaration placement"),
+        )
+        else {
+            panic!("both reference identities have local declarations in their recovered loops");
+        };
+        assert_ne!(first_owner, second_owner);
+
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("target SSA");
+        let code = ir.code().expect("target code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let uses = slot_uses(
+            ssa,
+            &operations,
+            &context.reuse,
+            &region_paths(&context.regions),
+            &BTreeSet::new(),
+        );
+        for (variable, owner, has_read) in
+            [(first, first_owner, true), (second, second_owner, false)]
+        {
+            let variable_uses = uses.get(&variable).expect("identity has slot accesses");
+            assert!(variable_uses.iter().any(|use_| use_.written.is_some()));
+            assert_eq!(
+                variable_uses.iter().any(|use_| use_.read.is_some()),
+                has_read,
+                "only the first rawAliasEscape identity has an actual local load"
+            );
+            assert!(
+                variable_uses
+                    .iter()
+                    .all(|use_| use_.path.as_ref() == Some(owner))
+            );
+        }
+    }
+
+    #[test]
+    fn raw_alias_escape_without_lvt_keeps_the_existing_unnamed_split() {
+        let context = iterator_test_context(
+            RAW_ALIAS_ESCAPE_CLASS,
+            "rawAliasEscape",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            23,
+        );
+        let ir = context.analysis.ir();
+        let declaration = ir.declaration().expect("method declaration");
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("target SSA");
+        let code = ir.code().expect("target code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let resources = resource_slots(&context.regions);
+        let mut budget = child_array_test_budget();
+        let reuse = reuse::plan(
+            ssa,
+            canonical,
+            &operations,
+            &context.regions,
+            code.max_locals,
+            declaration.parameter_slots(),
+            &[],
+            &resources,
+            &mut budget,
+        )
+        .expect("no-LVT reference identity proof completes");
+        assert_eq!(
+            reuse.evidence().get(5),
+            Some(&SlotEvidence::Split(vec![None, None]))
+        );
+        assert_eq!(reuse.variable_at(5, 30).map(LocalVariable::index), Some(0));
+        assert_eq!(reuse.variable_at(5, 72).map(LocalVariable::index), Some(1));
+    }
+
+    #[test]
+    fn raw_alias_escape_rejects_ambiguous_or_incomplete_lvt_rows_atomically() {
+        let context = iterator_test_context(
+            RAW_ALIAS_ESCAPE_CLASS,
+            "rawAliasEscape",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            23,
+        );
+        let ir = context.analysis.ir();
+        let declaration = ir.declaration().expect("method declaration");
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("target SSA");
+        let code = ir.code().expect("target code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let resources = resource_slots(&context.regions);
+        let valid = iterator_test_debug_locals(code)
+            .into_iter()
+            .filter(|local| local.slot() == 5)
+            .collect::<Vec<_>>();
+        assert_eq!(valid.len(), 2);
+
+        let malformed = [
+            vec![
+                DebugLocal::over(5, "value", 32, 41),
+                DebugLocal::over(5, "value", 40, 82),
+            ],
+            vec![
+                DebugLocal::over(5, "value", 32, 32),
+                DebugLocal::over(5, "value", 74, 82),
+            ],
+            vec![
+                DebugLocal::over(5, "value", 32, 41),
+                DebugLocal::over(5, "value", 75, 82),
+            ],
+            vec![
+                DebugLocal::over(5, "value", 32, 73),
+                DebugLocal::over(5, "value", 74, 82),
+            ],
+            vec![valid[0].clone()],
+            vec![
+                valid[0].clone(),
+                valid[1].clone(),
+                DebugLocal::over(5, "value", 90, 100),
+            ],
+            vec![
+                DebugLocal::over(5, "value", 0, 20),
+                DebugLocal::over(5, "value", 20, 30),
+            ],
+        ];
+        for records in malformed {
+            let mut budget = child_array_test_budget();
+            let reuse = reuse::plan(
+                ssa,
+                canonical,
+                &operations,
+                &context.regions,
+                code.max_locals,
+                declaration.parameter_slots(),
+                &records,
+                &resources,
+                &mut budget,
+            )
+            .expect("bad debug mapping declines the split without a partial plan");
+            assert_eq!(reuse.variable_at(5, 30), reuse.variable_at(5, 72));
+        }
+    }
+
+    #[test]
+    fn raw_alias_escape_full_reuse_plan_stops_atomically_during_lvt_matching() {
+        use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+
+        let context = iterator_test_context(
+            RAW_ALIAS_ESCAPE_CLASS,
+            "rawAliasEscape",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            23,
+        );
+        let ir = context.analysis.ir();
+        let declaration = ir.declaration().expect("method declaration");
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("target SSA");
+        let code = ir.code().expect("target code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let debug = iterator_test_debug_locals(code);
+        let rows = debug
+            .iter()
+            .filter(|local| local.slot() == 5)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            rows.iter().map(|local| local.range()).collect::<Vec<_>>(),
+            vec![Some((32, 41)), Some((74, 82))]
+        );
+        let resources = resource_slots(&context.regions);
+
+        let run_plan = |budget: &mut Budget| {
+            reuse::plan(
+                ssa,
+                canonical,
+                &operations,
+                &context.regions,
+                code.max_locals,
+                declaration.parameter_slots(),
+                &debug,
+                &resources,
+                budget,
+            )
+        };
+
+        let mut complete_budget = child_array_test_budget();
+        let complete_plan =
+            run_plan(&mut complete_budget).expect("the full rawAliasEscape reuse plan completes");
+        assert_eq!(
+            complete_plan.evidence().get(5),
+            Some(&SlotEvidence::Split(vec![
+                Some("value".to_owned()),
+                Some("value".to_owned()),
+            ])),
+            "the complete run must reach and accept the two actual slot-5 LVT rows"
+        );
+        let completed_steps = complete_budget.usage().analysis_steps;
+        assert!(completed_steps > 1);
+
+        // One fewer step than the successful plan should refuse its final matching charge. The
+        // root run must confirm that this final charge is the second row's BCI 74 visit.
+        let cut_limit = completed_steps - 1;
+        let mut stopped_budget = Budget::new(Limits {
+            analysis_steps: cut_limit,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        let stopped = run_plan(&mut stopped_budget)
+            .expect_err("a refused matching charge must return Stop, never a partial Plan");
+        assert_eq!(
+            stopped,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                written: 0,
+                limit: cut_limit,
+                at: Some(74),
+            }
+        );
+        assert_eq!(stopped_budget.usage().analysis_steps, cut_limit);
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled_budget = Budget::with_cancellation_token(
+            Limits {
+                analysis_steps: completed_steps,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            token,
+        );
+        let cancelled = run_plan(&mut cancelled_budget)
+            .expect_err("cancellation must return the existing Stop, never a partial Plan");
+        assert!(
+            matches!(cancelled, StopReason::Cancelled { .. }),
+            "the plan must preserve the existing cancellation reason: {cancelled:?}"
+        );
+        assert_eq!(cancelled_budget.usage().analysis_steps, 0);
+    }
 
     struct LocalReferenceWriteTestCase {
         context: IteratorTestContext,
