@@ -13,7 +13,7 @@
 
 - [x] 3.1 原/JADX/Jarde 双 JDK、双 profile 完整类独立编译运行，值/异常/效果同原；新增覆盖 JADX 无限重试/break 代表。历史 JADX 错码须在当前实测后分类，不能预定结果；拒绝边界准确保存。
 - [x] 3.2 永久回归、fresh 双 seed workspace、fmt/当前 CI Clippy/global strict、预算/取消及 source-map 门禁；5 GiB/target1 GiB/1 秒守卫/default stack/finally clean。
-- [ ] 3.3 提交推送确切产品、独立验收自身 CI，更新账本与 handoff，最后真实 HEAD 干净 main 交付；CF-18/71/612 完成数仅按单元完整证据更新。
+- [x] 3.3 提交推送确切产品、独立验收自身 CI，更新账本与 handoff，最后真实 HEAD 干净 main 交付；CF-18/71/612 完成数仅按单元完整证据更新。
 
 2026-10-12：2.1/3.1已按字段子变更 [integrated-comparison-root-v1](../recover-ordered-field-concat-operands/results/integrated-comparison-root-v1/README.md) 关闭；八retry内部Stop/物理与transfer拒绝反例实际通过，40命令12整类全部同原。父项6/8，full workspace/当前CI Clippy/global strict/自身CI与干净main仍待完成。
 
@@ -28,3 +28,5 @@
 2026-10-13：3.2 已按fresh focused-v12和完整workspace-v9关闭。八focused命令705/0/4、当前CI Clippy/global strict通过；两seed各96批/364targets、合计7050成功/0失败/196ignored，195命令全0、4854来源恒同、5GiB/target1GiB/1秒守卫/default stack/finally exact clean/target absent均独立核验。见 [完整工作区验收](../recover-ordered-field-concat-operands/results/full-workspace-accepted-root-v9/README.md)。自身产品CI和真实HEAD干净main仍待完成；不增加CF18/71/612完成数。
 
 2026-10-13：精确产品7e93已推送，自身CI38297425449实际4jobs/52steps全部成功，独立v4 verifier核两seed各364targets/3525-0-98与4854来源恒同，见字段子变更 results/own-product-ci-7e93-root-v1。最终真实HEAD干净main尚待检查点审计，交付checkbox保持未关闭。
+
+2026-10-13：交付门已按精确产品7e93自身CI接受与已推送检查点6bfc44833的真实主线审计关闭，见字段子变更 results/clean-main-checkpoint-root-v1。HEAD/main/origin/remote main恒同、only main、14aux detached/clean/ancestor/no-target、4854来源逐字匹配；关闭文档提交后仍须对实际最终HEAD外置审计，不把检查点当未来证明。不增加整CF11/CF18/71/612计数。
