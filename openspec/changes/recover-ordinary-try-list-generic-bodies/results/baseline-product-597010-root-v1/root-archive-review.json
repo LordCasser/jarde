@@ -1,0 +1,72 @@
+{
+  "status": "root-independently-reopened-and-bound",
+  "archive_sha256": "3738e0b0725f67f4aea9c4bfab12a74d58b6a111734e9dddb7b4413430c8448a",
+  "archive_bytes": 2004769,
+  "member_count": 276,
+  "payload_members": 275,
+  "baseline_commands": 54,
+  "baseline_raw_streams": 108,
+  "all_raw_bindings_including_focused_and_clean": 134,
+  "physical_methods_per_report": 17,
+  "runtime_rows": 44,
+  "source_closure_count": 4860,
+  "jarde_wholeclass_runs": 8,
+  "jadx_wholeclass_compile_failures_no_runtime": 8,
+  "known_pure_transfer_map_gaps": {
+    "handled": [
+      44
+    ],
+    "tryStringBranch": [
+      40,
+      60,
+      79
+    ],
+    "tryIntegerBranch": [
+      40,
+      60,
+      79
+    ],
+    "tryStringRemovePrefix": [
+      55
+    ],
+    "tryStringNested": [
+      90
+    ],
+    "tryStringUnknownCall": [
+      40
+    ]
+  },
+  "product_commit": "597010a8cb9992eead8276b2f2a67186ada393d9",
+  "fixture_jar_member_checks": [
+    {
+      "member": "captures/debug/inputs/for-condition-controls-javac8.jar",
+      "class_member": "cf11/UpstreamNestedLoops.class",
+      "class_bytes": 6887,
+      "class_sha256": "07cd9a4a18eba761dc86e8a613880ed4da42597edcc35b09fe161167b3579aba"
+    },
+    {
+      "member": "captures/debug/inputs/for-condition-controls-javac23.jar",
+      "class_member": "cf11/UpstreamNestedLoops.class",
+      "class_bytes": 6869,
+      "class_sha256": "ef355a757ebd79eedc0e29ceaebefbafeb8413edfddd50d7d36e7be5a89b7e38"
+    },
+    {
+      "member": "captures/none/inputs/for-condition-controls-javac8.jar",
+      "class_member": "cf11/UpstreamNestedLoops.class",
+      "class_bytes": 4114,
+      "class_sha256": "0ddf3521fb53dc358d48ee8b86b22cdce28a583ec965dd633f7dee0dbf71aa3f"
+    },
+    {
+      "member": "captures/none/inputs/for-condition-controls-javac23.jar",
+      "class_member": "cf11/UpstreamNestedLoops.class",
+      "class_bytes": 4096,
+      "class_sha256": "840acd0d5659f7ed9d488ea00f494cebc92fcb2aa7af65523e6120d60ba5cd98"
+    }
+  ],
+  "prior_root_reopen_failure": {
+    "exit_code": 1,
+    "reason": "overbroad root assertion excluded all .jar, including four original controlled fixture jars; no archive/source/runtime changes",
+    "correction": "Each allowed fixture jar is parsed independently, has exactly one cf11/UpstreamNestedLoops.class, identical bytes to its same-mode/same-JDK original class. Installed external binaries still excluded by origin and archive paths."
+  },
+  "interpretation": "Baseline observation only; does not complete next generic recovery or product own-CI delivery."
+}

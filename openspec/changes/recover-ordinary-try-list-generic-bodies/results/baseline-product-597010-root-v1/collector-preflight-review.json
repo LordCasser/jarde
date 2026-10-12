@@ -1,0 +1,11 @@
+{
+  "status": "reviewed_future_execution_only",
+  "actual_predecessor_attempt": {
+    "exit_code": 1,
+    "failed_before_output_directory_or_any_toolchain_command": true,
+    "reason": "KeyError bytes: source-only manifest not bound to collector byte/hash schema"
+  },
+  "change": "add actual bytes and sha256 for exactly complete target and Runner source; collector/runner/sources unchanged",
+  "source_manifest_sha256": "d057ce3c6316f6f370f824abe683e89aec4b418186b35bd2c1261c964751bbe6",
+  "collector_sha256": "74141123bb2e1a2be6e488b54b6b2a3a8adb8961ddfa935a3fb31a34a581b823"
+}

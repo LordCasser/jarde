@@ -1,0 +1,9 @@
+{
+  "status": "root-reviewed-before-execution",
+  "script": {
+    "path": "/private/tmp/jarde-ordinary-try-list-baseline-archive-prep-luna-v1/archive_baseline.py",
+    "bytes": 26015,
+    "sha256": "a96d35760a4147a3246d617b6726a6b760db5c39cbc52518a2bd22ff409def6d"
+  },
+  "review": "Root read all 399 lines. Only new private archive/sidecar writes, pinned accepted receipts, full capture trees and raw binding, class fixtures preserved, installed tool binaries omitted, full 4860 source closure metadata retained, actual map gaps explicit, archive reopened member-by-member. Planning task remains open until actual archive independently reopened."
+}
