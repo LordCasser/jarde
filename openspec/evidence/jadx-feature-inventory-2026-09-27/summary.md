@@ -441,3 +441,6 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 
 
 2026-10-12 循环catch当前固定基线与同次IR已实际完成：基线56命令/112raw独立接受观察，JADX八runtime复现loopCatch throw被移出try的错码；Jarde四整类compile失败/no-runtime。Q-i/Q-ii确认terminal block16（DV）/27（DF）在普通自然环外且普通路径不达join，handler→join构成普通SCC第二入口；Q-iii确认foreach区域认证已通过，另为try外数组局部写的SSA词法呈现拒绝。四lane×四method精确身份、完整IR、无Stop、4822来源还原/clean0已root接受，见[同次分析](../../changes/recover-loop-body-try-catch/instrumentation.md)。无限retry/break44命令当前观察另为Region ownership overlap，待独立接受与同次树定位。仍1/9，无产品修复验收；不能把假设豁免或准确拒绝当单元完成，CF18/CF11/71/612完成数均不增。
+
+
+2026-10-12 Structured List MVP 9/9：准确产品ca45c0e自身CI独立接受后，已推送文档70cd4b484实际clean-main审计exit0、4822来源同focus/产品/docs/live、only main/15checkouts/14aux detached干净祖先/全部无target。关闭文档推送后再以真实finalHEAD执行外置audit，不形成自引用。下一大颗粒循环catch仍1/9，设计须包含foreach独立SSA门与无限retry代表。整CF11/CF18/71/612完成数不增。
