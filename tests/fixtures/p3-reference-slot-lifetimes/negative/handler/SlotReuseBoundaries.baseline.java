@@ -44,11 +44,11 @@ public class SlotReuseBoundaries extends java.lang.Object {
         local1 = 0;
         while (arg0 > 0) {
             // @bytecode 13
-            // local 2 is treated as one source variable, but BCI 13 writes `int[]` and BCI 23 writes `int`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local
+            // local 2 is treated as one source variable, but the selected type `int[]` is not proved compatible with the value written at BCI 23 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 13)
             // @bytecode 14 15 16 17 18 19
             // the statement at BCI 19 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
             // @bytecode 23
-            // local 2 is treated as one source variable, but BCI 13 writes `int[]` and BCI 23 writes `int`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local
+            // local 2 is treated as one source variable, but the selected type `int[]` is not proved compatible with the value written at BCI 23 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 13)
             // @bytecode 24 25 26 27
             // the statement at BCI 27 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
             arg0 = arg0 - 1;
@@ -72,7 +72,7 @@ public class SlotReuseBoundaries extends java.lang.Object {
         // @declaration a static method of `SlotReuseBoundaries`, member flags 0x0009
         // recovered from bytecode; presentation is not claimed to compile
         // @bytecode 7
-        // local 0 is treated as one source variable, but BCI 7 writes `int[]` and BCI 19 writes `long`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local
+        // local 0 is treated as one source variable, but the selected type `int[]` is not proved compatible with the value written at BCI 19 (`long`); this region is refused instead of publishing a contradictory local (first write at BCI 7)
         // @bytecode 8 9 10 11 14 15 19 21 22 23 24 25 26 27
         // the statement at BCI 11 reads `local0`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
     }

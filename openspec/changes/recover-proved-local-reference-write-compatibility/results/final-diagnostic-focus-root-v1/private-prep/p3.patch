@@ -1,0 +1,20 @@
+--- a/crates/jarde-java/tests/p3_patterns.rs
++++ b/crates/jarde-java/tests/p3_patterns.rs
+@@ -4866,14 +4866,10 @@
+         &mut budget,
+     );
+     assert!(reused.report.produced(), "{}", reused.report.text);
+-    assert!(
+-        reused
+-            .report
+-            .text
+-            .contains("no Java declaration can hold both"),
+-        "{}",
+-        reused.report.text
++    let conflict = reused.report.text.contains(
++        "local 1 is treated as one source variable, but the selected type `em21.ThisAliasRefusals` is not proved compatible with the value written at BCI 7 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 1)",
+     );
++    assert!(conflict, "{}", reused.report.text);
+     assert!(!reused.report.text.contains("this.target()"));
+ }
+ 

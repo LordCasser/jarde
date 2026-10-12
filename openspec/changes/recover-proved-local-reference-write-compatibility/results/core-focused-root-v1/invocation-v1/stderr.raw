@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-local-reference-write-core-focused-runner-root-v1.py", line 25, in <module>
+    run(['cargo','test','-p','jarde-java','--lib','local_reference_write_compatibility','--locked','--','--nocapture'])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-local-reference-write-core-focused-runner-root-v1.py", line 18, in run
+    row=g.run_command(len(x['commands']),argv,env);x['commands'].append(row);save();assert row['exit_code']==0 and row['guard_stop'] is None,(argv,row['exit_code'],row['guard_stop'])
+                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (['cargo', 'test', '-p', 'jarde-java', '--lib', 'local_reference_write_compatibility', '--locked', '--', '--nocapture'], 101, None)

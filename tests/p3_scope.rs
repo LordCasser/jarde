@@ -252,7 +252,9 @@ fn non_monitor_handler_and_back_edge_do_not_borrow_the_monitor_split() {
         back_edge
             .recovery()
             .text
-            .contains("BCI 12 writes `Object` and BCI 34 writes `int`"),
+            .contains(
+                "selected type `Object` is not proved compatible with the value written at BCI 34 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 12)",
+            ),
         "{}",
         back_edge.recovery().text
     );

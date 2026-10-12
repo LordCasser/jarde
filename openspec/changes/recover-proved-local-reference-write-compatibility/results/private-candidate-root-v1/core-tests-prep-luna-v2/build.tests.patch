@@ -1,0 +1,115 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -34495,6 +34495,7 @@
+         class: &[u8],
+         method: &str,
+         descriptor: &str,
++        target_name: &str,
+     ) -> LocalReferenceWriteTestCase {
+         let context = iterator_test_context(class, method, descriptor, 23);
+         let ir = context.analysis.ir();
+@@ -34508,15 +34509,47 @@
+         let paths = region_paths(&context.regions);
+         let elided_cleanup = cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
+         let uses = slot_uses(ssa, &operations, &context.reuse, &paths, &elided_cleanup);
+-        let variable = uses
+-            .keys()
+-            .copied()
+-            .find(|variable| context.names.text(*variable) == Some("target"))
+-            .expect("debug fixture identifies the target local");
+-        let accesses = uses
+-            .get(&variable)
+-            .expect("target local has actual accesses")
+-            .clone();
++        let debug_matches = iterator_test_debug_locals(code)
++            .into_iter()
++            .filter(|local| local.name() == target_name)
++            .collect::<Vec<_>>();
++        assert_eq!(
++            debug_matches.len(),
++            1,
++            "{method}{descriptor}: expected one LVT record named {target_name:?}, found {}",
++            debug_matches.len()
++        );
++        let target_debug = debug_matches
++            .into_iter()
++            .next()
++            .expect("the unique target debug record was checked");
++        let (target_start, target_end) = target_debug.range().unwrap_or_else(|| {
++            panic!(
++                "{method}{descriptor}: LVT record {target_name:?} in slot {} has no bounded range",
++                target_debug.slot()
++            )
++        });
++        let variable = context
++            .reuse
++            .variable_at(target_debug.slot(), target_start)
++            .unwrap_or_else(|| {
++                panic!(
++                    "{method}{descriptor}: reuse has no identity for LVT record {target_name:?}, slot {}, range {target_start}..{target_end}",
++                    target_debug.slot()
++                )
++            });
++        let accesses = uses.get(&variable).unwrap_or_else(|| {
++            panic!(
++                "{method}{descriptor}: LVT record {target_name:?}, slot {}, range {target_start}..{target_end}, maps to {variable:?}, but that identity has no slot_uses",
++                target_debug.slot()
++            )
++        });
++        assert!(
++            !accesses.is_empty(),
++            "{method}{descriptor}: LVT record {target_name:?}, slot {}, range {target_start}..{target_end}, maps to {variable:?} with no accesses",
++            target_debug.slot()
++        );
++        let accesses = accesses.clone();
+         let first_use = accesses
+             .iter()
+             .filter(|access| access.written.is_some())
+@@ -34602,6 +34635,7 @@
+             LOCAL_REFERENCE_WRITE_TARGET_CLASS,
+             "noCastAssign",
+             "(Ljava/util/List;)Ljava/lang/Object;",
++            "target",
+         );
+         let mut cache = None;
+         let mut budget = child_array_test_budget();
+@@ -34636,6 +34670,7 @@
+             LOCAL_REFERENCE_WRITE_TARGET_CLASS,
+             "noCastAssign",
+             "(Ljava/util/List;)Ljava/lang/Object;",
++            "target",
+         );
+         let first_write = case.first.at;
+         let later_object_write = case
+@@ -34743,6 +34778,7 @@
+             LOCAL_REFERENCE_WRITE_CAST_READ_CLASS,
+             "castRead",
+             "(Ljava/util/List;)I",
++            "target",
+         );
+         // Keep the fixture's real SSA/regions/slot identities; confirm the target load really
+         // feeds checkcast, then supply Object only to pass the helper's earlier descriptor gate
+@@ -34806,6 +34842,7 @@
+             LOCAL_REFERENCE_WRITE_HANDLER_CLASS,
+             "handlerWrite",
+             "()Ljava/lang/Object;",
++            "target",
+         );
+         assert!(handler.has_exception_handlers);
+         let mut cache = None;
+@@ -34825,6 +34862,7 @@
+             LOCAL_REFERENCE_WRITE_SLOT_REUSE_CLASS,
+             "afterStringLifetime",
+             "(ZLjava/util/List;)Ljava/lang/Object;",
++            "target",
+         );
+         let code = reuse
+             .context
+@@ -34892,6 +34930,7 @@
+             LOCAL_REFERENCE_WRITE_TARGET_CLASS,
+             "noCastAssign",
+             "(Ljava/util/List;)Ljava/lang/Object;",
++            "target",
+         );
+         let ssa = case.context.analysis.ir().ssa().expect("fixture SSA");
+         let read = case

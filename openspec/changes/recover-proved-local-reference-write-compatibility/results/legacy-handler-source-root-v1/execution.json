@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/private/tmp/jarde-local-reference-write-candidate-cli-root-v1",
+    "class-source",
+    "--input",
+    "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/negative/handler/SlotReuseBoundaries.class",
+    "--class",
+    "SlotReuseBoundaries",
+    "--policy",
+    "single-class",
+    "--release",
+    "23",
+    "--format",
+    "json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T01:05:56.589576+00:00",
+  "finished_at": "2026-10-12T01:05:56.659189+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-legacy-handler-source-root-v1/stdout.raw",
+      "bytes": 86711,
+      "sha256": "31860a4cbf3d1add6cda94cff19d85a9e9464273962c5a2cddfd8d422c1a364c"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-legacy-handler-source-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

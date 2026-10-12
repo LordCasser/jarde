@@ -1,0 +1,13 @@
+--- a/tests/p3_scope.rs
++++ b/tests/p3_scope.rs
+@@ -252,7 +252,9 @@
+         back_edge
+             .recovery()
+             .text
+-            .contains("BCI 12 writes `Object` and BCI 34 writes `int`"),
++            .contains(
++                "selected type `Object` is not proved compatible with the value written at BCI 34 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 12)",
++            ),
+         "{}",
+         back_edge.recovery().text
+     );

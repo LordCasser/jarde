@@ -1,0 +1,373 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -544,8 +544,8 @@
+     /// The value the variable's first write stores has a frame entry that names a descriptor this
+     /// layer cannot spell as a Java type.
+     Unspellable(String),
+-    /// The slot was treated as one source local, but a later write has a value in the other JVM
+-    /// type category. A reference and a primitive cannot share one Java declaration.
++    /// No single Java declaration was proved sound for the source-local lifetime. This includes
++    /// JVM category conflicts and ambiguous or incompatible reference writes.
+     ConflictingWrites {
+         first: u32,
+         later: u32,
+@@ -568,7 +568,7 @@
+                 declared,
+                 observed,
+             } => format!(
+-                "local {slot} is treated as one source variable, but BCI {first} writes `{}` and BCI {later} writes `{}`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local",
++                "local {slot} is treated as one source variable, but the selected type `{}` is not proved compatible with the value written at BCI {later} (`{}`); this region is refused instead of publishing a contradictory local (first write at BCI {first})",
+                 declared.spell(),
+                 observed.spell()
+             ),
+@@ -753,9 +753,13 @@
+         &paths,
+         budget,
+     )?;
++    // The slots declared by resource/catch headers cannot be widened as ordinary body locals.
++    let resources = resource_slots(regions);
+     let decided = decide_types(
+         &uses,
+         regions,
++        &resources,
++        !code.exception_handlers.is_empty(),
+         ssa,
+         operations,
+         reuse,
+@@ -785,10 +789,8 @@
+         this_aliases,
+         ..Declarations::default()
+     };
+-    // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
+-    // header is the declaration, no statement of the body writes one, and hoisting a second
+-    // declaration above the statement would declare the same name twice.
+-    let resources = resource_slots(regions);
++    // The slots a guarded statement declares **in its own header** (P3 2.4) were collected before
++    // type planning so those same headers are excluded from ordinary body-local proofs.
+     // The lexical plan is a plan of the live flow. An uncovered quote is dead only when none of
+     // its entry edges can run: an exception edge fed by a real throw site is a live entry even
+     // though the normal-flow region walk did not visit its handler. Type decisions above still
+@@ -2434,6 +2436,8 @@
+ fn decide_types(
+     uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+     regions: &[Region],
++    resource_slots: &BTreeSet<u16>,
++    has_exception_handlers: bool,
+     ssa: &SsaTable,
+     operations: &Operations,
+     reuse: &reuse::Plan,
+@@ -2652,6 +2656,13 @@
+             break;
+         }
+     }
++    // This lazy full-method census can trigger a candidate from an exact Object store omitted
++    // from SlotUse (for example, a cleanup access). Keep each reuse owner, including None, so a
++    // candidate with ambiguous attribution fails conservatively. Reuse the census for later
++    // locals instead of rescanning the instruction stream for each candidate.
++    let mut physical_object_write_cache: Option<
++        BTreeMap<u16, Vec<(u32, Option<LocalVariable>)>>,
++    > = None;
+     // The decision every consumer reads: the descriptor's boolean for a parameter, the propagated
+     // boolean for a variable a read proved one, and otherwise the frame's own type for the value
+     // the first write stores.
+@@ -2864,7 +2875,27 @@
+             match inferred_type {
+                 Some(ty) => Decided::Type(ty),
+                 None => match written_type(ssa, operations, write.written) {
+-                    Ok(Some(ty)) => Decided::Type(ty),
++                    Ok(Some(ty)) => {
++                        let accesses = uses.get(variable).map(Vec::as_slice).unwrap_or(&[]);
++                        match local_reference_write_compatibility(
++                            *variable,
++                            write,
++                            &ty,
++                            accesses,
++                            resource_slots,
++                            has_exception_handlers,
++                            parameters,
++                            &mut physical_object_write_cache,
++                            ssa,
++                            operations,
++                            reuse,
++                            return_type,
++                            budget,
++                        )? {
++                            None => Decided::Type(ty),
++                            Some(decision) => decision,
++                        }
++                    }
+                     Ok(None) => Decided::Unknown(NoType::NoFrameEntry),
+                     Err(name) => Decided::Unknown(NoType::Unspellable(name)),
+                 },
+@@ -2912,6 +2943,271 @@
+         decided.insert(*variable, decision);
+     }
+     Ok(decided)
++}
++
++/// Widen one ordinary first-write reference only when every write is reference-safe and every
++/// actual local read has exactly one direct `return Object` consumer. The same-slot enumeration
++/// is checked against `SlotUse` as a multiset because that earlier index omits cleanup instructions
++/// and accesses whose reuse identity is unresolved.
++#[allow(clippy::too_many_arguments)]
++fn local_reference_write_compatibility(
++    variable: LocalVariable,
++    first: &FirstWrite,
++    selected: &Type,
++    accesses: &[SlotUse],
++    resource_slots: &BTreeSet<u16>,
++    has_exception_handlers: bool,
++    parameters: u16,
++    physical_object_write_cache: &mut Option<BTreeMap<u16, Vec<(u32, Option<LocalVariable>)>>>,
++    ssa: &SsaTable,
++    operations: &Operations,
++    reuse: &reuse::Plan,
++    return_type: Option<&Type>,
++    budget: &mut Budget,
++) -> Result<Option<Decided>, StopReason> {
++    let Type::Reference(first_name) = selected else {
++        return Ok(None);
++    };
++    if first_name == "java.lang.Object"
++        || first_name.ends_with("[]")
++        || !matches!(ssa.value(first.stored).ty(), Value::Ref(_))
++        || variable.slot() < parameters
++        || resource_slots.contains(&variable.slot())
++    {
++        return Ok(None);
++    }
++
++    let rejected = |later| {
++        Decided::Unknown(NoType::ConflictingWrites {
++            first: first.at,
++            later,
++            declared: (*selected).clone(),
++            observed: Type::Reference("java.lang.Object".to_owned()),
++        })
++    };
++
++    if physical_object_write_cache.is_none() {
++        let mut object_writes = BTreeMap::new();
++        for block in ssa.blocks() {
++            for instruction in block.instructions() {
++                poll(budget, Some(instruction.bci()))?;
++                charge(
++                    budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(instruction.bci()),
++                )?;
++                for (slot, _) in instruction.writes() {
++                    poll(budget, Some(instruction.bci()))?;
++                    charge(
++                        budget,
++                        CountedBudgetDimension::AnalysisSteps,
++                        1,
++                        Some(instruction.bci()),
++                    )?;
++                    let Slot::Local(slot) = slot else {
++                        continue;
++                    };
++                    if matches!(operations.get(instruction.bci()), Some(Operation::Store { slot: store_slot }) if store_slot == slot)
++                        && matches!(instruction.reads(), [(Slot::Stack(_), _)])
++                        && matches!(instruction.writes(), [(Slot::Local(local_slot), _)] if local_slot == slot)
++                        && let Some(stored) = store_operand(operations, instruction)
++                        && direct_reference_write_type(stored, ssa, operations)
++                            == Some(Type::Reference("java.lang.Object".to_owned()))
++                    {
++                        object_writes.entry(*slot).or_insert_with(Vec::new).push((
++                            instruction.bci(),
++                            reuse.variable_at(*slot, instruction.bci()),
++                        ));
++                    }
++                }
++            }
++        }
++        *physical_object_write_cache = Some(object_writes);
++    }
++    let mut later = None;
++    let mut ambiguous_object_write = false;
++    for (bci, owner) in physical_object_write_cache
++        .as_ref()
++        .and_then(|writes| writes.get(&variable.slot()))
++        .into_iter()
++        .flatten()
++    {
++        poll(budget, Some(*bci))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(*bci))?;
++        if *bci == first.at {
++            continue;
++        }
++        match owner {
++            Some(owner) if *owner == variable => {
++                later = Some(later.map_or(*bci, |previous: u32| previous.min(*bci)));
++            }
++            Some(_) => {}
++            None => {
++                ambiguous_object_write = true;
++                later = Some(later.map_or(*bci, |previous: u32| previous.min(*bci)));
++            }
++        }
++    }
++    let Some(later) = later else {
++        return Ok(None);
++    };
++    let mut expected = Vec::new();
++    let mut read_count = 0usize;
++    let mut write_count = 0usize;
++    let mut invalid_write = false;
++    for access in accesses {
++        poll(budget, Some(access.bci))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(access.bci))?;
++        if access.path.is_none() {
++            invalid_write = true;
++        }
++        if let Some(read) = access.read {
++            expected.push((access.bci, Some(read), None, None));
++            read_count += 1;
++        }
++        if let Some(written) = access.written {
++            let stored = access.stored.unwrap_or(written);
++            if !matches!(ssa.value(written).ty(), Value::Ref(_) | Value::Null)
++                || !matches!(ssa.value(stored).ty(), Value::Ref(_) | Value::Null)
++                || matches!(ssa.value(written).def(), Definition::Caught { .. })
++                || matches!(ssa.value(stored).def(), Definition::Caught { .. })
++            {
++                invalid_write = true;
++            }
++            expected.push((access.bci, None, Some(written), access.stored));
++            write_count += 1;
++        }
++    }
++    if ambiguous_object_write
++        || invalid_write
++        || has_exception_handlers
++        || write_count < 2
++        || read_count == 0
++        || !matches!(return_type, Some(Type::Reference(name)) if name == "java.lang.Object")
++    {
++        return Ok(Some(rejected(later)));
++    }
++
++    // Enumerate the physical slot directly. Missing reuse attribution is ambiguous, while an
++    // access attributed to another lifetime is outside this LocalVariable. Keep duplicate records.
++    let mut actual = Vec::new();
++    let mut instructions_by_bci = BTreeMap::new();
++    for block in ssa.blocks() {
++        for instruction in block.instructions() {
++            poll(budget, Some(instruction.bci()))?;
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(instruction.bci()),
++            )?;
++            if instructions_by_bci
++                .insert(instruction.bci(), (block.block().clone(), instruction))
++                .is_some()
++            {
++                return Ok(Some(rejected(later)));
++            }
++            for (slot, value) in instruction.reads() {
++                poll(budget, Some(instruction.bci()))?;
++                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(instruction.bci()))?;
++                if *slot != Slot::Local(variable.slot()) {
++                    continue;
++                }
++                match reuse.variable_at(variable.slot(), instruction.bci()) {
++                    Some(owner) if owner == variable => actual.push((instruction.bci(), Some(*value), None, None)),
++                    Some(_) => {}
++                    None => return Ok(Some(rejected(later))),
++                }
++            }
++            for (slot, value) in instruction.writes() {
++                poll(budget, Some(instruction.bci()))?;
++                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(instruction.bci()))?;
++                if *slot != Slot::Local(variable.slot()) {
++                    continue;
++                }
++                match reuse.variable_at(variable.slot(), instruction.bci()) {
++                    Some(owner) if owner == variable => actual.push((instruction.bci(), None, Some(*value), store_operand(operations, instruction))),
++                    Some(_) => {}
++                    None => return Ok(Some(rejected(later))),
++                }
++            }
++        }
++    }
++    expected.sort_unstable();
++    actual.sort_unstable();
++    if actual != expected {
++        return Ok(Some(rejected(later)));
++    }
++    for access in accesses {
++        poll(budget, Some(access.bci))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(access.bci))?;
++        let Some(written) = access.written else {
++            continue;
++        };
++        let stored = access.stored.unwrap_or(written);
++        let direct_type = direct_reference_write_type(stored, ssa, operations);
++        let named_array = matches!(ssa.value(stored).ty(), Value::Ref(RefType::Named { name, .. }) if array_descriptor(&String::from_utf8_lossy(name)).is_some());
++        if named_array
++            || matches!(direct_type, Some(Type::Reference(ref name)) if name.ends_with("[]"))
++        {
++            return Ok(Some(rejected(later)));
++        }
++    }
++
++    let mut proved_reads = 0usize;
++    for access in accesses {
++        poll(budget, Some(access.bci))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(access.bci))?;
++        let Some(read_value) = access.read else {
++            continue;
++        };
++        if reuse.variable_at(variable.slot(), access.bci) != Some(variable)
++            || !matches!(operations.get(access.bci), Some(Operation::Load { slot }) if *slot == variable.slot())
++        {
++            return Ok(Some(rejected(later)));
++        }
++        let Some((load_block, load)) = instructions_by_bci.get(&access.bci) else {
++            return Ok(Some(rejected(later)));
++        };
++        if !matches!(load.reads(), [(Slot::Local(slot), value)] if *slot == variable.slot() && *value == read_value)
++            || !matches!(load.writes(), [(Slot::Stack(_), _)])
++        {
++            return Ok(Some(rejected(later)));
++        }
++        let [(Slot::Stack(_), loaded)] = load.writes() else {
++            return Ok(Some(rejected(later)));
++        };
++        if ssa.value(*loaded).replaced_by().is_some()
++            || !matches!(ssa.value(*loaded).def(), Definition::Instruction { block, bci } if block == load_block && *bci == access.bci)
++        {
++            return Ok(Some(rejected(later)));
++        }
++        let [consumer] = ssa.value(*loaded).uses() else {
++            return Ok(Some(rejected(later)));
++        };
++        let Some(consumer_bci) = consumer.bci() else {
++            return Ok(Some(rejected(later)));
++        };
++        poll(budget, Some(consumer_bci))?;
++        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(consumer_bci))?;
++        let Some((consumer_block, consumer_instruction)) = instructions_by_bci.get(&consumer_bci) else {
++            return Ok(Some(rejected(later)));
++        };
++        if consumer_block != consumer.block()
++            || !matches!(operations.get(consumer_bci), Some(Operation::Return))
++            || !matches!(consumer_instruction.reads(), [(Slot::Stack(_), value)] if *value == *loaded)
++            || !consumer_instruction.writes().is_empty()
++        {
++            return Ok(Some(rejected(later)));
++        }
++        proved_reads += 1;
++    }
++    if proved_reads == read_count {
++        Ok(Some(Decided::Type(Type::Reference("java.lang.Object".to_owned()))))
++    } else {
++        Ok(Some(rejected(later)))
++    }
+ }
+ 
+ /// Whether the actual SSA operand of a local write is directly stated as Java `char`.

@@ -1,0 +1,106 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-debug/legs/javac8-original/classes/cf11/CF11SlotReuseControl.class
+  Last modified 2026-10-12; size 746 bytes
+  MD5 checksum 75c183c12be1d21253bdc530e668f284
+  Compiled from "CF11SlotReuseControl.java"
+public final class cf11.CF11SlotReuseControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#29         // java/lang/Object."<init>":()V
+   #2 = String             #30            // a
+   #3 = Methodref          #31.#32        // java/lang/String.length:()I
+   #4 = String             #33            // seed
+   #5 = InterfaceMethodref #34.#35        // java/util/List.get:(I)Ljava/lang/Object;
+   #6 = Class              #36            // cf11/CF11SlotReuseControl
+   #7 = Class              #37            // java/lang/Object
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               LineNumberTable
+  #12 = Utf8               LocalVariableTable
+  #13 = Utf8               this
+  #14 = Utf8               Lcf11/CF11SlotReuseControl;
+  #15 = Utf8               afterStringLifetime
+  #16 = Utf8               (ZLjava/util/List;)Ljava/lang/Object;
+  #17 = Utf8               first
+  #18 = Utf8               Ljava/lang/String;
+  #19 = Utf8               replace
+  #20 = Utf8               Z
+  #21 = Utf8               values
+  #22 = Utf8               Ljava/util/List;
+  #23 = Utf8               target
+  #24 = Utf8               Ljava/lang/Object;
+  #25 = Utf8               StackMapTable
+  #26 = Class              #37            // java/lang/Object
+  #27 = Utf8               SourceFile
+  #28 = Utf8               CF11SlotReuseControl.java
+  #29 = NameAndType        #8:#9          // "<init>":()V
+  #30 = Utf8               a
+  #31 = Class              #38            // java/lang/String
+  #32 = NameAndType        #39:#40        // length:()I
+  #33 = Utf8               seed
+  #34 = Class              #41            // java/util/List
+  #35 = NameAndType        #42:#43        // get:(I)Ljava/lang/Object;
+  #36 = Utf8               cf11/CF11SlotReuseControl
+  #37 = Utf8               java/lang/Object
+  #38 = Utf8               java/lang/String
+  #39 = Utf8               length
+  #40 = Utf8               ()I
+  #41 = Utf8               java/util/List
+  #42 = Utf8               get
+  #43 = Utf8               (I)Ljava/lang/Object;
+{
+  public cf11.CF11SlotReuseControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/CF11SlotReuseControl;
+
+  public static java.lang.Object afterStringLifetime(boolean, java.util.List);
+    descriptor: (ZLjava/util/List;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: ldc           #2                  // String a
+         2: astore_2
+         3: aload_2
+         4: invokevirtual #3                  // Method java/lang/String.length:()I
+         7: pop
+         8: ldc           #4                  // String seed
+        10: astore_2
+        11: iload_0
+        12: ifeq          23
+        15: aload_1
+        16: iconst_0
+        17: invokeinterface #5,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        22: astore_2
+        23: aload_2
+        24: areturn
+      LineNumberTable:
+        line 9: 0
+        line 10: 3
+        line 12: 8
+        line 13: 11
+        line 14: 15
+        line 16: 23
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            3       5     2 first   Ljava/lang/String;
+            0      25     0 replace   Z
+            0      25     1 values   Ljava/util/List;
+           11      14     2 target   Ljava/lang/Object;
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 23
+          locals = [ class java/lang/Object ]
+}
+SourceFile: "CF11SlotReuseControl.java"

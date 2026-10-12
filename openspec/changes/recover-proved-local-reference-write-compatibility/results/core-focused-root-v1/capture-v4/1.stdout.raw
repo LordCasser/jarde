@@ -1,0 +1,9 @@
+
+running 4 tests
+test build::tests::local_reference_write_compatibility_proves_real_object_return_fixture ... ok
+test build::tests::local_reference_write_compatibility_rejects_omitted_duplicate_and_pathless_accesses ... ok
+test build::tests::local_reference_write_compatibility_rejects_real_cast_read_handler_and_slot_reuse_controls ... ok
+test build::tests::local_reference_write_compatibility_stops_at_the_measured_final_return_consumer ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 365 filtered out; finished in 0.01s
+

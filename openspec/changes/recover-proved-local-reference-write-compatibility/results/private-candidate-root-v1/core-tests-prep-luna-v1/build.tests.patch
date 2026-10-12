@@ -1,0 +1,513 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -34345,6 +34345,7 @@
+ 
+     struct IteratorTestContext {
+         analysis: jarde_jvm::method_ir::MethodIrAnalysis,
++        regions: Vec<Region>,
+         reuse: reuse::Plan,
+         names: NameTable,
+         declarations: Declarations,
+@@ -34457,12 +34458,502 @@
+         .expect("fixture declaration ownership plan");
+         IteratorTestContext {
+             analysis,
++            regions,
+             reuse,
+             names,
+             declarations,
++        }
++    }
++
++    const LOCAL_REFERENCE_WRITE_TARGET_CLASS: &[u8] = include_bytes!(
++        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11OuterAssignmentTarget.class"
++    );
++    const LOCAL_REFERENCE_WRITE_CAST_READ_CLASS: &[u8] = include_bytes!(
++        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11CastReadControl.class"
++    );
++    const LOCAL_REFERENCE_WRITE_SLOT_REUSE_CLASS: &[u8] = include_bytes!(
++        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11SlotReuseControl.class"
++    );
++    const LOCAL_REFERENCE_WRITE_HANDLER_CLASS: &[u8] = include_bytes!(
++        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11HandlerWriteControl.class"
++    );
++
++    struct LocalReferenceWriteTestCase {
++        context: IteratorTestContext,
++        operations: Operations,
++        variable: LocalVariable,
++        first: FirstWrite,
++        selected: Type,
++        accesses: Vec<SlotUse>,
++        resources: BTreeSet<u16>,
++        parameters: u16,
++        return_type: Option<Type>,
++        has_exception_handlers: bool,
++    }
++
++    fn local_reference_write_test_case(
++        class: &[u8],
++        method: &str,
++        descriptor: &str,
++    ) -> LocalReferenceWriteTestCase {
++        let context = iterator_test_context(class, method, descriptor, 23);
++        let ir = context.analysis.ir();
++        let ssa = ir.ssa().expect("fixture method SSA");
++        let code = ir.code().expect("fixture method code");
++        let operations = Operations::of(code, ir.constant_pool());
++        let mut cleanup_bcis = Vec::new();
++        for region in &context.regions {
++            region.elided_cleanup_bcis(&mut cleanup_bcis);
++        }
++        let paths = region_paths(&context.regions);
++        let elided_cleanup = cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
++        let uses = slot_uses(ssa, &operations, &context.reuse, &paths, &elided_cleanup);
++        let variable = uses
++            .keys()
++            .copied()
++            .find(|variable| context.names.text(*variable) == Some("target"))
++            .expect("debug fixture identifies the target local");
++        let accesses = uses
++            .get(&variable)
++            .expect("target local has actual accesses")
++            .clone();
++        let first_use = accesses
++            .iter()
++            .filter(|access| access.written.is_some())
++            .min_by_key(|access| (access.path.clone(), access.bci))
++            .expect("target local has a first write");
++        let written = first_use.written.expect("first access is a write");
++        let first = FirstWrite {
++            at: first_use.bci,
++            written,
++            stored: first_use.stored.unwrap_or(written),
++        };
++        let selected = direct_reference_write_type(first.stored, ssa, &operations)
++            .expect("target's literal first write states a direct type");
++        assert_eq!(selected, Type::Reference("java.lang.String".to_owned()));
++        assert!(
++            accesses.iter().any(|access| {
++                access.written.is_some_and(|written| {
++                    let stored = access.stored.unwrap_or(written);
++                    access.bci > first.at
++                        && direct_reference_write_type(stored, ssa, &operations)
++                            == Some(Type::Reference("java.lang.Object".to_owned()))
++                })
++            }),
++            "the target lifetime has a later direct Object write"
++        );
++        let declaration = ir.declaration().expect("fixture method declaration");
++        let resources = resource_slots(&context.regions);
++        let parameters = declaration.parameter_slots();
++        let return_type = return_type(descriptor);
++        let has_exception_handlers = !code.exception_handlers.is_empty();
++        LocalReferenceWriteTestCase {
++            context,
++            operations,
++            variable,
++            first,
++            selected,
++            accesses,
++            resources,
++            parameters,
++            return_type,
++            has_exception_handlers,
+         }
+     }
+ 
++    fn run_local_reference_write_test_case(
++        case: &LocalReferenceWriteTestCase,
++        accesses: &[SlotUse],
++        return_type: Option<&Type>,
++        cache: &mut Option<BTreeMap<u16, Vec<(u32, Option<LocalVariable>)>>>,
++        budget: &mut Budget,
++    ) -> Result<Option<Decided>, StopReason> {
++        let ir = case.context.analysis.ir();
++        local_reference_write_compatibility(
++            case.variable,
++            &case.first,
++            &case.selected,
++            accesses,
++            &case.resources,
++            case.has_exception_handlers,
++            case.parameters,
++            cache,
++            ir.ssa().expect("fixture method SSA"),
++            &case.operations,
++            &case.context.reuse,
++            return_type,
++            budget,
++        )
++    }
++
++    fn assert_local_reference_write_conflict(result: Option<Decided>) {
++        assert!(
++            matches!(result, Some(Decided::Unknown(NoType::ConflictingWrites { .. }))),
++            "a refused candidate keeps the existing structured conflict reason: {result:?}"
++        );
++    }
++
++    #[test]
++    fn local_reference_write_compatibility_proves_real_object_return_fixture() {
++        let case = local_reference_write_test_case(
++            LOCAL_REFERENCE_WRITE_TARGET_CLASS,
++            "noCastAssign",
++            "(Ljava/util/List;)Ljava/lang/Object;",
++        );
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        let result = run_local_reference_write_test_case(
++            &case,
++            &case.accesses,
++            case.return_type.as_ref(),
++            &mut cache,
++            &mut budget,
++        )
++        .expect("real fixture proof completes");
++        assert_eq!(
++            result,
++            Some(Decided::Type(Type::Reference("java.lang.Object".to_owned())))
++        );
++        let object_writes = cache
++            .as_ref()
++            .and_then(|writes| writes.get(&case.variable.slot()))
++            .expect("the real same-slot Object trigger is indexed");
++        assert!(object_writes.iter().any(|(bci, owner)| {
++            *bci > case.first.at && *owner == Some(case.variable)
++        }));
++    }
++
++    #[test]
++    fn local_reference_write_compatibility_rejects_omitted_duplicate_and_pathless_accesses() {
++        let case = local_reference_write_test_case(
++            LOCAL_REFERENCE_WRITE_TARGET_CLASS,
++            "noCastAssign",
++            "(Ljava/util/List;)Ljava/lang/Object;",
++        );
++        let first_write = case.first.at;
++        let later_object_write = case
++            .accesses
++            .iter()
++            .find(|access| {
++                access.bci > first_write
++                    && access.written.is_some_and(|written| {
++                        let stored = access.stored.unwrap_or(written);
++                        direct_reference_write_type(
++                            stored,
++                            case.context.analysis.ir().ssa().unwrap(),
++                            &case.operations,
++                        ) == Some(Type::Reference("java.lang.Object".to_owned()))
++                    })
++            })
++            .expect("actual later Object write access")
++            .clone();
++
++        // Omit the real first write but preserve the write count by duplicating the later access;
++        // the physical same-identity census must reject the unequal occurrence multiset.
++        let mut omitted = case.accesses.clone();
++        let first_index = omitted
++            .iter()
++            .position(|access| access.bci == first_write && access.written.is_some())
++            .expect("actual first write access");
++        omitted.remove(first_index);
++        omitted.push(later_object_write.clone());
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &case,
++                &omitted,
++                case.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("omitted-access control completes"),
++        );
++
++        // A duplicate local-read occurrence cannot disappear into a set during reconciliation.
++        let mut duplicated = case.accesses.clone();
++        let read = duplicated
++            .iter()
++            .find(|access| access.read.is_some())
++            .expect("real local read")
++            .clone();
++        duplicated.push(read);
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &case,
++                &duplicated,
++                case.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("duplicate-access control completes"),
++        );
++
++        let mut pathless = case.accesses.clone();
++        pathless
++            .iter_mut()
++            .find(|access| access.read.is_some())
++            .expect("real local read")
++            .path = None;
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &case,
++                &pathless,
++                case.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("pathless-access control completes"),
++        );
++
++        let mut no_reads = case.accesses.clone();
++        for access in &mut no_reads {
++            access.read = None;
++        }
++        no_reads.retain(|access| access.written.is_some());
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &case,
++                &no_reads,
++                case.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("no-read control completes"),
++        );
++    }
++
++    #[test]
++    fn local_reference_write_compatibility_rejects_real_cast_read_handler_and_slot_reuse_controls() {
++        let cast_read = local_reference_write_test_case(
++            LOCAL_REFERENCE_WRITE_CAST_READ_CLASS,
++            "castRead",
++            "(Ljava/util/List;)I",
++        );
++        // Keep the fixture's real SSA/regions/slot identities; confirm the target load really
++        // feeds checkcast, then supply Object only to pass the helper's earlier descriptor gate
++        // and isolate its actual non-Return consumer rejection.
++        let ssa = cast_read.context.analysis.ir().ssa().expect("cast-read fixture SSA");
++        let read = cast_read
++            .accesses
++            .iter()
++            .find_map(|access| access.read.map(|value| (access.bci, value)))
++            .expect("cast-read target local access");
++        let load = ssa
++            .blocks()
++            .iter()
++            .flat_map(|block| block.instructions())
++            .find(|instruction| instruction.bci() == read.0)
++            .expect("cast-read local load");
++        let [(Slot::Stack(_), loaded)] = load.writes() else {
++            panic!("cast-read local load emits one stack value")
++        };
++        let [consumer] = ssa.value(*loaded).uses() else {
++            panic!("cast-read local load has one consumer")
++        };
++        assert!(matches!(
++            cast_read.operations.get(consumer.bci().expect("cast consumer BCI")),
++            Some(Operation::CheckCast { .. })
++        ));
++        let object_return = Type::Reference("java.lang.Object".to_owned());
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &cast_read,
++                &cast_read.accesses,
++                Some(&object_return),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("cast-read control completes"),
++        );
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &cast_read,
++                &cast_read.accesses,
++                cast_read.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("real int-return descriptor is refused"),
++        );
++
++        let handler = local_reference_write_test_case(
++            LOCAL_REFERENCE_WRITE_HANDLER_CLASS,
++            "handlerWrite",
++            "()Ljava/lang/Object;",
++        );
++        assert!(handler.has_exception_handlers);
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_local_reference_write_conflict(
++            run_local_reference_write_test_case(
++                &handler,
++                &handler.accesses,
++                handler.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("handler-write control completes"),
++        );
++
++        let reuse = local_reference_write_test_case(
++            LOCAL_REFERENCE_WRITE_SLOT_REUSE_CLASS,
++            "afterStringLifetime",
++            "(ZLjava/util/List;)Ljava/lang/Object;",
++        );
++        let code = reuse
++            .context
++            .analysis
++            .ir()
++            .code()
++            .expect("slot-reuse fixture method code");
++        let previous_debug = iterator_test_debug_locals(code)
++            .into_iter()
++            .find(|local| local.name() == "first")
++            .expect("debug table states the previous source lifetime");
++        let (previous_start, _) = previous_debug
++            .range()
++            .expect("previous source lifetime has a bounded range");
++        let previous = reuse
++            .context
++            .reuse
++            .variable_at(previous_debug.slot(), previous_start)
++            .expect("reuse plan assigns the previous source lifetime");
++        assert_ne!(previous, reuse.variable);
++        assert_eq!(previous.slot(), reuse.variable.slot());
++        assert!(reuse
++            .context
++            .analysis
++            .ir()
++            .ssa()
++            .expect("slot-reuse fixture SSA")
++            .blocks()
++            .iter()
++            .flat_map(|block| block.instructions())
++            .any(|instruction| {
++                instruction.bci() < reuse.first.at
++                    && instruction.reads().iter().any(|(slot, _)| {
++                        *slot == Slot::Local(previous.slot())
++                            && reuse
++                                .context
++                                .reuse
++                                .variable_at(previous.slot(), instruction.bci())
++                                == Some(previous)
++                    })
++            }),
++            "the old source lifetime has a real same-slot read before the new target lifetime"
++        );
++        let mut cache = None;
++        let mut budget = child_array_test_budget();
++        assert_eq!(
++            run_local_reference_write_test_case(
++                &reuse,
++                &reuse.accesses,
++                reuse.return_type.as_ref(),
++                &mut cache,
++                &mut budget,
++            )
++            .expect("slot-reuse control completes"),
++            Some(Decided::Type(Type::Reference("java.lang.Object".to_owned())))
++        );
++    }
++
++    #[test]
++    fn local_reference_write_compatibility_stops_at_the_measured_final_return_consumer() {
++        let case = local_reference_write_test_case(
++            LOCAL_REFERENCE_WRITE_TARGET_CLASS,
++            "noCastAssign",
++            "(Ljava/util/List;)Ljava/lang/Object;",
++        );
++        let ssa = case.context.analysis.ir().ssa().expect("fixture SSA");
++        let read = case
++            .accesses
++            .iter()
++            .find_map(|access| access.read.map(|value| (access.bci, value)))
++            .expect("one actual local read");
++        let load = ssa
++            .blocks()
++            .iter()
++            .flat_map(|block| block.instructions())
++            .find(|instruction| instruction.bci() == read.0)
++            .expect("the local read instruction");
++        let [(Slot::Stack(_), loaded)] = load.writes() else {
++            panic!("the local read emits one stack value")
++        };
++        let [consumer] = ssa.value(*loaded).uses() else {
++            panic!("the returned local value has one consumer")
++        };
++        let return_bci = consumer.bci().expect("actual return consumer BCI");
++
++        let mut measured = child_array_test_budget();
++        let mut measured_cache = None;
++        assert_eq!(
++            run_local_reference_write_test_case(
++                &case,
++                &case.accesses,
++                case.return_type.as_ref(),
++                &mut measured_cache,
++                &mut measured,
++            )
++            .expect("unlimited proof completes"),
++            Some(Decided::Type(Type::Reference("java.lang.Object".to_owned())))
++        );
++        let proof_usage = measured.usage().analysis_steps;
++        assert!(proof_usage > 1);
++        let proof_limit = proof_usage - 1;
++        let mut limits = child_array_test_budget().limits().clone();
++        limits.analysis_steps = proof_limit;
++        let mut stopped = Budget::new(limits);
++        let mut stopped_cache = None;
++        let stop = run_local_reference_write_test_case(
++            &case,
++            &case.accesses,
++            case.return_type.as_ref(),
++            &mut stopped_cache,
++            &mut stopped,
++        )
++        .expect_err("one less than measured complete proof usage must stop");
++        assert!(
++            matches!(
++                stop,
++                StopReason::Budget {
++                    dimension: CountedBudgetDimension::AnalysisSteps,
++                    at: Some(at),
++                    ..
++                } if at == return_bci
++            ),
++            "the final real Return consumer owns the measured Stop: {stop:?}"
++        );
++        assert_eq!(stopped.usage().analysis_steps, proof_limit);
++        assert!(stopped_cache.is_some(), "the physical trigger census completed first");
++
++        let mut cancelled = child_array_test_budget();
++        cancelled.cancellation_token().cancel();
++        let mut cancelled_cache = None;
++        assert!(matches!(
++            run_local_reference_write_test_case(
++                &case,
++                &case.accesses,
++                case.return_type.as_ref(),
++                &mut cancelled_cache,
++                &mut cancelled,
++            ),
++            Err(StopReason::Cancelled { at: Some(_) })
++        ));
++        assert!(cancelled_cache.is_none(), "pre-cancellation publishes no partial census");
++        assert_eq!(cancelled.usage().analysis_steps, 0);
++    }
++
+     fn iterator_init_value(ssa: &SsaTable, store_bci: u32, slot: u16) -> ValueId {
+         ssa.blocks()
+             .iter()

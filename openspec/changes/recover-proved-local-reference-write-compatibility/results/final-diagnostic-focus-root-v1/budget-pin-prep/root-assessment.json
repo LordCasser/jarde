@@ -1,0 +1,9 @@
+{
+  "private_patch_check_exit": 128,
+  "private_patch_error": "corrupt patch at line 15: hunk cardinality",
+  "root_applied": "two exact baseline/comment lines using apply_patch",
+  "tight_limit_derived_unchanged": true,
+  "candidate_sha256": "abdd951d9d6fbfa992139d7469cdc63a590cbccfd771ee6e940579b01bd61a90",
+  "focused_execution": "/private/tmp/jarde-local-reference-write-final-diagnostic-focus-root-v2/execution.json",
+  "acceptance": "pending"
+}

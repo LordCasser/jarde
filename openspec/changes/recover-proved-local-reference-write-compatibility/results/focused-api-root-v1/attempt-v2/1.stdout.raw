@@ -1,0 +1,13 @@
+
+running 3 tests
+test no_cast_iterator_assignment_preserves_object_target_and_full_source_map ... FAILED
+test pre_cancel_does_not_publish_partial_class_or_method_artifacts ... ok
+test reference_write_controls_keep_complete_public_results_across_evidence_requests ... ok
+
+failures:
+
+failures:
+    no_cast_iterator_assignment_preserves_object_target_and_full_source_map
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+

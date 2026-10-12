@@ -1,5 +1,9 @@
 # HANDOFF — jarde 主线接续入口
 
+最新状态（2026-10-12）：`recover-proved-local-reference-write-compatibility` **6/8**。完整类双profile对照、永久正反例、精确late Stop和所有本地验收已接受；fresh全仓root-v5 **96批/363targets/3489通过/0失败/97忽略/3586具名结果/4784输入**，独立acceptor exit0。最终fmt/当前CI完整Clippy/global strict **356-0**/CLI字节一致/clean以及独立acceptor均exit0、target不存在。最新CLIroot-v5 61486096B/0555/SHA4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95。源码与证据尚待提交推送，最后已推送main为9a381cc1；本片自身CI和干净主线仍待，不得借前片CI接受。四次全仓及首次定向失败完整保留，成功重跑未拼接；新增扫描精确计费已核，finally紧预算77步通过。
+
+/tmp清理20个无占用旧Cargo缓存，释放3.12GiB，最新101代和验收文件保留。CF11/固定71单元612文件完成数不扩大；下一项是同轮结构化void候选与List<String>参数用途诊断，当前仅私有准备，待本片交付后执行。以下段落为历史检查点。
+
 当前断点（2026-10-12）：用户明确继续本聊天，持续目标 active。固定 JADX **71 单元 / 612 文件**账本不变；root 架构/OpenSpec/真实对照/对抗验收，Luna 私有确定性准备。不新建分支或工作树。构建坚持 **5 GiB 最低余量 / target 1 GiB 上限、一秒进程组守卫、默认 Rust 栈**；仅固定 cargo clean 允许在低空间时执行以回收资源，全部清理有原始记录。
 
 当前 [保留外层赋值的 foreach](openspec/changes/recover-proved-iterator-assignment-foreach/verification-root.md) **8/8**，候选已应用并完成全部本地验收，产品 **73adae72c6d89e8eba0a34e3cd92fe81e899cb3e** 已实际提交推送 main；自身 [CI 38181427452](https://github.com/LordCasser/jarde/actions/runs/38181427452) 四jobs/52steps全success且root独立接受双seed各362targets/3481-0-97/3578named、20required、4744输入/产品Git/live/准确CLI绑定；实际干净main checkpoint已接受，关闭文档推送后按真实新HEAD另作外置最终审计。生产仅改现有三个 binding match，原 iterator/CFG/SSA/owner/Phi/effects/handler proof 原样，原变量声明/Assign/cast 保留，只替换 next 叶为既有 Object foreach 合成读取。固定类两个 foreach，控制类 positive 一个 foreach、三个反例 while。双 JDK 两组各十条完整类运行腿与原 8/12 case一致，全部物理来源核准；真实 late Stop/预取消无部分方法产物。详 [完整类](openspec/changes/recover-proved-iterator-assignment-foreach/results/complete-source-candidate-root-v1/README.md)、[定向](openspec/changes/recover-proved-iterator-assignment-foreach/results/focused-candidate-root-v1/README.md)。泛型、typed头、空声明清理和类型债务未混修；CF-11整体未关闭。

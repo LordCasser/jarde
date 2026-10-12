@@ -1,0 +1,113 @@
+--- a/tests/p3_local_reference_write_compatibility.rs
++++ b/tests/p3_local_reference_write_compatibility.rs
+@@ -331,6 +331,110 @@
+             all_body.text
+         );
+         assert_full_physical_map(bytes, all_method, all_body, METHOD, DESCRIPTOR);
++    }
++}
++
++#[test]
++fn measured_public_late_stop_does_not_publish_partial_target_artifacts_in_all_profiles() {
++    const METHOD: &str = "noCastAssign";
++    const DESCRIPTOR: &str = "(Ljava/util/List;)Ljava/lang/Object;";
++
++    for (profile, jdk, class, bytes) in FIXTURES
++        .iter()
++        .copied()
++        .filter(|row| row.2 == "CF11OuterAssignmentTarget")
++    {
++        let context = format!("{profile}/{jdk}/{class}/{METHOD}");
++        let internal_name = format!("cf11/{class}");
++        let (snapshot, request) = opened(bytes, &internal_name);
++
++        // Measure this exact body's public cumulative charge, then stop one step short. This
++        // asserts method-level atomicity without pinning historical costs or scanning limits.
++        let complete = recover(&snapshot, &request, &RecoveryEvidenceRequest::all());
++        let (complete_method, complete_body) = named_method(&complete, METHOD, DESCRIPTOR);
++        assert_complete_java(complete_body, &context);
++        let expected_identity = complete_method.item.identity.clone();
++        let ExecutionReport::Complete { usage } = &complete_body.execution else {
++            panic!("{context}: complete body has measured usage: {:?}", complete_body.execution);
++        };
++        assert!(usage.analysis_steps > 1, "{context}: body has analysis work");
++        let analysis_step_limit = usage.analysis_steps - 1;
++        let mut limits = budget().limits().clone();
++        limits.analysis_steps = analysis_step_limit;
++        let mut stopped_budget = Budget::new(limits);
++        let stopped = Engine::new()
++            .class_source_with_evidence(
++                slice::from_ref(&snapshot),
++                &request,
++                &RecoveryEvidenceRequest::all(),
++                &mut stopped_budget,
++            )
++            .expect("the public analysis budget stop is a reported state");
++        let report = match stopped {
++            OperationOutcome::Performed(report) => report,
++            other => panic!("{context}: measured limit returns a class-source report: {other:?}"),
++        };
++        assert!(
++            matches!(
++                &report.execution,
++                ExecutionReport::Partial {
++                    reason: TerminationReason::BudgetExceeded {
++                        dimension: BudgetDimension::AnalysisSteps
++                    },
++                    ..
++                }
++            ),
++            "{context}: class request reports AnalysisSteps partial: {:?}",
++            report.execution
++        );
++        let method = report
++            .methods
++            .iter()
++            .find(|method| {
++                method.item.name.raw().0 == METHOD.as_bytes()
++                    && method.item.descriptor.raw().0 == DESCRIPTOR.as_bytes()
++            })
++            .unwrap_or_else(|| panic!("{context}: exact stopped physical method remains present"));
++        assert_eq!(method.item.identity, expected_identity, "{context}");
++        let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome else {
++            panic!("{context}: target has a method recovery report: {:?}", method.outcome);
++        };
++        assert!(
++            matches!(
++                &body.execution,
++                ExecutionReport::Partial {
++                    reason: TerminationReason::BudgetExceeded {
++                        dimension: BudgetDimension::AnalysisSteps
++                    },
++                    ..
++                }
++            ),
++            "{context}: target body reports AnalysisSteps partial: {:?}",
++            body.execution
++        );
++        let stop = body.stop().expect("the target body carries its public stop");
++        assert!(stop.at().is_some(), "{context}: stop has a location: {stop:?}");
++        let partial_usage = match &body.execution {
++            ExecutionReport::Partial { usage, .. } => usage,
++            other => panic!("{context}: target body carries partial usage: {other:?}"),
++        };
++        assert!(partial_usage.analysis_steps > 0, "{context}: stop follows real work");
++        assert!(
++            partial_usage.analysis_steps <= analysis_step_limit,
++            "{context}: partial body respects measured limit"
++        );
++        eprintln!(
++            "[local-reference-write-public-stop] {context} limit={analysis_step_limit} usage={} stop={stop:?}",
++            partial_usage.analysis_steps
++        );
++
++        // This public class-source measurement does not promise that its stop lands on the final
++        // local Return consumer. The private core test separately exercises that exact consumer.
++        assert!(!body.produced(), "{context}");
++        assert_eq!(body.text, "", "{context}");
++        assert!(body.source_map.is_empty(), "{context}");
++        assert_eq!(body.content, RecoveryContent::NotProduced, "{context}");
++        assert!(body.news.is_empty(), "{context}");
+     }
+ }
+ 

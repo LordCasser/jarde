@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-full-validation-prep-luna-v4/accept_workspace.py",
+    "--workspace",
+    "/private/tmp/jarde-local-reference-write-full-workspace-root-v5",
+    "--out",
+    "/private/tmp/jarde-local-reference-write-full-workspace-acceptance-root-v5.json",
+    "--candidate-build-receipt",
+    "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "--candidate-build-receipt-sha256",
+    "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T02:48:58.463433+00:00",
+  "finished_at": "2026-10-12T02:48:59.207936+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-full-workspace-accept-invocation-root-v5/stdout.raw",
+      "bytes": 441,
+      "sha256": "22a0008ec9099fba16214f9c97963e622b771e1872550ec9305341d37fd5c053"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-full-workspace-accept-invocation-root-v5/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

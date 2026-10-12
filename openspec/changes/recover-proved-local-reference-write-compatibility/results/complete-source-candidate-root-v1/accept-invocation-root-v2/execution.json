@@ -1,0 +1,40 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-complete-source-accept-prep-root-v2/accept-complete-source.py",
+    "--debug-receipt",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-debug/execution.json",
+    "--debug-receipt-sha256",
+    "86f2ddf7bea614a6efde11789e78569531d7d2edf61aa12ab5f9910010457df4",
+    "--debug-observation",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-check-root-v1-debug/observation.json",
+    "--debug-observation-sha256",
+    "ea812ea73ae18f430c80c30c8dd9e7798831407460606becf38a3870f8185b5a",
+    "--none-receipt",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-none/execution.json",
+    "--none-receipt-sha256",
+    "3348356cb57c56993f1dbc8f9d3b2403f32a838750063d83d75fecb6e22045e5",
+    "--none-observation",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-check-root-v1-none/observation.json",
+    "--none-observation-sha256",
+    "89a4aa6ecd2a53edbde8a7a9055b1b79fa31b8335133147aeefee2430cfbfdcc",
+    "--out",
+    "/private/tmp/jarde-local-reference-write-complete-source-accept-root-v2/acceptance.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T01:19:20.637369+00:00",
+  "finished_at": "2026-10-12T01:19:21.388148+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-complete-source-accept-invocation-root-v2/stdout.raw",
+      "bytes": 262,
+      "sha256": "269aabf46d7d09b392c98a6ea0ccfa4bdba2e7bdaeeed41574d2c683e65f00b1"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-complete-source-accept-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

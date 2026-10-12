@@ -1,0 +1,98 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-debug/legs/javac8-original/classes/cf11/CF11CastReadControl.class
+  Last modified 2026-10-12; size 665 bytes
+  MD5 checksum db26ddae2974360da636c55a104cf7d5
+  Compiled from "CF11CastReadControl.java"
+public final class cf11.CF11CastReadControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#26         // java/lang/Object."<init>":()V
+   #2 = String             #27            // seed
+   #3 = InterfaceMethodref #28.#29        // java/util/List.isEmpty:()Z
+   #4 = InterfaceMethodref #28.#30        // java/util/List.get:(I)Ljava/lang/Object;
+   #5 = Class              #31            // java/lang/String
+   #6 = Methodref          #5.#32         // java/lang/String.length:()I
+   #7 = Class              #33            // cf11/CF11CastReadControl
+   #8 = Class              #34            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               Lcf11/CF11CastReadControl;
+  #16 = Utf8               castRead
+  #17 = Utf8               (Ljava/util/List;)I
+  #18 = Utf8               values
+  #19 = Utf8               Ljava/util/List;
+  #20 = Utf8               target
+  #21 = Utf8               Ljava/lang/Object;
+  #22 = Utf8               StackMapTable
+  #23 = Class              #34            // java/lang/Object
+  #24 = Utf8               SourceFile
+  #25 = Utf8               CF11CastReadControl.java
+  #26 = NameAndType        #9:#10         // "<init>":()V
+  #27 = Utf8               seed
+  #28 = Class              #35            // java/util/List
+  #29 = NameAndType        #36:#37        // isEmpty:()Z
+  #30 = NameAndType        #38:#39        // get:(I)Ljava/lang/Object;
+  #31 = Utf8               java/lang/String
+  #32 = NameAndType        #40:#41        // length:()I
+  #33 = Utf8               cf11/CF11CastReadControl
+  #34 = Utf8               java/lang/Object
+  #35 = Utf8               java/util/List
+  #36 = Utf8               isEmpty
+  #37 = Utf8               ()Z
+  #38 = Utf8               get
+  #39 = Utf8               (I)Ljava/lang/Object;
+  #40 = Utf8               length
+  #41 = Utf8               ()I
+{
+  public cf11.CF11CastReadControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/CF11CastReadControl;
+
+  public static int castRead(java.util.List);
+    descriptor: (Ljava/util/List;)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.isEmpty:()Z
+         9: ifne          20
+        12: aload_0
+        13: iconst_0
+        14: invokeinterface #4,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        19: astore_1
+        20: aload_1
+        21: checkcast     #5                  // class java/lang/String
+        24: invokevirtual #6                  // Method java/lang/String.length:()I
+        27: ireturn
+      LineNumberTable:
+        line 7: 0
+        line 8: 3
+        line 9: 12
+        line 11: 20
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      28     0 values   Ljava/util/List;
+            3      25     1 target   Ljava/lang/Object;
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 20
+          locals = [ class java/lang/Object ]
+}
+SourceFile: "CF11CastReadControl.java"

@@ -1,0 +1,73 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-none/legs/javac8-original/classes/cf11/CF11CharSequenceControl.class
+  Last modified 2026-10-12; size 407 bytes
+  MD5 checksum 92aeda0f8450b3d324222890b4e619d9
+public final class cf11.CF11CharSequenceControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #9.#16         // java/lang/Object."<init>":()V
+   #2 = String             #17            // string
+   #3 = InterfaceMethodref #18.#19        // java/lang/CharSequence.length:()I
+   #4 = String             #20            // seed
+   #5 = Class              #21            // java/lang/StringBuilder
+   #6 = String             #22            // builder
+   #7 = Methodref          #5.#23         // java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+   #8 = Class              #24            // cf11/CF11CharSequenceControl
+   #9 = Class              #25            // java/lang/Object
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               stringLength
+  #14 = Utf8               ()I
+  #15 = Utf8               builderLength
+  #16 = NameAndType        #10:#11        // "<init>":()V
+  #17 = Utf8               string
+  #18 = Class              #26            // java/lang/CharSequence
+  #19 = NameAndType        #27:#14        // length:()I
+  #20 = Utf8               seed
+  #21 = Utf8               java/lang/StringBuilder
+  #22 = Utf8               builder
+  #23 = NameAndType        #10:#28        // "<init>":(Ljava/lang/String;)V
+  #24 = Utf8               cf11/CF11CharSequenceControl
+  #25 = Utf8               java/lang/Object
+  #26 = Utf8               java/lang/CharSequence
+  #27 = Utf8               length
+  #28 = Utf8               (Ljava/lang/String;)V
+{
+  public cf11.CF11CharSequenceControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int stringLength();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: ldc           #2                  // String string
+         2: astore_0
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/lang/CharSequence.length:()I
+         9: ireturn
+
+  public static int builderLength();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=0
+         0: ldc           #4                  // String seed
+         2: astore_0
+         3: new           #5                  // class java/lang/StringBuilder
+         6: dup
+         7: ldc           #6                  // String builder
+         9: invokespecial #7                  // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+        12: astore_0
+        13: aload_0
+        14: invokeinterface #3,  1            // InterfaceMethod java/lang/CharSequence.length:()I
+        19: ireturn
+}

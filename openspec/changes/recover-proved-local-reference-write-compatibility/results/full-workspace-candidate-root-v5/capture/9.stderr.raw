@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.39s
+[1m[92m     Running[0m tests/em22_boolean_xor.rs (target/debug/deps/em22_boolean_xor-d3d1cccae0edc55f)
+[1m[92m     Running[0m tests/em23_field_unit_updates.rs (target/debug/deps/em23_field_unit_updates-f39143f1d7094ddf)
+[1m[92m     Running[0m tests/engine.rs (target/debug/deps/engine-dbd4cf0f48124368)
+[1m[92m     Running[0m tests/enum_string_field_name.rs (target/debug/deps/enum_string_field_name-e957e5700723644d)

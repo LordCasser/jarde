@@ -1,0 +1,709 @@
+//! P3 3.1 acceptance: where a local's declaration is written, what a name is a name for, and which
+//! facts the entry reads from the run that decoded the body.
+//!
+//! Everything here goes through the entry point the CLI calls ([`Engine::recover_method`]) over a
+//! **real compiled sample** — the committed javac 23.0.1 classes under `tests/fixtures/p3-scope/`,
+//! whose README states the two commands, the digests and the bytecode of every member. The sample is
+//! compiled **twice**, so the same shapes are read with and without debug evidence:
+//!
+//! * `v8/Scope.class` is `--release 8 -g:none`: no `LocalVariableTable`, so every name is an ordinal;
+//! * `v8-debug/Scope.class` is the same source with `-g`, so the table states the source names.
+//!
+//! The closure this file pins is the review's **P3-R3**: `scope(Z)I` is
+//! `iload_0; ifeq 9; iconst_1; istore_1; goto 11; iconst_2; istore_1; iload_1; ireturn` — slot 1 is
+//! written in the `then` arm and in the `else` arm and read after the join. A declaration written at
+//! the first write is out of scope at both of the other uses, and `javac --release 8` refuses the
+//! text. The declaration therefore belongs where every use can see it:
+//!
+//! ```text
+//! {
+//!     int local1;
+//!     if (arg0 != 0) {
+//!         local1 = 1;
+//!     } else {
+//!         local1 = 2;
+//!     }
+//!     return local1;
+//! }
+//! ```
+//!
+//! The controls in the other direction are here too, because "hoist everything" is not a fix:
+//! `simple()I` fills and reads one slot in one straight run and keeps `int local0 = 5;`, and
+//! `armOnly(I)I` declares its arm-local `z` **inside** the `then` arm where it is used and nowhere
+//! else. `reuse(ZI)I` is the slot-reuse shape (two variables in disjoint scopes on one slot), `after`
+//! / `reassign` / `receiver` are the category-2 shapes (`long` takes two slots, so the `int`
+//! parameter sits at slot 2), and the `-g` sample decides both of that shape's outcomes: the table's
+//! ranges split the reused slot into **two** variables with their own names and their own
+//! declarations (P3 3.4), and a slot the table states **one** name for keeps that name.
+//!
+//! What the entry reads to decide all of that is the **same run**'s own facts: one header read, one
+//! body attempt (the numbers are asserted below, and for the `-g` sample too — a second read of the
+//! class for the debug table would show up in them).
+
+use jarde::*;
+use std::slice;
+
+/// The no-debug sample, compiled by javac 23.0.1 `--release 8 -g:none` (see the fixture's README).
+const NO_DEBUG: &[u8] = include_bytes!("fixtures/p3-scope/v8/Scope.class");
+/// The same source with `-g`: its `LocalVariableTable` states the source names.
+const DEBUG: &[u8] = include_bytes!("fixtures/p3-scope/v8-debug/Scope.class");
+/// EM-20's no-debug guard/loop fixture, whose source is in the fixed replay input.
+const MONITOR_REUSE: &[u8] = include_bytes!("fixtures/em20-monitor-reuse/LocalScopes.class");
+/// Three refusal controls: plain catch, a later handler read, and a loop back to the guard.
+const MONITOR_REFUSALS: &[u8] = include_bytes!("fixtures/em20-monitor-reuse/NonGuard.class");
+
+/// The members this sample declares, each with a body: the premise every request below rests on.
+const DECLARED: [(&[u8], &[u8]); 8] = [
+    (b"<init>", b"()V"),
+    (b"scope", b"(Z)I"),
+    (b"simple", b"()I"),
+    (b"armOnly", b"(I)I"),
+    (b"reuse", b"(ZI)I"),
+    (b"after", b"(JI)I"),
+    (b"reassign", b"(JI)I"),
+    (b"receiver", b"(J)J"),
+];
+
+fn limits() -> Limits {
+    Limits {
+        input_bytes: 1 << 20,
+        archive_entries: 1_000,
+        entry_bytes: 1 << 20,
+        read_bytes: 1 << 20,
+        class_bytes: 1 << 20,
+        attribute_bytes: 1 << 20,
+        code_bytes: 1 << 20,
+        result_items: 1 << 20,
+        output_bytes: 1 << 20,
+        class_headers: 10,
+        method_bodies: 10,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
+        analysis_steps: 1 << 20,
+        normalization_clones: 1 << 20,
+        nested_depth: 8,
+        dependency_depth: 4,
+        elapsed_millis: u64::MAX,
+    }
+}
+
+/// One caller domain rooted at the fixture's own snapshot, and nothing else: the simplest environment
+/// the library's validator accepts without a problem.
+fn environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_string()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: vec![LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        }],
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    ResolutionEnvironment {
+        runtime: RuntimeView {
+            physical: PhysicalView {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+            },
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            load_domain: domain.clone(),
+        },
+        domains: vec![domain],
+        providers: Vec::new(),
+    }
+}
+
+/// The opened sample and the class identity the reader's own header read stated for it.
+struct Fixture {
+    snapshot: ArtifactSnapshot,
+    class_bytes: ClassBytesId,
+}
+
+/// Opens one of the two committed samples and reads its header through the reader's own entry point,
+/// so that the members presented below are the ones the class declares rather than the ones this file
+/// claims.
+fn fixture(engine: &Engine, bytes: &[u8]) -> Fixture {
+    let expected: Vec<&[u8]> = DECLARED.iter().map(|(name, _)| *name).collect();
+    fixture_with_members(engine, bytes, &expected)
+}
+
+fn fixture_with_members(engine: &Engine, bytes: &[u8], expected: &[&[u8]]) -> Fixture {
+    let mut budget = Budget::new(limits());
+    let snapshot = engine
+        .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
+        .expect("the fixture opens as a standalone CLASS");
+    let inspected = engine
+        .inspect_header(
+            &snapshot,
+            ClassTarget::Root,
+            &mut budget,
+            InspectionMode::Strict,
+        )
+        .expect("the fixture's own header is readable");
+    let declared: Vec<Vec<u8>> = inspected
+        .inspection
+        .header
+        .methods
+        .iter()
+        .map(|member| member.name.raw().0.clone())
+        .collect();
+    for name in expected {
+        assert!(
+            declared.iter().any(|member| member.as_slice() == *name),
+            "the sample declares the member this case presents, `{}`: {declared:?}",
+            String::from_utf8_lossy(name)
+        );
+    }
+    Fixture {
+        snapshot,
+        class_bytes: inspected.source.class_bytes.clone(),
+    }
+}
+
+/// One recovery run over one member of a sample, through the entry point the CLI calls: both halves of
+/// the answer, so the run's own usage is readable beside the presentation.
+fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> RecoveredMethod {
+    recover_with_budget(
+        engine,
+        fixture,
+        name,
+        descriptor,
+        &mut Budget::new(limits()),
+    )
+}
+
+fn recover_with_budget(
+    engine: &Engine,
+    fixture: &Fixture,
+    name: &[u8],
+    descriptor: &[u8],
+    budget: &mut Budget,
+) -> RecoveredMethod {
+    let request = MethodAnalysisRequest {
+        environment: environment(&fixture.snapshot),
+        method: PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: fixture.snapshot.id().clone(),
+                },
+                class_bytes: fixture.class_bytes.clone(),
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(name.to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
+        },
+        stages: AnalysisStage::ALL.to_vec(),
+    };
+    engine
+        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
+        .expect("a legal request is answered, not raised")
+}
+
+#[test]
+fn a_proved_monitor_cleanup_ends_before_reused_loop_integers() {
+    let engine = Engine::new();
+    let fixture = fixture_with_members(&engine, MONITOR_REUSE, &[b"synchronizedLoop"]);
+    let text = body(&engine, &fixture, b"synchronizedLoop", b"(I)I");
+    assert!(
+        text.contains("synchronized (em20.LocalScopes.class)"),
+        "{text}"
+    );
+    assert!(text.contains("int local2_2;"), "{text}");
+    assert!(text.contains("int local3_2;"), "{text}");
+    assert!(text.contains("return local2_2;"), "{text}");
+    assert!(!text.contains("@bytecode"), "{text}");
+}
+
+#[test]
+fn non_monitor_handler_and_back_edge_do_not_borrow_the_monitor_split() {
+    let engine = Engine::new();
+    let fixture = fixture_with_members(
+        &engine,
+        MONITOR_REFUSALS,
+        &[
+            b"catchThenLoop",
+            b"laterHandlerReadsReusedInt",
+            b"monitorInOuterLoop",
+        ],
+    );
+    let ordinary = recover(&engine, &fixture, b"catchThenLoop", b"(I)I");
+    assert!(
+        ordinary.recovery().text.contains("catch parameter scope"),
+        "{}",
+        ordinary.recovery().text
+    );
+    let handler = recover(&engine, &fixture, b"laterHandlerReadsReusedInt", b"(I)I");
+    assert!(
+        handler
+            .recovery()
+            .text
+            .contains("crosses a protected region"),
+        "{}",
+        handler.recovery().text
+    );
+    let back_edge = recover(&engine, &fixture, b"monitorInOuterLoop", b"(I)I");
+    assert!(
+        back_edge
+            .recovery()
+            .text
+            .contains(
+                "selected type `Object` is not proved compatible with the value written at BCI 34 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 12)",
+            ),
+        "{}",
+        back_edge.recovery().text
+    );
+    for report in [ordinary, handler, back_edge] {
+        assert_ne!(report.recovery().quality, Quality::Structured);
+        assert!(report.recovery().produced());
+        assert!(!report.recovery().text.contains("_2 = 0;"));
+    }
+}
+
+#[test]
+fn a_stopped_monitor_reuse_run_publishes_no_partial_local() {
+    let engine = Engine::new();
+    let fixture = fixture_with_members(&engine, MONITOR_REUSE, &[b"synchronizedLoop"]);
+    let mut full_budget = Budget::new(limits());
+    let full = recover_with_budget(
+        &engine,
+        &fixture,
+        b"synchronizedLoop",
+        b"(I)I",
+        &mut full_budget,
+    );
+    assert!(full.recovery().produced());
+    let analysis_items = match &full.analysis().execution {
+        ExecutionReport::Complete { usage } => usage.counted_usage(CountedBudgetDimension::IrItems),
+        other => panic!("the fixture analysis completes: {other:?}"),
+    };
+    // Find a bound that stops while accounting for the monitor handler block (BCI 14), after
+    // analysis has completed. The small window is fixed by this compiled method's region shape.
+    let stopped = (analysis_items..analysis_items + 32)
+        .find_map(|limit| {
+            let mut bounded = Budget::new(Limits {
+                ir_items: limit,
+                ..limits()
+            });
+            let result = recover_with_budget(
+                &engine,
+                &fixture,
+                b"synchronizedLoop",
+                b"(I)I",
+                &mut bounded,
+            );
+            matches!(
+                result.analysis().execution,
+                ExecutionReport::Complete { .. }
+            )
+            .then_some(result)
+            .filter(|result| {
+                matches!(
+                    result.recovery().stop(),
+                    Some(StopReason::Budget { at: Some(14), .. })
+                )
+            })
+        })
+        .expect("a bounded run stops while charging the monitor handler proof");
+    assert!(!stopped.recovery().produced());
+    assert_eq!(stopped.recovery().text, "");
+    assert!(stopped.recovery().source_map.is_empty());
+    assert!(matches!(
+        stopped.recovery().stop(),
+        Some(StopReason::Budget { .. })
+    ));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(limits(), token);
+    let stopped = recover_with_budget(
+        &engine,
+        &fixture,
+        b"synchronizedLoop",
+        b"(I)I",
+        &mut cancelled,
+    );
+    assert!(!stopped.recovery().produced());
+    assert_eq!(stopped.recovery().text, "");
+    assert!(stopped.recovery().source_map.is_empty());
+    assert!(matches!(
+        stopped.analysis().execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+}
+
+/// The usage snapshot of a finished run.
+fn usage(recovered: &RecoveredMethod) -> UsageSnapshot {
+    match &recovered.analysis().execution {
+        ExecutionReport::Complete { usage } => usage.clone(),
+        other => panic!("a legal request completes: {other:?}"),
+    }
+}
+
+/// One member's body as the presentation wrote it, with the planes this file checks everywhere.
+fn body(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> String {
+    let recovered = recover(engine, fixture, name, descriptor);
+    let report = recovered.recovery();
+    assert!(report.produced(), "{name:?}: {:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{name:?}: {}\nregions: {:?}\nfallbacks: {:?}",
+        report.text,
+        report.regions,
+        report.fallbacks
+    );
+    assert_eq!(report.quality, Quality::Structured, "{name:?}: {report:?}");
+    report.text.clone()
+}
+
+#[test]
+fn a_boolean_parameter_is_typed_by_the_members_own_descriptor() {
+    // P3-R5: `scope(Z)I` was presented as `if (b != 0)`, and `javac --release 8` refuses that text
+    // under the member's own signature (`boolean` and `int` are not comparable). The frames state one
+    // slot shape for all four int-sized primitives, so the fact that decides the condition is the
+    // member's **descriptor** — the same run's declaration — and the text now writes `if (b)`.
+    let engine = Engine::new();
+    let no_debug = fixture(&engine, NO_DEBUG);
+    let text = body(&engine, &no_debug, b"scope", b"(Z)I");
+    assert!(text.contains("if (arg0) {"), "{text}");
+    assert!(!text.contains("!= 0"), "{text}");
+
+    let debug = fixture(&engine, DEBUG);
+    let text = body(&engine, &debug, b"scope", b"(Z)I");
+    assert!(text.contains("if (b) {"), "{text}");
+
+    // The control in the other direction: an `int` parameter keeps its comparison, and a `long` one
+    // is untouched — the fact comes from each parameter's own descriptor rather than from a blanket
+    // rewrite of every zero test.
+    let arm = body(&engine, &no_debug, b"armOnly", b"(I)I");
+    assert!(arm.contains("if (arg0 > 0) {"), "{arm}");
+    let receiver = body(&engine, &no_debug, b"receiver", b"(J)J");
+    assert!(!receiver.contains('!'), "{receiver}");
+
+    // And the run claims no compilability it did not test: the text was not recompiled, so
+    // `compile_status` stays `NotAttempted` and the syntax is not claimed checked.
+    let report = recover(&engine, &no_debug, b"scope", b"(Z)I")
+        .recovery()
+        .clone();
+    assert_eq!(report.syntax_status, SyntaxStatus::Unchecked);
+    assert_eq!(report.compile_status, CompileStatus::NotAttempted);
+}
+
+#[test]
+fn a_slot_written_in_both_arms_is_declared_where_both_can_see_it() {
+    // P3-R3's own member: the review's counterexample, compiled by the same compiler generation.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NO_DEBUG);
+    let text = body(&engine, &fixture, b"scope", b"(Z)I");
+
+    // The declaration is written once, with no value, before the `if` — the innermost region that
+    // contains every use of the slot (`then` arm, `else` arm and the join all see it).
+    let declaration = text
+        .find("int local1;")
+        .unwrap_or_else(|| panic!("the declaration is hoisted above both arms:\n{text}"));
+    let if_at = text
+        .find("if (")
+        .unwrap_or_else(|| panic!("the branch is presented:\n{text}"));
+    assert!(
+        declaration < if_at,
+        "the declaration precedes the branch it is used on both sides of:\n{text}"
+    );
+    // Both writes are plain assignments: the declaration is not either write's.
+    assert!(
+        text.contains("local1 = 1;"),
+        "the `then` arm's write is an assignment:\n{text}"
+    );
+    assert!(
+        text.contains("local1 = 2;"),
+        "the `else` arm's write is an assignment:\n{text}"
+    );
+    assert!(
+        text.contains("return local1;"),
+        "the join reads the slot by its name:\n{text}"
+    );
+    // Not the shape `javac --release 8` refuses: no arm declares the slot.
+    assert!(
+        !text.contains("int local1 = "),
+        "a declaration inside an arm is out of scope in the other one:\n{text}"
+    );
+    assert_eq!(
+        text.matches("int local1;").count(),
+        1,
+        "one storage location, one declaration:\n{text}"
+    );
+}
+
+#[test]
+fn a_slot_filled_and_read_in_one_region_keeps_its_initial_value() {
+    // The control in the other direction: every use of slot 0 is in the region of its first write, so
+    // the write still declares it with its value. A fix that hoisted every declaration would answer
+    // `int local0; local0 = 5;` here, which is the same program with one more statement — and would
+    // mean the rule is "declare nothing where you can" rather than "declare where all uses see it".
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NO_DEBUG);
+    let text = body(&engine, &fixture, b"simple", b"()I");
+    assert!(
+        text.contains("int local0 = 5;"),
+        "the first write still declares the slot with the value it writes:\n{text}"
+    );
+    assert!(
+        text.contains("return local0;"),
+        "and the read after it names the slot:\n{text}"
+    );
+    assert!(
+        !text.contains("int local0;"),
+        "the declaration was not moved away from the write that fills it:\n{text}"
+    );
+}
+
+#[test]
+fn an_arms_own_local_is_still_declared_inside_that_arm() {
+    // `armOnly(I)I` holds both shapes at once: slot 1 (`y`) is written in the prefix and in the arm
+    // and read after the join, while slot 2 (`z`) is written and read in the `then` arm alone. The
+    // first must be hoisted; the second must stay where it is, or the fix would be an over-hoist.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NO_DEBUG);
+    let text = body(&engine, &fixture, b"armOnly", b"(I)I");
+
+    let if_at = text
+        .find("if (")
+        .unwrap_or_else(|| panic!("the branch is presented:\n{text}"));
+    let else_at = text
+        .find("} else {")
+        .unwrap_or_else(|| panic!("both arms are written:\n{text}"));
+    let inner = text
+        .find("int local2 = arg0 + 1;")
+        .unwrap_or_else(|| panic!("the arm's own local is declared with its value:\n{text}"));
+    assert!(
+        if_at < inner && inner < else_at,
+        "the arm's local stays inside the arm that uses it:\n{text}"
+    );
+    // And the slot both arms and the join touch is hoisted instead.
+    let shared = text.find("int local1;").unwrap_or_else(|| {
+        panic!("the shared slot is declared where all its uses see it:\n{text}")
+    });
+    assert!(
+        shared < if_at,
+        "the shared declaration precedes the branch:\n{text}"
+    );
+    assert!(
+        text.contains("return local1;"),
+        "the join reads the shared slot:\n{text}"
+    );
+}
+
+#[test]
+fn without_debug_evidence_a_reused_slot_stays_one_variable() {
+    // The `-g:none` sample: no `LocalVariableTable`, so nothing states that slot 3 carried two
+    // variables — the only honest reading of "one storage location, one variable" is the one this
+    // layer had before the table was read at all. Both of the slot's uses are in an arm, so its
+    // declaration is hoisted above the branch and both writes assign it; the ordinal names are the
+    // deterministic fallback `Deterministic names and scopes` requires when evidence is missing.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NO_DEBUG);
+    let text = body(&engine, &fixture, b"reuse", b"(ZI)I");
+
+    let if_at = text
+        .find("if (")
+        .unwrap_or_else(|| panic!("the branch is presented:\n{text}"));
+    for declaration in ["int local2;", "int local3;"] {
+        let at = text
+            .find(declaration)
+            .unwrap_or_else(|| panic!("`{declaration}` is declared once:\n{text}"));
+        assert!(
+            at < if_at,
+            "the shared slot's declaration precedes both arms:\n{text}"
+        );
+        assert_eq!(
+            text.matches(declaration).count(),
+            1,
+            "one storage location, one declaration:\n{text}"
+        );
+    }
+    assert!(
+        text.contains("local3 = arg1 + 1;") && text.contains("local3 = arg1 + 2;"),
+        "each arm writes the reused slot:\n{text}"
+    );
+    assert!(
+        text.contains("local2 = local3;"),
+        "and each arm stores it where the join reads it:\n{text}"
+    );
+    assert!(
+        text.contains("return local2;"),
+        "the join reads the slot the body really declares:\n{text}"
+    );
+}
+
+#[test]
+fn a_category_two_parameter_leaves_its_second_slot_to_the_signature() {
+    // `after(JI)I`, `reassign(JI)I` and `receiver(J)J` are the category-2 shapes: a `long` parameter
+    // fills two slots (JVM 2.6.1), so the `int` parameter of the first two sits at slot **2** and the
+    // receiver of the third is slot 0 with the `long` at 1 and 2. The count the run states decides
+    // both the names and the declarations — a count that stopped at the descriptor's parameter
+    // *count* would name the `int` `arg1` and would treat slot 2 as a local the body must declare.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NO_DEBUG);
+
+    let after = body(&engine, &fixture, b"after", b"(JI)I");
+    assert!(
+        after.trim_end().ends_with("{\n    return arg2;\n}"),
+        "the `int` parameter is slot 2 and is named as a parameter:\n{after}"
+    );
+    assert!(
+        !after.contains("local"),
+        "and nothing of this body is named as a local:\n{after}"
+    );
+
+    let reassign = body(&engine, &fixture, b"reassign", b"(JI)I");
+    assert!(
+        reassign
+            .trim_end()
+            .ends_with("{\n    arg2 = arg2 + 1;\n    return arg2;\n}"),
+        "a parameter is never declared by the body, and its slot is the one the descriptor says:\n{reassign}"
+    );
+    assert!(
+        !reassign.contains("int "),
+        "the body declares no local at all: slot 2 is a parameter and the `long` has no local:\n{reassign}"
+    );
+
+    let receiver = body(&engine, &fixture, b"receiver", b"(J)J");
+    assert!(
+        receiver.trim_end().ends_with("{\n    return arg1;\n}"),
+        "slot 0 is the receiver, the `long` is slots 1 and 2, and the read names slot 1:\n{receiver}"
+    );
+    assert!(
+        !receiver.contains("local"),
+        "the instance member's only local slots are its receiver and its parameter:\n{receiver}"
+    );
+}
+
+#[test]
+fn a_name_the_table_states_is_used_where_it_exists() {
+    // The `-g` sample: the same shapes, with a `LocalVariableTable`. The names the table states are
+    // the names the text carries, and the declaration of a slot written in both arms is still
+    // hoisted above them — the split of a *reused* slot (P3 3.4) does not move this one.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, DEBUG);
+
+    let scope = body(&engine, &fixture, b"scope", b"(Z)I");
+    assert!(
+        scope.contains("int x;"),
+        "the table's name for the slot is used:\n{scope}"
+    );
+    assert!(
+        scope.contains("if (b) {") && scope.contains("x = 1;") && scope.contains("x = 2;"),
+        "the parameter and the local are named, and both writes assign:\n{scope}"
+    );
+    assert!(
+        scope.contains("return x;"),
+        "the join reads the name the table states:\n{scope}"
+    );
+}
+
+#[test]
+fn a_slot_the_table_names_over_two_ranges_carries_two_variables() {
+    // P3-R6, and the `source-maps` scenario it comes from (`Slot reuse across ranges`): the `-g`
+    // sample's table names slot 3 `c` over `[8, 10)` and `d` over `[17, 19)` — the `then` arm's `c`
+    // and the `else` arm's `d`, two source variables in disjoint scopes on one storage location. The
+    // requirement is that the source map and the Java AST **establish different scopes and names**
+    // for them instead of merging the whole slot into one variable, so the recovered text is the
+    // source's own shape:
+    //
+    // ```java
+    // int a;
+    // if (b) { int c = seed + 1; a = c; } else { int d = seed + 2; a = d; } return a;
+    // ```
+    //
+    // Two things about that text are *not* read off the table, and both are the reason this file
+    // checks the whole block rather than the presence of two names. The store that fills `c` is at
+    // BCI 7 and `c`'s range starts at 8, while `a`'s stores (9 and 18) and its load (19) are outside
+    // the ranges the table states for `a`: the record gives a variable its **name and its
+    // visibility**, and which instructions belong to it is decided from the body's own value chains
+    // (P3 3.4). And `a` stays **one** variable across its two records — they state the same name —
+    // declared where both arms and the join can see it, which is the P3-R3 rule this test also
+    // guards against the new split.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, DEBUG);
+    let text = body(&engine, &fixture, b"reuse", b"(ZI)I");
+
+    assert!(
+        text.trim_end().ends_with(
+            "{\n    int a;\n    if (b) {\n        int c = seed + 1;\n        a = c;\n    } else {\n        int d = seed + 2;\n        a = d;\n    }\n    return a;\n}"
+        ),
+        "the reused slot is two variables, each declared where its own uses are:\n{text}"
+    );
+    assert!(
+        !text.contains("local3") && !text.contains("local2"),
+        "the slot the table names is never written by its ordinal:\n{text}"
+    );
+    // The declaration of `c` is the write that fills it, inside the arm that uses it — not one
+    // declaration hoisted for the whole slot, and not two declarations of one variable.
+    assert_eq!(
+        text.matches("int c").count(),
+        1,
+        "one declaration for `c`:\n{text}"
+    );
+    assert_eq!(
+        text.matches("int d").count(),
+        1,
+        "one declaration for `d`:\n{text}"
+    );
+    assert!(
+        text.find("int c").unwrap_or(usize::MAX) < text.find("} else {").unwrap_or(0)
+            && text.find("} else {").unwrap_or(0) < text.find("int d").unwrap_or(usize::MAX),
+        "each variable is declared in its own arm:\n{text}"
+    );
+    // And `a` — one name over two records — keeps the P3-R3 declaration, above the branch.
+    let shared = text
+        .find("int a;")
+        .unwrap_or_else(|| panic!("`a` is declared where every use sees it:\n{text}"));
+    assert!(
+        shared < text.find("if (").unwrap_or(0),
+        "the declaration of the variable both arms write precedes them:\n{text}"
+    );
+}
+
+#[test]
+fn the_debug_table_is_read_by_the_same_run_that_decoded_the_body() {
+    // A16 for this slice: the names and the parameter slots come from the run's own reads. The `-g`
+    // sample's table is inside the `Code` entry the one body decode already billed, so the numbers do
+    // not move: one header, one body attempt, and the bytes a body of that size costs. A second read
+    // of the class for the table would show up in them.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, DEBUG);
+    let recovered = recover(&engine, &fixture, b"scope", b"(Z)I");
+    let run = usage(&recovered);
+    assert_eq!(run.class_headers, 1, "one header read per request");
+    assert_eq!(run.method_bodies, 1, "and one body attempt");
+    assert_eq!(
+        recovered
+            .analysis()
+            .reads
+            .iter()
+            .map(|read| read.reason)
+            .collect::<Vec<_>>(),
+        vec![ReadReason::DriverMethodBody],
+        "the one read this request charged is the driver method's body"
+    );
+    assert_eq!(
+        (
+            run.attribute_bytes,
+            run.code_bytes,
+            run.class_bytes,
+            run.read_bytes
+        ),
+        PINNED,
+        "the debug table is inside the body's own `Code` entry, so it costs no dimension of its own"
+    );
+}
+
+/// The dimensions one `scope(Z)I` request over the `-g` sample charges, measured before the debug
+/// table was read at all: the table is inside the `Code` entry the body decode already billed, so
+/// these numbers are the same with and without it.
+const PINNED: (u64, u64, u64, u64) = (797, 13, 1101, 1101);

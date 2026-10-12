@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-public-single-method-stop-runner-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T01:19:19.347139+00:00",
+  "finished_at": "2026-10-12T01:20:10.724953+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-public-single-method-stop-invocation-root-v1/stdout.raw",
+      "bytes": 156,
+      "sha256": "e3590ae24be1fe7818de652952785d84d33841f498ecc467f5f01f8f5e295de1"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-public-single-method-stop-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-baseline-checker-root-v9/check_controls.py",
+    "--execution",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-none/execution.json",
+    "--expected-javac-debug",
+    "none",
+    "--out",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-check-root-v1-none/observation.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T01:03:39.776235+00:00",
+  "finished_at": "2026-10-12T01:03:40.126381+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-complete-source-check-invocation-root-v1-none/stdout.raw",
+      "bytes": 390,
+      "sha256": "e47a967c9670f510a24ed0c077f1868e6bc4eca11b5878a2791480b8cf7a3492"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-complete-source-check-invocation-root-v1-none/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

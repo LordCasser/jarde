@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-full-validation-prep-luna-v4/workspace_runner.py",
+    "--candidate-build-receipt",
+    "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "--candidate-build-receipt-sha256",
+    "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+    "--candidate-cli",
+    "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "--candidate-cli-sha256",
+    "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "--out",
+    "/private/tmp/jarde-local-reference-write-full-workspace-root-v5"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T02:36:30.570652+00:00",
+  "finished_at": "2026-10-12T02:48:50.801705+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-full-workspace-invocation-root-v5/stdout.raw",
+      "bytes": 7113,
+      "sha256": "71d07e0c8eeec1397ca777099475bd72b6c55fc3aced529eb8a8a20a5b319f45"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-full-workspace-invocation-root-v5/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

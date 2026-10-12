@@ -1,0 +1,74 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-none/legs/javac23-original/classes/cf11/CF11CastReadControl.class
+  Last modified 2026年10月12日; size 399 bytes
+  SHA-256 checksum 2de1af5a3ca1dbd9c0f6c06c92960de3406bef573a893d78508624594762a0d6
+public final class cf11.CF11CastReadControl
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #25                         // cf11/CF11CastReadControl
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // seed
+   #8 = Utf8               seed
+   #9 = InterfaceMethodref #10.#11        // java/util/List.isEmpty:()Z
+  #10 = Class              #12            // java/util/List
+  #11 = NameAndType        #13:#14        // isEmpty:()Z
+  #12 = Utf8               java/util/List
+  #13 = Utf8               isEmpty
+  #14 = Utf8               ()Z
+  #15 = InterfaceMethodref #10.#16        // java/util/List.get:(I)Ljava/lang/Object;
+  #16 = NameAndType        #17:#18        // get:(I)Ljava/lang/Object;
+  #17 = Utf8               get
+  #18 = Utf8               (I)Ljava/lang/Object;
+  #19 = Class              #20            // java/lang/String
+  #20 = Utf8               java/lang/String
+  #21 = Methodref          #19.#22        // java/lang/String.length:()I
+  #22 = NameAndType        #23:#24        // length:()I
+  #23 = Utf8               length
+  #24 = Utf8               ()I
+  #25 = Class              #26            // cf11/CF11CastReadControl
+  #26 = Utf8               cf11/CF11CastReadControl
+  #27 = Utf8               Code
+  #28 = Utf8               castRead
+  #29 = Utf8               (Ljava/util/List;)I
+  #30 = Utf8               StackMapTable
+{
+  public cf11.CF11CastReadControl();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int castRead(java.util.List);
+    descriptor: (Ljava/util/List;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: ldc           #7                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #9,  1            // InterfaceMethod java/util/List.isEmpty:()Z
+         9: ifne          20
+        12: aload_0
+        13: iconst_0
+        14: invokeinterface #15,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        19: astore_1
+        20: aload_1
+        21: checkcast     #19                 // class java/lang/String
+        24: invokevirtual #21                 // Method java/lang/String.length:()I
+        27: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 20
+          locals = [ class java/lang/Object ]
+}

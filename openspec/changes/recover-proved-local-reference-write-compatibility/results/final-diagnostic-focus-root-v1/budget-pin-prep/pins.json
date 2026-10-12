@@ -1,0 +1,24 @@
+{
+  "target": "crates/jarde-java/tests/p3_patterns.rs::straight_finally_reuses_its_guard_verdict_with_a_tight_budget",
+  "old_expected_analysis_steps": 63,
+  "observed_analysis_steps": 77,
+  "delta": 14,
+  "delta_accounting": {
+    "producer_scan_instructions": 9,
+    "producer_scan_instruction_writes": 5,
+    "total": 14,
+    "fixture_method": "FinallyStraightThrow.run()I",
+    "instruction_bcis": [0, 3, 4, 7, 8, 9, 10, 13, 14],
+    "write_bcis": [0, 3, 7, 9, 13]
+  },
+  "tight_limit": "derived from the measured full-run usage; unchanged",
+  "focused_capture": {
+    "path": "/private/tmp/jarde-local-reference-write-final-diagnostic-focus-root-v1/1.stdout.raw",
+    "p3_patterns_passed": 84,
+    "p3_patterns_failed": 1,
+    "other_focused_binary_passed": 9,
+    "other_focused_binary_failed": 0
+  },
+  "patch_scope": "test baseline and explanatory message only",
+  "verification": "static inspection only; no Cargo, JDK, or Git mutation"
+}

@@ -1,0 +1,11 @@
+--- a/crates/jarde-java/tests/cf12_proved_local_source_types.rs
++++ b/crates/jarde-java/tests/cf12_proved_local_source_types.rs
+@@ -653,7 +653,7 @@
+         (TYPED_BOUNDARY_DEBUG, "value", "number"),
+         (TYPED_BOUNDARY_NODEBUG, "local2", "local1"),
+     ];
+-    let conflict = "local 2 is treated as one source variable, but BCI 10 writes `int` and BCI 17 writes `Object`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local";
++    let conflict = "local 2 is treated as one source variable, but the selected type `int` is not proved compatible with the value written at BCI 17 (`Object`); this region is refused instead of publishing a contradictory local (first write at BCI 10)";
+     let expected_missing = [0, 1, 4, 6, 9, 16, 22, 28, 31, 32, 34];
+     for (class, local_name, number_name) in fixtures {
+         let (default, method) = recover_slot_reuse(

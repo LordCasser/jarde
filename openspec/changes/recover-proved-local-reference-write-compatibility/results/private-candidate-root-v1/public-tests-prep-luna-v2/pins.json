@@ -1,0 +1,266 @@
+{
+  "schema": "local-reference-write-public-test-draft-pins-v1",
+  "status": "private_draft_not_executed",
+  "draft_files": [
+    {
+      "path": "/private/tmp/jarde-local-reference-write-public-tests-prep-luna-v2/p3_local_reference_write_compatibility.rs",
+      "bytes": 16263,
+      "sha256": "d6a662cdf22771eafd4524951d4ea3e88fb9a72943da08e075bd22d4425baa15"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-public-tests-prep-luna-v2/README.md",
+      "bytes": 4253,
+      "sha256": "43b9423893331de0cebf06ba9cbd1c6ffb7dc7d7a6a68b89d74df74a0e2e7dfb"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-public-tests-prep-luna-v2/late_stop_root_probe.rs",
+      "bytes": 1198,
+      "sha256": "a0d87348404ce000c77c41ac2834f530ae53872c68a2387b4c9629d1d88e0683"
+    }
+  ],
+  "provenance": [
+    {
+      "profile": "debug",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/execution.json",
+      "bytes": 382758,
+      "sha256": "17ce6f9d1712725e6d72a6ccbd1076e285cb24fbeb404f426cb2290c86ffdec5"
+    },
+    {
+      "profile": "no-debug",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/execution.json",
+      "bytes": 403933,
+      "sha256": "12468c49c34208753e502eb8381ee102982696b4b663f89e6e3291549873760d"
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/manifest.json",
+      "bytes": 1720,
+      "sha256": "f0041e028254fd7dbaf45053f26079fdc4a167b85384db5aab2ba933c5410c90"
+    }
+  ],
+  "fixture_copy_plan": [
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11OuterAssignmentTarget",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1483,
+      "sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11CastReadControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11CastReadControl.class",
+      "bytes": 665,
+      "sha256": "92c054a7a4a8fb7dac674cab3f39e0384df97459c95214603d8d59863cf48a6f"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11CharSequenceControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11CharSequenceControl.class",
+      "bytes": 675,
+      "sha256": "6ca7b70d27087927c721796b3394b58604954b640993e27babadce0e15876eaf"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11ReferenceArrayControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11ReferenceArrayControl.class",
+      "bytes": 614,
+      "sha256": "585642a44d5dd0cf9ca4fb1b897c3958544c20b23bedebf2c119737ba940cce0"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11ParameterControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11ParameterControl.class",
+      "bytes": 624,
+      "sha256": "6839008459f7049ed80557a5071def5315ea75ede85b41a75ce957f8a910e2e4"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11SlotReuseControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11SlotReuseControl.class",
+      "bytes": 746,
+      "sha256": "38274a3abc14997076ecc611944583524fbaf9b84be63b66c4ddacc4205d31b2"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "CF11HandlerWriteControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11HandlerWriteControl.class",
+      "bytes": 798,
+      "sha256": "30d62603d4498bd89237a6fc6b498f2ce1cfe5f8352ee6013857d90770056171"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11OuterAssignmentTarget",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1474,
+      "sha256": "a145c63b58fba3de708617917b2817f6f5a40e92d2957fc643ac8e4d5684794a"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11CastReadControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11CastReadControl.class",
+      "bytes": 662,
+      "sha256": "e2095f799a519b9892dc523ffbbec0335e09806de0c8844ebbe88741ff3f51c2"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11CharSequenceControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11CharSequenceControl.class",
+      "bytes": 675,
+      "sha256": "e9b8ed9dfaac76a83e66da67be61bc9c3152ef1584a1ea8198777e56580eec6f"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11ReferenceArrayControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11ReferenceArrayControl.class",
+      "bytes": 614,
+      "sha256": "7b387ad2a63dfd404fbb4f527e4ca71a5c346c5a8b49b67bbd94fd2c191a0a05"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11ParameterControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11ParameterControl.class",
+      "bytes": 624,
+      "sha256": "e10fa4218f7da58b9fb074a114c237e237c3968be85307096d94644af659c627"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11SlotReuseControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11SlotReuseControl.class",
+      "bytes": 743,
+      "sha256": "a04d286d2c7e8d300f4d0d4e1016105771edad90a51ed4f62493793b6f3361ad"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "CF11HandlerWriteControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac23-original/classes/cf11/CF11HandlerWriteControl.class",
+      "bytes": 792,
+      "sha256": "a05891539f5d7af7bcead8538d38262492dd3bde5a2d786db997777bbc9ec8e7"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11OuterAssignmentTarget",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 932,
+      "sha256": "b36dc362124cd80cc1590dfb89afe0f874ec534143b27adde266c4e2f415c8ca"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11CastReadControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11CastReadControl.class",
+      "bytes": 402,
+      "sha256": "bbcb92f0df5f1f00cc2896db2a2da9400bc7342bc8bbfec729725c3342800727"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11CharSequenceControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11CharSequenceControl.class",
+      "bytes": 407,
+      "sha256": "eaab33dfe53feabb7079e6cea9de57555fe2b2af427c4c1081bcb7e0ed4223d8"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11ReferenceArrayControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11ReferenceArrayControl.class",
+      "bytes": 360,
+      "sha256": "b9254a41cc6f384ca759ed0410651d0e564941e722421b9c04d13a836fe80916"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11ParameterControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11ParameterControl.class",
+      "bytes": 363,
+      "sha256": "9c6d4f2012dfe3daabe24cd7742e2eb92322152b5cdee02f84d23c71f567b0e2"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11SlotReuseControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11SlotReuseControl.class",
+      "bytes": 410,
+      "sha256": "a3297a74e5fb821d5965779d8ecfa1c6f2af251a97d45e2ebae4d2ce163131fb"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "CF11HandlerWriteControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11HandlerWriteControl.class",
+      "bytes": 466,
+      "sha256": "0e3959f5a00d4f95962fcef9149502275a0814b1622807ad6fe672a705534936"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11OuterAssignmentTarget",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 923,
+      "sha256": "727e5375cb4f58364fdfc7a3d15a466e53c1526fa7b348007792f44b2df7617a"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11CastReadControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11CastReadControl.class",
+      "bytes": 399,
+      "sha256": "2de1af5a3ca1dbd9c0f6c06c92960de3406bef573a893d78508624594762a0d6"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11CharSequenceControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11CharSequenceControl.class",
+      "bytes": 407,
+      "sha256": "1d7f1a26ff73d38f0a8855465827a860ae73b7fb3bb38b32ec626809af64b8dd"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11ReferenceArrayControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11ReferenceArrayControl.class",
+      "bytes": 360,
+      "sha256": "df55153082418570f61d64e42504c10fad607f4ef8fcfbe2f985b19db55e1d90"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11ParameterControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11ParameterControl.class",
+      "bytes": 363,
+      "sha256": "d5a76e502514138b9d6cea43ab643b665d5a556f765e02c50f51e5686f1f8459"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11SlotReuseControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11SlotReuseControl.class",
+      "bytes": 407,
+      "sha256": "d9cfde5f641b0f7ab5bbb505e27687ea4649c5eb6f60d4c0c47421bedee2c940"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "CF11HandlerWriteControl",
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes/cf11/CF11HandlerWriteControl.class",
+      "bytes": 460,
+      "sha256": "a654160bd190da139b7e244a4d4f93010dda30d545767731c5c9bacdc82f5718"
+    }
+  ]
+}

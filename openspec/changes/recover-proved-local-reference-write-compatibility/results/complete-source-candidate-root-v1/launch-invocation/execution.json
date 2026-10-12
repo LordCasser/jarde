@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-candidate-complete-source-launch-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T00:11:02.931764+00:00",
+  "finished_at": "2026-10-12T00:18:30.075305+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-complete-source-launch-invocation-root-v1/stdout.raw",
+      "bytes": 5846,
+      "sha256": "26159f146c1bd7062d2f100357982c9f90bf63f5e2e3f0427556110ca3f54f8b"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-complete-source-launch-invocation-root-v1/stderr.raw",
+      "bytes": 2,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

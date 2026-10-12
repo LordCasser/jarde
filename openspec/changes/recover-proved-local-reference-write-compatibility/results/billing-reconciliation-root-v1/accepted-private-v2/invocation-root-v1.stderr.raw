@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-p5-billing-update-luna-v1/update_billing.py", line 171, in <module>
+    main()
+    ~~~~^^
+  File "/private/tmp/jarde-p5-billing-update-luna-v1/update_billing.py", line 109, in main
+    cases = case_records(args.recorder_stdout.read_text(encoding="utf-8", errors="replace"))
+  File "/private/tmp/jarde-p5-billing-update-luna-v1/update_billing.py", line 60, in case_records
+    records[case] = parse_literal(body)
+                    ~~~~~~~~~~~~~^^^^^^
+  File "/private/tmp/jarde-p5-billing-update-luna-v1/update_billing.py", line 49, in parse_literal
+    raise ValueError("recorder Billing literal is incomplete or repeats a field")
+ValueError: recorder Billing literal is incomplete or repeats a field

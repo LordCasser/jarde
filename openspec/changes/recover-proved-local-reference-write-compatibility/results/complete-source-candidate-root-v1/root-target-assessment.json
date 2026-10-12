@@ -1,0 +1,28 @@
+{
+  "status": "accepted_bounded_outer_target_behavior",
+  "dedicated_comparison_sha256": "dd0fbeef975a6cc93e20edeaba064a52b092a891f15741c6a88e2e64e8ca095c",
+  "profiles": [
+    {
+      "profile": "debug",
+      "capture_sha256": "86f2ddf7bea614a6efde11789e78569531d7d2edf61aa12ab5f9910010457df4",
+      "accepted_target_runtime_legs": [
+        "javac8-jarde-default-isolated-CF11OuterAssignmentTarget",
+        "javac8-jarde-all-isolated-CF11OuterAssignmentTarget",
+        "javac23-jarde-default-isolated-CF11OuterAssignmentTarget",
+        "javac23-jarde-all-isolated-CF11OuterAssignmentTarget"
+      ]
+    },
+    {
+      "profile": "none",
+      "capture_sha256": "3348356cb57c56993f1dbc8f9d3b2403f32a838750063d83d75fecb6e22045e5",
+      "accepted_target_runtime_legs": [
+        "javac8-jarde-default-isolated-CF11OuterAssignmentTarget",
+        "javac8-jarde-all-isolated-CF11OuterAssignmentTarget",
+        "javac23-jarde-default-isolated-CF11OuterAssignmentTarget",
+        "javac23-jarde-all-isolated-CF11OuterAssignmentTarget"
+      ]
+    }
+  ],
+  "case_count_per_leg": 29,
+  "scope": "Only exact generated CF11OuterAssignmentTarget with original controls and Runner. Entire generated seven-class project is not accepted; its combined compile failures and twelve refusal map gaps per profile remain explicit. Dedicated checker executed exit0 and accepts historical CLI/source binding, raw streams, byte-identical original control classes, exact source declaration-only delta, and each runtime equality. No live-source/final-CLI/workspace/CI acceptance implied."
+}

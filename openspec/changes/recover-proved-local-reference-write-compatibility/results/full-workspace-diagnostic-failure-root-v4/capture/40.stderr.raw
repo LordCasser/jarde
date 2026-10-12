@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.88s
+[1m[92m     Running[0m tests/p3_local_postfix_array_elements.rs (target/debug/deps/p3_local_postfix_array_elements-9499d0ca2030aaae)
+[1m[92m     Running[0m tests/p3_local_reference_write_compatibility.rs (target/debug/deps/p3_local_reference_write_compatibility-3ecaaa9ee99f8231)
+[1m[92m     Running[0m tests/p3_local_rewrite.rs (target/debug/deps/p3_local_rewrite-919c1955dd060069)
+[1m[92m     Running[0m tests/p3_long_field_assignment_result.rs (target/debug/deps/p3_long_field_assignment_result-976e7a8a3f20a58a)

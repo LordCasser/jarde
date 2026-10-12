@@ -1,0 +1,29 @@
+# Local reference-write candidate v2 adversarial review
+
+## Pins and status
+
+Read-only static review of candidate v2, not product source and not a compile/test result. The private base `build.rs.base` is byte-identical to current shared `build.rs` at the reviewed base: SHA-256 `3bce6972b9b8516a270725148e8e3e662b9dce09ff86c11207c6bb3b124d20f7`. Candidate `/private/tmp/jarde-local-reference-write-impl-luna-v2/build.rs` SHA-256 `7174f770e76045117690409e622eae8eadc657492a1702050ef1272dd999a5f6`; `build.patch` SHA-256 `405026eb445f48b99e15894612f539f0fff6aeb9be3e34423386f4ad66852aed`. The repository's four change artifacts remain at the hashes recorded in review-v1; their tracker says 1/8 and they are plans/specification, not completed validation.
+
+**Disposition: v2 is not ready to apply.** There is a definite static type mismatch in its caller/helper interface; root has also confirmed this and is preparing v3. I did not run a compiler or test.
+
+## Adversarial findings
+
+1. **Definite caller/helper return mismatch (blocking).** At candidate lines 2876–2900, `local_reference_write_compatibility(...)` is matched as `Option<(u32, bool)>` using `Some((_, true))` / `Some((later, false))`. Its declaration at lines 2959 onward is `Result<Option<Decided>, StopReason>` and it returns `Some(Decided::Type(Object))` or `Some(Decided::Unknown(...))`. Those types cannot match. This is visible from source and must be corrected before any application; v2 remains a rejected historical draft.
+
+2. **Access closure was materially improved.** The candidate scans the candidate physical slot's SSA reads/writes, rejects `reuse.variable_at == None`, isolates other proved indices, and compares candidate `SlotUse` observations with SSA observations as sorted vectors retaining multiplicity and value/operand identity. This catches accesses omitted by `slot_uses` because it skips unresolved identities and `elided_cleanup`. The same scan rejects an unmapped cleanup access. This directly addresses the earlier v1 completeness blocker. The exact Object-store cache similarly retains `None` identities and rejects an ambiguous Object trigger; mapped different indices are isolated.
+
+3. **Catch/resource/handler boundaries fail closed.** Resource slots are passed before type planning; Caught definitions invalidate writes; any exception table in the method rejects this candidate. This is conservative for methods with unrelated handlers, but within this narrow slice it is safe and avoids pretending handler coverage. The candidate excludes a selected array type and rejects observed named/direct array writes. It only starts from a non-null `Value::Ref` first store and permits later writes only when both stored and stored local value are `Ref` or `Null`, so uninitialized/primitive/Top/return-address writes do not pass. At least two writes and one read are required.
+
+4. **Positive proof shape is narrowly checked.** The trigger is a physical local `Store` with one Stack operand, one Local output, and a `direct_reference_write_type` exactly equal to `java.lang.Object`. For every candidate read, the candidate requires `Operation::Load` of the same slot, one Stack output, unreplaced SSA definition at the expected BCI/block, a single SSA use, that exact Stack value as the consumer's sole Stack input, `Operation::Return`, no writes, and a method return type exactly `java.lang.Object`. The writer's `instructions_by_bci` index is built during the same full traversal, rejects duplicate BCIs, and ties consumer block to the SSA use. The Object declaration remains a single `Decided` result consumed by the existing planning path; no pass, type entity, or general LUB service is introduced.
+
+5. **One small physical-opcode gap to close or explicitly justify.** The candidate checks abstract `Operation::Load`/`Operation::Return`, but not the concrete load/return opcode family. In valid verifier-checked class files, the reference Store/Load and Object descriptor strongly constrain these opcodes; however the review claim is physical direct Object return. To make that proof literal and defensive against malformed-but-parsed bytecode, require `aload` (`0x19`, `0x2a..=0x2d`) for the read and `areturn` (`0xb0`) for the consumer, or document the existing parser/verifier invariant that establishes those opcode relationships before this function runs. The current checks do verify both IR stack edges and the descriptor.
+
+6. **Conflict message is now materially accurate.** The replacement says the selected type is not proved compatible with the value at the conflicting write and refuses the region; it no longer claims that no possible Java declaration can hold String and Object. NoType remains the existing refusal contract.
+
+## Cache/cost and scope
+
+The first eligible non-Object scalar reference fallback triggers one method-wide scan to index exact Object stores. The cache is lazy and only built once per `decide_types`; every instruction/write and later cache observation is charged/polled. This is a bounded O(method IR) additional pass, not a per-variable repeated scan, and it is justified by the need to discover exact Object writes omitted from `SlotUse` (including cleanup/unresolved-owner cases). It may run even when the candidate local has no Object write, but avoids missing a hidden qualifying write and avoids N repeated scans. It uses an ordinary local `BTreeMap`; it does not add a persistent service or identity type.
+
+No recursive array helper or general type hierarchy/LUB appears in this candidate. Array checks use the existing `array_descriptor` and direct-producer helper. The array controls and generated-source compile/runtime checks are still future acceptance work, not established here.
+
+**Unperformed:** no shared edit, Git mutation, formatter, compiler, test, or candidate acceptance. This review is against v2's pinned private bytes only.

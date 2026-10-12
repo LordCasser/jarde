@@ -1,0 +1,279 @@
+{
+  "started_at": "2026-10-12T02:31:00.693710+00:00",
+  "free_before": 17867751424,
+  "removed": [
+    {
+      "path": "/private/tmp/scriptos-native76-cargo-20261011",
+      "allocated_bytes": 4096,
+      "children": [
+        ".rustc_info.json"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native82-cargo-20261011",
+      "allocated_bytes": 197099520,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native83-cargo-20261011",
+      "allocated_bytes": 197115904,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native84-cargo-20261011",
+      "allocated_bytes": 197124096,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native85-cargo-20261011",
+      "allocated_bytes": 197136384,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native86-cargo-20261011",
+      "allocated_bytes": 197120000,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native87-cargo-20261011",
+      "allocated_bytes": 4096,
+      "children": [
+        ".rustc_info.json"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native88-cargo-20261011",
+      "allocated_bytes": 197136384,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native89-cargo-20261011",
+      "allocated_bytes": 197124096,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native90-cargo-20261011",
+      "allocated_bytes": 197144576,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native91-cargo-20261012",
+      "allocated_bytes": 197300224,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native92-cargo-20261012",
+      "allocated_bytes": 197300224,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native93-cargo-20261012",
+      "allocated_bytes": 197332992,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native94-cargo-20261012",
+      "allocated_bytes": 197345280,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native95-cargo-20261012",
+      "allocated_bytes": 197345280,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native96-cargo-20261012",
+      "allocated_bytes": 197353472,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native97-cargo-20261012",
+      "allocated_bytes": 197345280,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native98-cargo-20261012",
+      "allocated_bytes": 4096,
+      "children": [
+        ".rustc_info.json"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native99-cargo-20261012",
+      "allocated_bytes": 197300224,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    },
+    {
+      "path": "/private/tmp/scriptos-native100-cargo-20261012",
+      "allocated_bytes": 197304320,
+      "children": [
+        ".rustc_info.json",
+        "debug",
+        "release",
+        "riscv64gc-unknown-none-elf",
+        "scriptos-rv64"
+      ],
+      "open_handles": 0,
+      "process_references": 0,
+      "absence_verified": true
+    }
+  ],
+  "preserved_latest": "/private/tmp/scriptos-native101-cargo-20261012",
+  "finished_at": "2026-10-12T02:31:05.594515+00:00",
+  "removed_allocated_bytes": 3352940544,
+  "free_after": 20933300224,
+  "preserved_latest_exists": true
+}

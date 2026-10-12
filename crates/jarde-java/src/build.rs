@@ -544,8 +544,8 @@ enum NoType {
     /// The value the variable's first write stores has a frame entry that names a descriptor this
     /// layer cannot spell as a Java type.
     Unspellable(String),
-    /// The slot was treated as one source local, but a later write has a value in the other JVM
-    /// type category. A reference and a primitive cannot share one Java declaration.
+    /// No single Java declaration was proved sound for the source-local lifetime. This includes
+    /// JVM category conflicts and ambiguous or incompatible reference writes.
     ConflictingWrites {
         first: u32,
         later: u32,
@@ -568,7 +568,7 @@ impl NoType {
                 declared,
                 observed,
             } => format!(
-                "local {slot} is treated as one source variable, but BCI {first} writes `{}` and BCI {later} writes `{}`; no Java declaration can hold both, so this region is refused instead of publishing a contradictory local",
+                "local {slot} is treated as one source variable, but the selected type `{}` is not proved compatible with the value written at BCI {later} (`{}`); this region is refused instead of publishing a contradictory local (first write at BCI {first})",
                 declared.spell(),
                 observed.spell()
             ),
@@ -753,9 +753,13 @@ fn declarations(
         &paths,
         budget,
     )?;
+    // The slots declared by resource/catch headers cannot be widened as ordinary body locals.
+    let resources = resource_slots(regions);
     let decided = decide_types(
         &uses,
         regions,
+        &resources,
+        !code.exception_handlers.is_empty(),
         ssa,
         operations,
         reuse,
@@ -785,10 +789,8 @@ fn declarations(
         this_aliases,
         ..Declarations::default()
     };
-    // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
-    // header is the declaration, no statement of the body writes one, and hoisting a second
-    // declaration above the statement would declare the same name twice.
-    let resources = resource_slots(regions);
+    // The slots a guarded statement declares **in its own header** (P3 2.4) were collected before
+    // type planning so those same headers are excluded from ordinary body-local proofs.
     // The lexical plan is a plan of the live flow. An uncovered quote is dead only when none of
     // its entry edges can run: an exception edge fed by a real throw site is a live entry even
     // though the normal-flow region walk did not visit its handler. Type decisions above still
@@ -2434,6 +2436,8 @@ struct FirstWrite {
 fn decide_types(
     uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
     regions: &[Region],
+    resource_slots: &BTreeSet<u16>,
+    has_exception_handlers: bool,
     ssa: &SsaTable,
     operations: &Operations,
     reuse: &reuse::Plan,
@@ -2652,6 +2656,12 @@ fn decide_types(
             break;
         }
     }
+    // This lazy full-method census can trigger a candidate from an exact Object store omitted
+    // from SlotUse (for example, a cleanup access). Keep each reuse owner, including None, so a
+    // candidate with ambiguous attribution fails conservatively. Reuse the census for later
+    // locals instead of rescanning the instruction stream for each candidate.
+    let mut physical_object_write_cache: Option<BTreeMap<u16, Vec<(u32, Option<LocalVariable>)>>> =
+        None;
     // The decision every consumer reads: the descriptor's boolean for a parameter, the propagated
     // boolean for a variable a read proved one, and otherwise the frame's own type for the value
     // the first write stores.
@@ -2864,7 +2874,27 @@ fn decide_types(
             match inferred_type {
                 Some(ty) => Decided::Type(ty),
                 None => match written_type(ssa, operations, write.written) {
-                    Ok(Some(ty)) => Decided::Type(ty),
+                    Ok(Some(ty)) => {
+                        let accesses = uses.get(variable).map(Vec::as_slice).unwrap_or(&[]);
+                        match local_reference_write_compatibility(
+                            *variable,
+                            write,
+                            &ty,
+                            accesses,
+                            resource_slots,
+                            has_exception_handlers,
+                            parameters,
+                            &mut physical_object_write_cache,
+                            ssa,
+                            operations,
+                            reuse,
+                            return_type,
+                            budget,
+                        )? {
+                            None => Decided::Type(ty),
+                            Some(decision) => decision,
+                        }
+                    }
                     Ok(None) => Decided::Unknown(NoType::NoFrameEntry),
                     Err(name) => Decided::Unknown(NoType::Unspellable(name)),
                 },
@@ -2912,6 +2942,311 @@ fn decide_types(
         decided.insert(*variable, decision);
     }
     Ok(decided)
+}
+
+/// Widen one ordinary first-write reference only when every write is reference-safe and every
+/// actual local read has exactly one direct `return Object` consumer. The same-slot enumeration
+/// is checked against `SlotUse` as a multiset because that earlier index omits cleanup instructions
+/// and accesses whose reuse identity is unresolved.
+#[allow(clippy::too_many_arguments)]
+fn local_reference_write_compatibility(
+    variable: LocalVariable,
+    first: &FirstWrite,
+    selected: &Type,
+    accesses: &[SlotUse],
+    resource_slots: &BTreeSet<u16>,
+    has_exception_handlers: bool,
+    parameters: u16,
+    physical_object_write_cache: &mut Option<BTreeMap<u16, Vec<(u32, Option<LocalVariable>)>>>,
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    return_type: Option<&Type>,
+    budget: &mut Budget,
+) -> Result<Option<Decided>, StopReason> {
+    let Type::Reference(first_name) = selected else {
+        return Ok(None);
+    };
+    if first_name == "java.lang.Object"
+        || first_name.ends_with("[]")
+        || !matches!(ssa.value(first.stored).ty(), Value::Ref(_))
+        || variable.slot() < parameters
+        || resource_slots.contains(&variable.slot())
+    {
+        return Ok(None);
+    }
+
+    let rejected = |later| {
+        Decided::Unknown(NoType::ConflictingWrites {
+            first: first.at,
+            later,
+            declared: (*selected).clone(),
+            observed: Type::Reference("java.lang.Object".to_owned()),
+        })
+    };
+
+    if physical_object_write_cache.is_none() {
+        let mut object_writes = BTreeMap::new();
+        for block in ssa.blocks() {
+            for instruction in block.instructions() {
+                poll(budget, Some(instruction.bci()))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                for (slot, _) in instruction.writes() {
+                    poll(budget, Some(instruction.bci()))?;
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(instruction.bci()),
+                    )?;
+                    let Slot::Local(slot) = slot else {
+                        continue;
+                    };
+                    if matches!(operations.get(instruction.bci()), Some(Operation::Store { slot: store_slot }) if store_slot == slot)
+                        && matches!(instruction.reads(), [(Slot::Stack(_), _)])
+                        && matches!(instruction.writes(), [(Slot::Local(local_slot), _)] if local_slot == slot)
+                        && let Some(stored) = store_operand(operations, instruction)
+                        && direct_reference_write_type(stored, ssa, operations)
+                            == Some(Type::Reference("java.lang.Object".to_owned()))
+                    {
+                        object_writes.entry(*slot).or_insert_with(Vec::new).push((
+                            instruction.bci(),
+                            reuse.variable_at(*slot, instruction.bci()),
+                        ));
+                    }
+                }
+            }
+        }
+        *physical_object_write_cache = Some(object_writes);
+    }
+    let mut later = None;
+    let mut ambiguous_object_write = false;
+    for (bci, owner) in physical_object_write_cache
+        .as_ref()
+        .and_then(|writes| writes.get(&variable.slot()))
+        .into_iter()
+        .flatten()
+    {
+        poll(budget, Some(*bci))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(*bci))?;
+        if *bci <= first.at {
+            continue;
+        }
+        match owner {
+            Some(owner) if *owner == variable => {
+                later = Some(later.map_or(*bci, |previous: u32| previous.min(*bci)));
+            }
+            Some(_) => {}
+            None => {
+                ambiguous_object_write = true;
+                later = Some(later.map_or(*bci, |previous: u32| previous.min(*bci)));
+            }
+        }
+    }
+    let Some(later) = later else {
+        return Ok(None);
+    };
+    let mut expected = Vec::new();
+    let mut read_count = 0usize;
+    let mut write_count = 0usize;
+    let mut invalid_write = false;
+    for access in accesses {
+        poll(budget, Some(access.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(access.bci),
+        )?;
+        if access.path.is_none() {
+            invalid_write = true;
+        }
+        if let Some(read) = access.read {
+            expected.push((access.bci, Some(read), None, None));
+            read_count += 1;
+        }
+        if let Some(written) = access.written {
+            let stored = access.stored.unwrap_or(written);
+            if !matches!(ssa.value(written).ty(), Value::Ref(_) | Value::Null)
+                || !matches!(ssa.value(stored).ty(), Value::Ref(_) | Value::Null)
+                || matches!(ssa.value(written).def(), Definition::Caught { .. })
+                || matches!(ssa.value(stored).def(), Definition::Caught { .. })
+            {
+                invalid_write = true;
+            }
+            expected.push((access.bci, None, Some(written), access.stored));
+            write_count += 1;
+        }
+    }
+    if ambiguous_object_write
+        || invalid_write
+        || has_exception_handlers
+        || write_count < 2
+        || read_count == 0
+        || !matches!(return_type, Some(Type::Reference(name)) if name == "java.lang.Object")
+    {
+        return Ok(Some(rejected(later)));
+    }
+
+    // Enumerate the physical slot directly. Missing reuse attribution is ambiguous, while an
+    // access attributed to another lifetime is outside this LocalVariable. Keep duplicate records.
+    let mut actual = Vec::new();
+    let mut instructions_by_bci = BTreeMap::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if instructions_by_bci
+                .insert(instruction.bci(), (block.block().clone(), instruction))
+                .is_some()
+            {
+                return Ok(Some(rejected(later)));
+            }
+            for (slot, value) in instruction.reads() {
+                poll(budget, Some(instruction.bci()))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                if *slot != Slot::Local(variable.slot()) {
+                    continue;
+                }
+                match reuse.variable_at(variable.slot(), instruction.bci()) {
+                    Some(owner) if owner == variable => {
+                        actual.push((instruction.bci(), Some(*value), None, None))
+                    }
+                    Some(_) => {}
+                    None => return Ok(Some(rejected(later))),
+                }
+            }
+            for (slot, value) in instruction.writes() {
+                poll(budget, Some(instruction.bci()))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                if *slot != Slot::Local(variable.slot()) {
+                    continue;
+                }
+                match reuse.variable_at(variable.slot(), instruction.bci()) {
+                    Some(owner) if owner == variable => actual.push((
+                        instruction.bci(),
+                        None,
+                        Some(*value),
+                        store_operand(operations, instruction),
+                    )),
+                    Some(_) => {}
+                    None => return Ok(Some(rejected(later))),
+                }
+            }
+        }
+    }
+    expected.sort_unstable();
+    actual.sort_unstable();
+    if actual != expected {
+        return Ok(Some(rejected(later)));
+    }
+    for access in accesses {
+        poll(budget, Some(access.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(access.bci),
+        )?;
+        let Some(written) = access.written else {
+            continue;
+        };
+        let stored = access.stored.unwrap_or(written);
+        let direct_type = direct_reference_write_type(stored, ssa, operations);
+        let named_array = matches!(ssa.value(stored).ty(), Value::Ref(RefType::Named { name, .. }) if array_descriptor(&String::from_utf8_lossy(name)).is_some());
+        if named_array
+            || matches!(direct_type, Some(Type::Reference(ref name)) if name.ends_with("[]"))
+        {
+            return Ok(Some(rejected(later)));
+        }
+    }
+
+    let mut proved_reads = 0usize;
+    for access in accesses {
+        poll(budget, Some(access.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(access.bci),
+        )?;
+        let Some(read_value) = access.read else {
+            continue;
+        };
+        if reuse.variable_at(variable.slot(), access.bci) != Some(variable)
+            || !matches!(operations.get(access.bci), Some(Operation::Load { slot }) if *slot == variable.slot())
+        {
+            return Ok(Some(rejected(later)));
+        }
+        let Some((load_block, load)) = instructions_by_bci.get(&access.bci) else {
+            return Ok(Some(rejected(later)));
+        };
+        if !matches!(load.reads(), [(Slot::Local(slot), value)] if *slot == variable.slot() && *value == read_value)
+            || !matches!(load.writes(), [(Slot::Stack(_), _)])
+        {
+            return Ok(Some(rejected(later)));
+        }
+        let [(Slot::Stack(_), loaded)] = load.writes() else {
+            return Ok(Some(rejected(later)));
+        };
+        if ssa.value(*loaded).replaced_by().is_some()
+            || !matches!(ssa.value(*loaded).def(), Definition::Instruction { block, bci } if block == load_block && *bci == access.bci)
+        {
+            return Ok(Some(rejected(later)));
+        }
+        let [consumer] = ssa.value(*loaded).uses() else {
+            return Ok(Some(rejected(later)));
+        };
+        let Some(consumer_bci) = consumer.bci() else {
+            return Ok(Some(rejected(later)));
+        };
+        poll(budget, Some(consumer_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(consumer_bci),
+        )?;
+        let Some((consumer_block, consumer_instruction)) = instructions_by_bci.get(&consumer_bci)
+        else {
+            return Ok(Some(rejected(later)));
+        };
+        if consumer_block != consumer.block()
+            || !matches!(operations.get(consumer_bci), Some(Operation::Return))
+            || !matches!(consumer_instruction.reads(), [(Slot::Stack(_), value)] if *value == *loaded)
+            || !consumer_instruction.writes().is_empty()
+        {
+            return Ok(Some(rejected(later)));
+        }
+        proved_reads += 1;
+    }
+    if proved_reads == read_count {
+        Ok(Some(Decided::Type(Type::Reference(
+            "java.lang.Object".to_owned(),
+        ))))
+    } else {
+        Ok(Some(rejected(later)))
+    }
 }
 
 /// Whether the actual SSA operand of a local write is directly stated as Java `char`.
@@ -34010,6 +34345,7 @@ mod tests {
 
     struct IteratorTestContext {
         analysis: jarde_jvm::method_ir::MethodIrAnalysis,
+        regions: Vec<Region>,
         reuse: reuse::Plan,
         names: NameTable,
         declarations: Declarations,
@@ -34122,10 +34458,567 @@ mod tests {
         .expect("fixture declaration ownership plan");
         IteratorTestContext {
             analysis,
+            regions,
             reuse,
             names,
             declarations,
         }
+    }
+
+    const LOCAL_REFERENCE_WRITE_TARGET_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11OuterAssignmentTarget.class"
+    );
+    const LOCAL_REFERENCE_WRITE_CAST_READ_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11CastReadControl.class"
+    );
+    const LOCAL_REFERENCE_WRITE_SLOT_REUSE_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11SlotReuseControl.class"
+    );
+    const LOCAL_REFERENCE_WRITE_HANDLER_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11HandlerWriteControl.class"
+    );
+
+    struct LocalReferenceWriteTestCase {
+        context: IteratorTestContext,
+        operations: Operations,
+        variable: LocalVariable,
+        first: FirstWrite,
+        selected: Type,
+        accesses: Vec<SlotUse>,
+        resources: BTreeSet<u16>,
+        parameters: u16,
+        return_type: Option<Type>,
+        has_exception_handlers: bool,
+    }
+
+    fn local_reference_write_test_case(
+        class: &[u8],
+        method: &str,
+        descriptor: &str,
+        target_name: &str,
+    ) -> LocalReferenceWriteTestCase {
+        let context = iterator_test_context(class, method, descriptor, 23);
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("fixture method SSA");
+        let code = ir.code().expect("fixture method code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let mut cleanup_bcis = Vec::new();
+        for region in &context.regions {
+            region.elided_cleanup_bcis(&mut cleanup_bcis);
+        }
+        let paths = region_paths(&context.regions);
+        let elided_cleanup = cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
+        let uses = slot_uses(ssa, &operations, &context.reuse, &paths, &elided_cleanup);
+        let debug_matches = iterator_test_debug_locals(code)
+            .into_iter()
+            .filter(|local| local.name() == target_name)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            debug_matches.len(),
+            1,
+            "{method}{descriptor}: expected one LVT record named {target_name:?}, found {}",
+            debug_matches.len()
+        );
+        let target_debug = debug_matches
+            .into_iter()
+            .next()
+            .expect("the unique target debug record was checked");
+        let (target_start, target_end) = target_debug.range().unwrap_or_else(|| {
+            panic!(
+                "{method}{descriptor}: LVT record {target_name:?} in slot {} has no bounded range",
+                target_debug.slot()
+            )
+        });
+        let variable = context
+            .reuse
+            .variable_at(target_debug.slot(), target_start)
+            .unwrap_or_else(|| {
+                panic!(
+                    "{method}{descriptor}: reuse has no identity for LVT record {target_name:?}, slot {}, range {target_start}..{target_end}",
+                    target_debug.slot()
+                )
+            });
+        let accesses = uses.get(&variable).unwrap_or_else(|| {
+            panic!(
+                "{method}{descriptor}: LVT record {target_name:?}, slot {}, range {target_start}..{target_end}, maps to {variable:?}, but that identity has no slot_uses",
+                target_debug.slot()
+            )
+        });
+        assert!(
+            !accesses.is_empty(),
+            "{method}{descriptor}: LVT record {target_name:?}, slot {}, range {target_start}..{target_end}, maps to {variable:?} with no accesses",
+            target_debug.slot()
+        );
+        let accesses = accesses.clone();
+        let first_use = accesses
+            .iter()
+            .filter(|access| access.written.is_some())
+            .min_by_key(|access| (access.path.clone(), access.bci))
+            .expect("target local has a first write");
+        let written = first_use.written.expect("first access is a write");
+        let first = FirstWrite {
+            at: first_use.bci,
+            written,
+            stored: first_use.stored.unwrap_or(written),
+        };
+        let selected = direct_reference_write_type(first.stored, ssa, &operations)
+            .expect("target's literal first write states a direct type");
+        assert_eq!(selected, Type::Reference("java.lang.String".to_owned()));
+        assert!(
+            accesses.iter().any(|access| {
+                access.written.is_some_and(|written| {
+                    let stored = access.stored.unwrap_or(written);
+                    access.bci > first.at
+                        && direct_reference_write_type(stored, ssa, &operations)
+                            == Some(Type::Reference("java.lang.Object".to_owned()))
+                })
+            }),
+            "the target lifetime has a later direct Object write"
+        );
+        let declaration = ir.declaration().expect("fixture method declaration");
+        let resources = resource_slots(&context.regions);
+        let parameters = declaration.parameter_slots();
+        let return_type = return_type(descriptor);
+        let has_exception_handlers = !code.exception_handlers.is_empty();
+        LocalReferenceWriteTestCase {
+            context,
+            operations,
+            variable,
+            first,
+            selected,
+            accesses,
+            resources,
+            parameters,
+            return_type,
+            has_exception_handlers,
+        }
+    }
+
+    fn run_local_reference_write_test_case(
+        case: &LocalReferenceWriteTestCase,
+        accesses: &[SlotUse],
+        return_type: Option<&Type>,
+        cache: &mut Option<BTreeMap<u16, Vec<(u32, Option<LocalVariable>)>>>,
+        budget: &mut Budget,
+    ) -> Result<Option<Decided>, StopReason> {
+        let ir = case.context.analysis.ir();
+        local_reference_write_compatibility(
+            case.variable,
+            &case.first,
+            &case.selected,
+            accesses,
+            &case.resources,
+            case.has_exception_handlers,
+            case.parameters,
+            cache,
+            ir.ssa().expect("fixture method SSA"),
+            &case.operations,
+            &case.context.reuse,
+            return_type,
+            budget,
+        )
+    }
+
+    fn assert_local_reference_write_conflict(result: Option<Decided>) {
+        assert!(
+            matches!(
+                result,
+                Some(Decided::Unknown(NoType::ConflictingWrites { .. }))
+            ),
+            "a refused candidate keeps the existing structured conflict reason: {result:?}"
+        );
+    }
+
+    #[test]
+    fn local_reference_write_compatibility_proves_real_object_return_fixture() {
+        let case = local_reference_write_test_case(
+            LOCAL_REFERENCE_WRITE_TARGET_CLASS,
+            "noCastAssign",
+            "(Ljava/util/List;)Ljava/lang/Object;",
+            "target",
+        );
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        let result = run_local_reference_write_test_case(
+            &case,
+            &case.accesses,
+            case.return_type.as_ref(),
+            &mut cache,
+            &mut budget,
+        )
+        .expect("real fixture proof completes");
+        assert_eq!(
+            result,
+            Some(Decided::Type(Type::Reference(
+                "java.lang.Object".to_owned()
+            )))
+        );
+        let object_writes = cache
+            .as_ref()
+            .and_then(|writes| writes.get(&case.variable.slot()))
+            .expect("the real same-slot Object trigger is indexed");
+        assert!(
+            object_writes
+                .iter()
+                .any(|(bci, owner)| { *bci > case.first.at && *owner == Some(case.variable) })
+        );
+    }
+
+    #[test]
+    fn local_reference_write_compatibility_rejects_omitted_duplicate_and_pathless_accesses() {
+        let case = local_reference_write_test_case(
+            LOCAL_REFERENCE_WRITE_TARGET_CLASS,
+            "noCastAssign",
+            "(Ljava/util/List;)Ljava/lang/Object;",
+            "target",
+        );
+        let first_write = case.first.at;
+        let later_object_write = case
+            .accesses
+            .iter()
+            .find(|access| {
+                access.bci > first_write
+                    && access.written.is_some_and(|written| {
+                        let stored = access.stored.unwrap_or(written);
+                        direct_reference_write_type(
+                            stored,
+                            case.context.analysis.ir().ssa().unwrap(),
+                            &case.operations,
+                        ) == Some(Type::Reference("java.lang.Object".to_owned()))
+                    })
+            })
+            .expect("actual later Object write access")
+            .clone();
+
+        // Omit the real first write but preserve the write count by duplicating the later access;
+        // the physical same-identity census must reject the unequal occurrence multiset.
+        let mut omitted = case.accesses.clone();
+        let first_index = omitted
+            .iter()
+            .position(|access| access.bci == first_write && access.written.is_some())
+            .expect("actual first write access");
+        omitted.remove(first_index);
+        omitted.push(later_object_write.clone());
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &case,
+                &omitted,
+                case.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("omitted-access control completes"),
+        );
+
+        // A duplicate local-read occurrence cannot disappear into a set during reconciliation.
+        let mut duplicated = case.accesses.clone();
+        let read = duplicated
+            .iter()
+            .find(|access| access.read.is_some())
+            .expect("real local read")
+            .clone();
+        duplicated.push(read);
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &case,
+                &duplicated,
+                case.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("duplicate-access control completes"),
+        );
+
+        let mut pathless = case.accesses.clone();
+        pathless
+            .iter_mut()
+            .find(|access| access.read.is_some())
+            .expect("real local read")
+            .path = None;
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &case,
+                &pathless,
+                case.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("pathless-access control completes"),
+        );
+
+        let mut no_reads = case.accesses.clone();
+        for access in &mut no_reads {
+            access.read = None;
+        }
+        no_reads.retain(|access| access.written.is_some());
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &case,
+                &no_reads,
+                case.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("no-read control completes"),
+        );
+    }
+
+    #[test]
+    fn local_reference_write_compatibility_rejects_real_cast_read_handler_and_slot_reuse_controls()
+    {
+        let cast_read = local_reference_write_test_case(
+            LOCAL_REFERENCE_WRITE_CAST_READ_CLASS,
+            "castRead",
+            "(Ljava/util/List;)I",
+            "target",
+        );
+        // Keep the fixture's real SSA/regions/slot identities; confirm the target load really
+        // feeds checkcast, then supply Object only to pass the helper's earlier descriptor gate
+        // and isolate its actual non-Return consumer rejection.
+        let ssa = cast_read
+            .context
+            .analysis
+            .ir()
+            .ssa()
+            .expect("cast-read fixture SSA");
+        let read = cast_read
+            .accesses
+            .iter()
+            .find_map(|access| access.read.map(|value| (access.bci, value)))
+            .expect("cast-read target local access");
+        let load = ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == read.0)
+            .expect("cast-read local load");
+        let [(Slot::Stack(_), loaded)] = load.writes() else {
+            panic!("cast-read local load emits one stack value")
+        };
+        let [consumer] = ssa.value(*loaded).uses() else {
+            panic!("cast-read local load has one consumer")
+        };
+        assert!(matches!(
+            cast_read
+                .operations
+                .get(consumer.bci().expect("cast consumer BCI")),
+            Some(Operation::CheckCast { .. })
+        ));
+        let object_return = Type::Reference("java.lang.Object".to_owned());
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &cast_read,
+                &cast_read.accesses,
+                Some(&object_return),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("cast-read control completes"),
+        );
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &cast_read,
+                &cast_read.accesses,
+                cast_read.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("real int-return descriptor is refused"),
+        );
+
+        let handler = local_reference_write_test_case(
+            LOCAL_REFERENCE_WRITE_HANDLER_CLASS,
+            "handlerWrite",
+            "()Ljava/lang/Object;",
+            "target",
+        );
+        assert!(handler.has_exception_handlers);
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &handler,
+                &handler.accesses,
+                handler.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("handler-write control completes"),
+        );
+
+        let reuse = local_reference_write_test_case(
+            LOCAL_REFERENCE_WRITE_SLOT_REUSE_CLASS,
+            "afterStringLifetime",
+            "(ZLjava/util/List;)Ljava/lang/Object;",
+            "target",
+        );
+        let code = reuse
+            .context
+            .analysis
+            .ir()
+            .code()
+            .expect("slot-reuse fixture method code");
+        let previous_debug = iterator_test_debug_locals(code)
+            .into_iter()
+            .find(|local| local.name() == "first")
+            .expect("debug table states the previous source lifetime");
+        let (previous_start, _) = previous_debug
+            .range()
+            .expect("previous source lifetime has a bounded range");
+        let previous = reuse
+            .context
+            .reuse
+            .variable_at(previous_debug.slot(), previous_start)
+            .expect("reuse plan assigns the previous source lifetime");
+        assert_eq!(previous, reuse.variable);
+        assert_eq!(previous.slot(), reuse.variable.slot());
+        let (target_start, _) = iterator_test_debug_locals(code)
+            .into_iter()
+            .find(|local| local.name() == "target")
+            .and_then(|local| local.range())
+            .expect("target source lifetime has a bounded debug range");
+        assert!(
+            reuse
+                .context
+                .analysis
+                .ir()
+                .ssa()
+                .expect("slot-reuse fixture SSA")
+                .blocks()
+                .iter()
+                .flat_map(|block| block.instructions())
+                .any(|instruction| {
+                    instruction.bci() < target_start
+                        && instruction.reads().iter().any(|(slot, _)| {
+                            *slot == Slot::Local(previous.slot())
+                                && reuse
+                                    .context
+                                    .reuse
+                                    .variable_at(previous.slot(), instruction.bci())
+                                    == Some(previous)
+                        })
+                }),
+            "the old source lifetime has a real same-slot read before the new target lifetime"
+        );
+        let mut cache = None;
+        let mut budget = child_array_test_budget();
+        assert_local_reference_write_conflict(
+            run_local_reference_write_test_case(
+                &reuse,
+                &reuse.accesses,
+                reuse.return_type.as_ref(),
+                &mut cache,
+                &mut budget,
+            )
+            .expect("the same-identity old receiver read refuses widening"),
+        );
+    }
+
+    #[test]
+    fn local_reference_write_compatibility_stops_at_the_measured_final_return_consumer() {
+        let case = local_reference_write_test_case(
+            LOCAL_REFERENCE_WRITE_TARGET_CLASS,
+            "noCastAssign",
+            "(Ljava/util/List;)Ljava/lang/Object;",
+            "target",
+        );
+        let ssa = case.context.analysis.ir().ssa().expect("fixture SSA");
+        let read = case
+            .accesses
+            .iter()
+            .find_map(|access| access.read.map(|value| (access.bci, value)))
+            .expect("one actual local read");
+        let load = ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == read.0)
+            .expect("the local read instruction");
+        let [(Slot::Stack(_), loaded)] = load.writes() else {
+            panic!("the local read emits one stack value")
+        };
+        let [consumer] = ssa.value(*loaded).uses() else {
+            panic!("the returned local value has one consumer")
+        };
+        let return_bci = consumer.bci().expect("actual return consumer BCI");
+
+        let mut measured = child_array_test_budget();
+        let mut measured_cache = None;
+        assert_eq!(
+            run_local_reference_write_test_case(
+                &case,
+                &case.accesses,
+                case.return_type.as_ref(),
+                &mut measured_cache,
+                &mut measured,
+            )
+            .expect("unlimited proof completes"),
+            Some(Decided::Type(Type::Reference(
+                "java.lang.Object".to_owned()
+            )))
+        );
+        let proof_usage = measured.usage().analysis_steps;
+        assert!(proof_usage > 1);
+        let proof_limit = proof_usage - 1;
+        let mut limits = child_array_test_budget().limits().clone();
+        limits.analysis_steps = proof_limit;
+        let mut stopped = Budget::new(limits);
+        let mut stopped_cache = None;
+        let stop = run_local_reference_write_test_case(
+            &case,
+            &case.accesses,
+            case.return_type.as_ref(),
+            &mut stopped_cache,
+            &mut stopped,
+        )
+        .expect_err("one less than measured complete proof usage must stop");
+        assert!(
+            matches!(
+                stop,
+                StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(at),
+                    ..
+                } if at == return_bci
+            ),
+            "the final real Return consumer owns the measured Stop: {stop:?}"
+        );
+        assert_eq!(stopped.usage().analysis_steps, proof_limit);
+        assert!(
+            stopped_cache.is_some(),
+            "the physical trigger census completed first"
+        );
+
+        let mut cancelled = child_array_test_budget();
+        cancelled.cancellation_token().cancel();
+        let mut cancelled_cache = None;
+        assert!(matches!(
+            run_local_reference_write_test_case(
+                &case,
+                &case.accesses,
+                case.return_type.as_ref(),
+                &mut cancelled_cache,
+                &mut cancelled,
+            ),
+            Err(StopReason::Cancelled { at: Some(_) })
+        ));
+        assert!(
+            cancelled_cache.is_none(),
+            "pre-cancellation publishes no partial census"
+        );
+        assert_eq!(cancelled.usage().analysis_steps, 0);
     }
 
     fn iterator_init_value(ssa: &SsaTable, store_bci: u32, slot: u16) -> ValueId {

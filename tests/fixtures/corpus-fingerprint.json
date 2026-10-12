@@ -5071,6 +5071,196 @@
       "path": "tests/fixtures/p3-local-postfix-array-elements/v8/Runner.java"
     },
     {
+      "blake3": "34338c2c200fe9a1ff7076e70f89b702eca7e3f85e6e9b0444970a35abea0a16",
+      "bytes": 288,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11CastReadControl.java"
+    },
+    {
+      "blake3": "c36c73bcbb2c2c1be287dbdab40c7764e0ed25206e79ed5389d5ae2e728b2a19",
+      "bytes": 338,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11CharSequenceControl.java"
+    },
+    {
+      "blake3": "11a5d49fb6a7db4ef93964d98e1133db754a052b65808cebb7d2d47981f5ecc3",
+      "bytes": 417,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11HandlerWriteControl.java"
+    },
+    {
+      "blake3": "c53bcff078c328b1ec6c7813baccc20af8d95e612a12198addbbafe1fcf9cffb",
+      "bytes": 1322,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11OuterAssignmentTarget.java"
+    },
+    {
+      "blake3": "6b38568e5460682e295c54fdc291d783b096e2b1c8c6f4c7dd1870f46601f91d",
+      "bytes": 254,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11ParameterControl.java"
+    },
+    {
+      "blake3": "aac57e5dd30c702b5b03bdbe654fc8a01381ee43dcdee4f8f15ff11cbbf489d7",
+      "bytes": 322,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11ReferenceArrayControl.java"
+    },
+    {
+      "blake3": "5c47a78a5c9d97df155a74650daea763a0e4d057881fe80e0787a47d52dc6be4",
+      "bytes": 400,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/CF11SlotReuseControl.java"
+    },
+    {
+      "blake3": "321ad728b60e8b746f7712cfe037004f5a4d42492adee9e03c80dde7951ab1ba",
+      "bytes": 7213,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/Runner.java"
+    },
+    {
+      "blake3": "832eef08823866465968b8916da50d4fe099764201a8585ad5d88a50dfc95633",
+      "bytes": 662,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11CastReadControl.class"
+    },
+    {
+      "blake3": "6ba656e24a83e2ff4354a18c2e093094cc4a15710c009ebb2628e7cb49eebf76",
+      "bytes": 675,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11CharSequenceControl.class"
+    },
+    {
+      "blake3": "3a61a9ee3227a7c5f72fd3ad28d4e4a86f23bc85713eceb76b57ca13ea226691",
+      "bytes": 792,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11HandlerWriteControl.class"
+    },
+    {
+      "blake3": "6c6f196ef37781ac4ecc0266d0fa2a922aecba3059b21c51668f1df302b80c66",
+      "bytes": 1474,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11OuterAssignmentTarget.class"
+    },
+    {
+      "blake3": "9c9353fd7804f7da9012a3785b6e444fecad23a16f782a497ec6fcb427851c0a",
+      "bytes": 624,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11ParameterControl.class"
+    },
+    {
+      "blake3": "c30240623b4acec1c2199fbf2d57dcc760947d76aeb8e2aaa0cb9600cd9f7eec",
+      "bytes": 614,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11ReferenceArrayControl.class"
+    },
+    {
+      "blake3": "50d21093ca6d95e09dbb3babbc0ac8928830d5fd73f1b6f1ea64545faff44e60",
+      "bytes": 743,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11SlotReuseControl.class"
+    },
+    {
+      "blake3": "2c784e4c689c7b447cb5ec5703c9b63935ad4322a987bcda4af56f47a6739fe7",
+      "bytes": 665,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11CastReadControl.class"
+    },
+    {
+      "blake3": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+      "bytes": 675,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11CharSequenceControl.class"
+    },
+    {
+      "blake3": "31d89c3b743ba08b1b0a520c32119d7292ffba12b9022c74a57f7162acd59e82",
+      "bytes": 798,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11HandlerWriteControl.class"
+    },
+    {
+      "blake3": "1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075",
+      "bytes": 1483,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11OuterAssignmentTarget.class"
+    },
+    {
+      "blake3": "a3bb87b7181ccfd317a01e9766f94dfd5c6667e7fc3553df2e993876299f8f63",
+      "bytes": 624,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11ParameterControl.class"
+    },
+    {
+      "blake3": "f6c884aad50ca947262b75d6ce0df96ceaa41d30dc964ef75c9600e5db6ae8d4",
+      "bytes": 614,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11ReferenceArrayControl.class"
+    },
+    {
+      "blake3": "348c825f076c64bc5fade3ea5fc37f32c64e632ec46a7ef040d5bfef271d8192",
+      "bytes": 746,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/debug/javac8/CF11SlotReuseControl.class"
+    },
+    {
+      "blake3": "e931256e0ca72263ddb2d43e84cfaf4b45e1669e9c105b661fc91e7815cf48b4",
+      "bytes": 1720,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/manifest.json"
+    },
+    {
+      "blake3": "29cd4371347c8af6c95afd8a14fa7315ddf2752b0c74afcc53224097c75bf76f",
+      "bytes": 399,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11CastReadControl.class"
+    },
+    {
+      "blake3": "32f210fda6db6b2b814fbdc22fcba48c4a899c2d8205d4b8ad12f92d406bf95d",
+      "bytes": 407,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11CharSequenceControl.class"
+    },
+    {
+      "blake3": "689ea7d7d7fc28cd6431e50b000a8a015462480ec7d9eea46706c8b952e9579f",
+      "bytes": 460,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11HandlerWriteControl.class"
+    },
+    {
+      "blake3": "62a8ca2ad3c7632cc4cdabf130ee93e8e18d7c70e993a29645bdcad915165d95",
+      "bytes": 923,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11OuterAssignmentTarget.class"
+    },
+    {
+      "blake3": "c50f92ecaa0ee08eb0fc9842ac97c9b0dd4520c1ba604e86fef028e21789fc42",
+      "bytes": 363,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11ParameterControl.class"
+    },
+    {
+      "blake3": "15e4b97c00ff5ffb0501507f04bbb21a5afaece87a3b8c2e797c7282955cb18c",
+      "bytes": 360,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11ReferenceArrayControl.class"
+    },
+    {
+      "blake3": "cdadcf5aa9ebfccc83686346f035986698862da5e429272dde01fda0e7485c9f",
+      "bytes": 407,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac23/CF11SlotReuseControl.class"
+    },
+    {
+      "blake3": "0ad77acbc6cc8fd9b7ca262a4b7f7d8a4c7f0d9c7eda713c7a12280d6d684b1a",
+      "bytes": 402,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11CastReadControl.class"
+    },
+    {
+      "blake3": "4a4c7029af100b4f2d631d350bec989a5447268318884c22076c3cdaa9ef8210",
+      "bytes": 407,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11CharSequenceControl.class"
+    },
+    {
+      "blake3": "88031d4db942afc4f8129f3b616f98bbca5980f47a7e17b0e2dda4c8d53afc83",
+      "bytes": 466,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11HandlerWriteControl.class"
+    },
+    {
+      "blake3": "35935c6f72a943e3a478ba452e83ab15851fa3ce978c74e804e4b3524c980f75",
+      "bytes": 932,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11OuterAssignmentTarget.class"
+    },
+    {
+      "blake3": "61dbd38898370e64236cf4587c658b9d06428c018924203bb8409845417fd53d",
+      "bytes": 363,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11ParameterControl.class"
+    },
+    {
+      "blake3": "c93482e1b503c85ede1458a891d712687caf12d056d553f5f4753e2feb53c9ce",
+      "bytes": 360,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11ReferenceArrayControl.class"
+    },
+    {
+      "blake3": "5f15d4fbdc460ca745cb0f61896b3b46737969a60813456d66946f3212fa9cd7",
+      "bytes": 410,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/none/javac8/CF11SlotReuseControl.class"
+    },
+    {
+      "blake3": "8bd56de2444ae836f46fb739359fabd1c75ad95dababa4ea6e8cd01e648fd079",
+      "bytes": 12465,
+      "path": "tests/fixtures/p3-local-reference-write-compatibility/pins.json"
+    },
+    {
       "blake3": "c3575914b083b65295da29bcef50f36ab0207ee70ff32d408b8fd29f0dcf73b3",
       "bytes": 2368,
       "path": "tests/fixtures/p3-local-rewrite/LocalRewrite.java"
@@ -6236,8 +6426,8 @@
       "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/cross-phi/V3.class"
     },
     {
-      "blake3": "1aee1b53392d2b05950e516a8c5e89b476223cc951756a8ac86c00f2a1b166fd",
-      "bytes": 4280,
+      "blake3": "7db7f4c634ada7ffb8b589302346469de590551423f5c76376a7d61adcdffcb8",
+      "bytes": 4376,
       "path": "tests/fixtures/p3-reference-slot-lifetimes/negative/handler/SlotReuseBoundaries.baseline.java"
     },
     {

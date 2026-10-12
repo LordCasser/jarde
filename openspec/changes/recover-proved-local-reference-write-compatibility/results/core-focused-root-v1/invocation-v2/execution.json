@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-core-focused-runner-root-v2.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-12T01:08:55.142735+00:00",
+  "finished_at": "2026-10-12T01:09:32.555710+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-core-focused-invocation-root-v2/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-core-focused-invocation-root-v2/stderr.raw",
+      "bytes": 948,
+      "sha256": "b8d9bebdc6b078e967a7c272e324c91100bcb08d8021b5d273632d5f467fdb0c"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

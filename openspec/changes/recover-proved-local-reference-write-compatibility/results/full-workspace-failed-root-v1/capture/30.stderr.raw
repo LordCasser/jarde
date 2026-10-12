@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.80s
+[1m[92m     Running[0m tests/p3_char_switch.rs (target/debug/deps/p3_char_switch-ce6c73cd302c5dc6)
+[1m[92m     Running[0m tests/p3_class_literals.rs (target/debug/deps/p3_class_literals-f6f6b0afc1209dff)
+[1m[92m     Running[0m tests/p3_compound_lvalue_updates.rs (target/debug/deps/p3_compound_lvalue_updates-5125e363d674c896)
+[1m[92m     Running[0m tests/p3_concat_char.rs (target/debug/deps/p3_concat_char-8dd5e5ea52fb8656)

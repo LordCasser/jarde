@@ -1,0 +1,25 @@
+{
+  "status": "verified_identical_readonly_cli_deduplication",
+  "canonical": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v3",
+  "files": [
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v1",
+      "bytes": 61486096,
+      "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+      "mode": "0o555",
+      "old_inode": 335598373,
+      "new_inode": 335775746
+    },
+    {
+      "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v2",
+      "bytes": 61486096,
+      "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+      "mode": "0o555",
+      "old_inode": 335711341,
+      "new_inode": 335775746
+    }
+  ],
+  "free_before": 6315298816,
+  "free_after": 6438191104,
+  "paths_bytes_and_modes_preserved": true
+}

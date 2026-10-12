@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.69s
+[1m[92m     Running[0m tests/d5_acceptance_ledger.rs (target/debug/deps/d5_acceptance_ledger-abdac8a227503ec3)
+[1m[92m     Running[0m tests/d5_process_release.rs (target/debug/deps/d5_process_release-0d8842be96153639)
+[1m[92m     Running[0m tests/d5_semantic_comparison.rs (target/debug/deps/d5_semantic_comparison-918a6fc5f3ea8a01)
+[1m[92m     Running[0m tests/double_brace_capture.rs (target/debug/deps/double_brace_capture-505a6caa0448af96)

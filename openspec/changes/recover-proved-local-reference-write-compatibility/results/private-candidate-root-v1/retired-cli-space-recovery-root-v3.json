@@ -1,0 +1,51 @@
+{
+  "schema": "retired-cli-space-recovery-root-v3",
+  "status": "lossless_compression_complete",
+  "free_before": 5702144000,
+  "free_after": 5897220096,
+  "rows": [
+    {
+      "original": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v6",
+      "bytes": 61314560,
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "mode": "0o555",
+      "gzip": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v6.gz",
+      "gzip_bytes": 12656495,
+      "gzip_sha256": "1d086d39c906038653b494b7ad34ab071b681d3ea13b7233c3ea5e84e0dd285f",
+      "lossless_verified_before_unlink": true
+    },
+    {
+      "original": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v2",
+      "bytes": 61314560,
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "mode": "0o555",
+      "gzip": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v2.gz",
+      "gzip_bytes": 12656495,
+      "gzip_sha256": "1d086d39c906038653b494b7ad34ab071b681d3ea13b7233c3ea5e84e0dd285f",
+      "lossless_verified_before_unlink": true
+    },
+    {
+      "original": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+      "mode": "0o555",
+      "gzip": "/private/tmp/jarde-constructor-conditional-final-cli-root-v1.gz",
+      "gzip_bytes": 12649179,
+      "gzip_sha256": "67606bfa0745a8c77c61aafcbf46e20a7d8d7b45a5d2c6bd75284c3a5d69755e",
+      "lossless_verified_before_unlink": true
+    },
+    {
+      "original": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v6",
+      "bytes": 61286928,
+      "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+      "mode": "0o555",
+      "gzip": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v6.gz",
+      "gzip_bytes": 12649179,
+      "gzip_sha256": "67606bfa0745a8c77c61aafcbf46e20a7d8d7b45a5d2c6bd75284c3a5d69755e",
+      "lossless_verified_before_unlink": true
+    }
+  ],
+  "reclaimed_file_bytes": 194591628,
+  "current_cli_preserved": "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+  "restore": "gzip decompress to original path, verify original sha256 and restore mode; do not overwrite an existing original path."
+}

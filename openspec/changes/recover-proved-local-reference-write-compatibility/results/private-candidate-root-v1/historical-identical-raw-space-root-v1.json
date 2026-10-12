@@ -1,0 +1,31 @@
+{
+  "status": "verified_identical_raw_path_preserving_deduplication",
+  "files": [
+    {
+      "canonical": "/private/tmp/jarde-iterator-assignment-product-clean-main-root-v1/9.stdout.raw",
+      "path": "/private/tmp/jarde-iterator-assignment-final-clean-main-root-v1/9.stdout.raw",
+      "bytes": 36682984,
+      "sha256": "be8e35c9d84fff866631c7247c3391f4e1072a0bd65a5bbbabbce2bbb92319eb"
+    },
+    {
+      "canonical": "/private/tmp/jarde-iterator-assignment-product-clean-main-root-v1/11.stdout.raw",
+      "path": "/private/tmp/jarde-iterator-assignment-final-clean-main-root-v1/11.stdout.raw",
+      "bytes": 194504,
+      "sha256": "444dca7a68091b46010a259786c656d99f8d53ca3071e3a22fbfa1ffe258f944"
+    },
+    {
+      "canonical": "/private/tmp/jarde-hoisted-iterator-clean-main-root-v1/9.stdout.raw",
+      "path": "/private/tmp/jarde-hoisted-iterator-clean-main-root-v2/9.stdout.raw",
+      "bytes": 36496787,
+      "sha256": "e903193bf7c802341159d6fc900c2379ca3feea7ee2a15fd6b2929a2f8c1742d"
+    },
+    {
+      "canonical": "/private/tmp/jarde-hoisted-iterator-clean-main-root-v1/11.stdout.raw",
+      "path": "/private/tmp/jarde-hoisted-iterator-clean-main-root-v2/11.stdout.raw",
+      "bytes": 194012,
+      "sha256": "cbebc0c5cae7441dc02f2e0e4cc61ce653e479f5c304a64bd64208bc7bf2adc2"
+    }
+  ],
+  "deduplicated_bytes": 73568287,
+  "free_after": 9041457152
+}

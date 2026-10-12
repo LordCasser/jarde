@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-p5-billing-update-luna-v2/update_billing.py",
+    "/private/tmp/jarde-local-reference-write-billing-preflight-root-v1/1.stdout.raw",
+    "/private/tmp/jarde-local-reference-write-full-workspace-root-v3/65.stdout.raw",
+    "--output",
+    "/private/tmp/jarde-p5-billing-update-luna-v2/p5_bulk_corpus.root-accepted.rs"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T02:00:13.441017+00:00",
+  "finished_at": "2026-10-12T02:00:13.488084+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-billing-update-invocation-root-v2/stdout.raw",
+      "bytes": 586,
+      "sha256": "0eaa0e119e3d44c0a63773b4815f84d929a61cfb78df4d2bb28da7405b3be328"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-billing-update-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,8 @@
+
+running 3 tests
+test no_cast_iterator_assignment_preserves_object_target_and_full_source_map ... ok
+test pre_cancel_does_not_publish_partial_class_or_method_artifacts ... ok
+test reference_write_controls_keep_complete_public_results_across_evidence_requests ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+

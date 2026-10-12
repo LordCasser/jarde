@@ -1,0 +1,13 @@
+--- a/crates/jarde-java/tests/p3_patterns.rs
++++ b/crates/jarde-java/tests/p3_patterns.rs
+@@ -5253,8 +5253,8 @@
+     assert!(full.produced(), "{}", full.text);
+     let steps = full_budget.usage().analysis_steps;
+     assert_eq!(
+-        steps, 63,
+-        "the Site census and local type proof charge the two physical local writes"
++        steps, 77,
++        "the Site census and local type proof plus the 9-instruction/5-write physical census"
+     );
+     let mut tight_limits = limits();
+     tight_limits.analysis_steps = steps;

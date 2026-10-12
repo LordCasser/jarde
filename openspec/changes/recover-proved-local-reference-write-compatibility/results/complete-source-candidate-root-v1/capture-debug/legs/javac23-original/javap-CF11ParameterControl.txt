@@ -1,0 +1,85 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-debug/legs/javac23-original/classes/cf11/CF11ParameterControl.class
+  Last modified 2026年10月12日; size 624 bytes
+  SHA-256 checksum e10fa4218f7da58b9fb074a114c237e237c3968be85307096d94644af659c627
+  Compiled from "CF11ParameterControl.java"
+public final class cf11.CF11ParameterControl
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #17                         // cf11/CF11ParameterControl
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InterfaceMethodref #8.#9          // java/util/List.isEmpty:()Z
+   #8 = Class              #10            // java/util/List
+   #9 = NameAndType        #11:#12        // isEmpty:()Z
+  #10 = Utf8               java/util/List
+  #11 = Utf8               isEmpty
+  #12 = Utf8               ()Z
+  #13 = InterfaceMethodref #8.#14         // java/util/List.get:(I)Ljava/lang/Object;
+  #14 = NameAndType        #15:#16        // get:(I)Ljava/lang/Object;
+  #15 = Utf8               get
+  #16 = Utf8               (I)Ljava/lang/Object;
+  #17 = Class              #18            // cf11/CF11ParameterControl
+  #18 = Utf8               cf11/CF11ParameterControl
+  #19 = Utf8               Code
+  #20 = Utf8               LineNumberTable
+  #21 = Utf8               LocalVariableTable
+  #22 = Utf8               this
+  #23 = Utf8               Lcf11/CF11ParameterControl;
+  #24 = Utf8               replace
+  #25 = Utf8               (Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;
+  #26 = Utf8               target
+  #27 = Utf8               Ljava/lang/Object;
+  #28 = Utf8               values
+  #29 = Utf8               Ljava/util/List;
+  #30 = Utf8               StackMapTable
+  #31 = Utf8               SourceFile
+  #32 = Utf8               CF11ParameterControl.java
+{
+  public cf11.CF11ParameterControl();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/CF11ParameterControl;
+
+  public static java.lang.Object replace(java.lang.Object, java.util.List);
+    descriptor: (Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_1
+         1: invokeinterface #7,  1            // InterfaceMethod java/util/List.isEmpty:()Z
+         6: ifne          17
+         9: aload_1
+        10: iconst_0
+        11: invokeinterface #13,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        16: astore_0
+        17: aload_0
+        18: areturn
+      LineNumberTable:
+        line 7: 0
+        line 8: 9
+        line 10: 17
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      19     0 target   Ljava/lang/Object;
+            0      19     1 values   Ljava/util/List;
+      StackMapTable: number_of_entries = 1
+        frame_type = 17 /* same */
+}
+SourceFile: "CF11ParameterControl.java"

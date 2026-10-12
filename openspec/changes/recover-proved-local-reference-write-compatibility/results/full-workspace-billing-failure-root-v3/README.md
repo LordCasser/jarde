@@ -1,0 +1,1 @@
+Actual third fresh workspace attempt failed at batch 65 on two existing exact p5_bulk_corpus AnalysisSteps snapshots. flat-mixed observed 1548 vs 1540; direct/shared observed 19911 vs 19685. Other observed billing fields and prior text/plane comparison are unchanged. The failure is preserved; exact cleanup exited 0 and target is absent. No whole-workspace acceptance is claimed.

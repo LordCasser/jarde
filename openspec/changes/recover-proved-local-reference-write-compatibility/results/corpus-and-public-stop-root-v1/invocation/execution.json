@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-corpus-and-late-stop-runner-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T01:12:18.808238+00:00",
+  "finished_at": "2026-10-12T01:13:15.697514+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-corpus-and-late-stop-invocation-root-v1/stdout.raw",
+      "bytes": 166,
+      "sha256": "79f37c741b2c344a55de0dbadf1f546c6bbd3bc26a613840611b76ce1e3b5724"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-corpus-and-late-stop-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-focused-accept-prep-luna-v2/accept-focus.py",
+    "--receipt",
+    "/private/tmp/jarde-local-reference-write-focused-root-v3/execution.json",
+    "--receipt-sha256",
+    "f322798aff08a9e510410b1167da847f3072b53f9f7a575e8ab033ab0c47fd30",
+    "--candidate-sha256",
+    "56664a850c8b8f47d27c66072cfb3552a492a6901e1d29a528e19f809780ce5d",
+    "--out",
+    "/private/tmp/jarde-local-reference-write-focused-accept-prep-luna-v2/acceptance-v2.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T00:12:53.051868+00:00",
+  "finished_at": "2026-10-12T00:12:53.875360+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-focused-accept-invocation-root-v2/stdout.raw",
+      "bytes": 225,
+      "sha256": "6554f19c3a4ae535163905320fc5f96f65e450c5161daee29773875f31d85bfd"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-focused-accept-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

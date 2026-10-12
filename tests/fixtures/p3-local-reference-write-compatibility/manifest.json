@@ -1,0 +1,54 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.CF11OuterAssignmentTarget",
+      "source": "CF11OuterAssignmentTarget.java",
+      "bytes": 1322,
+      "sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc"
+    },
+    {
+      "class": "cf11.CF11CastReadControl",
+      "source": "CF11CastReadControl.java",
+      "bytes": 288,
+      "sha256": "36328ec2905b93ebba5415eea247423a09383b0e8c30dcf8b44b3cdc27908628"
+    },
+    {
+      "class": "cf11.CF11CharSequenceControl",
+      "source": "CF11CharSequenceControl.java",
+      "bytes": 338,
+      "sha256": "ebbc05a570e1ed10ee0e206257cd1355d43aab5c6eed5be17c16c16807a949ac"
+    },
+    {
+      "class": "cf11.CF11ReferenceArrayControl",
+      "source": "CF11ReferenceArrayControl.java",
+      "bytes": 322,
+      "sha256": "c26fc40214dcbcea6c8899e38cb6796408fad1ed0a3522c4d9ca404b8503f0bb"
+    },
+    {
+      "class": "cf11.CF11ParameterControl",
+      "source": "CF11ParameterControl.java",
+      "bytes": 254,
+      "sha256": "56198ef3b4818468916e89b8b2bf5d57566d46bcc6f847ab29b7af9e98b644d3"
+    },
+    {
+      "class": "cf11.CF11SlotReuseControl",
+      "source": "CF11SlotReuseControl.java",
+      "bytes": 400,
+      "sha256": "89ae995ef346fee3a89c73adc351cb4addde80ddb8ebecb0590de47600b4b609"
+    },
+    {
+      "class": "cf11.CF11HandlerWriteControl",
+      "source": "CF11HandlerWriteControl.java",
+      "bytes": 417,
+      "sha256": "a22603d8e6a5c6f69fb6c80a28d03bff8f4ff6c027c60a8838956928dba5fc3e"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 7213,
+    "sha256": "b25be5ae110ae986631252ed0d3999c0c6935a890e4a0f008b5aec0f85c5bb73"
+  }
+}

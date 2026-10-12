@@ -1,0 +1,10 @@
+{
+  "candidate_build_runner": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-build-runner-root-v3.py",
+    "sha256": "385aac0df99f1286d46c399e691782f5b80a65b5c4d6ae9ea0aa3153e2e5bb85"
+  },
+  "workspace_runner.py": "8f427510b3bb30d6c32c02cb3fd063ee87d441a8c9e51f0f43516f84f7e64911",
+  "accept_workspace.py": "e263e38230c4a95bcd40f21746f9e4060a06182bf57f196b30edb3c7ac454ef3",
+  "final-build-runner.py": "c7525a6b8ad0853204944a09e3d8fb6a58fcfd87287aad12d86adde3e4aaff68",
+  "accept-final.py": "3a7c461e15f2166ed482194ee0af7809d69da0107bf9d41f60c74f189f2b494d"
+}

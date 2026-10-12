@@ -1,0 +1,179 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-none/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class
+  Last modified 2026-10-12; size 932 bytes
+  MD5 checksum f690c7d97f68bc3ba70af013db8c0d69
+public final class cf11.CF11OuterAssignmentTarget
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #10.#24        // java/lang/Object."<init>":()V
+   #2 = String             #25            // seed
+   #3 = InterfaceMethodref #26.#27        // java/util/List.iterator:()Ljava/util/Iterator;
+   #4 = InterfaceMethodref #28.#29        // java/util/Iterator.hasNext:()Z
+   #5 = InterfaceMethodref #28.#30        // java/util/Iterator.next:()Ljava/lang/Object;
+   #6 = Class              #31            // java/lang/String
+   #7 = Methodref          #32.#33        // cf11/Runner.assigned:(Ljava/lang/String;)V
+   #8 = Methodref          #32.#34        // cf11/Runner.beforeAssignment:()V
+   #9 = Class              #35            // cf11/CF11OuterAssignmentTarget
+  #10 = Class              #36            // java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Utf8               Code
+  #14 = Utf8               positive
+  #15 = Utf8               (Ljava/util/List;)Ljava/lang/String;
+  #16 = Utf8               StackMapTable
+  #17 = Class              #31            // java/lang/String
+  #18 = Class              #37            // java/util/Iterator
+  #19 = Utf8               noCastAssign
+  #20 = Utf8               (Ljava/util/List;)Ljava/lang/Object;
+  #21 = Class              #36            // java/lang/Object
+  #22 = Utf8               bodyEffectBeforeAssign
+  #23 = Utf8               extraNextConsumption
+  #24 = NameAndType        #11:#12        // "<init>":()V
+  #25 = Utf8               seed
+  #26 = Class              #38            // java/util/List
+  #27 = NameAndType        #39:#40        // iterator:()Ljava/util/Iterator;
+  #28 = Class              #37            // java/util/Iterator
+  #29 = NameAndType        #41:#42        // hasNext:()Z
+  #30 = NameAndType        #43:#44        // next:()Ljava/lang/Object;
+  #31 = Utf8               java/lang/String
+  #32 = Class              #45            // cf11/Runner
+  #33 = NameAndType        #46:#47        // assigned:(Ljava/lang/String;)V
+  #34 = NameAndType        #48:#12        // beforeAssignment:()V
+  #35 = Utf8               cf11/CF11OuterAssignmentTarget
+  #36 = Utf8               java/lang/Object
+  #37 = Utf8               java/util/Iterator
+  #38 = Utf8               java/util/List
+  #39 = Utf8               iterator
+  #40 = Utf8               ()Ljava/util/Iterator;
+  #41 = Utf8               hasNext
+  #42 = Utf8               ()Z
+  #43 = Utf8               next
+  #44 = Utf8               ()Ljava/lang/Object;
+  #45 = Utf8               cf11/Runner
+  #46 = Utf8               assigned
+  #47 = Utf8               (Ljava/lang/String;)V
+  #48 = Utf8               beforeAssignment
+{
+  public cf11.CF11OuterAssignmentTarget();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String positive(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          36
+        19: aload_2
+        20: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        25: checkcast     #6                  // class java/lang/String
+        28: astore_1
+        29: aload_1
+        30: invokestatic  #7                  // Method cf11/Runner.assigned:(Ljava/lang/String;)V
+        33: goto          10
+        36: aload_1
+        37: areturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 25 /* same */
+
+  public static java.lang.Object noCastAssign(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          29
+        19: aload_2
+        20: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        25: astore_1
+        26: goto          10
+        29: aload_1
+        30: areturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/Object, class java/util/Iterator ]
+        frame_type = 18 /* same */
+
+  public static java.lang.String bodyEffectBeforeAssign(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          39
+        19: invokestatic  #8                  // Method cf11/Runner.beforeAssignment:()V
+        22: aload_2
+        23: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        28: checkcast     #6                  // class java/lang/String
+        31: astore_1
+        32: aload_1
+        33: invokestatic  #7                  // Method cf11/Runner.assigned:(Ljava/lang/String;)V
+        36: goto          10
+        39: aload_1
+        40: areturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 28 /* same */
+
+  public static java.lang.String extraNextConsumption(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+         9: astore_2
+        10: aload_2
+        11: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          43
+        19: aload_2
+        20: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        25: pop
+        26: aload_2
+        27: invokeinterface #5,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        32: checkcast     #6                  // class java/lang/String
+        35: astore_1
+        36: aload_1
+        37: invokestatic  #7                  // Method cf11/Runner.assigned:(Ljava/lang/String;)V
+        40: goto          10
+        43: aload_1
+        44: areturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class java/lang/String, class java/util/Iterator ]
+        frame_type = 32 /* same */
+}

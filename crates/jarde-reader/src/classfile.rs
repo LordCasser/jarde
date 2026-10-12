@@ -12243,7 +12243,7 @@ mod tests {
             // independently confirmed against both compiler legs and parsed Code bytes.
             // CF11OuterAssignmentTarget: one canonical javac8 class, five Code bodies,
             // no handlers, eight direct branch targets (two per loop method), no jsr.
-            (1105, 4919, 469, 3000, 10),
+            (1133, 4995, 473, 3048, 10),
             "fixture population changed: re-measure these counts"
         );
     }

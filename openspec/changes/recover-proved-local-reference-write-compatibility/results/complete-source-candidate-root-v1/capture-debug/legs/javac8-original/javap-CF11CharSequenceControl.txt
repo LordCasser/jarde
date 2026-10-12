@@ -1,0 +1,101 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-debug/legs/javac8-original/classes/cf11/CF11CharSequenceControl.class
+  Last modified 2026-10-12; size 675 bytes
+  MD5 checksum 39da21fd72439d866447492e3bef3880
+  Compiled from "CF11CharSequenceControl.java"
+public final class cf11.CF11CharSequenceControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #9.#24         // java/lang/Object."<init>":()V
+   #2 = String             #25            // string
+   #3 = InterfaceMethodref #26.#27        // java/lang/CharSequence.length:()I
+   #4 = String             #28            // seed
+   #5 = Class              #29            // java/lang/StringBuilder
+   #6 = String             #30            // builder
+   #7 = Methodref          #5.#31         // java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+   #8 = Class              #32            // cf11/CF11CharSequenceControl
+   #9 = Class              #33            // java/lang/Object
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               LineNumberTable
+  #14 = Utf8               LocalVariableTable
+  #15 = Utf8               this
+  #16 = Utf8               Lcf11/CF11CharSequenceControl;
+  #17 = Utf8               stringLength
+  #18 = Utf8               ()I
+  #19 = Utf8               value
+  #20 = Utf8               Ljava/lang/CharSequence;
+  #21 = Utf8               builderLength
+  #22 = Utf8               SourceFile
+  #23 = Utf8               CF11CharSequenceControl.java
+  #24 = NameAndType        #10:#11        // "<init>":()V
+  #25 = Utf8               string
+  #26 = Class              #34            // java/lang/CharSequence
+  #27 = NameAndType        #35:#18        // length:()I
+  #28 = Utf8               seed
+  #29 = Utf8               java/lang/StringBuilder
+  #30 = Utf8               builder
+  #31 = NameAndType        #10:#36        // "<init>":(Ljava/lang/String;)V
+  #32 = Utf8               cf11/CF11CharSequenceControl
+  #33 = Utf8               java/lang/Object
+  #34 = Utf8               java/lang/CharSequence
+  #35 = Utf8               length
+  #36 = Utf8               (Ljava/lang/String;)V
+{
+  public cf11.CF11CharSequenceControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/CF11CharSequenceControl;
+
+  public static int stringLength();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: ldc           #2                  // String string
+         2: astore_0
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/lang/CharSequence.length:()I
+         9: ireturn
+      LineNumberTable:
+        line 5: 0
+        line 6: 3
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            3       7     0 value   Ljava/lang/CharSequence;
+
+  public static int builderLength();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=0
+         0: ldc           #4                  // String seed
+         2: astore_0
+         3: new           #5                  // class java/lang/StringBuilder
+         6: dup
+         7: ldc           #6                  // String builder
+         9: invokespecial #7                  // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+        12: astore_0
+        13: aload_0
+        14: invokeinterface #3,  1            // InterfaceMethod java/lang/CharSequence.length:()I
+        19: ireturn
+      LineNumberTable:
+        line 10: 0
+        line 11: 3
+        line 12: 13
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            3      17     0 value   Ljava/lang/CharSequence;
+}
+SourceFile: "CF11CharSequenceControl.java"

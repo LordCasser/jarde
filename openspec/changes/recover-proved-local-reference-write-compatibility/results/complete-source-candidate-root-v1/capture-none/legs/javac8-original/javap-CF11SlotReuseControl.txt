@@ -1,0 +1,72 @@
+Classfile /private/tmp/jarde-local-reference-write-candidate-complete-source-root-v1-none/legs/javac8-original/classes/cf11/CF11SlotReuseControl.class
+  Last modified 2026-10-12; size 410 bytes
+  MD5 checksum 3098d79c6a170b28edc8954dd2fc04ad
+public final class cf11.CF11SlotReuseControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#15         // java/lang/Object."<init>":()V
+   #2 = String             #16            // a
+   #3 = Methodref          #17.#18        // java/lang/String.length:()I
+   #4 = String             #19            // seed
+   #5 = InterfaceMethodref #20.#21        // java/util/List.get:(I)Ljava/lang/Object;
+   #6 = Class              #22            // cf11/CF11SlotReuseControl
+   #7 = Class              #23            // java/lang/Object
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               afterStringLifetime
+  #12 = Utf8               (ZLjava/util/List;)Ljava/lang/Object;
+  #13 = Utf8               StackMapTable
+  #14 = Class              #23            // java/lang/Object
+  #15 = NameAndType        #8:#9          // "<init>":()V
+  #16 = Utf8               a
+  #17 = Class              #24            // java/lang/String
+  #18 = NameAndType        #25:#26        // length:()I
+  #19 = Utf8               seed
+  #20 = Class              #27            // java/util/List
+  #21 = NameAndType        #28:#29        // get:(I)Ljava/lang/Object;
+  #22 = Utf8               cf11/CF11SlotReuseControl
+  #23 = Utf8               java/lang/Object
+  #24 = Utf8               java/lang/String
+  #25 = Utf8               length
+  #26 = Utf8               ()I
+  #27 = Utf8               java/util/List
+  #28 = Utf8               get
+  #29 = Utf8               (I)Ljava/lang/Object;
+{
+  public cf11.CF11SlotReuseControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.Object afterStringLifetime(boolean, java.util.List);
+    descriptor: (ZLjava/util/List;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: ldc           #2                  // String a
+         2: astore_2
+         3: aload_2
+         4: invokevirtual #3                  // Method java/lang/String.length:()I
+         7: pop
+         8: ldc           #4                  // String seed
+        10: astore_2
+        11: iload_0
+        12: ifeq          23
+        15: aload_1
+        16: iconst_0
+        17: invokeinterface #5,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        22: astore_2
+        23: aload_2
+        24: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 23
+          locals = [ class java/lang/Object ]
+}
