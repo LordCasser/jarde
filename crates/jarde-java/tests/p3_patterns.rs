@@ -4866,14 +4866,10 @@ fn class_source_preserves_aliases_without_closed_receiver_uses() {
         &mut budget,
     );
     assert!(reused.report.produced(), "{}", reused.report.text);
-    assert!(
-        reused
-            .report
-            .text
-            .contains("no Java declaration can hold both"),
-        "{}",
-        reused.report.text
+    let conflict = reused.report.text.contains(
+        "local 1 is treated as one source variable, but the selected type `em21.ThisAliasRefusals` is not proved compatible with the value written at BCI 7 (`int`); this region is refused instead of publishing a contradictory local (first write at BCI 1)",
     );
+    assert!(conflict, "{}", reused.report.text);
     assert!(!reused.report.text.contains("this.target()"));
 }
 
@@ -5257,8 +5253,8 @@ fn straight_finally_reuses_its_guard_verdict_with_a_tight_budget() {
     assert!(full.produced(), "{}", full.text);
     let steps = full_budget.usage().analysis_steps;
     assert_eq!(
-        steps, 63,
-        "the Site census and local type proof charge the two physical local writes"
+        steps, 77,
+        "the Site census and local type proof plus the 9-instruction/5-write physical census"
     );
     let mut tight_limits = limits();
     tight_limits.analysis_steps = steps;

@@ -1,0 +1,9 @@
+# Finally budget pin review
+
+The focused capture at `/private/tmp/jarde-local-reference-write-final-diagnostic-focus-root-v1/1.stdout.raw` records `straight_finally_reuses_its_guard_verdict_with_a_tight_budget` failing with measured `left: 77` versus stale `right: 63`; the same `p3_patterns` binary reports 84 passed and 1 failed. The preceding focused binary reports 9 passed.
+
+The delta is 14 and matches the new lazy full-method census in `crates/jarde-java/src/build.rs` (`local_reference_write_compatibility`, around lines 2988–3025). It bills every SSA instruction once and every write produced by that instruction once before filtering for a local or an Object producer. In the fixture's `run()I`, bytecode/IR has nine instructions at BCIs 0, 3, 4, 7, 8, 9, 10, 13, and 14. Five writes are produced: stack results at BCIs 0, 7, and 13, and local stores at BCIs 3 and 9. Thus this census adds 9 + 5 = 14 steps to the prior 63, giving 77. The producer predicate does not add a write entry for this method; those five writes are billed because the census bills all writes.
+
+`both.patch` only updates the measured baseline and its explanatory assertion message. The tight run already sets `tight_limits.analysis_steps = steps`, so it continues to pin success at the exact full-run budget; no assertion is weakened.
+
+Impact evidence: the supplied focused capture shows this as the only failure in the `p3_patterns` binary (84 pass / 1 fail), with the adjacent 9-test binary all passing. A static scan of integration tests found no other hard-coded `analysis_steps` equality that needs a new expected number. Budget-stop tests generally derive their limit from observed usage or test a tiny limit. Since the census only runs for eligible non-parameter, non-array reference locals, other potentially shifted runs depend on their fixture reaching that proof; this focused capture is evidence for the executed subset, not a claim that the entire workspace was run.

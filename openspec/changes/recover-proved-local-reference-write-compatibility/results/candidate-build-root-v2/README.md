@@ -1,0 +1,1 @@
+Actual fresh candidate build v2 passed and cleaned. Its updated source closure produced the same CLI bytes as the complete-source comparison CLI v1. A subsequent whole-workspace run failed on a diagnostic wording assertion; this receipt is historical build evidence, not full acceptance.

@@ -1,0 +1,1 @@
+Actual failed whole-workspace attempt. Batch 53 contains one p3_scope diagnostic wording assertion failure; the recorder subsequently encountered a JSONDecodeError on the printed Java `{` line, masking that failure in its top-level error. Raw streams and exact cleanup are preserved. No workspace acceptance is claimed.

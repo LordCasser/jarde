@@ -1,0 +1,1 @@
+Root actually rendered the unchanged 642-byte negative handler fixture with frozen candidate CLI. Exact full-text comparison found three NoType conflict comments changed and no Java statement changed; baseline updated byte-for-byte from captured text. Raw full JSON, invocation, and before/after golden retained. This is not a compile/runtime pass for the refused class.
