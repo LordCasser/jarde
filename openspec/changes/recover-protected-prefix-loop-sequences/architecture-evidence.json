@@ -1,0 +1,57 @@
+{
+  "schema": "protected-prefix-loop-design-source-pins-v1",
+  "scope": "read_source_and_two_accepted_diagnostics_no_patch_acceptance",
+  "product_commit": "7e93eb30647338dd8a6ddfc9994392f23457aa3e",
+  "pins": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1018532,
+      "sha256": "6f10c13d37b2472b77a0a5bc1d97f9bb45d05a65a030dca4f555d0221c3a707a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1823530,
+      "sha256": "2bc675af2124bb4d883ce18b24b415da917648a59fbf426ea3f99e0a5a5c4678"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/RegionMaker.java",
+      "bytes": 4802,
+      "sha256": "f93147242c63aca4f0f27739b9de23bf93c8f83bbd25b48d12478b98a4c29b77"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/ProcessTryCatchRegions.java",
+      "bytes": 4389,
+      "sha256": "0a382bc7e189742410b7a1b93f90703f60dfd7cc1256e06ddca4da0ccff6225d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNestedLoops.java",
+      "bytes": 876,
+      "sha256": "4897fd18a15fce6e0abb40dc8afc6c7a3fa9f16e617f3c7e5e88072f6a37309e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-13/outer-try-foreach-trace-root-v1/manifest.json",
+      "bytes": 1846,
+      "sha256": "a3dd884cfa8c710522ae3f08bbcb872102a23bbe20be8702847fddba30b434de"
+    },
+    {
+      "path": "/private/tmp/jarde-outer-try-composition-design-review-luna-v1/report.md",
+      "bytes": 10111,
+      "sha256": "0fcd1303860eacdf5c2d40c8ab029949974f7d75f307692f523f33b97c471a03"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-13/outer-try-foreach-child-probe-root-v1/manifest.json",
+      "bytes": 1947,
+      "sha256": "bb0a4c75e8a993fcf738fd8cff31cb7199bf0d2fff13771623a8146415615733"
+    },
+    {
+      "path": "/private/tmp/jarde-protected-prefix-loop-impl-luna-v1/frame-owner-audit.md",
+      "bytes": 6395,
+      "sha256": "8626c56d6e813bfead55cf5d5bd1f9d880e5ac0bfcb7d494371de5694e463e70"
+    },
+    {
+      "path": "/private/tmp/jarde-protected-prefix-loop-impl-luna-v1/owner-scope-options.md",
+      "bytes": 6435,
+      "sha256": "1bbea4e3e589f6a56045d0b9880ad84b0b48b21f84b79c9f82d9d7773da2b72d"
+    }
+  ]
+}

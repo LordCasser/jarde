@@ -454,3 +454,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-12 集成验收：循环父项6/8、字段子项4/6。新focused-v6实际390+91测试/4854来源一致，父项40命令12完整类全部同原，四retry-v2动态Error已恢复；字段24命令四Jarde与四JADX均匹配原11行oracle，含Object转换/volatile/null/char[]/源图。见[集成归档](../../changes/recover-ordered-field-concat-operands/results/integrated-comparison-root-v1/README.md)。fresh双seed/CI Clippy/global strict/自身产品CI/干净main未完成，整体单元完成数不增。
 
 2026-10-13 循环/字段本地门关闭：父7/8、子5/6。fresh focused-v12共705/0/4，CLI逐字同已接受整类矩阵；fresh workspace-v9两seed各96批/364targets，合计7050/0/196，195命令全部0、4854来源不变、guard/默认stack/finally clean/target absent已独立接受。见[完整验收](../../changes/recover-ordered-field-concat-operands/results/full-workspace-accepted-root-v9/README.md)。自身新产品CI、提交推送及最终真实HEAD干净main待完成，CF18/71/612计数保持不变。下一项EM20取证须区分javac -g/-g:none与Jarde evidence default/all，不能把证据模式当编译profile。
+
+2026-10-13 自身产品CI实际接受：产品7e93已推送，run38297425449的4jobs/52steps全部成功，逐项核两seed各364targets/3525-0-98、4854来源与本地一致。见[自身CI归档](../../changes/recover-ordered-field-concat-operands/results/own-product-ci-7e93-root-v1/README.md)。父7/8、子5/6仅余真实HEAD主线交付。后续引用LVT与外层try两个变更各1/6：原17场景、同次header异常拒绝trace及独立10场景边界基线均已归档，候选尚未应用/接受。CF11/CF18/71/612完成数保持不变。

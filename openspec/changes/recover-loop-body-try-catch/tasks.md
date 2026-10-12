@@ -26,3 +26,5 @@
 2026-10-13：撤回全局Caught拒绝、保留handler入口ValueId身份证明后，focused-v10实际518成功/4ignored、原scope+wrap-family断言通过；fresh parent-root-v6的12完整类运行同原，新增C2W双JDK8份全类编译/16次main与Runner运行同原，2.3再次接受，父6/8。见字段子变更 results/wrap-load-regression-fix-and-final-local-root-v1；完整工作区及自身CI仍待完成。
 
 2026-10-13：3.2 已按fresh focused-v12和完整workspace-v9关闭。八focused命令705/0/4、当前CI Clippy/global strict通过；两seed各96批/364targets、合计7050成功/0失败/196ignored，195命令全0、4854来源恒同、5GiB/target1GiB/1秒守卫/default stack/finally exact clean/target absent均独立核验。见 [完整工作区验收](../recover-ordered-field-concat-operands/results/full-workspace-accepted-root-v9/README.md)。自身产品CI和真实HEAD干净main仍待完成；不增加CF18/71/612完成数。
+
+2026-10-13：精确产品7e93已推送，自身CI38297425449实际4jobs/52steps全部成功，独立v4 verifier核两seed各364targets/3525-0-98与4854来源恒同，见字段子变更 results/own-product-ci-7e93-root-v1。最终真实HEAD干净main尚待检查点审计，交付checkbox保持未关闭。

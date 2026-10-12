@@ -17,3 +17,5 @@
 2026-10-13：fresh workspace-v8 reader lib最后population tuple发现未计入本轮23个class。独立核全部1140旧class恒同及新增139body/27handler/138target/0subroutine后，仅更新总量和ledger，结构断言不变。fresh focused-v12含完整reader lib，共705成功/0失败/4ignored，CLI字节恒同整类对照候选；见 [局部验收](results/reader-census-fix-and-final-local-root-v1/README.md)。全新workspace-v9已运行，2.2/2.3继续保留未关闭。
 
 2026-10-13：2.2 已按fresh focused-v12和完整workspace-v9关闭。八focused命令705/0/4、当前CI Clippy/global strict通过；两seed各96批/364targets、合计7050成功/0失败/196ignored，195命令全0、4854来源恒同、5GiB/target1GiB/1秒守卫/default stack/finally exact clean/target absent均独立核验。见 [完整工作区验收](results/full-workspace-accepted-root-v9/README.md)。自身产品CI和真实HEAD干净main仍待完成；不增加CF18/71/612完成数。
+
+2026-10-13：精确产品7e93已推送，自身CI38297425449实际4jobs/52steps全部成功，独立v4 verifier核两seed各364targets/3525-0-98与4854来源恒同，见字段子变更 results/own-product-ci-7e93-root-v1。最终真实HEAD干净main尚待检查点审计，交付checkbox保持未关闭。
