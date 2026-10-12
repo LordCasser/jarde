@@ -1,0 +1,41 @@
+{
+  "schema": "cf11-null-api-copied-frozen-inputs-root-v1",
+  "inputs": [
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-current-null-add-debug-root-v1/legs/javac23-original/classes/cf11/NullStringListFixture.class",
+      "destination": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.class",
+      "bytes": 1309,
+      "sha256": "ac8681e77fe2f641a24da40be401871aa3008fdf970d8d83cea1ecbf9a5d44d6"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-current-null-add-debug-root-v1/legs/javac23-original/classes/cf11/NullIntegerListFixture.class",
+      "destination": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.class",
+      "bytes": 1320,
+      "sha256": "4433d50823d9ba85a6a2838d7460197676860eb1201b01bb227c8314705a866b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-null-add-luna-v1/NullStringListFixture.java",
+      "destination": "tests/fixtures/cf11-structured-list-null-api/NullStringListFixture.java",
+      "bytes": 731,
+      "sha256": "4a14c7410bcaf80e1c35617b0d03dc7030b7ca9f08e6748b8832529135377594"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-null-add-luna-v1/NullIntegerListFixture.java",
+      "destination": "tests/fixtures/cf11-structured-list-null-api/NullIntegerListFixture.java",
+      "bytes": 739,
+      "sha256": "32cb0739e073760b856eefef7616119891ecc42169571542e5a6ec9e43c33441"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-null-add-luna-v1/Runner.java",
+      "destination": "tests/fixtures/cf11-structured-list-null-api/Runner.java",
+      "bytes": 2066,
+      "sha256": "18d97b19cbc3650657f34e481e4acf96679a5e93fd3560270bd0806f15124037"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-null-add-luna-v1/manifest.json",
+      "destination": "tests/fixtures/cf11-structured-list-null-api/manifest.json",
+      "bytes": 737,
+      "sha256": "d06a756719cd3815441c3aa38df76a8b4c720ca8835751845e89f4cd91c4268d"
+    }
+  ]
+}

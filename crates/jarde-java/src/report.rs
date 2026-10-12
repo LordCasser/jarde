@@ -1478,6 +1478,29 @@ pub struct ClassSourceAstLocalDeclaration {
     pub scope_anchors: Vec<ClassSourceAstAnchor>,
 }
 
+/// One retained local initializer or assignment and its direct cast value, if any. This narrow
+/// inventory joins a source declaration to the physical store and producer at one statement BCI.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstLocalAssignment {
+    pub bci: u32,
+    pub name: String,
+    pub value_bci: u32,
+    pub cast_type: Option<crate::ast::Type>,
+    pub scope_anchors: Vec<ClassSourceAstAnchor>,
+}
+
+/// A retained enhanced-for source edge. The direct local spelling and expression BCI are joined
+/// to physical receiver-load evidence by class-source; this record makes no element-type claim.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAstForEachIterable {
+    pub statement_bci: u32,
+    pub expression_bci: u32,
+    pub local_name: Option<String>,
+    pub scope_anchors: Vec<ClassSourceAstAnchor>,
+}
+
 /// A retained formal's emitted name tied to its physical JVM local slot.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1898,6 +1921,33 @@ pub fn class_source_method_first_instruction_bci(ast: &ClassSourceMethodAst) -> 
     } else {
         None
     }
+}
+
+/// Returns the uniquely retained opcode for one physical instruction BCI.
+#[doc(hidden)]
+pub fn class_source_instruction_opcode(
+    ast: &ClassSourceMethodAst,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<u8>, crate::stop::StopReason> {
+    let source = &ast.projection;
+    if !source.complete_code
+        || source.instruction_bcis.len() != source.instruction_count
+        || source.instruction_opcodes.len() != source.instruction_count
+    {
+        return Ok(None);
+    }
+    charge_class_source_metadata(budget, source.instruction_count, Some(bci))?;
+    let mut found = None;
+    for (candidate, opcode) in &source.instruction_opcodes {
+        crate::stop::poll(budget, Some(*candidate))?;
+        if *candidate == bci {
+            if found.replace(*opcode).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+    Ok(found.filter(|_| source.instruction_bcis.contains(&bci)))
 }
 
 /// Checks that the caller's complete physical same-owner invoke inventory matches the census
@@ -3170,6 +3220,7 @@ pub fn project_class_source_invoke_argument_edits(
         has_exception_handlers: ast.projection.has_exception_handlers,
         instruction_count: ast.projection.instruction_count,
         instruction_bcis: ast.projection.instruction_bcis.clone(),
+        instruction_opcodes: ast.projection.instruction_opcodes.clone(),
         call_targets: ast.projection.call_targets.clone(),
         anonymous_constructor_initializer_bci: ast
             .projection
@@ -3344,6 +3395,225 @@ pub fn class_source_local_declarations(
         budget,
     )?;
     Ok(Some(declarations))
+}
+
+/// Lists local initializers and actual `name = (T) value` source assignments from the retained
+/// Program with their statement BCI and lexical containers. Both forms use the same narrow record;
+/// this inventory does not change the established method-body consumer allowlist.
+#[doc(hidden)]
+pub fn class_source_local_assignments(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceAstLocalAssignment>>, crate::stop::StopReason> {
+    use crate::ast::StmtKind;
+
+    if !ast.projection.complete_code {
+        return Ok(None);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+    let mut assignments = Vec::new();
+    let member = &ast.projection.member;
+    let mut pending = vec![(&ast.projection.program.stmts[..], 0usize, Vec::new())];
+    while let Some((statements, index, scopes)) = pending.pop() {
+        if index >= statements.len() {
+            continue;
+        }
+        let statement = &statements[index];
+        let bci = statement.origin.primary().bci();
+        crate::stop::poll(budget, Some(bci))?;
+        charge_class_source_metadata(budget, 1, Some(bci))?;
+        charge_class_source_metadata(budget, scopes.len().saturating_add(1), Some(bci))?;
+        pending.push((statements, index + 1, scopes.clone()));
+        match &statement.kind {
+            StmtKind::Declare {
+                name,
+                value: Some(value),
+                ..
+            }
+            | StmtKind::Assign { name, value } => assignments.push(ClassSourceAstLocalAssignment {
+                bci,
+                name: name.clone(),
+                value_bci: value.origin.primary().bci(),
+                cast_type: match &value.kind {
+                    crate::ast::ExprKind::Cast { ty, .. } => Some(ty.clone()),
+                    _ => None,
+                },
+                scope_anchors: scopes,
+            }),
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((else_body, 0, child_scopes.clone()));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((then_body, 0, child_scopes));
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::Synchronized { body, .. }
+            | StmtKind::ForEach { body, .. } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes));
+            }
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes.clone()));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((std::slice::from_ref(update), 0, child_scopes.clone()));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((std::slice::from_ref(init), 0, child_scopes));
+            }
+            StmtKind::Switch { arms, .. } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                for arm in arms.iter().rev() {
+                    charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                    pending.push((&arm.body, 0, child_scopes.clone()));
+                }
+            }
+            StmtKind::Try {
+                body,
+                catches,
+                finally_body,
+                ..
+            } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                if let Some(finally_body) = finally_body {
+                    charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                    pending.push((finally_body, 0, child_scopes.clone()));
+                }
+                for catch in catches.iter().rev() {
+                    charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                    pending.push((&catch.body, 0, child_scopes.clone()));
+                }
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes));
+            }
+            _ => {}
+        }
+    }
+    Ok(Some(assignments))
+}
+
+/// Enumerates enhanced-for iterable expressions from the retained Program without exposing or
+/// reparsing the AST. A direct local is reported by spelling and source BCI; callers must bind both
+/// to the same-run formal and physical load evidence before using it as a List receiver.
+#[doc(hidden)]
+pub fn class_source_for_each_local_iterables(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceAstForEachIterable>>, crate::stop::StopReason> {
+    use crate::ast::{ExprKind, StmtKind};
+
+    if !ast.projection.complete_code
+        || ast.projection.instruction_bcis.len() != ast.projection.instruction_count
+    {
+        return Ok(None);
+    }
+    charge_class_source_ast(&ast.projection, budget)?;
+    let mut result = Vec::new();
+    let member = &ast.projection.member;
+    let mut pending = vec![(&ast.projection.program.stmts[..], 0usize, Vec::new())];
+    while let Some((statements, index, scopes)) = pending.pop() {
+        if index >= statements.len() {
+            continue;
+        }
+        let statement = &statements[index];
+        let bci = statement.origin.primary().bci();
+        crate::stop::poll(budget, Some(bci))?;
+        charge_class_source_metadata(budget, 1, Some(bci))?;
+        charge_class_source_metadata(budget, scopes.len().saturating_add(1), Some(bci))?;
+        pending.push((statements, index + 1, scopes.clone()));
+        match &statement.kind {
+            StmtKind::ForEach { iterable, body, .. } => {
+                result.push(ClassSourceAstForEachIterable {
+                    statement_bci: bci,
+                    expression_bci: iterable.origin.primary().bci(),
+                    local_name: match &iterable.kind {
+                        ExprKind::Local(name) => Some(name.clone()),
+                        _ => None,
+                    },
+                    scope_anchors: scopes.clone(),
+                });
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes));
+            }
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((else_body, 0, child_scopes.clone()));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((then_body, 0, child_scopes));
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::Synchronized { body, .. } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes));
+            }
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes.clone()));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((std::slice::from_ref(update), 0, child_scopes.clone()));
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((std::slice::from_ref(init), 0, child_scopes));
+            }
+            StmtKind::Switch { arms, .. } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                for arm in arms.iter().rev() {
+                    charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                    pending.push((&arm.body, 0, child_scopes.clone()));
+                }
+            }
+            StmtKind::Try {
+                body,
+                catches,
+                finally_body,
+                ..
+            } => {
+                let mut child_scopes = scopes;
+                child_scopes.push(class_source_ast_anchor(statement.origin.primary(), member));
+                if let Some(finally_body) = finally_body {
+                    charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                    pending.push((finally_body, 0, child_scopes.clone()));
+                }
+                for catch in catches.iter().rev() {
+                    charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                    pending.push((&catch.body, 0, child_scopes.clone()));
+                }
+                charge_class_source_metadata(budget, child_scopes.len(), Some(bci))?;
+                pending.push((body, 0, child_scopes));
+            }
+            _ => {}
+        }
+    }
+    Ok(Some(result))
 }
 
 /// Returns only unambiguous emitted formal names with their physical local slots.
@@ -3562,7 +3832,10 @@ fn class_source_exact_reference_presentation_wrapper<'a>(
     };
     if ty != &Type::Reference(required_type)
         || argument.presented.as_ref() != Some(ty)
-        || !matches!(&value.kind, ExprKind::Call { .. } | ExprKind::Null)
+        || !matches!(
+            &value.kind,
+            ExprKind::Call { .. } | ExprKind::Null | ExprKind::Local(_)
+        )
         || argument.origin.primary() != value.origin.primary()
         || !class_source_origin_belongs_to_method(argument.origin.primary(), &source.member)
         || argument.origin.derived().len() != value.origin.derived().len().saturating_add(1)
@@ -3617,7 +3890,10 @@ fn class_source_expression_reference_presentation_wrapper<'a>(
         class_source_descriptor_reference_parameter(key.target.descriptor(), argument_index)?;
     if ty != &Type::Reference(required_type)
         || argument.presented.as_ref() != Some(ty)
-        || !matches!(&value.kind, ExprKind::Call { .. } | ExprKind::Null)
+        || !matches!(
+            &value.kind,
+            ExprKind::Call { .. } | ExprKind::Null | ExprKind::Local(_)
+        )
         || argument.origin.primary() != value.origin.primary()
         || !class_source_origin_belongs_to_method(argument.origin.primary(), &source.member)
         || argument.origin.derived().len() != value.origin.derived().len().saturating_add(1)
@@ -4461,6 +4737,7 @@ mod instance_array_prefix_tests {
             has_exception_handlers: handlers,
             instruction_count: 8,
             instruction_bcis: (0..8).collect(),
+            instruction_opcodes: (0..8).map(|bci| (bci, 0)).collect(),
             call_targets: Vec::new(),
             anonymous_constructor_initializer_bci: None,
             generic_call_init: Some(crate::init::InitRecord {
@@ -6225,6 +6502,9 @@ pub(crate) struct ClassSourceMethodAstSource {
     /// Every physical instruction BCI observed in the complete Code attribute. A certificate
     /// compares this exact set to the admitted AST anchors; a matching node count is insufficient.
     pub(crate) instruction_bcis: Vec<u32>,
+    /// The opcode at each corresponding BCI, retained from the same complete Code read so source
+    /// proofs can distinguish physical checkcasts from derived presentation wrappers.
+    pub(crate) instruction_opcodes: Vec<(u32, u8)>,
     /// Decoded invocation targets, tied to their physical instruction BCIs.
     pub(crate) call_targets: Vec<(u32, u8, crate::facts::CallTarget)>,
     pub(crate) anonymous_constructor_initializer_bci:
@@ -6418,13 +6698,20 @@ pub struct GenericConstructorFieldWrite {
 pub enum GenericReturnValue {
     /// The body is exactly one effect-free `return;` instruction.
     EmptyVoid,
-    /// A complete, straight-line void body whose parameter locals are never reassigned. This is
-    /// used only as same-run evidence for a source-level generic parameter projection: the body
+    /// A complete void body whose parameter locals are never reassigned. This is used only as
+    /// same-run evidence for a source-level generic parameter projection: the body
     /// remains typed from its physical descriptor while the declaration may name a subtype
     /// variable with the same proved erasure. Slots in this list are physical parameter starts
     /// that neither the SSA instruction reads nor the effects census says the body reads.
     VoidBody {
         unread_parameter_slots: Vec<u16>,
+        /// Every physical instruction BCI at which an unchanged parameter local is read.
+        /// Class-source must account for each occurrence, including duplicate reads.
+        parameter_read_bcis: Vec<(u16, u32)>,
+        /// Direct parameter loads whose same-run SSA value has exactly one use as an invoke
+        /// receiver. These remain physical facts until class-source joins them with the retained
+        /// AST call and a closed platform contract.
+        parameter_receiver_calls: Vec<GenericVoidParameterReceiverCall>,
     },
     /// The body is exactly an effect-free `aconst_null; areturn` sequence.
     NullLiteral,
@@ -6458,6 +6745,16 @@ pub enum GenericReturnValue {
     TypedFunctional {
         target: TypedFunctionalTarget,
     },
+}
+
+/// Same-run physical edge from an unchanged formal local through one direct load to one invoke
+/// receiver. It is deliberately not a source type or generic substitution.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GenericVoidParameterReceiverCall {
+    pub parameter_slot: u16,
+    pub load_bci: u32,
+    pub call_bci: u32,
 }
 
 #[doc(hidden)]
@@ -8798,29 +9095,116 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     )
 }
 
-/// Collect unused physical parameter slots from one complete straight-line void body. Code, SSA
+/// Collect unused physical parameter slots from one complete void body. Code, SSA
 /// and effects must agree on every instruction and local access before a slot can be called unread.
 fn generic_void_unread_parameter_slots(
     code: &jarde_reader::classfile::MethodCodeFacts,
     ssa: &SsaTable,
+    operations: &Operations,
     parameter_slots: &std::collections::BTreeSet<u16>,
     budget: &mut Budget,
-) -> Result<Option<Vec<u16>>, StopReason> {
-    let Some(block) = ssa.blocks().first() else {
-        return Ok(None);
-    };
-    let instructions = block.instructions();
+) -> Result<
+    Option<(
+        Vec<u16>,
+        Vec<(u16, u32)>,
+        Vec<GenericVoidParameterReceiverCall>,
+    )>,
+    StopReason,
+> {
     let effects = ssa.effects().instructions();
     let code_instructions = &code.instructions;
     let code_operands = code.operands();
-    if ssa.blocks().len() != 1
-        || !ssa.phis().is_empty()
+    let mut operations_len = 0usize;
+    for (bci, _) in operations.iter() {
+        crate::stop::poll(budget, Some(*bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(*bci),
+        )?;
+        operations_len = operations_len.saturating_add(1);
+    }
+    if ssa.blocks().is_empty()
         || code.stopped_at.is_some()
         || code.exception_handler_count != 0
         || !code.exception_handlers.is_empty()
-        || instructions.len() != code_instructions.len()
         || code_operands.len() != code_instructions.len()
         || effects.len() != code_instructions.len()
+        || operations_len != code_instructions.len()
+    {
+        return Ok(None);
+    }
+
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(
+            code_instructions
+                .len()
+                .saturating_add(operations_len)
+                .saturating_add(effects.len())
+                .saturating_add(ssa.blocks().len()),
+        )
+        .unwrap_or(u64::MAX),
+        None,
+    )?;
+
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code_instructions.len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(
+                u64::try_from(log2_upper_bound(code_instructions.len()).saturating_add(1))
+                    .unwrap_or(u64::MAX),
+            )
+            .saturating_mul(3),
+        None,
+    )?;
+
+    // Match the whole physical method by unique BCI. CFG block order is not a source order, and
+    // Phi nodes are allowed as control-flow evidence; neither may be flattened into a guessed
+    // straight line. Duplicate, missing or extra members remain a refusal.
+    let mut instructions_by_bci = std::collections::BTreeMap::new();
+    let mut block_by_bci = std::collections::BTreeMap::new();
+    for block in ssa.blocks() {
+        crate::stop::poll(budget, None)?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            None,
+        )?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(block.instructions().len())
+                .unwrap_or(u64::MAX)
+                .saturating_mul(2),
+            None,
+        )?;
+        for instruction in block.instructions() {
+            if instructions_by_bci
+                .insert(instruction.bci(), instruction)
+                .is_some()
+                || block_by_bci
+                    .insert(instruction.bci(), block.block())
+                    .is_some()
+            {
+                return Ok(None);
+            }
+        }
+    }
+    let mut effects_by_bci = std::collections::BTreeMap::new();
+    for effect in effects {
+        crate::stop::poll(budget, Some(effect.bci()))?;
+        if effects_by_bci.insert(effect.bci(), effect).is_some() {
+            return Ok(None);
+        }
+    }
+    if instructions_by_bci.len() != code_instructions.len()
+        || effects_by_bci.len() != code_instructions.len()
     {
         return Ok(None);
     }
@@ -8834,17 +9218,31 @@ fn generic_void_unread_parameter_slots(
     crate::stop::charge(
         budget,
         jarde_reader::budget::CountedBudgetDimension::IrItems,
-        u64::try_from(instructions.len().saturating_add(effects.len())).unwrap_or(u64::MAX),
+        u64::try_from(
+            instructions_by_bci
+                .len()
+                .saturating_add(effects_by_bci.len()),
+        )
+        .unwrap_or(u64::MAX),
         None,
     )?;
     let mut local_reads = std::collections::BTreeSet::new();
     let mut parameter_writes = std::collections::BTreeSet::new();
-    for (((raw, operands), instruction), effect) in code_instructions
-        .iter()
-        .zip(code_operands)
-        .zip(instructions)
-        .zip(effects)
-    {
+    let mut parameter_read_bcis = Vec::new();
+    let mut parameter_receiver_calls = Vec::new();
+    for (raw, operands) in code_instructions.iter().zip(code_operands) {
+        let Some(instruction) = instructions_by_bci.get(&raw.bci).copied() else {
+            return Ok(None);
+        };
+        let Some(effect) = effects_by_bci.get(&raw.bci).copied() else {
+            return Ok(None);
+        };
+        if operations.get(raw.bci).is_none() {
+            return Ok(None);
+        }
+        let Some(block) = block_by_bci.get(&raw.bci).copied() else {
+            return Ok(None);
+        };
         crate::stop::poll(budget, Some(raw.bci))?;
         crate::stop::charge(
             budget,
@@ -8867,9 +9265,39 @@ fn generic_void_unread_parameter_slots(
             raw.opcode == operands.effective_opcode
                 && operands.local.is_none_or(|local| !local.wide)
         };
+        let local_index = operands.local.map(|local| local.index);
+        let short_local = match operands.effective_opcode {
+            0x1a..=0x1d => Some(u16::from(operands.effective_opcode - 0x1a)),
+            0x1e..=0x21 => Some(u16::from(operands.effective_opcode - 0x1e)),
+            0x22..=0x25 => Some(u16::from(operands.effective_opcode - 0x22)),
+            0x26..=0x29 => Some(u16::from(operands.effective_opcode - 0x26)),
+            0x2a..=0x2d => Some(u16::from(operands.effective_opcode - 0x2a)),
+            0x3b..=0x3e => Some(u16::from(operands.effective_opcode - 0x3b)),
+            0x3f..=0x42 => Some(u16::from(operands.effective_opcode - 0x3f)),
+            0x43..=0x46 => Some(u16::from(operands.effective_opcode - 0x43)),
+            0x47..=0x4a => Some(u16::from(operands.effective_opcode - 0x47)),
+            0x4b..=0x4e => Some(u16::from(operands.effective_opcode - 0x4b)),
+            _ => None,
+        };
+        let local_access = match operands.effective_opcode {
+            0x15..=0x19 | 0xa9 => local_index.map(|slot| (vec![slot], Vec::new())),
+            0x1a..=0x2d => local_index
+                .zip(short_local)
+                .and_then(|(slot, expected)| (slot == expected).then(|| (vec![slot], Vec::new()))),
+            0x36..=0x3a => local_index.map(|slot| (Vec::new(), vec![slot])),
+            0x3b..=0x4e => local_index
+                .zip(short_local)
+                .and_then(|(slot, expected)| (slot == expected).then(|| (Vec::new(), vec![slot]))),
+            0x84 => local_index.map(|slot| (vec![slot], vec![slot])),
+            _ if operands.local.is_none() => Some((Vec::new(), Vec::new())),
+            _ => None,
+        };
+        let Some((expected_local_reads, expected_local_writes)) = local_access else {
+            return Ok(None);
+        };
         if raw.bci != instruction.bci()
             || raw.bci != effect.bci()
-            || effect.block() != block.block()
+            || effect.block() != block
             || !raw_opcode_matches
             || operands.effective_opcode != instruction.opcode()
             || operands.effective_opcode != effect.opcode()
@@ -8884,67 +9312,140 @@ fn generic_void_unread_parameter_slots(
             u64::try_from(instruction.reads().len()).unwrap_or(u64::MAX),
             Some(raw.bci),
         )?;
-        let ssa_reads = instruction
+        let mut ssa_read_slots = instruction
             .reads()
             .iter()
             .filter_map(|(slot, _)| match slot {
                 Slot::Local(index) => Some(*index),
                 Slot::Stack(_) => None,
             })
-            .collect::<std::collections::BTreeSet<_>>();
+            .collect::<Vec<_>>();
+        ssa_read_slots.sort_unstable();
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
             u64::try_from(effect.locals_read().len()).unwrap_or(u64::MAX),
             Some(raw.bci),
         )?;
-        let effect_reads = effect
-            .locals_read()
-            .iter()
-            .copied()
-            .collect::<std::collections::BTreeSet<_>>();
+        let mut effect_read_slots = effect.locals_read().to_vec();
+        effect_read_slots.sort_unstable();
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
             u64::try_from(instruction.writes().len()).unwrap_or(u64::MAX),
             Some(raw.bci),
         )?;
-        let ssa_writes = instruction
+        let mut ssa_write_slots = instruction
             .writes()
             .iter()
             .filter_map(|(slot, _)| match slot {
                 Slot::Local(index) => Some(*index),
                 Slot::Stack(_) => None,
             })
-            .collect::<std::collections::BTreeSet<_>>();
+            .collect::<Vec<_>>();
+        ssa_write_slots.sort_unstable();
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
             u64::try_from(effect.locals_written().len()).unwrap_or(u64::MAX),
             Some(raw.bci),
         )?;
-        let effect_writes = effect
-            .locals_written()
-            .iter()
-            .copied()
-            .collect::<std::collections::BTreeSet<_>>();
-        if ssa_reads != effect_reads || ssa_writes != effect_writes {
+        let mut effect_write_slots = effect.locals_written().to_vec();
+        effect_write_slots.sort_unstable();
+        let mut expected_local_reads = expected_local_reads;
+        let mut expected_local_writes = expected_local_writes;
+        expected_local_reads.sort_unstable();
+        expected_local_writes.sort_unstable();
+        if ssa_read_slots != effect_read_slots
+            || ssa_write_slots != effect_write_slots
+            || ssa_read_slots != expected_local_reads
+            || ssa_write_slots != expected_local_writes
+        {
             return Ok(None);
         }
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
-            u64::try_from(ssa_reads.len()).unwrap_or(u64::MAX),
+            u64::try_from(ssa_read_slots.len()).unwrap_or(u64::MAX),
             Some(raw.bci),
         )?;
-        local_reads.extend(ssa_reads);
+        local_reads.extend(ssa_read_slots.iter().copied());
+        for slot in instruction
+            .reads()
+            .iter()
+            .filter_map(|(slot, _)| match slot {
+                Slot::Local(index) if parameter_slots.contains(index) => Some(*index),
+                _ => None,
+            })
+        {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(raw.bci),
+            )?;
+            parameter_read_bcis.push((slot, raw.bci));
+        }
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
-            u64::try_from(ssa_writes.len()).unwrap_or(u64::MAX),
+            u64::try_from(ssa_write_slots.len()).unwrap_or(u64::MAX),
             Some(raw.bci),
         )?;
-        parameter_writes.extend(ssa_writes.intersection(parameter_slots).copied());
+        parameter_writes.extend(
+            ssa_write_slots
+                .iter()
+                .filter(|slot| parameter_slots.contains(slot))
+                .copied(),
+        );
+
+        // A List parameter is eligible for later source proof only when each direct formal load
+        // has one physical invoke consumer as receiver. This records no element type; class-source
+        // must still join the call target, local declaration and retained AST site.
+        if matches!(instruction.opcode(), 0x19 | 0x2a..=0x2d) {
+            let [(Slot::Local(slot), parameter_value)] = instruction.reads() else {
+                continue;
+            };
+            if !parameter_slots.contains(slot) {
+                continue;
+            }
+            let [(Slot::Stack(_), loaded_value)] = instruction.writes() else {
+                continue;
+            };
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                u64::try_from(ssa.value(*loaded_value).uses().len()).unwrap_or(u64::MAX),
+                Some(raw.bci),
+            )?;
+            if !matches!(ssa.value(*parameter_value).def(), Definition::Entry { slot: Slot::Local(entry_slot), .. } if entry_slot == slot)
+                || !matches!(ssa.value(*loaded_value).def(), Definition::Instruction { bci, .. } if *bci == raw.bci)
+                || ssa.value(*loaded_value).uses().len() != 1
+            {
+                continue;
+            }
+            let use_bci = ssa.value(*loaded_value).uses()[0].bci();
+            let Some(call_bci) = use_bci else {
+                continue;
+            };
+            let Some((Operation::Invoke(_), call_instruction)) = operations
+                .get(call_bci)
+                .zip(instructions_by_bci.get(&call_bci).copied())
+            else {
+                continue;
+            };
+            if call_instruction
+                .reads()
+                .iter()
+                .any(|(read_slot, value)| *read_slot == Slot::Stack(0) && *value == *loaded_value)
+            {
+                parameter_receiver_calls.push(GenericVoidParameterReceiverCall {
+                    parameter_slot: *slot,
+                    load_bci: raw.bci,
+                    call_bci,
+                });
+            }
+        }
     }
     if !parameter_writes.is_empty() {
         return Ok(None);
@@ -8969,7 +9470,11 @@ fn generic_void_unread_parameter_slots(
             unread.push(*slot);
         }
     }
-    Ok(Some(unread))
+    Ok(Some((
+        unread,
+        parameter_read_bcis,
+        parameter_receiver_calls,
+    )))
 }
 
 fn generic_return_candidate(
@@ -9058,22 +9563,18 @@ fn generic_return_candidate(
             value: GenericReturnValue::EmptyVoid,
         }));
     }
-    // This candidate records a complete straight-line void body and unchanged parameter locals.
+    // This candidate records a complete structured void body and unchanged parameter locals.
     // Its unread-slot list is a separate physical fact: declaration projection may use it for a
     // parameter whose Signature is parameterized by a class variable, while read parameters still
     // need the existing narrower source-assignability proof.
     if matches!(
         program.stmts.last().map(|statement| &statement.kind),
         Some(StmtKind::Return { value: None })
-    ) && program.statements == program.stmts.len()
-        && program.stmts.len() > 1
+    ) && !program.stmts.is_empty()
         && code.stopped_at.is_none()
         && code.exception_handler_count == 0
         && code.exception_handlers.is_empty()
-        && ssa.blocks().len() == 1
-        && ssa.phis().is_empty()
         && !program.ragged
-        && ssa.blocks()[0].instructions().len() == code.instructions.len()
         && ssa.effects().instructions().len() == code.instructions.len()
     {
         crate::stop::poll(budget, None)?;
@@ -9085,8 +9586,8 @@ fn generic_return_candidate(
         )?;
         let parameter_slots: std::collections::BTreeSet<_> =
             parameter_types.keys().copied().collect();
-        let Some(unread_parameter_slots) =
-            generic_void_unread_parameter_slots(code, ssa, &parameter_slots, budget)?
+        let Some((unread_parameter_slots, parameter_read_bcis, parameter_receiver_calls)) =
+            generic_void_unread_parameter_slots(code, ssa, operations, &parameter_slots, budget)?
         else {
             return Ok(None);
         };
@@ -9108,6 +9609,8 @@ fn generic_return_candidate(
             parameters,
             value: GenericReturnValue::VoidBody {
                 unread_parameter_slots,
+                parameter_read_bcis,
+                parameter_receiver_calls,
             },
         }));
     }
@@ -11516,6 +12019,14 @@ fn recover_inner(
         } else {
             Vec::new()
         };
+        let instruction_opcodes: Vec<(u32, u8)> = if retain_complete_invocation_ast {
+            code.instructions
+                .iter()
+                .map(|instruction| (instruction.bci, instruction.opcode))
+                .collect()
+        } else {
+            Vec::new()
+        };
         let call_targets: Vec<(u32, u8, crate::facts::CallTarget)> =
             if retain_complete_invocation_ast {
                 operations
@@ -11535,6 +12046,7 @@ fn recover_inner(
             program_node_count(&program)
                 .saturating_add(u64::try_from(parameter_names.len()).unwrap_or(u64::MAX))
                 .saturating_add(u64::try_from(instruction_bcis.len()).unwrap_or(u64::MAX))
+                .saturating_add(u64::try_from(instruction_opcodes.len()).unwrap_or(u64::MAX))
                 .saturating_add(u64::try_from(call_targets.len()).unwrap_or(u64::MAX))
         } else {
             2
@@ -11662,6 +12174,7 @@ fn recover_inner(
                 }),
                 instruction_count: request.ir.code().map_or(0, |code| code.instructions.len()),
                 instruction_bcis,
+                instruction_opcodes,
                 call_targets,
                 anonymous_constructor_initializer_bci,
                 generic_call_init,
@@ -13424,6 +13937,323 @@ fn content_of(emitted: &Emitted) -> RecoveryContent {
 }
 
 #[cfg(test)]
+mod generic_void_parameter_census_tests {
+    use super::*;
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::{Budget, Limits};
+    use jarde_reader::classfile::{InstructionFact, InstructionOperands, MethodCodeFacts};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+        MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+        RuntimeView,
+    };
+    use std::collections::BTreeSet;
+
+    const FIXED: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class"
+    );
+    const CONTROLS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class"
+    );
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 10,
+            method_bodies: 10,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 16,
+            dependency_depth: 8,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn analyzed(
+        bytes: &[u8],
+        name: &str,
+        descriptor: &str,
+        parameter_slots: u16,
+    ) -> (jarde_jvm::method_ir::MethodIrAnalysis, BTreeSet<u16>) {
+        let mut budget = Budget::new(limits());
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
+            .expect("the frozen CF11 class opens");
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let method = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(bytes).to_hex().to_string()),
+                    length: u64::try_from(bytes.len()).expect("fixture length fits"),
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: method.owner.location.snapshot().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method,
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget,
+        )
+        .expect("the frozen CF11 method analyzes");
+        let slots = crate::facts::MethodFacts::new(name, descriptor, parameter_slots)
+            .with_access_flags(0x0001)
+            .parameter_types()
+            .into_keys()
+            .collect();
+        (analysis, slots)
+    }
+    fn rebuilt_code(
+        code: &MethodCodeFacts,
+        pairs: Vec<(InstructionFact, InstructionOperands)>,
+        exception_handlers: Vec<jarde_reader::classfile::ExceptionHandlerFact>,
+        exception_handler_count: u32,
+    ) -> MethodCodeFacts {
+        MethodCodeFacts::from_parts(
+            code.max_stack,
+            code.max_locals,
+            code.code_span.clone(),
+            pairs,
+            exception_handlers,
+            exception_handler_count,
+            code.execution.clone(),
+            code.stopped_at.clone(),
+            code.debug().clone(),
+        )
+    }
+    fn code_pairs(code: &MethodCodeFacts) -> Vec<(InstructionFact, InstructionOperands)> {
+        code.instructions
+            .iter()
+            .cloned()
+            .zip(code.operands().iter().cloned())
+            .collect()
+    }
+    fn refused(
+        code: &MethodCodeFacts,
+        ssa: &SsaTable,
+        operations: &Operations,
+        slots: &BTreeSet<u16>,
+    ) {
+        assert!(
+            generic_void_unread_parameter_slots(
+                code,
+                ssa,
+                operations,
+                slots,
+                &mut Budget::new(limits())
+            )
+            .expect("a conservative refusal is not a stop")
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn complete_fixed_void_census_keeps_phi_and_every_formal_read() {
+        let (analysis, parameter_slots) =
+            analyzed(FIXED, "test", "(Ljava/util/List;Ljava/util/List;)V", 3);
+        let ir = analysis.ir();
+        let code = ir.code().expect("the fixed method has Code");
+        let ssa = ir.ssa().expect("the fixed method has SSA");
+        let operations = Operations::of(code, ir.constant_pool());
+        assert!(ssa.blocks().len() > 1, "fixture must stay multi-block");
+        assert!(!ssa.phis().is_empty(), "fixture must retain a real SSA phi");
+        assert_eq!(parameter_slots, BTreeSet::from([1, 2]));
+
+        let (unread, reads, receivers) = generic_void_unread_parameter_slots(
+            code,
+            ssa,
+            &operations,
+            &parameter_slots,
+            &mut Budget::new(limits()),
+        )
+        .expect("the census completes")
+        .expect("the complete physical body is internally closed");
+        assert!(
+            unread.is_empty(),
+            "all exact List formals have physical reads"
+        );
+        assert_eq!(
+            reads,
+            vec![(1, 0), (2, 27), (2, 76), (1, 88), (2, 103), (1, 112)],
+            "parameter reads retain their physical occurrences"
+        );
+        assert_eq!(
+            receivers
+                .iter()
+                .map(|call| (call.parameter_slot, call.load_bci, call.call_bci))
+                .collect::<Vec<_>>(),
+            vec![
+                (1, 0, 1),
+                (2, 27, 28),
+                (2, 76, 79),
+                (1, 88, 91),
+                (2, 103, 104),
+                (1, 112, 113),
+            ],
+            "only direct single-use List receiver loads enter the receiver subset"
+        );
+    }
+
+    #[test]
+    fn fixed_census_refuses_physical_inventory_and_operation_disagreements() {
+        let (analysis, slots) = analyzed(FIXED, "test", "(Ljava/util/List;Ljava/util/List;)V", 3);
+        let ir = analysis.ir();
+        let code = ir.code().unwrap();
+        let ssa = ir.ssa().unwrap();
+        let pool = ir.constant_pool();
+
+        let mut missing = code_pairs(code);
+        missing.pop();
+        let missing = rebuilt_code(
+            code,
+            missing,
+            code.exception_handlers.clone(),
+            code.exception_handler_count,
+        );
+        let missing_ops = Operations::of(&missing, pool);
+        refused(&missing, ssa, &missing_ops, &slots);
+
+        let mut duplicate = code_pairs(code);
+        duplicate.push(duplicate[0].clone());
+        let duplicate = rebuilt_code(
+            code,
+            duplicate,
+            code.exception_handlers.clone(),
+            code.exception_handler_count,
+        );
+        let duplicate_ops = Operations::of(&duplicate, pool);
+        refused(&duplicate, ssa, &duplicate_ops, &slots);
+
+        let mut wrong_bci = code_pairs(code);
+        wrong_bci[0].0.bci = u32::MAX;
+        let wrong_bci = rebuilt_code(
+            code,
+            wrong_bci,
+            code.exception_handlers.clone(),
+            code.exception_handler_count,
+        );
+        let wrong_bci_ops = Operations::of(&wrong_bci, pool);
+        refused(&wrong_bci, ssa, &wrong_bci_ops, &slots);
+
+        let mut wrong_opcode = code_pairs(code);
+        wrong_opcode[0].0.opcode = 0x19;
+        wrong_opcode[0].1.effective_opcode = 0x19;
+        let wrong_opcode = rebuilt_code(
+            code,
+            wrong_opcode,
+            code.exception_handlers.clone(),
+            code.exception_handler_count,
+        );
+        let wrong_opcode_ops = Operations::of(&wrong_opcode, pool);
+        refused(&wrong_opcode, ssa, &wrong_opcode_ops, &slots);
+    }
+
+    #[test]
+    fn fixed_read_is_not_unread_when_the_invoke_target_is_unknown() {
+        let (analysis, slots) = analyzed(FIXED, "test", "(Ljava/util/List;Ljava/util/List;)V", 3);
+        let ir = analysis.ir();
+        let code = ir.code().unwrap();
+        let ssa = ir.ssa().unwrap();
+        let pool = ir.constant_pool();
+        let mut pairs = code_pairs(code);
+        let call = pairs
+            .iter_mut()
+            .find(|(instruction, _)| instruction.bci == 79)
+            .expect("the List.add invoke is at BCI 79");
+        call.0.constant_pool_index = None;
+        call.1.constant_pool_index = None;
+        let unknown_target = rebuilt_code(
+            code,
+            pairs,
+            code.exception_handlers.clone(),
+            code.exception_handler_count,
+        );
+        let operations = Operations::of(&unknown_target, pool);
+        let (unread, reads, receivers) = generic_void_unread_parameter_slots(
+            &unknown_target,
+            ssa,
+            &operations,
+            &slots,
+            &mut Budget::new(limits()),
+        )
+        .expect("the operation inventory remains complete")
+        .expect("unknown call identity does not falsify physical read evidence");
+        assert!(unread.is_empty());
+        assert!(reads.contains(&(2, 76)), "the formal read remains counted");
+        assert!(
+            !receivers
+                .iter()
+                .any(|call| call.parameter_slot == 2 && call.load_bci == 76),
+            "unknown invoke identity cannot be claimed as a proved receiver edge"
+        );
+    }
+
+    #[test]
+    fn real_parameter_reassignment_and_handler_facts_refuse_the_list_census() {
+        for (name, descriptor) in [
+            ("reassigned", "(Ljava/util/List;Ljava/util/List;)V"),
+            ("handled", "(Ljava/util/List;Ljava/util/List;)V"),
+        ] {
+            let (analysis, slots) = analyzed(CONTROLS, name, descriptor, 3);
+            let ir = analysis.ir();
+            let code = ir.code().expect("control method has Code");
+            let ssa = ir.ssa().expect("control method has SSA");
+            let operations = Operations::of(code, ir.constant_pool());
+            refused(code, ssa, &operations, &slots);
+        }
+    }
+}
+
+#[cfg(test)]
 mod generic_call_ast_projection_tests {
     use super::*;
     use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
@@ -13501,6 +14331,7 @@ mod generic_call_ast_projection_tests {
             has_exception_handlers: false,
             instruction_count: 1,
             instruction_bcis: vec![3],
+            instruction_opcodes: vec![(3, 0xb6)],
             call_targets: vec![(3, 0xb6, target)],
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
@@ -13674,6 +14505,19 @@ mod generic_call_ast_projection_tests {
             complete_code: true,
             has_exception_handlers: false,
             instruction_count: instruction_bcis.len(),
+            instruction_opcodes: instruction_bcis
+                .iter()
+                .map(|bci| {
+                    (
+                        *bci,
+                        if physical_cast && *bci == 3 {
+                            0xc0
+                        } else {
+                            0xb8
+                        },
+                    )
+                })
+                .collect(),
             instruction_bcis,
             call_targets,
             anonymous_constructor_initializer_bci: None,
@@ -13772,6 +14616,227 @@ mod generic_call_ast_projection_tests {
         assert_eq!(ty, &Type::Reference("java.lang.Number".to_owned()));
         assert!(matches!(&value.kind, ExprKind::Call { .. }));
         assert_eq!(value.origin.primary().bci(), producer.call_bci);
+    }
+
+    fn local_presentation_wrapper_ast() -> (
+        ClassSourceMethodAst,
+        ClassSourceInvokeKey,
+        ClassSourceInvokeKey,
+    ) {
+        let (ast, producer, consumer) = object_presentation_wrapper_ast(false);
+        let mut source = (*ast.projection).clone();
+        let StmtKind::Return {
+            value:
+                Some(Expr {
+                    kind: ExprKind::Call { args, .. },
+                    ..
+                }),
+        } = &mut source.program.stmts[0].kind
+        else {
+            panic!("fixture returns the consumer call")
+        };
+        let ExprKind::Cast { value, .. } = &mut args[0].kind else {
+            panic!("fixture argument is source-presentation cast")
+        };
+        let child_origin = value.origin.clone();
+        let child_presented = value.presented.clone();
+        *value = Box::new(Expr {
+            kind: ExprKind::Local("value".to_owned()),
+            origin: child_origin,
+            presented: child_presented,
+        });
+        (
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            },
+            producer,
+            consumer,
+        )
+    }
+
+    fn presentation_removal(
+        key: &ClassSourceInvokeKey,
+        argument_index: usize,
+    ) -> ClassSourceInvokeArgumentPresentationCast {
+        ClassSourceInvokeArgumentPresentationCast {
+            call_bci: key.call_bci,
+            opcode: key.opcode,
+            target: key.target.clone(),
+            argument_index,
+        }
+    }
+
+    fn assert_removal_refused_without_mutating_ast(
+        ast: &ClassSourceMethodAst,
+        removals: &[ClassSourceInvokeArgumentPresentationCast],
+        label: &str,
+    ) {
+        let before = ast.clone();
+        let mut budget = fresh_budget();
+        assert!(
+            project_class_source_invoke_argument_edits(ast, removals, &[], &mut budget)
+                .unwrap()
+                .is_none(),
+            "{label} must independently refuse the local wrapper edit"
+        );
+        assert_eq!(
+            ast, &before,
+            "{label} leaves the retained source AST unchanged"
+        );
+    }
+
+    #[test]
+    fn exact_local_object_presentation_wrapper_is_reported_and_removed() {
+        let (ast, producer, consumer) = local_presentation_wrapper_ast();
+        let before = ast.clone();
+        let mut budget = fresh_budget();
+        let sites =
+            class_source_invoke_ast_sites(&ast, std::slice::from_ref(&consumer), &mut budget)
+                .unwrap()
+                .unwrap();
+        let wrapper = sites[0].arguments[0]
+            .presentation_wrapper
+            .as_ref()
+            .expect("the exact descriptor-erasure wrapper around a local is reported");
+        assert_eq!(wrapper.ty, Type::Reference("java.lang.Object".to_owned()));
+        assert_eq!(wrapper.child.shape, ClassSourceAstExpressionShape::Local);
+        assert_eq!(wrapper.child.direct_local_name.as_deref(), Some("value"));
+        assert_eq!(wrapper.child.primary.bci, producer.call_bci);
+        assert_eq!(wrapper.child.primary, sites[0].arguments[0].primary);
+        assert_eq!(
+            wrapper.child.derived,
+            sites[0].arguments[0].derived[..wrapper.child.derived.len()]
+        );
+        assert_eq!(
+            sites[0].arguments[0]
+                .derived
+                .last()
+                .map(|anchor| anchor.bci),
+            Some(consumer.call_bci)
+        );
+
+        let projected = project_class_source_invoke_argument_edits(
+            &ast,
+            &[presentation_removal(&consumer, 0)],
+            &[],
+            &mut budget,
+        )
+        .unwrap()
+        .expect("the one exact local wrapper edit applies atomically");
+        let StmtKind::Return { value: Some(call) } = &projected.projection.program.stmts[0].kind
+        else {
+            panic!("the consumer remains a return value")
+        };
+        let ExprKind::Call { args, .. } = &call.kind else {
+            panic!("the consumer remains a call")
+        };
+        let [argument] = args.as_slice() else {
+            panic!("the consumer has one argument")
+        };
+        assert!(matches!(&argument.kind, ExprKind::Local(name) if name == "value"));
+        assert_eq!(argument.origin.primary().bci(), producer.call_bci);
+        assert_eq!(
+            ast, before,
+            "projection returns a clone and keeps the input AST intact"
+        );
+    }
+
+    #[test]
+    fn local_wrapper_removal_rejects_wrong_identity_duplicates_and_physical_checkcasts() {
+        let (ast, _, consumer) = local_presentation_wrapper_ast();
+
+        let mut wrong_method = (*ast.projection).clone();
+        let mut foreign = wrong_method.member.clone();
+        foreign.name = JvmBytes(b"foreign".to_vec());
+        let foreign_child_origin =
+            OriginSet::new(crate::source_map::Origin::direct(2).in_method(&foreign));
+        let foreign_wrapper_origin = foreign_child_origin
+            .clone()
+            .plus_derived(crate::source_map::Origin::derived(consumer.call_bci));
+        let StmtKind::Return {
+            value:
+                Some(Expr {
+                    kind: ExprKind::Call { args, .. },
+                    ..
+                }),
+        } = &mut wrong_method.program.stmts[0].kind
+        else {
+            panic!("fixture returns the consumer call")
+        };
+        let ExprKind::Cast { value, .. } = &mut args[0].kind else {
+            panic!("fixture argument remains a wrapper cast")
+        };
+        value.origin = foreign_child_origin;
+        args[0].origin = foreign_wrapper_origin;
+        let wrong_method = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(wrong_method),
+        };
+        assert_removal_refused_without_mutating_ast(
+            &wrong_method,
+            &[presentation_removal(&consumer, 0)],
+            "foreign method origin",
+        );
+
+        let wrong_bci = {
+            let mut edit = presentation_removal(&consumer, 0);
+            edit.call_bci += 1;
+            edit
+        };
+        assert_removal_refused_without_mutating_ast(&ast, &[wrong_bci], "wrong call BCI");
+
+        let wrong_opcode = {
+            let mut edit = presentation_removal(&consumer, 0);
+            edit.opcode = 0xb6;
+            edit
+        };
+        assert_removal_refused_without_mutating_ast(&ast, &[wrong_opcode], "wrong opcode");
+
+        let wrong_target = {
+            let mut edit = presentation_removal(&consumer, 0);
+            edit.target = crate::facts::CallTarget::new(
+                crate::facts::InvokeKind::Static,
+                "sample/Box",
+                "different",
+                "(Ljava/lang/Object;)Ljava/lang/Object;",
+                false,
+            );
+            edit
+        };
+        assert_removal_refused_without_mutating_ast(&ast, &[wrong_target], "wrong target");
+
+        assert_removal_refused_without_mutating_ast(
+            &ast,
+            &[presentation_removal(&consumer, 1)],
+            "wrong argument index",
+        );
+        let duplicate = presentation_removal(&consumer, 0);
+        assert_removal_refused_without_mutating_ast(
+            &ast,
+            &[duplicate.clone(), duplicate],
+            "duplicate removal",
+        );
+
+        let (physical_ast, _, physical_consumer) = object_presentation_wrapper_ast(true);
+        let physical_before = physical_ast.clone();
+        let mut budget = fresh_budget();
+        assert!(
+            class_source_invoke_ast_sites(
+                &physical_ast,
+                std::slice::from_ref(&physical_consumer),
+                &mut budget,
+            )
+            .unwrap()
+            .unwrap()[0]
+                .arguments[0]
+                .presentation_wrapper
+                .is_none()
+        );
+        assert_removal_refused_without_mutating_ast(
+            &physical_ast,
+            &[presentation_removal(&physical_consumer, 0)],
+            "physical checkcast",
+        );
+        assert_eq!(physical_ast, physical_before);
     }
 
     #[test]
@@ -15092,6 +16157,7 @@ mod lambda_helper_instruction_coverage_tests {
             has_exception_handlers: false,
             instruction_count: instruction_bcis.len(),
             instruction_bcis,
+            instruction_opcodes: Vec::new(),
             call_targets: Vec::new(),
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
@@ -15185,6 +16251,7 @@ mod anonymous_capture_projection_tests {
                 has_exception_handlers: false,
                 instruction_count: 0,
                 instruction_bcis: Vec::new(),
+                instruction_opcodes: Vec::new(),
                 call_targets: Vec::new(),
                 anonymous_constructor_initializer_bci: None,
                 generic_call_init: None,
@@ -16023,6 +17090,9 @@ mod integer_array_name_projection_tests {
                 instruction_count: element_bcis.len() + 1,
                 instruction_bcis: std::iter::once(0)
                     .chain(element_bcis.iter().copied())
+                    .collect(),
+                instruction_opcodes: std::iter::once((0, 0xb1))
+                    .chain(element_bcis.iter().copied().map(|bci| (bci, 0xb1)))
                     .collect(),
                 call_targets: Vec::new(),
                 anonymous_constructor_initializer_bci: None,

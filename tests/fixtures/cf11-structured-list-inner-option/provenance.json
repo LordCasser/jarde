@@ -1,0 +1,29 @@
+{
+  "schema": "cf11-inner-option-copied-frozen-inputs-root-v1",
+  "inputs": [
+    {
+      "source": "/private/tmp/jarde-cf11-structured-list-current-inner-option-debug-root-v1/legs/javac23-original/classes/cf11/DistinctIntegerFixture.class",
+      "destination": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.class",
+      "bytes": 1320,
+      "sha256": "935d0c2aed93723ee59b0c407dec4e999c4bc11a8593b07765f122f5f9761d2d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-inner-option-boundary-luna-v2/DistinctIntegerFixture.java",
+      "destination": "tests/fixtures/cf11-structured-list-inner-option/DistinctIntegerFixture.java",
+      "bytes": 740,
+      "sha256": "067ae158526955a9d04830bd019f54da00699238a184c35b31590c5e4c611191"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-inner-option-boundary-luna-v2/Runner.java",
+      "destination": "tests/fixtures/cf11-structured-list-inner-option/Runner.java",
+      "bytes": 2637,
+      "sha256": "233080b4a54895b362eb572d0ceb1c8e1a9a204efb60e23346d2723b02096f11"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-list-inner-option-boundary-luna-v2/manifest.json",
+      "destination": "tests/fixtures/cf11-structured-list-inner-option/manifest.json",
+      "bytes": 987,
+      "sha256": "732e452b63f066939cdc40761c2f46a1cd71f67e8843982b9ff103cd7294f254"
+    }
+  ]
+}

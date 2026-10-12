@@ -12243,7 +12243,10 @@ mod tests {
             // independently confirmed against both compiler legs and parsed Code bytes.
             // CF11OuterAssignmentTarget: one canonical javac8 class, five Code bodies,
             // no handlers, eight direct branch targets (two per loop method), no jsr.
-            (1133, 4995, 473, 3048, 10),
+            // Structured List generic bodies add seven classes, twenty-three Code bodies,
+            // one handler and ninety-three branch targets: six nested bodies with eight each,
+            // plus forty-five in the combined controls; no subroutine is introduced.
+            (1140, 5018, 474, 3141, 10),
             "fixture population changed: re-measure these counts"
         );
     }

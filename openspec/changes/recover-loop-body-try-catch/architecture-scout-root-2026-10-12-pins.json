@@ -1,0 +1,36 @@
+{
+  "scope": "read-only architecture observation; no current toolchain replay or implementation",
+  "observed_at": "2026-10-12T07:18:47.831609+00:00",
+  "files": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 969855,
+      "sha256": "c905af706bda527881fa99e6a3f1e771164d676900a5c57c1dd154bb9fb63eaa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-05/loop-body-catch-patrol/fixture/DV.java",
+      "bytes": 969,
+      "sha256": "a720d3c4f3c4fcb96e00debe3d5dbc11f107ee452df01ad37ca498db68a6c14f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-05/loop-body-catch-patrol/results/jarde-DV.txt",
+      "bytes": 418794,
+      "sha256": "00a57f049d0c8ab6c9d4a428f9d92192cf6e322a8891d9f5e7965451fab46b3e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestTryCatchInLoop.java",
+      "bytes": 868,
+      "sha256": "9fc7c99bf968ffbfb948bf5dca186f36c1d923ee9c4600f8d86ff85899003830"
+    },
+    {
+      "path": "/private/tmp/jarde-loop-body-catch-scope-scout-luna-v1/README.md",
+      "bytes": 9521,
+      "sha256": "a3f34704097a3c665a9513ab5c946c57b6f85a3a31521dad0bda166ad0f86390"
+    },
+    {
+      "path": "/private/tmp/jarde-loop-body-catch-scope-scout-luna-v1/pins.md",
+      "bytes": 2519,
+      "sha256": "b50c45358e90d867e5bfc5c3346b1d43eadb5246bb3e144166ebcbd91b14d466"
+    }
+  ]
+}

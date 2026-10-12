@@ -5463,6 +5463,7 @@ pub(crate) fn project_method_signature(
         resolved_inner_classes,
         same_class,
         unproved_this_delegate_bci,
+        &[],
         budget,
     );
     if result.is_err() {
@@ -5494,6 +5495,7 @@ pub(crate) fn project_method_signature_with_state(
     resolved_inner_classes: &[ResolvedInnerClass],
     same_class: SameClassBinding,
     unproved_this_delegate_bci: Option<u32>,
+    proved_list_parameters: &[(u16, Vec<String>)],
     budget: &mut Budget,
 ) -> Result<SignatureProjection> {
     let shells = attribute_shells(member, b"Signature");
@@ -5791,7 +5793,7 @@ pub(crate) fn project_method_signature_with_state(
             )?;
             (
                 declaration,
-                "same-run complete straight-line AST/Code/SSA parameter-use and Signature erasure proof",
+                "same-run complete AST/Code/SSA parameter-use and Signature erasure proof",
             )
         } else if body_ordinary_parameterized_null_return {
             let declaration = ordinary_parameterized_declaration(
@@ -5806,6 +5808,7 @@ pub(crate) fn project_method_signature_with_state(
                 class_interfaces,
                 class_scope,
                 true,
+                proved_list_parameters,
                 budget,
             )?;
             (
@@ -5854,6 +5857,7 @@ pub(crate) fn project_method_signature_with_state(
                 class_interfaces,
                 class_scope,
                 false,
+                proved_list_parameters,
                 budget,
             )?;
             (
@@ -5871,7 +5875,7 @@ pub(crate) fn project_method_signature_with_state(
                     candidate.map(|candidate| &candidate.value),
                     Some(GenericReturnValue::VoidBody { .. })
                 ) {
-                    "same-run AST/Code/SSA straight-line void body proof"
+                    "same-run AST/Code/SSA complete void body proof"
                 } else {
                     "same-run AST/SSA parameter-return proof"
                 },
@@ -6152,6 +6156,7 @@ pub(crate) fn project_member_family_generic_signature(
             class_interfaces,
             class_scope,
             false,
+            &[],
             budget,
         )?
     };
@@ -7187,6 +7192,7 @@ fn ordinary_parameterized_declaration(
     class_interfaces: &[Vec<u8>],
     class_scope: &[TypeParameterErasure],
     allow_null_return: bool,
+    proved_list_parameters: &[(u16, Vec<String>)],
     budget: &mut Budget,
 ) -> Result<String> {
     let refused = |why| Error::unsupported("ordinary_generic_source_unproved", why);
@@ -7417,6 +7423,7 @@ fn ordinary_parameterized_declaration(
             }
             let void_body_parameters_proved = if let GenericReturnValue::VoidBody {
                 unread_parameter_slots,
+                ..
             } = &candidate.value
             {
                 budget.charge(
@@ -7432,6 +7439,13 @@ fn ordinary_parameterized_declaration(
                 let mut proved = unread_parameter_slots
                     .windows(2)
                     .all(|slots| slots[0] < slots[1]);
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(proved_list_parameters.len()).unwrap_or(u64::MAX),
+                )?;
+                proved &= proved_list_parameters
+                    .windows(2)
+                    .all(|slots| slots[0].0 < slots[1].0);
                 for slot in unread_parameter_slots {
                     budget.poll()?;
                     proved &= signature
@@ -7442,10 +7456,90 @@ fn ordinary_parameterized_declaration(
                 for (position, parameter) in parsed.parameters.iter().enumerate() {
                     budget.poll()?;
                     let physical = signature.parameters.get(position);
+                    let list_signature_element = match parameter {
+                        SignatureType::Class(class) => {
+                            budget.charge(
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(class.segments.len())
+                                    .unwrap_or(u64::MAX)
+                                    .saturating_add(1),
+                            )?;
+                            match class.segments.as_slice() {
+                                [list] if list.binary_name.as_slice() == b"java/util/List" => {
+                                    match list.arguments.as_slice() {
+                                        [TypeArgument::Exact(SignatureType::Class(element))] => {
+                                            budget.charge(
+                                                CountedBudgetDimension::AnalysisSteps,
+                                                u64::try_from(element.segments.len())
+                                                    .unwrap_or(u64::MAX)
+                                                    .saturating_add(1),
+                                            )?;
+                                            if element.segments.is_empty()
+                                                || element
+                                                    .segments
+                                                    .iter()
+                                                    .any(|segment| !segment.arguments.is_empty())
+                                            {
+                                                None
+                                            } else {
+                                                let copied_bytes = element.segments.iter().fold(
+                                                    0u64,
+                                                    |total, segment| {
+                                                        total.saturating_add(
+                                                            u64::try_from(
+                                                                segment.binary_name.len(),
+                                                            )
+                                                            .unwrap_or(u64::MAX),
+                                                        )
+                                                    },
+                                                );
+                                                budget.charge(
+                                                    CountedBudgetDimension::OutputBytes,
+                                                    copied_bytes,
+                                                )?;
+                                                let element_signature =
+                                                    SignatureType::Class(element.clone());
+                                                Some(
+                                                    spell_ordinary_signature_type_with_member_path(
+                                                        &element_signature,
+                                                        class_scope,
+                                                        source_type_path.unwrap_or(&[]),
+                                                        budget,
+                                                        0,
+                                                    )?,
+                                                )
+                                            }
+                                        }
+                                        _ => None,
+                                    }
+                                }
+                                _ => None,
+                            }
+                        }
+                        _ => None,
+                    };
+                    let list_actual_types = physical.and_then(|(_, slot)| {
+                        proved_list_parameters
+                            .binary_search_by_key(slot, |(proved_slot, _)| *proved_slot)
+                            .ok()
+                            .map(|index| &proved_list_parameters[index].1)
+                    });
+                    let list_element_matches =
+                        match (list_signature_element.as_deref(), list_actual_types) {
+                            (Some(_), Some(actual_types)) if actual_types.is_empty() => true,
+                            (Some(expected), Some(actual_types)) => {
+                                actual_types.first().is_some_and(|actual| {
+                                    actual.as_str() == expected
+                                        && actual_types.iter().all(|candidate| candidate == actual)
+                                })
+                            }
+                            _ => false,
+                        };
                     let preserved = physical.is_some_and(|(physical_type, slot)| {
                         matches!(parameter, SignatureType::TypeVariable(_))
                             || parameter_types.get(position) == Some(physical_type)
                             || unread_parameter_slots.binary_search(slot).is_ok()
+                            || list_element_matches
                     });
                     proved &= preserved;
                 }
@@ -7462,13 +7556,14 @@ fn ordinary_parameterized_declaration(
                 }
                 GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
                 GenericReturnValue::EmptyVoid => None,
-                // A complete straight-line void body whose parameters are only read keeps compiling
+                // A complete void body whose parameters are only read keeps compiling
                 // when a class-scope variable replaces the erased parameter spelling: the reader
                 // proved the variable's erasure is that parameter, so every read stays assignable to
                 // the context that accepted the erased reference. The same-run candidate refused any
                 // reassignment of the parameter locals, which is the write side this proof refuses.
                 GenericReturnValue::VoidBody {
                     unread_parameter_slots,
+                    ..
                 } if parsed.result.is_none()
                     && parsed.throws.is_empty()
                     && void_body_parameters_proved =>
@@ -8173,9 +8268,7 @@ fn generic_void_body_declaration(
         || !attributes.throws_raw.is_empty()
         || !matches!(candidate, Some(GenericReturnCandidate {
             parameters,
-            value: GenericReturnValue::VoidBody {
-                unread_parameter_slots: _,
-            },
+            value: GenericReturnValue::VoidBody { .. },
         }) if parameters.len() == 2)
     {
         return Err(refused(
@@ -14919,6 +15012,8 @@ mod tests {
             parameters: vec![(1, "arg1".to_owned()), (2, "arg2".to_owned())],
             value: GenericReturnValue::VoidBody {
                 unread_parameter_slots: vec![],
+                parameter_read_bcis: vec![],
+                parameter_receiver_calls: vec![],
             },
         };
         let erasures = vec![jarde_reader::signature::TypeParameterErasure {
@@ -15635,6 +15730,7 @@ mod tests {
                 &[],
                 &[],
                 false,
+                &[],
                 &mut budget,
             );
             if accepted {
@@ -15664,6 +15760,7 @@ mod tests {
             &[],
             &[],
             false,
+            &[],
             &mut budget,
         );
         assert!(

@@ -1,5 +1,14 @@
 # 实现完成复核（2026-09-21）
 
+## 2026-10-12 独立债务：List 近邻控制的完整类失败
+
+真实来源见 [CF11 结构化 List 控制基线](changes/recover-structured-list-generic-bodies/results/controls-combined-baseline-root-v1/README.md)。冻结旧产品 CLI SHA `4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95`，原始完整类 Java 8/23 编译运行均成功，17 条 oracle 相同。下面两项旧 Jarde 缺陷独立拆分，不扩大当前结构化泛型投影的实现范围，也不以拒绝泛型宣布它们正确。
+
+- **局部生命期与类型合并**：`rawAliasEscape(List<String>,List<Integer>)` 的两个循环复用 slot 5，LVT 是 `[32,41)` Integer 和 `[74,82)` String；物理 checkcast 为 BCI 27 Integer、69 String。旧正文把两者合成单个 Integer `value` 声明，第二次赋 String，双 JDK 生成完整类编译失败。后续应按真实局部身份/生命期及已有声明计划决定名字与类型，覆盖 debug/no-debug、同槽异型的连续循环；不靠泛型 Signature 或全方法唯一变量名修补。
+- **handler 的 ExplanationOnly 正文**：`handled(List<String>,List<String>)` 有唯一 `[0,47)->50 RuntimeException` handler。旧输出是 unresolved `jarde_refused_body()`，有物理来源缺口；编译失败后没有 runtime 证据。后续按既有异常恢复架构处理该语法及其状态，不把 marker 消失或 generic refusal 当作可编译完整类。
+
+同时发现 JADX 1.5.6 在该合法 raw-alias 源码上消去别名、保留 `List<String>` 声明，输出 `target.add(Integer)`，default/rename-none 双 JDK 编译均失败。JADX 作为参考臂仍须核源码契约；当前实现应拒绝未闭合的 alias 用途，不能照搬这个错误。所有失败原样保留，新泛型实现尚未通过本片验收。
+
 **最新裁决：按约定的四项外部判据，T1–T4 本轮闭环确认完成；三项归档保留。** 本次重新审阅 `f4d1044`、`2895bc4`、`5c35cbf` 的实现并复跑关键门禁，没有重开已通过的原反例。同时新复现 T5：已接受的 `append(int)` 消费 `char` 表达式时仍丢失数值转换，原类与产物可编译但值不同。T5 单独登记后续修正，不能把本轮关闭扩大为 concat 转换契约已无缺口。并行导出与性能专项仍各 0/22。
 
 ## 第四轮：本轮关闭判据及独立复跑
@@ -360,3 +369,5 @@ PY
 - class_view 已共享一次物化字节/成员列举，但 reader 的 body 解码仍会重新解析类；成员表损坏可能连带拒绝原先可读的 body。这项局部解析/隔离债务需独立设计，不混入停止传播修正。
 - `references` 按符号拼写查询，尚无物理身份直接查引用入口；WAR/Boot 自动 layout policy、现代源码输出、批量/并行/持久索引均不因本次任务链归档而成为已实现。
 - 支持矩阵、路线、benchmark-review 中过期状态与归档链接已随本轮校正；历史 measurements/archives 不改写为当前运行结果。
+
+- 2026-10-12 CF11 预算探针发现既有 `enum_projection_stop_error` 将 `StopReason::Budget.written` 转为 `Error::BudgetExceeded.consumed`、requested固定1。analysis_steps限33427时实际33379，消息consumed12151（输出字节），停止维度和Partial仍准确；需独立审计各预算维度的转换，不能混入List用途证明本片。真实探针见 [add-boundary观察](changes/recover-structured-list-generic-bodies/results/add-boundary-observations-root-v1/README.md)。

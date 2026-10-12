@@ -7717,6 +7717,7 @@ impl Engine {
                                     vec![analysis.execution.clone(), report.execution.clone()];
                                 if let Some(jarde_java::report::GenericReturnValue::VoidBody {
                                     unread_parameter_slots,
+                                    ..
                                 }) = generic_return.as_ref().map(|candidate| &candidate.value)
                                 {
                                     let result = budget.poll().and_then(|()| {
@@ -7750,12 +7751,48 @@ impl Engine {
                                     && generic_call_asts_needed
                                     && class_source::declares_signature(member)
                                 {
-                                    match generic_call_signature_needs_transaction(
-                                        member,
-                                        &read.bytes,
-                                        &pool,
-                                        budget,
-                                    ) {
+                                    let list_body_needs_transaction = record
+                                        .same_run_generic_return
+                                        .as_ref()
+                                        .is_some_and(|candidate| {
+                                            matches!(
+                                                &candidate.value,
+                                                jarde_java::report::GenericReturnValue::VoidBody {
+                                                    parameter_read_bcis,
+                                                    ..
+                                                } if !parameter_read_bcis.is_empty()
+                                            )
+                                        });
+                                    let transaction_needed = if list_body_needs_transaction {
+                                        generic_list_parameter_slots(
+                                            member,
+                                            &read.bytes,
+                                            &pool,
+                                            budget,
+                                        )
+                                        .and_then(
+                                            |slots| {
+                                                if slots.is_some_and(|slots| !slots.is_empty()) {
+                                                    Ok(true)
+                                                } else {
+                                                    generic_call_signature_needs_transaction(
+                                                        member,
+                                                        &read.bytes,
+                                                        &pool,
+                                                        budget,
+                                                    )
+                                                }
+                                            },
+                                        )
+                                    } else {
+                                        generic_call_signature_needs_transaction(
+                                            member,
+                                            &read.bytes,
+                                            &pool,
+                                            budget,
+                                        )
+                                    };
+                                    match transaction_needed {
                                         Ok(true) => {
                                             match record.generic_call_projection_state(budget) {
                                                 Ok(projection_state) => {
@@ -7830,6 +7867,7 @@ impl Engine {
                                             if let Some(
                                                 jarde_java::report::GenericReturnValue::VoidBody {
                                                     unread_parameter_slots,
+                                                    ..
                                                 },
                                             ) = signature_candidate
                                                 .map(|candidate| &candidate.value)
@@ -12522,6 +12560,580 @@ fn generic_call_ast_key(
     })
 }
 
+/// Closed source-level contract slice for the standard `List<E>` receiver methods used by this
+/// proof. The exact erasures and generic declarations were confirmed from JDK 8 and JDK 23
+/// `javap -s -v`: inherited `Collection<E>.iterator():Iterator<E>` and `add(E):boolean`, plus
+/// non-generic `remove(Object):boolean`, `size():int`, and `clear():void`. `remove(int):E` is
+/// deliberately absent; the physical descriptor makes the overload distinction explicit.
+fn generic_list_member_contract(name: &[u8], descriptor: &[u8]) -> Option<u8> {
+    match (name, descriptor) {
+        (b"iterator", b"()Ljava/util/Iterator;") => Some(0),
+        (b"add", b"(Ljava/lang/Object;)Z") => Some(1),
+        (b"remove", b"(Ljava/lang/Object;)Z") => Some(2),
+        (b"size", b"()I") => Some(3),
+        (b"clear", b"()V") => Some(4),
+        _ => None,
+    }
+}
+
+/// Select only exact `List<ConcreteReference>` parameters from the parsed physical Signature.
+/// This chooses which formal slots may enter the body-use proof; the ordinary Signature gate
+/// later checks the spelling and erasure against the same parsed parameter.
+fn generic_list_parameter_slots(
+    member: &MemberHeader,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<Option<Vec<u16>>> {
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(member.attributes.len()).unwrap_or(u64::MAX),
+    )?;
+    let shells = member
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Signature")
+        .cloned()
+        .collect::<Vec<_>>();
+    if shells.len() != 1 {
+        return Ok(None);
+    }
+    let facts = match attribute_facts(bytes, &shells, pool, budget) {
+        Ok(facts) => facts,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => return Ok(None),
+    };
+    let Some(signature) = facts.signature else {
+        return Ok(None);
+    };
+    let parsed = match jarde_reader::signature::parse_method_signature(&signature.0, budget) {
+        Ok(parsed) => parsed,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => return Ok(None),
+    };
+    let descriptor = match descriptor_facts(&member.descriptor.raw().0, DescriptorKind::Method) {
+        Ok(descriptor) => descriptor,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => return Ok(None),
+    };
+    let Some(slots) =
+        jarde_jvm::method_ir::parameter_positions(&descriptor, member.access_flags & 0x0008 != 0)
+    else {
+        return Ok(None);
+    };
+    if slots.len() != parsed.parameters.len() {
+        return Ok(None);
+    }
+    let mut selected = Vec::new();
+    for (parameter, slot) in parsed.parameters.iter().zip(slots) {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let jarde_reader::signature::SignatureType::Class(class) = parameter else {
+            continue;
+        };
+        let [list] = class.segments.as_slice() else {
+            continue;
+        };
+        if list.binary_name.as_slice() != b"java/util/List" {
+            continue;
+        }
+        let [
+            jarde_reader::signature::TypeArgument::Exact(
+                jarde_reader::signature::SignatureType::Class(element),
+            ),
+        ] = list.arguments.as_slice()
+        else {
+            continue;
+        };
+        if element.segments.is_empty()
+            || element
+                .segments
+                .iter()
+                .any(|segment| !segment.arguments.is_empty())
+        {
+            continue;
+        }
+        selected.push(slot);
+    }
+    Ok(Some(selected))
+}
+
+/// Proves the closed List receiver uses of a structured void candidate from the same physical
+/// reads and retained AST. The returned slot/type tuples are transaction-local inputs to the
+/// parsed Signature gate; the second result contains only the add(Object) presentation wrappers
+/// whose direct-local actuals passed the physical/declaration check below.
+fn prove_generic_list_parameter_body(
+    candidate: &jarde_java::report::GenericReturnCandidate,
+    ast: &jarde_java::report::ClassSourceMethodAst,
+    caller: &PhysicalMethodId,
+    invokes: &[class_source::SameClassInvokeUse],
+    body_values: &[class_source::SameClassBodyValueSite],
+    list_parameter_slots: &[u16],
+    budget: &mut Budget,
+) -> Result<
+    Option<(
+        Vec<(u16, Vec<String>)>,
+        Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
+    )>,
+> {
+    use jarde_java::ast::Type;
+    use jarde_java::report::{
+        ClassSourceAstExpressionShape as Shape, ClassSourceInvokeArgumentPresentationCast,
+        ClassSourceInvokeKey, GenericReturnValue,
+    };
+    use jarde_jvm::method_ir::Definition;
+
+    let GenericReturnValue::VoidBody {
+        parameter_read_bcis,
+        parameter_receiver_calls,
+        ..
+    } = &candidate.value
+    else {
+        return Ok(None);
+    };
+    if list_parameter_slots.is_empty() {
+        return Ok(Some((Vec::new(), Vec::new())));
+    }
+    budget.poll()?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            parameter_read_bcis
+                .len()
+                .saturating_add(parameter_receiver_calls.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    let Some(formals) =
+        jarde_java::report::class_source_method_formal_names(ast, budget).map_err(|stop| {
+            enum_projection_stop_error(stop, "List formal inventory", "generic_call_ast_missing")
+        })?
+    else {
+        return Ok(None);
+    };
+    let Some(declarations) = jarde_java::report::class_source_local_declarations(ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(stop, "List local declarations", "generic_call_ast_missing")
+        })?
+    else {
+        return Ok(None);
+    };
+    let Some(assignments) = jarde_java::report::class_source_local_assignments(ast, budget)
+        .map_err(|stop| {
+            enum_projection_stop_error(stop, "List local assignments", "generic_call_ast_missing")
+        })?
+    else {
+        return Ok(None);
+    };
+    let Some(foreach_sites) =
+        jarde_java::report::class_source_for_each_local_iterables(ast, budget).map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "List enhanced-for sources",
+                "generic_call_ast_missing",
+            )
+        })?
+    else {
+        return Ok(None);
+    };
+
+    let selected_bound = parameter_read_bcis
+        .len()
+        .saturating_add(parameter_receiver_calls.len())
+        .saturating_add(1);
+    let scan_bound = formals
+        .len()
+        .saturating_add(declarations.len())
+        .saturating_add(assignments.len())
+        .saturating_add(foreach_sites.len())
+        .saturating_add(invokes.len())
+        .saturating_add(body_values.len())
+        .saturating_add(parameter_receiver_calls.len())
+        .saturating_add(parameter_read_bcis.len())
+        .saturating_add(1);
+    let proof_work = u64::try_from(selected_bound)
+        .unwrap_or(u64::MAX)
+        .saturating_mul(u64::try_from(scan_bound).unwrap_or(u64::MAX))
+        .saturating_mul(8);
+    budget.charge(CountedBudgetDimension::AnalysisSteps, proof_work)?;
+    budget.charge(CountedBudgetDimension::IrItems, proof_work)?;
+
+    let mut call_keys = Vec::<ClassSourceInvokeKey>::new();
+    for physical_use in parameter_receiver_calls
+        .iter()
+        .filter(|site| list_parameter_slots.contains(&site.parameter_slot))
+    {
+        budget.poll()?;
+        let Some(invoke) = invokes.iter().find(|invoke| {
+            invoke.physical_caller == *caller && invoke.bci == physical_use.call_bci
+        }) else {
+            continue;
+        };
+        if !invoke.ssa_operands_complete {
+            continue;
+        }
+        let Some(key) = generic_call_ast_key(invoke) else {
+            continue;
+        };
+        if invoke.name.as_slice() != b"iterator" {
+            call_keys.push(key);
+        }
+    }
+    call_keys.sort_by_key(|key| key.call_bci);
+    if call_keys
+        .windows(2)
+        .any(|pair| pair[0].call_bci == pair[1].call_bci)
+    {
+        return Ok(None);
+    }
+    let Some(call_sites) = jarde_java::report::class_source_invoke_ast_sites(
+        ast, &call_keys, budget,
+    )
+    .map_err(|stop| {
+        enum_projection_stop_error(stop, "List call AST sites", "generic_call_ast_missing")
+    })?
+    else {
+        return Ok(None);
+    };
+    let formal_name = |slot: u16| -> Option<&str> {
+        let mut matches = formals.iter().filter(|formal| formal.slot == slot);
+        let formal = matches.next()?;
+        if matches.next().is_some() {
+            return None;
+        }
+        Some(formal.name.as_str())
+    };
+    let mut type_uses = std::collections::BTreeMap::<u16, Vec<String>>::new();
+    let mut removals = Vec::new();
+    let selected_reads = parameter_read_bcis
+        .iter()
+        .filter(|(slot, _)| list_parameter_slots.contains(slot))
+        .copied()
+        .collect::<Vec<_>>();
+    if selected_reads.is_empty() {
+        return Ok(None);
+    }
+    for slot in list_parameter_slots {
+        if !selected_reads.iter().any(|read| read.0 == *slot) {
+            return Ok(None);
+        }
+    }
+    for (slot, read_bci) in &selected_reads {
+        budget.poll()?;
+        let Some(name) = formal_name(*slot) else {
+            return Ok(None);
+        };
+        let mut physical_uses = parameter_receiver_calls
+            .iter()
+            .filter(|site| site.parameter_slot == *slot && site.load_bci == *read_bci);
+        let Some(physical_use) = physical_uses.next() else {
+            // A read which was not one exact direct invoke-receiver load prevents List-use
+            // closure, while leaving the baseline VoidBody candidate intact for old gates.
+            return Ok(None);
+        };
+        if physical_uses.next().is_some() {
+            return Ok(None);
+        }
+        let Some(invoke) = invokes.iter().find(|invoke| {
+            invoke.physical_caller == *caller && invoke.bci == physical_use.call_bci
+        }) else {
+            return Ok(None);
+        };
+        if !invoke.ssa_operands_complete
+            || invoke.receiver_value_fact.as_ref().is_none_or(|receiver| {
+                receiver.replaced_by.is_some()
+                    || receiver.uses.as_slice() != [Some(invoke.bci)]
+                    || !matches!(receiver.definition, Definition::Instruction { bci, .. } if bci == *read_bci)
+            })
+            || invoke.owner.as_slice() != b"java/util/List"
+            || invoke.opcode != 0xb9
+        {
+            return Ok(None);
+        }
+        if generic_call_ast_key(invoke).is_none() {
+            return Ok(None);
+        }
+        let Some(call_kind) = generic_list_member_contract(&invoke.name, &invoke.descriptor) else {
+            return Ok(None);
+        };
+        type_uses.entry(*slot).or_default();
+        if call_kind == 0 {
+            let matches = foreach_sites
+                .iter()
+                .filter(|site| {
+                    site.expression_bci == *read_bci && site.local_name.as_deref() == Some(name)
+                })
+                .count();
+            if matches != 1 {
+                return Ok(None);
+            }
+            continue;
+        }
+        let Some(site) = call_sites
+            .iter()
+            .find(|site| site.key.call_bci == invoke.bci)
+        else {
+            return Ok(None);
+        };
+        let Some(receiver) = site.receiver.as_ref() else {
+            return Ok(None);
+        };
+        if receiver.shape != Shape::Local
+            || receiver.direct_local_name.as_deref() != Some(name)
+            || receiver.primary.bci != *read_bci
+        {
+            return Ok(None);
+        }
+        if call_kind == 1 {
+            let Some(argument) = site.arguments.first() else {
+                return Ok(None);
+            };
+            let Some(wrapper) = argument.presentation_wrapper.as_ref() else {
+                return Ok(None);
+            };
+            if wrapper.ty != Type::Reference("java.lang.Object".to_owned())
+                || argument.primary.bci != wrapper.child.primary.bci
+            {
+                return Ok(None);
+            }
+            if wrapper.child.shape == Shape::Null {
+                let null_bci = wrapper.child.primary.bci;
+                budget.poll()?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(body_values.len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_add(1),
+                )?;
+                if jarde_java::report::class_source_instruction_opcode(ast, null_bci, budget)
+                    .map_err(|stop| {
+                        enum_projection_stop_error(
+                            stop,
+                            "List null argument opcode",
+                            "generic_call_ast_missing",
+                        )
+                    })?
+                    != Some(0x01)
+                {
+                    return Ok(None);
+                }
+                let mut null_sites = body_values.iter().filter(|value| value.bci == null_bci);
+                let Some(null_value) = null_sites.next() else {
+                    return Ok(None);
+                };
+                if null_sites.next().is_some() {
+                    return Ok(None);
+                }
+                let [null_output] = null_value.stack_writes.as_slice() else {
+                    return Ok(None);
+                };
+                let [argument_value] = invoke.argument_value_facts.as_slice() else {
+                    return Ok(None);
+                };
+                if null_value.opcode != 0x01
+                    || !null_value.stack_reads.is_empty()
+                    || !null_value.local_reads.is_empty()
+                    || !null_value.local_writes.is_empty()
+                    || !matches!(null_output.definition, Definition::Instruction { bci, .. } if bci == null_bci)
+                    || null_output.replaced_by.is_some()
+                    || null_output.uses.as_slice() != [Some(invoke.bci)]
+                    || argument_value.value != null_output.value
+                    || !matches!(argument_value.definition, Definition::Instruction { bci, .. } if bci == null_bci)
+                    || argument_value.replaced_by.is_some()
+                    || argument_value.uses.as_slice() != [Some(invoke.bci)]
+                {
+                    return Ok(None);
+                }
+                removals.push(ClassSourceInvokeArgumentPresentationCast {
+                    call_bci: site.key.call_bci,
+                    opcode: site.key.opcode,
+                    target: site.key.target.clone(),
+                    argument_index: 0,
+                });
+                continue;
+            }
+            let Some(actual_name) = wrapper.child.direct_local_name.as_deref() else {
+                return Ok(None);
+            };
+            if wrapper.child.shape != Shape::Local {
+                return Ok(None);
+            }
+            let matching_declarations = declarations
+                .iter()
+                .filter(|declaration| declaration.name == actual_name)
+                .collect::<Vec<_>>();
+            let [declaration] = matching_declarations.as_slice() else {
+                return Ok(None);
+            };
+            let Type::Reference(actual_type) = &declaration.ty else {
+                return Ok(None);
+            };
+            let matching_assignments = assignments
+                .iter()
+                .filter(|assignment| assignment.name == actual_name)
+                .collect::<Vec<_>>();
+            let [assignment] = matching_assignments.as_slice() else {
+                return Ok(None);
+            };
+            let Some(cast_ty) = assignment.cast_type.as_ref() else {
+                return Ok(None);
+            };
+            let declaration_scope_is_prefix = assignment
+                .scope_anchors
+                .get(..declaration.scope_anchors.len())
+                == Some(declaration.scope_anchors.as_slice());
+            let assignment_loop_matches = selected_reads
+                .iter()
+                .filter_map(|(loop_slot, loop_read_bci)| {
+                    let name = formal_name(*loop_slot)?;
+                    foreach_sites.iter().find(|site| {
+                        site.expression_bci == *loop_read_bci
+                            && site.local_name.as_deref() == Some(name)
+                            && assignment.scope_anchors.iter().any(|anchor| {
+                                anchor.bci == site.statement_bci
+                                    && anchor.method.as_ref() == Some(caller)
+                            })
+                    })
+                })
+                .count();
+            let cast_bci = assignment.value_bci;
+            if cast_ty != &declaration.ty
+                || assignment.bci >= invoke.bci
+                || !declaration_scope_is_prefix
+                || assignment_loop_matches == 0
+                || jarde_java::report::class_source_instruction_opcode(ast, cast_bci, budget)
+                    .map_err(|stop| {
+                        enum_projection_stop_error(
+                            stop,
+                            "List actual cast opcode",
+                            "generic_call_ast_missing",
+                        )
+                    })?
+                    != Some(0xc0)
+            {
+                return Ok(None);
+            }
+            let Some(cast_value) = body_values.iter().find(|value| value.bci == cast_bci) else {
+                return Ok(None);
+            };
+            let [(_, cast_input)] = cast_value.stack_reads.as_slice() else {
+                return Ok(None);
+            };
+            let [cast_output] = cast_value.stack_writes.as_slice() else {
+                return Ok(None);
+            };
+            if cast_value.opcode != 0xc0
+                || cast_input.replaced_by.is_some()
+                || cast_output.replaced_by.is_some()
+                || cast_output.uses.as_slice() != [Some(assignment.bci)]
+            {
+                return Ok(None);
+            }
+            let next_calls = invokes
+                .iter()
+                .filter(|next| {
+                    next.physical_caller == *caller
+                        && next.owner.as_slice() == b"java/util/Iterator"
+                        && next.name.as_slice() == b"next"
+                        && next.descriptor.as_slice() == b"()Ljava/lang/Object;"
+                        && next.opcode == 0xb9
+                        && next.ssa_operands_complete
+                        && next.result_value_fact.as_ref().is_some_and(|result| {
+                            result.value == cast_input.value
+                                && result.replaced_by.is_none()
+                                && result.uses.as_slice() == [Some(cast_bci)]
+                        })
+                })
+                .collect::<Vec<_>>();
+            if next_calls.len() != 1 {
+                return Ok(None);
+            }
+            let declaration_stores = body_values
+                .iter()
+                .flat_map(|value| {
+                    value
+                        .local_writes
+                        .iter()
+                        .map(move |(local, fact)| (value, *local, fact))
+                })
+                .filter(|(value, _, _)| value.bci == assignment.bci)
+                .collect::<Vec<_>>();
+            let [(declaration_value, actual_slot, stored_value)] = declaration_stores.as_slice()
+            else {
+                return Ok(None);
+            };
+            if !matches!(stored_value.definition, Definition::Instruction { bci, .. } if bci == declaration_value.bci)
+                || stored_value.replaced_by.is_some()
+                || declaration_value.stack_reads.iter().filter(|(_, fact)| {
+                    fact.value == cast_output.value
+                        && matches!(fact.definition, Definition::Instruction { bci, .. } if bci == cast_bci)
+                        && fact.replaced_by.is_none()
+                }).count() != 1
+            {
+                return Ok(None);
+            }
+            let all_local_writes = body_values
+                .iter()
+                .flat_map(|value| {
+                    value
+                        .local_writes
+                        .iter()
+                        .map(move |(local, _)| (value.bci, *local))
+                })
+                .filter(|(_, local)| local == actual_slot)
+                .collect::<Vec<_>>();
+            if all_local_writes.as_slice() != [(declaration_value.bci, *actual_slot)] {
+                return Ok(None);
+            }
+            let Some(load_value) = body_values
+                .iter()
+                .find(|value| value.bci == wrapper.child.primary.bci)
+            else {
+                return Ok(None);
+            };
+            let [(loaded_slot, local_value)] = load_value.local_reads.as_slice() else {
+                return Ok(None);
+            };
+            let [loaded_value] = load_value.stack_writes.as_slice() else {
+                return Ok(None);
+            };
+            let Some(argument_value) = invoke.argument_value_facts.first() else {
+                return Ok(None);
+            };
+            if *loaded_slot != *actual_slot
+                || local_value.replaced_by.is_some()
+                || local_value.value != stored_value.value
+                || loaded_value.value != argument_value.value
+                || argument_value.replaced_by.is_some()
+                || argument_value.uses.as_slice() != [Some(invoke.bci)]
+                || !matches!(loaded_value.definition, Definition::Instruction { bci, .. } if bci == load_value.bci)
+                || loaded_value.uses.as_slice() != [Some(invoke.bci)]
+            {
+                return Ok(None);
+            }
+            type_uses
+                .entry(*slot)
+                .or_default()
+                .push(actual_type.clone());
+            removals.push(ClassSourceInvokeArgumentPresentationCast {
+                call_bci: site.key.call_bci,
+                opcode: site.key.opcode,
+                target: site.key.target.clone(),
+                argument_index: 0,
+            });
+        }
+    }
+    let mut proved = Vec::new();
+    for (slot, actual_types) in type_uses {
+        if actual_types.windows(2).any(|pair| pair[0] != pair[1]) {
+            return Ok(None);
+        }
+        proved.push((slot, actual_types));
+    }
+    Ok(Some((proved, removals)))
+}
+
 fn generic_call_ast_inventory_matches(
     ast: &jarde_java::report::ClassSourceMethodAst,
     caller: &PhysicalMethodId,
@@ -15257,6 +15869,28 @@ fn project_generic_call_components(
                 }
             }
             if !has_edge {
+                for index in &component.members {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    let list_body_candidate = methods[*index]
+                        .same_run_generic_return
+                        .as_ref()
+                        .is_some_and(|candidate| {
+                            matches!(
+                                &candidate.value,
+                                jarde_java::report::GenericReturnValue::VoidBody {
+                                    parameter_read_bcis,
+                                    ..
+                                } if !parameter_read_bcis.is_empty()
+                            )
+                        });
+                    if list_body_candidate && input_by_index.contains_key(index) {
+                        has_edge = true;
+                        break;
+                    }
+                }
+            }
+            if !has_edge {
                 continue;
             }
             let mut staged =
@@ -15270,6 +15904,8 @@ fn project_generic_call_components(
                 usize,
                 Vec<jarde_java::report::ClassSourceInvokeArgumentPresentationCast>,
             >::new();
+            let mut staged_list_parameter_proofs =
+                std::collections::BTreeMap::<usize, Vec<(u16, Vec<String>)>>::new();
             if group_closed {
                 let order = component.order.as_deref().unwrap_or_default();
                 if order.len() != component.members.len() {
@@ -15408,6 +16044,40 @@ fn project_generic_call_components(
                         let mut validated_overload_call_bcis = Vec::new();
                         let mut call_casts = Vec::new();
                         let mut presentation_removals = Vec::new();
+                        let list_parameter_slots = generic_list_parameter_slots(
+                            &method_headers[*index],
+                            bytes,
+                            pool,
+                            budget,
+                        )?;
+                        let list_parameter_slots = list_parameter_slots.unwrap_or_default();
+                        let proved_list_parameters = if !list_parameter_slots.is_empty() {
+                            let Some(candidate) = signature_candidate else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            if !body_scan.complete {
+                                reject_generic_call_component!();
+                                break;
+                            }
+                            let Some((proved, removals)) = prove_generic_list_parameter_body(
+                                candidate,
+                                caller_ast,
+                                &record.item.identity,
+                                invokes,
+                                &body_scan.body_values,
+                                &list_parameter_slots,
+                                budget,
+                            )?
+                            else {
+                                reject_generic_call_component!();
+                                break;
+                            };
+                            presentation_removals.extend(removals);
+                            proved
+                        } else {
+                            Vec::new()
+                        };
                         let mut nested_call_sources = Vec::new();
                         let mut caller_invokes = Vec::new();
                         for invoke in invokes {
@@ -15582,7 +16252,7 @@ fn project_generic_call_components(
                         }
                         {
                             let body_ast = caller_ast;
-                            let Some(body_summary) =
+                            let body_summary =
                                 jarde_java::report::class_source_method_body_consumers(
                                     body_ast, budget,
                                 )
@@ -15592,120 +16262,55 @@ fn project_generic_call_components(
                                         "same-class generic method body proof",
                                         "generic_call_ast_missing",
                                     )
-                                })?
-                            else {
-                                // A narrower existing typed candidate may still prove this body; a
-                                // call-derived return cannot use an incomplete body summary.
-                                if !validated_return_calls.is_empty() {
+                                })?;
+                            if let Some(body_summary) = body_summary {
+                                let Some(formals) =
+                                    jarde_java::report::class_source_method_formal_names(
+                                        body_ast, budget,
+                                    )
+                                    .map_err(|stop| {
+                                        enum_projection_stop_error(
+                                            stop,
+                                            "same-class generic method formals",
+                                            "generic_call_ast_missing",
+                                        )
+                                    })?
+                                else {
                                     reject_generic_call_component!();
                                     break;
-                                }
-                                let binding = class_source::prove_same_class_method_binding(
-                                    class_internal,
-                                    class_superclass,
-                                    class_interfaces,
-                                    method_headers,
-                                    *index,
-                                    &use_facts,
-                                    budget,
-                                )?;
-                                let binding = match binding {
-                                    class_source::SameClassBinding::OverloadPending
-                                        if projection_state
-                                            .same_class_generic_body_proof
-                                            .as_ref()
-                                            .is_some_and(|proof| {
-                                                proof.method == record.item.identity
-                                            })
-                                            || signature_candidate.is_some()
-                                            || caller_constructor_candidate.is_some() =>
-                                    {
-                                        class_source::SameClassBinding::Proven
-                                    }
-                                    binding => binding,
                                 };
-                                let this_delegate_bci =
-                                    class_source::unproved_same_class_this_delegate_bci(
-                                        class_internal,
-                                        &method_headers[*index],
-                                        &use_facts,
-                                        budget,
-                                    )?;
-                                let projection = class_source::project_method_signature_with_state(
-                                    record,
-                                    &mut projection_state,
-                                    &method_headers[*index],
-                                    &input.attributes,
-                                    signature_candidate,
-                                    caller_constructor_candidate,
+                                let body_proof = prove_generic_method_body(
+                                    &record.item.identity,
+                                    &caller_contract,
+                                    &formals,
+                                    &body_summary,
+                                    &body_scan.body_values,
+                                    &body_scan.allocations,
+                                    &validated_return_calls,
+                                    &validated_call_bcis,
+                                    &validated_overload_call_bcis,
+                                    field_uses,
+                                    invokes,
                                     physical_fields,
-                                    bytes,
-                                    pool,
                                     class_internal,
-                                    class_flags,
-                                    class_superclass,
-                                    class_interfaces,
                                     class_scope,
-                                    class_signature_present,
-                                    resolved_inner_classes,
-                                    binding,
-                                    this_delegate_bci,
+                                    class_parameters,
+                                    caller_constructor_candidate,
+                                    caller_init_record.or(body_summary.init_record.as_ref()),
+                                    class_superclass,
+                                    &method_headers[*index],
                                     budget,
                                 )?;
-                                if !projection_state.generic_signature_projected
-                                    || projection
-                                        == class_source::SignatureProjection::DeferredSameClass
+
+                                projection_state.same_class_generic_body_proof = body_proof;
+                                if !validated_return_calls.is_empty()
+                                    && projection_state.same_class_generic_body_proof.is_none()
                                 {
                                     reject_generic_call_component!();
                                     break;
                                 }
-                                staged_call_casts.insert(*index, call_casts);
-                                staged_presentation_removals.insert(*index, presentation_removals);
-                                staged.insert(*index, projection_state);
-                                continue;
-                            };
-                            let Some(formals) =
-                                jarde_java::report::class_source_method_formal_names(
-                                    body_ast, budget,
-                                )
-                                .map_err(|stop| {
-                                    enum_projection_stop_error(
-                                        stop,
-                                        "same-class generic method formals",
-                                        "generic_call_ast_missing",
-                                    )
-                                })?
-                            else {
-                                reject_generic_call_component!();
-                                break;
-                            };
-                            let body_proof = prove_generic_method_body(
-                                &record.item.identity,
-                                &caller_contract,
-                                &formals,
-                                &body_summary,
-                                &body_scan.body_values,
-                                &body_scan.allocations,
-                                &validated_return_calls,
-                                &validated_call_bcis,
-                                &validated_overload_call_bcis,
-                                field_uses,
-                                invokes,
-                                physical_fields,
-                                class_internal,
-                                class_scope,
-                                class_parameters,
-                                caller_constructor_candidate,
-                                caller_init_record.or(body_summary.init_record.as_ref()),
-                                class_superclass,
-                                &method_headers[*index],
-                                budget,
-                            )?;
-
-                            projection_state.same_class_generic_body_proof = body_proof;
-                            if !validated_return_calls.is_empty()
-                                && projection_state.same_class_generic_body_proof.is_none()
-                            {
+                            } else if !validated_return_calls.is_empty() {
+                                // A call-derived return needs the complete body summary.
                                 reject_generic_call_component!();
                                 break;
                             }
@@ -15764,6 +16369,7 @@ fn project_generic_call_components(
                             resolved_inner_classes,
                             binding,
                             this_delegate_bci,
+                            &proved_list_parameters,
                             budget,
                         )?;
 
@@ -15838,6 +16444,7 @@ fn project_generic_call_components(
                                 break;
                             }
                         }
+                        staged_list_parameter_proofs.insert(*index, proved_list_parameters);
                         staged_call_casts.insert(*index, call_casts);
                         staged_presentation_removals.insert(*index, presentation_removals);
                         staged.insert(*index, projection_state);
@@ -15940,6 +16547,51 @@ fn project_generic_call_components(
                     };
                     let mut final_casts = Vec::new();
                     let mut final_presentation_removals = Vec::new();
+                    let final_list_parameter_slots =
+                        generic_list_parameter_slots(&method_headers[*index], bytes, pool, budget)?
+                            .unwrap_or_default();
+                    let mut final_list_parameter_types = Vec::new();
+                    let mut final_list_presentation_removals = Vec::new();
+                    if !final_list_parameter_slots.is_empty() {
+                        let signature_candidate = methods[*index]
+                            .same_run_generic_return
+                            .as_ref()
+                            .filter(|candidate| {
+                                !matches!(
+                                    &candidate.value,
+                                    jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
+                                )
+                            });
+                        let Some(candidate) = signature_candidate else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        if !body_scan.complete {
+                            reject_generic_call_component!();
+                            break;
+                        }
+                        let Some((proved, removals)) = prove_generic_list_parameter_body(
+                            candidate,
+                            caller_ast,
+                            expected_method,
+                            invokes,
+                            &body_scan.body_values,
+                            &final_list_parameter_slots,
+                            budget,
+                        )?
+                        else {
+                            reject_generic_call_component!();
+                            break;
+                        };
+                        final_list_parameter_types = proved;
+                        final_list_presentation_removals = removals;
+                    }
+                    if staged_list_parameter_proofs.get(index) != Some(&final_list_parameter_types)
+                    {
+                        reject_generic_call_component!();
+                        break;
+                    }
+                    final_presentation_removals.extend(final_list_presentation_removals);
                     let mut nested_call_sources = Vec::new();
                     let mut caller_invokes = Vec::new();
                     for invoke in invokes {
