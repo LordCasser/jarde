@@ -69,3 +69,10 @@ normal v4 链 session49761 exit0；fmt/当前 CI Clippy/global strict357-0/CLI r
 ## 当前 CLI v4 对照：3.1 已闭合
 
 session6599 实际exit0，12组全部采集成功；root独立checker exit0接受352命令/704raw/80成功编译运行对/24控制失败无runtime/41 oracle labels，acceptance SHA a9511e5048e2c06ef9f6bc4d4d0baae0f6cd5c59893b01646e9ca36bececbb34。新CLI停止两调用实际4/0，collector读取错误name层级导致failed收据保持；root独立raw验收SHA99c22e68f09db83eadb59140834c043e69584382f11e199e1b0e89a2449dde20接受同物理方法/完整raw正文map/准确25299+8112越32531/partial无generic/full有generic。见 [整类及停止完整归档](results/final-comparison-cli-v4-root-v1/README.md)。结合已闭合1.2同次归因与当前永久回归，root关闭3.1；当前7/9，自身CI及main交付尚未完成。
+
+
+## 自身产品 CI：3.3 已接受
+
+产品 `ca45c0ed2193fa8709eeba1196ef325f1804f63e` 已提交推送，实际 run `38225064059` completed/success，4 jobs/52 steps 全成功。root fresh capture-v2 保存三条 gh argv/rc/raw；旧 capture-v1 属 b155 产品未复用。root verifier v10 实际 exit0，两 seed 各364targets/3502-0-98，逐具名结果/顺序/状态同 fresh 本地；完整4822动态来源同 focused/workspace/final/live/product Git，CLI准确d3d15d...c65e6f。
+
+v8/v9 两次实际验收脚本失败原样保留：前者 tuple/list 容器比较，后者 ignored 原因文字比对。root 实解析全部差异仅为状态原文的原因，v10 精确规范化 ignored 并另存194条原文观测；没有改产品、测试状态或通过计数。归档 [own-product-ci-ca45-root-v1](results/own-product-ci-ca45-root-v1/README.md)。当前8/9；最后文档推送后 main/remote/15checkouts/4822输入外置审计尚待，不能以自身CI替代。

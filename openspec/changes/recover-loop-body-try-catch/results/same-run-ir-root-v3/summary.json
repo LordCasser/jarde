@@ -1,0 +1,191 @@
+{
+  "status": "accepted_same_run_observations_only",
+  "implementation_accepted": false,
+  "execution_sha256": "5d8ad8ea8cd60c70a67fe2b03ebe1dd83fea339f6047f294567604aea59e7f07",
+  "four_lanes": 4,
+  "methods_observed": 16,
+  "source_closure_count": 4822,
+  "source_restored": true,
+  "target_absent": true,
+  "sections": [
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "DV",
+      "method": "plainFor",
+      "descriptor": "([I)I",
+      "class_digest": "69bb850ed410955cca3a9423e88eef43e7237acbd35b3e7170f597b124fba6e8",
+      "section_sha256": "c325ec3b6b15ea138b2141310f31b2d151353d89b51c576e9905e16f2f4a1423",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "DV",
+      "method": "whileLoop",
+      "descriptor": "([I)I",
+      "class_digest": "69bb850ed410955cca3a9423e88eef43e7237acbd35b3e7170f597b124fba6e8",
+      "section_sha256": "8b6b7693c2c79b940ca4a47ec64b3fe39dba29215eca2d0ec56cadf4b45553ef",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "DV",
+      "method": "forEach",
+      "descriptor": "([I)I",
+      "class_digest": "69bb850ed410955cca3a9423e88eef43e7237acbd35b3e7170f597b124fba6e8",
+      "section_sha256": "e090e3b9468788e90f0b76fc8cfe6321aa222d59ef06e94e8ea1688ff548d3a0",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac8",
+      "class": "DF",
+      "method": "loopCatch",
+      "descriptor": "([I)I",
+      "class_digest": "5d875147f8ec5ca004d8c35e2571c06c907b01f41225bb8be35871d891566d74",
+      "section_sha256": "9d0d3fd68da39077d278594c31d59e661b16e7debb7dfafdfbb46284c4e529e2",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "DV",
+      "method": "plainFor",
+      "descriptor": "([I)I",
+      "class_digest": "3bb98a7519bd218d684a9494b2b6e1f6f736d1233b6a382de0b0d60ca3b19d9d",
+      "section_sha256": "80ba131bb66dff1f4903ce8c5f471415c269b6cff4a3b88e4f664cfa7e47da41",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "DV",
+      "method": "whileLoop",
+      "descriptor": "([I)I",
+      "class_digest": "3bb98a7519bd218d684a9494b2b6e1f6f736d1233b6a382de0b0d60ca3b19d9d",
+      "section_sha256": "bb3fc69ca5eedbd06ae4caeb6ba1573230a3046e9c34d8682aab338ed6fedc48",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "DV",
+      "method": "forEach",
+      "descriptor": "([I)I",
+      "class_digest": "3bb98a7519bd218d684a9494b2b6e1f6f736d1233b6a382de0b0d60ca3b19d9d",
+      "section_sha256": "4ac229914d5feaf39898bad918adaf633175990d5e824ded01657262b9c2430d",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "debug",
+      "jdk": "javac23",
+      "class": "DF",
+      "method": "loopCatch",
+      "descriptor": "([I)I",
+      "class_digest": "ba3b4617489de0029ccd08c2db6dc3a5961a58736e369e99876b213257c58e73",
+      "section_sha256": "c9231272c0a2e4066215c7a3a4369ff9678338f3f9052af57412d9ac7b4a324d",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "DV",
+      "method": "plainFor",
+      "descriptor": "([I)I",
+      "class_digest": "9db1b95f08797db3c45f4a4e3cf4efa12431baf2395fd4601b6ceeb6f2abf94a",
+      "section_sha256": "175bf2af4c20804b8cf39dde2f2c7a3acbea61e86986af09954dcde2f35db68e",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "DV",
+      "method": "whileLoop",
+      "descriptor": "([I)I",
+      "class_digest": "9db1b95f08797db3c45f4a4e3cf4efa12431baf2395fd4601b6ceeb6f2abf94a",
+      "section_sha256": "d2f2df1550dea5e5ae0394cebfea7778a5c9d44418cfd51cc219348554cf8759",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "DV",
+      "method": "forEach",
+      "descriptor": "([I)I",
+      "class_digest": "9db1b95f08797db3c45f4a4e3cf4efa12431baf2395fd4601b6ceeb6f2abf94a",
+      "section_sha256": "bf225fa57f0ea1a49389311eddc5e32451d3409fbfcb27edde634aef8ac326b0",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac8",
+      "class": "DF",
+      "method": "loopCatch",
+      "descriptor": "([I)I",
+      "class_digest": "4d1514fe2a4aeee2f0c3bcebe4907e65b8461ebe8a5f15d40a8e35342d250460",
+      "section_sha256": "4eba956216e896688715f838a3a91eb43588a5d6663e81196467cb49aa104ae5",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "DV",
+      "method": "plainFor",
+      "descriptor": "([I)I",
+      "class_digest": "6fc59b07f506d6776977769abc2ad36c6f7fc22724fd3d2504ab27ceb0ae8049",
+      "section_sha256": "c2436e7410c17c9245e1d8534eec2fd6f730edc0ccc9efc67f0a73bae6b1cffd",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "DV",
+      "method": "whileLoop",
+      "descriptor": "([I)I",
+      "class_digest": "6fc59b07f506d6776977769abc2ad36c6f7fc22724fd3d2504ab27ceb0ae8049",
+      "section_sha256": "3d6d0b8ddb0703f450828e0e295e82fe7c4f80a53a0c9e711284b7b286b9ab76",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "DV",
+      "method": "forEach",
+      "descriptor": "([I)I",
+      "class_digest": "6fc59b07f506d6776977769abc2ad36c6f7fc22724fd3d2504ab27ceb0ae8049",
+      "section_sha256": "4ee0468cbe2cf981adfe1bdaaf72077abe1876bd4d390676b7942290f7fe8e7f",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    },
+    {
+      "profile": "none",
+      "jdk": "javac23",
+      "class": "DF",
+      "method": "loopCatch",
+      "descriptor": "([I)I",
+      "class_digest": "362af225811a627c65f219d908da33014d64b15285cd3ca05b9ef8c4cd7e50c1",
+      "section_sha256": "7a216c1484eb71c4dfcbbb73b3609fe4e81e762753b3e5347652453a713a232e",
+      "evidence": "same IR payload; no stop; Q predicates match current CLI classification"
+    }
+  ],
+  "scope": "Q-i/Q-ii/Q-iii physical attribution for current fixed DF/DV only. Hypothetical join exclusion is an observation, not a certified implementation; infinite retry representative remains outstanding.",
+  "archival": {
+    "file": "capture-and-tooling.tar.gz",
+    "sha256": "b8a06664273d4fa776272bfe4a4fc3d706903005e2a7c068c6f267c8b637e9ca",
+    "captures": [
+      "jarde-loop-body-catch-same-run-ir-root-v1",
+      "jarde-loop-body-catch-same-run-ir-root-v2",
+      "jarde-loop-body-catch-same-run-ir-root-v3",
+      "jarde-loop-body-catch-same-run-ir-prep-luna-v2",
+      "jarde-loop-body-catch-same-run-ir-prep-luna-v3",
+      "jarde-loop-body-catch-same-run-ir-prep-root-v4",
+      "jarde-loop-body-catch-ir-runner-root-v1.py",
+      "jarde-loop-body-catch-ir-runner-root-v2.py",
+      "jarde-loop-body-catch-ir-runner-root-v3.py",
+      "jarde-loop-body-catch-same-run-ir-acceptance-root-v1"
+    ],
+    "raw_acceptance_summary_sha256": "dc121e4727a01de3108ae5433acffdef7557b52f70c694ed6ce89f788a0a648e",
+    "root_inline_checker_exit_code": 0
+  }
+}

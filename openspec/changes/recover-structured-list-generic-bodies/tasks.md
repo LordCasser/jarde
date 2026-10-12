@@ -13,5 +13,5 @@
 
 - [x] 3.1 root最终CLI双profile/双JDK原/JADX/Jarde固定及控制完整源码对照并独立验收。验收：实际新生成完整类编译运行、值/集合状态/异常/效果顺序同原；fixed8路径含null/CME/heap污染等必要边界扩展，不用手工改源码充当成功，独立拒绝和map gaps准确记录。
 - [x] 3.2 fresh全workspace、fmt/当前CIClippy/globalstrict，冻结来源与最终CLI。验收：真实具名结果/目标exact-once、完整源码闭包同byte identity、5GiB/target1GiB一秒守卫/defaultstack/finallyclean，失败不拼接。
-- [ ] 3.3 提交推送确切产品并独立接受自身CI。验收：准确HEAD/run所有jobs/steps与双seed结果逐目标匹配本地/来源/CLI，不借文档或旧CI。
+- [x] 3.3 提交推送确切产品并独立接受自身CI。验收：准确HEAD/run所有jobs/steps与双seed结果逐目标匹配本地/来源/CLI，不借文档或旧CI。
 - [ ] 3.4 更新账本/verification/handoff并fresh main交付。验收：文档推送后main=origin=remote仅main、14aux detached干净主线祖先/全部无target；关闭后实际finalHEAD另做外置audit，固定CF11/71/612完成数不擅增。

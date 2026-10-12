@@ -1,6 +1,6 @@
 ## Why
 
-2026-10-05 的固定探针记录了循环体内具名 try/catch 的拒绝：DV.plainFor、whileLoop 为不可归约诊断，forEach 简化形另有 protected-local SSA 拒绝；无 try 循环和循环内 try/finally 为对照。历史 JADX 对其中 DF.loopCatch 曾把 throw 提出 try 之外，重编后异常逃逸。它们是待复核的具体差距，不能直接代表当前产品或所有同类形状。当前 CLI 的完整类基线和同次 Q-i/Q-ii/Q-iii 尚未执行；能否由现有所有权证明闭合，须先验证。
+2026-10-05 的固定探针记录了循环体内具名 try/catch 的拒绝：DV.plainFor、whileLoop 为不可归约诊断，forEach 简化形另有 protected-local SSA 拒绝；无 try 循环和循环内 try/finally 为对照。历史 JADX 对其中 DF.loopCatch 曾把 throw 提出 try 之外，重编后异常逃逸。它们是待复核的具体差距，不能直接代表当前产品或所有同类形状。当前 CLI 完整类基线及固定四方法的同次 Q-i/Q-ii/Q-iii 已实际接受观察，见 [instrumentation.md](instrumentation.md)。普通catch的terminal分支所有权与foreach的try外引用写呈现为两个实际门；无限retry代表另出现region ownership overlap，仍需同次Region树定位。设计和产品实现尚未完成。
 
 取证：[loop-body-catch-patrol](../../evidence/java-syntax-2026-10-05/loop-body-catch-patrol/README.md)（变体矩阵 + jadx 错码对照）。
 

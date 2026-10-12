@@ -1,6 +1,6 @@
 ## 1. 取证与基线
 
-- [ ] 1.1 当前 CLI 复跑固定 DF/DV，保存 debug/none、Java8/23 原/JADX/Jarde 完整类、物理异常表和来源。独立记录各方法的实际第一处拒绝；失败保留 no-runtime，不预设与旧 README 一致。
+- [x] 1.1 当前 CLI 复跑固定 DF/DV，保存 debug/none、Java8/23 原/JADX/Jarde 完整类、物理异常表和来源。独立记录各方法的实际第一处拒绝；失败保留 no-runtime，不预设与旧 README 一致。
 - [ ] 1.2 按 DV.plainFor 的同次 IR 回答 Q-i/Q-ii，并分别核 DV.forEach/DF.loopCatch 的 Q-iii。完整 handler/row/header/join/普通与异常边及 terminal 路径写入 `instrumentation.md`；参考 JADX splitter 与区域所有权算法，先完成 design 再实施。
 
 ## 2. 实现
