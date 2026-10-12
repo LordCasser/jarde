@@ -430,3 +430,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-12 上述外层Assign foreach窄片8/8交付checkpoint已实际接受：docs 8df36aad4 main/origin/真实remote仅main，15checkouts/14aux detached干净祖先、无target、5GiB守卫满足；关闭文档推送后按真实新HEAD外置audit。CF11/71/612不增加，下一片为有实际完整读写证据的局部类型兼容性。
 
 2026-10-12 局部引用写兼容窄片7/8：产品5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e自身CI38197592542实际4jobs/52steps全成功，root独立verifier v5 exit0、全本地与双seed具名比较/4784来源闭包和最终CLI绑定。fresh本地96批363targets3489-0-97、strict356-0已接受；旧verifier三处名称错误失败保留，文档后fresh clean main仍待。CF11下一固定嵌套循环泛型调用双JDK探针实测：只List<String>签名因add(Object)失败，单独去该cast后手工完整类8行为同原；这是第三证明义务，不是产品修复或全局去cast依据。CF11/71/612完成数不变。
+
+2026-10-12 局部引用写兼容窄片8/8：自身CI独立接受后，已推送文档fa12d5499e14115c039d75d7880dfc2d01aba94e的fresh main audit实际exit0、4784源码绑定/only main/15checkouts/14辅助detached干净祖先/全部无target。关闭文档推送后另做真实finalHEAD外置audit，不形成自引用。当前保持持续目标active，固定CF11/71/612完成数不增；下一步运行structured-void/generic三请求同次诊断，完整调用泛型绑定不能靠擦除descriptor冒充。
