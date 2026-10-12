@@ -1,6 +1,6 @@
 # 循环体 catch 的同次 IR 分析
 
-当前 `ca45c0e` 的问题分成两个落点：普通 catch 认证不接纳 try 内的终止 throw 分支；foreach 的区域已经恢复，但 try 外写入的数组局部被词法呈现门拒绝。先把这两个事实分开，才能判断要补什么证明。
+当前 `ca45c0e` 有三个落点：普通 catch 认证不接纳 try 内的终止 throw 分支；foreach 区域已恢复，try 外写入的数组局部被词法呈现门拒绝；无限 retry 的 handler 重入自己的 try 导致重复 owner。分别补现有证明，不能合并成一个归约豁免。
 
 取证来自 [当前完整类基线](results/baseline-cli-v4-root-v1/README.md) 和 [同次 IR 原始流](results/same-run-ir-root-v3/README.md)。debug/none、Java8/23 共四个 lane；每个 lane 在同一个方法分析 payload 上取得 Code/canonical/normal-flow/SSA，再运行现有恢复。四方法共 16 次，physical class digest/length/name/descriptor 与原 CLI 配对。插桩使用最小 MethodFacts（参数槽、访问标志），没有模拟 CLI 的 debug-name 元数据；它证明实际物理/SSA 门，不能冒充 CLI 完整来源请求。
 
@@ -28,8 +28,12 @@
 
 要在原任务 2.3 补 try 外已呈现写的实际 SSA/词法支配证明：所有读须到达同一已呈现写，类型和作用域闭合，不能猜测赋值或新增 blanket reference 放行。普通 catch join 修复不能关闭这一项。
 
-## 仍需验证的方案边界
+## 无限 retry：重复 owner 在同一个根 Try 内
 
-无限 retry/break 代表已按 JADX `TestTryCatchInLoop` 算法准备五个事件 oracle，当前整类采集仍待独立接受；不能让有限 for 成功替代它。它可能涉及 handler 直接回到 body/header 的循环所有权，须由实际 Code/CFG 决定，当前尚未定方案。
+见 [两变体基线和八lane同次树](results/retry-baseline-and-ir-root-v1/README.md)。root 实际接受88基线命令/176raw与9个IR命令/18raw，前后4822来源恢复、clean0、target absent。原类和 JADX 的五 oracle 相同，Jarde 两变体均 test()I ownership overlap/完整类 compile1/no-runtime。v2 exc()V 另有动态观察文本触发的 nested StringBuilder 参数拒绝；v3 固定文字消除该干扰后 test()I 拒绝相同，原 v2 失败保留。
 
-设计需同时检查 terminal throw 的异常派发、完整范围/行重叠/普通 handler 入口、循环测试与更新不被吞进 try、已有 try emitter 对 terminal 分支的认领、foreach producer/consumer 的全路径与停止计费。保持原 CFG、来源和 exception row，不用 hypothetical 结果绕过这些条件。`design.md` 尚未完成，任务 1.2 仍开放。
+v3 row0 `[0,26)→handler29`，普通边 `0→55,29→0,55→63/73,63→73`；v2 对应 `[0,46)→49`、normal exit95。八lane普通图均无环，真实 exception0→handler 保留，循环不能伪装成普通 NaturalLoop。pre-overlap 树都是根 Try(body block0)，其 catch 又嵌套同 Try(prefix handler/body fallback0/catch fallback handler)。block0与handler owners均为 `[0,0]`，首重复0；不是两个顶层 Try。recovery 完整执行后正确成为 ExplanationOnly。
+
+需使 protected body 以 normal exit 为边界、catch 以 header 为边界，再由已证明的两个 goto 表达 break/continue。既有 Endless/Try 表达足够，最终 overlap gate 必须保留。`normal_exit_bci=None` 是 Try 的出口来源字段，不能推断为 guard::Catches.join=None；该 shape 的实际 join 须在候选中交叉验证表 end Transfer 与唯一普通 successor。
+
+[design.md](design.md) 已完成，1.2关闭；产品和整类门仍未通过。fixed DF.loopFinally 当前 handler51 uncovered 单独记录，不能在 catch 修复时删掉该控制方法。

@@ -444,3 +444,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 
 
 2026-10-12 Structured List MVP 9/9：准确产品ca45c0e自身CI独立接受后，已推送文档70cd4b484实际clean-main审计exit0、4822来源同focus/产品/docs/live、only main/15checkouts/14aux detached干净祖先/全部无target。关闭文档推送后再以真实finalHEAD执行外置audit，不形成自引用。下一大颗粒循环catch仍1/9，设计须包含foreach独立SSA门与无限retry代表。整CF11/CF18/71/612完成数不增。
+
+2026-10-12 后续实际推进：Structured List finalHEAD 9dc64e4d 的外置审计已exit0。循环catch现 **2/8**（CLI实数8项，此前1/9计数误记，不是减少验收要求），design完成且严格validate/applyready。retry v2/v3两个完整基线88命令/176raw、八lane同次IR9命令/18raw已root独立接受并[归档](../../changes/recover-loop-body-try-catch/results/retry-baseline-and-ir-root-v1/README.md)：普通图无环，根Try内部catch重入自己的try，block0/handler各重复owner；v3消除exc构造观察干扰仍同拒绝。既有Endless/Try/Break/Continue足以表达，补局部所有权边界；finite terminalbody与foreach reference Load另两落点分别派Luna私有候选。DF.loopFinally的handler51 uncovered独立分析，完整DF验收仍开放。没有产品验收，CF18/CF11/71/612均不增。
