@@ -2,11 +2,11 @@
 
 持续目标保持 active，用户要求继续在当前聊天推进。按固定 JADX **71 语法单元 / 612 测试文件**的账本完成大颗粒 MVP，再探索双方尚未覆盖的情况。组件测试通过不能直接增加整体完成数。
 
-## 当前唯一交付项
+## 最近完成的 MVP
 
-OpenSpec [recover-structured-list-generic-bodies](openspec/changes/recover-structured-list-generic-bodies/tasks.md) 当前 **8/9**。结构化 void 正文的物理 census、List 参数真实用途证明和泛型声明/调用正文事务已经实现；复用现有 AST/精确 argument edits，不新增 solver、pass 或公共 carrier。永久测试覆盖 String/Integer、inner option、null add、控制反例、三 profile、来源和停止。详见 [verification-root.md](openspec/changes/recover-structured-list-generic-bodies/verification-root.md)。
+OpenSpec [recover-structured-list-generic-bodies](openspec/changes/recover-structured-list-generic-bodies/tasks.md) 当前 **9/9**。结构化 void 正文的物理 census、List 参数真实用途证明和泛型声明/调用正文事务已经实现；复用现有 AST/精确 argument edits，不新增 solver、pass 或公共 carrier。永久测试覆盖 String/Integer、inner option、null add、控制反例、三 profile、来源和停止。详见 [verification-root.md](openspec/changes/recover-structured-list-generic-bodies/verification-root.md)。
 
-**本轮本地验收起点是 e9e3a0ec27e5bf7698bdf4817ff08d38bcb63374，交付提交以当前 Git 与下述自身 CI 记录为准。** 产品 `ca45c0ed2193fa8709eeba1196ef325f1804f63e` 已提交推送；自身 CI `38225064059` 已独立接受，3.3 闭合。最终文档 HEAD 的干净主线审计（3.4）仍待完成。旧产品锚点 5f5fb2c6、旧 CI 38197592542 和 f12668ed0 的最终审计仅证明前一项，不能用于关闭当前项。
+**本轮本地验收起点是 e9e3a0ec27e5bf7698bdf4817ff08d38bcb63374，交付提交以当前 Git 与下述自身 CI 记录为准。** 产品 `ca45c0ed2193fa8709eeba1196ef325f1804f63e` 已提交推送；自身 CI `38225064059` 已独立接受，3.3 闭合。已推送检查点 `70cd4b48410b118011b8be3d4411fd421f3e3dd2` 的干净主线审计已通过，3.4关闭。关闭文档推送后真实finalHEAD还会单独外置审计；检查点不是未来提交的证明。旧产品锚点 5f5fb2c6、旧 CI 38197592542 和 f12668ed0 的最终审计仅证明前一项，不能用于关闭当前项。
 
 ## 最新有效源码与本地证据
 
@@ -20,7 +20,7 @@ OpenSpec [recover-structured-list-generic-bodies](openspec/changes/recover-struc
 
 最终本地门禁 **session49761 已 exit0**：fmt/当前 CI Clippy/global strict357-0/CLI rebuild/exact clean 五命令0，新CLI字节恒同、4822来源一致、target absent，root独立 accept-final.py exit0。final receipt SHA 3cf03577eea64a7d19f1164cbc2da3d322686c7eb5d5baca3dd50f1e22286b04，acceptance SHA f91f3ab30fea420d4d39ba1662d1cb9ef229b64aaef4af9359ef3ae29d43ad0c；见 [最终门禁](openspec/changes/recover-structured-list-generic-bodies/results/final-validation-root-v2/README.md)。3.2 已关闭。
 
-新 CLI v4 的整类对照 **session6599 已 exit0**，root 独立 checker 接受12份/352命令/704raw/80成功运行对/24控制编译失败无runtime/41 oracle labels。新 CLI 精确停止两调用实际4/0；collector因方法name读取层级错误failed，root独立接受其完整raw且保留原失败状态。见 [整类及停止归档](openspec/changes/recover-structured-list-generic-bodies/results/final-comparison-cli-v4-root-v1/README.md)。3.1/3.2均已关闭。自身 CI 已实际接受4jobs/52steps、双seed各364targets/3502-0-98与全部具名结果，4822来源及CLI字节同产品；见 [自身CI](openspec/changes/recover-structured-list-generic-bodies/results/own-product-ci-ca45-root-v1/README.md)。最后文档推送、only main/14aux detached/全部干净无target/主线祖先的实际finalHEAD外置审计（3.4）仍待。旧矩阵空间失败没有拼接，71/612和整CF11完成数不增。
+新 CLI v4 的整类对照 **session6599 已 exit0**，root 独立 checker 接受12份/352命令/704raw/80成功运行对/24控制编译失败无runtime/41 oracle labels。新 CLI 精确停止两调用实际4/0；collector因方法name读取层级错误failed，root独立接受其完整raw且保留原失败状态。见 [整类及停止归档](openspec/changes/recover-structured-list-generic-bodies/results/final-comparison-cli-v4-root-v1/README.md)。3.1/3.2均已关闭。自身 CI 已实际接受4jobs/52steps、双seed各364targets/3502-0-98与全部具名结果，4822来源及CLI字节同产品；见 [自身CI](openspec/changes/recover-structured-list-generic-bodies/results/own-product-ci-ca45-root-v1/README.md)。已推送文档检查点的only main/14aux detached/全干净无target/主线祖先/4822来源实审通过；见 [交付检查点](openspec/changes/recover-structured-list-generic-bodies/results/clean-main-checkpoint-root-v1/README.md)。关闭文档推送后，再对真实finalHEAD作外置审计。旧矩阵空间失败没有拼接，71/612和整CF11完成数不增。
 
 ## 工具和资源约束
 

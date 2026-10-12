@@ -76,3 +76,8 @@ session6599 实际exit0，12组全部采集成功；root独立checker exit0接�
 产品 `ca45c0ed2193fa8709eeba1196ef325f1804f63e` 已提交推送，实际 run `38225064059` completed/success，4 jobs/52 steps 全成功。root fresh capture-v2 保存三条 gh argv/rc/raw；旧 capture-v1 属 b155 产品未复用。root verifier v10 实际 exit0，两 seed 各364targets/3502-0-98，逐具名结果/顺序/状态同 fresh 本地；完整4822动态来源同 focused/workspace/final/live/product Git，CLI准确d3d15d...c65e6f。
 
 v8/v9 两次实际验收脚本失败原样保留：前者 tuple/list 容器比较，后者 ignored 原因文字比对。root 实解析全部差异仅为状态原文的原因，v10 精确规范化 ignored 并另存194条原文观测；没有改产品、测试状态或通过计数。归档 [own-product-ci-ca45-root-v1](results/own-product-ci-ca45-root-v1/README.md)。当前8/9；最后文档推送后 main/remote/15checkouts/4822输入外置审计尚待，不能以自身CI替代。
+
+
+## 主线交付检查点：3.4 关闭
+
+已推送文档 `70cd4b48410b118011b8be3d4411fd421f3e3dd2` 的root实际外置audit exit0，接受4822来源同focus/产品/docs/live；local/remote仅main、15checkouts/14辅助detached干净祖先、全无target/fuzz target，5GiB满足。见[检查点](results/clean-main-checkpoint-root-v1/README.md)。当前9/9仅关闭本片；关闭文档推送后真实finalHEAD另执行外置audit，不把检查点或产品CI冒充该finalHEAD的结果。CF11/71/612完成数不增加。
