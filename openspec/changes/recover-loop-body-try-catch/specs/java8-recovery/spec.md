@@ -10,7 +10,7 @@
 
 #### Scenario: 对照组零回退
 - **WHEN** 输入为无 try 的同构循环、循环内 try-finally（continue 交互）与已验收 fragmented-loop-catches 既有 fixture
-- **THEN** 既有完整恢复 SHALL 逐字节不变；固定 DF.loopFinally 当前未完整恢复的 handler51 缺口 MUST 独立闭合后再满足整类验收，循环内 try-finally 的等价分布输出与原 class 行为一致，不得删除该方法或修补生成源码
+- **THEN** 既有恢复 SHALL 逐字节不变，循环内 try-finally 的等价分布输出与原 class 行为一致；固定 DF.loopFinally 的 handler51 质量差距 MUST 独立记录并以实际完整类编译/运行判断验收，不得从诊断推断编译失败、删除该方法或修补生成源码
 
 #### Scenario: 结构判据不满足时维持拒绝
 - **WHEN** 保护区跨循环测试/递增块、handler 有普通前驱、异常表行交叉或共享、或 SSA 局部读写不能在同一词法 catch 内闭合

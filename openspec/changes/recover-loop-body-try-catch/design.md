@@ -12,7 +12,7 @@
 
 **Non-Goals:**
 
-本片不扩大 fragmented 认证、catch-all/finally/multi-catch 的支持边界，不重写自然循环或删除 handler 普通边。v2 观察文本导致的 nested StringBuilder 构造参数拒绝独立记录。DF.loopFinally 当前另有 handler51 uncovered，完整 DF 验收仍受其约束；不能删除该方法或修补生成源码来关闭本片。该缺口须独立分析和处理后才能通过要求的整类验收。
+本片不扩大 fragmented 认证、catch-all/finally/multi-catch 的支持边界，不重写自然循环或删除 handler 普通边。v2 观察文本导致的 nested StringBuilder 构造参数拒绝独立记录。DF.loopFinally 当前另有 handler51 uncovered，但生成方法已有 return，遗漏内容为注释；它不等于 javac 错误。原始 debug javac8/23 错误均只报 loopCatch 缺返回（生成 DF.java:46）。finally 差距独立记录，完整类仍必须实际编译运行；不能删除方法或修补生成源码。
 
 ## Decisions
 
@@ -60,7 +60,7 @@ Load 是在原 store 位置呈现的局部读取，可以位于 try 外。仅此
 
 表、块、边、SSA uses/phi 的新增遍历逐项计 AnalysisSteps/已有对应维度并 poll；集合大小受本次 view 与 Budget 约束，递归保持现有深度界。没有默认 stack 扩大。停止测试必须实际落在新增证明内部，并证明没有发布部分 owner/正文。
 
-Luna 分别准备 region 所有权与 build 引用 Load 的私有候选，root 审阅后顺序应用、构建和验收。完整 DV/DF 与 retry v2/v3 都保留；v3 是观察干扰控制，不替换 v2。产品每次改变后重建 CLI，再做双 JDK/双 metadata profile 的完整类对照。当前 DF.loopFinally 独立拒绝未闭合之前，DF 完整类 gate 保持开放，不能用仅 loopCatch 的方法片段当作完成。
+Luna 分别准备 region 所有权与 build 引用 Load 的私有候选，root 审阅后顺序应用、构建和验收。完整 DV/DF 与 retry v2/v3 都保留；v3 是观察干扰控制，不替换 v2。产品每次改变后重建 CLI，再做双 JDK/双 metadata profile 的完整类对照。DF 完整类 gate 只由未改写源码的实际编译与行为证明，不能用仅 loopCatch 的方法片段当作完成，也不能从 finally 的质量诊断推断编译失败。
 
 验收保持原值、异常、调用次数和事件顺序；另测 crossing-header/update、ordinary handler predecessor、shared/crossed row、额外出口、共享 terminal owner、reference 多消费/间隔效果/错误 phi、handler 非 header 回跳等反例。无 try、已完整支持的 finally 与 fragmented fixtures 保留既有文本；当前未完整支持的 DF.loopFinally 单独保留失败与后续修复证据。
 
@@ -70,7 +70,7 @@ Luna 分别准备 region 所有权与 build 引用 Load 的私有候选，root �
 - terminal may-throw 被误当作必匹配 catch → 保留完整派发与逃逸，不靠静态异常类型推断改边；整类 runtime 验证错误输入。
 - 引用 load 放宽牵连 effectful producer → 只在 Load 分支复用现有窄证明，constructor/call 门不变。
 - retry catch 重入或吞掉方法尾部 → 独立 header/exit 边界、唯一 Transfer、完整 owner 与原五 oracle 核验。
-- 既有 DF finally 缺口妨碍完整类验收 → 单独处理具体缺口，不混入 catch proof；在完成前不关闭3.1或本 MVP。
+- DF finally 的质量诊断被误当作编译错误 → 保留原方法和诊断，检查实际 javac stderr 与 runtime；质量差距独立登记，不扩大 catch proof。
 
 ## Migration Plan
 
