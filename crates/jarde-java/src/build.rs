@@ -1209,6 +1209,7 @@ fn declarations(
                         sites,
                         variable_uses,
                         &paths,
+                        plan.decided.get(variable),
                         budget,
                     )?))
         {
@@ -4096,6 +4097,8 @@ fn catch_parameter_stays_in_clause(
             if !visited.insert(value) {
                 continue;
             }
+            // The binding is this handler's entry store, not the shared local slot. A Caught
+            // definition records a throw site and can belong to a different catch clause.
             if value == entry {
                 return Ok(false);
             }
@@ -4106,6 +4109,9 @@ fn catch_parameter_stays_in_clause(
                 let Some(inputs) = phis.get(&value) else {
                     return Ok(false);
                 };
+                if inputs.is_empty() {
+                    return Ok(false);
+                }
                 for input in *inputs {
                     match input {
                         PhiInput::Value(value) => pending.push(*value),
@@ -4170,6 +4176,25 @@ fn cross_exception_store_type_is_proven(decided: Option<&Decided>, has_increment
     }
 }
 
+/// A newly admitted reference Load is safe for a cross-region declaration only when its own
+/// verifier type proves assignment to that declaration. Without class hierarchy evidence this
+/// accepts an exact type or any reference assigned to Object; unknown/subtype relations stay
+/// refused instead of treating `Reference` as a complete compatibility proof.
+fn presented_reference_load_matches_declared_type(
+    value: ValueId,
+    ssa: &SsaTable,
+    decided: Option<&Decided>,
+) -> bool {
+    let Some(Decided::Type(Type::Reference(declared))) = decided else {
+        return false;
+    };
+    if declared == "java.lang.Object" {
+        return matches!(ssa.value(value).ty(), Value::Ref(_));
+    }
+    matches!(ssa.value(value).ty(), Value::Ref(RefType::Named { .. }))
+        && matches!(value_type(ssa.value(value).ty()), Ok(Some(Type::Reference(observed))) if observed.as_str() == declared.as_str())
+}
+
 /// Proves that each local read's SSA value is made only from stores the region builder can present.
 ///
 /// The frame pass has already merged normal and exception inputs into the SSA phis. Requiring every
@@ -4184,6 +4209,7 @@ fn all_reads_reach_presented_writes(
     sites: &init::Sites,
     uses: &[SlotUse],
     paths: &RegionPaths,
+    decided: Option<&Decided>,
     budget: &mut Budget,
 ) -> Result<bool, StopReason> {
     // A reaching local definition is useful only if its value can be written at the store. Keep
@@ -4246,10 +4272,16 @@ fn all_reads_reach_presented_writes(
         let inline = presented_int_store_value(
             ssa, operations, paths, stored, block, write.bci, &mut seen, budget, 0,
         )?;
+        let reference_load = matches!(
+            ssa.value(stored).def(),
+            Definition::Instruction { bci, .. }
+                if matches!(operations.get(*bci), Some(Operation::Load { .. }))
+        );
         if !inline
-            && !presented_reference_store_value(
+            && (!presented_reference_store_value(
                 ssa, operations, sites, paths, stored, block, write.bci, budget,
-            )?
+            )? || (reference_load
+                && !presented_reference_load_matches_declared_type(stored, ssa, decided)))
         {
             return Ok(false);
         }
@@ -4535,28 +4567,78 @@ fn presented_array_operand(
     Ok(local_read(instruction, *slot).is_some())
 }
 
+fn presented_load_is_immediate_predecessor(
+    instructions: &[SsaInstruction],
+    producer: u32,
+    consumer: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    for pair in instructions.windows(2) {
+        poll(budget, Some(pair[0].bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(pair[0].bci()),
+        )?;
+        if pair[0].bci() == producer && pair[1].bci() == consumer {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+/// Whether a local reference Load copies a caught parameter, directly or through local
+/// Store/Load/Phi aliases. Such a value belongs to its catch clause; using it to initialize a
+/// declaration that crosses that clause can assign an unrelated exception type to the declared
+/// local. Entry values remain valid here because a method parameter is already in scope.
+fn presented_reference_load_is_independent_of_caught_parameter(
+    ssa: &SsaTable,
+    operations: &Operations,
+    paths: &RegionPaths,
+    load: ValueId,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let Definition::Instruction { bci, .. } = ssa.value(load).def() else {
+        return Ok(false);
+    };
+    let Some(instruction) = instruction_at(ssa, *bci) else {
+        return Ok(false);
+    };
+    let Some((_, loaded)) = instruction
+        .reads()
+        .iter()
+        .find(|(slot, _)| matches!(slot, Slot::Local(_)))
+    else {
+        return Ok(false);
+    };
+
+    // Treat the Load's actual local input as an outside read for each catch binding. Reuse the
+    // declaration planner's bounded SSA alias walk so Store/Load/Phi and missing-edge behavior
+    // stay identical to the existing catch-escape proof.
+    let source = [SlotUse {
+        path: None,
+        bci: *bci,
+        read: Some(*loaded),
+        written: None,
+        stored: None,
+    }];
+    for (clause, (slot, handler)) in &paths.catch_parameters {
+        if !catch_parameter_stays_in_clause(
+            ssa, operations, &source, clause, handler, *slot, budget,
+        )? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 /// The reference value a cross-exception store can safely present as its own declaration's
-/// initialiser: one **verified construction site** (`new T(…)` — the allocation, its copy and the
-/// constructor call the `new` rule proved, rendered by the same new-site expression a consumer
-/// spells) or one **zero-argument static call**. Both shapes reuse the disciplines the int chain
-/// above already states, so the value never moves and never runs twice:
-///
-/// * the producing instruction and the store share one basic block whose region is presented (no
-///   quoted run — a construction this block cannot spell stays quoted);
-/// * the value is consumed exactly once, by this store — the constructed instance a second reader
-///   shares would be evaluated once in the text and twice in the source's meaning;
-/// * the producing instruction is the store's immediate predecessor, with every instruction
-///   between the site's allocation and the store belonging to the site's own verified expression —
-///   a statement the bytecode ran between the construction and the store would change order in the
-///   text, and an argument producer of a wider call is one such statement this slice does not
-///   accept;
-/// * the block sits in a `try` statement's protected arm, the same arm discipline the int call
-///   reads: the region path is attached to the basic block, so requiring it also preserves the
-///   exception table's own answer for the call.
-///
-/// The declaration the certificate hoists reads the store where it ran — the `try` statement's
-/// lead — so nothing is evaluated anywhere else. Every other reference shape keeps the existing
-/// whole-slice refusal until its own presentation rules can supply the same proof.
+/// initializer. A same-block local Load reuses [`presented_array_operand`] for its actual local read,
+/// single-use and presented-path proof, then requires the Load to immediately precede the store.
+/// This Load may sit outside a protected arm. Constructor and zero-argument static-call shapes keep
+/// their protected-arm requirement and their existing exact-site/run proofs. Every accepted value
+/// stays in its original block and evaluation position.
 #[allow(clippy::too_many_arguments)]
 fn presented_reference_store_value(
     ssa: &SsaTable,
@@ -4574,32 +4656,70 @@ fn presented_reference_store_value(
         1,
         Some(consumer),
     )?;
-    let Definition::Instruction { block, bci } = ssa.value(value).def() else {
+    let Definition::Instruction {
+        block: block_id,
+        bci,
+    } = ssa.value(value).def()
+    else {
         return Ok(false);
     };
-    if block != store_block
+    if block_id != store_block
         || *bci >= consumer
         || !matches!(ssa.value(value).ty(), Value::Ref(_))
         || paths
             .paths
-            .get(block)
+            .get(block_id)
             .is_none_or(|path| paths.fallbacks.contains(path))
-        || !paths.tries.iter().any(|try_path| {
-            paths.paths.get(block).is_some_and(|path| {
-                path.starts_with(try_path) && path.get(try_path.len()) == Some(&0)
-            })
-        })
-        || !single_use_at_with_budget(ssa, value, block, consumer, budget)?
     {
         return Ok(false);
     }
-    let Some(block) = ssa.block(block) else {
+    let in_protected_arm = paths.tries.iter().any(|try_path| {
+        paths
+            .paths
+            .get(block_id)
+            .is_some_and(|path| path.starts_with(try_path) && path.get(try_path.len()) == Some(&0))
+    });
+    let Some(block) = ssa.block(block_id) else {
         return Ok(false);
     };
     match operations.get(*bci) {
+        Some(Operation::Load { .. }) => {
+            let mut seen = BTreeSet::new();
+            if !presented_array_operand(
+                ssa,
+                operations,
+                paths,
+                value,
+                store_block,
+                consumer,
+                &mut seen,
+                budget,
+            )? {
+                return Ok(false);
+            }
+            let Some(ssa_block) = ssa.block(block_id) else {
+                return Ok(false);
+            };
+            if !presented_load_is_immediate_predecessor(
+                ssa_block.instructions(),
+                *bci,
+                consumer,
+                budget,
+            )? || !presented_reference_load_is_independent_of_caught_parameter(
+                ssa, operations, paths, value, budget,
+            )? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         Some(Operation::Invoke(target))
             if target.kind() == InvokeKind::Special && target.name() == "<init>" =>
         {
+            if !in_protected_arm
+                || !single_use_at_with_budget(ssa, value, block_id, consumer, budget)?
+            {
+                return Ok(false);
+            }
             // The construction this value came from: the site's own verified expression is the
             // whole run from the allocation to this constructor call, and the store is the run's
             // immediate next instruction.
@@ -4627,6 +4747,11 @@ fn presented_reference_store_value(
             Ok(true)
         }
         Some(Operation::Invoke(target)) if target.kind() == InvokeKind::Static => {
+            if !in_protected_arm
+                || !single_use_at_with_budget(ssa, value, block_id, consumer, budget)?
+            {
+                return Ok(false);
+            }
             let run: BTreeSet<u32> = block
                 .instructions()
                 .iter()
@@ -29916,6 +30041,37 @@ impl Builder<'_> {
                 ),
                 Widening::Text,
             )?;
+            if chain.object_value_of_appends.contains(append_bci) {
+                let object = Type::Reference("java.lang.Object".to_owned());
+                if parameter != &object {
+                    return Err(format!(
+                        "the `append` at BCI {append_bci} is marked for Object conversion but its pool descriptor names `{}`",
+                        parameter.spell()
+                    )
+                    .into());
+                }
+                let origin = part.value.origin.clone();
+                let object_argument = Expr::new(
+                    ExprKind::Cast {
+                        ty: object.clone(),
+                        value: Box::new(part.value),
+                    },
+                    origin.clone(),
+                )
+                .presenting(object);
+                part.value = Expr::new(
+                    ExprKind::Call {
+                        receiver: Some(Box::new(Expr::new(
+                            ExprKind::Path("java.lang.String".to_owned()),
+                            origin.clone(),
+                        ))),
+                        name: "valueOf".to_owned(),
+                        args: vec![object_argument],
+                    },
+                    origin,
+                )
+                .presenting(Type::Reference("java.lang.String".to_owned()));
+            }
             parts.push(part);
         }
         let origin = chain
@@ -34463,6 +34619,245 @@ mod tests {
             names,
             declarations,
         }
+    }
+
+    const LOOP_BODY_CATCH_DV_DEBUG_JAVAC8: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-loop-body-catch/DV-debug-javac8.class");
+    const LOOP_BODY_CATCH_DV_DEBUG_JAVAC23: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-loop-body-catch/DV-debug-javac23.class");
+    const LOOP_BODY_CATCH_DV_NONE_JAVAC8: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-loop-body-catch/DV-none-javac8.class");
+    const LOOP_BODY_CATCH_DV_NONE_JAVAC23: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-loop-body-catch/DV-none-javac23.class");
+    const REFERENCE_LOAD_CONSTRUCTOR_CONTROL: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11CharSequenceControl.class"
+    );
+    const REFERENCE_LOAD_STATIC_CONTROL: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-local-reference-write-compatibility/debug/javac23/CF11HandlerWriteControl.class"
+    );
+
+    fn reference_load_to_store(
+        ssa: &SsaTable,
+        operations: &Operations,
+    ) -> (ValueId, CanonicalBlockId, u32, u32) {
+        ssa.values_with_ids()
+            .find_map(|(value_id, value)| {
+                let Definition::Instruction { block, bci } = value.def() else {
+                    return None;
+                };
+                if !matches!(value.ty(), Value::Ref(_))
+                    || !matches!(operations.get(*bci), Some(Operation::Load { .. }))
+                {
+                    return None;
+                }
+                let [usage] = value.uses() else { return None };
+                let store = usage.bci()?;
+                (usage.block() == block
+                    && matches!(operations.get(store), Some(Operation::Store { .. })))
+                .then(|| (value_id, block.clone(), *bci, store))
+            })
+            .expect("fixture contains a reference Load stored in the same block")
+    }
+
+    fn reference_invoke_to_store(
+        ssa: &SsaTable,
+        operations: &Operations,
+        wanted: InvokeKind,
+        constructor: bool,
+    ) -> (ValueId, CanonicalBlockId, u32, u32) {
+        ssa.values_with_ids()
+            .find_map(|(value_id, value)| {
+                let Definition::Instruction { block, bci } = value.def() else {
+                    return None;
+                };
+                let Some(Operation::Invoke(target)) = operations.get(*bci) else {
+                    return None;
+                };
+                if !matches!(value.ty(), Value::Ref(_))
+                    || target.kind() != wanted
+                    || (target.name() == "<init>") != constructor
+                {
+                    return None;
+                }
+                let [usage] = value.uses() else { return None };
+                let store = usage.bci()?;
+                (usage.block() == block
+                    && matches!(operations.get(store), Some(Operation::Store { .. })))
+                .then(|| (value_id, block.clone(), *bci, store))
+            })
+            .expect("control fixture has the expected reference invoke/store")
+    }
+
+    #[test]
+    fn same_block_reference_load_is_presented_outside_try_for_fixed_dv_variants() {
+        for (class, release) in [
+            (LOOP_BODY_CATCH_DV_DEBUG_JAVAC8, 8),
+            (LOOP_BODY_CATCH_DV_DEBUG_JAVAC23, 23),
+            (LOOP_BODY_CATCH_DV_NONE_JAVAC8, 8),
+            (LOOP_BODY_CATCH_DV_NONE_JAVAC23, 23),
+        ] {
+            let context = iterator_test_context(class, "forEach", "([I)I", release);
+            let ir = context.analysis.ir();
+            let ssa = ir.ssa().expect("fixed DV.forEach SSA");
+            let code = ir.code().expect("fixed DV.forEach code");
+            let operations = Operations::of(code, ir.constant_pool());
+            let paths = region_paths(&context.regions);
+            let (value, block, producer, store) = reference_load_to_store(ssa, &operations);
+            assert_eq!((producer, store), (2, 3), "fixed DV.forEach parameter copy");
+            let path = paths
+                .paths
+                .get(&block)
+                .expect("presented block has a region path");
+            assert!(
+                !paths.tries.iter().any(|try_path| {
+                    path.starts_with(try_path) && path.get(try_path.len()) == Some(&0)
+                }),
+                "the parameter copy is outside every protected arm"
+            );
+            let mut budget = child_array_test_budget();
+            assert!(
+                presented_reference_store_value(
+                    ssa,
+                    &operations,
+                    &crate::init::Sites::empty(),
+                    &paths,
+                    value,
+                    &block,
+                    store,
+                    &mut budget,
+                )
+                .expect("local reference Load proof completes")
+            );
+            let mut limits = child_array_test_budget().limits().clone();
+            limits.analysis_steps = budget.usage().analysis_steps - 1;
+            let mut stopped = Budget::new(limits);
+            assert!(
+                matches!(
+                    presented_reference_store_value(
+                        ssa,
+                        &operations,
+                        &crate::init::Sites::empty(),
+                        &paths,
+                        value,
+                        &block,
+                        store,
+                        &mut stopped,
+                    ),
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        at: Some(2),
+                        ..
+                    })
+                ),
+                "the full reference proof stops inside the new adjacency check"
+            );
+        }
+    }
+
+    #[test]
+    fn reference_load_adjacency_scan_propagates_budget_stop() {
+        let context =
+            iterator_test_context(LOOP_BODY_CATCH_DV_DEBUG_JAVAC23, "forEach", "([I)I", 23);
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("fixed DV.forEach SSA");
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .any(|instruction| instruction.bci() == 4)
+            })
+            .expect("array local Load block");
+        assert!(
+            block
+                .instructions()
+                .iter()
+                .any(|instruction| instruction.bci() == 5),
+            "BCI 5 arraylength lies between local Load BCI 4 and later store BCI 8"
+        );
+        let mut budget = child_array_test_budget();
+        assert!(
+            !presented_load_is_immediate_predecessor(block.instructions(), 4, 8, &mut budget,)
+                .expect("bounded adjacency scan completes")
+        );
+        let mut limits = child_array_test_budget().limits().clone();
+        limits.analysis_steps = 0;
+        let mut stopped = Budget::new(limits);
+        assert!(
+            matches!(
+                presented_load_is_immediate_predecessor(block.instructions(), 4, 8, &mut stopped),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(_),
+                    ..
+                })
+            ),
+            "the scan propagates its budget stop instead of returning a refusal"
+        );
+    }
+
+    fn assert_reference_invoke_outside_protected_arm_is_refused(
+        class: &[u8],
+        method: &str,
+        descriptor: &str,
+        release: u16,
+        kind: InvokeKind,
+        constructor: bool,
+    ) {
+        let context = iterator_test_context(class, method, descriptor, release);
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("reference invoke SSA");
+        let code = ir.code().expect("reference invoke code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let paths = region_paths(&context.regions);
+        let (value, block, _producer, store) =
+            reference_invoke_to_store(ssa, &operations, kind, constructor);
+        let path = paths
+            .paths
+            .get(&block)
+            .expect("invoke block has a region path");
+        assert!(
+            !paths.tries.iter().any(|try_path| {
+                path.starts_with(try_path) && path.get(try_path.len()) == Some(&0)
+            }),
+            "control invoke is outside a protected arm"
+        );
+        let mut budget = child_array_test_budget();
+        assert!(
+            !presented_reference_store_value(
+                ssa,
+                &operations,
+                &crate::init::Sites::empty(),
+                &paths,
+                value,
+                &block,
+                store,
+                &mut budget,
+            )
+            .expect("unprotected invoke refusal completes")
+        );
+    }
+
+    #[test]
+    fn reference_constructor_and_static_invoke_still_require_protected_arms() {
+        assert_reference_invoke_outside_protected_arm_is_refused(
+            REFERENCE_LOAD_CONSTRUCTOR_CONTROL,
+            "builderLength",
+            "()I",
+            23,
+            InvokeKind::Special,
+            true,
+        );
+        assert_reference_invoke_outside_protected_arm_is_refused(
+            REFERENCE_LOAD_STATIC_CONTROL,
+            "handlerWrite",
+            "()Ljava/lang/Object;",
+            23,
+            InvokeKind::Static,
+            false,
+        );
     }
 
     const LOCAL_REFERENCE_WRITE_TARGET_CLASS: &[u8] = include_bytes!(
@@ -41683,5 +42078,195 @@ mod tests {
         });
         assert_ne!(ids.other_join, ids.join);
         assert_cf12_fallback(&inner_switch, 89, "nearest active switch");
+    }
+    const REFERENCE_LOAD_NEGATIVES: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-loop-body-catch-negative-load/LoadNegatives.class"
+    );
+
+    const REFERENCE_LOAD_CAUGHT_ALIAS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/preserve-local-scope-refusals/v8/ScopeRefusalsEscape.class"
+    );
+
+    #[test]
+    fn reference_load_rejects_caught_parameter_alias_from_real_handler_ssa() {
+        let context = iterator_test_context(
+            REFERENCE_LOAD_CAUGHT_ALIAS,
+            "sharedHandler",
+            "(Ljava/lang/Runnable;)Ljava/lang/Object;",
+            8,
+        );
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("handler fixture SSA");
+        let code = ir.code().expect("handler fixture code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let paths = region_paths(&context.regions);
+        let (value, block, producer, store) = ssa
+            .values_with_ids()
+            .find_map(|(value, named)| {
+                let Definition::Instruction { block, bci } = named.def() else {
+                    return None;
+                };
+                if !matches!(operations.get(*bci), Some(Operation::Load { .. }))
+                    || named.uses().len() != 1
+                    || !matches!(
+                        operations.get(named.uses()[0].bci()?),
+                        Some(Operation::Store { slot: 1 })
+                    )
+                {
+                    return None;
+                }
+                let path = paths.paths.get(block)?;
+                paths
+                    .tries
+                    .iter()
+                    .any(|try_path| {
+                        path.starts_with(try_path) && path.get(try_path.len()) == Some(&1)
+                    })
+                    .then_some((value, block.clone(), *bci, named.uses()[0].bci()?))
+            })
+            .expect("handler copies its catch parameter through a local Load");
+        assert!(matches!(
+            operations.get(producer),
+            Some(Operation::Load { .. })
+        ));
+        assert!(matches!(
+            operations.get(store),
+            Some(Operation::Store { slot: 1 })
+        ));
+        let runnable = Decided::Type(Type::Reference("java.lang.Runnable".to_owned()));
+        assert!(
+            !presented_reference_load_matches_declared_type(value, ssa, Some(&runnable)),
+            "the verifier-stated catch type cannot initialize the Runnable declaration"
+        );
+        let unqualified_object = Decided::Type(Type::Reference("Object".to_owned()));
+        assert!(
+            !presented_reference_load_matches_declared_type(value, ssa, Some(&unqualified_object)),
+            "an unqualified Object may name a user class rather than java.lang.Object"
+        );
+        let java_object = Decided::Type(Type::Reference("java.lang.Object".to_owned()));
+        assert!(presented_reference_load_matches_declared_type(
+            value,
+            ssa,
+            Some(&java_object)
+        ));
+        let mut budget = child_array_test_budget();
+        assert!(
+            !presented_reference_store_value(
+                ssa,
+                &operations,
+                &crate::init::Sites::empty(),
+                &paths,
+                value,
+                &block,
+                store,
+                &mut budget,
+            )
+            .expect("caught-alias refusal completes")
+        );
+    }
+
+    #[test]
+    fn reference_load_does_not_borrow_stack_duplicate_values() {
+        let context = iterator_test_context(
+            REFERENCE_LOAD_NEGATIVES,
+            "multi",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            8,
+        );
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("stack duplication fixture SSA");
+        let code = ir.code().expect("stack duplication fixture code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let paths = region_paths(&context.regions);
+        let (_, loaded) = ssa
+            .values_with_ids()
+            .find(|(_, value)| {
+                matches!(value.def(), Definition::Instruction { bci: 0, .. })
+                    && matches!(value.ty(), Value::Ref(_))
+            })
+            .expect("aload_0 produces the fixture reference value");
+        assert_eq!(loaded.uses().len(), 1, "dup reads the actual Load value");
+        assert_eq!(loaded.uses()[0].bci(), Some(1));
+        assert!(matches!(operations.get(1), Some(Operation::Duplicate)));
+        let (stored_id, stored) = ssa
+            .values_with_ids()
+            .find(|(_, value)| {
+                matches!(value.def(), Definition::Instruction { bci: 1, .. })
+                    && value.uses().iter().any(|usage| usage.bci() == Some(2))
+            })
+            .expect("dup defines the reference consumed by astore_1");
+        assert!(
+            ssa.values_with_ids().any(|(_, value)| {
+                matches!(value.def(), Definition::Instruction { bci: 1, .. })
+                    && value.uses().iter().any(|usage| usage.bci() == Some(3))
+            }),
+            "the other dup output is consumed by areturn"
+        );
+        let block = match stored.def() {
+            Definition::Instruction { block, .. } => block,
+            _ => unreachable!(),
+        };
+        let mut budget = child_array_test_budget();
+        assert!(
+            !presented_reference_store_value(
+                ssa,
+                &operations,
+                &crate::init::Sites::empty(),
+                &paths,
+                stored_id,
+                block,
+                2,
+                &mut budget,
+            )
+            .expect("a duplicate value does not borrow the Load certificate")
+        );
+    }
+
+    #[test]
+    fn reference_load_rejects_actual_store_after_intervening_effect() {
+        let context = iterator_test_context(
+            REFERENCE_LOAD_NEGATIVES,
+            "crossEffect",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            8,
+        );
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().expect("effect fixture SSA");
+        let code = ir.code().expect("effect fixture code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let paths = region_paths(&context.regions);
+        let (value_id, value) = ssa
+            .values_with_ids()
+            .find(|(_, value)| {
+                matches!(value.def(), Definition::Instruction { bci: 0, .. })
+                    && matches!(value.ty(), Value::Ref(_))
+                    && matches!(operations.get(0), Some(Operation::Load { .. }))
+            })
+            .expect("aload_0 produces the fixture reference value");
+        assert_eq!(value.uses().len(), 1);
+        assert_eq!(value.uses()[0].bci(), Some(4));
+        assert!(
+            matches!(operations.get(1), Some(Operation::Invoke(_))),
+            "invokestatic effect()V is between reference Load@0 and Store@4"
+        );
+        assert!(matches!(operations.get(4), Some(Operation::Store { .. })));
+        let block = match value.def() {
+            Definition::Instruction { block, .. } => block,
+            _ => unreachable!(),
+        };
+        let mut budget = child_array_test_budget();
+        assert!(
+            !presented_reference_store_value(
+                ssa,
+                &operations,
+                &crate::init::Sites::empty(),
+                &paths,
+                value_id,
+                block,
+                4,
+                &mut budget,
+            )
+            .expect("effect-separated reference store is refused")
+        );
     }
 }

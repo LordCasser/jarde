@@ -1,0 +1,2955 @@
+{
+  "scope": "focused proofs and unmodified whole-class runtime comparisons accepted; full workspace and own CI pending",
+  "capture": {
+    "bytes": 8168311,
+    "sha256": "3d5c279917a405c390725ca23bd1e43ff6c3db80a5a7160a535a99f7a9f88d1d"
+  },
+  "entries": [
+    {
+      "entry": "accepted-source/crates/jarde-java/src/build.rs",
+      "source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1816875,
+      "sha256": "ebe8af9449baccf14cf0e2cdf70bcb1861a8e467fdc6110179aedabb5968d187"
+    },
+    {
+      "entry": "accepted-source/crates/jarde-java/src/concat.rs",
+      "source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/concat.rs",
+      "bytes": 125612,
+      "sha256": "680e064c4f43a8bf9dcba3c925a3d52bcd8014b9372a1830bf592faaf632d04b"
+    },
+    {
+      "entry": "accepted-source/crates/jarde-java/src/region.rs",
+      "source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1018532,
+      "sha256": "6f10c13d37b2472b77a0a5bc1d97f9bb45d05a65a030dca4f555d0221c3a707a"
+    },
+    {
+      "entry": "accepted-source/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "bytes": 40777,
+      "sha256": "12fa3af5a77136cf4d8fce47274651d9b2b2999df154181c5efd4529b1ff74a0"
+    },
+    {
+      "entry": "accepted-source/crates/jarde-java/src/report.rs",
+      "source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 671291,
+      "sha256": "4435bbb34d6f09583d0071eae2a3e8e9f7fe69b775ce22cb91b9cea8745a9a74"
+    },
+    {
+      "entry": "accepted-source/crates/jarde-java/tests/p3_patterns.rs",
+      "source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 278775,
+      "sha256": "55108ba724fc493d3fe0cee33742b14b964a7397f9a1763f4019e295b677189f"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v2-debug-javac23/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v2-debug-javac23/RetryFixture.class",
+      "bytes": 1739,
+      "sha256": "8268faa4e719cf7567cccea5723ffb1e3e789f78fceba1049cd4cda13a9a5ea6"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v2-debug-javac8/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v2-debug-javac8/RetryFixture.class",
+      "bytes": 1742,
+      "sha256": "1276ac7a3c9b225f93165a26e78d656696ccc6559448751636ec210c1edcb582"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v2-none-javac23/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v2-none-javac23/RetryFixture.class",
+      "bytes": 1391,
+      "sha256": "649cbe5a484911cd2781d2509f4b02cf08ad4b2a9085eb2bfa7b1e79e489b84f"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v2-none-javac8/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v2-none-javac8/RetryFixture.class",
+      "bytes": 1394,
+      "sha256": "3af8fed50e8cd33e3d1ae6b9da412787dde7ce7f57642131d850791a7eed7638"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v3-debug-javac23/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v3-debug-javac23/RetryFixture.class",
+      "bytes": 1395,
+      "sha256": "0ec60f83bab5388954ec3408f4df32fa4b3febbfa12d7aeadd6c75b51f5dd071"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v3-debug-javac8/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v3-debug-javac8/RetryFixture.class",
+      "bytes": 1398,
+      "sha256": "51cd2c6389d16e30a586ae39103ab314242b14584e8050e82fc62035dbda63d9"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v3-none-javac23/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v3-none-javac23/RetryFixture.class",
+      "bytes": 1047,
+      "sha256": "1b69652ce655d42f1b1b003e072b5cfae9c4b513c534191700bb6f37e47b785d"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/p3-loop-catch-retry/v3-none-javac8/RetryFixture.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-catch-retry/v3-none-javac8/RetryFixture.class",
+      "bytes": 1050,
+      "sha256": "99e407717ef0ee271acd755f215db916730bb0ca4c90923a51453ec46661c13a"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/NegativeRunner.java",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/NegativeRunner.java",
+      "bytes": 819,
+      "sha256": "36c52280fde8a59b50da3b11e3ccc9d243779113f181a7073ddf98b8d2238f8d"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/OrderedFieldConcat.java",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/OrderedFieldConcat.java",
+      "bytes": 2115,
+      "sha256": "e00c37cca66fd095bd1bdce09b3c69bce685a9a679e4848d5a16ae427a0af59a"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/OrderedFieldConcatNegatives.java",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/OrderedFieldConcatNegatives.java",
+      "bytes": 1602,
+      "sha256": "9fa332ce8cf3730dbefe31b3c3ed43939b7eb1199621cf5b3521ecb55a432f26"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/README.md",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/README.md",
+      "bytes": 918,
+      "sha256": "05a3456208c33e0790073775c2c68b0bc66ac0365c72751225164cc00e8c77d7"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/Runner.java",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcat.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "6d539bbf6197fc8543116061792e245a019bf0033704ef7a00d7e913d69aadd8"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcatNegatives.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "640f698f870db3cba7c3d26d4d8f3c61de08b2c7c601c6ff43eb257767ea49ce"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcat.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "493ad6b01ac201cfd60f9f281f75fa86a56a3e9ae6432838509bf8cccb38e4b7"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcatNegatives.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "9f74d8b5bd723583084a1599731f9e41ab8854966d1ced28721c7133d773c588"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "fb29ead76d4c869a8d130fc2f57ce0ed4cbfbaae29594616c8fa29e0da0fe158"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcatNegatives.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "cac81bd3e50e51e59b0bf3551d2267152f0cf843d448208477a88bd952ab0c58"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcat.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "3445c86718d52b8f4c220f9a5506cc1163eb19fa5c4de9df4e0ad1afb45d9ddc"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcatNegatives.class",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "821af1d0d43e0a0ebfccc860199146ef327bbac252dc7b1acd599c817c038830"
+    },
+    {
+      "entry": "accepted-source/tests/fixtures/proved-ordered-field-concat/manifest.json",
+      "source": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/manifest.json",
+      "bytes": 2984,
+      "sha256": "698701fa0ab7dcc638d18381ca4c55021523b1da61e529227bd612f84defd72e"
+    },
+    {
+      "entry": "field-comparison-prep-v3/README.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v3/README.md",
+      "bytes": 2735,
+      "sha256": "210dd3687edd59da2080cb8a96da5a7b87f4f535cf0ddb641b2bd903ababe17a"
+    },
+    {
+      "entry": "field-comparison-prep-v3/check.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v3/check.py",
+      "bytes": 16588,
+      "sha256": "d947fadea29385eb083c6fb1b1e0a203b06a93afe4b38e496fa4e9a15fad93ee"
+    },
+    {
+      "entry": "field-comparison-prep-v3/collect.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v3/collect.py",
+      "bytes": 27269,
+      "sha256": "621ed2489c8d12eccb8fbdae5b7b9346c30b6da3ac81324d6de39c45ec081439"
+    },
+    {
+      "entry": "field-comparison-prep-v3/pins.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v3/pins.json",
+      "bytes": 72639,
+      "sha256": "66dcffea8b7f9fac2c1e260b270bd1cdec0797e5b9baa48701ba3f376bde4106"
+    },
+    {
+      "entry": "field-comparison-prep-v3/prepare_pins.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v3/prepare_pins.py",
+      "bytes": 5768,
+      "sha256": "7404b6ede448a5bb3b7716c795f65e92b5365acb4b9bfd85042e73e675ee7773"
+    },
+    {
+      "entry": "field-comparison-prep-v4/README.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v4/README.md",
+      "bytes": 3525,
+      "sha256": "5af64aed66c40cc446135b4983f299eab4217910e6aacaa62a14302715778b2f"
+    },
+    {
+      "entry": "field-comparison-prep-v4/check.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v4/check.py",
+      "bytes": 16588,
+      "sha256": "37dfba389115b02b5f1c3bc2c104a79569c46c9d9a63009cf214028a3c197f08"
+    },
+    {
+      "entry": "field-comparison-prep-v4/collect.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v4/collect.py",
+      "bytes": 27274,
+      "sha256": "2b6fc4b224e7c4c08f43e04fd8429df458c47a966ba3b294d8f63a3647a6acb7"
+    },
+    {
+      "entry": "field-comparison-prep-v4/pins.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v4/pins.json",
+      "bytes": 72639,
+      "sha256": "66dcffea8b7f9fac2c1e260b270bd1cdec0797e5b9baa48701ba3f376bde4106"
+    },
+    {
+      "entry": "field-comparison-prep-v4/prepare_pins.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v4/prepare_pins.py",
+      "bytes": 5768,
+      "sha256": "7404b6ede448a5bb3b7716c795f65e92b5365acb4b9bfd85042e73e675ee7773"
+    },
+    {
+      "entry": "field-comparison-prep-v5/README.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v5/README.md",
+      "bytes": 3854,
+      "sha256": "31e325ab773bbd324f402e2e4526c2e1236214ef3d4ce354de7e6951f741818a"
+    },
+    {
+      "entry": "field-comparison-prep-v5/check.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v5/check.py",
+      "bytes": 16588,
+      "sha256": "37dfba389115b02b5f1c3bc2c104a79569c46c9d9a63009cf214028a3c197f08"
+    },
+    {
+      "entry": "field-comparison-prep-v5/collect.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v5/collect.py",
+      "bytes": 27267,
+      "sha256": "3668c0aa2079a6183eb33feafa4bd0c046df91cd520ca31f51ed546105739ac6"
+    },
+    {
+      "entry": "field-comparison-prep-v5/pins.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v5/pins.json",
+      "bytes": 72639,
+      "sha256": "66dcffea8b7f9fac2c1e260b270bd1cdec0797e5b9baa48701ba3f376bde4106"
+    },
+    {
+      "entry": "field-comparison-prep-v5/prepare_pins.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-prep-luna-v5/prepare_pins.py",
+      "bytes": 5768,
+      "sha256": "7404b6ede448a5bb3b7716c795f65e92b5365acb4b9bfd85042e73e675ee7773"
+    },
+    {
+      "entry": "field-comparison-v1/root-failure.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v1/root-failure.json",
+      "bytes": 494,
+      "sha256": "8ca41b82abbb9acc092605eab28f347ea34db5679d4d97313ea5c3701a3d91b0"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-debug/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-debug/OrderedFieldConcat.java",
+      "bytes": 4873,
+      "sha256": "e10926be4e848d777ac02831f1892095fdf36d1167028241863d20a0bd07da99"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-debug/report.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-debug/report.json",
+      "bytes": 816715,
+      "sha256": "b8995918a988f5282419a7e0aa69576c34cc3c74f5fe3b96a72936685a5b86aa"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-debug/response.raw.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-debug/response.raw.json",
+      "bytes": 221637,
+      "sha256": "43cfe41ad070a45646d6a5bc7d161380ee6477ddb50c27ad54e41634314929a8"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-debug/source-map-methods.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-debug/source-map-methods.json",
+      "bytes": 1029453,
+      "sha256": "58495d5c4d8ee19184316f1a375d21f76d978873088350d79231e9af3d060731"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-none/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-none/OrderedFieldConcat.java",
+      "bytes": 4785,
+      "sha256": "9b08f6d15be716eb81ab0f9a83d5b459a671d3e1fccadbbe375c2f7bd0e7ae7c"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-none/report.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-none/report.json",
+      "bytes": 816420,
+      "sha256": "99072b6178e62765528ea87ccf377f9b4355d0293d3002cd464b591464e08e6f"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-none/response.raw.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-none/response.raw.json",
+      "bytes": 221342,
+      "sha256": "42c959d949747920fad95afb70178412cb31c3fe5ac23ac7b5eb429251f035a5"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/candidate-javac8-none/source-map-methods.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/candidate-javac8-none/source-map-methods.json",
+      "bytes": 1029066,
+      "sha256": "a17bb22026502391a4b143aebb6f5ca2ca90d6d5e3874df90753eec0b3de8bfd"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/classes/candidate-javac8-debug/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/classes/candidate-javac8-debug/OrderedFieldConcat.class",
+      "bytes": 2213,
+      "sha256": "33f26cf98a6fa101ea9936069f091d24347cc3eb4559ca4d2f7f118aeb6d45a8"
+    },
+    {
+      "entry": "field-comparison-v2/candidate/classes/candidate-javac8-debug/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/candidate/classes/candidate-javac8-debug/Runner.class",
+      "bytes": 3109,
+      "sha256": "4defe8fa92f4b338a8a0779cf5755f0e3484bb1628b42ba366f21b7444d97af8"
+    },
+    {
+      "entry": "field-comparison-v2/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/execution.json",
+      "bytes": 3304290,
+      "sha256": "e13731551020eb9e52911b8c583b31fcdaf8668f31187b80a50f8fb5d2baf17d"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/README.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/README.md",
+      "bytes": 3525,
+      "sha256": "5af64aed66c40cc446135b4983f299eab4217910e6aacaa62a14302715778b2f"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/check.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/check.py",
+      "bytes": 16588,
+      "sha256": "37dfba389115b02b5f1c3bc2c104a79569c46c9d9a63009cf214028a3c197f08"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/collect.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/collect.py",
+      "bytes": 27274,
+      "sha256": "2b6fc4b224e7c4c08f43e04fd8429df458c47a966ba3b294d8f63a3647a6acb7"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/derived-runner/candidate-javac8-debug/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/derived-runner/candidate-javac8-debug/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/derived-runner/candidate-javac8-none/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/derived-runner/candidate-javac8-none/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/focused-command-spec.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/focused-command-spec.json",
+      "bytes": 379,
+      "sha256": "b73c8723ed17353b9d79e4acfcc37c9e44b0847b141646ef10e91a2d6fee4d0f"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/focused-receipt.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/focused-receipt.json",
+      "bytes": 2128979,
+      "sha256": "f1c6ad47cf36c040f03c5e7ed77941542fd016b4770cf03ec25c1e7a883f9e02"
+    },
+    {
+      "entry": "field-comparison-v2/inputs/pins.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/inputs/pins.json",
+      "bytes": 72639,
+      "sha256": "66dcffea8b7f9fac2c1e260b270bd1cdec0797e5b9baa48701ba3f376bde4106"
+    },
+    {
+      "entry": "field-comparison-v2/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v2/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/1.stdout.raw",
+      "bytes": 221637,
+      "sha256": "43cfe41ad070a45646d6a5bc7d161380ee6477ddb50c27ad54e41634314929a8"
+    },
+    {
+      "entry": "field-comparison-v2/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v2/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v2/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v2/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/3.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v2/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v2/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v2/raw/4.stdout.raw",
+      "bytes": 221342,
+      "sha256": "42c959d949747920fad95afb70178412cb31c3fe5ac23ac7b5eb429251f035a5"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-debug/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-debug/OrderedFieldConcat.java",
+      "bytes": 4873,
+      "sha256": "e10926be4e848d777ac02831f1892095fdf36d1167028241863d20a0bd07da99"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-debug/report.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-debug/report.json",
+      "bytes": 816697,
+      "sha256": "9fbfb8965f0e7996865631367df1e8d1defbbb8104c0b8049b8b75b969262dfb"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-debug/response.raw.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-debug/response.raw.json",
+      "bytes": 221619,
+      "sha256": "260732311c3d8ae0a9efca18e1d3ab467c68d3bfc3b295cde23741c41132148c"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-debug/source-map-methods.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-debug/source-map-methods.json",
+      "bytes": 1029453,
+      "sha256": "73ffe519b71f47ca7c2d5dcbfb9f585e4016c5f5f64cbbf3f68742af86631450"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-none/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-none/OrderedFieldConcat.java",
+      "bytes": 4785,
+      "sha256": "9b08f6d15be716eb81ab0f9a83d5b459a671d3e1fccadbbe375c2f7bd0e7ae7c"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-none/report.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-none/report.json",
+      "bytes": 816420,
+      "sha256": "2d1d8c11cffebdf4b54ccc284141d44ff408cc327c52cc60823edf27e376b093"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-none/response.raw.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-none/response.raw.json",
+      "bytes": 221342,
+      "sha256": "93a279fb984c572e459912d71473a1e651d07725ea9666c36fee68dc2f50faf4"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac23-none/source-map-methods.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac23-none/source-map-methods.json",
+      "bytes": 1029066,
+      "sha256": "6662131567cb116f2b11184ee182bfa8ef0c7c91873fbda86ad7858a18e1d9b5"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-debug/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-debug/OrderedFieldConcat.java",
+      "bytes": 4873,
+      "sha256": "e10926be4e848d777ac02831f1892095fdf36d1167028241863d20a0bd07da99"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-debug/report.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-debug/report.json",
+      "bytes": 816715,
+      "sha256": "3f83ef1273e5e4f2002f3f34012099dbeb89517314be04d330487b2593a70edd"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-debug/response.raw.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-debug/response.raw.json",
+      "bytes": 221637,
+      "sha256": "6163f89df1c94e8119c181b4ec70773fa792152419a72cda54d2c70b2e4a9487"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-debug/source-map-methods.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-debug/source-map-methods.json",
+      "bytes": 1029453,
+      "sha256": "58495d5c4d8ee19184316f1a375d21f76d978873088350d79231e9af3d060731"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-none/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-none/OrderedFieldConcat.java",
+      "bytes": 4785,
+      "sha256": "9b08f6d15be716eb81ab0f9a83d5b459a671d3e1fccadbbe375c2f7bd0e7ae7c"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-none/report.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-none/report.json",
+      "bytes": 816420,
+      "sha256": "93d9f81d479cbe47d791186c85d88b29ecc90e2ec3371ed2df69f518f52bf1a4"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-none/response.raw.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-none/response.raw.json",
+      "bytes": 221342,
+      "sha256": "1fd1b9428bdef2c2ffc8f9fca23aede55dfce11c165b811076891f14b8acfc90"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/candidate-javac8-none/source-map-methods.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/candidate-javac8-none/source-map-methods.json",
+      "bytes": 1029066,
+      "sha256": "a17bb22026502391a4b143aebb6f5ca2ca90d6d5e3874df90753eec0b3de8bfd"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac23-debug/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac23-debug/OrderedFieldConcat.class",
+      "bytes": 2213,
+      "sha256": "49a9c5101f547ff744b4d37e1b1ea9eddaa2dc8c107881345807cbb3ee8b81d8"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac23-debug/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac23-debug/Runner.class",
+      "bytes": 3094,
+      "sha256": "2b24ad17b543243c77828828d9f559fa0c9867014c0aadc9675d6eb3d9caa414"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac23-none/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac23-none/OrderedFieldConcat.class",
+      "bytes": 1698,
+      "sha256": "5571fd2dfc3e68ed0a7779c5b200dbe10660af357631092415910cf53e6f9b78"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac23-none/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac23-none/Runner.class",
+      "bytes": 2516,
+      "sha256": "9ac17ba3696594a74bd46d025f0cd510f7a4b0099b70c34344342c1291fc6ccb"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac8-debug/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac8-debug/OrderedFieldConcat.class",
+      "bytes": 2213,
+      "sha256": "33f26cf98a6fa101ea9936069f091d24347cc3eb4559ca4d2f7f118aeb6d45a8"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac8-debug/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac8-debug/Runner.class",
+      "bytes": 3109,
+      "sha256": "4defe8fa92f4b338a8a0779cf5755f0e3484bb1628b42ba366f21b7444d97af8"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac8-none/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac8-none/OrderedFieldConcat.class",
+      "bytes": 1698,
+      "sha256": "aa8e9d89e9ee0282a32b20b5d83cf40f535e948694a1fa22ef125c413bae9a33"
+    },
+    {
+      "entry": "field-comparison-v3/candidate/classes/candidate-javac8-none/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/candidate/classes/candidate-javac8-none/Runner.class",
+      "bytes": 2531,
+      "sha256": "6b2c8151c81688f6662e314de9cff5b8e5d4803d8174e101d82b2391305072b2"
+    },
+    {
+      "entry": "field-comparison-v3/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/execution.json",
+      "bytes": 6353790,
+      "sha256": "184b321d89cffbe38064550b222771234e5f1d40c9e748cc0e42f88d1cd26bea"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/README.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/README.md",
+      "bytes": 3854,
+      "sha256": "31e325ab773bbd324f402e2e4526c2e1236214ef3d4ce354de7e6951f741818a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/check.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/check.py",
+      "bytes": 16588,
+      "sha256": "37dfba389115b02b5f1c3bc2c104a79569c46c9d9a63009cf214028a3c197f08"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/collect.py",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/collect.py",
+      "bytes": 27267,
+      "sha256": "3668c0aa2079a6183eb33feafa4bd0c046df91cd520ca31f51ed546105739ac6"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/candidate-javac23-debug/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/candidate-javac23-debug/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/candidate-javac23-none/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/candidate-javac23-none/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/candidate-javac8-debug/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/candidate-javac8-debug/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/candidate-javac8-none/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/candidate-javac8-none/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/jadx-javac23-debug/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/jadx-javac23-debug/Runner.java",
+      "bytes": 2935,
+      "sha256": "a6858721d0a1c62b80a69ef0d4b93cacb4c6aae702c65b6fad93b04621a472c2"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/jadx-javac23-none/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/jadx-javac23-none/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/jadx-javac8-debug/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/jadx-javac8-debug/Runner.java",
+      "bytes": 2935,
+      "sha256": "a6858721d0a1c62b80a69ef0d4b93cacb4c6aae702c65b6fad93b04621a472c2"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/derived-runner/jadx-javac8-none/Runner.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/derived-runner/jadx-javac8-none/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/focused-command-spec.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/focused-command-spec.json",
+      "bytes": 379,
+      "sha256": "b73c8723ed17353b9d79e4acfcc37c9e44b0847b141646ef10e91a2d6fee4d0f"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/focused-receipt.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/focused-receipt.json",
+      "bytes": 2128979,
+      "sha256": "f1c6ad47cf36c040f03c5e7ed77941542fd016b4770cf03ec25c1e7a883f9e02"
+    },
+    {
+      "entry": "field-comparison-v3/inputs/pins.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/inputs/pins.json",
+      "bytes": 72639,
+      "sha256": "66dcffea8b7f9fac2c1e260b270bd1cdec0797e5b9baa48701ba3f376bde4106"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac23-debug/defpackage/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac23-debug/defpackage/OrderedFieldConcat.class",
+      "bytes": 2237,
+      "sha256": "72664ab593274a390577b37d412a94393db2997527dadd54f136e9dcc21fc8f4"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac23-debug/defpackage/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac23-debug/defpackage/Runner.class",
+      "bytes": 3149,
+      "sha256": "27fef4442cdb9dfd00962a0ed4d55db539dabf2c9210e6997abb22285805f9e8"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac23-none/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac23-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "493ad6b01ac201cfd60f9f281f75fa86a56a3e9ae6432838509bf8cccb38e4b7"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac23-none/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac23-none/Runner.class",
+      "bytes": 2516,
+      "sha256": "9ac17ba3696594a74bd46d025f0cd510f7a4b0099b70c34344342c1291fc6ccb"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac8-debug/defpackage/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac8-debug/defpackage/OrderedFieldConcat.class",
+      "bytes": 2237,
+      "sha256": "d9efbeeb4b20e51121b42be96a792fa20c8f2128990af20d482b5bfde2e2dbe6"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac8-debug/defpackage/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac8-debug/defpackage/Runner.class",
+      "bytes": 3164,
+      "sha256": "e3612168c20aa593774990a927f6be756391f8391115684905c1676778ae1bdd"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac8-none/OrderedFieldConcat.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac8-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "3445c86718d52b8f4c220f9a5506cc1163eb19fa5c4de9df4e0ad1afb45d9ddc"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/classes/jadx-javac8-none/Runner.class",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/classes/jadx-javac8-none/Runner.class",
+      "bytes": 2531,
+      "sha256": "6b2c8151c81688f6662e314de9cff5b8e5d4803d8174e101d82b2391305072b2"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/jadx-javac23-debug/decompiled/sources/defpackage/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/jadx-javac23-debug/decompiled/sources/defpackage/OrderedFieldConcat.java",
+      "bytes": 1833,
+      "sha256": "7166e9a0025374b108bac508cac519bb4ad7f4243be4b4f07726f431f9cd6f4c"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/jadx-javac23-none/decompiled/sources/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/jadx-javac23-none/decompiled/sources/OrderedFieldConcat.java",
+      "bytes": 1934,
+      "sha256": "f683da3777763b152f6d3beffc48c54d679ffedf6957a613aea9010b11754c4c"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/jadx-javac8-debug/decompiled/sources/defpackage/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/jadx-javac8-debug/decompiled/sources/defpackage/OrderedFieldConcat.java",
+      "bytes": 1833,
+      "sha256": "7166e9a0025374b108bac508cac519bb4ad7f4243be4b4f07726f431f9cd6f4c"
+    },
+    {
+      "entry": "field-comparison-v3/jadx/jadx-javac8-none/decompiled/sources/OrderedFieldConcat.java",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/jadx/jadx-javac8-none/decompiled/sources/OrderedFieldConcat.java",
+      "bytes": 1934,
+      "sha256": "f683da3777763b152f6d3beffc48c54d679ffedf6957a613aea9010b11754c4c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/1.stdout.raw",
+      "bytes": 221637,
+      "sha256": "6163f89df1c94e8119c181b4ec70773fa792152419a72cda54d2c70b2e4a9487"
+    },
+    {
+      "entry": "field-comparison-v3/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/10.stdout.raw",
+      "bytes": 221342,
+      "sha256": "93a279fb984c572e459912d71473a1e651d07725ea9666c36fee68dc2f50faf4"
+    },
+    {
+      "entry": "field-comparison-v3/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/11.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "entry": "field-comparison-v3/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/12.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/13.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "entry": "field-comparison-v3/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/15.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/16.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "entry": "field-comparison-v3/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/18.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/19.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "entry": "field-comparison-v3/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/20.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "entry": "field-comparison-v3/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/20.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/21.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/21.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/21.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/22.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/22.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/22.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "entry": "field-comparison-v3/raw/23.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/23.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "entry": "field-comparison-v3/raw/23.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/23.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/24.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/24.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/24.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/3.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/4.stdout.raw",
+      "bytes": 221342,
+      "sha256": "1fd1b9428bdef2c2ffc8f9fca23aede55dfce11c165b811076891f14b8acfc90"
+    },
+    {
+      "entry": "field-comparison-v3/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/6.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/7.stdout.raw",
+      "bytes": 221619,
+      "sha256": "260732311c3d8ae0a9efca18e1d3ab467c68d3bfc3b295cde23741c41132148c"
+    },
+    {
+      "entry": "field-comparison-v3/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/8.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "entry": "field-comparison-v3/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "field-comparison-v3/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/raw/9.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "entry": "field-comparison-v3/root-runtime-summary.json",
+      "source": "/private/tmp/jarde-ordered-field-concat-comparison-root-v3/root-runtime-summary.json",
+      "bytes": 2304,
+      "sha256": "f7959929bc5581b6291f29d9f336b0964ffb321c7e7596bf3881a68f603262cb"
+    },
+    {
+      "entry": "focused-v1/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/execution.json",
+      "bytes": 2126110,
+      "sha256": "51a98e973d2ca6b8e8a294f991f474a687209947f7965c9120a9a6bad0eafa15"
+    },
+    {
+      "entry": "focused-v1/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v1/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v1/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/raw/2.stderr.raw",
+      "bytes": 3155,
+      "sha256": "4fe1bf5ce59035461d7b01f5a1efc2336b89aacc4d7969b3e64ef9fc152591ee"
+    },
+    {
+      "entry": "focused-v1/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v1/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/raw/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "4c473056611ec6f0c3e151e4f49ac523f96ea575fb90ce785e38bdaaf0892f0e"
+    },
+    {
+      "entry": "focused-v1/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v2/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/execution.json",
+      "bytes": 2127611,
+      "sha256": "610a5a2c4f80ffc1603e372fc32cce197ff42ad229e5f701b80d468ca8421dc3"
+    },
+    {
+      "entry": "focused-v2/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v2/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v2/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/2.stderr.raw",
+      "bytes": 1940,
+      "sha256": "381baea4c3c2fd5ec72fdefe0b8ae422f186582492d7e877ae04a4680caed153"
+    },
+    {
+      "entry": "focused-v2/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/2.stdout.raw",
+      "bytes": 36558,
+      "sha256": "e474fbe0bfbc5fd3a3dffaaacdbefc387534e0701b17f68f917d56c699d394f9"
+    },
+    {
+      "entry": "focused-v2/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/3.stderr.raw",
+      "bytes": 1137,
+      "sha256": "c350f8aa29f049791a1fb12ccc2db5c0a09dd367fd085fdf40c1860fbf6d2010"
+    },
+    {
+      "entry": "focused-v2/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/3.stdout.raw",
+      "bytes": 7485,
+      "sha256": "b0091a007302e8916797bc397483807cb06c4ca9eecec683ca8623a6291b6901"
+    },
+    {
+      "entry": "focused-v2/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "f34bec58032f71990def3b9caf09cf59a1ae5aec00bf2df7cc23428b2fdb88bb"
+    },
+    {
+      "entry": "focused-v2/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v2/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v3/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/execution.json",
+      "bytes": 2126110,
+      "sha256": "c835d851bb80a025ec2efd5753866fe3f27354d5e1946cf26f53705f98f8eb62"
+    },
+    {
+      "entry": "focused-v3/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v3/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v3/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/raw/2.stderr.raw",
+      "bytes": 3022,
+      "sha256": "da3e5c41c35bec981ba49a87c531c691eb6b5d7aff321317044887d58062b7ef"
+    },
+    {
+      "entry": "focused-v3/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v3/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/raw/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "4c473056611ec6f0c3e151e4f49ac523f96ea575fb90ce785e38bdaaf0892f0e"
+    },
+    {
+      "entry": "focused-v3/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v3/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v4/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/execution.json",
+      "bytes": 2126208,
+      "sha256": "8d9dfd0d9d03448af54d30dbf0085d6a793d6e91e01cef8d2d364720ac9b93fd"
+    },
+    {
+      "entry": "focused-v4/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v4/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v4/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/raw/2.stderr.raw",
+      "bytes": 2009,
+      "sha256": "5a04ab951a7469b24ddc7c3c9b715816f81bd74466619210327de91bfe0bb6ba"
+    },
+    {
+      "entry": "focused-v4/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/raw/2.stdout.raw",
+      "bytes": 37155,
+      "sha256": "4430bcf4bcb29d9dd29e139acc4cfe809ad51b9e7f91dd7ea7b8641d41ac09ae"
+    },
+    {
+      "entry": "focused-v4/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/raw/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "ade2678d6df1fd16c6929bcd376396e5b571c549bf2f744fe7dc7818760e1575"
+    },
+    {
+      "entry": "focused-v4/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v4/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v5/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/execution.json",
+      "bytes": 2127515,
+      "sha256": "82c26e30502b76942a8907fa286fdcd583f1b048bc5a44b5ee6bdcb04e4a6d81"
+    },
+    {
+      "entry": "focused-v5/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v5/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v5/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/2.stderr.raw",
+      "bytes": 1940,
+      "sha256": "11b47ab3180595a748e1d56f21b5052019917d9b87dae1e9a6af059be6f58634"
+    },
+    {
+      "entry": "focused-v5/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/2.stdout.raw",
+      "bytes": 36677,
+      "sha256": "cdc667bedca520bc4f1acc6fb62dc65d3b630df3d03be65b8c5aa11ff7b766a5"
+    },
+    {
+      "entry": "focused-v5/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/3.stderr.raw",
+      "bytes": 3426,
+      "sha256": "8b564e14330e6fe65e258dd0bc2bc2684b87cfa6e602932cbf15d629f63c2ae8"
+    },
+    {
+      "entry": "focused-v5/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v5/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "a4f12a95ec4a816d495f4b2656b8d4cf4144711fae8355dbfe9c8bf3501e6e70"
+    },
+    {
+      "entry": "focused-v5/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v5/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v6/execution.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/execution.json",
+      "bytes": 2128979,
+      "sha256": "f1c6ad47cf36c040f03c5e7ed77941542fd016b4770cf03ec25c1e7a883f9e02"
+    },
+    {
+      "entry": "focused-v6/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v6/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v6/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/2.stderr.raw",
+      "bytes": 1940,
+      "sha256": "3ef22674fb8d9a275181094bd0561fcbada465a9145ffca8eed8fe60bab1fbfa"
+    },
+    {
+      "entry": "focused-v6/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/2.stdout.raw",
+      "bytes": 36677,
+      "sha256": "9d55790e8e5b0dc1c8595e634ec96b20e7cabdd7cb5e229e732b3752b7087ab8"
+    },
+    {
+      "entry": "focused-v6/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/3.stderr.raw",
+      "bytes": 818242,
+      "sha256": "4217ccffded5ec911b235a45c872a53677dc65f25dc41608cf7d0ab4c0db78b1"
+    },
+    {
+      "entry": "focused-v6/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/3.stdout.raw",
+      "bytes": 7311,
+      "sha256": "622c8a1b8b50bd86cea51a9a1644dae5135697891fb1e71889e4fcc29985179c"
+    },
+    {
+      "entry": "focused-v6/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/4.stderr.raw",
+      "bytes": 1649,
+      "sha256": "247891067d69ca59f4e82c1485e6ceb41307b2395ba4aad20b48dae5c77c4d88"
+    },
+    {
+      "entry": "focused-v6/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v6/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/5.stderr.raw",
+      "bytes": 52,
+      "sha256": "5f2e2ea9b361e6a26c1d65a48b2cd1c1f1aff9e83e77d6a324504739b275595b"
+    },
+    {
+      "entry": "focused-v6/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "focused-v6/root-summary.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-root-v6/root-summary.json",
+      "bytes": 1843,
+      "sha256": "b3a9323c04f93e53378ca4c6faeea6493fedb315700226186ac15354d410942c"
+    },
+    {
+      "entry": "luna-field-implementation/IMPLEMENTATION.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/IMPLEMENTATION.md",
+      "bytes": 5185,
+      "sha256": "d1f7001615d1b245f58758f5d8c4882cb601f22b5aa87e5ef6461976f8223d26"
+    },
+    {
+      "entry": "luna-field-implementation/base.sha",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/base.sha",
+      "bytes": 41,
+      "sha256": "ce52d54ebbc5e25a47a7473217819c0cd4587ad6ffd6ff9834cac291c8c8b239"
+    },
+    {
+      "entry": "luna-field-implementation/baseline.sha256",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/baseline.sha256",
+      "bytes": 398,
+      "sha256": "9430a88d27866b05a8c949693391994622f684675fdcdbd25deeff114a127c56"
+    },
+    {
+      "entry": "luna-field-implementation/baseline/crates/jarde-java/src/build.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/baseline/crates/jarde-java/src/build.rs",
+      "bytes": 1815507,
+      "sha256": "60c921ba50e03000e041d402d5ea590f7f49c1cf459c6867ed31e63476767b97"
+    },
+    {
+      "entry": "luna-field-implementation/baseline/crates/jarde-java/src/concat.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/baseline/crates/jarde-java/src/concat.rs",
+      "bytes": 83175,
+      "sha256": "c2ef3c80d178800c476ccbf0f8abffca78ca6188059e59217d169b1f33932d3b"
+    },
+    {
+      "entry": "luna-field-implementation/baseline/crates/jarde-java/src/report.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/baseline/crates/jarde-java/src/report.rs",
+      "bytes": 671255,
+      "sha256": "ecf8c4cb10199555ae756cc3754a8a7dfe0cbc4255e7acd6280f94aea51903fb"
+    },
+    {
+      "entry": "luna-field-implementation/baseline/crates/jarde-java/tests/p3_patterns.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/baseline/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 253606,
+      "sha256": "abdd951d9d6fbfa992139d7469cdc63a590cbccfd771ee6e940579b01bd61a90"
+    },
+    {
+      "entry": "luna-field-implementation/candidate.patch",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/candidate.patch",
+      "bytes": 76524,
+      "sha256": "c620d4f371c4a00bc40a76bfdb23218a4f3a09b9dc1ce64e041845f74c1ac50a"
+    },
+    {
+      "entry": "luna-field-implementation/candidate/crates/jarde-java/src/build.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/candidate/crates/jarde-java/src/build.rs",
+      "bytes": 1816875,
+      "sha256": "0b47437feabf63732c8b0a94faa7410fc54307144cccd71f2b18674f9203c0e4"
+    },
+    {
+      "entry": "luna-field-implementation/candidate/crates/jarde-java/src/concat.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/candidate/crates/jarde-java/src/concat.rs",
+      "bytes": 124042,
+      "sha256": "3596efd60aa78665959600329ccdceb2156d8da1b6d842359254a6f7fd1e2761"
+    },
+    {
+      "entry": "luna-field-implementation/candidate/crates/jarde-java/src/report.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/candidate/crates/jarde-java/src/report.rs",
+      "bytes": 671291,
+      "sha256": "4435bbb34d6f09583d0071eae2a3e8e9f7fe69b775ce22cb91b9cea8745a9a74"
+    },
+    {
+      "entry": "luna-field-implementation/candidate/crates/jarde-java/tests/p3_patterns.rs",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/candidate/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 265177,
+      "sha256": "fbbcf00c9e9079730bc60df22e30cc13ce1d82509b348f56b5a1508f154e79bc"
+    },
+    {
+      "entry": "luna-field-implementation/shared-status.txt",
+      "source": "/private/tmp/jarde-ordered-field-concat-impl-luna-v3/shared-status.txt",
+      "bytes": 436,
+      "sha256": "79c7d8ac25a9f305cb72dedf0b7a1ceb81534509aeed698b92781c1e75809e5a"
+    },
+    {
+      "entry": "luna-retry-gates/README.md",
+      "source": "/private/tmp/jarde-loop-retry-proof-tests-luna-v2/README.md",
+      "bytes": 2220,
+      "sha256": "b2dcfde8974ae26cd538fdd6ae6e05c4f0e69192b2a04b38b9458959f50d3111"
+    },
+    {
+      "entry": "luna-retry-gates/additions.rs",
+      "source": "/private/tmp/jarde-loop-retry-proof-tests-luna-v2/additions.rs",
+      "bytes": 14177,
+      "sha256": "e29139a4881533e1e7fe5ce0afba376c361bb3a2d6b719c06ede57412abccde5"
+    },
+    {
+      "entry": "luna-retry-gates/applyroot/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "source": "/private/tmp/jarde-loop-retry-proof-tests-luna-v2/applyroot/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "bytes": 38506,
+      "sha256": "61f7274e994e1a16cd47d247b8ed1c47093dd3876db0bbc940acbdd6c012ac84"
+    },
+    {
+      "entry": "luna-retry-gates/candidate.patch",
+      "source": "/private/tmp/jarde-loop-retry-proof-tests-luna-v2/candidate.patch",
+      "bytes": 15478,
+      "sha256": "874dbec6a1f580c33bfbdad6fef99550522faf8e18e1d98cdf4cda0c25b37327"
+    },
+    {
+      "entry": "luna-retry-gates/finite_loop_catch_tests.base.rs",
+      "source": "/private/tmp/jarde-loop-retry-proof-tests-luna-v2/finite_loop_catch_tests.base.rs",
+      "bytes": 23922,
+      "sha256": "084a4ab256bd19c1c7c755e523841d8a06704a4b02bf86bbcb0af6a5353f3f5c"
+    },
+    {
+      "entry": "luna-retry-gates/finite_loop_catch_tests.candidate.rs",
+      "source": "/private/tmp/jarde-loop-retry-proof-tests-luna-v2/finite_loop_catch_tests.candidate.rs",
+      "bytes": 38506,
+      "sha256": "61f7274e994e1a16cd47d247b8ed1c47093dd3876db0bbc940acbdd6c012ac84"
+    },
+    {
+      "entry": "luna-same-payload-test/README.md",
+      "source": "/private/tmp/jarde-ordered-field-concat-exc-ir-prep-luna-v1/README.md",
+      "bytes": 2468,
+      "sha256": "52098daca51f62e86fbe10c05ff405c11d44dc1a6c1d44fb6e356dea290b0086"
+    },
+    {
+      "entry": "luna-same-payload-test/base-head.sha",
+      "source": "/private/tmp/jarde-ordered-field-concat-exc-ir-prep-luna-v1/base-head.sha",
+      "bytes": 41,
+      "sha256": "ce52d54ebbc5e25a47a7473217819c0cd4587ad6ffd6ff9834cac291c8c8b239"
+    },
+    {
+      "entry": "luna-same-payload-test/base.sha256",
+      "source": "/private/tmp/jarde-ordered-field-concat-exc-ir-prep-luna-v1/base.sha256",
+      "bytes": 105,
+      "sha256": "7a000deb664b6ec2523afc47eaa42cff65802f49cc7edc6de0fcb8e7c0d4935a"
+    },
+    {
+      "entry": "luna-same-payload-test/retry_v2_exc_trace_test.rs.snippet",
+      "source": "/private/tmp/jarde-ordered-field-concat-exc-ir-prep-luna-v1/retry_v2_exc_trace_test.rs.snippet",
+      "bytes": 13074,
+      "sha256": "8796a1ec6840836d461ea228d149b0c9ee345a10c08ac0fb9f88e140336a4a4b"
+    },
+    {
+      "entry": "parent-comparison-prep/README.md",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/README.md",
+      "bytes": 2419,
+      "sha256": "25a03d56238cfdb6899cb83ff03efdd6040f351890cd3f3842a5eff77181fa4d"
+    },
+    {
+      "entry": "parent-comparison-prep/RetryFixture-v2.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/RetryFixture-v2.java",
+      "bytes": 1063,
+      "sha256": "831196e5eb613fb41db2bb73fc798377785303de61b44c5393687f57fdddd27c"
+    },
+    {
+      "entry": "parent-comparison-prep/RetryFixture-v3.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/RetryFixture-v3.java",
+      "bytes": 1022,
+      "sha256": "f1a382855e5c71d7be52cd0037bed46ff0027dabbd972d4a68be66066afa9156"
+    },
+    {
+      "entry": "parent-comparison-prep/Runner-dvdf.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/Runner-dvdf.java",
+      "bytes": 1508,
+      "sha256": "2a746742aa4fecadfe0e598937ffa47203e31813a27d7ff78b85c6ea77cc69c9"
+    },
+    {
+      "entry": "parent-comparison-prep/Runner-v2.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/Runner-v2.java",
+      "bytes": 750,
+      "sha256": "c470fd58dbfed96f9fa19074c35d1a2ca477207044148ae0556f6d463bf7e34d"
+    },
+    {
+      "entry": "parent-comparison-prep/Runner-v3.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/Runner-v3.java",
+      "bytes": 727,
+      "sha256": "3efd5761c3141aef8b043efd941606075fa9dbbd5442cc4e63d49a8144d521e1"
+    },
+    {
+      "entry": "parent-comparison-prep/check.py",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/check.py",
+      "bytes": 14869,
+      "sha256": "609d1b782f934edb249d5e00834dbb3e0d6a9f62568a3f5928a1d3f612d79776"
+    },
+    {
+      "entry": "parent-comparison-prep/collect.py",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/collect.py",
+      "bytes": 29217,
+      "sha256": "ba5fc9707b39840b2e433bbf905db3a01fdeab3a883720054981331cec27c2a1"
+    },
+    {
+      "entry": "parent-comparison-prep/fixture-manifest-v2.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/fixture-manifest-v2.json",
+      "bytes": 3743,
+      "sha256": "a57fa8b8e1ab495d98817cf9259927d71dafe7ba95cc6d353351b4ff878ca054"
+    },
+    {
+      "entry": "parent-comparison-prep/fixture-manifest-v3.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/fixture-manifest-v3.json",
+      "bytes": 4310,
+      "sha256": "67e06bf1d019d2afd26b36e66de59e3d798b5a269c93e96b39ad9b93ff5fd0ba"
+    },
+    {
+      "entry": "parent-comparison-prep/pins.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/pins.json",
+      "bytes": 4519,
+      "sha256": "29458ff318101c369335ce0d0d91bb33bd75918b281d6e315b77347e61bcd558"
+    },
+    {
+      "entry": "parent-comparison-prep/test_check.py",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-prep-root-v3/test_check.py",
+      "bytes": 4152,
+      "sha256": "9383d5f7478069ac45811146d212498518a662d5e55c2d190c825bc2c7b587dd"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/debug/javac23/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/debug/javac23/classes/RetryFixture.class",
+      "bytes": 1680,
+      "sha256": "728d2fc48173cce99160d503a2e3fe2b4d5b19011e3b4eac6fcc9613a27168bc"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/debug/javac23/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/debug/javac23/classes/Runner.class",
+      "bytes": 1876,
+      "sha256": "d38dae1e63b8f457556c43e7ed5047c98fa8deca40e514172d7749d4e2992b63"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/debug/javac8/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/debug/javac8/classes/RetryFixture.class",
+      "bytes": 1683,
+      "sha256": "8f3be46652c3349a98add572d97f33bb63127b029f61a32c3e218bd0d19d0b3e"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/debug/javac8/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/debug/javac8/classes/Runner.class",
+      "bytes": 1882,
+      "sha256": "88152dd174a760e807fbbd54311883fadce9a7f5843de68758bb98c77c205479"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/none/javac23/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/none/javac23/classes/RetryFixture.class",
+      "bytes": 1332,
+      "sha256": "a9772dbb25444e6878fd56fc74af0652e7dc35ffc4a5c783883cdd21acde0f0d"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/none/javac23/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/none/javac23/classes/Runner.class",
+      "bytes": 1425,
+      "sha256": "9cdb43eed1a8099c0490ffcf6769add95eb3205bacd481925a1e4ba99bf306ff"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/none/javac8/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/none/javac8/classes/RetryFixture.class",
+      "bytes": 1335,
+      "sha256": "e40aabf8c1a7d1d412895cad1bcde7716eaa426de8add8fc87ca017b545d86a6"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v2/none/javac8/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v2/none/javac8/classes/Runner.class",
+      "bytes": 1431,
+      "sha256": "5f9a771e972fa0c5b70a5a0017e01f54d89b6acb37c6afefff9c67f79361713c"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/debug/javac23/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/debug/javac23/classes/RetryFixture.class",
+      "bytes": 1336,
+      "sha256": "39ed653ac14217543935ea05bd47d483e409d4d4ca0a6d7bbe5cf96354013f71"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/debug/javac23/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/debug/javac23/classes/Runner.class",
+      "bytes": 1833,
+      "sha256": "318139746653798ecdc48b415df1637b36575d36638657f5d996b9e661d5e9e8"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/debug/javac8/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/debug/javac8/classes/RetryFixture.class",
+      "bytes": 1339,
+      "sha256": "2f9f30a87b16efcb38c3b7aca85f0a9f6643cf3334f27c9671ebe69b4ef0f71e"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/debug/javac8/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/debug/javac8/classes/Runner.class",
+      "bytes": 1839,
+      "sha256": "6ac84e11794d85e5d845878329832872174c46e00229ed10ae9a1db3eb4727d0"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/none/javac23/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/none/javac23/classes/RetryFixture.class",
+      "bytes": 988,
+      "sha256": "426ec306e9683952072bd287a71a97da3297040692f8879e048f75f1eaaa2ee4"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/none/javac23/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/none/javac23/classes/Runner.class",
+      "bytes": 1382,
+      "sha256": "1beb0c903654a5a4da2a215fadb96a4bab728d57f08effae108c8fd0912f4a08"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/none/javac8/classes/RetryFixture.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/none/javac8/classes/RetryFixture.class",
+      "bytes": 991,
+      "sha256": "596e714b428822b330feeef6cd7ce58f619405448d029ab42d9839db6759eb6d"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/compile/retry/v3/none/javac8/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/compile/retry/v3/none/javac8/classes/Runner.class",
+      "bytes": 1388,
+      "sha256": "e73247703985ad837f1ab228adc5ee2093592fca1ebb80664f50f4e290048aad"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DF/DF.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DF/DF.java",
+      "bytes": 3645,
+      "sha256": "245070091587a59319027db8b84f9f7ce88cf2d772c1b5e6896eee053d2ec645"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DF/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DF/report.json",
+      "bytes": 404813,
+      "sha256": "09d82a388330e72c32438e48d143737c6bdac3815b9ba0e283a5b4a9a5212694"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DF/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DF/response.raw.json",
+      "bytes": 134184,
+      "sha256": "3bab31675deeb7032dda295e44611c08cd0a69c593cf521c30a70db5df245913"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DF/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DF/wholeclass-source-maps.json",
+      "bytes": 305858,
+      "sha256": "f233fcc87640041b7ff24452d7edc856b37d1082f352d76af31b217000f06edf"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DV/DV.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DV/DV.java",
+      "bytes": 3650,
+      "sha256": "f3656559725a292be4b2f6a7f37d2c64a47216a660cd1f32d93fc63f901b69d1"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DV/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DV/report.json",
+      "bytes": 499673,
+      "sha256": "fc41bf6b05dd1427566d2b7611c08738a895d2245fda14e045d2aa3fce4441b6"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DV/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DV/response.raw.json",
+      "bytes": 163059,
+      "sha256": "f26fb9e62173cf010ce132ebda9edb252dabe77962bef23eaeacd910c3ef1356"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac23-DV/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac23-DV/wholeclass-source-maps.json",
+      "bytes": 385880,
+      "sha256": "238cddd4a0b5ae32df60c182f42702c58db799eced86657f34918cb56de8a7b4"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DF/DF.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DF/DF.java",
+      "bytes": 3645,
+      "sha256": "245070091587a59319027db8b84f9f7ce88cf2d772c1b5e6896eee053d2ec645"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DF/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DF/report.json",
+      "bytes": 404818,
+      "sha256": "9d8903ab8ace99eced3281fa03cdf45b8da3778c1887a5123eaf3bfa5770782f"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DF/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DF/response.raw.json",
+      "bytes": 134189,
+      "sha256": "b306fcd69e4e9fa13c9d770e71854df66f9ca05723868ffe1082c6c3a4d6c6a4"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DF/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DF/wholeclass-source-maps.json",
+      "bytes": 305858,
+      "sha256": "70c13a425410b5649ee8d05f9686fa39237a6c196b36ceafe760b5693bb57a4b"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DV/DV.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DV/DV.java",
+      "bytes": 3650,
+      "sha256": "f3656559725a292be4b2f6a7f37d2c64a47216a660cd1f32d93fc63f901b69d1"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DV/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DV/report.json",
+      "bytes": 499673,
+      "sha256": "c1a020214846776dbc2f5b2f292d9670d09305895fee2d9b298afaff6be8b217"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DV/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DV/response.raw.json",
+      "bytes": 163059,
+      "sha256": "1dfe3d75adaa751ef6bf00d3b3611891edf1d0579ae20ffd6859b1b348cd8fcd"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-debug-javac8-DV/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-debug-javac8-DV/wholeclass-source-maps.json",
+      "bytes": 385880,
+      "sha256": "c6217851224a59a24dadb8ae05e6a47a6543fdc16507081bb9ba0ce5815f6de0"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DF/DF.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DF/DF.java",
+      "bytes": 3762,
+      "sha256": "f2cbf00119ea6aff830609f03a451223105f451f8f8db9a49e040363fa83adef"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DF/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DF/report.json",
+      "bytes": 405162,
+      "sha256": "e0412a1ebf3fe165b73abf54a7a8654214d8f0e1b60313964d4966592b24a48f"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DF/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DF/response.raw.json",
+      "bytes": 134533,
+      "sha256": "c3a7a3bca04656c9ef81f19a6eba3ae5b04a0b5be8a1ed4df0889a7dc6a188a1"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DF/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DF/wholeclass-source-maps.json",
+      "bytes": 305868,
+      "sha256": "0e04b3eb78189d0656a5769c7284452dd4c91c8056e45723615d1b5eb721b2aa"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DV/DV.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DV/DV.java",
+      "bytes": 3927,
+      "sha256": "a3b5ec6cffbf09d578f3971c5ee70c4827ebad69185c295effeb0d20ead34711"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DV/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DV/report.json",
+      "bytes": 500499,
+      "sha256": "ef72b81d3eeb87a7508a9f671f533c2c1ee2c9cb8d2ece8cb859ca449f1d2504"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DV/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DV/response.raw.json",
+      "bytes": 163885,
+      "sha256": "d0990f21da0b790e61788e61beaf46244d4ca9d88ae1fbb12b96688e03aebc56"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac23-DV/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac23-DV/wholeclass-source-maps.json",
+      "bytes": 385886,
+      "sha256": "69541e9a6e595d7d01c73994b7bae18bd87b552a38b4656f624d31911ca74cd7"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DF/DF.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DF/DF.java",
+      "bytes": 3762,
+      "sha256": "f2cbf00119ea6aff830609f03a451223105f451f8f8db9a49e040363fa83adef"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DF/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DF/report.json",
+      "bytes": 405162,
+      "sha256": "4109338b8c336eb42c046f27af7276f9629b1281f78ca8a4df384c9d6e18ccd5"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DF/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DF/response.raw.json",
+      "bytes": 134533,
+      "sha256": "56b73e6f0ed2b5c83d87fbd68010edb88b273330b78b9ff1fe0ae451591c726d"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DF/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DF/wholeclass-source-maps.json",
+      "bytes": 305868,
+      "sha256": "fe2ef145ef6524e5cd98334c3b2869d469bd2e9eb9d0ecda17b6905b119d3529"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DV/DV.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DV/DV.java",
+      "bytes": 3927,
+      "sha256": "a3b5ec6cffbf09d578f3971c5ee70c4827ebad69185c295effeb0d20ead34711"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DV/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DV/report.json",
+      "bytes": 500499,
+      "sha256": "4effc2900e0f944d9903dfb7639199b8d40aa72b0c00f44e48733912ae92e346"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DV/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DV/response.raw.json",
+      "bytes": 163885,
+      "sha256": "a944b6289b7fb85809b96712094a618dbd643ac99ad29862469f2d2d11e85986"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/dvdf-none-javac8-DV/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/dvdf-none-javac8-DV/wholeclass-source-maps.json",
+      "bytes": 385886,
+      "sha256": "c0d1c768ffde61a0f3c58a12f9cdf0877be5e1e260f1c9a2852af7f63b47e477"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac23/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac23/RetryFixture.java",
+      "bytes": 2711,
+      "sha256": "0f5d3cdfa20c1708c3e6e8c3cd0c15ad92ab9aca2a8be11922948c9c179dfd8c"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac23/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac23/report.json",
+      "bytes": 357148,
+      "sha256": "4f0e30d90e818577381aad9977270b220ee46a4d68b6cf37a3cc61d246fdccdf"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac23/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac23/response.raw.json",
+      "bytes": 126442,
+      "sha256": "2075c6fff685a4150828953d747b3cbd12966fb26ce442bb82d42412e4ec2775"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac23/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac23/wholeclass-source-maps.json",
+      "bytes": 267277,
+      "sha256": "38b232f6d110512751febfe70700d1e5306191498705dc9b1222a1f6576b755d"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac8/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac8/RetryFixture.java",
+      "bytes": 2711,
+      "sha256": "0f5d3cdfa20c1708c3e6e8c3cd0c15ad92ab9aca2a8be11922948c9c179dfd8c"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac8/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac8/report.json",
+      "bytes": 357148,
+      "sha256": "400d8c534f32c005d99cebd59629699505fef59e793bb2cda01f7c727cd51013"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac8/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac8/response.raw.json",
+      "bytes": 126442,
+      "sha256": "9a7d79e6d307a604970f2a4ebeee0d8e5cbdae049a25fd0cbb7a1aa652048e5d"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-debug-javac8/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-debug-javac8/wholeclass-source-maps.json",
+      "bytes": 267277,
+      "sha256": "c9f769e97ecb4ccdf8998a1b90423cf50582f986e92ee7e88c968611495fe792"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac23/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac23/RetryFixture.java",
+      "bytes": 2668,
+      "sha256": "96657345f0bc834b8339ab238dad314263183744cdf8eae8de3996ec25258290"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac23/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac23/report.json",
+      "bytes": 357015,
+      "sha256": "41d2e03a3f2f2d4de1b5650f543f938972e89055961718035ee6b34a368667f6"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac23/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac23/response.raw.json",
+      "bytes": 126309,
+      "sha256": "a1bae3a13f8797f41865640ba96ead16dd1e797732fa084e82ba9c3843c6f0dc"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac23/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac23/wholeclass-source-maps.json",
+      "bytes": 267251,
+      "sha256": "696e7b8337314be9ef8947ca25973affbd30b4d365968bd5589ecf47fc82c071"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac8/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac8/RetryFixture.java",
+      "bytes": 2668,
+      "sha256": "96657345f0bc834b8339ab238dad314263183744cdf8eae8de3996ec25258290"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac8/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac8/report.json",
+      "bytes": 357015,
+      "sha256": "404e08f0af440d15dfc9c24c4003ca2b69062db1d27d0ec0f43cac4d4500adca"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac8/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac8/response.raw.json",
+      "bytes": 126309,
+      "sha256": "11e1d0ff19811ea360a0d91d88b688ebbff43bab03ff70437c8e3f71344018c8"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v2-none-javac8/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v2-none-javac8/wholeclass-source-maps.json",
+      "bytes": 267251,
+      "sha256": "b4311dc56abfe165fbda35619571fbedd8b322142116cc5e50c8d10aa7accf75"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac23/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac23/RetryFixture.java",
+      "bytes": 2616,
+      "sha256": "6790b13a8f938f65a5c93be64f4f0f29819c308fe468baa37f5396a1e183b313"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac23/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac23/report.json",
+      "bytes": 224762,
+      "sha256": "324f4df1de62ca95342125b70ba667f837059e8acc2494c1cd60965e498c34ab"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac23/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac23/response.raw.json",
+      "bytes": 84509,
+      "sha256": "646cd430b0771b98894c03d08b1ee596f5e32a921fa3b7b1124b7cef3c555284"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac23/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac23/wholeclass-source-maps.json",
+      "bytes": 152839,
+      "sha256": "8ddb3d144c96b8446bb6677f4f8ead3d58becfed871165e82eafb4e2f7385127"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac8/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac8/RetryFixture.java",
+      "bytes": 2616,
+      "sha256": "6790b13a8f938f65a5c93be64f4f0f29819c308fe468baa37f5396a1e183b313"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac8/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac8/report.json",
+      "bytes": 224762,
+      "sha256": "6ea7a95d8b567eb8e38801cd4dd020a2f977b9c70490bba7441e52507a75c3dd"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac8/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac8/response.raw.json",
+      "bytes": 84509,
+      "sha256": "8a637d34ec7981a88a5468384a6ed98db4c37ea94855d62a7022198d69260696"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-debug-javac8/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-debug-javac8/wholeclass-source-maps.json",
+      "bytes": 152839,
+      "sha256": "8f6e2df2bef1bf16ea1bf0d71d6c2f2cd74ae08663b594608f2cd5c6ce3f8b07"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac23/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac23/RetryFixture.java",
+      "bytes": 2573,
+      "sha256": "9b9368487c5508d673babeaf2aa971351c68ca37b42fcbdd6ee3f3900a8f19c1"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac23/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac23/report.json",
+      "bytes": 224621,
+      "sha256": "32027cc5fcf14c99a2d96c6c907cdf33bb27a0fd1d59eeece12ed076146c2e4c"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac23/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac23/response.raw.json",
+      "bytes": 84368,
+      "sha256": "e82ad2e7b0f3c231d7ae74fd6f7d249f92e51bca36245e536d447ba00aa27a52"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac23/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac23/wholeclass-source-maps.json",
+      "bytes": 152811,
+      "sha256": "6da20c4454fa840fc532214b777327d1003c6b592c25423d2358f1a15b8dc608"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac8/RetryFixture.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac8/RetryFixture.java",
+      "bytes": 2573,
+      "sha256": "9b9368487c5508d673babeaf2aa971351c68ca37b42fcbdd6ee3f3900a8f19c1"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac8/report.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac8/report.json",
+      "bytes": 224621,
+      "sha256": "aba3132db5ef446c4fd9f2e9c309ff3c8f750b7fd9595a2778edc35a92573535"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac8/response.raw.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac8/response.raw.json",
+      "bytes": 84368,
+      "sha256": "e13d0b653b58bf41dc02354d88ae3714bb23a61ad4746f00ac8d5ce3a2a67d09"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/retry-v3-none-javac8/wholeclass-source-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/retry-v3-none-javac8/wholeclass-source-maps.json",
+      "bytes": 152811,
+      "sha256": "bf08b783709db2fa8536a265556785bd1420bac911e0047626d73436f351448f"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/DF.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/DF.class",
+      "bytes": 1917,
+      "sha256": "a7c54f6fd329a6564a16fc881548f3682d5f2c72a0488e8828d9cfe27ede87d4"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/DV.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/DV.class",
+      "bytes": 2096,
+      "sha256": "7a8e79aef198dc5d88415008f3d36237c54e1bc28ce9969dda336eff38390de3"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$1.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$1.class",
+      "bytes": 567,
+      "sha256": "0fb99a59120a46d40331e83c1ca637f3a55874b5642f175c0b50c79deb53c4a7"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$2.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$2.class",
+      "bytes": 568,
+      "sha256": "edc511cc31f835871580c010680bbefe6de020dee249780ccc7f6e87ce0fdd67"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$3.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$3.class",
+      "bytes": 566,
+      "sha256": "314c9a1f6fd2d0335c7f1d091f6195e86d181965bba89480625df44cf1026ffd"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$4.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$4.class",
+      "bytes": 568,
+      "sha256": "09ae04c7bf133992979c0e0b513cf4215d81d93d7475eb8510af22306f10fbac"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$5.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$5.class",
+      "bytes": 568,
+      "sha256": "9081da66dedf2d9ddef1e3a73128db9451d12d2105fe98f42c22a1d99b5e4e15"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$6.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$6.class",
+      "bytes": 570,
+      "sha256": "8dbbc06a0b3a9d21ac4a422e5f49cc28d6ce66d89cd0d6c3bcc69717832ddec8"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$Call.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner$Call.class",
+      "bytes": 216,
+      "sha256": "bb8a461f244b124f1446ffc42718d34877ccf9368c3d4adb70b1544b47f53580"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac23/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac23/classes/Runner.class",
+      "bytes": 2203,
+      "sha256": "704f2dd86c928de9781ffc03e765f7dae276d95fe877fdd6270803c86c0a957f"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/DF.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/DF.class",
+      "bytes": 1920,
+      "sha256": "835898f14199a4a82ef5b1994d87ff3dc88ef888082e193f144ceaed97742e03"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/DV.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/DV.class",
+      "bytes": 2102,
+      "sha256": "fb4296f7c2799bcc1db2f9b287e4979f5da7cdec9c324c235005bd76808cb67b"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$1.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$1.class",
+      "bytes": 547,
+      "sha256": "8fbf1820de40765294b66a245f5cdd27146a2f32aeef7abce6d2ed1361cf07da"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$2.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$2.class",
+      "bytes": 548,
+      "sha256": "cec34d58fc97ee29e0d99f733a3cabc90cbc30f39b5e608a4c651091f81e45b8"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$3.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$3.class",
+      "bytes": 546,
+      "sha256": "9afb9360ae177f38c2bae842bab22358f2a3888e272aebad48039c912e9c576a"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$4.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$4.class",
+      "bytes": 548,
+      "sha256": "c67f9dfe215d905f9836f9320bc2f4e6c983dcc00c5e1f5efcb3d89fcb50f3b4"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$5.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$5.class",
+      "bytes": 548,
+      "sha256": "579e100502c3b7b4add7af12a808428649cb5011023be4750ffbaf222f229ae9"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$6.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$6.class",
+      "bytes": 550,
+      "sha256": "d4ba5828490f6cbf209f759260e6f1bc060d0e7db2436e2fb2ad885ba473a585"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$Call.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner$Call.class",
+      "bytes": 216,
+      "sha256": "f43fb95ff6d86a79326f26f5669f1cf9490fc0103d510954ba077ea055ab1f22"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/debug/javac8/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/debug/javac8/classes/Runner.class",
+      "bytes": 2209,
+      "sha256": "8f0bf8015fb610158308df5b3a00ba4add2fcfc653641fa39544c33e24f33e94"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/DF.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/DF.class",
+      "bytes": 1238,
+      "sha256": "b0c698e25c68063f1f68694e43097af8076cc9b577f33053aeb35a4fdd8f2cc9"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/DV.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/DV.class",
+      "bytes": 1296,
+      "sha256": "082c95cd9f3e65b198165f8b360eda195f5b059d041c4fd13f5f2f79989f87ca"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$1.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$1.class",
+      "bytes": 413,
+      "sha256": "a98215409dc96548664da10ae554a793469d192698edc7ba70b0799ef3817c11"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$2.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$2.class",
+      "bytes": 414,
+      "sha256": "584a85551dab1db0aa579f66ae8e3ee9ce91d26868667a7b7e75d5b916bfa7a0"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$3.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$3.class",
+      "bytes": 412,
+      "sha256": "11ba001887541d267e6743b43573b86b245d361f8b863fdf7a55995745732d03"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$4.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$4.class",
+      "bytes": 414,
+      "sha256": "85db97032487ea7f47902f0e5668023c758884ee20468e772963c03bdbce5621"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$5.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$5.class",
+      "bytes": 414,
+      "sha256": "0a57dd5d2214b64ecd3e49d227a73e9759f22be998961f722f42b2061afe9ab8"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$6.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$6.class",
+      "bytes": 416,
+      "sha256": "a25c11bf3da945cb74e6732cada163cd8fb2cc23334183bd998dad05ffc2f6f3"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner$Call.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner$Call.class",
+      "bytes": 181,
+      "sha256": "20951600478c6dd6dfe22ae90ff0492202a65323fa9e60f433239af729b59bfc"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac23/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac23/classes/Runner.class",
+      "bytes": 1680,
+      "sha256": "6ba59195ceda81f5c804e08f3d3cb070719d16e07089d38afab398b55e9b7b42"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/DF.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/DF.class",
+      "bytes": 1241,
+      "sha256": "ff949689fb117cb814706217290beee24f74f7ddeafb1b73e8a6892d7dff9e4a"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/DV.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/DV.class",
+      "bytes": 1302,
+      "sha256": "5a76ddc01b101f347b1a4945cab1b5a8b2dcc924172c08023f7343522d94abfa"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$1.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$1.class",
+      "bytes": 393,
+      "sha256": "2f6156c499ff3b0d380068931f47c0b10066d92ad761d999b02b79057af04673"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$2.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$2.class",
+      "bytes": 394,
+      "sha256": "2ac5d3ae199ef9125a439bfe8d6be5f232fa129b82b86904ce37a87e67d43054"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$3.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$3.class",
+      "bytes": 392,
+      "sha256": "98af9453507667d59e58f6a6e8dceeb57cc430da79038a1085aa2b343d72133d"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$4.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$4.class",
+      "bytes": 394,
+      "sha256": "a97bd28c23a947f04d364de29c287f9ba11ad90135ce58fe54bcc0f619ad5d30"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$5.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$5.class",
+      "bytes": 394,
+      "sha256": "37761b3b04f05702a59da912e47340e969d964ee87ed2ddd1795a0bf75069029"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$6.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$6.class",
+      "bytes": 396,
+      "sha256": "c6373d1b99b267617d75bb5d256910c30ea31becce689fb223393dc7464c90f9"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner$Call.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner$Call.class",
+      "bytes": 181,
+      "sha256": "fb5e867b421ce134561cfb0803ccd72dadc42a9627767034a28e212743b18142"
+    },
+    {
+      "entry": "parent-comparison-v3/candidate/whole-dvdf/none/javac8/classes/Runner.class",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/candidate/whole-dvdf/none/javac8/classes/Runner.class",
+      "bytes": 1686,
+      "sha256": "40f996a9685f196a578afa75fc8f4e8590ae0d429730327d5303bba32a0085da"
+    },
+    {
+      "entry": "parent-comparison-v3/execution.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/execution.json",
+      "bytes": 5834442,
+      "sha256": "344afbb01a29eae30b7342e6712ca2b96c69c45dd822a5e36e833547a38ba4eb"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/README.md",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/README.md",
+      "bytes": 2419,
+      "sha256": "25a03d56238cfdb6899cb83ff03efdd6040f351890cd3f3842a5eff77181fa4d"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/RetryFixture-v2.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/RetryFixture-v2.java",
+      "bytes": 1063,
+      "sha256": "831196e5eb613fb41db2bb73fc798377785303de61b44c5393687f57fdddd27c"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/RetryFixture-v3.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/RetryFixture-v3.java",
+      "bytes": 1022,
+      "sha256": "f1a382855e5c71d7be52cd0037bed46ff0027dabbd972d4a68be66066afa9156"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/Runner-dvdf.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/Runner-dvdf.java",
+      "bytes": 1508,
+      "sha256": "2a746742aa4fecadfe0e598937ffa47203e31813a27d7ff78b85c6ea77cc69c9"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/Runner-v2.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/Runner-v2.java",
+      "bytes": 750,
+      "sha256": "c470fd58dbfed96f9fa19074c35d1a2ca477207044148ae0556f6d463bf7e34d"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/Runner-v3.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/Runner-v3.java",
+      "bytes": 727,
+      "sha256": "3efd5761c3141aef8b043efd941606075fa9dbbd5442cc4e63d49a8144d521e1"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/check.py",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/check.py",
+      "bytes": 14869,
+      "sha256": "609d1b782f934edb249d5e00834dbb3e0d6a9f62568a3f5928a1d3f612d79776"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/collect.py",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/collect.py",
+      "bytes": 29217,
+      "sha256": "ba5fc9707b39840b2e433bbf905db3a01fdeab3a883720054981331cec27c2a1"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/dvdf-whole-debug-javac23/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/dvdf-whole-debug-javac23/Runner.java",
+      "bytes": 1508,
+      "sha256": "2a746742aa4fecadfe0e598937ffa47203e31813a27d7ff78b85c6ea77cc69c9"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/dvdf-whole-debug-javac8/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/dvdf-whole-debug-javac8/Runner.java",
+      "bytes": 1508,
+      "sha256": "2a746742aa4fecadfe0e598937ffa47203e31813a27d7ff78b85c6ea77cc69c9"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/dvdf-whole-none-javac23/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/dvdf-whole-none-javac23/Runner.java",
+      "bytes": 1508,
+      "sha256": "2a746742aa4fecadfe0e598937ffa47203e31813a27d7ff78b85c6ea77cc69c9"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/dvdf-whole-none-javac8/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/dvdf-whole-none-javac8/Runner.java",
+      "bytes": 1508,
+      "sha256": "2a746742aa4fecadfe0e598937ffa47203e31813a27d7ff78b85c6ea77cc69c9"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v2-debug-javac23/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v2-debug-javac23/Runner.java",
+      "bytes": 750,
+      "sha256": "c470fd58dbfed96f9fa19074c35d1a2ca477207044148ae0556f6d463bf7e34d"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v2-debug-javac8/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v2-debug-javac8/Runner.java",
+      "bytes": 750,
+      "sha256": "c470fd58dbfed96f9fa19074c35d1a2ca477207044148ae0556f6d463bf7e34d"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v2-none-javac23/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v2-none-javac23/Runner.java",
+      "bytes": 750,
+      "sha256": "c470fd58dbfed96f9fa19074c35d1a2ca477207044148ae0556f6d463bf7e34d"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v2-none-javac8/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v2-none-javac8/Runner.java",
+      "bytes": 750,
+      "sha256": "c470fd58dbfed96f9fa19074c35d1a2ca477207044148ae0556f6d463bf7e34d"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v3-debug-javac23/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v3-debug-javac23/Runner.java",
+      "bytes": 727,
+      "sha256": "3efd5761c3141aef8b043efd941606075fa9dbbd5442cc4e63d49a8144d521e1"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v3-debug-javac8/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v3-debug-javac8/Runner.java",
+      "bytes": 727,
+      "sha256": "3efd5761c3141aef8b043efd941606075fa9dbbd5442cc4e63d49a8144d521e1"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v3-none-javac23/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v3-none-javac23/Runner.java",
+      "bytes": 727,
+      "sha256": "3efd5761c3141aef8b043efd941606075fa9dbbd5442cc4e63d49a8144d521e1"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/derived-runner/retry-v3-none-javac8/Runner.java",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/derived-runner/retry-v3-none-javac8/Runner.java",
+      "bytes": 727,
+      "sha256": "3efd5761c3141aef8b043efd941606075fa9dbbd5442cc4e63d49a8144d521e1"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/fixture-manifest-v2.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/fixture-manifest-v2.json",
+      "bytes": 3743,
+      "sha256": "a57fa8b8e1ab495d98817cf9259927d71dafe7ba95cc6d353351b4ff878ca054"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/fixture-manifest-v3.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/fixture-manifest-v3.json",
+      "bytes": 4310,
+      "sha256": "67e06bf1d019d2afd26b36e66de59e3d798b5a269c93e96b39ad9b93ff5fd0ba"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/pins.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/pins.json",
+      "bytes": 4519,
+      "sha256": "29458ff318101c369335ce0d0d91bb33bd75918b281d6e315b77347e61bcd558"
+    },
+    {
+      "entry": "parent-comparison-v3/inputs/test_check.py",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/inputs/test_check.py",
+      "bytes": 4152,
+      "sha256": "9383d5f7478069ac45811146d212498518a662d5e55c2d190c825bc2c7b587dd"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/1.stdout.raw",
+      "bytes": 134189,
+      "sha256": "b306fcd69e4e9fa13c9d770e71854df66f9ca05723868ffe1082c6c3a4d6c6a4"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/10.stdout.raw",
+      "bytes": 163885,
+      "sha256": "a944b6289b7fb85809b96712094a618dbd643ac99ad29862469f2d2d11e85986"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/12.stdout.raw",
+      "bytes": 834,
+      "sha256": "f2857bbf2fb0a8d825ee238a99dcc275767f973275fad273b77fc004006e2a6b"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/13.stdout.raw",
+      "bytes": 134533,
+      "sha256": "c3a7a3bca04656c9ef81f19a6eba3ae5b04a0b5be8a1ed4df0889a7dc6a188a1"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/14.stdout.raw",
+      "bytes": 163885,
+      "sha256": "d0990f21da0b790e61788e61beaf46244d4ca9d88ae1fbb12b96688e03aebc56"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/15.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/16.stdout.raw",
+      "bytes": 834,
+      "sha256": "f2857bbf2fb0a8d825ee238a99dcc275767f973275fad273b77fc004006e2a6b"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/17.stdout.raw",
+      "bytes": 126442,
+      "sha256": "9a7d79e6d307a604970f2a4ebeee0d8e5cbdae049a25fd0cbb7a1aa652048e5d"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/18.stderr.raw",
+      "bytes": 137,
+      "sha256": "b5d767584a350877b5e1e0c20b0583f8e008d39faac2d1deb565e398805f725f"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/19.stdout.raw",
+      "bytes": 573,
+      "sha256": "7a7da4b1d254981ca4f4b210c5432826d32811aab464a8fef3569d4a8e472cfa"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/2.stdout.raw",
+      "bytes": 163059,
+      "sha256": "1dfe3d75adaa751ef6bf00d3b3611891edf1d0579ae20ffd6859b1b348cd8fcd"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/20.stdout.raw",
+      "bytes": 126442,
+      "sha256": "2075c6fff685a4150828953d747b3cbd12966fb26ce442bb82d42412e4ec2775"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/21.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/21.stderr.raw",
+      "bytes": 380,
+      "sha256": "c67d380714b4e1403eb7d03bc2e5c32de04d856fa6837146c621218d54758131"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/21.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/21.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/22.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/22.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/22.stdout.raw",
+      "bytes": 573,
+      "sha256": "7a7da4b1d254981ca4f4b210c5432826d32811aab464a8fef3569d4a8e472cfa"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/23.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/23.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/23.stdout.raw",
+      "bytes": 126309,
+      "sha256": "11e1d0ff19811ea360a0d91d88b688ebbff43bab03ff70437c8e3f71344018c8"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/24.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/24.stderr.raw",
+      "bytes": 137,
+      "sha256": "b5d767584a350877b5e1e0c20b0583f8e008d39faac2d1deb565e398805f725f"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/24.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/25.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/25.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/25.stdout.raw",
+      "bytes": 573,
+      "sha256": "7a7da4b1d254981ca4f4b210c5432826d32811aab464a8fef3569d4a8e472cfa"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/26.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/26.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/26.stdout.raw",
+      "bytes": 126309,
+      "sha256": "a1bae3a13f8797f41865640ba96ead16dd1e797732fa084e82ba9c3843c6f0dc"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/27.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/27.stderr.raw",
+      "bytes": 380,
+      "sha256": "c67d380714b4e1403eb7d03bc2e5c32de04d856fa6837146c621218d54758131"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/27.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/27.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/28.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/28.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/28.stdout.raw",
+      "bytes": 573,
+      "sha256": "7a7da4b1d254981ca4f4b210c5432826d32811aab464a8fef3569d4a8e472cfa"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/29.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/29.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/29.stdout.raw",
+      "bytes": 84509,
+      "sha256": "8a637d34ec7981a88a5468384a6ed98db4c37ea94855d62a7022198d69260696"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/30.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/30.stderr.raw",
+      "bytes": 137,
+      "sha256": "b5d767584a350877b5e1e0c20b0583f8e008d39faac2d1deb565e398805f725f"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/30.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/30.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/31.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/31.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/31.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/31.stdout.raw",
+      "bytes": 502,
+      "sha256": "a8ccceb6aeeb09955638b188a51e1efeedd26d409c3fe71a9d6240e2fa79bfa8"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/32.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/32.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/32.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/32.stdout.raw",
+      "bytes": 84509,
+      "sha256": "646cd430b0771b98894c03d08b1ee596f5e32a921fa3b7b1124b7cef3c555284"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/33.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/33.stderr.raw",
+      "bytes": 380,
+      "sha256": "c67d380714b4e1403eb7d03bc2e5c32de04d856fa6837146c621218d54758131"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/33.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/33.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/34.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/34.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/34.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/34.stdout.raw",
+      "bytes": 502,
+      "sha256": "a8ccceb6aeeb09955638b188a51e1efeedd26d409c3fe71a9d6240e2fa79bfa8"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/35.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/35.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/35.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/35.stdout.raw",
+      "bytes": 84368,
+      "sha256": "e13d0b653b58bf41dc02354d88ae3714bb23a61ad4746f00ac8d5ce3a2a67d09"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/36.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/36.stderr.raw",
+      "bytes": 137,
+      "sha256": "b5d767584a350877b5e1e0c20b0583f8e008d39faac2d1deb565e398805f725f"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/36.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/36.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/37.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/37.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/37.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/37.stdout.raw",
+      "bytes": 502,
+      "sha256": "a8ccceb6aeeb09955638b188a51e1efeedd26d409c3fe71a9d6240e2fa79bfa8"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/38.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/38.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/38.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/38.stdout.raw",
+      "bytes": 84368,
+      "sha256": "e82ad2e7b0f3c231d7ae74fd6f7d249f92e51bca36245e536d447ba00aa27a52"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/39.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/39.stderr.raw",
+      "bytes": 380,
+      "sha256": "c67d380714b4e1403eb7d03bc2e5c32de04d856fa6837146c621218d54758131"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/39.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/39.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/4.stdout.raw",
+      "bytes": 834,
+      "sha256": "f2857bbf2fb0a8d825ee238a99dcc275767f973275fad273b77fc004006e2a6b"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/40.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/40.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/40.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/40.stdout.raw",
+      "bytes": 502,
+      "sha256": "a8ccceb6aeeb09955638b188a51e1efeedd26d409c3fe71a9d6240e2fa79bfa8"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/5.stdout.raw",
+      "bytes": 134184,
+      "sha256": "3bab31675deeb7032dda295e44611c08cd0a69c593cf521c30a70db5df245913"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/6.stdout.raw",
+      "bytes": 163059,
+      "sha256": "f26fb9e62173cf010ce132ebda9edb252dabe77962bef23eaeacd910c3ef1356"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/7.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/8.stdout.raw",
+      "bytes": 834,
+      "sha256": "f2857bbf2fb0a8d825ee238a99dcc275767f973275fad273b77fc004006e2a6b"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "parent-comparison-v3/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/raw/9.stdout.raw",
+      "bytes": 134533,
+      "sha256": "56b73e6f0ed2b5c83d87fbd68010edb88b273330b78b9ff1fe0ae451591c726d"
+    },
+    {
+      "entry": "parent-comparison-v3/root-runtime-summary.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v3/root-runtime-summary.json",
+      "bytes": 2473,
+      "sha256": "0fdc1e0a115a9338087bbf0a29bedc21f2f13358736c7c509ecb82830530fd7d"
+    },
+    {
+      "entry": "root-tools/jarde-loop-candidate-runtime-accept-root-v1.py",
+      "source": "/private/tmp/jarde-loop-candidate-runtime-accept-root-v1.py",
+      "bytes": 2381,
+      "sha256": "3db317be7ec45d12aa072a1eda89bb75bac8dc15f5adabc7d11eed31e9e28258"
+    },
+    {
+      "entry": "root-tools/jarde-loop-focused-runner-root-v1.py",
+      "source": "/private/tmp/jarde-loop-focused-runner-root-v1.py",
+      "bytes": 4549,
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f"
+    },
+    {
+      "entry": "root-tools/jarde-ordered-field-focused-accept-root-v2.py",
+      "source": "/private/tmp/jarde-ordered-field-focused-accept-root-v2.py",
+      "bytes": 3251,
+      "sha256": "5bcbdfbdca44c2a22131872987b82373423b90fdfd817645e1e48e79180564e6"
+    },
+    {
+      "entry": "root-tools/jarde-ordered-field-focused-commands-root-v1.json",
+      "source": "/private/tmp/jarde-ordered-field-focused-commands-root-v1.json",
+      "bytes": 379,
+      "sha256": "b73c8723ed17353b9d79e4acfcc37c9e44b0847b141646ef10e91a2d6fee4d0f"
+    },
+    {
+      "entry": "root-tools/jarde-ordered-field-runtime-accept-root-v1.py",
+      "source": "/private/tmp/jarde-ordered-field-runtime-accept-root-v1.py",
+      "bytes": 2655,
+      "sha256": "d13c6dd6af67ace1b6417ce081066c942d59356689b31f2c7deb5ab6b65edfd8"
+    },
+    {
+      "entry": "root-tools/jarde-ordered-field-runtime-accept-root-v2.py",
+      "source": "/private/tmp/jarde-ordered-field-runtime-accept-root-v2.py",
+      "bytes": 2648,
+      "sha256": "282cd7ad0f78dc008d61949288c8b5d1f6d3de416b4998a91986e712f3a9aea6"
+    }
+  ]
+}

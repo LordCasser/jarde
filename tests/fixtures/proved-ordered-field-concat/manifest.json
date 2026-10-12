@@ -1,0 +1,70 @@
+{
+  "scope": "Original JVM-verified fixtures, no candidate acceptance",
+  "classes": [
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "fb29ead76d4c869a8d130fc2f57ce0ed4cbfbaae29594616c8fa29e0da0fe158"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "cac81bd3e50e51e59b0bf3551d2267152f0cf843d448208477a88bd952ab0c58"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "3445c86718d52b8f4c220f9a5506cc1163eb19fa5c4de9df4e0ad1afb45d9ddc"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "821af1d0d43e0a0ebfccc860199146ef327bbac252dc7b1acd599c817c038830"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "6d539bbf6197fc8543116061792e245a019bf0033704ef7a00d7e913d69aadd8"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "640f698f870db3cba7c3d26d4d8f3c61de08b2c7c601c6ff43eb257767ea49ce"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "493ad6b01ac201cfd60f9f281f75fa86a56a3e9ae6432838509bf8cccb38e4b7"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "9f74d8b5bd723583084a1599731f9e41ab8854966d1ced28721c7133d773c588"
+    }
+  ],
+  "original_execution": "/private/tmp/jarde-ordered-field-concat-original-root-v2/execution.json",
+  "sources": [
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/OrderedFieldConcat.java",
+      "bytes": 2115,
+      "sha256": "e00c37cca66fd095bd1bdce09b3c69bce685a9a679e4848d5a16ae427a0af59a"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/OrderedFieldConcatNegatives.java",
+      "bytes": 1602,
+      "sha256": "9fa332ce8cf3730dbefe31b3c3ed43939b7eb1199621cf5b3521ecb55a432f26"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "path": "tests/fixtures/proved-ordered-field-concat/NegativeRunner.java",
+      "bytes": 819,
+      "sha256": "36c52280fde8a59b50da3b11e3ccc9d243779113f181a7073ddf98b8d2238f8d"
+    }
+  ],
+  "null_receiver_execution": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/execution.json",
+  "null_receiver_acceptance": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/root-summary.json"
+}

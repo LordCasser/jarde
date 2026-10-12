@@ -270,11 +270,20 @@ fn the_nine_write_accessor_types_all_recover() {
         "exactly the nine accessors return their written value:\n{}",
         report.text
     );
-    // The whole rendering equals the frozen accepted record byte for byte.
+    // Keep the historical record intact. Only its independently proved field concat changes;
+    // every other byte, including all nine accessor bodies, must still match.
+    let expected = evidence("fixed/WA-rendered-fixed.txt");
+    let before = "        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(\"\").append(local1.flag).append(local1.count).append(local1.big).append(local1.d).append(local1.ref).append((int) local1.by).append((int) local1.sh).append(local1.ch).append(local1.fl).toString());";
+    let after = "        java.lang.System.out.println(\"\" + local1.flag + local1.count + local1.big + local1.d + local1.ref + (int) local1.by + (int) local1.sh + local1.ch + local1.fl);";
     assert_eq!(
-        report.text,
-        evidence("fixed/WA-rendered-fixed.txt"),
-        "the WA rendering must equal the frozen fixed-leg record"
+        expected.matches(before).count(),
+        1,
+        "the frozen WA record must contain exactly one legacy println"
+    );
+    let expected = expected.replacen(before, after, 1);
+    assert_eq!(
+        report.text, expected,
+        "the WA rendering changed beyond its recovered field concat"
     );
 }
 

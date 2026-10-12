@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 625215,
+    "sha256": "7cfb7bfc50b4aef27941091ba96f295b6bb6261a2889522debf75fb57d593ab5"
+  },
+  "members": [
+    {
+      "path": "binary-identity-and-prior-evidence.json",
+      "bytes": 1534,
+      "sha256": "bd3610c53403f00687d88887e76f3c93e1728803429f919ef0c565658e723999"
+    },
+    {
+      "path": "execution.json",
+      "bytes": 2135743,
+      "sha256": "887bff1cb4999f13d03e9d3e6b411a032c46ce26151b0f566ea78448a7869401"
+    },
+    {
+      "path": "independent-census/README.md",
+      "bytes": 1673,
+      "sha256": "91e0fbe8bf0783a31a04bbe05e4dc2418fa1f7ca880993d7f3d73abff9e2c292"
+    },
+    {
+      "path": "independent-census/audit_census.py",
+      "bytes": 8074,
+      "sha256": "e48acee172a76b97754be3b746c16f2e99016a80669db4499581a3c906e59e35"
+    },
+    {
+      "path": "independent-census/census.json",
+      "bytes": 39375,
+      "sha256": "c1e1c8092ae98a6f8a0ec609c5e49805a40eb4de42e1e5cd12809ce721ad6f7f"
+    },
+    {
+      "path": "independent-census/pins.json",
+      "bytes": 1684,
+      "sha256": "dfcc6fc7c39de2ebbe0bd6beffffdc7fec08e01cec22d1e5ead4f1d7a0b59d18"
+    },
+    {
+      "path": "independent-census/suggested.patch",
+      "bytes": 859,
+      "sha256": "f47367ed994cbcf76e28350a3b30598ae4d76c43da7a2097143dacc3ffb0fb52"
+    },
+    {
+      "path": "independent-census/v8-evidence.json",
+      "bytes": 2101,
+      "sha256": "1587513637a3eec5b18468ae5de029ab50a3f347b8af216bf3adbfba361af952"
+    },
+    {
+      "path": "raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/2.stderr.raw",
+      "bytes": 3835,
+      "sha256": "43b8b106e25e577372909a3babee512616fb19febb6db48ced57382701f35b44"
+    },
+    {
+      "path": "raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/3.stderr.raw",
+      "bytes": 2967,
+      "sha256": "6810358ed7bdd94426404b95c46f05df075bb8437bc761b675707b2f0a3f732a"
+    },
+    {
+      "path": "raw/3.stdout.raw",
+      "bytes": 52498,
+      "sha256": "30b2be28092810b2151749ea45dcb0fae507f6da8d3e7c1868cebab8ce5af7a6"
+    },
+    {
+      "path": "raw/4.stderr.raw",
+      "bytes": 875913,
+      "sha256": "0ffe1b3d6ed0bb0b6cf5085040b2d75dc50de69c7cafb08ab005c68e82234e66"
+    },
+    {
+      "path": "raw/4.stdout.raw",
+      "bytes": 16234,
+      "sha256": "8d2cb4135a942d16d97fbdeb96655435d17e84d1ba18fb8b6c5d1514b421afc6"
+    },
+    {
+      "path": "raw/5.stderr.raw",
+      "bytes": 53,
+      "sha256": "0f86e7ea9369ea07e679a1c74ec9cdf279e07ca0153f7205503e7466bb24b667"
+    },
+    {
+      "path": "raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/6.stderr.raw",
+      "bytes": 1349,
+      "sha256": "94b93c92b1b4380749474f400bdd0d63e3436495a376ca4abf0bd634aef8f8d3"
+    },
+    {
+      "path": "raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/7.stdout.raw",
+      "bytes": 16536,
+      "sha256": "a80a3519bd518f6c4b22b75405e7563a2ebab4d04d464f2aec3477a4238827d5"
+    },
+    {
+      "path": "raw/8.stderr.raw",
+      "bytes": 53,
+      "sha256": "cb1793633929b31f9e5ab06d4cb4d425082ea07e2d3d94991a73a0e6510cde8d"
+    },
+    {
+      "path": "raw/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "root-summary.json",
+      "bytes": 3843,
+      "sha256": "27b6b2cbf7c2b755bdd02459ed687bda3b5643021f7aec7d9f20a181aa423e98"
+    },
+    {
+      "path": "source/reader-classfile.rs",
+      "bytes": 532047,
+      "sha256": "ad0ebeedd279fd8b21d5b7de730658ab1e6f93e3cb13e92dadc245032c94722f"
+    },
+    {
+      "path": "tools/focused-acceptor.py",
+      "bytes": 4118,
+      "sha256": "db2ee03fe4f48af3f7024064902ec57be7c1a2153f0b52e05ccabb2f9765a477"
+    },
+    {
+      "path": "tools/jarde-loop-focused-runner-root-v1.py",
+      "bytes": 4549,
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f"
+    },
+    {
+      "path": "tools/jarde-ordered-field-final-check-commands-root-v12.json",
+      "bytes": 2428,
+      "sha256": "f5ae5dce82ce6e94f14047301e6600016bd1d7b077b2dd9d239618e96f71e071"
+    }
+  ]
+}

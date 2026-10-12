@@ -1,0 +1,1405 @@
+{
+  "schema": "anonymous-regression-and-final-local-archive-v1",
+  "status": "archived_verified_bytes",
+  "capture": {
+    "path": "capture-and-tooling.tar.gz",
+    "bytes": 4234998,
+    "sha256": "6e053386d855d5f108eaae2fe76f6a15e5f9a1d8692b12ad78fe563b1a801dd6"
+  },
+  "entries": [
+    {
+      "path": "product-source/crates/jarde-java/src/build.rs",
+      "bytes": 1816875,
+      "sha256": "ebe8af9449baccf14cf0e2cdf70bcb1861a8e467fdc6110179aedabb5968d187"
+    },
+    {
+      "path": "product-source/crates/jarde-java/src/concat.rs",
+      "bytes": 125607,
+      "sha256": "d2df225a87b04f3dfdc6e4621c3c6f4c33a3bf91278cfbec096ff36973fdfcef"
+    },
+    {
+      "path": "product-source/crates/jarde-java/src/region.rs",
+      "bytes": 1018532,
+      "sha256": "6f10c13d37b2472b77a0a5bc1d97f9bb45d05a65a030dca4f555d0221c3a707a"
+    },
+    {
+      "path": "product-source/crates/jarde-java/src/region/finite_loop_catch_tests.rs",
+      "bytes": 40777,
+      "sha256": "12fa3af5a77136cf4d8fce47274651d9b2b2999df154181c5efd4529b1ff74a0"
+    },
+    {
+      "path": "product-source/crates/jarde-java/src/report.rs",
+      "bytes": 671291,
+      "sha256": "4435bbb34d6f09583d0071eae2a3e8e9f7fe69b775ce22cb91b9cea8745a9a74"
+    },
+    {
+      "path": "product-source/crates/jarde-java/tests/p3_patterns.rs",
+      "bytes": 293459,
+      "sha256": "fb4b0a2a656d52652575c3bc5b7f493e118dfe2cd1d0e95d9aa7f90db04bce21"
+    },
+    {
+      "path": "product-source/tests/class_source.rs",
+      "bytes": 340839,
+      "sha256": "755fc8b60d3eaa81fe804b42e4085cd9c5f42d585e5030bda07c2beca4538028"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/execution.json",
+      "bytes": 2126245,
+      "sha256": "709c50c14d1d6b068d3464838918ec7d49c1cc5878b79ea26fd4e7011ce468fd"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/raw/2.stderr.raw",
+      "bytes": 59010,
+      "sha256": "3d8af813329fc71229c27b0e004df9b36c185f9e0e617132205a8d8280fab45f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/raw/2.stdout.raw",
+      "bytes": 191,
+      "sha256": "1be04a2d98a3061d5fbea002b38541af12c8243571ef242f069af140856d00d6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/raw/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "1d7c1e4175d2a97217bf26e68d03b1e12d30829495de85d5f031f49176669659"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-child-proof-root-v1/root-summary.json",
+      "bytes": 279,
+      "sha256": "92e80d7cd42e078a1c2a0660249023fb490db2df4fa71b3391079b6843ea4f5a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v1/README.md",
+      "bytes": 2488,
+      "sha256": "127d22204d7a6469f1ee3398a577b8104fded0ccafab11de3abae5004e94da48"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v1/check.py",
+      "bytes": 21646,
+      "sha256": "9e6ef774fff64c232a25bc48f27f2452ccc338746e4721a2337d02692cf5a980"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v1/collect.py",
+      "bytes": 31482,
+      "sha256": "d4ce834b0c00d8abd0771bbac42d012ab49c0af8c4b516c73d19cfc8923058a9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v1/pins.json",
+      "bytes": 11924,
+      "sha256": "6d595fb35a86ab6f55e81b6313ada9304b46c393911b2fec475cd448441c0e39"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v2/README.md",
+      "bytes": 2488,
+      "sha256": "95512af5f00251a77bc3fa17b3148868d82bac42cf7a93a92a61c687bab59a1c"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v2/check.py",
+      "bytes": 22019,
+      "sha256": "8bda76f73b4e071493013e0da8941e393103352face07a3fc4e63862c2e6d80e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v2/collect.py",
+      "bytes": 32282,
+      "sha256": "eda1b3760db06e258771510a9b7890277c4720c4176ef40ca8036278b25b51f5"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v2/pins.json",
+      "bytes": 11924,
+      "sha256": "7fbbcdb854597f20bf840fbaf6e2b4776a40a6cf90dc298a829c9796e053660f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v3/README.md",
+      "bytes": 3416,
+      "sha256": "3f148a175c531578182446d086256fc3c645a3eeb650dc4cf934e1b1455d77a7"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v3/check.py",
+      "bytes": 21987,
+      "sha256": "4faf6ff959171543bdb7e3f1a1222263c1e545a6657ca71abbfa0d9744e57b54"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v3/collect.py",
+      "bytes": 32282,
+      "sha256": "eda1b3760db06e258771510a9b7890277c4720c4176ef40ca8036278b25b51f5"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v3/pins.json",
+      "bytes": 12377,
+      "sha256": "0124bc98edefdd25501e0214609ffb1d48027c25f26115f1204b8bb8ceee9d67"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v3/projected-root-replay.py",
+      "bytes": 7838,
+      "sha256": "03e88168526829079be05301af5f677c9730e1511d2eb0410aa365e483a325d0"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v4/README.md",
+      "bytes": 3333,
+      "sha256": "24028c9af2fb6239dea3fe30f1854bcf9ee523678ff24ceb4d8ca56e05aff1cd"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v4/check.py",
+      "bytes": 21987,
+      "sha256": "4faf6ff959171543bdb7e3f1a1222263c1e545a6657ca71abbfa0d9744e57b54"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v4/collect.py",
+      "bytes": 32282,
+      "sha256": "eda1b3760db06e258771510a9b7890277c4720c4176ef40ca8036278b25b51f5"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v4/pins.json",
+      "bytes": 12377,
+      "sha256": "680e076ab5fc7bf5ea357005386918547f8c33b5c0723fd5b515f7ba54511506"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-prep-luna-v4/projected-root-replay.py",
+      "bytes": 9427,
+      "sha256": "1a21ae0b71ccf6aa1e9cc68e9f6eec981802ea7b0342125287be007160176dea"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/anonymous-super-args.zip",
+      "bytes": 1800,
+      "sha256": "e8f1692467dc638276ea63eac984d496d730ca4b9c6acbcc67559a2482d4a261"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/check-v3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/check-v3.stdout.raw",
+      "bytes": 41142,
+      "sha256": "86b34fa48387e37ff1cc3620c48d89ea807bc1f8319814fe56bdcac590b3dd54"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/check.json",
+      "bytes": 41142,
+      "sha256": "86b34fa48387e37ff1cc3620c48d89ea807bc1f8319814fe56bdcac590b3dd54"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/check.stderr.raw",
+      "bytes": 68,
+      "sha256": "5bd5bcb9d061f174501987a425b81d292a2ecc5e61b7623ed68c4775577d3a42"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/check.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/execution.json",
+      "bytes": 440563,
+      "sha256": "0e7e326145c93692286f79fb5d9485ade1343e1d59116ffa5a59643c95396744"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-classes/javac23/defpackage/AnonymousSuperArgs$1.class",
+      "bytes": 714,
+      "sha256": "0a2a5a4fcd55191e8b8d9b09597d6afe969d54d25995c4562e566cfddaba1f43"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-classes/javac23/defpackage/AnonymousSuperArgs.class",
+      "bytes": 1294,
+      "sha256": "122e1d51159f225bf7f41e684d0d9a830f64577c5c78e103770e05facf4cfc7d"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-classes/javac23/defpackage/Base.class",
+      "bytes": 619,
+      "sha256": "f4cb70b8f390863e0749e30ce4deade6cf1112d08e574413958e5650acebcfaa"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-classes/javac8/defpackage/AnonymousSuperArgs$1.class",
+      "bytes": 714,
+      "sha256": "740cdf6c6aa8f5de928bbadbfd0faca7365673314035a0b0619a5c2534c1b368"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-classes/javac8/defpackage/AnonymousSuperArgs.class",
+      "bytes": 1294,
+      "sha256": "51380ec158e7f393721feb68c5cca4d3aa6d4e70e8e89662c375cd1923a64d14"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-classes/javac8/defpackage/Base.class",
+      "bytes": 619,
+      "sha256": "02d68826acc15d1b41c2dc51597aea388d0735fd31c93b9521a77c6db350ccd1"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-source/resources/AnonymousSuperArgs$1.class",
+      "bytes": 682,
+      "sha256": "e65c29fc6d6f0835d2fc94e222446332b1ce6d1fe860ba6dbd71aefd8ab8223e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-source/resources/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "064622c19764fafbe90deec5a419ba39048fcb76a045301ae4c4ef2c3e7a52b6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-source/resources/Base.class",
+      "bytes": 597,
+      "sha256": "f047f184122f64b24075a57322e5a7a4494561ba1cea2329edec64ad3bcc5790"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-source/sources/defpackage/AnonymousSuperArgs.java",
+      "bytes": 1107,
+      "sha256": "902d3a64c142b073b7c00410b7c1af81de8ea9ef941066da821d3c5929b2b9f2"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jadx-source/sources/defpackage/Base.java",
+      "bytes": 384,
+      "sha256": "df1927e1a2f6feb478a4f0ef87d65a003649553391b56085d0406bee67bcdc68"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/current_final_v2/javac23/AnonymousSuperArgs$2.class",
+      "bytes": 680,
+      "sha256": "d004b90d36e74e8e7cb98753e0e34baa0ad44277414ebee83a0279bc962a6b77"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/current_final_v2/javac23/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "bf919458fdab32341e551ec531046a4f09483de797744993c389dbe78e1d72a4"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/current_final_v2/javac8/AnonymousSuperArgs$2.class",
+      "bytes": 680,
+      "sha256": "7967dd0cf34eca356e86fe762dce90c0130701d302da44af4dfa6a8c78434e4e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/current_final_v2/javac8/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "a57a98f5194ee33cc014c1f0da0e5402e115f405d9ce2d09c4328b38fe218658"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/parent_v5/javac23/AnonymousSuperArgs$2.class",
+      "bytes": 680,
+      "sha256": "d004b90d36e74e8e7cb98753e0e34baa0ad44277414ebee83a0279bc962a6b77"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/parent_v5/javac23/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "bf919458fdab32341e551ec531046a4f09483de797744993c389dbe78e1d72a4"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/parent_v5/javac8/AnonymousSuperArgs$2.class",
+      "bytes": 680,
+      "sha256": "7967dd0cf34eca356e86fe762dce90c0130701d302da44af4dfa6a8c78434e4e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde-classes/parent_v5/javac8/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "a57a98f5194ee33cc014c1f0da0e5402e115f405d9ce2d09c4328b38fe218658"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs/json/AnonymousSuperArgs.java",
+      "bytes": 2513,
+      "sha256": "92fc87c7e6c4cf33cb8eb7017ce63582b1c3907a20d28a639a2430a4689b0069"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs/json/method-facts.json",
+      "bytes": 26715,
+      "sha256": "fe25414c4d9f84b51059a0b6e069a60aab11a61fe5c5f764b909c4bf492fbe9e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs/json/report.json",
+      "bytes": 112027,
+      "sha256": "eec43e4d7e81aa3337e89ea5b019a7d115a5112ede1d91a01c2493936ddbe640"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs/json/response.raw.json",
+      "bytes": 112027,
+      "sha256": "eec43e4d7e81aa3337e89ea5b019a7d115a5112ede1d91a01c2493936ddbe640"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs/text/response.raw.txt",
+      "bytes": 2513,
+      "sha256": "92fc87c7e6c4cf33cb8eb7017ce63582b1c3907a20d28a639a2430a4689b0069"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs_dollar_1/json/AnonymousSuperArgs$1.java",
+      "bytes": 1204,
+      "sha256": "466a8b1f157fa3648fdb978fc97cf56fe696cf7eedb1bbef8f29fdc669eb0c63"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs_dollar_1/json/method-facts.json",
+      "bytes": 10081,
+      "sha256": "7e0d46b58276a2d8d82eee65b7a27e228e17fb0416477c6bfdcb3c33ef18ec80"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs_dollar_1/json/report.json",
+      "bytes": 50736,
+      "sha256": "5a0966e10ff5f6062461d42168829b4a356cb8ca7e9d0ee53331e41048fd0528"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs_dollar_1/json/response.raw.json",
+      "bytes": 50736,
+      "sha256": "5a0966e10ff5f6062461d42168829b4a356cb8ca7e9d0ee53331e41048fd0528"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/AnonymousSuperArgs_dollar_1/text/response.raw.txt",
+      "bytes": 1204,
+      "sha256": "466a8b1f157fa3648fdb978fc97cf56fe696cf7eedb1bbef8f29fdc669eb0c63"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/Base/json/Base.java",
+      "bytes": 1125,
+      "sha256": "31bc9a6de2975ca94ea2088b72364ff60fa9f185b30cfd8e8a471f828ac0a38e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/Base/json/method-facts.json",
+      "bytes": 8968,
+      "sha256": "a869001715791f1a93dc4ad3b1938d66d341731f3685826429f3eb5612d47597"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/Base/json/report.json",
+      "bytes": 51244,
+      "sha256": "af948c4fc4a3b062235a17b56acc2d403dd6e554c4a6a1cb3113690d07dcacdb"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/Base/json/response.raw.json",
+      "bytes": 51244,
+      "sha256": "af948c4fc4a3b062235a17b56acc2d403dd6e554c4a6a1cb3113690d07dcacdb"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/current_final_v2/Base/text/response.raw.txt",
+      "bytes": 1125,
+      "sha256": "31bc9a6de2975ca94ea2088b72364ff60fa9f185b30cfd8e8a471f828ac0a38e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs/json/AnonymousSuperArgs.java",
+      "bytes": 2667,
+      "sha256": "d78b470cb91aceff26111eeecdcb289d5b5b7f2d8892b9b47f88e730e11edf51"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs/json/method-facts.json",
+      "bytes": 26869,
+      "sha256": "c277b82b581878eced419718fd74b988864a8926a71b4e1bfd6b8027580f598c"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs/json/report.json",
+      "bytes": 112337,
+      "sha256": "5b3ef38d43c943ef7b4282893abaf6b2537518aaaa0836c776fc0e76bac6654a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs/json/response.raw.json",
+      "bytes": 112337,
+      "sha256": "5b3ef38d43c943ef7b4282893abaf6b2537518aaaa0836c776fc0e76bac6654a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs/text/response.raw.txt",
+      "bytes": 2667,
+      "sha256": "d78b470cb91aceff26111eeecdcb289d5b5b7f2d8892b9b47f88e730e11edf51"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs_dollar_1/json/AnonymousSuperArgs$1.java",
+      "bytes": 1358,
+      "sha256": "148a7f461f716f6e27b69cf41a8f781725190451e2d9c7cb51b2b851d3013e1a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs_dollar_1/json/method-facts.json",
+      "bytes": 12583,
+      "sha256": "1b657248dd8437724d30e1d8885364e5eefd189035c14b274131f7a58f2f9aca"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs_dollar_1/json/report.json",
+      "bytes": 48642,
+      "sha256": "6ca23229a5165ba23e279f7aac3cbd29aaea4b58a975103d8d52636dd4e81f24"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs_dollar_1/json/response.raw.json",
+      "bytes": 48642,
+      "sha256": "6ca23229a5165ba23e279f7aac3cbd29aaea4b58a975103d8d52636dd4e81f24"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/AnonymousSuperArgs_dollar_1/text/response.raw.txt",
+      "bytes": 1358,
+      "sha256": "148a7f461f716f6e27b69cf41a8f781725190451e2d9c7cb51b2b851d3013e1a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/Base/json/Base.java",
+      "bytes": 1186,
+      "sha256": "fc6c4602bcc3d89ef064e2d0042a188e03afe44eec2a40cac43a939d75a530b3"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/Base/json/method-facts.json",
+      "bytes": 10206,
+      "sha256": "8400dbdd049e278c56e776950160b902c55f04d62954527a5c59021996f4a539"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/Base/json/report.json",
+      "bytes": 48520,
+      "sha256": "f3386c422e0a98e5099bedc6f44d93f46b2f441893cabdcd00616edbca8af0d0"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/Base/json/response.raw.json",
+      "bytes": 48520,
+      "sha256": "f3386c422e0a98e5099bedc6f44d93f46b2f441893cabdcd00616edbca8af0d0"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/jarde/parent_v5/Base/text/response.raw.txt",
+      "bytes": 1186,
+      "sha256": "fc6c4602bcc3d89ef064e2d0042a188e03afe44eec2a40cac43a939d75a530b3"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/javap/javac23.txt",
+      "bytes": 9815,
+      "sha256": "277b0447531cf8f8698cf16521e7ac38c95fce484d5d5cd36bf4d1fc1704e8b9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/javap/javac8.txt",
+      "bytes": 9815,
+      "sha256": "277b0447531cf8f8698cf16521e7ac38c95fce484d5d5cd36bf4d1fc1704e8b9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/original-source/javac23/classes/AnonymousSuperArgs$1.class",
+      "bytes": 682,
+      "sha256": "e65c29fc6d6f0835d2fc94e222446332b1ce6d1fe860ba6dbd71aefd8ab8223e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/original-source/javac23/classes/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "064622c19764fafbe90deec5a419ba39048fcb76a045301ae4c4ef2c3e7a52b6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/original-source/javac23/classes/Base.class",
+      "bytes": 597,
+      "sha256": "f047f184122f64b24075a57322e5a7a4494561ba1cea2329edec64ad3bcc5790"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/original-source/javac8/classes/AnonymousSuperArgs$1.class",
+      "bytes": 682,
+      "sha256": "1f7aec2546b3052d779cffbf5a6879f6dfbf20071c4ab685b040a367cedf37c5"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/original-source/javac8/classes/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "e5eab67dc7d8a384c27d49ed6af4431520364db8aebc6ddee17351a4c7d1e51e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/original-source/javac8/classes/Base.class",
+      "bytes": 597,
+      "sha256": "59e2409e4204db7ed56ed74f93b3710327f166526bee62eaeba34bb8639afbb6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/1.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/11.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/12.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/13.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/14.stdout.raw",
+      "bytes": 112337,
+      "sha256": "5b3ef38d43c943ef7b4282893abaf6b2537518aaaa0836c776fc0e76bac6654a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/15.stderr.raw",
+      "bytes": 265460,
+      "sha256": "ff30ca327c7dff08eec561a2e7753c6c3094d66e5d91fde5f90266a3dedf4fe2"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/15.stdout.raw",
+      "bytes": 2667,
+      "sha256": "d78b470cb91aceff26111eeecdcb289d5b5b7f2d8892b9b47f88e730e11edf51"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/16.stdout.raw",
+      "bytes": 48642,
+      "sha256": "6ca23229a5165ba23e279f7aac3cbd29aaea4b58a975103d8d52636dd4e81f24"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/17.stderr.raw",
+      "bytes": 109558,
+      "sha256": "8dbe45c9ac140e64e4fec2f3ea4a5fc02152706a48d0b511ce977a8079923dd9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/17.stdout.raw",
+      "bytes": 1358,
+      "sha256": "148a7f461f716f6e27b69cf41a8f781725190451e2d9c7cb51b2b851d3013e1a"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/18.stdout.raw",
+      "bytes": 48520,
+      "sha256": "f3386c422e0a98e5099bedc6f44d93f46b2f441893cabdcd00616edbca8af0d0"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/19.stderr.raw",
+      "bytes": 118719,
+      "sha256": "17fa2443950734d3c28ce0e54b1b803cf61bc1f8f86103e8de4f842b5e244329"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/19.stdout.raw",
+      "bytes": 1186,
+      "sha256": "fc6c4602bcc3d89ef064e2d0042a188e03afe44eec2a40cac43a939d75a530b3"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/20.stderr.raw",
+      "bytes": 734,
+      "sha256": "682fff8b78fdac49ea4e2e0d7f1a5a2a80c659c43ed0e505511737b235578d39"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/20.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/21.stderr.raw",
+      "bytes": 565,
+      "sha256": "54c2d51c483b8c8dfa9c3034afc71f7f9813df614321ecb6941f8b61eaff9854"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/21.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/22.stdout.raw",
+      "bytes": 112027,
+      "sha256": "eec43e4d7e81aa3337e89ea5b019a7d115a5112ede1d91a01c2493936ddbe640"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/23.stderr.raw",
+      "bytes": 265306,
+      "sha256": "95eff50f3361cf766f029e97afd58c4ff7608dec9d099aa5d222ebfe34c076d7"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/23.stdout.raw",
+      "bytes": 2513,
+      "sha256": "92fc87c7e6c4cf33cb8eb7017ce63582b1c3907a20d28a639a2430a4689b0069"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/24.stdout.raw",
+      "bytes": 50736,
+      "sha256": "5a0966e10ff5f6062461d42168829b4a356cb8ca7e9d0ee53331e41048fd0528"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/25.stderr.raw",
+      "bytes": 119505,
+      "sha256": "d593b4f3ea166c0826d06735db82bc91b3e77e12ba4a72ba862d25c3ed233c5f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/25.stdout.raw",
+      "bytes": 1204,
+      "sha256": "466a8b1f157fa3648fdb978fc97cf56fe696cf7eedb1bbef8f29fdc669eb0c63"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/26.stdout.raw",
+      "bytes": 51244,
+      "sha256": "af948c4fc4a3b062235a17b56acc2d403dd6e554c4a6a1cb3113690d07dcacdb"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/27.stderr.raw",
+      "bytes": 129035,
+      "sha256": "884899664c7d3745afecce3f2a842b24c32162cdb6f9db96abb499366f5a9b14"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/27.stdout.raw",
+      "bytes": 1125,
+      "sha256": "31bc9a6de2975ca94ea2088b72364ff60fa9f185b30cfd8e8a471f828ac0a38e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/28.stderr.raw",
+      "bytes": 748,
+      "sha256": "d326d4a0c5041a7cfd457761ac6c3095fd8c6f3a8f358296f62365c8ffaf0ffb"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/29.stderr.raw",
+      "bytes": 572,
+      "sha256": "ba4705269875bb51598ea20893df52a42b9363fe3b9afbbc9cc00787ff912097"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/29.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/3.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/4.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/5.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/6.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/7.stdout.raw",
+      "bytes": 9815,
+      "sha256": "277b0447531cf8f8698cf16521e7ac38c95fce484d5d5cd36bf4d1fc1704e8b9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/8.stdout.raw",
+      "bytes": 9815,
+      "sha256": "277b0447531cf8f8698cf16521e7ac38c95fce484d5d5cd36bf4d1fc1704e8b9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/raw/9.stdout.raw",
+      "bytes": 148,
+      "sha256": "8ccfd5fed33428dddca5f1e730a90c74d9e7e719a875467e38a018a8f38b7cc2"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/root-check.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/root-check.stdout.raw",
+      "bytes": 41142,
+      "sha256": "86b34fa48387e37ff1cc3620c48d89ea807bc1f8319814fe56bdcac590b3dd54"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-comparison-root-v2/root-physical-check.json",
+      "bytes": 41142,
+      "sha256": "86b34fa48387e37ff1cc3620c48d89ea807bc1f8319814fe56bdcac590b3dd54"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/current_final_v2/javac23/AnonymousSuperArgs$1.class",
+      "bytes": 680,
+      "sha256": "034279693f7eb1a146cb3ef591704e3c4a607d901827f1cafd66d0cfa47add55"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/current_final_v2/javac23/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "064622c19764fafbe90deec5a419ba39048fcb76a045301ae4c4ef2c3e7a52b6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/current_final_v2/javac23/Base.class",
+      "bytes": 597,
+      "sha256": "f047f184122f64b24075a57322e5a7a4494561ba1cea2329edec64ad3bcc5790"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/current_final_v2/javac8/AnonymousSuperArgs$1.class",
+      "bytes": 680,
+      "sha256": "b6ce5c812ff27ba9016f3854759b793d7459208e1a8210b1ab8ff7ccc27bb908"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/current_final_v2/javac8/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "e5eab67dc7d8a384c27d49ed6af4431520364db8aebc6ddee17351a4c7d1e51e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/current_final_v2/javac8/Base.class",
+      "bytes": 597,
+      "sha256": "59e2409e4204db7ed56ed74f93b3710327f166526bee62eaeba34bb8639afbb6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/parent_v5/javac23/AnonymousSuperArgs$1.class",
+      "bytes": 680,
+      "sha256": "034279693f7eb1a146cb3ef591704e3c4a607d901827f1cafd66d0cfa47add55"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/parent_v5/javac23/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "064622c19764fafbe90deec5a419ba39048fcb76a045301ae4c4ef2c3e7a52b6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/parent_v5/javac23/Base.class",
+      "bytes": 597,
+      "sha256": "f047f184122f64b24075a57322e5a7a4494561ba1cea2329edec64ad3bcc5790"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/parent_v5/javac8/AnonymousSuperArgs$1.class",
+      "bytes": 680,
+      "sha256": "b6ce5c812ff27ba9016f3854759b793d7459208e1a8210b1ab8ff7ccc27bb908"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/parent_v5/javac8/AnonymousSuperArgs.class",
+      "bytes": 1261,
+      "sha256": "e5eab67dc7d8a384c27d49ed6af4431520364db8aebc6ddee17351a4c7d1e51e"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/classes/parent_v5/javac8/Base.class",
+      "bytes": 597,
+      "sha256": "59e2409e4204db7ed56ed74f93b3710327f166526bee62eaeba34bb8639afbb6"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/execution.json",
+      "bytes": 38778,
+      "sha256": "123bcd1b7b05a8b6dee6227aaf4261374d07f050bb39f11cf6a92dc99f22ffcb"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/2.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/3.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/4.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/6.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/7.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/raw/8.stdout.raw",
+      "bytes": 82,
+      "sha256": "58a734c7b8e65d3b368974a51aebbdd66c0c4a7a173a7eb3582e5686b23a39c9"
+    },
+    {
+      "path": "temporary/jarde-anonymous-super-args-projected-root-replay-root-v1/root-summary.json",
+      "bytes": 405,
+      "sha256": "431bbcab4c27a0058d650633c9839562d9ac1da93f9caf8077b43ff9e0685924"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-concat-anon-child-proof-root-v1/README.md",
+      "bytes": 1690,
+      "sha256": "ff6ef29c43705045fa38270dc9d8828bd30813e2523a2ff7ab7461310de840e5"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-concat-anon-child-proof-root-v1/anonymous_super_args_render_test.rs.snippet",
+      "bytes": 11323,
+      "sha256": "abf14a52f47659883fe1db9da6214f1d53e2edbde9c00d05ee7c3f2fa9e58c9b"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-concat-failure-review-root-v1/REVIEW.md",
+      "bytes": 6373,
+      "sha256": "c61d5a626530fd9a3baafc5be4d75e9fe37b2369d994bbe4c1be07bb8b307556"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/execution.json",
+      "bytes": 2127684,
+      "sha256": "b2d5e6a8b684ffcc8ac933bb1083258b4bab2bef2654fb32137753e9d979c3e2"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/raw/2.stderr.raw",
+      "bytes": 4592,
+      "sha256": "f8b11b917a570add27d9d38e970fa7963675aa970889204188bd369aea10b540"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/raw/3.stderr.raw",
+      "bytes": 53,
+      "sha256": "634e376708dd0dae101e095a8c45800044b2e5864c0f8e4665d7b85e0bbe28fa"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/execution.json",
+      "bytes": 2133090,
+      "sha256": "2ae5263fa94b65cbaa5e7744d980c8c1989a902139af1c54455a383e67bc9a71"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/2.stderr.raw",
+      "bytes": 3835,
+      "sha256": "be3ecb5a9a38a8bd32f8671dfc11bef7e6df63be517e05396eff86ac1c2ef79c"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/3.stderr.raw",
+      "bytes": 1680,
+      "sha256": "d06aac11a89836a624b73db009f1f1692793068418a0558426f8669681900f18"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/3.stdout.raw",
+      "bytes": 36677,
+      "sha256": "8da3b4df3759f87d29090eb4c20ca6f8207b4f3c2940a88da801f401c355d95b"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/4.stderr.raw",
+      "bytes": 818242,
+      "sha256": "4508e1ee098df42d3d1b67ee64483f04e08e5e907dd478f8525eb1fab018348e"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/4.stdout.raw",
+      "bytes": 7311,
+      "sha256": "1925fb85134fbb8ba7a49592ffa3a90b2513c4c5bc5efeeb1da080c53fa39a90"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/5.stderr.raw",
+      "bytes": 1432,
+      "sha256": "cb667028461b6ddddba820065dc495d70c3766da4227d0a194deeb455275e2c6"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/6.stdout.raw",
+      "bytes": 16536,
+      "sha256": "a80a3519bd518f6c4b22b75405e7563a2ebab4d04d464f2aec3477a4238827d5"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/7.stderr.raw",
+      "bytes": 53,
+      "sha256": "9181590facb7a1d9d7ea2a0bcb29b6c7fe5800c3d1476d58cdf67e40ed3d4469"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v2/root-summary.json",
+      "bytes": 1868,
+      "sha256": "0b85dbfb0359095dcd113579dc491e470564d0fb69477053e84c55c574847353"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/execution.json",
+      "bytes": 2127685,
+      "sha256": "577fa8c8ed770f6c4b8067b7e2100d49a6a694c99ec6cbd98806df075fcc3766"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/raw/2.stderr.raw",
+      "bytes": 4961,
+      "sha256": "dde6ddb060bec3b8312b19b5d9c9302b06908a120637539b933cf3185c05bc2c"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/raw/3.stderr.raw",
+      "bytes": 53,
+      "sha256": "e7c04320b4f9f16175b672014d06d65682867d7baaf1bbb324c0a3e2c894f8e0"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v3/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/execution.json",
+      "bytes": 2133091,
+      "sha256": "3612d48e7951552b70e61bfa36fa083582316a7f469394e05e7e435a934f5597"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/2.stderr.raw",
+      "bytes": 3835,
+      "sha256": "7a24fb631de4b726b054f24865e1d32bb1de7be0f797accdf44464f76a0a96c7"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/3.stderr.raw",
+      "bytes": 1680,
+      "sha256": "9a761b5a21fd46416f9fb744e9833b7c147b87b84512d65034528889047537fa"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/3.stdout.raw",
+      "bytes": 36677,
+      "sha256": "a230e26e9e06bbb7847fff2ed492edeb793167fc3e555ae8c403a33c07173677"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/4.stderr.raw",
+      "bytes": 874705,
+      "sha256": "e91599517bc44127260f9e6c82db1c0dbaf1bc9f953ca4f1963c6f5f977c9989"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/4.stdout.raw",
+      "bytes": 7389,
+      "sha256": "886d40c1e6962c286e89b7ce0749f817f811e063e76c2ce60a82674c331015b1"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/5.stderr.raw",
+      "bytes": 1432,
+      "sha256": "5eea91d54a53c6f9060e18f6e4223c40ef0b9c31c0e0d9e59c7638711531fbc2"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/6.stdout.raw",
+      "bytes": 16536,
+      "sha256": "a80a3519bd518f6c4b22b75405e7563a2ebab4d04d464f2aec3477a4238827d5"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/7.stderr.raw",
+      "bytes": 53,
+      "sha256": "4d1e1f16b706d833193b606b2c7d98ffd9302538953880b4f7046df6346f05ce"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-final-check-root-v4/root-summary.json",
+      "bytes": 1945,
+      "sha256": "57fb4ef4b26c078aabaf008d6e7b30830ccaf06e01e2f6b7e351f1f951d12522"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-prep-luna-v2/README.md",
+      "bytes": 2457,
+      "sha256": "d935541af87ba73dcf7991a87336e0be65f7e3e4084a899493c27693da3040d1"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-prep-luna-v2/accept_workspace.py",
+      "bytes": 26853,
+      "sha256": "48067b857dcbeb78983a5fb391cd0c18739ad7c2f4a3186057ce94970777498c"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-prep-luna-v2/pins.json",
+      "bytes": 4784,
+      "sha256": "ea1e8800edb018acfe1f4076b8695174d5aeb8b320455a1089b6d57be9a44c0f"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-prep-luna-v2/workspace_runner.py",
+      "bytes": 45945,
+      "sha256": "9b3ec7930e9ccb9e7b66d44035606367ceb78293c2bb5a4741ef403ad343ea24"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/1.stdout.raw",
+      "bytes": 94315,
+      "sha256": "4b39effb4ad04d0e58d7f6a575dde9844a379a32d600198f3e97d83577a3895a"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/2.stderr.raw",
+      "bytes": 4127,
+      "sha256": "a652e236004b9f4613395de74c473e8902e5e9feb399781c0d0a6e5b81676e86"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/2.stdout.raw",
+      "bytes": 101738,
+      "sha256": "b512d0d40d9eb71ed1f2ac660ed5605f8e6f92c8c8d54301dab91100334e8937"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/3.stderr.raw",
+      "bytes": 658,
+      "sha256": "c0d0bf6c2834fa70c1374808b7e691d1ee7fa5ff63e05a0b88fa469013e4014a"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/3.stdout.raw",
+      "bytes": 75709,
+      "sha256": "255ec586f2e9bf4861cb0d203024b9ef00f5bc51eb5c340245b4557819a3107e"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/4.stderr.raw",
+      "bytes": 628,
+      "sha256": "4192dc05251aeefa2681e18876fc71d4ab6aa3269d8f88b396396606115b2d10"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/4.stdout.raw",
+      "bytes": 75103,
+      "sha256": "64325bdb226bceb2f07d995083f2ffc6e5d9dc69263de080fcdd8999a977ea4f"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/5.stderr.raw",
+      "bytes": 606,
+      "sha256": "efcde65644134614cc31714f8a698c140a9c6e26455e06220493ffc235222f3e"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/5.stdout.raw",
+      "bytes": 75016,
+      "sha256": "600166b6d12fa55cf872aabb20f8b8ee4e70b6365d8fc43677d5199d73cb4a78"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/6.stderr.raw",
+      "bytes": 476,
+      "sha256": "f6603cf2a8abbc4a33b977b75a44b700d6f285b76007c28a6fb097cc357d415e"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/6.stdout.raw",
+      "bytes": 85357,
+      "sha256": "18da78bd3385590a3aa90a5847cd177ecb6cff09d290cd200851db5e7da12d9a"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/7.stderr.raw",
+      "bytes": 52,
+      "sha256": "69fd4100e97401ca4698c32648902662b5c54332a5710f7e1dee55fa62e720b0"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/execution.json",
+      "bytes": 2541404,
+      "sha256": "a8435dd7a3befd56f616d313fcd7a5aa8f37048e2c95bde4d4f24feae33436ba"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-full-workspace-run-root-v2/metadata.json",
+      "bytes": 94315,
+      "sha256": "4b39effb4ad04d0e58d7f6a575dde9844a379a32d600198f3e97d83577a3895a"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/README.md",
+      "bytes": 4716,
+      "sha256": "bb12d1c1574949c9a80925031d5cc30a6ee7e66f413ba546fd57e81eac2a4d6f"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/accept_workspace-v2-frozen.py",
+      "bytes": 26853,
+      "sha256": "48067b857dcbeb78983a5fb391cd0c18739ad7c2f4a3186057ce94970777498c"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/capture-own-ci-v3-frozen.py",
+      "bytes": 6778,
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/capture-own-ci-v3-to-adapter.diff",
+      "bytes": 1511,
+      "sha256": "3653eb5b0c0722f906487ce2e5cf7db3faf65e2d71ed898f8ea3f3cc6a6b9877"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/capture-own-ci.py",
+      "bytes": 6770,
+      "sha256": "842ce7f7b9ae20c19962b9495fb62c1d8eac2d87ccc05d1c482d4c95818a7bdf"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/pins.json",
+      "bytes": 4625,
+      "sha256": "d1bdb38d0d81c87fe9abca9dea6344c3d8ae94f242441179485f2586f4e5c580"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/verify-own-ci-v10-frozen.py",
+      "bytes": 52585,
+      "sha256": "02d3241c9f9ca26b4fe68d8b8ce7415dee0772cad649feb028fbe68c3a5389c4"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/verify-own-ci-v10-to-ordered-field.diff",
+      "bytes": 86077,
+      "sha256": "4dd6371279512f9026b455b23b37a78d4b7d12b1ff22ea1b8a7ebe8c41f59074"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/verify-own-ci.py",
+      "bytes": 35792,
+      "sha256": "4f5456f11724c62294e028cd00ad76fc3c6d858155983c3b73624526e3821e27"
+    },
+    {
+      "path": "temporary/jarde-ordered-field-own-ci-prep-luna-v1/workspace_runner-v2-frozen.py",
+      "bytes": 45945,
+      "sha256": "9b3ec7930e9ccb9e7b66d44035606367ceb78293c2bb5a4741ef403ad343ea24"
+    },
+    {
+      "path": "tooling/jarde-anonymous-child-proof-commands-root-v1.json",
+      "bytes": 260,
+      "sha256": "f6e5a5298851a6df37e3ac05aba578fdd892a6a1a441d5b7d2366a0e04a8bfdf"
+    },
+    {
+      "path": "tooling/jarde-loop-focused-runner-root-v1.py",
+      "bytes": 4549,
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-accept-root-v1.py",
+      "bytes": 3788,
+      "sha256": "6fb2ec3e4f0d1d670764ab98a7c73aaf46ab2146942559ae09e1fde0b3a319e5"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-accept-root-v2.py",
+      "bytes": 3788,
+      "sha256": "6fb2ec3e4f0d1d670764ab98a7c73aaf46ab2146942559ae09e1fde0b3a319e5"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-accept-root-v3.py",
+      "bytes": 3856,
+      "sha256": "6d46c113f1ecdda2d2dd6fef3490ee1f9f24dd266139265569e4f8b9adaa0111"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-commands-root-v1.json",
+      "bytes": 1557,
+      "sha256": "915459b2d9276c9ba3938ab4307fcadfa911a523ba3b589772b1c58ae02704a2"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-commands-root-v2.json",
+      "bytes": 1863,
+      "sha256": "0fe25a79d40c78f8bf1216f47801d23ec97070c97359f4e316d0889d4c442623"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-commands-root-v3.json",
+      "bytes": 1863,
+      "sha256": "0fe25a79d40c78f8bf1216f47801d23ec97070c97359f4e316d0889d4c442623"
+    },
+    {
+      "path": "tooling/jarde-ordered-field-final-check-commands-root-v4.json",
+      "bytes": 1863,
+      "sha256": "0fe25a79d40c78f8bf1216f47801d23ec97070c97359f4e316d0889d4c442623"
+    }
+  ],
+  "focused_receipt_sha256": "3612d48e7951552b70e61bfa36fa083582316a7f469394e05e7e435a934f5597",
+  "source_snapshot_matches_focused_manifest": true,
+  "source_count": 4854,
+  "scope": "Final local gates and anonymous concat regression attribution; failed first full workspace retained. Fresh full workspace root-v3 and own product CI are not included or accepted."
+}

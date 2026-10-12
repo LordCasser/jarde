@@ -1,0 +1,99 @@
+{
+  "scope": "CLI v5 fragmented whole-text and published retry transfer maps only",
+  "entries": [
+    {
+      "entry": "fragmented/execution.json",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/execution.json",
+      "bytes": 2124185,
+      "sha256": "ed3fc7ca5081034cb2dbdc2ef87e448be457691f67acde4f0e83f91d3b8098ab"
+    },
+    {
+      "entry": "fragmented/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "fragmented/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/1.stdout.raw",
+      "bytes": 73440,
+      "sha256": "c5dcbf99a5c3fe609a16f0b1dadada159e448c935cdb671e8701f4bb088523d2"
+    },
+    {
+      "entry": "fragmented/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "fragmented/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/2.stdout.raw",
+      "bytes": 73440,
+      "sha256": "7401be918393d8b71bb5fff3ed016fdd67c519d2bf0faebc12555b3c8d38daa9"
+    },
+    {
+      "entry": "fragmented/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "fragmented/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/3.stdout.raw",
+      "bytes": 93506,
+      "sha256": "95fdba136937d5fc00d3cbda5364aa1a8ada97faf2d49bae07cfcfb561bbd3f7"
+    },
+    {
+      "entry": "fragmented/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "fragmented/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/4.stdout.raw",
+      "bytes": 93508,
+      "sha256": "8bd3aedfa61cd856c142078f420b21b209932e36509555e8f418e5aa8926062f"
+    },
+    {
+      "entry": "fragmented/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/5.stderr.raw",
+      "bytes": 34,
+      "sha256": "46bec2d095221d376eb64b03e4b991c1170ad3773ec9245b8095edab69f94927"
+    },
+    {
+      "entry": "fragmented/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "fragmented/root-summary.json",
+      "source": "/private/tmp/jarde-loop-fragmented-control-root-v1/root-summary.json",
+      "bytes": 968,
+      "sha256": "976721c239924aeaf9e52ae358f1f8506bbece50622b31d82fa748923906000b"
+    },
+    {
+      "entry": "maps/root-transfer-maps.json",
+      "source": "/private/tmp/jarde-loop-candidate-comparison-root-v2/root-transfer-maps.json",
+      "bytes": 9032,
+      "sha256": "56886a51049c534bd5cda4a9ede48050b3b0ac8415548dc33e3c937dc3fba9b3"
+    },
+    {
+      "entry": "tools/jarde-loop-fragmented-control-commands-root-v1.json",
+      "source": "/private/tmp/jarde-loop-fragmented-control-commands-root-v1.json",
+      "bytes": 1697,
+      "sha256": "095b2778e3f07a166c45b59bd81f8bcbbc7200539fabcea654a438b0da123ef4"
+    },
+    {
+      "entry": "tools/jarde-loop-focused-runner-root-v1.py",
+      "source": "/private/tmp/jarde-loop-focused-runner-root-v1.py",
+      "bytes": 4549,
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f"
+    }
+  ],
+  "archive": {
+    "bytes": 474410,
+    "sha256": "106b67e462a7b6bfca7ed69ce279a5ec8bde41e0ee3a848085fa5902d98e6467"
+  }
+}

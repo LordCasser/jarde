@@ -1,7 +1,8 @@
 //! `recover-twr-javac8-close-sequence`: the JDK 8 `try`-with-resources closing sequence — a blank
 //! primary copy (`aconst_null; astore p`), the rethrow relay the body's own row runs through, and
 //! every close guarded twice — recovers as the source `try (T n = …) { … }`, while the newer
-//! lowering's presentation and every weakened geometry of the older one keep the answers they had.
+//! lowering's resource statements and every weakened geometry of the older one keep the answers
+//! they had. Direct field concatenations in `use` and `close` recover independently.
 //!
 //! The two legs are the patrol's own frozen fixtures (one `TR.java`, compiled by Corretto 1.8.0_432
 //! and by javac 23 `--release 8`):
@@ -147,12 +148,26 @@ fn the_older_lowerings_level_is_recovered_as_a_try_with_resources() {
 }
 
 #[test]
-fn the_newer_lowerings_presentation_is_byte_for_byte_the_pre_change_one() {
+fn the_newer_lowerings_keep_their_resource_text_with_recovered_field_concats() {
     let report = class_source(JAVAC23);
     let rendered = report.text.as_bytes();
+    // Keep the historical snapshot intact. Only the two independently proved field chains
+    // change; every other byte, including the complete one/two resource statements, must match.
+    let expected = std::str::from_utf8(JAVAC23_RENDERED)
+        .expect("the frozen presentation is UTF-8")
+        .replacen(
+            "return new java.lang.StringBuilder().append(\"used:\").append(this.name).toString();",
+            "return \"used:\" + this.name;",
+            1,
+        )
+        .replacen(
+            "java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(\"closed:\").append(this.name).toString());",
+            "java.lang.System.out.println(\"closed:\" + this.name);",
+            1,
+        );
     assert!(
-        JAVAC23_RENDERED.starts_with(rendered),
-        "the javac 23 leg's content moved:\n{}",
+        expected.as_bytes().starts_with(rendered),
+        "the javac 23 leg changed beyond its two recovered field chains:\n{}",
         report.text
     );
 }

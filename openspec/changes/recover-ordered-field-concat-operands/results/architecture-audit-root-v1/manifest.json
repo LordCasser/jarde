@@ -1,0 +1,63 @@
+{
+  "scope": "Architecture observations only; no new product acceptance",
+  "entries": [
+    {
+      "path": "openspec/changes/recover-ordered-field-concat-operands/results/architecture-audit-root-v1/audit-luna-v1.md",
+      "bytes": 13443,
+      "sha256": "a1234ddfd14d8b95a350120d12778a22e1abc6a3f7a4cc15e9242b3f3af0f159"
+    },
+    {
+      "path": "openspec/changes/recover-ordered-field-concat-operands/results/architecture-audit-root-v1/audit-luna-v2.md",
+      "bytes": 25863,
+      "sha256": "a37577951ed6cd31116d6e55c86554025ebb226c620c434ccd40015fa479ccb2"
+    },
+    {
+      "lane": "debug-javac8",
+      "report_path": "/private/tmp/jarde-loop-candidate-comparison-root-v2/candidate/retry-v2-debug-javac8/report.json",
+      "report_bytes": 285572,
+      "report_sha256": "3f1d57493b23f00cb4929a8f61ea2b962d16159a6965ad0c87c23d4aacf59215",
+      "physical_class": {
+        "digest": "2f473c5d80f0e81e6a867ef0e1123c7039434d79b9106a4cc9f6282fb16fc533",
+        "length": 1742
+      },
+      "omitted_allocation53": true,
+      "method_outcome": "recovered"
+    },
+    {
+      "lane": "none-javac8",
+      "report_path": "/private/tmp/jarde-loop-candidate-comparison-root-v2/candidate/retry-v2-none-javac8/report.json",
+      "report_bytes": 285439,
+      "report_sha256": "87dafc08a09ca236aa9ad610db71852895ae9503dc83d0e1935247c47408973b",
+      "physical_class": {
+        "digest": "7bcd2673f5ade332f0d7905f5d8cf506875b2dbbd313a0d86eaf96feb7156ee6",
+        "length": 1394
+      },
+      "omitted_allocation53": true,
+      "method_outcome": "recovered"
+    },
+    {
+      "lane": "debug-javac23",
+      "report_path": "/private/tmp/jarde-loop-candidate-comparison-root-v2/candidate/retry-v2-debug-javac23/report.json",
+      "report_bytes": 285572,
+      "report_sha256": "39f1e47c29ca96c38b250adbee915b859a12970c75b889ae857fb782f5731134",
+      "physical_class": {
+        "digest": "c72d07932e978537a79e4ce104a680e2e5501183316666eb659b343762a56efa",
+        "length": 1739
+      },
+      "omitted_allocation53": true,
+      "method_outcome": "recovered"
+    },
+    {
+      "lane": "none-javac23",
+      "report_path": "/private/tmp/jarde-loop-candidate-comparison-root-v2/candidate/retry-v2-none-javac23/report.json",
+      "report_bytes": 285439,
+      "report_sha256": "72c5dc9d6ca2cca3d8d4b8ac3c85abd4609365b482f7c0c6804c406574c9b5a9",
+      "physical_class": {
+        "digest": "4d5fe57af88a851b001947d4d003daba615643cd118755142720556dd1e09991",
+        "length": 1391
+      },
+      "omitted_allocation53": true,
+      "method_outcome": "recovered"
+    }
+  ]
+}

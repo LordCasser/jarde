@@ -1721,6 +1721,16 @@
       "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.java"
     },
     {
+      "blake3": "5d875147f8ec5ca004d8c35e2571c06c907b01f41225bb8be35871d891566d74",
+      "bytes": 1716,
+      "path": "tests/fixtures/java8/loop-body-catch-patrol/javac8/DF.class"
+    },
+    {
+      "blake3": "69bb850ed410955cca3a9423e88eef43e7237acbd35b3e7170f597b124fba6e8",
+      "bytes": 1755,
+      "path": "tests/fixtures/java8/loop-body-catch-patrol/javac8/DV.class"
+    },
+    {
       "blake3": "9102cd0d30c33781f2f1b3dde476d484c63a380601fc4a557c1504c664065e03",
       "bytes": 91,
       "path": "tests/fixtures/method-signature-grammar/GenericReturn.java"
@@ -5436,6 +5446,36 @@
       "path": "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoinExtraBreak.class"
     },
     {
+      "blake3": "1791b9b85dc85b4cdc5c09a4d00000ac15322296df219679e0bf5ad5ce060472",
+      "bytes": 430,
+      "path": "tests/fixtures/p3-loop-body-catch-negative-load/LoadNegatives.class"
+    },
+    {
+      "blake3": "3745a15cb449baffdeb2f6f6bbe800243b7b65e5ed3acfdfccd592ba083390f6",
+      "bytes": 374,
+      "path": "tests/fixtures/p3-loop-body-catch-negative-load/LoadNegatives.java"
+    },
+    {
+      "blake3": "3bb98a7519bd218d684a9494b2b6e1f6f736d1233b6a382de0b0d60ca3b19d9d",
+      "bytes": 1749,
+      "path": "tests/fixtures/p3-loop-body-catch/DV-debug-javac23.class"
+    },
+    {
+      "blake3": "69bb850ed410955cca3a9423e88eef43e7237acbd35b3e7170f597b124fba6e8",
+      "bytes": 1755,
+      "path": "tests/fixtures/p3-loop-body-catch/DV-debug-javac8.class"
+    },
+    {
+      "blake3": "6fc59b07f506d6776977769abc2ad36c6f7fc22724fd3d2504ab27ceb0ae8049",
+      "bytes": 1261,
+      "path": "tests/fixtures/p3-loop-body-catch/DV-none-javac23.class"
+    },
+    {
+      "blake3": "9db1b95f08797db3c45f4a4e3cf4efa12431baf2395fd4601b6ceeb6f2abf94a",
+      "bytes": 1267,
+      "path": "tests/fixtures/p3-loop-body-catch/DV-none-javac8.class"
+    },
+    {
       "blake3": "a6765d28d14c92f6900961351b1d1566bbd8e275ec07de393b65813b1fde0c16",
       "bytes": 601,
       "path": "tests/fixtures/p3-loop-boolean-exit/LoopBool.java"
@@ -5444,6 +5484,46 @@
       "blake3": "c2077dc2b9d8a6f8a7bd339a418606257b6120fdbf978c2b350ace9cbb5e4b0c",
       "bytes": 379,
       "path": "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class"
+    },
+    {
+      "blake3": "c72d07932e978537a79e4ce104a680e2e5501183316666eb659b343762a56efa",
+      "bytes": 1739,
+      "path": "tests/fixtures/p3-loop-catch-retry/v2-debug-javac23/RetryFixture.class"
+    },
+    {
+      "blake3": "2f473c5d80f0e81e6a867ef0e1123c7039434d79b9106a4cc9f6282fb16fc533",
+      "bytes": 1742,
+      "path": "tests/fixtures/p3-loop-catch-retry/v2-debug-javac8/RetryFixture.class"
+    },
+    {
+      "blake3": "4d5fe57af88a851b001947d4d003daba615643cd118755142720556dd1e09991",
+      "bytes": 1391,
+      "path": "tests/fixtures/p3-loop-catch-retry/v2-none-javac23/RetryFixture.class"
+    },
+    {
+      "blake3": "7bcd2673f5ade332f0d7905f5d8cf506875b2dbbd313a0d86eaf96feb7156ee6",
+      "bytes": 1394,
+      "path": "tests/fixtures/p3-loop-catch-retry/v2-none-javac8/RetryFixture.class"
+    },
+    {
+      "blake3": "6e75177bc9ac17d3d3bd230104aa0b0f657d6247fd34a2ccaae3b008d95cd394",
+      "bytes": 1395,
+      "path": "tests/fixtures/p3-loop-catch-retry/v3-debug-javac23/RetryFixture.class"
+    },
+    {
+      "blake3": "b8fde4055668ca864c84c00298ad14c15b8c910d95d61c49800511e48b77d51d",
+      "bytes": 1398,
+      "path": "tests/fixtures/p3-loop-catch-retry/v3-debug-javac8/RetryFixture.class"
+    },
+    {
+      "blake3": "648e3fc441ab895451a414bc41242394183c9e661af5e5b1bc07435dda72dc2d",
+      "bytes": 1047,
+      "path": "tests/fixtures/p3-loop-catch-retry/v3-none-javac23/RetryFixture.class"
+    },
+    {
+      "blake3": "355b3edc1a92194ea932490b2add0b751969e2cf609cb1cad30c8fe745188515",
+      "bytes": 1050,
+      "path": "tests/fixtures/p3-loop-catch-retry/v3-none-javac8/RetryFixture.class"
     },
     {
       "blake3": "e747790d51d52f4fb9f6435238c6c0644f8f4e243ca3b6092a54cda6164ff874",
@@ -8734,6 +8814,71 @@
       "blake3": "01bedf79f7ffa09112b4fc246a0f2979f17cbe10f71322de9ce16e9995030195",
       "bytes": 2346,
       "path": "tests/fixtures/proved-java-structure/static-member-basic/javap.txt"
+    },
+    {
+      "blake3": "c6046ab8ba94181d9ed5aea5f9d1e32e98713c82156239888b69fa602a314bfc",
+      "bytes": 819,
+      "path": "tests/fixtures/proved-ordered-field-concat/NegativeRunner.java"
+    },
+    {
+      "blake3": "86813378374ebcf2eb970d3f7989108f23518d96e99c83de91bd0e2341617c34",
+      "bytes": 2115,
+      "path": "tests/fixtures/proved-ordered-field-concat/OrderedFieldConcat.java"
+    },
+    {
+      "blake3": "b4658788fce94276879d9a5006e867c86cb557e9762171e2968493c785f1a9e6",
+      "bytes": 1602,
+      "path": "tests/fixtures/proved-ordered-field-concat/OrderedFieldConcatNegatives.java"
+    },
+    {
+      "blake3": "2215ada8fea7b78598444acbb4677440af23c4956d8b0e36e496eee49ead8eaa",
+      "bytes": 2915,
+      "path": "tests/fixtures/proved-ordered-field-concat/Runner.java"
+    },
+    {
+      "blake3": "c7afdd44ee04e04a0088ad790795c4ead7f6993110c437c10e7efd0a81df902f",
+      "bytes": 2228,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcat.class"
+    },
+    {
+      "blake3": "1ebafbe6a9ade7a5261f354d93cff8b08deda62a11412b49a1581d97db636fab",
+      "bytes": 1892,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcatNegatives.class"
+    },
+    {
+      "blake3": "7229612884ef9ccf80ecdcd3e8f8427d4f7479e11d4ff126677f355f49ab92dd",
+      "bytes": 1689,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcat.class"
+    },
+    {
+      "blake3": "a066fd432945d2d2e28045b33145ee9a722a31d0c03343ebe58ac5478d4b138a",
+      "bytes": 1336,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcatNegatives.class"
+    },
+    {
+      "blake3": "193c146e3a2527a9b60b1aaadddd5e03438a63145413e51cf7a4247abf4032ce",
+      "bytes": 2228,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class"
+    },
+    {
+      "blake3": "689f21b5834d5e9cb7a2ca9596d2677ed4bc0ad1377b5d83df54ee9537b8066f",
+      "bytes": 1892,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcatNegatives.class"
+    },
+    {
+      "blake3": "62b14828974ade571487b88c218806d2bc54346fdcc986b596ab32ffc6c386fa",
+      "bytes": 1689,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcat.class"
+    },
+    {
+      "blake3": "eb99268eeb7bfb9abe35e147d045fcd7776ec22934e024660f878e243514481c",
+      "bytes": 1336,
+      "path": "tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcatNegatives.class"
+    },
+    {
+      "blake3": "e6e6b878fb409b5ad953913cdf95f35e6c962d7fc687d5c10b09f420b7a6eca6",
+      "bytes": 2984,
+      "path": "tests/fixtures/proved-ordered-field-concat/manifest.json"
     },
     {
       "blake3": "35268788b3efa08b08db573efba5931cdecfe83ea8375af9710282e9f1286339",

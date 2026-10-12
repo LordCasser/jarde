@@ -1465,7 +1465,9 @@ pub(crate) fn recover(
     // same kind is asked of the decode, and it is answered at the end of this function, because
     // what the body has to become then depends on what the walk found.
     let fragmented = crate::fragmented_catch::prove(canonical, view, ssa, code, budget)?;
-    let mut catch_joins = proved_loop_catch_joins(canonical, view, code, budget)?;
+    let loop_catch_proofs =
+        proved_loop_catch_joins(canonical, view, ssa, operations, code, budget)?;
+    let mut catch_joins = loop_catch_proofs.joins.clone();
     if let Some(proof) = &fragmented {
         catch_joins.extend(proof.loop_entries.iter().copied());
     }
@@ -1582,6 +1584,7 @@ pub(crate) fn recover(
         profile,
         budget,
         catch_joins,
+        loop_catch_terminal_owners: loop_catch_proofs.terminal_owners,
         fragmented,
         excluded_edge_nodes,
         visited: BTreeSet::new(),
@@ -1896,16 +1899,35 @@ pub(crate) fn quoted_control_flow_exit(
     Ok(None)
 }
 
+/// One finite catch-body extension to a natural loop. The ordinary CFG stays unchanged; these
+/// blocks are lexical body owners proved from a named row and terminal throw paths.
+#[derive(Clone, Debug)]
+struct LoopCatchTerminalOwner {
+    header: usize,
+    handler: usize,
+    join: usize,
+    row_ordinal: u32,
+    blocks: BTreeSet<usize>,
+}
+
+#[derive(Default)]
+struct LoopCatchProofs {
+    joins: BTreeSet<(usize, usize)>,
+    terminal_owners: Vec<LoopCatchTerminalOwner>,
+}
+
 /// A handler reached only through its stated exception row is not a second ordinary entry when
 /// its protected code belongs to one loop and both paths meet again inside that loop. Keep the
 /// ordinary edge in the view: the `try` walk still has to claim the handler and the join.
 fn proved_loop_catch_joins(
     canonical: &CanonicalCfg,
     view: &NormalFlowView,
+    ssa: &SsaTable,
+    operations: &Operations,
     code: &MethodCodeFacts,
     budget: &mut Budget,
-) -> Result<BTreeSet<(usize, usize)>, StopReason> {
-    let mut joins = BTreeSet::new();
+) -> Result<LoopCatchProofs, StopReason> {
+    let mut proofs = LoopCatchProofs::default();
     charge(
         budget,
         CountedBudgetDimension::AnalysisSteps,
@@ -1961,38 +1983,176 @@ fn proved_loop_catch_joins(
             if *join == header || !loop_of.blocks().contains(join) {
                 continue;
             }
-            let mut compatible = true;
-            for row in &rows {
+            // Preserve the original full physical-span scan for every mapped row. Its result
+            // drives both the old in-loop/dominated gate and, when it finds a loop-external block,
+            // the narrowly extended terminal-owner gate below.
+            let mut single_row_span = Vec::<(usize, u32)>::new();
+            let mut single_row_span_mapped = true;
+            let mut single_row_span_original_compatible = true;
+            let mut has_external_span_block = false;
+            let single_declared = if rows.len() == 1 {
+                let row = rows[0];
+                let Some(declared) = code
+                    .exception_handlers
+                    .iter()
+                    .find(|declared| declared.ordinal == row.ordinal())
+                else {
+                    continue;
+                };
                 charge(
                     budget,
                     CountedBudgetDimension::AnalysisSteps,
                     u64::try_from(canonical.blocks().len()).unwrap_or(u64::MAX),
                     at,
                 )?;
-                let Some(declared) = code
-                    .exception_handlers
-                    .iter()
-                    .find(|declared| declared.ordinal == row.ordinal())
-                else {
-                    compatible = false;
-                    break;
-                };
-                // `protected()` may list only actual throw-site blocks. The table's full range
-                // must also stay inside the loop body; a row covering the loop test or a block
-                // outside this loop cannot borrow a sibling row's valid handler entry.
-                for block in canonical.blocks().iter().filter(|block| {
-                    block.id().bci() < declared.end_bci && block.end_bci() > declared.start_bci
-                }) {
-                    let Some(node) = view.index_of(block.id()) else {
+                for block in canonical.blocks() {
+                    poll(budget, Some(block.id().bci()))?;
+                    if block.id().bci() < declared.end_bci && block.end_bci() > declared.start_bci {
+                        if let Some(node) = view.index_of(block.id()) {
+                            single_row_span.push((node, block.id().bci()));
+                            has_external_span_block |= !loop_of.blocks().contains(&node);
+                            // This is the original full-physical-span gate. Keep it active for
+                            // every single-row proof, including rows that do not qualify for the
+                            // terminal-owner extension.
+                            if node == header || !view.dominates(header, node) {
+                                single_row_span_original_compatible = false;
+                            }
+                        } else {
+                            single_row_span_mapped = false;
+                            single_row_span_original_compatible = false;
+                        }
+                    }
+                }
+                Some(declared)
+            } else {
+                None
+            };
+            let terminal = if rows.len() == 1 && single_row_span_mapped && has_external_span_block {
+                let row = rows[0];
+                let declared = single_declared.expect("single row has its physical facts");
+                prove_loop_catch_terminal_body(
+                    canonical, view, ssa, operations, code, row, declared, handler, *join, header,
+                    loop_of, budget,
+                )?
+            } else {
+                None
+            };
+            let empty_terminal_set = BTreeSet::new();
+            let terminal_nodes = terminal
+                .as_ref()
+                .map(|(nodes, _)| nodes)
+                .unwrap_or(&empty_terminal_set);
+            let terminal_leaves = terminal
+                .as_ref()
+                .map(|(_, leaves)| leaves)
+                .unwrap_or(&empty_terminal_set);
+            let mut compatible = rows.len() != 1
+                || (single_row_span_mapped
+                    && single_row_span_original_compatible
+                    && (terminal.is_some() || !has_external_span_block));
+            for row in &rows {
+                let declared = if rows.len() == 1 {
+                    single_declared.expect("single row has its physical facts")
+                } else {
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(canonical.blocks().len()).unwrap_or(u64::MAX),
+                        at,
+                    )?;
+                    let Some(declared) = code
+                        .exception_handlers
+                        .iter()
+                        .find(|declared| declared.ordinal == row.ordinal())
+                    else {
                         compatible = false;
                         break;
                     };
-                    if node == header
-                        || !loop_of.blocks().contains(&node)
-                        || !view.dominates(header, node)
-                    {
-                        compatible = false;
-                        break;
+                    declared
+                };
+                if rows.len() == 1 && terminal.is_some() {
+                    // The terminal certificate may own only the exceptional arm that the old
+                    // natural-loop gate excluded. Recheck the cached full-span nodes with the
+                    // additional owner and test-exit requirements; ordinary rows use only the
+                    // original full-span result above.
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(single_row_span.len()).unwrap_or(u64::MAX),
+                        at,
+                    )?;
+                    for &(node, block_bci) in &single_row_span {
+                        poll(budget, Some(block_bci))?;
+                        let Some(id) = view.id_of(node) else {
+                            compatible = false;
+                            break;
+                        };
+                        let test_exit = if terminal.is_some() {
+                            let successors = view.successors(node);
+                            charge(
+                                budget,
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(successors.len()).unwrap_or(u64::MAX),
+                                Some(block_bci),
+                            )?;
+                            let mut test_exit = false;
+                            if ssa
+                                .block(id)
+                                .and_then(|names| names.instructions().last())
+                                .is_some_and(|last| {
+                                    operations
+                                        .get(last.bci())
+                                        .is_some_and(|operation| operation.comparison().is_some())
+                                })
+                            {
+                                for successor in successors {
+                                    poll(budget, Some(block_bci))?;
+                                    if !loop_of.blocks().contains(&successor)
+                                        && !terminal_nodes.contains(&successor)
+                                    {
+                                        test_exit = true;
+                                    }
+                                }
+                            }
+                            test_exit
+                        } else {
+                            false
+                        };
+                        let terminal_path_mismatch = terminal.is_some()
+                            && row
+                                .handler()
+                                .is_none_or(|handler_id| id.path() != handler_id.path());
+                        if node == header
+                            || test_exit
+                            || terminal_path_mismatch
+                            || (terminal.is_some()
+                                && !loop_of.blocks().contains(&node)
+                                && !terminal_nodes.contains(&node))
+                            || !view.dominates(header, node)
+                        {
+                            compatible = false;
+                            break;
+                        }
+                    }
+                } else if rows.len() > 1 {
+                    for block in canonical.blocks() {
+                        poll(budget, Some(block.id().bci()))?;
+                        if block.id().bci() >= declared.end_bci
+                            || block.end_bci() <= declared.start_bci
+                        {
+                            continue;
+                        }
+                        let Some(node) = view.index_of(block.id()) else {
+                            compatible = false;
+                            break;
+                        };
+                        if node == header
+                            || !loop_of.blocks().contains(&node)
+                            || !view.dominates(header, node)
+                        {
+                            compatible = false;
+                            break;
+                        }
                     }
                 }
                 if !compatible {
@@ -2003,9 +2163,15 @@ fn proved_loop_catch_joins(
                         compatible = false;
                         break;
                     };
-                    if !loop_of.blocks().contains(&node)
+                    if (!loop_of.blocks().contains(&node) && !terminal_nodes.contains(&node))
                         || !view.dominates(header, node)
-                        || !plain_paths_reach_join(view, node, *join, budget)?
+                        || !plain_paths_reach_join_or_throw_leaves(
+                            view,
+                            node,
+                            *join,
+                            &terminal_leaves,
+                            budget,
+                        )?
                     {
                         compatible = false;
                         break;
@@ -2016,19 +2182,514 @@ fn proved_loop_catch_joins(
                 }
             }
             if compatible {
-                joins.insert((handler, *join));
+                proofs.joins.insert((handler, *join));
+                if !terminal_nodes.is_empty() {
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(terminal_nodes.len()).unwrap_or(u64::MAX),
+                        at,
+                    )?;
+                    for node in terminal_nodes {
+                        poll(budget, view.id_of(*node).map(CanonicalBlockId::bci))?;
+                    }
+                    proofs.terminal_owners.push(LoopCatchTerminalOwner {
+                        header,
+                        handler,
+                        join: *join,
+                        row_ordinal: rows[0].ordinal(),
+                        blocks: terminal_nodes.clone(),
+                    });
+                }
             }
         }
     }
-    Ok(joins)
+    Ok(proofs)
 }
 
-/// Every ordinary path must reach the join before a terminal or a cycle. A cycle that can avoid
-/// the join is not a proved rejoin, even if another route reaches it.
-fn plain_paths_reach_join(
+/// A terminal-body exemption is tied to exactly one decoded physical table row and one canonical
+/// path. Nearby rows can change JVM dispatch priority, so the new permission is withheld whenever
+/// another row overlaps its range or targets the same handler entry.
+fn finite_terminal_row_is_exclusive(
+    canonical: &CanonicalCfg,
+    code: &MethodCodeFacts,
+    row: &jarde_jvm::method_ir::CanonicalHandlerRow,
+    declared: &ExceptionHandlerFact,
+    handler: usize,
+    view: &NormalFlowView,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let at = Some(declared.start_bci);
+    if declared.start_bci >= declared.end_bci
+        || row.ordinal() != declared.ordinal
+        || row.handler_bci() != declared.handler_bci
+        || row.catch_type_index() != declared.catch_type_index
+        || row.catch_type_index().is_none()
+        || row.handler().and_then(|id| view.index_of(id)) != Some(handler)
+        || view.id_of(handler).map(CanonicalBlockId::bci) != Some(declared.handler_bci)
+    {
+        return Ok(false);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code.exception_handlers.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(u64::try_from(canonical.handler_rows().len()).unwrap_or(u64::MAX)),
+        at,
+    )?;
+    let mut matching_physical_rows = 0usize;
+    for candidate in &code.exception_handlers {
+        poll(budget, Some(candidate.start_bci))?;
+        if candidate.ordinal == declared.ordinal {
+            matching_physical_rows = matching_physical_rows.saturating_add(1);
+        } else if candidate.handler_bci == declared.handler_bci
+            || (candidate.start_bci < declared.end_bci && declared.start_bci < candidate.end_bci)
+        {
+            return Ok(false);
+        }
+    }
+    if matching_physical_rows != 1 {
+        return Ok(false);
+    }
+    let mut matching_canonical_rows = 0usize;
+    for candidate in canonical.handler_rows() {
+        poll(budget, Some(candidate.handler_bci()))?;
+        if candidate.ordinal() == declared.ordinal {
+            matching_canonical_rows = matching_canonical_rows.saturating_add(1);
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(row.protected().len()).unwrap_or(u64::MAX),
+                at,
+            )?;
+            if candidate.protected().len() != row.protected().len() {
+                return Ok(false);
+            }
+            for (candidate_block, row_block) in candidate.protected().iter().zip(row.protected()) {
+                poll(budget, Some(candidate_block.bci()))?;
+                if candidate_block != row_block {
+                    return Ok(false);
+                }
+            }
+            if candidate.handler_bci() != declared.handler_bci
+                || candidate.catch_type_index() != declared.catch_type_index
+                || candidate.handler() != row.handler()
+            {
+                return Ok(false);
+            }
+        }
+    }
+    if matching_canonical_rows != 1 {
+        return Ok(false);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical.throw_sites().len()).unwrap_or(u64::MAX),
+        at,
+    )?;
+    let mut dispatched_blocks = BTreeSet::new();
+    for site in canonical.throw_sites() {
+        poll(budget, Some(site.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(site.handlers().len()).unwrap_or(u64::MAX),
+            Some(site.bci()),
+        )?;
+        let mut dispatches_row = false;
+        for ordinal in site.handlers() {
+            poll(budget, Some(site.bci()))?;
+            if *ordinal == declared.ordinal {
+                dispatches_row = true;
+                break;
+            }
+        }
+        if dispatches_row {
+            if site.bci() < declared.start_bci || site.bci() >= declared.end_bci {
+                return Ok(false);
+            }
+            dispatched_blocks.insert(site.block().clone());
+        }
+    }
+    if dispatched_blocks.is_empty() || dispatched_blocks.len() != row.protected().len() {
+        return Ok(false);
+    }
+    let Some(handler_id) = row.handler() else {
+        return Ok(false);
+    };
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(row.protected().len()).unwrap_or(u64::MAX),
+        at,
+    )?;
+    for protected in row.protected() {
+        poll(budget, Some(protected.bci()))?;
+        if protected.path() != handler_id.path() || !dispatched_blocks.contains(protected) {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+/// Prove the normal-flow subgraph that leaves the natural loop through one or more terminal arms
+/// of the same protected row. Every normal sink must be an actual decoded athrow site protected by
+/// that row. This proves statement ownership only; it does not assert runtime exception matching.
+fn prove_loop_catch_terminal_body(
+    canonical: &CanonicalCfg,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &MethodCodeFacts,
+    row: &jarde_jvm::method_ir::CanonicalHandlerRow,
+    declared: &ExceptionHandlerFact,
+    handler: usize,
+    join: usize,
+    header: usize,
+    loop_of: &crate::normal_flow::NaturalLoop,
+    budget: &mut Budget,
+) -> Result<Option<(BTreeSet<usize>, BTreeSet<usize>)>, StopReason> {
+    if !finite_terminal_row_is_exclusive(canonical, code, row, declared, handler, view, budget)? {
+        return Ok(None);
+    }
+    // Keep the extension local to ordinary terminal arms. A row overlapping even part of its
+    // natural latch block is refused; identifying a latch's true update belongs to the existing
+    // `prove_for_header` proof, not to a guessed instruction-count pattern here.
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(loop_of.latches().len()).unwrap_or(u64::MAX),
+        view.id_of(header).map(CanonicalBlockId::bci),
+    )?;
+    for &latch in loop_of.latches() {
+        let at = view.id_of(latch).map(CanonicalBlockId::bci);
+        poll(budget, at)?;
+        let Some(latch_id) = view.id_of(latch) else {
+            return Ok(None);
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(canonical.blocks().len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        let mut matched = None;
+        for block in canonical.blocks() {
+            poll(budget, Some(block.id().bci()))?;
+            if block.id() == latch_id {
+                matched = Some(block);
+                break;
+            }
+        }
+        let Some(block) = matched else {
+            return Ok(None);
+        };
+        if block.id().bci() < declared.end_bci && block.end_bci() > declared.start_bci {
+            return Ok(None);
+        }
+    }
+    let mut owners = BTreeSet::new();
+    let mut leaves = BTreeSet::new();
+    for &source in loop_of.blocks() {
+        let at = view.id_of(source).map(CanonicalBlockId::bci);
+        poll(budget, at)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+        if source == header || !view.dominates(header, source) {
+            continue;
+        }
+        let Some(source_id) = view.id_of(source) else {
+            return Ok(None);
+        };
+        let mut source_block = None;
+        for block in canonical.blocks() {
+            poll(budget, Some(block.id().bci()))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+            if block.id() == source_id {
+                source_block = Some(block);
+                break;
+            }
+        }
+        let Some(source_block) = source_block else {
+            return Ok(None);
+        };
+        let source_is_comparison = ssa
+            .block(source_id)
+            .and_then(|block| block.instructions().last())
+            .is_some_and(|last| {
+                declared.start_bci <= last.bci()
+                    && last.bci() < declared.end_bci
+                    && operations
+                        .get(last.bci())
+                        .is_some_and(|operation| operation.comparison().is_some())
+            });
+        if source_block.end_bci() > declared.end_bci || !source_is_comparison {
+            continue;
+        }
+        let successors = view.successors(source);
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(successors.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        if successors.len() != 2 {
+            continue;
+        }
+        let mut normal_edges = Vec::new();
+        for edge in canonical.edges() {
+            poll(budget, at)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+            if edge.from() == source_id && edge.kind() == CanonicalEdgeKind::Normal {
+                normal_edges.push(edge.to().clone());
+            }
+        }
+        if normal_edges.len() != 2
+            || normal_edges
+                .iter()
+                .filter_map(|id| view.index_of(id))
+                .collect::<BTreeSet<_>>()
+                != successors.iter().copied().collect()
+        {
+            continue;
+        }
+        for root in successors.iter().copied() {
+            poll(budget, at)?;
+            if loop_of.blocks().contains(&root) || root == handler || root == join {
+                continue;
+            }
+            let Some((arm_nodes, arm_leaves)) = prove_terminal_throw_subgraph(
+                canonical,
+                view,
+                ssa,
+                operations,
+                row,
+                declared,
+                header,
+                handler,
+                join,
+                loop_of.blocks(),
+                source,
+                root,
+                budget,
+            )?
+            else {
+                continue;
+            };
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(arm_nodes.len()).unwrap_or(u64::MAX),
+                at,
+            )?;
+            for node in &arm_nodes {
+                poll(budget, view.id_of(*node).map(CanonicalBlockId::bci))?;
+                if owners.contains(node) {
+                    // A shared tail is not assigned to one source by this certificate.
+                    return Ok(None);
+                }
+            }
+            owners.extend(arm_nodes);
+            leaves.extend(arm_leaves);
+        }
+    }
+    if owners.is_empty() || leaves.is_empty() {
+        return Ok(None);
+    }
+    // A row's real throw-site list must contain all terminal leaves. The row edge is kept as-is;
+    // other may-throw instructions retain their own handler list and any unmatched escape path.
+    for &leaf in &leaves {
+        let at = view.id_of(leaf).map(CanonicalBlockId::bci);
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(row.protected().len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        let Some(id) = view.id_of(leaf) else {
+            return Ok(None);
+        };
+        let mut protected_leaf = false;
+        for protected in row.protected() {
+            poll(budget, Some(protected.bci()))?;
+            if protected == id {
+                protected_leaf = true;
+                break;
+            }
+        }
+        if !protected_leaf {
+            return Ok(None);
+        }
+    }
+    Ok(Some((owners, leaves)))
+}
+
+fn prove_terminal_throw_subgraph(
+    canonical: &CanonicalCfg,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    operations: &Operations,
+    row: &jarde_jvm::method_ir::CanonicalHandlerRow,
+    declared: &ExceptionHandlerFact,
+    header: usize,
+    handler: usize,
+    join: usize,
+    natural: &BTreeSet<usize>,
+    source: usize,
+    root: usize,
+    budget: &mut Budget,
+) -> Result<Option<(BTreeSet<usize>, BTreeSet<usize>)>, StopReason> {
+    let mut state = BTreeMap::<usize, u8>::new();
+    let mut pending = vec![(root, false)];
+    let mut owners = BTreeSet::new();
+    let mut leaves = BTreeSet::new();
+    while let Some((node, finished)) = pending.pop() {
+        let at = view.id_of(node).map(CanonicalBlockId::bci);
+        poll(budget, at)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+        if finished {
+            state.insert(node, 2);
+            continue;
+        }
+        if node == handler || node == join || natural.contains(&node) || node == header {
+            return Ok(None);
+        }
+        match state.get(&node) {
+            Some(1) => return Ok(None),
+            Some(2) => continue,
+            _ => {}
+        }
+        let Some(id) = view.id_of(node) else {
+            return Ok(None);
+        };
+        if !view.dominates(header, node) {
+            return Ok(None);
+        }
+        let mut block = None;
+        for candidate in canonical.blocks() {
+            poll(budget, at)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+            if candidate.id() == id {
+                block = Some(candidate);
+                break;
+            }
+        }
+        let Some(block) = block else {
+            return Ok(None);
+        };
+        if block.id().bci() < declared.start_bci || block.end_bci() > declared.end_bci {
+            return Ok(None);
+        }
+        state.insert(node, 1);
+        owners.insert(node);
+        let successors = view.successors(node);
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(successors.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        for edge in canonical.edges() {
+            poll(budget, at)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+            if edge.from() == id
+                && matches!(
+                    edge.kind(),
+                    CanonicalEdgeKind::Call { .. } | CanonicalEdgeKind::Return { .. }
+                )
+            {
+                return Ok(None);
+            }
+        }
+        if successors.is_empty() {
+            let Some(terminal) = ssa.block(id).and_then(|block| block.instructions().last()) else {
+                return Ok(None);
+            };
+            if !matches!(operations.get(terminal.bci()), Some(Operation::Throw))
+                || terminal.bci() < declared.start_bci
+                || terminal.bci() >= declared.end_bci
+            {
+                return Ok(None);
+            }
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(canonical.throw_sites().len()).unwrap_or(u64::MAX),
+                at,
+            )?;
+            let mut matching_throw_site = false;
+            for site in canonical.throw_sites() {
+                poll(budget, Some(site.bci()))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(site.handlers().len()).unwrap_or(u64::MAX),
+                    Some(site.bci()),
+                )?;
+                let mut dispatches_row = false;
+                for ordinal in site.handlers() {
+                    poll(budget, Some(site.bci()))?;
+                    if *ordinal == row.ordinal() {
+                        dispatches_row = true;
+                        break;
+                    }
+                }
+                if site.block() == id && site.bci() == terminal.bci() && dispatches_row {
+                    matching_throw_site = true;
+                    break;
+                }
+            }
+            if !matching_throw_site {
+                return Ok(None);
+            }
+            leaves.insert(node);
+            continue;
+        }
+        for successor in &successors {
+            poll(budget, at)?;
+            if *successor == handler || *successor == join || natural.contains(successor) {
+                return Ok(None);
+            }
+        }
+        pending.push((node, true));
+        pending.extend(
+            successors
+                .into_iter()
+                .rev()
+                .map(|successor| (successor, false)),
+        );
+    }
+    if leaves.is_empty() {
+        return Ok(None);
+    }
+    for &node in &owners {
+        let at = view.id_of(node).map(CanonicalBlockId::bci);
+        poll(budget, at)?;
+        let predecessors = view.predecessors(node);
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(predecessors.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        for predecessor in predecessors {
+            poll(budget, at)?;
+            if !owners.contains(&predecessor) && !(predecessor == source && node == root) {
+                return Ok(None);
+            }
+        }
+    }
+    Ok(Some((owners, leaves)))
+}
+
+/// Every ordinary path must reach the join or one certified throw leaf before a cycle. A cycle
+/// that can avoid both is not a proved rejoin, even if another route reaches one of them.
+fn plain_paths_reach_join_or_throw_leaves(
     view: &NormalFlowView,
     start: usize,
     join: usize,
+    throw_leaves: &BTreeSet<usize>,
     budget: &mut Budget,
 ) -> Result<bool, StopReason> {
     let mut state = BTreeMap::new();
@@ -2036,7 +2697,7 @@ fn plain_paths_reach_join(
     while let Some((node, finished)) = pending.pop() {
         let at = view.id_of(node).map(CanonicalBlockId::bci);
         charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
-        if node == join {
+        if node == join || throw_leaves.contains(&node) {
             continue;
         }
         if finished {
@@ -2049,17 +2710,21 @@ fn plain_paths_reach_join(
             _ => {}
         }
         let successors = view.successors(node);
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(successors.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
         if successors.is_empty() {
             return Ok(false);
         }
         state.insert(node, 1u8);
         pending.push((node, true));
-        pending.extend(
-            successors
-                .into_iter()
-                .rev()
-                .map(|successor| (successor, false)),
-        );
+        for successor in successors.into_iter().rev() {
+            poll(budget, at)?;
+            pending.push((successor, false));
+        }
     }
     Ok(true)
 }
@@ -2359,6 +3024,7 @@ impl Frame {
         exits: BTreeSet<usize>,
         transfer_sources: &BTreeSet<usize>,
         terminal_returns: &BTreeSet<usize>,
+        terminal_bodies: &BTreeSet<usize>,
     ) -> Self {
         // A loop inside a loop may not claim a block the enclosing loop's body does not hold: the
         // scope of a body is the intersection, so a nesting cannot widen it.
@@ -2373,6 +3039,14 @@ impl Frame {
         // A proved return leaf is reached recursively from the branch in this body, rather than
         // from the natural-loop walk's top-level queue.
         scope.extend(terminal_returns.iter().copied());
+        // A proved catch terminal body is reached through its row-owned branch, never by the
+        // loop's ordinary top-level sequence.
+        scope.extend(
+            terminal_bodies
+                .iter()
+                .copied()
+                .filter(|node| self.scope.as_ref().is_none_or(|outer| outer.contains(node))),
+        );
         Self {
             boundary: Some(boundary),
             if_arm: None,
@@ -2564,6 +3238,7 @@ struct Walker<'a> {
     profile: &'a crate::pass::RecoveryProfile,
     budget: &'a mut Budget,
     catch_joins: BTreeSet<(usize, usize)>,
+    loop_catch_terminal_owners: Vec<LoopCatchTerminalOwner>,
     fragmented: Option<crate::fragmented_catch::FragmentedCatch>,
     /// Endpoints of exception and subroutine edges, computed once so bounded local shape probes do
     /// not rescan the whole canonical edge table.
@@ -2611,6 +3286,19 @@ const MAX_REGION_DEPTH: usize = 32;
 /// One recovered `try`: the protected range, the instructions of the statement's own block written
 /// before it ([`crate::guard::Catches::lead`]), the clauses, where the code after it begins, and
 /// the sibling quotes a gap inside it left behind ([`Run`]).
+#[derive(Clone, Debug)]
+struct RetryLoopFacts {
+    header: CanonicalBlockId,
+    exit: CanonicalBlockId,
+    header_node: usize,
+    exit_node: usize,
+    handler: CanonicalBlockId,
+    handler_node: usize,
+    continue_source_bci: u32,
+    owners: BTreeSet<usize>,
+    transfer_sources: BTreeSet<usize>,
+}
+
 type OwnedTry = (
     Box<Region>,
     (u32, u32),
@@ -2619,6 +3307,7 @@ type OwnedTry = (
     Vec<Region>,
     Option<u32>,
     Option<crate::guard::TransparentHandler>,
+    Option<RetryLoopFacts>,
 );
 
 /// What one call of the walk proved, in the order the text writes it, and where the run continues.
@@ -2800,6 +3489,76 @@ fn shared_join_body_supported(region: &Region, loop_allowed: bool) -> bool {
 }
 
 impl Walker<'_> {
+    /// Terminal bodies proved for this exact natural-loop header and its certified named rows.
+    fn loop_catch_terminal_body(&mut self, header: usize) -> Result<BTreeSet<usize>, StopReason> {
+        let at = self.view.id_of(header).map(CanonicalBlockId::bci);
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.loop_catch_terminal_owners.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        let mut nodes = BTreeSet::new();
+        for owner in &self.loop_catch_terminal_owners {
+            poll(self.budget, at)?;
+            if owner.header != header || !self.catch_joins.contains(&(owner.handler, owner.join)) {
+                continue;
+            }
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(self.handlers.len()).unwrap_or(u64::MAX),
+                at,
+            )?;
+            let mut has_row = false;
+            for row in self.handlers {
+                poll(self.budget, Some(row.start_bci))?;
+                if row.ordinal == owner.row_ordinal {
+                    has_row = true;
+                    break;
+                }
+            }
+            if has_row {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(owner.blocks.len()).unwrap_or(u64::MAX),
+                    at,
+                )?;
+                for node in &owner.blocks {
+                    poll(
+                        self.budget,
+                        self.view.id_of(*node).map(CanonicalBlockId::bci),
+                    )?;
+                    nodes.insert(*node);
+                }
+            }
+        }
+        Ok(nodes)
+    }
+
+    /// Account for the terminal-owner set copied into a loop frame's lexical scope.
+    fn charge_loop_terminal_scope_copy(
+        &mut self,
+        header: usize,
+        terminal_bodies: &BTreeSet<usize>,
+    ) -> Result<(), StopReason> {
+        let at = self.view.id_of(header).map(CanonicalBlockId::bci);
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(terminal_bodies.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        for node in terminal_bodies {
+            poll(
+                self.budget,
+                self.view.id_of(*node).map(CanonicalBlockId::bci),
+            )?;
+        }
+        Ok(())
+    }
+
     /// The region that starts at one block, and the block the run continues at afterwards.
     ///
     /// `frame` says where this region may go: the join it ends at, and — when it is a loop's body —
@@ -3052,10 +3811,10 @@ impl Walker<'_> {
             if frame.own_try != Some(node)
                 && (frame.own_finally.is_none() || frame.nested_finally_row.is_some())
                 && self.starts_catch(&current)
-                && let Some((body, lead, catches, join, tails, exit_bci, transparent)) =
-                    self.try_region(&current, node, frame)?
+                && let Some((body, lead, catches, join, tails, exit_bci, transparent, retry)) =
+                    self.try_region(&current, node, frame, prefix.is_empty())?
             {
-                let mut run = vec![Region::Try {
+                let try_region = Region::Try {
                     prefix,
                     lead,
                     body,
@@ -3068,7 +3827,21 @@ impl Walker<'_> {
                                 .then_some(proof.inner_exit_bci)
                         })
                     }),
-                }];
+                };
+                let mut run = if let Some(retry) = retry {
+                    vec![Region::Loop {
+                        header: retry.header,
+                        tests: Vec::new(),
+                        test_operator: None,
+                        form: LoopForm::Endless,
+                        for_header: None,
+                        body: vec![try_region],
+                        exit: Some(retry.exit),
+                        gateway_origins: Vec::new(),
+                    }]
+                } else {
+                    vec![try_region]
+                };
                 run.extend(tails);
                 if self.fragmented.as_ref().is_some_and(|proof| {
                     proof.outer_start != proof.inner_start
@@ -6281,6 +7054,334 @@ impl Walker<'_> {
                 .is_some_and(|last| body_row.start_bci <= last)
     }
 
+    /// The intentionally narrow, one-protected-block retry shape. The guard reader remains the
+    /// authority for named catch binding/SSA; this proof only certifies the exceptional cycle and
+    /// the two distinct normal boundaries.
+    fn retry_loop_facts(
+        &mut self,
+        start: &CanonicalBlockId,
+        shape: &crate::guard::Catches,
+    ) -> Result<Option<RetryLoopFacts>, StopReason> {
+        if !start.path().is_empty()
+            || shape.inner.is_some()
+            || shape.transparent.is_some()
+            || shape.lead != (start.bci(), start.bci())
+            || shape.sites.len() != 1
+            || !matches!(&shape.sites[0].types, crate::guard::CatchTypes::Named(types) if types.len() == 1)
+        {
+            return Ok(None);
+        }
+        let Some(exit) = shape.join.clone() else {
+            return Ok(None);
+        };
+        let Some(handler) = shape.sites.first().map(|site| site.handler.clone()) else {
+            return Ok(None);
+        };
+        let Some(header_node) = self.view.index_of(start) else {
+            return Ok(None);
+        };
+        let Some(exit_node) = self.view.index_of(&exit) else {
+            return Ok(None);
+        };
+        let Some(handler_node) = self.view.index_of(&handler) else {
+            return Ok(None);
+        };
+        if exit == *start || handler == *start || exit == handler {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        poll(self.budget, Some(start.bci()))?;
+        poll(self.budget, Some(handler.bci()))?;
+        poll(self.budget, Some(exit.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.handlers.len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        let mut matching_row = None;
+        for candidate in self.handlers {
+            poll(self.budget, Some(candidate.start_bci))?;
+            if candidate.start_bci == start.bci()
+                && candidate.end_bci == shape.protected_end
+                && candidate.handler_bci == handler.bci()
+                && candidate.catch_type_index.is_some()
+            {
+                if matching_row.replace(candidate).is_some() {
+                    return Ok(None);
+                }
+            }
+        }
+        let Some(row) = matching_row else {
+            return Ok(None);
+        };
+        poll(self.budget, Some(start.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(start.bci()),
+        )?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.handlers.len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        let mut overlapping_rows = 0usize;
+        for other in self.handlers {
+            poll(self.budget, Some(other.start_bci))?;
+            if other.start_bci < row.end_bci && row.start_bci < other.end_bci {
+                overlapping_rows += 1;
+            }
+        }
+        if overlapping_rows != 1 {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.handler_rows().len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        let mut rows = Vec::new();
+        for candidate in self.canonical.handler_rows() {
+            poll(self.budget, Some(candidate.handler_bci()))?;
+            if candidate.ordinal() == row.ordinal {
+                rows.push(candidate);
+            }
+        }
+        let [canonical_row] = rows.as_slice() else {
+            return Ok(None);
+        };
+        let Some(row_type) = row.catch_type_index else {
+            return Ok(None);
+        };
+        if shape.sites[0].types != crate::guard::CatchTypes::Named(vec![row_type])
+            || shape.sites[0].handler != handler
+            || row.handler_bci != handler.bci()
+            || canonical_row.handler_bci() != handler.bci()
+            || canonical_row.catch_type_index() != Some(row_type)
+            || canonical_row.handler() != Some(&handler)
+            || canonical_row.protected().len() != 1
+            || canonical_row.protected()[0] != *start
+        {
+            return Ok(None);
+        }
+        // A second physical row naming this same handler is a shared handler, even if its
+        // protected range is disjoint. This narrow retry proof owns exactly one named clause.
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.handlers.len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        let mut same_handler_rows = 0usize;
+        for other in self.handlers {
+            poll(self.budget, Some(other.handler_bci))?;
+            if other.handler_bci == row.handler_bci {
+                same_handler_rows += 1;
+            }
+        }
+        if same_handler_rows != 1 {
+            return Ok(None);
+        }
+        // MVP proof: the complete protected byte range maps to exactly the header block. This
+        // deliberately rejects fused/split and jsr-cloned variants until separately proved.
+        let mut in_range = Vec::new();
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.blocks().len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        for block in self.canonical.blocks() {
+            poll(self.budget, Some(block.id().bci()))?;
+            if block.id().path().is_empty()
+                && block.id().bci() < row.end_bci
+                && block.end_bci() > row.start_bci
+            {
+                if block.id() != start
+                    || block.id().bci() < row.start_bci
+                    || block.end_bci() <= row.end_bci
+                {
+                    return Ok(None);
+                }
+                in_range.push(block.id().clone());
+            }
+        }
+        if in_range.as_slice() != [start.clone()] {
+            return Ok(None);
+        }
+        // The exclusive range end itself must be the only instruction outside the protected
+        // portion of this canonical block, and must be its physical goto. Catches.join is
+        // independently recomputed from that goto's unique normal successor.
+        let Some(header_ssa) = self.ssa.block(start) else {
+            return Ok(None);
+        };
+        let mut suffix = Vec::new();
+        for instruction in header_ssa.instructions() {
+            poll(self.budget, Some(instruction.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if instruction.bci() >= row.end_bci {
+                suffix.push(instruction.bci());
+            }
+        }
+        if suffix.as_slice() != [row.end_bci]
+            || !matches!(self.operations.get(row.end_bci), Some(Operation::Transfer))
+            || self.terminal_bci(start) != Some(row.end_bci)
+            || self.view.successors(header_node) != [exit_node]
+        {
+            return Ok(None);
+        }
+        let joined: Vec<_> = self.view.successor_ids(start);
+        if joined.as_slice() != [exit.clone()] || self.view.predecessors(exit_node) != [header_node]
+        {
+            return Ok(None);
+        }
+        // The one handler block has no ordinary predecessor and its sole normal edge is the
+        // terminal goto back to this exact header. CatchSite already proved the exception store.
+        if !self.view.predecessors(handler_node).is_empty()
+            || self.view.successors(handler_node) != [header_node]
+        {
+            return Ok(None);
+        }
+        let Some(continue_source_bci) = self.terminal_bci(&handler) else {
+            return Ok(None);
+        };
+        if !matches!(
+            self.operations.get(continue_source_bci),
+            Some(Operation::Transfer)
+        ) {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        let mut expected_exception = false;
+        let mut closed_exception_rows = true;
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(edge.from().bci()))?;
+            if edge.from() != start {
+                continue;
+            }
+            match edge.kind() {
+                CanonicalEdgeKind::Normal if edge.to() == &exit => {}
+                CanonicalEdgeKind::Exception { handler_ordinal }
+                    if handler_ordinal == row.ordinal && edge.to() == &handler =>
+                {
+                    expected_exception = true;
+                }
+                _ => closed_exception_rows = false,
+            }
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.throw_sites().len()).unwrap_or(u64::MAX),
+            Some(start.bci()),
+        )?;
+        let mut throw_sites = Vec::new();
+        for site in self.canonical.throw_sites() {
+            poll(self.budget, Some(site.bci()))?;
+            if row.start_bci <= site.bci() && site.bci() < row.end_bci {
+                throw_sites.push(site);
+            }
+        }
+        if !expected_exception
+            || !closed_exception_rows
+            || throw_sites.is_empty()
+            || throw_sites
+                .iter()
+                .any(|site| site.block() != start || site.handlers() != [row.ordinal])
+        {
+            return Ok(None);
+        }
+        let owners = BTreeSet::from([header_node, handler_node]);
+        let transfer_sources = BTreeSet::from([header_node, handler_node]);
+        Ok(Some(RetryLoopFacts {
+            header: start.clone(),
+            exit,
+            header_node,
+            exit_node,
+            handler,
+            handler_node,
+            continue_source_bci,
+            owners,
+            transfer_sources,
+        }))
+    }
+
+    fn retry_owned_regions_complete(
+        &mut self,
+        proof: &RetryLoopFacts,
+        body: &Region,
+        catches: &[CatchClause],
+        checkpoint: &BTreeSet<usize>,
+    ) -> Result<bool, StopReason> {
+        if catches.len() != 1 || !body.is_structured() || !catches[0].body().is_structured() {
+            return Ok(false);
+        }
+        let body_blocks = body.blocks();
+        let catch_blocks = catches[0].body().blocks();
+        let work = body_blocks.len().saturating_add(catch_blocks.len());
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(work).unwrap_or(u64::MAX),
+            Some(proof.header.bci()),
+        )?;
+        let mut body_owners = BTreeSet::new();
+        for block in body_blocks {
+            poll(self.budget, Some(block.bci()))?;
+            let Some(node) = self.view.index_of(block) else {
+                return Ok(false);
+            };
+            body_owners.insert(node);
+        }
+        let mut catch_owners = BTreeSet::new();
+        for block in catch_blocks {
+            poll(self.budget, Some(block.bci()))?;
+            let Some(node) = self.view.index_of(block) else {
+                return Ok(false);
+            };
+            catch_owners.insert(node);
+        }
+        let visited_work = self.visited.len().saturating_add(checkpoint.len());
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(visited_work).unwrap_or(u64::MAX),
+            Some(proof.header.bci()),
+        )?;
+        let mut added = BTreeSet::new();
+        for node in &self.visited {
+            poll(
+                self.budget,
+                self.view.id_of(*node).map(CanonicalBlockId::bci),
+            )?;
+            if !checkpoint.contains(node) {
+                added.insert(*node);
+            }
+        }
+        Ok(body_owners == BTreeSet::from([proof.header_node])
+            && catch_owners == BTreeSet::from([proof.handler_node])
+            && added == proof.owners)
+    }
+
     /// The protected range and the clauses of the `try` that begins in one block, when this block
     /// states one.
     ///
@@ -6304,6 +7405,7 @@ impl Walker<'_> {
         start: &CanonicalBlockId,
         node: usize,
         frame: &Frame,
+        retry_entry: bool,
     ) -> Result<Option<OwnedTry>, StopReason> {
         let Some(shape) = crate::guard::catches(
             self.canonical,
@@ -6320,17 +7422,85 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let previous = shape.transparent.as_ref().map(|_| self.visited.clone());
+        let retry = if retry_entry
+            && frame.boundary.is_none()
+            && frame.if_arm.is_none()
+            && frame.shared_tail.is_none()
+            && frame.case_entries.is_none()
+            && frame.transfer_source_bci.is_none()
+            && frame.switch_join.is_none()
+            && frame.switch_branch_bci.is_none()
+            && frame.switch_fallthrough_target.is_none()
+            && frame.switch_continue.is_none()
+            && frame.scope.is_none()
+            && frame.loop_targets.is_empty()
+            && frame.own_loop.is_none()
+            && frame.own_try.is_none()
+            && frame.own_finally.is_none()
+            && frame.segmented_finally_rows.is_none()
+            && frame.multi_return_finally_rows.is_none()
+            && frame.nested_finally_row.is_none()
+            && !frame.void_loop_finally
+            && !frame.lock_guard_finally
+            && self.own_monitor.is_none()
+        {
+            self.retry_loop_facts(start, &shape)?
+        } else {
+            None
+        };
+        let previous =
+            (shape.transparent.is_some() || retry.is_some()).then(|| self.visited.clone());
+        let previous_unclosed_tail = retry.as_ref().map(|_| self.unclosed_tail_at);
+        let retry_frame = retry.as_ref().map(|proof| {
+            let mut loop_frame = frame.loop_body(
+                &proof.owners,
+                proof.exit_node,
+                proof.header_node,
+                proof.header_node,
+                Some(proof.exit_node),
+                Some(proof.exit_node),
+                BTreeSet::new(),
+                &proof.transfer_sources,
+                &BTreeSet::new(),
+                &BTreeSet::new(),
+            );
+            loop_frame.allow_own_loop_entry = true;
+            loop_frame
+        });
+        let walk_frame = retry_frame.as_ref().unwrap_or(frame);
         let (body, catches, join, tails, exit_bci) =
-            match self.try_level(start, node, frame, &shape) {
+            match self.try_level(start, node, walk_frame, &shape, retry.as_ref()) {
                 Ok(level) => level,
                 Err(stop) => {
                     if let Some(previous) = previous {
                         self.visited = previous;
                     }
+                    if let Some(previous) = previous_unclosed_tail {
+                        self.unclosed_tail_at = previous;
+                    }
                     return Err(stop);
                 }
             };
+        if let Some(proof) = &retry {
+            let checkpoint = previous.as_ref().expect("retry checkpoint");
+            let complete = match if tails.is_empty() {
+                self.retry_owned_regions_complete(proof, &body, &catches, checkpoint)
+            } else {
+                Ok(false)
+            } {
+                Ok(complete) => complete,
+                Err(stop) => {
+                    self.visited = checkpoint.clone();
+                    self.unclosed_tail_at = previous_unclosed_tail.expect("retry tail checkpoint");
+                    return Err(stop);
+                }
+            };
+            if !complete {
+                self.visited = checkpoint.clone();
+                self.unclosed_tail_at = previous_unclosed_tail.expect("retry tail checkpoint");
+                return Ok(None);
+            }
+        }
         if let Some(proof) = &shape.transparent {
             if !body.is_structured()
                 || !tails.is_empty()
@@ -6359,6 +7529,7 @@ impl Walker<'_> {
             tails,
             exit_bci,
             shape.transparent,
+            retry,
         )))
     }
 
@@ -6381,6 +7552,7 @@ impl Walker<'_> {
         node: usize,
         frame: &Frame,
         shape: &crate::guard::Catches,
+        retry: Option<&RetryLoopFacts>,
     ) -> Result<
         (
             Region,
@@ -6413,7 +7585,7 @@ impl Walker<'_> {
                     frame.clone()
                 };
                 let (body, catches, join, inner_tails, _) =
-                    self.try_level(start, node, &outer_frame, inner)?;
+                    self.try_level(start, node, &outer_frame, inner, None)?;
                 let inner_region = Region::Try {
                     prefix: Vec::new(),
                     lead: inner.lead,
@@ -6463,7 +7635,7 @@ impl Walker<'_> {
                     body.extend(bridge_run);
                     exit_bci = Some(bridge.bci());
                 }
-                let body = if certified {
+                let body = if certified || retry.is_some() {
                     sequence_region(body)
                 } else {
                     let (body, body_tails) = split(body);
@@ -6478,8 +7650,53 @@ impl Walker<'_> {
             .and_then(|block| self.view.index_of(block));
         let mut catches = Vec::with_capacity(shape.sites.len());
         for site in &shape.sites {
-            let (handler, _) = self.region_at(&site.handler, &frame.arm(boundary_node, None))?;
-            let handler = if certified {
+            let handler_boundary = retry
+                .and_then(|proof| self.view.index_of(&proof.header))
+                .or(boundary_node);
+            let (mut handler, handler_next) =
+                self.region_at(&site.handler, &frame.arm(handler_boundary, None))?;
+            if let Some(proof) = retry {
+                if site.handler != proof.handler
+                    || handler_next
+                        .as_ref()
+                        .is_some_and(|next| next != &proof.header)
+                {
+                    return Ok((
+                        sequence_region(Vec::new()),
+                        Vec::new(),
+                        None,
+                        Vec::new(),
+                        None,
+                    ));
+                }
+                let handler_blocks: Vec<_> =
+                    handler.iter().flat_map(Region::blocks).cloned().collect();
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(handler_blocks.len()).unwrap_or(u64::MAX),
+                    Some(proof.handler.bci()),
+                )?;
+                for block in &handler_blocks {
+                    poll(self.budget, Some(block.bci()))?;
+                }
+                if handler_blocks.iter().cloned().collect::<BTreeSet<_>>()
+                    != BTreeSet::from([proof.handler.clone()])
+                {
+                    return Ok((
+                        sequence_region(Vec::new()),
+                        Vec::new(),
+                        None,
+                        Vec::new(),
+                        None,
+                    ));
+                }
+                handler.push(Region::LoopContinue {
+                    source_bci: proof.continue_source_bci,
+                    loop_header: proof.header.clone(),
+                });
+            }
+            let handler = if certified || retry.is_some() {
                 sequence_region(handler)
             } else {
                 let (handler, handler_tails) = split(handler);
@@ -12375,6 +13592,7 @@ impl Walker<'_> {
             BTreeSet::from([join]),
             &BTreeSet::new(),
             &BTreeSet::new(),
+            &BTreeSet::new(),
         );
         self.include_fragmented_catch_scope(&mut body_frame, header_node);
         body_frame.allow_own_loop_entry = true;
@@ -12657,6 +13875,8 @@ impl Walker<'_> {
                 all_exits.extend(exits.iter().copied());
                 let transfer_sources = self.loop_transfer_sources(&all_exits);
                 let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+                let terminal_bodies = self.loop_catch_terminal_body(header_node)?;
+                self.charge_loop_terminal_scope_copy(header_node, &terminal_bodies)?;
                 let mut body_frame = frame.loop_body(
                     blocks,
                     header_node,
@@ -12667,6 +13887,7 @@ impl Walker<'_> {
                     exits,
                     &transfer_sources,
                     &terminal_returns,
+                    &terminal_bodies,
                 );
                 self.include_fragmented_catch_scope(&mut body_frame, header_node);
                 let (body, _) = self.loop_body_sequence(&chain.body, &body_frame, blocks)?;
@@ -12676,6 +13897,7 @@ impl Walker<'_> {
                     expected.remove(&node);
                 }
                 expected.extend(terminal_returns);
+                expected.extend(terminal_bodies);
                 if !self.covers(&expected) {
                     return Ok(Some(Self::loop_fallback(
                         header,
@@ -12774,6 +13996,8 @@ impl Walker<'_> {
         // The exact exit/frame-scoped return certificate is shared by the induction proof, body
         // frame, coverage accounting, and final tail-latch source check.
         let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+        let terminal_bodies = self.loop_catch_terminal_body(header_node)?;
+        self.charge_loop_terminal_scope_copy(header_node, &terminal_bodies)?;
         let side_exit = match exit_node {
             Some(parent_exit) => {
                 self.nested_loop_side_exit(header_node, blocks, parent_exit, frame, None)?
@@ -12816,6 +14040,7 @@ impl Walker<'_> {
             exits,
             &transfer_sources,
             &terminal_returns,
+            &terminal_bodies,
         );
         if matches!(self.handlers.len(), 3 | 4)
             && frame.own_finally.is_some()
@@ -12940,6 +14165,7 @@ impl Walker<'_> {
             expected.insert(gateway);
         }
         expected.extend(terminal_returns.iter().copied());
+        expected.extend(terminal_bodies.iter().copied());
         if let Some(proof) = &side_exit {
             expected.extend(proof.owners.iter().copied());
         }
@@ -13439,6 +14665,7 @@ impl Walker<'_> {
         blocks: &BTreeSet<usize>,
         terminal_returns: &BTreeSet<usize>,
     ) -> Result<Option<ForHeader>, StopReason> {
+        let terminal_body = self.loop_catch_terminal_body(header_node)?;
         let Some((proof, preheader, invariants)) = (|| {
             let loop_fact = self.view.loop_entered_at(header_node)?;
             let latch = *loop_fact.latches().iter().next()?;
@@ -13728,7 +14955,8 @@ impl Walker<'_> {
                 return Ok(None);
             };
             for instruction in names.instructions() {
-                if blocks.contains(&node)
+                let body_owner = blocks.contains(&node) || terminal_body.contains(&node);
+                if body_owner
                     && instruction.bci() != proof.update_bci
                     && instruction
                         .writes()
@@ -13737,14 +14965,14 @@ impl Walker<'_> {
                 {
                     return Ok(None);
                 }
-                if blocks.contains(&node)
+                if body_owner
                     && instruction.writes().iter().any(
                         |(at, _)| matches!(at, Slot::Local(index) if invariants.contains(index)),
                     )
                 {
                     return Ok(None);
                 }
-                if !blocks.contains(&node) && node != preheader {
+                if !body_owner && node != preheader {
                     let reads_induction = instruction
                         .reads()
                         .iter()
@@ -14331,6 +15559,8 @@ impl Walker<'_> {
         all_exits.extend(exits.iter().copied());
         let transfer_sources = self.loop_transfer_sources(&all_exits);
         let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+        let terminal_bodies = self.loop_catch_terminal_body(header_node)?;
+        self.charge_loop_terminal_scope_copy(header_node, &terminal_bodies)?;
         let mut body_frame = frame.loop_body(
             blocks,
             latch_node,
@@ -14341,6 +15571,7 @@ impl Walker<'_> {
             exits.clone(),
             &transfer_sources,
             &terminal_returns,
+            &terminal_bodies,
         );
         self.include_fragmented_catch_scope(&mut body_frame, header_node);
         body_frame.allow_own_loop_entry = allow_header_entry;
@@ -14354,6 +15585,7 @@ impl Walker<'_> {
         let mut expected = blocks.clone();
         expected.remove(&latch_node);
         expected.extend(terminal_returns);
+        expected.extend(terminal_bodies);
         expected.extend(
             exits
                 .iter()
@@ -17817,6 +19049,7 @@ mod tests {
                     profile: &crate::pass::JAVA_8,
                     budget: &mut warm_budget,
                     catch_joins: BTreeSet::new(),
+                    loop_catch_terminal_owners: Vec::new(),
                     fragmented: None,
                     excluded_edge_nodes: BTreeSet::new(),
                     visited: BTreeSet::new(),
@@ -17856,6 +19089,7 @@ mod tests {
                     profile: &crate::pass::JAVA_8,
                     budget: &mut reject_budget,
                     catch_joins: BTreeSet::new(),
+                    loop_catch_terminal_owners: Vec::new(),
                     fragmented: None,
                     excluded_edge_nodes: BTreeSet::new(),
                     visited: prior_owners.clone(),
@@ -17898,6 +19132,7 @@ mod tests {
                     profile: &crate::pass::JAVA_8,
                     budget: &mut stop_budget,
                     catch_joins: BTreeSet::new(),
+                    loop_catch_terminal_owners: Vec::new(),
                     fragmented: None,
                     excluded_edge_nodes: BTreeSet::new(),
                     visited: prior_owners.clone(),
@@ -17991,6 +19226,7 @@ mod tests {
                     profile: &crate::pass::JAVA_8,
                     budget: &mut late_budget,
                     catch_joins: BTreeSet::new(),
+                    loop_catch_terminal_owners: Vec::new(),
                     fragmented: None,
                     excluded_edge_nodes: BTreeSet::new(),
                     visited: prior_owners.clone(),
@@ -18075,6 +19311,7 @@ mod tests {
                     profile: &crate::pass::JAVA_8,
                     budget: &mut cancel_budget,
                     catch_joins: BTreeSet::new(),
+                    loop_catch_terminal_owners: Vec::new(),
                     fragmented: None,
                     excluded_edge_nodes: BTreeSet::new(),
                     visited: prior_owners.clone(),
@@ -18363,6 +19600,7 @@ mod tests {
             profile: &crate::pass::JAVA_8,
             budget: &mut walk_budget,
             catch_joins: BTreeSet::new(),
+            loop_catch_terminal_owners: Vec::new(),
             fragmented: None,
             excluded_edge_nodes: BTreeSet::new(),
             visited: BTreeSet::new(),
@@ -18594,6 +19832,7 @@ mod tests {
                     profile: &crate::pass::JAVA_8,
                     budget: &mut $budget,
                     catch_joins: BTreeSet::new(),
+                    loop_catch_terminal_owners: Vec::new(),
                     fragmented: None,
                     excluded_edge_nodes: BTreeSet::new(),
                     visited: BTreeSet::new(),
@@ -19853,6 +21092,7 @@ mod tests {
                             profile: &crate::pass::JAVA_8,
                             budget: &mut $budget,
                             catch_joins: BTreeSet::new(),
+                            loop_catch_terminal_owners: Vec::new(),
                             fragmented: None,
                             excluded_edge_nodes: BTreeSet::new(),
                             visited: BTreeSet::from([root_node, root_predecessor]),
@@ -21731,6 +22971,7 @@ mod tests {
                 profile: &crate::pass::JAVA_8,
                 budget: &mut proof_budget,
                 catch_joins: initial_catch_joins.clone(),
+                loop_catch_terminal_owners: Vec::new(),
                 fragmented: None,
                 excluded_edge_nodes: BTreeSet::new(),
                 visited: initial_visited.clone(),
@@ -22029,6 +23270,7 @@ mod tests {
             profile: &crate::pass::JAVA_8,
             budget: &mut proof_budget,
             catch_joins: initial_catch_joins.clone(),
+            loop_catch_terminal_owners: Vec::new(),
             fragmented: None,
             excluded_edge_nodes: BTreeSet::new(),
             visited: initial_visited.clone(),
@@ -22233,6 +23475,7 @@ mod tests {
             profile: &crate::pass::JAVA_8,
             budget: &mut budget,
             catch_joins: BTreeSet::new(),
+            loop_catch_terminal_owners: Vec::new(),
             fragmented: None,
             excluded_edge_nodes: BTreeSet::new(),
             visited: BTreeSet::new(),
@@ -22875,6 +24118,7 @@ mod tests {
                 profile: &crate::pass::JAVA_8,
                 budget: &mut tiny,
                 catch_joins: BTreeSet::new(),
+                loop_catch_terminal_owners: Vec::new(),
                 fragmented: None,
                 excluded_edge_nodes: BTreeSet::new(),
                 visited: BTreeSet::new(),
@@ -22913,3 +24157,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "region/finite_loop_catch_tests.rs"]
+mod finite_loop_catch_tests;

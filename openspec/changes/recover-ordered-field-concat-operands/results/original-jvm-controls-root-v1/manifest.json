@@ -1,0 +1,1636 @@
+{
+  "scope": "Original JVM controls only; no Jarde implementation acceptance. Null v1 explicitly rejected for shared Runner source mutation.",
+  "entries": [
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/execution.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/execution.json",
+      "bytes": 2145935,
+      "sha256": "f63ecc67f1cf68dd70a8315d64ab5acb65e4e13a218cd355ea1ad952f24acfaa"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/1.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/1.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/10.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/10.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/11.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/11.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/11.stdout.raw",
+      "bytes": 27349,
+      "sha256": "825c7c3908ef986729f463f73b59907ca88834c00485a5383951bc409e9fbdf7"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/12.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/12.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/12.stdout.raw",
+      "bytes": 707,
+      "sha256": "ddc217069b53cad12bfe343f67a44633d5d52ef0e01af3883e1ab9ca3a9bb9b5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/13.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/13.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/14.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/14.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/14.stdout.raw",
+      "bytes": 32978,
+      "sha256": "920ca118b08f0b055fc70925e097446a49e25f5593b7a25d23921ed614d13595"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/15.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/15.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/15.stdout.raw",
+      "bytes": 707,
+      "sha256": "ddc217069b53cad12bfe343f67a44633d5d52ef0e01af3883e1ab9ca3a9bb9b5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/16.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/16.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/17.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/17.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/17.stdout.raw",
+      "bytes": 28679,
+      "sha256": "dbad9dc69eec8149da5c5d4d1fafd17d761dce6673127b1e2e4e836272c88beb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/18.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/18.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/18.stdout.raw",
+      "bytes": 707,
+      "sha256": "ddc217069b53cad12bfe343f67a44633d5d52ef0e01af3883e1ab9ca3a9bb9b5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/19.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/19.stderr.raw",
+      "bytes": 34,
+      "sha256": "46bec2d095221d376eb64b03e4b991c1170ad3773ec9245b8095edab69f94927"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/19.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/2.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/2.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/2.stdout.raw",
+      "bytes": 31180,
+      "sha256": "459ce6c6bd52b4e884c44c445e687c74f6551842c61eda01e9e5fcd79064968c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/3.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/3.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/3.stdout.raw",
+      "bytes": 707,
+      "sha256": "ddc217069b53cad12bfe343f67a44633d5d52ef0e01af3883e1ab9ca3a9bb9b5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/4.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/4.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/5.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/5.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/5.stdout.raw",
+      "bytes": 26881,
+      "sha256": "2a47a3ec333cecc6da94c73f8e3c98645eea777102a8fb52614c04684c21bdfa"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/6.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/6.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/6.stdout.raw",
+      "bytes": 707,
+      "sha256": "ddc217069b53cad12bfe343f67a44633d5d52ef0e01af3883e1ab9ca3a9bb9b5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/7.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/7.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/8.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/8.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/8.stdout.raw",
+      "bytes": 31648,
+      "sha256": "f6f86d26cef7ce5943e69d2f19a6a7906236ed401f005f3a286bebbc0b85711d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/9.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/raw/9.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/raw/9.stdout.raw",
+      "bytes": 707,
+      "sha256": "ddc217069b53cad12bfe343f67a44633d5d52ef0e01af3883e1ab9ca3a9bb9b5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v1/root-summary.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v1/root-summary.json",
+      "bytes": 4851,
+      "sha256": "41e94b0b89b6b3d21551bb9da25209040ce3e813dc3dc65cccea0cdf3e29e76b"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/execution.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/execution.json",
+      "bytes": 2175194,
+      "sha256": "33a8411d6157342e2c7749c31d2c7cd3b89adc4fa1539473bc2d37707d71e8d9"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/1.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/1.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/10.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/10.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/11.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/11.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/11.stdout.raw",
+      "bytes": 13762,
+      "sha256": "17f53b5b90a8ad37c45a5ba10ed23d7a94484d34a5ec34d6328e12e9cd33cc67"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/12.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/12.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/12.stdout.raw",
+      "bytes": 165,
+      "sha256": "9cf231b73f5f5072a07c326a33fd5c115b740696a2f274adc5d44072061dd5f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/13.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/13.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/14.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/14.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/14.stdout.raw",
+      "bytes": 21298,
+      "sha256": "836329a510ceca563457fef1b07bb9238784c2344be0dcfb467835941ddef337"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/15.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/15.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/15.stdout.raw",
+      "bytes": 500,
+      "sha256": "42de60708cd332f3b2d5399a311535cef11b9230afc475b02dfa2db75d23873e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/16.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/16.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/17.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/17.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/17.stdout.raw",
+      "bytes": 16641,
+      "sha256": "9c3232d3f7064dc40ebf37fbe48bc44d93d918140ae8d5a0a0a817196b28cdf2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/18.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/18.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/18.stdout.raw",
+      "bytes": 165,
+      "sha256": "9cf231b73f5f5072a07c326a33fd5c115b740696a2f274adc5d44072061dd5f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/19.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/19.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/2.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/2.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/2.stdout.raw",
+      "bytes": 20911,
+      "sha256": "b04d7d2920d09438b7f0a39a550bff19672881cf0acb89f3161e7c17abee9f33"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/20.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/20.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/20.stdout.raw",
+      "bytes": 18668,
+      "sha256": "0bd9f62c58e8db141a801ac032ceaafa37bfdd3196a506a6ec2e3c36441cdfef"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/21.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/21.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/21.stdout.raw",
+      "bytes": 500,
+      "sha256": "42de60708cd332f3b2d5399a311535cef11b9230afc475b02dfa2db75d23873e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/22.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/22.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/23.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/23.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/23.stdout.raw",
+      "bytes": 14121,
+      "sha256": "cb1279025574b9a9012aa605b6e550a09e1d90492eb2fd497c91f14b09dece49"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/24.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/24.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/24.stdout.raw",
+      "bytes": 165,
+      "sha256": "9cf231b73f5f5072a07c326a33fd5c115b740696a2f274adc5d44072061dd5f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/25.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/25.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/26.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/26.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/26.stdout.raw",
+      "bytes": 22666,
+      "sha256": "aefd256c3558e4b2dffd6147c7ea131b4526bf2b85ded56c342ad63ed4831e15"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/27.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/27.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/27.stdout.raw",
+      "bytes": 500,
+      "sha256": "42de60708cd332f3b2d5399a311535cef11b9230afc475b02dfa2db75d23873e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/28.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/28.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/29.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/29.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/29.stdout.raw",
+      "bytes": 18785,
+      "sha256": "4b8190e54329f8ad751dbe3db6220dd8a512b58e46c90341ed61403f78fc4ad4"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/3.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/3.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/3.stdout.raw",
+      "bytes": 500,
+      "sha256": "42de60708cd332f3b2d5399a311535cef11b9230afc475b02dfa2db75d23873e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/30.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/30.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/30.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/30.stdout.raw",
+      "bytes": 165,
+      "sha256": "9cf231b73f5f5072a07c326a33fd5c115b740696a2f274adc5d44072061dd5f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/31.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/31.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/31.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/31.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/32.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/32.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/32.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/32.stdout.raw",
+      "bytes": 20029,
+      "sha256": "b7078a945d68b9e8698520a82a1b322d4c1d8c76b258cd4ce25d8a245e00d10d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/33.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/33.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/33.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/33.stdout.raw",
+      "bytes": 500,
+      "sha256": "42de60708cd332f3b2d5399a311535cef11b9230afc475b02dfa2db75d23873e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/34.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/34.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/34.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/34.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/35.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/35.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/35.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/35.stdout.raw",
+      "bytes": 16205,
+      "sha256": "45f71275d1f31ea1b87b9ae9786115970fcb1409f9bf9f825608b3409ce8f204"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/36.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/36.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/36.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/36.stdout.raw",
+      "bytes": 165,
+      "sha256": "9cf231b73f5f5072a07c326a33fd5c115b740696a2f274adc5d44072061dd5f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/37.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/37.stderr.raw",
+      "bytes": 34,
+      "sha256": "46bec2d095221d376eb64b03e4b991c1170ad3773ec9245b8095edab69f94927"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/37.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/37.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/4.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/4.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/5.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/5.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/5.stdout.raw",
+      "bytes": 16282,
+      "sha256": "3c1b816b247583f576d5175f67d0349c540b13cd3cab0d3aedb3e577d613cb15"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/6.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/6.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/6.stdout.raw",
+      "bytes": 165,
+      "sha256": "9cf231b73f5f5072a07c326a33fd5c115b740696a2f274adc5d44072061dd5f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/7.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/7.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/8.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/8.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/8.stdout.raw",
+      "bytes": 18281,
+      "sha256": "3bfe6d6e3885c65d226b30404187024fb64f3453eddfd64d4c67dafa37f51606"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/9.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/raw/9.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/raw/9.stdout.raw",
+      "bytes": 500,
+      "sha256": "42de60708cd332f3b2d5399a311535cef11b9230afc475b02dfa2db75d23873e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-root-v2/root-summary.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-original-root-v2/root-summary.json",
+      "bytes": 4964,
+      "sha256": "d1dcc0c5ca22373cf3f03f31c9985ce66fd2124be1eec4cde0cd1a69482aba71"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/execution.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/execution.json",
+      "bytes": 2142609,
+      "sha256": "1b1186986bea611cb89fdeffa70cc01e99f2d6666893d67f716b2e167b2f79ee"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/1.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/1.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/10.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/10.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/10.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/11.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/11.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/12.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/12.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/12.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/13.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/13.stderr.raw",
+      "bytes": 34,
+      "sha256": "46bec2d095221d376eb64b03e4b991c1170ad3773ec9245b8095edab69f94927"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/13.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/2.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/2.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/2.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/3.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/3.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/4.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/4.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/4.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/5.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/5.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/6.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/6.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/6.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/7.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/7.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/8.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/8.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/8.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/9.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/raw/9.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v1/root-rejection.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v1/root-rejection.json",
+      "bytes": 777,
+      "sha256": "859463b659353d73446bbba7276df6db4f0a3d85858dccaf8db6b4ae678253e1"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/execution.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/execution.json",
+      "bytes": 2142610,
+      "sha256": "670e8318f791f58b6619fdebfca30d52b81e275ee3b7b6f36016aa92dc345c9e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/1.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/1.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/10.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/10.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/10.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/11.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/11.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/12.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/12.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/12.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/13.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/13.stderr.raw",
+      "bytes": 34,
+      "sha256": "46bec2d095221d376eb64b03e4b991c1170ad3773ec9245b8095edab69f94927"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/13.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/2.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/2.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/2.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/3.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/3.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/4.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/4.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/4.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/5.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/5.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/6.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/6.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/6.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/7.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/7.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/8.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/8.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/8.stdout.raw",
+      "bytes": 542,
+      "sha256": "f8cc22c850499ee5e6d19efa6b92b34d7d31166657a8f64302a49ee3d786689c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/9.stderr.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/raw/9.stdout.raw",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-original-root-v2/root-summary.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-null-original-root-v2/root-summary.json",
+      "bytes": 3888,
+      "sha256": "b1bbafc041ff94df0c012ab549a2882cd6d596ae1bc720251519232287d7b924"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v1/OrderedFieldConcat.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v1/OrderedFieldConcat.java",
+      "bytes": 4018,
+      "sha256": "f0b14831767b528381c747a5ed1eb57f25a3d633cddd3f693e0ff28dfa1400fc"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v1/README.md",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v1/README.md",
+      "bytes": 1219,
+      "sha256": "82e66dcf00d0f5865e45fd80823f8e5f147a78e770c1d951aeb585741f57d7ce"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v1/Runner.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v1/Runner.java",
+      "bytes": 2783,
+      "sha256": "500fe3793bfdd10ec7208dff264d272b0989182bede2f7556aaba877ab925e58"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v1/manifest.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v1/manifest.json",
+      "bytes": 12499,
+      "sha256": "4b92ba2299fc4e91790b5bda7dd35d9352ea6ed1f8ab118585d07cb30ad55f19"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v1/prepare_manifest.py",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v1/prepare_manifest.py",
+      "bytes": 4750,
+      "sha256": "2517cb23aed01e583fe6d7e2f293d03d4b3600338da20caafba85b0d026e8dec"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/OrderedFieldConcat.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/OrderedFieldConcat.java",
+      "bytes": 4373,
+      "sha256": "f35c19ea530fc33822a9bf3d931fae85455d52d1e5a4df56e9f1377a5b86552b"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/README.md",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/README.md",
+      "bytes": 1201,
+      "sha256": "21b81e78696baf3ec371ec33a1ab407f0ecacbfd799a35016b484631c2dec109"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/Runner.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/Runner.java",
+      "bytes": 3658,
+      "sha256": "f4e744f3be3c3ef72326ea5bf59e4df8173b4c60aaafaf41126f85290e9151a1"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/manifest.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/manifest.json",
+      "bytes": 18123,
+      "sha256": "af1aeb045c529c448b8acf028d53e520dface1ac84443a08f3f8a233b390bd2b"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/prepare_manifest.py",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/prepare_manifest.py",
+      "bytes": 6805,
+      "sha256": "e150a4cc7960a0b35da1a14f30d27230d56e89a6db1976d5ccc3d6285880854a"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/debug/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/debug/classes/OrderedFieldConcat.class",
+      "bytes": 3213,
+      "sha256": "92acf130cea1058ca34d75d593870eeffeb097843905ae1820bc1b552513fddb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/debug/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/debug/classes/Runner.class",
+      "bytes": 3627,
+      "sha256": "f3e479ca0eb73eaf8ae2b7e8ca1d7584adf027ce0d24a68ecaa8b4e2c4d696f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/none/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/none/classes/OrderedFieldConcat.class",
+      "bytes": 2343,
+      "sha256": "5cbe2b867689678c2b230220beb801100359b177092ae8cb81a298f93162f51c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/none/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/none/classes/Runner.class",
+      "bytes": 3017,
+      "sha256": "fc9019721fdd593d0927895bff3bb2647d77d96ff0f8c92c09c88778bce3bfa3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/debug/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/debug/classes/OrderedFieldConcat.class",
+      "bytes": 3754,
+      "sha256": "8c8a55e42a60e37c476db949b9c5657ca8ec709f5b628327bc81275ec90154bd"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/debug/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/debug/classes/Runner.class",
+      "bytes": 3963,
+      "sha256": "6739756bcaec4bf057fa6dc60c0da54e1545cab6cd5844ceadd4dfe2bc2fdd72"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/none/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/none/classes/OrderedFieldConcat.class",
+      "bytes": 2884,
+      "sha256": "c70fb5fb4d5d2abeb7dd11c25ab4d62363288e5ab54d933e122312534a766658"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/none/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac23/source-default/none/classes/Runner.class",
+      "bytes": 3353,
+      "sha256": "fe5e481a3d0a20bc3bb9d0e848b888c7f20ec3b3a38006580e7b885022443b8f"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/debug/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/debug/classes/OrderedFieldConcat.class",
+      "bytes": 3213,
+      "sha256": "a513e28eef4d5e78570879ae0f664697a043ea31258db8794fca8d3b5591ca95"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/debug/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/debug/classes/Runner.class",
+      "bytes": 3642,
+      "sha256": "9ede2c7a6ba41d1b5e5f24cb1b6a3f574c3fc6891b956eaf989d21c8fd2ec3eb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/none/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/none/classes/OrderedFieldConcat.class",
+      "bytes": 2343,
+      "sha256": "52e3acae63fa82e173d60e58b3cecba717607c20638538c107beaab1fcbef394"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/none/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v2/runs/javac8/none/classes/Runner.class",
+      "bytes": 3032,
+      "sha256": "86a6113867c3b11c294ed8780801f16f6d83d616523f950089175d0f88560ae0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/NegativeRunner.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/NegativeRunner.java",
+      "bytes": 819,
+      "sha256": "36c52280fde8a59b50da3b11e3ccc9d243779113f181a7073ddf98b8d2238f8d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/OrderedFieldConcat.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/OrderedFieldConcat.java",
+      "bytes": 2115,
+      "sha256": "e00c37cca66fd095bd1bdce09b3c69bce685a9a679e4848d5a16ae427a0af59a"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/OrderedFieldConcatNegatives.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/OrderedFieldConcatNegatives.java",
+      "bytes": 1602,
+      "sha256": "9fa332ce8cf3730dbefe31b3c3ed43939b7eb1199621cf5b3521ecb55a432f26"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/README.md",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/README.md",
+      "bytes": 1319,
+      "sha256": "e6a57c8d0d2734db5aa4d7be8c04c18a2161035dfaa49b1eb61d5768182fd06f"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/Runner.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/Runner.java",
+      "bytes": 2633,
+      "sha256": "617f1f10a7866059bd21c3b63f2ea7810ba350795ebdef64f8c18756a4130ae1"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/manifest.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/manifest.json",
+      "bytes": 35615,
+      "sha256": "3e8ef4575b6125b7d4ffab4587ff82e952a39ca0f9d11a04055a8f9c18ba25e2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/prepare_manifest.py",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/prepare_manifest.py",
+      "bytes": 6115,
+      "sha256": "7cffa81b16e51e9b076b05f5a0b0ec5967a1af7cf2e8a21acce4ab1c8c8b4376"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/debug/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/debug/classes/OrderedFieldConcat.class",
+      "bytes": 3213,
+      "sha256": "92acf130cea1058ca34d75d593870eeffeb097843905ae1820bc1b552513fddb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/debug/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/debug/classes/Runner.class",
+      "bytes": 3627,
+      "sha256": "f3e479ca0eb73eaf8ae2b7e8ca1d7584adf027ce0d24a68ecaa8b4e2c4d696f3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/none/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/none/classes/OrderedFieldConcat.class",
+      "bytes": 2343,
+      "sha256": "5cbe2b867689678c2b230220beb801100359b177092ae8cb81a298f93162f51c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/none/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/none/classes/Runner.class",
+      "bytes": 3017,
+      "sha256": "fc9019721fdd593d0927895bff3bb2647d77d96ff0f8c92c09c88778bce3bfa3"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/classes/OrderedFieldConcat.class",
+      "bytes": 3754,
+      "sha256": "8c8a55e42a60e37c476db949b9c5657ca8ec709f5b628327bc81275ec90154bd"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/classes/Runner.class",
+      "bytes": 3963,
+      "sha256": "6739756bcaec4bf057fa6dc60c0da54e1545cab6cd5844ceadd4dfe2bc2fdd72"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/negative-original/NegativeRunner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/negative-original/NegativeRunner.class",
+      "bytes": 1648,
+      "sha256": "4bfbefb397c2f688b76ace70e49e723cae37ed6586ef58c3a9dfc68fbf2b99e2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/negative-original/OrderedFieldConcatNegatives.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/negative-original/OrderedFieldConcatNegatives.class",
+      "bytes": 2392,
+      "sha256": "92e8e876f6e16d95866cad8f87ac42d56a502ef5709dea85bb80ef1bb6917b26"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/positive/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/positive/OrderedFieldConcat.class",
+      "bytes": 2769,
+      "sha256": "6e326933ca1b0bd22dddc7a78c6f3316894db626d5a33a50c6697da67a962754"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/positive/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/debug/positive/Runner.class",
+      "bytes": 3086,
+      "sha256": "d11e4549791799863491ac42c157d0cb9d75bb444412b3dd0bd389f9c3a3e377"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/classes/OrderedFieldConcat.class",
+      "bytes": 2884,
+      "sha256": "c70fb5fb4d5d2abeb7dd11c25ab4d62363288e5ab54d933e122312534a766658"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/classes/Runner.class",
+      "bytes": 3353,
+      "sha256": "fe5e481a3d0a20bc3bb9d0e848b888c7f20ec3b3a38006580e7b885022443b8f"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/negative-original/NegativeRunner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/negative-original/NegativeRunner.class",
+      "bytes": 1370,
+      "sha256": "70abb41888b6391ec3401d7960dd9413df4a6aace2e0cdf748b05e527e4aab85"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/negative-original/OrderedFieldConcatNegatives.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/negative-original/OrderedFieldConcatNegatives.class",
+      "bytes": 1836,
+      "sha256": "fb26cd3766d3a7bb09047c035490158916a0860bbeda5d0deee13abdab8e086c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/positive/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/positive/OrderedFieldConcat.class",
+      "bytes": 2230,
+      "sha256": "4ce71abc0a8ff09b28344aa59eb0aeca786e4bbcb51ab787dee36af3b3cd9053"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/positive/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source-default/none/positive/Runner.class",
+      "bytes": 2584,
+      "sha256": "ce5ef83a71cfd636c1e0969de1b82ed317033f625b5d0ddefb6175e364ac77f5"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/negative-original/NegativeRunner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/negative-original/NegativeRunner.class",
+      "bytes": 1293,
+      "sha256": "e517b93e93fb17e2a2a84ecc234158461c3bdc5572023f808da3113e280f9ff8"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/negative-original/OrderedFieldConcatNegatives.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/negative-original/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "640f698f870db3cba7c3d26d4d8f3c61de08b2c7c601c6ff43eb257767ea49ce"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/positive/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/positive/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "6d539bbf6197fc8543116061792e245a019bf0033704ef7a00d7e913d69aadd8"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/positive/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/debug/positive/Runner.class",
+      "bytes": 2835,
+      "sha256": "50467d337de29f86606db3f28882729e38c690cf1222b5c150c1df3c9ef76215"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/negative-original/NegativeRunner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/negative-original/NegativeRunner.class",
+      "bytes": 1015,
+      "sha256": "62b9293014c14d2eb157f408368e49502667293f36d8e6b9003754a3ab248ef0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/negative-original/OrderedFieldConcatNegatives.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/negative-original/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "9f74d8b5bd723583084a1599731f9e41ab8854966d1ced28721c7133d773c588"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/positive/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/positive/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "493ad6b01ac201cfd60f9f281f75fa86a56a3e9ae6432838509bf8cccb38e4b7"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/positive/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac23/source8-target8/none/positive/Runner.class",
+      "bytes": 2333,
+      "sha256": "bf681dca736b8f8f3712a8c4ca807b044798dae912b89a79ab6b530d5f00cc01"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/debug/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/debug/classes/OrderedFieldConcat.class",
+      "bytes": 3213,
+      "sha256": "a513e28eef4d5e78570879ae0f664697a043ea31258db8794fca8d3b5591ca95"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/debug/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/debug/classes/Runner.class",
+      "bytes": 3642,
+      "sha256": "9ede2c7a6ba41d1b5e5f24cb1b6a3f574c3fc6891b956eaf989d21c8fd2ec3eb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/none/classes/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/none/classes/OrderedFieldConcat.class",
+      "bytes": 2343,
+      "sha256": "52e3acae63fa82e173d60e58b3cecba717607c20638538c107beaab1fcbef394"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/none/classes/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/none/classes/Runner.class",
+      "bytes": 3032,
+      "sha256": "86a6113867c3b11c294ed8780801f16f6d83d616523f950089175d0f88560ae0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/negative-original/NegativeRunner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/negative-original/NegativeRunner.class",
+      "bytes": 1293,
+      "sha256": "27b8f91c3a973da58984b1adf31119c246ea3d8650cac22b93cad2613fd23662"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/negative-original/OrderedFieldConcatNegatives.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/negative-original/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "cac81bd3e50e51e59b0bf3551d2267152f0cf843d448208477a88bd952ab0c58"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/positive/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/positive/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "fb29ead76d4c869a8d130fc2f57ce0ed4cbfbaae29594616c8fa29e0da0fe158"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/positive/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/debug/positive/Runner.class",
+      "bytes": 2847,
+      "sha256": "02372f4b2b5adbbd4e1b69370c2bb41288520dbaa1f1836fb130feb4daeaa7e9"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/negative-original/NegativeRunner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/negative-original/NegativeRunner.class",
+      "bytes": 1015,
+      "sha256": "6c9c1d5466cca5f8992affcfe6a2e06fd8f61122f2cc09b3e3278db33ffaf46c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/negative-original/OrderedFieldConcatNegatives.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/negative-original/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "821af1d0d43e0a0ebfccc860199146ef327bbac252dc7b1acd599c817c038830"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/positive/OrderedFieldConcat.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/positive/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "3445c86718d52b8f4c220f9a5506cc1163eb19fa5c4de9df4e0ad1afb45d9ddc"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/positive/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-fixture-luna-v3/runs/javac8/source8-target8/none/positive/Runner.class",
+      "bytes": 2345,
+      "sha256": "64f212816ec7606cfbb581e11bd4386f38847b34233758b18bb748d9268612dc"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/0/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/0/Runner.class",
+      "bytes": 2531,
+      "sha256": "6b2c8151c81688f6662e314de9cff5b8e5d4803d8174e101d82b2391305072b2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/1/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/1/Runner.class",
+      "bytes": 2531,
+      "sha256": "6b2c8151c81688f6662e314de9cff5b8e5d4803d8174e101d82b2391305072b2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/2/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/2/Runner.class",
+      "bytes": 2516,
+      "sha256": "9ac17ba3696594a74bd46d025f0cd510f7a4b0099b70c34344342c1291fc6ccb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/3/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/3/Runner.class",
+      "bytes": 2516,
+      "sha256": "9ac17ba3696594a74bd46d025f0cd510f7a4b0099b70c34344342c1291fc6ccb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/4/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/4/Runner.class",
+      "bytes": 2766,
+      "sha256": "2cfaebf437046bb8bb32b3fa2e502ea2460a1ab82c78837aa4cbce4b7c157dde"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/5/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/5/Runner.class",
+      "bytes": 2766,
+      "sha256": "2cfaebf437046bb8bb32b3fa2e502ea2460a1ab82c78837aa4cbce4b7c157dde"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/Runner.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v1/commands.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v1/commands.json",
+      "bytes": 5071,
+      "sha256": "fb2ed2120e8cc7934e88042156d3399a57f4f4723e26c61ab29648f34eff40c0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/0/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/0/Runner.class",
+      "bytes": 2531,
+      "sha256": "6b2c8151c81688f6662e314de9cff5b8e5d4803d8174e101d82b2391305072b2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/1/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/1/Runner.class",
+      "bytes": 2531,
+      "sha256": "6b2c8151c81688f6662e314de9cff5b8e5d4803d8174e101d82b2391305072b2"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/2/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/2/Runner.class",
+      "bytes": 2516,
+      "sha256": "9ac17ba3696594a74bd46d025f0cd510f7a4b0099b70c34344342c1291fc6ccb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/3/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/3/Runner.class",
+      "bytes": 2516,
+      "sha256": "9ac17ba3696594a74bd46d025f0cd510f7a4b0099b70c34344342c1291fc6ccb"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/4/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/4/Runner.class",
+      "bytes": 2766,
+      "sha256": "2cfaebf437046bb8bb32b3fa2e502ea2460a1ab82c78837aa4cbce4b7c157dde"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/5/Runner.class",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/5/Runner.class",
+      "bytes": 2766,
+      "sha256": "2cfaebf437046bb8bb32b3fa2e502ea2460a1ab82c78837aa4cbce4b7c157dde"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/Runner.java",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-runner-null-root-v2/commands.json",
+      "archive_path": "tmp/jarde-ordered-field-concat-runner-null-root-v2/commands.json",
+      "bytes": 5071,
+      "sha256": "b16f6b48c0a5806babd1c4123e1b5e50d3055d82034921b5fc8ffe89c55e3ffd"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-commands-root-v1.json",
+      "archive_path": "tools/jarde-ordered-field-concat-original-commands-root-v1.json",
+      "bytes": 6901,
+      "sha256": "8b7ba538b276308bc8244c52e5dd39177d1b9a3a3aa57b038edcd17a53863954"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-original-commands-root-v2.json",
+      "archive_path": "tools/jarde-ordered-field-concat-original-commands-root-v2.json",
+      "bytes": 14841,
+      "sha256": "f7163c624e684f85cf35ff753debd6c2d63493ccfc4a1dc8f753fde345a6a25a"
+    },
+    {
+      "source_path": "/private/tmp/jarde-ordered-field-concat-null-accept-root-v2.py",
+      "archive_path": "tools/jarde-ordered-field-concat-null-accept-root-v2.py",
+      "bytes": 1890,
+      "sha256": "608a8c8c1a30b550dcc07664b160ff2ce8713106b64b63e29f8f4765b3f41fd7"
+    },
+    {
+      "source_path": "/private/tmp/jarde-loop-focused-runner-root-v1.py",
+      "archive_path": "tools/jarde-loop-focused-runner-root-v1.py",
+      "bytes": 4549,
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/NegativeRunner.java",
+      "archive_path": "fixture/NegativeRunner.java",
+      "bytes": 819,
+      "sha256": "36c52280fde8a59b50da3b11e3ccc9d243779113f181a7073ddf98b8d2238f8d"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/OrderedFieldConcat.java",
+      "archive_path": "fixture/OrderedFieldConcat.java",
+      "bytes": 2115,
+      "sha256": "e00c37cca66fd095bd1bdce09b3c69bce685a9a679e4848d5a16ae427a0af59a"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/OrderedFieldConcatNegatives.java",
+      "archive_path": "fixture/OrderedFieldConcatNegatives.java",
+      "bytes": 1602,
+      "sha256": "9fa332ce8cf3730dbefe31b3c3ed43939b7eb1199621cf5b3521ecb55a432f26"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/README.md",
+      "archive_path": "fixture/README.md",
+      "bytes": 918,
+      "sha256": "05a3456208c33e0790073775c2c68b0bc66ac0365c72751225164cc00e8c77d7"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/Runner.java",
+      "archive_path": "fixture/Runner.java",
+      "bytes": 2915,
+      "sha256": "63eef60b2bafb4806ea62b615b5ae980341190bb3a976ed2d1c6f91f6e804c0a"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcat.class",
+      "archive_path": "fixture/javac23-debug/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "6d539bbf6197fc8543116061792e245a019bf0033704ef7a00d7e913d69aadd8"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcatNegatives.class",
+      "archive_path": "fixture/javac23-debug/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "640f698f870db3cba7c3d26d4d8f3c61de08b2c7c601c6ff43eb257767ea49ce"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcat.class",
+      "archive_path": "fixture/javac23-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "493ad6b01ac201cfd60f9f281f75fa86a56a3e9ae6432838509bf8cccb38e4b7"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcatNegatives.class",
+      "archive_path": "fixture/javac23-none/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "9f74d8b5bd723583084a1599731f9e41ab8854966d1ced28721c7133d773c588"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class",
+      "archive_path": "fixture/javac8-debug/OrderedFieldConcat.class",
+      "bytes": 2228,
+      "sha256": "fb29ead76d4c869a8d130fc2f57ce0ed4cbfbaae29594616c8fa29e0da0fe158"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcatNegatives.class",
+      "archive_path": "fixture/javac8-debug/OrderedFieldConcatNegatives.class",
+      "bytes": 1892,
+      "sha256": "cac81bd3e50e51e59b0bf3551d2267152f0cf843d448208477a88bd952ab0c58"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcat.class",
+      "archive_path": "fixture/javac8-none/OrderedFieldConcat.class",
+      "bytes": 1689,
+      "sha256": "3445c86718d52b8f4c220f9a5506cc1163eb19fa5c4de9df4e0ad1afb45d9ddc"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcatNegatives.class",
+      "archive_path": "fixture/javac8-none/OrderedFieldConcatNegatives.class",
+      "bytes": 1336,
+      "sha256": "821af1d0d43e0a0ebfccc860199146ef327bbac252dc7b1acd599c817c038830"
+    },
+    {
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-ordered-field-concat/manifest.json",
+      "archive_path": "fixture/manifest.json",
+      "bytes": 2984,
+      "sha256": "698701fa0ab7dcc638d18381ca4c55021523b1da61e529227bd612f84defd72e"
+    }
+  ],
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 1897133,
+    "sha256": "c0a2d55d8ad02ad96ed3808127661c9f490f022737d585ab4db589345f007a3b"
+  }
+}
