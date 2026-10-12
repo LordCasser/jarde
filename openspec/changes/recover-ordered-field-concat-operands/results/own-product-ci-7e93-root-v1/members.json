@@ -1,0 +1,90 @@
+{
+  "archive": {
+    "bytes": 852276,
+    "path": "capture.tar.gz",
+    "sha256": "5da3f3cfe4ddc63a6d362b92813f4283666e8ebce10838080b9b3de577e8ed42"
+  },
+  "members": [
+    {
+      "bytes": 16384,
+      "path": "tools/archive-own-ci.py",
+      "sha256": "b40f98d71f410d2da0c161140147e8bbaf097ef39af8dcff66c30b75344fa334"
+    },
+    {
+      "bytes": 1351457,
+      "path": "evidence/own-ci-acceptance.json",
+      "sha256": "21cef85755605dfa482d0c652ae6c2cb04412e932e4b30fec7fb7a7960aa223c"
+    },
+    {
+      "bytes": 21352,
+      "path": "evidence/capture/capture-execution-root-v2.json",
+      "sha256": "f3d5f87b534c72c81a42b054c076ebce4d3d15d3b322a8d208c65c952ad16757"
+    },
+    {
+      "bytes": 10113,
+      "path": "evidence/capture/ci-run-v2.json",
+      "sha256": "cd1900d188cad7c808bc0dc61e491eb16877de486b650859de2c7e0068dbfa45"
+    },
+    {
+      "bytes": 0,
+      "path": "evidence/capture/ci-run-v2.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 288006,
+      "path": "evidence/capture/ci-stable-job-v2.log.gz",
+      "sha256": "47cb4529f83c6cfcad01c8ffd53a03045947c48d2bee2f018bd8e46a9624a046"
+    },
+    {
+      "bytes": 0,
+      "path": "evidence/capture/ci-stable-job-v2.log.gz.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1826552,
+      "path": "evidence/capture/ci-stable-job-v2.log.stdout.raw",
+      "sha256": "9548f7cf2132ccd5ec761dcdefb6e98dd9d29b0290fd0d189ed756b42c223c31"
+    },
+    {
+      "bytes": 15227,
+      "path": "evidence/capture/ci-supply-job-v2.log.gz",
+      "sha256": "5667cbe7d245b1472e306b7b41477821fa1cc27446e7cd44c358ab4d1e830ea9"
+    },
+    {
+      "bytes": 0,
+      "path": "evidence/capture/ci-supply-job-v2.log.gz.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 116246,
+      "path": "evidence/capture/ci-supply-job-v2.log.stdout.raw",
+      "sha256": "4b5b797bdb36c13362897c42c7b05f53cc9be5ca6e67357b05a3bdd54e201359"
+    },
+    {
+      "bytes": 6770,
+      "path": "tools/capture-own-ci.py",
+      "sha256": "842ce7f7b9ae20c19962b9495fb62c1d8eac2d87ccc05d1c482d4c95818a7bdf"
+    },
+    {
+      "bytes": 47267,
+      "path": "tools/workspace_runner.py",
+      "sha256": "557d1decba94c3f0e58fee22c7335de77f3087c9337924824724f0412135c38f"
+    },
+    {
+      "bytes": 28052,
+      "path": "tools/accept_workspace.py",
+      "sha256": "5a0ba7f3e763706701117017fd628383c7281ee288e3af902a01bfcdaa8f1d4c"
+    },
+    {
+      "bytes": 38163,
+      "path": "tools/verify-own-ci.py",
+      "sha256": "08dd3bf0758400ad413eba0d12283ff584c6c00f7b11b53d0b6af948f7b8c5db"
+    },
+    {
+      "bytes": 150082,
+      "path": "evidence/prior-archive-references.json",
+      "sha256": "4cbc3163dc6e53fb8fca25d4feecbd8614de93a2ae37f58b43a51add57e17c8a"
+    }
+  ],
+  "schema": "ordered-field-own-ci-durable-archive-v1"
+}

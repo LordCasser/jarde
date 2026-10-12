@@ -1,0 +1,15 @@
+{
+  "schema": "em20-baseline-capture-output-pins-v1",
+  "archive": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-debug-reference-lifetimes/results/baseline-product-7e93-root-v1/capture.tar.gz",
+    "bytes": 1082919,
+    "sha256": "b452c5251bb40bc750f553876a7afa3bed929b61fa53ababd7c9b05a34404bd1"
+  },
+  "manifest_member_count": 154,
+  "capture_manifest": {
+    "path": "capture-manifest.json",
+    "bytes": 27312,
+    "sha256": "5be2063ab803719822c3aa0c372104717713a5e09de504f6e80ed260f3833629"
+  },
+  "archive_reopened_and_verified": true
+}
