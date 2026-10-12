@@ -1,13 +1,13 @@
 ## 1. 取证与基线
 
 - [x] 1.1 当前 CLI 复跑固定 DF/DV，保存 debug/none、Java8/23 原/JADX/Jarde 完整类、物理异常表和来源。独立记录各方法的实际第一处拒绝；失败保留 no-runtime，不预设与旧 README 一致。
-- [ ] 1.2 按 DV.plainFor 的同次 IR 回答 Q-i/Q-ii，并分别核 DV.forEach/DF.loopCatch 的 Q-iii。完整 handler/row/header/join/普通与异常边及 terminal 路径写入 `instrumentation.md`；参考 JADX splitter 与区域所有权算法，先完成 design 再实施。
+- [x] 1.2 按 DV.plainFor 的同次 IR 回答 Q-i/Q-ii，并分别核 DV.forEach/DF.loopCatch 的 Q-iii。完整 handler/row/header/join/普通与异常边及 terminal 路径已写入 `instrumentation.md`；retry 两变体基线与八lane同次树已独立接受，参考 JADX splitter 与区域所有权算法，`design.md` 已完成。观察接受不表示产品通过。
 
 ## 2. 实现
 
-- [ ] 2.1 按 Q-i/Q-ii 结论在现有普通 catch 认证补齐简单形的所有权/出口证明，保持原 CFG/异常派发/来源与停止计费；不得删边强制归约或放宽 fragmented 特化门。
-- [ ] 2.2 对照组零回退：无 try 循环、循环内 try-finally、fragmented-loop-catches 既有 fixture 逐字节不变。
-- [ ] 2.3 如 Q-iii 确认独立 SSA/作用域门，按实际落点细化并实现三形所需证明；不以准确拒绝冒充三形恢复完成。
+- [ ] 2.1 在现有普通 catch 认证补齐 finite terminal-body 证明，由同一次事实供 join/scope/coverage/induction 使用；并在现有 Walker 证明 retry header/exit 的不同边界，复用 Endless/Try/LoopBreak/LoopContinue。保持原 CFG/异常派发/来源与停止计费；不得删边、禁用 overlap 或放宽 fragmented 特化门。
+- [ ] 2.2 对照组零回退：无 try、已完整支持的 try-finally、fragmented-loop-catches fixture 文本不变。固定 DF.loopFinally 当前另有 handler51 uncovered，单独分析和处理，保留完整类失败与后续成功证据；不得删除方法或修补生成源码满足3.1。
+- [ ] 2.3 在现有 presented_reference_store_value 仅为同 block、单消费、无间隔效果的实际 reference Load 复用呈现证明，保留 constructor/call protected-arm 门和全读 SSA/phi/词法 owner 门；完成 foreach，不能以准确拒绝关闭三形。
 
 ## 3. 验证
 

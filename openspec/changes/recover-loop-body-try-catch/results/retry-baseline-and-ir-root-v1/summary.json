@@ -1,0 +1,842 @@
+{
+  "status": "accepted_observations_only",
+  "implementation_accepted": false,
+  "baseline": {
+    "status": "accepted_observations_only",
+    "implementation_accepted": false,
+    "versions": [
+      {
+        "version": "v2",
+        "execution_sha256": "dd7e7cf1d394c3202aff9dd484fa0922c7483fb227ef2d78b40e6889487bf5d3",
+        "commands": 44,
+        "raw_streams": 88,
+        "original_runtime_legs": 4,
+        "jadx_runtime_legs": 8,
+        "runtime_oracles_per_leg": 5,
+        "jarde_compile_fail_no_runtime": 4,
+        "refusals": [
+          {
+            "mode": "debug",
+            "jdk": "javac8",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "2f473c5d80f0e81e6a867ef0e1123c7039434d79b9106a4cc9f6282fb16fc533",
+                  "length": 1742
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "2f473c5d80f0e81e6a867ef0e1123c7039434d79b9106a4cc9f6282fb16fc533"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          },
+          {
+            "mode": "debug",
+            "jdk": "javac23",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "c72d07932e978537a79e4ce104a680e2e5501183316666eb659b343762a56efa",
+                  "length": 1739
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "c72d07932e978537a79e4ce104a680e2e5501183316666eb659b343762a56efa"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          },
+          {
+            "mode": "none",
+            "jdk": "javac8",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "7bcd2673f5ade332f0d7905f5d8cf506875b2dbbd313a0d86eaf96feb7156ee6",
+                  "length": 1394
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "7bcd2673f5ade332f0d7905f5d8cf506875b2dbbd313a0d86eaf96feb7156ee6"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          },
+          {
+            "mode": "none",
+            "jdk": "javac23",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "4d5fe57af88a851b001947d4d003daba615643cd118755142720556dd1e09991",
+                  "length": 1391
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "4d5fe57af88a851b001947d4d003daba615643cd118755142720556dd1e09991"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          }
+        ]
+      },
+      {
+        "version": "v3",
+        "execution_sha256": "bd45fcb195c4ff89d541c4da23021e5735e261760aecd6d9f05d8f4bc2f25079",
+        "commands": 44,
+        "raw_streams": 88,
+        "original_runtime_legs": 4,
+        "jadx_runtime_legs": 8,
+        "runtime_oracles_per_leg": 5,
+        "jarde_compile_fail_no_runtime": 4,
+        "refusals": [
+          {
+            "mode": "debug",
+            "jdk": "javac8",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "b8fde4055668ca864c84c00298ad14c15b8c910d95d61c49800511e48b77d51d",
+                  "length": 1398
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "b8fde4055668ca864c84c00298ad14c15b8c910d95d61c49800511e48b77d51d"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          },
+          {
+            "mode": "debug",
+            "jdk": "javac23",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "6e75177bc9ac17d3d3bd230104aa0b0f657d6247fd34a2ccaae3b008d95cd394",
+                  "length": 1395
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "6e75177bc9ac17d3d3bd230104aa0b0f657d6247fd34a2ccaae3b008d95cd394"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          },
+          {
+            "mode": "none",
+            "jdk": "javac8",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "355b3edc1a92194ea932490b2add0b751969e2cf609cb1cad30c8fe745188515",
+                  "length": 1050
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "355b3edc1a92194ea932490b2add0b751969e2cf609cb1cad30c8fe745188515"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          },
+          {
+            "mode": "none",
+            "jdk": "javac23",
+            "physical_identity": {
+              "descriptor": [
+                40,
+                41,
+                73
+              ],
+              "name": [
+                116,
+                101,
+                115,
+                116
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "648e3fc441ab895451a414bc41242394183c9e661af5e5b1bc07435dda72dc2d",
+                  "length": 1047
+                },
+                "location": {
+                  "kind": "standalone_root",
+                  "snapshot": "648e3fc441ab895451a414bc41242394183c9e661af5e5b1bc07435dda72dc2d"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "first_refusal": {
+              "code": "jre_region_ownership_overlap",
+              "message": "canonical block at BCI 0 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+              "provenance": null,
+              "severity": "warning"
+            }
+          }
+        ]
+      }
+    ],
+    "total_commands": 88,
+    "raw_streams": 176,
+    "scope": "Whole classes unmodified; independent Runner package prefix only. Observed infinite retry/break gap remains and is not accepted as restored."
+  },
+  "same_run_ir": {
+    "status": "accepted_same_run_observations_only",
+    "implementation_accepted": false,
+    "execution": {
+      "path": "/private/tmp/jarde-loop-catch-retry-same-run-ir-root-v1/execution.json",
+      "bytes": 3184670,
+      "sha256": "2ea6be77f4b6f0e80179fec64527bdc26efe4aa920d62dd53aa02afb55a9b6cc"
+    },
+    "checker": {
+      "path": "/private/tmp/jarde-loop-catch-retry-ir-accept-root-v1.py",
+      "bytes": 7982,
+      "sha256": "70072f1d911b76f8f16ceee2c8b5355321748616bc000ffa8eb79df07f0eaa01"
+    },
+    "commands": 9,
+    "raw_streams": 18,
+    "physical_methods": 8,
+    "source_closure_count": 4822,
+    "restored_exact": true,
+    "target_absent": true,
+    "limitation": "Minimal MethodFacts; not the CLI debug-name RecoveryFacts request.",
+    "observations": [
+      {
+        "fixture_version": "v2",
+        "mode": "debug",
+        "jdk": "javac8",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v2-v1/legs/debug/javac8/original/classes/RetryFixture.class",
+          "bytes": 1742,
+          "sha256": "1276ac7a3c9b225f93165a26e78d656696ccc6559448751636ec210c1edcb582"
+        },
+        "physical_class_identity": {
+          "digest": "2f473c5d80f0e81e6a867ef0e1123c7039434d79b9106a4cc9f6282fb16fc533",
+          "length": 1742
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 46,
+          "handler": 49
+        },
+        "ordinary_edges": [
+          [
+            0,
+            95
+          ],
+          [
+            49,
+            0
+          ],
+          [
+            95,
+            103
+          ],
+          [
+            95,
+            113
+          ],
+          [
+            103,
+            113
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            49,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v2",
+        "mode": "debug",
+        "jdk": "javac23",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v2-v1/legs/debug/javac23/original/classes/RetryFixture.class",
+          "bytes": 1739,
+          "sha256": "8268faa4e719cf7567cccea5723ffb1e3e789f78fceba1049cd4cda13a9a5ea6"
+        },
+        "physical_class_identity": {
+          "digest": "c72d07932e978537a79e4ce104a680e2e5501183316666eb659b343762a56efa",
+          "length": 1739
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 46,
+          "handler": 49
+        },
+        "ordinary_edges": [
+          [
+            0,
+            95
+          ],
+          [
+            49,
+            0
+          ],
+          [
+            95,
+            103
+          ],
+          [
+            95,
+            113
+          ],
+          [
+            103,
+            113
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            49,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v2",
+        "mode": "none",
+        "jdk": "javac8",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v2-v1/legs/none/javac8/original/classes/RetryFixture.class",
+          "bytes": 1394,
+          "sha256": "3af8fed50e8cd33e3d1ae6b9da412787dde7ce7f57642131d850791a7eed7638"
+        },
+        "physical_class_identity": {
+          "digest": "7bcd2673f5ade332f0d7905f5d8cf506875b2dbbd313a0d86eaf96feb7156ee6",
+          "length": 1394
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 46,
+          "handler": 49
+        },
+        "ordinary_edges": [
+          [
+            0,
+            95
+          ],
+          [
+            49,
+            0
+          ],
+          [
+            95,
+            103
+          ],
+          [
+            95,
+            113
+          ],
+          [
+            103,
+            113
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            49,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v2",
+        "mode": "none",
+        "jdk": "javac23",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v2-v1/legs/none/javac23/original/classes/RetryFixture.class",
+          "bytes": 1391,
+          "sha256": "649cbe5a484911cd2781d2509f4b02cf08ad4b2a9085eb2bfa7b1e79e489b84f"
+        },
+        "physical_class_identity": {
+          "digest": "4d5fe57af88a851b001947d4d003daba615643cd118755142720556dd1e09991",
+          "length": 1391
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 46,
+          "handler": 49
+        },
+        "ordinary_edges": [
+          [
+            0,
+            95
+          ],
+          [
+            49,
+            0
+          ],
+          [
+            95,
+            103
+          ],
+          [
+            95,
+            113
+          ],
+          [
+            103,
+            113
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            49,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v3",
+        "mode": "debug",
+        "jdk": "javac8",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v3-v1/legs/debug/javac8/original/classes/RetryFixture.class",
+          "bytes": 1398,
+          "sha256": "51cd2c6389d16e30a586ae39103ab314242b14584e8050e82fc62035dbda63d9"
+        },
+        "physical_class_identity": {
+          "digest": "b8fde4055668ca864c84c00298ad14c15b8c910d95d61c49800511e48b77d51d",
+          "length": 1398
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 26,
+          "handler": 29
+        },
+        "ordinary_edges": [
+          [
+            0,
+            55
+          ],
+          [
+            29,
+            0
+          ],
+          [
+            55,
+            63
+          ],
+          [
+            55,
+            73
+          ],
+          [
+            63,
+            73
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            29,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v3",
+        "mode": "debug",
+        "jdk": "javac23",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v3-v1/legs/debug/javac23/original/classes/RetryFixture.class",
+          "bytes": 1395,
+          "sha256": "0ec60f83bab5388954ec3408f4df32fa4b3febbfa12d7aeadd6c75b51f5dd071"
+        },
+        "physical_class_identity": {
+          "digest": "6e75177bc9ac17d3d3bd230104aa0b0f657d6247fd34a2ccaae3b008d95cd394",
+          "length": 1395
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 26,
+          "handler": 29
+        },
+        "ordinary_edges": [
+          [
+            0,
+            55
+          ],
+          [
+            29,
+            0
+          ],
+          [
+            55,
+            63
+          ],
+          [
+            55,
+            73
+          ],
+          [
+            63,
+            73
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            29,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v3",
+        "mode": "none",
+        "jdk": "javac8",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v3-v1/legs/none/javac8/original/classes/RetryFixture.class",
+          "bytes": 1050,
+          "sha256": "99e407717ef0ee271acd755f215db916730bb0ca4c90923a51453ec46661c13a"
+        },
+        "physical_class_identity": {
+          "digest": "355b3edc1a92194ea932490b2add0b751969e2cf609cb1cad30c8fe745188515",
+          "length": 1050
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 26,
+          "handler": 29
+        },
+        "ordinary_edges": [
+          [
+            0,
+            55
+          ],
+          [
+            29,
+            0
+          ],
+          [
+            55,
+            63
+          ],
+          [
+            55,
+            73
+          ],
+          [
+            63,
+            73
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            29,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      },
+      {
+        "fixture_version": "v3",
+        "mode": "none",
+        "jdk": "javac23",
+        "class_pin": {
+          "path": "/private/tmp/jarde-loop-catch-retry-baseline-root-v3-v1/legs/none/javac23/original/classes/RetryFixture.class",
+          "bytes": 1047,
+          "sha256": "1b69652ce655d42f1b1b003e072b5cfae9c4b513c534191700bb6f37e47b785d"
+        },
+        "physical_class_identity": {
+          "digest": "648e3fc441ab895451a414bc41242394183c9e661af5e5b1bc07435dda72dc2d",
+          "length": 1047
+        },
+        "handler_row": {
+          "start": 0,
+          "end": 26,
+          "handler": 29
+        },
+        "ordinary_edges": [
+          [
+            0,
+            55
+          ],
+          [
+            29,
+            0
+          ],
+          [
+            55,
+            63
+          ],
+          [
+            55,
+            73
+          ],
+          [
+            63,
+            73
+          ]
+        ],
+        "ordinary_graph_acyclic": true,
+        "duplicate_owners": [
+          [
+            0,
+            [
+              0,
+              0
+            ]
+          ],
+          [
+            29,
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "first_overlap_bci": 0,
+        "same_root_nested_try": true,
+        "analysis_and_recovery_complete": true
+      }
+    ]
+  },
+  "archive": {
+    "bytes": 1328014,
+    "sha256": "4779cbb2dfa1d6267ff41059d469b4be43cd8948811b21a7bd4ed5e730acdb7d",
+    "file_count": 331,
+    "all_bytes_rechecked": true
+  }
+}

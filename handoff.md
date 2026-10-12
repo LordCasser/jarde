@@ -28,10 +28,14 @@ root 独占共享 Git/Cargo/rustfmt/JDK/JADX/CLI；Luna 仅只读或私有准备
 
 ## 后续大颗粒方向
 
-循环体 try/catch 是下一项，当前 **1/9**，尚无产品实现。当前CLI固定DF/DV完整基线已独立接受56命令/112raw：debug/none × Java8/23原18条oracle同值，JADX default经独立Runner包适配后与none共8个runtime均复现loopCatch错误异常逃逸；4条Jarde整类编译失败/no-runtime准确保留。见 [基线](openspec/changes/recover-loop-body-try-catch/results/baseline-cli-v4-root-v1/README.md)。
+循环体 try/catch 当前 **2/8**，OpenSpec 实际8个checkbox；此前1/9为计数误记，要求没有减少，尚无产品实现验收。当前CLI固定DF/DV完整基线已独立接受56命令/112raw：debug/none × Java8/23原18条oracle同值，JADX default经独立Runner包适配后与none共8个runtime均复现loopCatch错误异常逃逸；4条Jarde整类编译失败/no-runtime准确保留。见 [基线](openspec/changes/recover-loop-body-try-catch/results/baseline-cli-v4-root-v1/README.md)。
 
 固定四方法的同次IR真实四测试均1/0/0，最后clean0、4822源码按字节恢复、targetabsent；root独立接受16个精确physical方法观察，见 [instrumentation.md](openspec/changes/recover-loop-body-try-catch/instrumentation.md)。for/while与loopCatch的终止throw分支不在普通自然环且普通路径不达join，现有catch证明拒绝，handler→join形成第二SCC入口。foreach现有区域证明已通过，另卡在try外aload0@2/astore2@3引用producer的呈现门。优先分别补现有所有权与SSA证明，不能删CFG边强制归约或放宽fragmented特化条件。
 
-无限retry/break代表已真实采集44命令：原与JADX完整类运行均同五个计数/事件oracle；Jarde test()I实际首拒为block0的region ownership overlap，完整类compile1/no-runtime。原始材料 `/private/tmp/jarde-loop-catch-retry-baseline-root-v2-v1` 已terminal；root独立验收、归档及该代表同次Region树定位仍待。observability中的nested StringBuilder construction另有拒绝，需并列最小事件控制确认，不能混入catch修复扩大范围。`design.md` 尚未完成、1.2仍开放；先闭合这些实际落点再派Luna实现。
+无限retry/break两变体已实际独立接受88命令/176raw：原与JADX完整类运行同五个计数/事件oracle；Jarde test()I首拒block0的ownership overlap、整类compile1/no-runtime。v3固定事件文字消除v2的exc nested StringBuilder干扰，但test拒绝相同。八lane同次IR真实9命令/18raw已root独立接受；普通图无环，catch回header重入同一个根Try，block0/handler owners[0,0]。4822源码恢复、clean0、targetabsent。见 [重试归档](openspec/changes/recover-loop-body-try-catch/results/retry-baseline-and-ir-root-v1/README.md)。
+
+[design.md](openspec/changes/recover-loop-body-try-catch/design.md) 已完成并严格validate通过/applyready。方案为同一次finite terminal-body事实供join/scope/coverage/induction、foreach实际引用Load原位呈现、retry复用Endless/Try/Break/Continue并区分protected exit与catch header边界。不能把Try.normal_exit_bci=None误认成guard join=None；候选须用真实Transfer/唯一successor互证。任务1.2已关闭，三个Luna私有候选准备中：`jarde-loop-finite-ownership-impl-luna-v1`、`jarde-loop-retry-ownership-impl-luna-v1`、`jarde-loop-reference-load-impl-luna-v1`（均在/private/tmp，尚未应用或构建）。root串行合并验收。固定DF.loopFinally当前handler51 uncovered尚需独立处理，完整DF门继续开放，禁止删方法/改生成源码。
+
+Structured List真实finalHEAD `9dc64e4df464b157f430bae63c74cbb2c72d195e` 已完成外置clean-main实际审计，`/private/tmp/jarde-structured-list-clean-main-audit-final-root-v1/execution.json` accepted_clean_main；该审计只覆盖该HEAD。后续仅循环设计/证据文档变化不替代新产品CI；新产品修改后必须重新完成门禁。
 
 历史验收与架构债务分别保留在各 change 的 results 和 [completion-review.md](openspec/completion-review.md)，不能混入当前产品改动扩大范围。
