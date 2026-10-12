@@ -1,0 +1,9 @@
+/private/tmp/jarde-cf11-generic-signature-only-probe-root-v2/legs/javac8-signature-only/UpstreamNestedLoops.java:27: 错误: 对于add(Object), 找不到合适的方法
+                        l2.add((java.lang.Object) s1);
+                          ^
+    方法 Collection.add(String)不适用
+      (参数不匹配; Object无法转换为String)
+    方法 List.add(String)不适用
+      (参数不匹配; Object无法转换为String)
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+1 个错误

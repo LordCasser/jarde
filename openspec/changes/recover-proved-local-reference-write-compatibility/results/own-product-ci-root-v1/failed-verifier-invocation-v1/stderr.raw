@@ -1,0 +1,15 @@
+local-reference-write own-CI verification failed: name 'recorded_runtime_cli' is not defined
+Traceback (most recent call last):
+  File "/private/tmp/jarde-local-reference-write-own-ci-verifier-prep-luna-v4/verify-own-ci.py", line 1094, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/private/tmp/jarde-local-reference-write-own-ci-verifier-prep-luna-v4/verify-own-ci.py", line 1032, in main
+    build = verify_final_build(args.product_commit, ex['source_pins_before'],
+                               final_build_record, args.final_cli,
+    ...<4 lines>...
+                               workspace_receipt, workspace_sha256,
+                               workspace_acceptance, workspace_acceptance_sha256, ci)
+  File "/private/tmp/jarde-local-reference-write-own-ci-verifier-prep-luna-v4/verify-own-ci.py", line 596, in verify_final_build
+    cli_row.get('sha256') == recorded_runtime_cli.get('sha256') == EXPECTED_CLI_SHA256 and
+                             ^^^^^^^^^^^^^^^^^^^^
+NameError: name 'recorded_runtime_cli' is not defined. Did you mean: 'recorded_candidate_cli'?

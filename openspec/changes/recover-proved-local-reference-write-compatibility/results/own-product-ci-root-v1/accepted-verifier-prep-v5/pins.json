@@ -1,0 +1,36 @@
+{
+  "schema": "local-reference-write-own-ci-verifier-preparation-v5",
+  "status": "prepared_not_executed",
+  "source_verifier": {
+    "path": "/private/tmp/jarde-local-reference-write-own-ci-verifier-prep-luna-v3/verify-own-ci.py",
+    "sha256": "c2263e7f7b63dc3ed21a21bbf3c1d5544174ce216746496e586afa424936e69b"
+  },
+  "verifier": {
+    "path": "/private/tmp/jarde-local-reference-write-own-ci-verifier-prep-luna-v5/verify-own-ci.py",
+    "sha256": "9eb67570b0816fbc2516a4f3d3a8ba1575636d6ad11d5fb4e6e400e1835a834f"
+  },
+  "readme": {
+    "path": "/private/tmp/jarde-local-reference-write-own-ci-verifier-prep-luna-v5/README.md",
+    "sha256": "cec555adff6b766c6b8bccc42f977f8f6608058db274d0880ee7d34671b5c5f0"
+  },
+  "candidate_build_runner": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-build-runner-root-v5.py",
+    "sha256": "bbc5232b45c3703b17d104eeaca44d6e19374a2363319c27e1acb3b6a1a53783"
+  },
+  "candidate_build_receipt": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-build-root-v5/execution.json",
+    "sha256": "4124576e8d01fa87cb1bb33267de1758ca4367fec68b8f99195b1b81d095aaa1",
+    "schema": "local-reference-write-candidate-build-root-v3",
+    "status": "passed_candidate_build_only"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+    "bytes": 61486096,
+    "mode": "0555"
+  },
+  "workspace_runner_sha256": "8f427510b3bb30d6c32c02cb3fd063ee87d441a8c9e51f0f43516f84f7e64911",
+  "workspace_acceptor_sha256": "e263e38230c4a95bcd40f21746f9e4060a06182bf57f196b30edb3c7ac454ef3",
+  "final_runner_sha256": "c7525a6b8ad0853204944a09e3d8fb6a58fcfd87287aad12d86adde3e4aaff68",
+  "own_ci_acceptance_schema": "local-reference-write-own-ci-acceptance-v3"
+}

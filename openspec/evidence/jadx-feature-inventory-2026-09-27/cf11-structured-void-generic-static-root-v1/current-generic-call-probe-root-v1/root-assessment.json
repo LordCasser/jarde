@@ -1,0 +1,51 @@
+{
+  "scope": "counterexample and current product baseline only; no generic product change accepted",
+  "actual_product": "5f5fb2c605d61e18f392bb3abe6bdae6e10bf41e",
+  "cli_path": "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+  "cli_sha256": "4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95",
+  "private_pin_typo_corrected_before_execution": true,
+  "legs": [
+    {
+      "leg": "javac8-raw",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "same_original_8_cases": true,
+      "scope": "actual current product"
+    },
+    {
+      "leg": "javac8-signature-only",
+      "compile_exit": 1,
+      "run_exit": null,
+      "same_original_8_cases": false,
+      "scope": "manual diagnostic source mutation; not product acceptance"
+    },
+    {
+      "leg": "javac8-signature-plus-add-arg",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "same_original_8_cases": true,
+      "scope": "manual diagnostic source mutation; not product acceptance"
+    },
+    {
+      "leg": "javac23-raw",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "same_original_8_cases": true,
+      "scope": "actual current product"
+    },
+    {
+      "leg": "javac23-signature-only",
+      "compile_exit": 1,
+      "run_exit": null,
+      "same_original_8_cases": false,
+      "scope": "manual diagnostic source mutation; not product acceptance"
+    },
+    {
+      "leg": "javac23-signature-plus-add-arg",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "same_original_8_cases": true,
+      "scope": "manual diagnostic source mutation; not product acceptance"
+    }
+  ]
+}

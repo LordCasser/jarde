@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/private/tmp/jarde-local-reference-write-candidate-cli-root-v5",
+    "class-source",
+    "--input",
+    "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+    "--class",
+    "cf11.UpstreamNestedLoops",
+    "--policy",
+    "single-class",
+    "--release",
+    "8",
+    "--format",
+    "json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-12T03:07:56.710527+00:00",
+  "finished_at": "2026-10-12T03:07:56.793843+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-current-generic-calls-invocation-root-v1/stdout.raw",
+      "bytes": 54035,
+      "sha256": "4358c06abe9be1084cde5c4526863ead581e0d76ecb0ace2f7fe1e206189054a"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-current-generic-calls-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}
