@@ -64,6 +64,32 @@ const BRANCHED_BITS_ALTERNATE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-dt29-branched/v8/BranchedBitsAlternate.class");
 const BRANCHED_BITS_NEGATIVES: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-dt29-branched/v8/BranchedBitsNegatives.class");
+const RETRY_V2_DEBUG_JAVAC8: &[u8] = include_bytes!(
+    "../../../tests/fixtures/p3-loop-catch-retry/v2-debug-javac8/RetryFixture.class"
+);
+const RETRY_V2_DEBUG_JAVAC23: &[u8] = include_bytes!(
+    "../../../tests/fixtures/p3-loop-catch-retry/v2-debug-javac23/RetryFixture.class"
+);
+const RETRY_V2_NONE_JAVAC8: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-loop-catch-retry/v2-none-javac8/RetryFixture.class");
+const RETRY_V2_NONE_JAVAC23: &[u8] = include_bytes!(
+    "../../../tests/fixtures/p3-loop-catch-retry/v2-none-javac23/RetryFixture.class"
+);
+const ORDERED_FIELD_V3_JAVAC8_DEBUG: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class"
+);
+const ORDERED_FIELD_V3_JAVAC8_NONE: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-ordered-field-concat/javac8-none/OrderedFieldConcat.class"
+);
+const ORDERED_FIELD_V3_JAVAC23_DEBUG: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-ordered-field-concat/javac23-debug/OrderedFieldConcat.class"
+);
+const ORDERED_FIELD_V3_JAVAC23_NONE: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-ordered-field-concat/javac23-none/OrderedFieldConcat.class"
+);
+const ORDERED_FIELD_V3_NEGATIVES: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcatNegatives.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -862,6 +888,65 @@ fn concat_order_class() -> Vec<u8> {
     )
 }
 
+/// A direct instance array-field read consumed by `append(Object)`. The explicit Object cast in
+/// the recovered value conversion prevents Java from selecting `String.valueOf(char[])`.
+fn concat_char_array_field_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let concat = concat_pool(&mut pool, STRING_BUILDER);
+    let append_object = member_ref(
+        &mut pool,
+        concat.class,
+        "append",
+        &format!("(Ljava/lang/Object;)L{STRING_BUILDER};"),
+    );
+    let to_string = member_ref(&mut pool, concat.class, "toString", "()Ljava/lang/String;");
+    let field = field_ref(&mut pool, test, "chars", "[C");
+    let field_name = pool.utf8("chars");
+    let field_descriptor = pool.utf8("[C");
+    let method = pool.utf8("method");
+    let method_descriptor = pool.utf8("()Ljava/lang/String;");
+    let literal_name = pool.utf8("!");
+    let literal = pool.string(literal_name);
+    let short = |index: u16| u8::try_from(index).expect("fixture `ldc` index fits a byte");
+    let code = Code::default()
+        .op(0xbb)
+        .index(concat.class)
+        .op(0x59)
+        .op(0xb7)
+        .index(concat.init)
+        .op(0x2a)
+        .op(0xb4)
+        .index(field)
+        .op(0xb6)
+        .index(append_object)
+        .op(0x12)
+        .byte(short(literal))
+        .op(0xb6)
+        .index(concat.append_string)
+        .op(0xb6)
+        .index(to_string)
+        .op(0xb0)
+        .done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[FieldDef {
+            flags: 0x0002,
+            name: field_name,
+            descriptor: field_descriptor,
+        }],
+        &[MemberDef {
+            flags: 0x0001,
+            name: method,
+            descriptor: method_descriptor,
+            max_stack: 2,
+            max_locals: 1,
+            code,
+        }],
+    )
+}
+
 /// `Test.method(I)Ljava/lang/String;` = `value + f() + "x"`, on a `StringBuffer`.
 ///
 /// The pre-5 spelling of the same chain, with a local operand and the throwing call **between** the
@@ -1132,7 +1217,13 @@ fn concat_single_append_class() -> Vec<u8> {
 #[test]
 fn a_verified_chain_is_written_once_with_its_operands_in_the_order_it_read_them() {
     let class = concat_order_class();
-    let report = present(&class, b"method", b"()Ljava/lang/String;", 0, Vec::new());
+    let report = present(
+        &class,
+        b"method",
+        b"()Ljava/lang/String;",
+        1,
+        vec![Some("self".into())],
+    );
     assert!(report.produced(), "{:?}", report.stop());
     assert_eq!(report.representation, Representation::Java);
     assert_eq!(report.quality, Quality::Structured);
@@ -1340,6 +1431,574 @@ fn an_append_overload_that_plus_would_not_reproduce_is_refused() {
         report.text
     );
     assert_eq!(report.representation, Representation::Java);
+}
+
+fn ordered_trace_member_ref<'a>(
+    pool: &'a [jarde_reader::classfile::CpEntryFacts],
+    instruction: &jarde_reader::classfile::InstructionFact,
+) -> Option<(&'a [u8], &'a [u8], &'a [u8])> {
+    let index = instruction.constant_pool_index?;
+    let entry = pool.iter().find(|entry| entry.index == index)?;
+    match &entry.kind {
+        jarde_reader::classfile::CpEntryKind::FieldRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        }
+        | jarde_reader::classfile::CpEntryKind::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        }
+        | jarde_reader::classfile::CpEntryKind::InterfaceMethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } => Some((
+            owner.0.as_slice(),
+            name.0.as_slice(),
+            descriptor.0.as_slice(),
+        )),
+        _ => None,
+    }
+}
+
+#[test]
+fn retry_v2_exc_same_payload_proves_field_append_tail_error_value_flow_on_all_lanes() {
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    for (label, class) in [
+        ("debug/javac8", RETRY_V2_DEBUG_JAVAC8),
+        ("debug/javac23", RETRY_V2_DEBUG_JAVAC23),
+        ("none/javac8", RETRY_V2_NONE_JAVAC8),
+        ("none/javac23", RETRY_V2_NONE_JAVAC23),
+    ] {
+        let payload = analyze(class, b"exc", b"()V");
+        let ir = payload.analysis.ir();
+        let code = ir.code().expect("same payload carries physical Code facts");
+        let ssa = ir.ssa().expect("same payload carries SSA");
+        let pool = ir.constant_pool();
+
+        let ssa_at = |bci| {
+            ssa.blocks()
+                .iter()
+                .flat_map(|block| block.instructions())
+                .find(|instruction| instruction.bci() == bci)
+        };
+        let stack_writes = |instruction: &jarde_jvm::method_ir::SsaInstruction| {
+            instruction
+                .writes()
+                .iter()
+                .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+                .collect::<Vec<_>>()
+        };
+        let stack_reads = |instruction: &jarde_jvm::method_ir::SsaInstruction| {
+            let mut reads = instruction
+                .reads()
+                .iter()
+                .filter_map(|(slot, value)| match slot {
+                    Slot::Stack(depth) => Some((*depth, *value)),
+                    Slot::Local(_) => None,
+                })
+                .collect::<Vec<_>>();
+            reads.sort_by_key(|(depth, _)| *depth);
+            reads
+        };
+
+        eprintln!("\n=== retry-v2 exc trace: {label} ===");
+        eprintln!("physical method: {:#?}", payload.analysis.report().method);
+        eprintln!("physical exception rows: {:#?}", code.exception_handlers);
+        eprintln!("physical instructions: {:#?}", code.instructions);
+        for (instruction, operands) in code.instructions.iter().zip(code.operands()) {
+            eprintln!("physical bci={} operands={:?}", instruction.bci, operands);
+        }
+        for block in ssa.blocks() {
+            eprintln!("SSA block {:?}", block.block());
+            for instruction in block.instructions() {
+                eprintln!(
+                    "  bci={} opcode=0x{:02x} reads={:?} writes={:?}",
+                    instruction.bci(),
+                    instruction.opcode(),
+                    instruction.reads(),
+                    instruction.writes()
+                );
+            }
+        }
+        for (id, value) in ssa.values_with_ids() {
+            eprintln!(
+                "SSA value {:?}: def={:?}, uses={:?}, origin={:?}, replaced_by={:?}",
+                id,
+                value.def(),
+                value.uses(),
+                value.origin(),
+                value.replaced_by()
+            );
+        }
+
+        // Start at the Error constructor's physical String/Object argument and find the unique
+        // toString definition that supplies that exact SSA value. This avoids taking the earlier
+        // c read used by the loop increment.
+        let mut tail_ctor_candidates = Vec::new();
+        for ctor in code.instructions.iter().filter(|instruction| {
+            instruction.opcode == 0xb7
+                && ordered_trace_member_ref(pool, instruction).is_some_and(|(owner, name, _)| {
+                    owner == b"java/lang/AssertionError" && name == b"<init>"
+                })
+        }) {
+            let Some(ctor_ir) = ssa_at(ctor.bci) else {
+                continue;
+            };
+            let ctor_stack_values = stack_reads(ctor_ir)
+                .into_iter()
+                .map(|(_, value)| value)
+                .collect::<Vec<_>>();
+            for tail in code.instructions.iter().filter(|instruction| {
+                ordered_trace_member_ref(pool, instruction).is_some_and(|(_, name, descriptor)| {
+                    name == b"toString" && descriptor == b"()Ljava/lang/String;"
+                })
+            }) {
+                let Some(tail_ir) = ssa_at(tail.bci) else {
+                    continue;
+                };
+                for tail_value in stack_writes(tail_ir) {
+                    if ctor_stack_values.contains(&tail_value) {
+                        tail_ctor_candidates.push((tail, tail_value, ctor, ctor_ir));
+                    }
+                }
+            }
+        }
+        assert_eq!(
+            tail_ctor_candidates.len(),
+            1,
+            "{label}: expected one physical toString result to feed AssertionError; candidates={:?}",
+            tail_ctor_candidates
+                .iter()
+                .map(|(tail, value, ctor, _)| {
+                    (
+                        tail.bci,
+                        value,
+                        ctor.bci,
+                        ordered_trace_member_ref(pool, ctor),
+                    )
+                })
+                .collect::<Vec<_>>()
+        );
+        let (tail_instruction, tail_value, assertion_ctor, ctor_ir) = tail_ctor_candidates[0];
+        let tail_ir = ssa_at(tail_instruction.bci).expect("selected tail has SSA");
+        let tail_reads = stack_reads(tail_ir);
+        assert_eq!(
+            tail_reads.len(),
+            1,
+            "toString has exactly its builder receiver"
+        );
+        let tail_block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .any(|i| i.bci() == tail_instruction.bci)
+            })
+            .expect("tail belongs to an SSA block")
+            .block()
+            .clone();
+        let ctor_ref = ordered_trace_member_ref(pool, assertion_ctor)
+            .expect("constructor resolves to its physical owner/name/descriptor");
+        eprintln!(
+            "tail-to-error flow: tail={} value={:?} ctor={} ref={:?}.{:?}{:?} reads={:?}",
+            tail_instruction.bci,
+            tail_value,
+            assertion_ctor.bci,
+            ctor_ref.0,
+            ctor_ref.1,
+            ctor_ref.2,
+            ctor_ir.reads()
+        );
+
+        // Walk backward from the selected toString receiver through append return values. At each
+        // append, the lower stack value is its builder receiver and the higher one its sole argument.
+        // The selected c field must be the argument whose result reaches the Error message tail.
+        let mut builder_value = tail_reads[0].1;
+        let mut reverse_append_chain = Vec::new();
+        let mut selected_field = None;
+        for _ in 0..code.instructions.len() {
+            let Definition::Instruction { block, bci } = ssa.value(builder_value).def() else {
+                break;
+            };
+            if block != &tail_block {
+                break;
+            }
+            let Some(append_instruction) = code.instructions.iter().find(|instruction| {
+                instruction.bci == *bci
+                    && ordered_trace_member_ref(pool, instruction)
+                        .is_some_and(|(_, name, _)| name == b"append")
+            }) else {
+                break;
+            };
+            let append_ir = ssa_at(append_instruction.bci).expect("append has SSA");
+            assert!(stack_writes(append_ir).contains(&builder_value));
+            let operands = stack_reads(append_ir);
+            assert_eq!(
+                operands.len(),
+                2,
+                "append has one receiver and one category-1 argument: bci={}",
+                append_instruction.bci
+            );
+            let receiver_value = operands[0].1;
+            let argument_value = operands[1].1;
+            let append_ref = ordered_trace_member_ref(pool, append_instruction)
+                .expect("append has a physical member reference");
+            reverse_append_chain.push(append_instruction.bci);
+            eprintln!(
+                "append link bci={} ref={:?}.{:?}{:?} receiver={:?} argument={:?}",
+                append_instruction.bci,
+                append_ref.0,
+                append_ref.1,
+                append_ref.2,
+                receiver_value,
+                argument_value
+            );
+
+            if let Definition::Instruction {
+                block: argument_block,
+                bci: argument_bci,
+            } = ssa.value(argument_value).def()
+            {
+                if argument_block == &tail_block {
+                    if let Some(field_instruction) = code.instructions.iter().find(|instruction| {
+                        instruction.bci == *argument_bci
+                            && instruction.opcode == 0xb4
+                            && ordered_trace_member_ref(pool, instruction).is_some_and(
+                                |(owner, name, _)| owner == b"RetryFixture" && name == b"c",
+                            )
+                    }) {
+                        selected_field =
+                            Some((field_instruction, argument_value, append_instruction));
+                        break;
+                    }
+                }
+            }
+            builder_value = receiver_value;
+        }
+        let (field_instruction, field_value, field_append) = selected_field.expect(
+            "the tail's append receiver chain contains the c read used in the Error message",
+        );
+        let field_ir = ssa_at(field_instruction.bci).expect("selected getfield has SSA");
+        assert_eq!(stack_writes(field_ir), vec![field_value]);
+        assert_eq!(
+            ssa.blocks()
+                .iter()
+                .find(|block| {
+                    block
+                        .instructions()
+                        .iter()
+                        .any(|instruction| instruction.bci() == field_instruction.bci)
+                })
+                .expect("field has a block")
+                .block(),
+            &tail_block,
+            "field and tail must be in the same SSA block"
+        );
+        assert!(
+            stack_reads(ssa_at(field_append.bci).expect("field append has SSA"))
+                .iter()
+                .any(|(_, value)| *value == field_value)
+        );
+        reverse_append_chain.reverse();
+        eprintln!(
+            "selected field-to-tail path: field={} value={:?}, append path={:?}, tail={}",
+            field_instruction.bci, field_value, reverse_append_chain, tail_instruction.bci
+        );
+        let field_ref = ordered_trace_member_ref(pool, field_instruction)
+            .expect("selected field has a physical member reference");
+        let append_ref = ordered_trace_member_ref(pool, field_append)
+            .expect("selected append has a physical member reference");
+        eprintln!(
+            "selected field ref={:?}.{:?}:{:?}; append ref={:?}.{:?}{:?}",
+            field_ref.0, field_ref.1, field_ref.2, append_ref.0, append_ref.1, append_ref.2
+        );
+
+        let declaration = ir
+            .declaration()
+            .expect("same payload carries the member declaration");
+        assert_eq!(declaration.name().0.as_slice(), b"exc");
+        assert_eq!(declaration.descriptor().0.as_slice(), b"()V");
+        let expected_slots = if declaration.is_static() { 0 } else { 1 };
+        let parameter_slots = declaration.parameter_slots();
+        assert_eq!(parameter_slots, expected_slots);
+        let facts = facts_of(class, b"exc", parameter_slots, Vec::new());
+        let members = members_of(class);
+        let mut budget = Budget::new(limits());
+        let report = recover_body(&payload, &facts, Some(&members), &mut budget);
+        eprintln!("same-request method: {}", report.method);
+        eprintln!("same-request fields: {:#?}", report.fields);
+        eprintln!("same-request concats: {:#?}", report.concats);
+        eprintln!("same-request news: {:#?}", report.news);
+        eprintln!("same-request regions/refusals: {:#?}", report.regions);
+        eprintln!("same-request source text:\n{}", report.text);
+        for bci in [
+            field_instruction.bci,
+            field_append.bci,
+            tail_instruction.bci,
+            assertion_ctor.bci,
+        ] {
+            let segments: Vec<_> = report
+                .source_map
+                .of_bci(bci)
+                .into_iter()
+                .map(|segment| {
+                    (
+                        segment.start(),
+                        segment.end(),
+                        segment.text(&report.text).to_owned(),
+                        segment.mentions(bci),
+                        segment.origin().clone(),
+                    )
+                })
+                .collect();
+            eprintln!("source map bci {bci}: {segments:#?}");
+        }
+
+        assert!(report.produced(), "{label}: {:?}", report.outcome);
+        assert!(report.fields.iter().any(|field| {
+            field.name == "c" && field.bci == field_instruction.bci && field.presented()
+        }));
+        assert!(report.concats.iter().any(|concat| {
+            concat.presented()
+                && concat.tail == Some(tail_instruction.bci)
+                && concat
+                    .appends
+                    .iter()
+                    .any(|append| append.bci == field_append.bci)
+        }));
+        assert_eq!(ctor_ref.2, b"(Ljava/lang/Object;)V");
+        assert!(report.news.iter().any(|site| {
+            site.class == "java/lang/AssertionError"
+                && site.constructor == Some(assertion_ctor.bci)
+                && site.arguments.contains(&tail_instruction.bci)
+                && site.presented()
+        }));
+        assert!(report.text.contains("uncaught-error:"));
+    }
+}
+
+#[test]
+fn a_field_backed_object_append_pins_the_conversion_and_keeps_origins() {
+    let class = concat_char_array_field_class();
+    let report = present(&class, b"method", b"()Ljava/lang/String;", 1, Vec::new());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.concats.iter().any(|concat| concat.presented()));
+    assert!(
+        report
+            .text
+            .contains("java.lang.String.valueOf((java.lang.Object) this.chars)"),
+        "the Object overload is explicit despite the char[] field type:\n{}",
+        report.text
+    );
+    assert!(
+        report
+            .source_map
+            .direct_of_bci(8)
+            .iter()
+            .any(|segment| segment.text(&report.text).contains("this.chars")),
+        "the field origin remains attached to its rendered operand"
+    );
+    assert!(
+        report
+            .source_map
+            .derived_of_bci(11)
+            .iter()
+            .any(|segment| segment.text(&report.text).contains("valueOf")),
+        "the explicit conversion is derived from the original Object append"
+    );
+}
+
+#[test]
+fn v3_instance_field_concats_are_recovered_in_all_four_compiler_lanes() {
+    for (label, class) in [
+        ("javac8/debug", ORDERED_FIELD_V3_JAVAC8_DEBUG),
+        ("javac8/none", ORDERED_FIELD_V3_JAVAC8_NONE),
+        ("javac23/debug", ORDERED_FIELD_V3_JAVAC23_DEBUG),
+        ("javac23/none", ORDERED_FIELD_V3_JAVAC23_NONE),
+    ] {
+        let report = present(
+            class,
+            b"instanceFields",
+            b"(LOrderedFieldConcat;)Ljava/lang/String;",
+            1,
+            vec![Some("receiver".into())],
+        );
+        assert!(report.produced(), "{label}: {:?}", report.outcome);
+        assert!(
+            report.concats.iter().any(|concat| concat.presented()),
+            "{label}: field-backed concat was refused: {:?}",
+            report.concats
+        );
+        assert!(
+            report.fields.iter().any(|field| field.presented()),
+            "{label}: field operand was not independently retained"
+        );
+        assert!(
+            report.text.contains("receiver.value"),
+            "{label}: {}",
+            report.text
+        );
+        assert!(
+            report.text.contains("receiver.volatileValue"),
+            "{label}: {}",
+            report.text
+        );
+    }
+}
+
+fn ordered_field_duplicate_result_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let field_name = pool.utf8("value");
+    let field_descriptor = pool.utf8("Ljava/lang/String;");
+    let field = field_ref(&mut pool, test, "value", "Ljava/lang/String;");
+    let concat = concat_pool(&mut pool, STRING_BUILDER);
+    let append = member_ref(
+        &mut pool,
+        concat.class,
+        "append",
+        &format!("(Ljava/lang/String;)L{STRING_BUILDER};"),
+    );
+    let to_string = member_ref(&mut pool, concat.class, "toString", "()Ljava/lang/String;");
+    let method_name = pool.utf8("duplicateThenAppend");
+    let descriptor = pool.utf8("(LTest;)Ljava/lang/String;");
+    let body = Code::default()
+        .op(0xbb)
+        .index(concat.class) // 0: new StringBuilder
+        .op(0x59) // 3: dup
+        .op(0xb7)
+        .index(concat.init) // 4: invokespecial <init>
+        .op(0x2b) // 7: aload_1
+        .op(0xb4)
+        .index(field) // 8: getfield Test.value:String
+        .op(0x5a) // 11: dup_x1 (retain one field-result copy across append)
+        .op(0xb6)
+        .index(append) // 12: append(String), consumes one copy
+        .op(0x5f) // 15: swap retained copy below the builder
+        .op(0xb6)
+        .index(append) // 16: append(String), consumes the second copy
+        .op(0xb6)
+        .index(to_string) // 19: toString
+        .op(0xb0) // 22: areturn
+        .done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[FieldDef {
+            flags: 0x0002,
+            name: field_name,
+            descriptor: field_descriptor,
+        }],
+        &[MemberDef {
+            flags: 0x0001,
+            name: method_name,
+            descriptor,
+            max_stack: 3,
+            max_locals: 2,
+            code: body,
+        }],
+    )
+}
+
+#[test]
+fn ordered_field_candidate_rejects_static_receiver_call_and_duplicated_result() {
+    for (method, descriptor, parameters, class) in [
+        (
+            b"staticFieldBetweenAppends".as_slice(),
+            b"()Ljava/lang/String;".as_slice(),
+            0,
+            ORDERED_FIELD_V3_NEGATIVES,
+        ),
+        (
+            b"receiverCallShape".as_slice(),
+            b"(LOrderedFieldConcatNegatives;)Ljava/lang/String;".as_slice(),
+            1,
+            ORDERED_FIELD_V3_NEGATIVES,
+        ),
+    ] {
+        let report = present(class, method, descriptor, parameters, vec![]);
+        assert!(
+            report.produced(),
+            "{}: {:?}",
+            String::from_utf8_lossy(method),
+            report.outcome
+        );
+        assert!(
+            report.concats.iter().any(|concat| !concat.presented()),
+            "{} must remain refused: {:?}",
+            String::from_utf8_lossy(method),
+            report.concats
+        );
+    }
+
+    let duplicate = ordered_field_duplicate_result_class();
+    let report = present(
+        &duplicate,
+        b"duplicateThenAppend",
+        b"(LTest;)Ljava/lang/String;",
+        2,
+        vec![None, Some("receiver".into())],
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report.concats.iter().any(|concat| !concat.presented()),
+        "a getfield value duplicated across two append calls is not a unique field operand: {:?}",
+        report.concats
+    );
+}
+
+#[test]
+fn ordered_field_concat_pre_cancel_publishes_no_partial_owner() {
+    let class = ORDERED_FIELD_V3_JAVAC8_DEBUG;
+    let payload = analyze(
+        class,
+        b"instanceFields",
+        b"(LOrderedFieldConcat;)Ljava/lang/String;",
+    );
+    let facts = facts_of(class, b"instanceFields", 1, vec![Some("receiver".into())]);
+    let members = members_of(class);
+    let request = RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all())
+        .with_members(&members);
+    let cancellation = jarde_reader::budget::CancellationToken::new();
+    cancellation.cancel();
+    let mut budget = Budget::with_cancellation_token(limits(), cancellation);
+    let report = recover(&request, &mut budget);
+    assert!(matches!(report.stop(), Some(StopReason::Cancelled { .. })));
+    assert!(report.concats.is_empty());
+    assert!(report.fields.is_empty());
+    assert!(report.news.is_empty());
+}
+
+#[test]
+fn ordered_field_concat_short_ir_budget_stops_without_partial_owner() {
+    let (report, budget) = present_with_ir_limit(
+        ORDERED_FIELD_V3_JAVAC8_DEBUG,
+        b"instanceFields",
+        b"(LOrderedFieldConcat;)Ljava/lang/String;",
+        1,
+        vec![Some("receiver".into())],
+        1,
+    );
+    assert!(matches!(report.stop(), Some(StopReason::Budget { .. })));
+    assert!(report.concats.is_empty());
+    assert!(report.fields.is_empty());
+    assert!(report.news.is_empty());
+    assert!(
+        budget
+            .usage()
+            .counted_usage(jarde_reader::budget::CountedBudgetDimension::IrItems)
+            <= 1
+    );
 }
 
 #[test]
@@ -6920,4 +7579,401 @@ fn four_branch_certificate_stops_without_partial_text() {
         Some(StopReason::Cancelled { .. })
     ));
     assert!(cancelled.text.is_empty());
+}
+
+const ANON_SUPER_ARGS_CHILD_TRACE: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-java-structure/anonymous-super-args/AnonymousSuperArgs$1.class"
+);
+
+#[test]
+fn anonymous_super_args_render_traces_each_message_from_its_consumer() {
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    let class = ANON_SUPER_ARGS_CHILD_TRACE;
+    let payload = analyze(class, b"render", b"()Ljava/lang/String;");
+    let ir = payload.analysis.ir();
+    let code = ir
+        .code()
+        .expect("same analysis payload carries physical Code");
+    let ssa = ir.ssa().expect("same analysis payload carries SSA");
+    let pool = ir.constant_pool();
+    let ssa_at = |bci| {
+        ssa.blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == bci)
+    };
+    let stack_values = |instruction: &jarde_jvm::method_ir::SsaInstruction, writes| {
+        let values = if writes {
+            instruction.writes()
+        } else {
+            instruction.reads()
+        };
+        values
+            .iter()
+            .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+            .collect::<Vec<_>>()
+    };
+    let stack_operands = |instruction: &jarde_jvm::method_ir::SsaInstruction| {
+        let mut values = instruction
+            .reads()
+            .iter()
+            .filter_map(|(slot, value)| match slot {
+                Slot::Stack(depth) => Some((*depth, *value)),
+                Slot::Local(_) => None,
+            })
+            .collect::<Vec<_>>();
+        values.sort_by_key(|(depth, _)| *depth);
+        values
+    };
+    let unique_consumer = |value, expected_bci| {
+        let mut instruction_uses = Vec::new();
+        for block in ssa.blocks() {
+            for instruction in block.instructions() {
+                for (_, read) in instruction.reads() {
+                    if *read == value {
+                        instruction_uses.push(instruction.bci());
+                    }
+                }
+            }
+        }
+        let phi_inputs = ssa
+            .phis()
+            .iter()
+            .flat_map(|phi| phi.inputs().iter())
+            .filter(|input| matches!(input, jarde_jvm::method_ir::PhiInput::Value(input_value) if *input_value == value))
+            .count();
+        assert_eq!(instruction_uses, vec![expected_bci], "value {value:?}");
+        assert_eq!(phi_inputs, 0, "value {value:?} must not flow into a phi");
+        assert_eq!(
+            ssa.value(value)
+                .uses()
+                .iter()
+                .map(|use_| use_.bci())
+                .collect::<Vec<_>>(),
+            vec![Some(expected_bci)],
+            "the SSA use index agrees with the complete instruction/Phi scan"
+        );
+    };
+
+    // Select the two tails from their actual consumers, avoiding source names and guessed BCIs.
+    let event = code
+        .instructions
+        .iter()
+        .find(|i| {
+            i.opcode == 0xb8
+                && ordered_trace_member_ref(pool, i).is_some_and(|(owner, name, desc)| {
+                    owner == b"AnonymousSuperArgs"
+                        && name == b"event"
+                        && desc == b"(Ljava/lang/String;)V"
+                })
+        })
+        .expect("render invokes the fixture's event(String)");
+    let event_ir = ssa_at(event.bci).expect("event call has SSA");
+    let event_args = stack_operands(event_ir);
+    assert_eq!(
+        event_args.len(),
+        1,
+        "static event has only its String argument"
+    );
+    let event_value = event_args[0].1;
+    let ret = code
+        .instructions
+        .iter()
+        .find(|i| i.opcode == 0xb0)
+        .expect("render returns one String");
+    let ret_ir = ssa_at(ret.bci).expect("areturn has SSA");
+    let ret_reads = stack_operands(ret_ir);
+    assert_eq!(ret_reads.len(), 1);
+    let ret_value = ret_reads[0].1;
+
+    let tails_for = |value| {
+        code.instructions
+            .iter()
+            .filter(|i| {
+                ordered_trace_member_ref(pool, i).is_some_and(|(_, name, desc)| {
+                    name == b"toString" && desc == b"()Ljava/lang/String;"
+                })
+            })
+            .filter(|i| {
+                stack_values(ssa_at(i.bci).expect("toString has SSA"), true).contains(&value)
+            })
+            .map(|i| i.bci)
+            .collect::<Vec<_>>()
+    };
+    let event_tails = tails_for(event_value);
+    let return_tails = tails_for(ret_value);
+    assert_eq!(
+        event_tails.len(),
+        1,
+        "event's exact String argument has one tail"
+    );
+    assert_eq!(
+        return_tails.len(),
+        1,
+        "return's exact String value has one tail"
+    );
+    assert_ne!(event_tails[0], return_tails[0]);
+
+    let declaration = ir.declaration().expect("same payload has declaration");
+    assert_eq!(declaration.name().0.as_slice(), b"render");
+    assert_eq!(
+        declaration.descriptor().0.as_slice(),
+        b"()Ljava/lang/String;"
+    );
+    let facts = facts_of_exact(
+        class,
+        b"render",
+        b"()Ljava/lang/String;",
+        declaration.parameter_slots(),
+        vec![],
+    );
+    let members = members_of(class);
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, Some(&members), &mut budget);
+    assert!(
+        report.produced(),
+        "same-payload recovery: {:?}",
+        report.outcome
+    );
+
+    for (label, tail_bci, consumer_bci, consumer_value) in [
+        ("event", event_tails[0], event.bci, event_value),
+        ("return", return_tails[0], ret.bci, ret_value),
+    ] {
+        let tail_ir = ssa_at(tail_bci).unwrap();
+        let tail_reads = stack_operands(tail_ir);
+        assert_eq!(tail_reads.len(), 1, "toString builder receiver");
+        unique_consumer(consumer_value, consumer_bci);
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| block.instructions().iter().any(|i| i.bci() == tail_bci))
+            .unwrap();
+        let block_id = block.block();
+
+        // Follow append results backwards from toString. Every link is physical, in this block,
+        // and the field is located by the CP identity of the declared captured field.
+        let mut builder = tail_reads[0].1;
+        let mut reverse_appends = Vec::new();
+        let mut selected = None;
+        for _ in 0..code.instructions.len() {
+            let Definition::Instruction {
+                block: def_block,
+                bci,
+            } = ssa.value(builder).def()
+            else {
+                break;
+            };
+            if def_block != block_id {
+                break;
+            }
+            let Some(append) = code.instructions.iter().find(|i| {
+                i.bci == *bci
+                    && ordered_trace_member_ref(pool, i)
+                        .is_some_and(|(_, name, _)| name == b"append")
+            }) else {
+                break;
+            };
+            let append_ir = ssa_at(append.bci).unwrap();
+            assert!(stack_values(append_ir, true).contains(&builder));
+            let operands = stack_operands(append_ir);
+            assert_eq!(
+                operands.len(),
+                2,
+                "append receiver and one argument at {}",
+                append.bci
+            );
+            let (receiver, argument) = (operands[0].1, operands[1].1);
+            reverse_appends.push(append.bci);
+            if let Definition::Instruction {
+                block: arg_block,
+                bci: field_bci,
+            } = ssa.value(argument).def()
+            {
+                if arg_block == block_id {
+                    if let Some(field) = code.instructions.iter().find(|i| {
+                        i.bci == *field_bci
+                            && i.opcode == 0xb4
+                            && ordered_trace_member_ref(pool, i).is_some_and(|(owner, name, _)| {
+                                owner == b"AnonymousSuperArgs$1" && name == b"val$captured"
+                            })
+                    }) {
+                        selected = Some((field, argument, append, receiver));
+                        break;
+                    }
+                }
+            }
+            builder = receiver;
+        }
+        let (field, field_value, field_append, append_receiver) =
+            selected.expect("message chain reads val$captured");
+        assert_eq!(
+            ordered_trace_member_ref(pool, field),
+            Some((
+                b"AnonymousSuperArgs$1".as_slice(),
+                b"val$captured".as_slice(),
+                b"Ljava/lang/String;".as_slice()
+            ))
+        );
+        assert_eq!(
+            ordered_trace_member_ref(pool, field_append),
+            Some((
+                b"java/lang/StringBuilder".as_slice(),
+                b"append".as_slice(),
+                b"(Ljava/lang/String;)Ljava/lang/StringBuilder;".as_slice()
+            ))
+        );
+        assert_eq!(
+            ssa_at(field.bci)
+                .unwrap()
+                .writes()
+                .iter()
+                .filter_map(|(slot, id)| matches!(slot, Slot::Stack(_)).then_some(*id))
+                .collect::<Vec<_>>(),
+            vec![field_value]
+        );
+        assert_eq!(
+            stack_operands(ssa_at(field.bci).unwrap()).len(),
+            1,
+            "getfield consumes one actual receiver"
+        );
+        assert_eq!(
+            stack_operands(ssa_at(field_append.bci).unwrap())
+                .iter()
+                .map(|(_, id)| *id)
+                .collect::<Vec<_>>()
+                .iter()
+                .filter(|id| **id == field_value)
+                .count(),
+            1
+        );
+        // Javac's field receiver is the immediately preceding local-0 reference load.
+        let field_index = code
+            .instructions
+            .iter()
+            .position(|i| i.bci == field.bci)
+            .unwrap();
+        assert!(field_index > 0);
+        let ref_load = &code.instructions[field_index - 1];
+        assert!(
+            matches!(ref_load.opcode, 0x2a..=0x2d | 0x19),
+            "field receiver load is adjacent: {ref_load:?}"
+        );
+        assert_eq!(
+            ssa_at(field.bci)
+                .unwrap()
+                .reads()
+                .iter()
+                .filter_map(|(slot, id)| matches!(slot, Slot::Stack(_)).then_some(*id))
+                .collect::<Vec<_>>(),
+            stack_values(ssa_at(ref_load.bci).unwrap(), true)
+        );
+        let append_args = stack_operands(ssa_at(field_append.bci).unwrap());
+        assert_eq!(append_receiver, append_args[0].1);
+        assert_eq!(
+            field_value, append_args[1].1,
+            "the field is this append's exact argument"
+        );
+        assert_eq!(
+            code.instructions[field_index + 1].bci,
+            field_append.bci,
+            "getfield is immediately followed by its append"
+        );
+        unique_consumer(
+            stack_values(ssa_at(ref_load.bci).unwrap(), true)[0],
+            field.bci,
+        );
+        unique_consumer(field_value, field_append.bci);
+        assert_eq!(
+            ssa.blocks()
+                .iter()
+                .find(|candidate| candidate
+                    .instructions()
+                    .iter()
+                    .any(|i| i.bci() == field.bci))
+                .unwrap()
+                .block(),
+            block_id,
+            "field and tail share the exact SSA block"
+        );
+
+        let concat = report
+            .concats
+            .iter()
+            .find(|c| c.tail == Some(tail_bci))
+            .expect("recovery contains this exact physical chain");
+        assert!(concat.presented(), "{label}: {:?}", concat.refusal);
+        assert!(concat.appends.iter().any(|a| a.bci == field_append.bci));
+        assert!(
+            report
+                .fields
+                .iter()
+                .any(|f| f.bci == field.bci && f.presented())
+        );
+        assert!(
+            report
+                .source_map
+                .of_bci(field.bci)
+                .into_iter()
+                .any(|segment| {
+                    let origin = segment.origin();
+                    origin.primary().bci() == field.bci
+                        && origin.primary().provenance() == Provenance::Direct
+                        && origin.primary().method() == Some(&payload.analysis.report().method)
+                        && origin.derived().iter().any(|derived| {
+                            derived.bci() == field_append.bci
+                                && derived.provenance() == Provenance::Derived
+                                && derived.method() == Some(&payload.analysis.report().method)
+                        })
+                })
+        );
+        let rows_for = |bci| {
+            code.exception_handlers
+                .iter()
+                .filter(|row| row.start_bci <= bci && bci < row.end_bci)
+                .cloned()
+                .collect::<Vec<_>>()
+        };
+        let span_rows = code
+            .instructions
+            .iter()
+            .filter(|i| concat.head <= i.bci && i.bci <= consumer_bci)
+            .map(|i| (i.bci, rows_for(i.bci)))
+            .collect::<Vec<_>>();
+        let expected_rows = rows_for(concat.head);
+        assert!(
+            span_rows.iter().all(|(_, rows)| *rows == expected_rows),
+            "full ordered exception-row coverage differs: {span_rows:#?}"
+        );
+
+        reverse_appends.reverse();
+        eprintln!("{label}: method={}; field={} {:?} -> append={} path={:?} -> tail={} -> consumer={} value={:?}; physical exception rows={:?};
+  report field={:?}; concat={:?}", report.method, field.bci, ordered_trace_member_ref(pool, field), field_append.bci, reverse_appends, tail_bci, consumer_bci, consumer_value, expected_rows, report.fields.iter().find(|f| f.bci == field.bci), concat);
+        for bci in [
+            ref_load.bci,
+            field.bci,
+            field_append.bci,
+            tail_bci,
+            consumer_bci,
+        ] {
+            let mapped = report
+                .source_map
+                .of_bci(bci)
+                .into_iter()
+                .map(|s| {
+                    (
+                        s.text(&report.text).to_owned(),
+                        s.mentions(bci),
+                        s.origin().clone(),
+                    )
+                })
+                .collect::<Vec<_>>();
+            eprintln!("  source-map bci={bci}: {mapped:?}");
+            assert!(
+                !mapped.is_empty(),
+                "source map retains physical/derived provenance for bci {bci}"
+            );
+        }
+    }
 }

@@ -11611,11 +11611,13 @@ fn recover_inner(
         Ok(field_copies) => field_copies,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let chains = match concat::plan_conditional_cut_chains(
+    let chains = match concat::plan_with_ordered_field_operands(
         ssa,
         canonical,
         &operations,
         &field_copies,
+        &fields,
+        code,
         budget,
     ) {
         Ok(chains) => chains,

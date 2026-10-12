@@ -8706,7 +8706,8 @@ fn anonymous_superclass_projects_the_local_declaration_initializer_shape() {
         root.text
     );
     assert!(
-        root.text.contains("append(\"body:\").append(local1)"),
+        root.text
+            .contains("AnonymousSuperArgs.event(\"body:\" + local1);"),
         "{}",
         root.text
     );

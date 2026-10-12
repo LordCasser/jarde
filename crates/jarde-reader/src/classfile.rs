@@ -11791,10 +11791,11 @@ mod tests {
     /// 252 handler records, 1,763 branch/switch targets and the same eight subroutines.
     ///
     /// The ledger below records every family added since, with the bodies and targets it moved.
-    /// The census the assertion pins is **828 classes, 3,596 bodies, 290 handler records, 2,211
+    /// The historical census reached **828 classes, 3,596 bodies, 290 handler records, 2,211
     /// branch/switch targets and the same eight subroutines**; the last entry —
     /// `recover-postfix-condition-positions`, three classes on both compiler legs — is the one that
     /// reached it.
+    /// Later additions continue in the assertion's ledger below, which pins the current totals.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -12246,7 +12247,10 @@ mod tests {
             // Structured List generic bodies add seven classes, twenty-three Code bodies,
             // one handler and ninety-three branch targets: six nested bodies with eight each,
             // plus forty-five in the combined controls; no subroutine is introduced.
-            (1140, 5018, 474, 3141, 10),
+            // Loop-body-catch patrol/load/retry fixtures add 15 classes, 63 Code bodies,
+            // 27 handlers and 130 branch/switch targets. Ordered-field-concat fixtures add
+            // eight classes, 76 Code bodies and eight targets. Neither adds a subroutine.
+            (1163, 5157, 501, 3279, 10),
             "fixture population changed: re-measure these counts"
         );
     }

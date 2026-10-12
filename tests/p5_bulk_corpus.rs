@@ -797,7 +797,13 @@ impl Billing {
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
         ir_items: 21384,
-        analysis_steps: 12060,
+        // +44 with `recover-loop-body-try-catch`: the new retry candidate proof is also
+        // examined before declining three ordinary named catches in `Guarded`.
+        // The pinned old/current CLI comparison measures +13 for `syncThrowsCatching`,
+        // +13 for `secondInitFailsCatching`, and +18 for `suppressedCatching`;
+        // text, outcome, content, source map, and every other counted dimension stand.
+        // `record_the_billing_table` independently measures this case's same +44.
+        analysis_steps: 12104,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -882,7 +888,9 @@ impl Billing {
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
         ir_items: 35580,
-        analysis_steps: 19911,
+        // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
+        // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
+        analysis_steps: 19955,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -921,7 +929,9 @@ impl Billing {
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
         ir_items: 35580,
-        analysis_steps: 19911,
+        // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
+        // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
+        analysis_steps: 19955,
         result_items: 26,
         output_bytes: 39617,
     };

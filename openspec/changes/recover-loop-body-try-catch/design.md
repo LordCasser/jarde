@@ -40,6 +40,10 @@ Load 是在原 store 位置呈现的局部读取，可以位于 try 外。仅此
 
 `all_reads_reach_presented_writes` 的全读 SSA/phi 检查、`cross_exception_store_type_is_proven` 和声明 common-owner/catch-parameter 作用域检查继续执行。每个 read 必须到达这个 reuse variable 的实际已呈现写；Entry/Caught/缺失定义/PhiInput::Itself/另一未呈现写继续拒绝。声明可提升，但赋值、load、效果和来源仍在原位置；不能因“引用类型可命名”就猜测初始化。
 
+2026-10-13 完整工作区发现 `ScopeRefusalsEscape.sharedHandler` 回退：catch 参数经另一槽的 Load/Store 别名流入提升后的 Runnable 声明。对新 Load 准入，复用现有有预算的 catch 参数别名证明检查实际 local 输入；捕获参数的别名不得跨出其 clause。另逐写核 Load 的 verifier 类型与已决定声明类型相同，或目标为完整限定 java.lang.Object；未限定 Object 可能为用户类，Unknown verifier 引用不能冒充精确命名类型。没有类层次赋值事实的转换保持拒绝。仅有 Reference 大类不足以证明赋值兼容。原 constructor/static 分支保持原门，本片不新增类型求解器。原 SHARED/ESCAPED 拒绝断言保留，四 lane foreach 与完整类运行仍是必须满足的门。
+
+2026-10-13 完整工作区 v6 进一步发现多个独立 catch 复用同一 slot 的 C2W.main 回退。`catch_parameter_stays_in_clause` 的证明对象是当前 handler 入口 store 的 ValueId，不能把遍历中任意 Caught 叶子都认作这个 Java 绑定。Caught 的 block/BCI 记录 throw site，不记录 handler；其他 catch 的独立值不构成当前参数逃逸。新 Load 仍对每个已恢复 catch 的入口执行别名证明，真实 Store/Load/Phi 别名会抵达对应入口并被拒绝；缺失/空 Phi 与 Itself 保持拒绝。撤回全局 Caught 拒绝，不新增另一个来源分析机制。完整 wrap-family 与原 scope 拒绝断言必须同次通过。
+
 这补的是已有表达式证明，没有新的 SSA pass 或特殊 foreach holder。
 
 ### 3. 无限 retry 是既有 Walker 的局部异常循环形

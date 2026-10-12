@@ -108,6 +108,10 @@ pub(crate) struct Chain {
     /// instruction, every `append` and the `toString`. An owned instruction produces no statement of
     /// its own — its text is written inside the concatenation and nowhere else.
     pub(crate) owned: BTreeSet<u32>,
+    /// Object-overload append positions on a chain whose verified field read requires the source
+    /// conversion to happen before the next operand is evaluated. These positions are rendered as
+    /// an explicit `String.valueOf((Object) value)` call at the append's original position.
+    pub(crate) object_value_of_appends: BTreeSet<u32>,
     /// The proved conditional materialization this chain crosses, when one does.
     ///
     /// A chain whose middle blocks are exactly one two-arm constant materialization ends in a
@@ -420,7 +424,7 @@ pub(crate) fn plan(
             }
             let ty = ty.clone();
             match verify(
-                head, &ty, head_block, &block_of, &all, block, ssa, operations, copies,
+                head, &ty, head_block, &block_of, &all, block, ssa, operations, copies, None, None,
             ) {
                 Ok(chain) => {
                     if let Some(shared) = chain.owned.iter().find(|bci| plan.owned.contains(bci)) {
@@ -451,6 +455,504 @@ pub(crate) fn plan(
     }
     plan.refused.sort_by_key(|refused| refused.head);
     plan
+}
+
+/// Completes only the ordinary concat refusals whose interleaved operation is a directly consumed,
+/// precisely claimed instance field read. Every additional value-use and physical-handler scan is
+/// charged here; the original plan remains intact until the full certificate and chain verify.
+pub(crate) fn certify_ordered_field_operands(
+    mut plan: Plan,
+    ssa: &SsaTable,
+    operations: &Operations,
+    copies: &crate::build::FieldCopies,
+    fields: &crate::field::Plan,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<Plan, StopReason> {
+    let mut index = 0;
+    while index < plan.refused.len() {
+        if plan.refused[index].refusal.code() != "jre_concat_interleaved_effect" {
+            index += 1;
+            continue;
+        }
+        let head = plan.refused[index].head;
+        let class = plan.refused[index].class.clone();
+        let Some(field_reads) =
+            certify_direct_field_reads(head, &class, ssa, operations, fields, budget)?
+        else {
+            index += 1;
+            continue;
+        };
+        // The verifier replay is instrumented at each actual instruction, read, copy and Phi it
+        // visits. A stop from that replay propagates before either owner set changes.
+        let mut blocks = Vec::with_capacity(ssa.blocks().len());
+        for block in ssa.blocks() {
+            let mut instructions = Vec::with_capacity(block.instructions().len());
+            for instruction in block.instructions() {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                poll(budget, Some(instruction.bci()))?;
+                instructions.push(instruction);
+            }
+            blocks.push(instructions);
+        }
+        let mut all = Vec::new();
+        for instruction in blocks.iter().flatten() {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            poll(budget, Some(instruction.bci()))?;
+            all.push(*instruction);
+        }
+        let mut block_of = BTreeMap::new();
+        for (block_index, block) in blocks.iter().enumerate() {
+            for instruction in block {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                poll(budget, Some(instruction.bci()))?;
+                block_of.insert(instruction.bci(), block_index);
+            }
+        }
+        let mut found_head = None;
+        for (block_index, block) in blocks.iter().enumerate() {
+            for instruction in block {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(instruction.bci()),
+                )?;
+                poll(budget, Some(instruction.bci()))?;
+                if instruction.bci() == head {
+                    found_head = Some((block_index, block.as_slice()));
+                    break;
+                }
+            }
+            if found_head.is_some() {
+                break;
+            }
+        }
+        let Some((head_block, block)) = found_head else {
+            index += 1;
+            continue;
+        };
+        let mut replay_meter = VerifyMeter::new(budget);
+        let verified = verify(
+            head,
+            &class,
+            head_block,
+            &block_of,
+            &all,
+            block,
+            ssa,
+            operations,
+            copies,
+            Some(&field_reads),
+            Some(&mut replay_meter),
+        );
+        if let Some(stop) = replay_meter.stop.take() {
+            return Err(stop);
+        }
+        poll(budget, Some(head))?;
+        let Ok(chain) = verified else {
+            index += 1;
+            continue;
+        };
+        let mut all_field_reads_owned = true;
+        for at in &field_reads {
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(*at))?;
+            poll(budget, Some(*at))?;
+            all_field_reads_owned &= chain.owned.contains(at);
+        }
+        if !all_field_reads_owned
+            || !validate_field_chain_tail_and_handlers(
+                &chain, block, ssa, operations, code, budget,
+            )?
+        {
+            index += 1;
+            continue;
+        }
+        let mut overlaps_existing = false;
+        for bci in &chain.owned {
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+            poll(budget, Some(*bci))?;
+            overlaps_existing |= plan.owned.contains(bci);
+        }
+        if overlaps_existing {
+            index += 1;
+            continue;
+        }
+        for bci in &chain.owned {
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+            poll(budget, Some(*bci))?;
+        }
+        plan.refused.remove(index);
+        plan.owned.extend(&chain.owned);
+        plan.chains.insert(chain.tail, chain);
+    }
+    Ok(plan)
+}
+
+/// The scan that upgrades a refusal's specific field reads to candidates. `None` means the shape
+/// was not proven; budget and cancellation remain errors and are never collapsed into that answer.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ValueUseSite {
+    Instruction(u32),
+    Phi,
+}
+
+fn certify_direct_field_reads(
+    head: u32,
+    ty: &str,
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &crate::field::Plan,
+    budget: &mut Budget,
+) -> Result<Option<BTreeSet<u32>>, StopReason> {
+    let mut candidate = None;
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            poll(budget, Some(instruction.bci()))?;
+            if instruction.bci() == head {
+                candidate = Some(block);
+                break;
+            }
+        }
+        if candidate.is_some() {
+            break;
+        }
+    }
+    let Some(block) = candidate else {
+        return Ok(None);
+    };
+    let instructions = block.instructions();
+    let mut start = None;
+    for (position, instruction) in instructions.iter().enumerate() {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        if instruction.bci() == head {
+            start = Some(position);
+            break;
+        }
+    }
+    let Some(start) = start else {
+        return Ok(None);
+    };
+    let mut uses: BTreeMap<ValueId, Vec<ValueUseSite>> = BTreeMap::new();
+    let mut stack_writes = BTreeMap::new();
+    let mut loads = BTreeMap::new();
+    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        let mut stack_write = None;
+        let mut stack_write_count = 0usize;
+        for (slot, value) in instruction.writes() {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            poll(budget, Some(instruction.bci()))?;
+            if matches!(slot, Slot::Stack(_)) {
+                stack_write_count += 1;
+                stack_write = Some(*value);
+                stack_writes.insert(instruction.bci(), *value);
+            }
+        }
+        let mut local_read = None;
+        let mut local_read_count = 0usize;
+        for (slot, value) in instruction.reads() {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            poll(budget, Some(instruction.bci()))?;
+            uses.entry(*value)
+                .or_default()
+                .push(ValueUseSite::Instruction(instruction.bci()));
+            if matches!(slot, Slot::Local(_)) {
+                local_read_count += 1;
+                local_read = Some(*value);
+            }
+        }
+        if matches!(
+            operations.get(instruction.bci()),
+            Some(Operation::Load { .. })
+        ) {
+            if local_read_count == 1 && stack_write_count == 1 {
+                if let (Some(local), Some(output)) = (local_read, stack_write) {
+                    loads.insert(instruction.bci(), (local, output));
+                }
+            }
+        }
+    }
+    for phi in ssa.phis() {
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(head))?;
+        poll(budget, Some(head))?;
+        for input in phi.inputs() {
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(head))?;
+            poll(budget, Some(head))?;
+            if let PhiInput::Value(value) = input {
+                uses.entry(*value).or_default().push(ValueUseSite::Phi);
+            }
+        }
+    }
+    let mut field_reads = BTreeSet::new();
+    let mut saw_tail = false;
+    for (position, instruction) in instructions.iter().enumerate().skip(start + 3) {
+        let at = instruction.bci();
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+        poll(budget, Some(at))?;
+        match operations.get(at) {
+            Some(Operation::Invoke(target))
+                if target.owner() == ty && target.name() == "toString" =>
+            {
+                saw_tail = true;
+                break;
+            }
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                is_static,
+                owner,
+                name,
+                descriptor,
+            }) => {
+                if *is_static {
+                    return Ok(None);
+                }
+                let Some((evidence, shape)) = fields.claim(at) else {
+                    return Ok(None);
+                };
+                let operands = stack_operands_counted(instruction, budget)?;
+                if operands.len() != 1 {
+                    return Ok(None);
+                }
+                let Some((_, receiver)) = operands.first().copied() else {
+                    return Ok(None);
+                };
+                let Some(result) = stack_writes.get(&at).copied() else {
+                    return Ok(None);
+                };
+                if evidence.access != FieldAccess::Read
+                    || evidence.is_static
+                    || evidence.owner != *owner
+                    || evidence.name != *name
+                    || evidence.descriptor != *descriptor
+                    || shape.writes()
+                    || shape.receiver != Some(receiver)
+                {
+                    return Ok(None);
+                }
+                let Some(previous) = position.checked_sub(1).and_then(|i| instructions.get(i))
+                else {
+                    return Ok(None);
+                };
+                if !matches!(operations.get(previous.bci()), Some(Operation::Load { .. }))
+                    || !matches!(previous.opcode(), 0x19 | 0x2a..=0x2d)
+                    || !loads
+                        .get(&previous.bci())
+                        .is_some_and(|(_, output)| *output == receiver)
+                    || !uses
+                        .get(&receiver)
+                        .is_some_and(|seen| seen.as_slice() == [ValueUseSite::Instruction(at)])
+                {
+                    return Ok(None);
+                }
+                let Some(next) = instructions.get(position + 1) else {
+                    return Ok(None);
+                };
+                let Some(Operation::Invoke(target)) = operations.get(next.bci()) else {
+                    return Ok(None);
+                };
+                if target.owner() != ty || target.name() != "append" {
+                    return Ok(None);
+                }
+                let next_operands = stack_operands_counted(next, budget)?;
+                let Some((_, appended)) = next_operands.last().copied() else {
+                    return Ok(None);
+                };
+                if appended != result
+                    || !uses.get(&result).is_some_and(|seen| {
+                        seen.as_slice() == [ValueUseSite::Instruction(next.bci())]
+                    })
+                {
+                    return Ok(None);
+                }
+                field_reads.insert(at);
+            }
+            _ => {}
+        }
+    }
+    if !saw_tail || field_reads.is_empty() {
+        return Ok(None);
+    }
+    Ok(Some(field_reads))
+}
+
+struct VerifyMeter<'a> {
+    budget: &'a mut Budget,
+    stop: Option<StopReason>,
+}
+
+impl<'a> VerifyMeter<'a> {
+    fn new(budget: &'a mut Budget) -> Self {
+        Self { budget, stop: None }
+    }
+
+    fn step(&mut self, at: Option<u32>) -> bool {
+        if self.stop.is_some() {
+            return false;
+        }
+        self.stop = charge(self.budget, CountedBudgetDimension::IrItems, 1, at)
+            .and_then(|()| poll(self.budget, at))
+            .err();
+        self.stop.is_none()
+    }
+}
+
+fn validate_field_chain_tail_and_handlers(
+    chain: &Chain,
+    block: &[&SsaInstruction],
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut tail_index = None;
+    for (index, instruction) in block.iter().enumerate() {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        if instruction.bci() == chain.tail {
+            tail_index = Some(index);
+            break;
+        }
+    }
+    let Some(tail_index) = tail_index else {
+        return Ok(false);
+    };
+    let Some(consumer) = block.get(tail_index + 1) else {
+        return Ok(false);
+    };
+    let Some(string_value) = written_value_counted(ssa, chain.tail, budget)? else {
+        return Ok(false);
+    };
+    let mut consumers = Vec::new();
+    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        let mut reads_string = false;
+        for (_, read) in instruction.reads() {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            poll(budget, Some(instruction.bci()))?;
+            reads_string |= *read == string_value;
+        }
+        if reads_string {
+            consumers.push(instruction.bci());
+        }
+    }
+    let mut phi_reads_string = false;
+    for phi in ssa.phis() {
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(chain.tail))?;
+        poll(budget, Some(chain.tail))?;
+        for input in phi.inputs() {
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(chain.tail))?;
+            poll(budget, Some(chain.tail))?;
+            phi_reads_string |= matches!(input, PhiInput::Value(value) if *value == string_value);
+        }
+    }
+    if phi_reads_string
+        || consumers.as_slice() != [consumer.bci()]
+        || !renders_its_reads(operations.get(consumer.bci()))
+    {
+        return Ok(false);
+    }
+    let mut head_index = None;
+    for (index, instruction) in block.iter().enumerate() {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        if instruction.bci() == chain.head {
+            head_index = Some(index);
+            break;
+        }
+    }
+    let Some(head_index) = head_index else {
+        return Ok(false);
+    };
+    if head_index > tail_index {
+        return Ok(false);
+    }
+    let mut expected_rows: Option<Vec<jarde_reader::classfile::ExceptionHandlerFact>> = None;
+    for instruction in &block[head_index..=tail_index + 1] {
+        let at = instruction.bci();
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+        poll(budget, Some(at))?;
+        let mut rows = Vec::new();
+        for row in &code.exception_handlers {
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+            poll(budget, Some(at))?;
+            if row.start_bci <= at && at < row.end_bci {
+                rows.push(row.clone());
+            }
+        }
+        if expected_rows
+            .as_ref()
+            .is_some_and(|expected| expected != &rows)
+        {
+            return Ok(false);
+        }
+        expected_rows.get_or_insert(rows);
+    }
+    Ok(true)
 }
 
 /// The one bounded branched form used by Java 8's four conditional String operands.
@@ -800,6 +1302,7 @@ fn verify_four_conditional_strings(
             .iter()
             .map(|instruction| instruction.bci())
             .collect(),
+        object_value_of_appends: BTreeSet::new(),
         cut: None,
     }))
 }
@@ -849,6 +1352,22 @@ pub(crate) fn plan_conditional_cut_chains(
         }
     }
     Ok(plan)
+}
+
+/// Plans every supported concat shape through one entry point, including the narrowly proved
+/// instance-field operands. The field certificate consumes the same facts and budget as the
+/// ordinary planner; it is a completion of this plan, not a second concat pass in the caller.
+pub(crate) fn plan_with_ordered_field_operands(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    copies: &crate::build::FieldCopies,
+    fields: &crate::field::Plan,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<Plan, StopReason> {
+    let plan = plan_conditional_cut_chains(ssa, canonical, operations, copies, budget)?;
+    certify_ordered_field_operands(plan, ssa, operations, copies, fields, code, budget)
 }
 
 /// Verifies one candidate whose cross-block `toString` a conditional materialization cuts.
@@ -994,7 +1513,9 @@ fn verify_conditional_cut_chain(
             }) => {
                 owned.insert(at);
             }
-            Some(Operation::Invoke(_)) if produces_a_read_value(instruction, &block_refs, at) => {
+            Some(Operation::Invoke(_))
+                if produces_a_read_value(instruction, &block_refs, at, None) =>
+            {
                 owned.insert(at);
             }
             _ => return Ok(None),
@@ -1244,7 +1765,9 @@ fn verify_conditional_cut_chain(
             }) => {
                 owned.insert(at);
             }
-            Some(Operation::Invoke(_)) if produces_a_read_value(instruction, &join_refs, at) => {
+            Some(Operation::Invoke(_))
+                if produces_a_read_value(instruction, &join_refs, at, None) =>
+            {
                 owned.insert(at);
             }
             _ => return Ok(None),
@@ -1287,6 +1810,7 @@ fn verify_conditional_cut_chain(
         class: ty.to_string(),
         appends,
         owned,
+        object_value_of_appends: BTreeSet::new(),
         cut: Some(Cut {
             head_block: head_block.block().clone(),
             branch_bci,
@@ -1370,11 +1894,26 @@ fn verify(
     ssa: &SsaTable,
     operations: &Operations,
     copies: &crate::build::FieldCopies,
+    ordered_field_reads: Option<&BTreeSet<u32>>,
+    mut meter: Option<&mut VerifyMeter<'_>>,
 ) -> Result<Chain, Refusal> {
-    let index = block
-        .iter()
-        .position(|instruction| instruction.bci() == head)
-        .expect("the candidate's block holds the candidate");
+    let mut index = None;
+    for (position, instruction) in block.iter().enumerate() {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+        {
+            return Err(Refusal::shape(
+                "jre_concat_shape",
+                "concat verification stopped".to_owned(),
+            ));
+        }
+        if instruction.bci() == head {
+            index = Some(position);
+            break;
+        }
+    }
+    let index = index.expect("the candidate's block holds the candidate");
     let shape = |detail: String| Refusal::shape("jre_concat_shape", detail);
     // A chain is one contiguous run of one block. A `toString` on the same class in *another* block
     // can be the shape a branch inside the concatenation leaves behind — but only when that
@@ -1404,9 +1943,16 @@ fn verify(
         )
         .then_some(vec![head, copy.bci(), init.bci()])
     })();
-    if let Some(tail) = built.and_then(|built| {
-        all.iter().find(|instruction| {
-            instruction.bci() > head
+    let mut split_tail = None;
+    if let Some(built) = &built {
+        for instruction in all {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+            {
+                return Err(shape("concat verification stopped".to_owned()));
+            }
+            if instruction.bci() > head
                 && matches!(
                     operations.get(instruction.bci()),
                     Some(Operation::Invoke(target))
@@ -1415,9 +1961,28 @@ fn verify(
                             && target.descriptor() == "()Ljava/lang/String;"
                 )
                 && block_of.get(&instruction.bci()).copied() != Some(head_block)
-                && consumes_the_instance(ssa, operations, all, ty, &built, instruction)
-        })
-    }) {
+                && consumes_the_instance(
+                    ssa,
+                    operations,
+                    all,
+                    ty,
+                    built,
+                    instruction,
+                    meter.as_deref_mut(),
+                )
+            {
+                split_tail = Some(*instruction);
+                break;
+            }
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| meter.stop.is_some())
+            {
+                return Err(shape("concat verification stopped".to_owned()));
+            }
+        }
+    }
+    if let Some(tail) = split_tail {
         return Err(Refusal::shape(
             "jre_concat_split",
             format!(
@@ -1466,14 +2031,16 @@ fn verify(
     // part of the chain — one outside it is an *alias*, and presenting the chain would hide the use
     // that alias makes of the instance.
     let mut produced_by: Vec<u32> = vec![head, dup.bci(), init.bci()];
-    let operands = stack_operands(init);
+    let Some(operands) = stack_operands_metered(init, &mut meter) else {
+        return Err(shape("concat verification stopped".to_owned()));
+    };
     let Some((_, receiver)) = operands.first().copied() else {
         return Err(shape(format!(
             "the constructor call at BCI {} reads no receiver this run states",
             init.bci()
         )));
     };
-    if !is_the_instance(ssa, receiver, &produced_by) {
+    if !is_the_instance_metered(ssa, receiver, &produced_by, &mut meter, head) {
         return Err(shape(format!(
             "the constructor at BCI {} is called on a value this chain's allocation did not produce",
             init.bci()
@@ -1484,6 +2051,12 @@ fn verify(
     let mut previous = init.bci();
     let mut tail: Option<u32> = None;
     for instruction in &block[index + 3..] {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+        {
+            return Err(shape("concat verification stopped".to_owned()));
+        }
         let at = instruction.bci();
         match operations.get(at) {
             Some(Operation::Invoke(target))
@@ -1512,13 +2085,15 @@ fn verify(
                         "the `append` at BCI {at} does not return `{ty}`, so it is not the chain-building overload"
                     )));
                 }
-                let operands = stack_operands(instruction);
+                let Some(operands) = stack_operands_metered(instruction, &mut meter) else {
+                    return Err(shape("concat verification stopped".to_owned()));
+                };
                 let Some((_, receiver)) = operands.first().copied() else {
                     return Err(shape(format!(
                         "the `append` at BCI {at} reads no receiver this run states"
                     )));
                 };
-                if !is_the_instance(ssa, receiver, &produced_by) {
+                if !is_the_instance_metered(ssa, receiver, &produced_by, &mut meter, at) {
                     return Err(shape(format!(
                         "the `append` at BCI {at} is called on a value this chain's allocation did not produce: the chain's receiver is not one `new`"
                     )));
@@ -1557,13 +2132,15 @@ fn verify(
                         target.descriptor()
                     )));
                 }
-                let operands = stack_operands(instruction);
+                let Some(operands) = stack_operands_metered(instruction, &mut meter) else {
+                    return Err(shape("concat verification stopped".to_owned()));
+                };
                 let Some((_, receiver)) = operands.first().copied() else {
                     return Err(shape(format!(
                         "the `toString` at BCI {at} reads no receiver this run states"
                     )));
                 };
-                if !is_the_instance(ssa, receiver, &produced_by) {
+                if !is_the_instance_metered(ssa, receiver, &produced_by, &mut meter, at) {
                     return Err(shape(format!(
                         "the `toString` at BCI {at} is called on a value this chain's allocation did not produce"
                     )));
@@ -1585,7 +2162,9 @@ fn verify(
             ) => {
                 owned.insert(at);
             }
-            Some(Operation::Invoke(_)) if produces_a_read_value(instruction, block, at) => {
+            Some(Operation::Invoke(_))
+                if produces_a_read_value(instruction, block, at, meter.as_deref_mut()) =>
+            {
                 owned.insert(at);
             }
             // The receiver copy of a proved compound assignment whose pass-through is **this
@@ -1602,8 +2181,9 @@ fn verify(
                 if copies
                     .receiver_copy_at(at)
                     .is_some_and(|copy| copy.pass_through.is_some())
-                    && dup_x1_operands(instruction)
-                        .is_some_and(|(_, below)| is_the_instance(ssa, below, &produced_by)) =>
+                    && dup_x1_operands(instruction).is_some_and(|(_, below)| {
+                        is_the_instance_metered(ssa, below, &produced_by, &mut meter, at)
+                    }) =>
             {
                 owned.insert(at);
                 produced_by.push(at);
@@ -1615,16 +2195,14 @@ fn verify(
             Some(Operation::Field {
                 access: FieldAccess::Read,
                 ..
+            }) if ordered_field_reads.is_some_and(|reads| reads.contains(&at)) => {
+                owned.insert(at);
+            }
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                ..
             }) if copies.copy_at(at).is_none()
-                && copies
-                    .values()
-                    .find(|copy| {
-                        matches!(
-                            copy.shape,
-                            crate::build::FieldCopyShape::Receiver { read, .. } if read == at
-                        )
-                    })
-                    .is_some_and(|copy| owned.contains(&copy.duplicate)) =>
+                && field_read_is_receiver_copy(at, copies, &owned, &mut meter) =>
             {
                 owned.insert(at);
             }
@@ -1657,14 +2235,36 @@ fn verify(
     }
     // The result is written where it is consumed: a chain whose `String` nothing reads is an
     // invocation the bytecode made with no place in the body.
-    let produced = written_value(ssa, tail);
-    let consumed = produced.is_some_and(|value| {
-        all.iter().any(|instruction| {
-            instruction.bci() != tail
-                && instruction.reads().iter().any(|(_, read)| *read == value)
-                && renders_its_reads(operations.get(instruction.bci()))
-        })
-    });
+    let produced = written_value_metered(ssa, tail, &mut meter);
+    let mut consumed = false;
+    if let Some(value) = produced {
+        for instruction in all {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+            {
+                return Err(shape("concat verification stopped".to_owned()));
+            }
+            if instruction.bci() == tail {
+                continue;
+            }
+            for (_, read) in instruction.reads() {
+                if meter
+                    .as_deref_mut()
+                    .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+                {
+                    return Err(shape("concat verification stopped".to_owned()));
+                }
+                if *read == value && renders_its_reads(operations.get(instruction.bci())) {
+                    consumed = true;
+                    break;
+                }
+            }
+            if consumed {
+                break;
+            }
+        }
+    }
     if !consumed {
         return Err(shape(format!(
             "nothing in this method reads the `String` the `toString` at BCI {tail} returns, so the chain has no place in the body"
@@ -1676,22 +2276,49 @@ fn verify(
     // other value; the copy is the chain's own instruction, and the store is the one statement the
     // `+=` this chain is the value of is written as.
     for instruction in all {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+        {
+            return Err(shape("concat verification stopped".to_owned()));
+        }
         if owned.contains(&instruction.bci()) {
             continue;
         }
-        if copies.values().any(|copy| {
-            matches!(
+        let mut copied_receiver = false;
+        for copy in copies.values() {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+            {
+                return Err(shape("concat verification stopped".to_owned()));
+            }
+            if matches!(
                 copy.shape,
                 crate::build::FieldCopyShape::Receiver { store, .. } if store == instruction.bci()
             ) && owned.contains(&copy.duplicate)
-        }) {
+            {
+                copied_receiver = true;
+                break;
+            }
+        }
+        if copied_receiver {
             continue;
         }
-        if instruction
-            .reads()
-            .iter()
-            .any(|(_, read)| is_the_instance(ssa, *read, &produced_by))
-        {
+        let mut reads_instance = false;
+        for (_, read) in instruction.reads() {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+            {
+                return Err(shape("concat verification stopped".to_owned()));
+            }
+            if is_the_instance_metered(ssa, *read, &produced_by, &mut meter, head) {
+                reads_instance = true;
+                break;
+            }
+        }
+        if reads_instance {
             return Err(shape(format!(
                 "the instruction at BCI {} reads the instance the allocation at BCI {head} built, and it is not part of the chain: the instance is aliased, so the chain is not the only thing being done with it",
                 instruction.bci()
@@ -1699,12 +2326,27 @@ fn verify(
         }
     }
     let class = constructor.owner().to_string();
+    let mut object_value_of_appends = BTreeSet::new();
+    if ordered_field_reads.is_some_and(|reads| !reads.is_empty()) {
+        for (append_bci, parameter) in &appends {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(*append_bci)))
+            {
+                return Err(shape("concat verification stopped".to_owned()));
+            }
+            if matches!(parameter, Type::Reference(name) if name == "java.lang.Object") {
+                object_value_of_appends.insert(*append_bci);
+            }
+        }
+    }
     Ok(Chain {
         head,
         tail,
         class,
         appends,
         owned,
+        object_value_of_appends,
         cut: None,
     })
 }
@@ -1736,8 +2378,18 @@ fn consumes_the_instance(
     ty: &str,
     built: &[u32],
     tail: &SsaInstruction,
+    mut meter: Option<&mut VerifyMeter<'_>>,
 ) -> bool {
-    let Some((_, receiver)) = stack_operands(tail).first().copied() else {
+    if meter
+        .as_deref_mut()
+        .is_some_and(|meter| !meter.step(Some(tail.bci())))
+    {
+        return false;
+    }
+    let Some(operands) = stack_operands_metered(tail, &mut meter) else {
+        return false;
+    };
+    let Some((_, receiver)) = operands.first().copied() else {
         return false;
     };
     reaches_the_allocation(
@@ -1748,7 +2400,426 @@ fn consumes_the_instance(
         built,
         receiver,
         RECEIVER_TRACE_BOUND,
+        meter.as_deref_mut(),
     )
+}
+
+fn is_the_instance_metered(
+    ssa: &SsaTable,
+    value: ValueId,
+    produced_by: &[u32],
+    meter: &mut Option<&mut VerifyMeter<'_>>,
+    at: u32,
+) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    for produced in produced_by {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(at)))
+        {
+            return false;
+        }
+        if produced == bci {
+            return true;
+        }
+    }
+    false
+}
+
+fn stack_operands_metered(
+    instruction: &SsaInstruction,
+    meter: &mut Option<&mut VerifyMeter<'_>>,
+) -> Option<Vec<(Slot, ValueId)>> {
+    let mut operands = Vec::new();
+    for (slot, value) in instruction.reads() {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+        {
+            return None;
+        }
+        if matches!(slot, Slot::Stack(_)) {
+            operands.push((*slot, *value));
+        }
+    }
+    operands.sort_by_key(|(slot, _)| match slot {
+        Slot::Stack(depth) => *depth,
+        Slot::Local(slot) => u32::from(*slot),
+    });
+    Some(operands)
+}
+
+fn stack_operands_counted(
+    instruction: &SsaInstruction,
+    budget: &mut Budget,
+) -> Result<Vec<(Slot, ValueId)>, StopReason> {
+    let mut operands = Vec::new();
+    for (slot, value) in instruction.reads() {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        if matches!(slot, Slot::Stack(_)) {
+            operands.push((*slot, *value));
+        }
+    }
+    operands.sort_by_key(|(slot, _)| match slot {
+        Slot::Stack(depth) => *depth,
+        Slot::Local(slot) => u32::from(*slot),
+    });
+    Ok(operands)
+}
+
+fn field_read_is_receiver_copy(
+    at: u32,
+    copies: &crate::build::FieldCopies,
+    owned: &BTreeSet<u32>,
+    meter: &mut Option<&mut VerifyMeter<'_>>,
+) -> bool {
+    for copy in copies.values() {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(at)))
+        {
+            return false;
+        }
+        if matches!(
+            copy.shape,
+            crate::build::FieldCopyShape::Receiver { read, .. } if read == at
+        ) {
+            return owned.contains(&copy.duplicate);
+        }
+    }
+    false
+}
+
+#[cfg(test)]
+mod ordered_field_budget_tests {
+    use super::*;
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
+    use jarde_reader::classfile::{ExceptionHandlerFact, MethodCodeFacts};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+        MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+        RuntimeView,
+    };
+
+    const FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/proved-ordered-field-concat/javac8-debug/OrderedFieldConcat.class"
+    );
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 10,
+            method_bodies: 10,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 8,
+            dependency_depth: 4,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn direct_candidate() -> (
+        jarde_jvm::method_ir::MethodIrAnalysis,
+        crate::decode::Operations,
+        crate::field::Plan,
+        crate::build::FieldCopies,
+    ) {
+        let mut setup_budget = Budget::new(limits());
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(FIXTURE.to_vec()), &mut setup_budget)
+                .expect("fixture class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(FIXTURE).to_hex().to_string()),
+                length: u64::try_from(FIXTURE.len()).expect("fixture length fits"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(b"instanceFields".to_vec()),
+            descriptor: JvmBytes(b"(LOrderedFieldConcat;)Ljava/lang/String;".to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: method.owner.location.snapshot().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method,
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut setup_budget,
+        )
+        .expect("fixture method analyzes");
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("SSA table is present");
+        let canonical = ir.canonical().expect("canonical CFG is present");
+        let code = ir.code().expect("decoded Code facts are present");
+        let operations = crate::decode::Operations::of(code, ir.constant_pool());
+        let declaring = crate::facts::DeclaringClass::new("OrderedFieldConcat", 0x0031);
+        let element_receiver_type =
+            |value| crate::build::element_receiver_type(ssa, &operations, value);
+        let fields = crate::field::plan(
+            ssa,
+            &operations,
+            &element_receiver_type,
+            Some(&declaring),
+            "instanceFields",
+            "(LOrderedFieldConcat;)Ljava/lang/String;",
+            ir.class_fields(),
+            &[],
+            &mut setup_budget,
+        )
+        .expect("field plan completes");
+        let copies = crate::build::FieldCopies::prove(
+            ssa,
+            canonical,
+            &operations,
+            &fields,
+            false,
+            &mut setup_budget,
+        )
+        .expect("field-copy plan completes");
+        (analysis, operations, fields, copies)
+    }
+
+    #[test]
+    fn short_budget_and_precancel_stop_inside_field_certificate_before_owner_commit() {
+        let (analysis, operations, fields, copies) = direct_candidate();
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("SSA table is present");
+        let canonical = ir.canonical().expect("canonical CFG is present");
+        let code = ir.code().expect("decoded Code facts are present");
+
+        let mut full_budget = Budget::new(limits());
+        let full = plan_with_ordered_field_operands(
+            ssa,
+            canonical,
+            &operations,
+            &copies,
+            &fields,
+            code,
+            &mut full_budget,
+        );
+        let full = full.expect("the direct candidate reaches a complete certificate");
+        assert!(
+            !full.chains.is_empty(),
+            "the accepted chain owns its append plan"
+        );
+        let used = full_budget.usage().ir_items;
+        let mut short_limits = limits();
+        short_limits.ir_items = used.checked_sub(1).expect("certificate charged IR work");
+        let mut short_budget = Budget::new(short_limits);
+        let short = plan_with_ordered_field_operands(
+            ssa,
+            canonical,
+            &operations,
+            &copies,
+            &fields,
+            code,
+            &mut short_budget,
+        );
+        assert!(matches!(
+            short,
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                at: Some(_),
+                ..
+            })
+        ));
+        assert!(short_budget.usage().ir_items < used);
+
+        let ordinary = plan(ssa, &operations, &copies);
+        assert!(
+            ordinary
+                .refused
+                .iter()
+                .any(|refused| { refused.refusal.code() == "jre_concat_interleaved_effect" })
+        );
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled_budget = Budget::with_cancellation_token(limits(), cancellation);
+        let cancelled = certify_ordered_field_operands(
+            ordinary,
+            ssa,
+            &operations,
+            &copies,
+            &fields,
+            code,
+            &mut cancelled_budget,
+        );
+        assert!(matches!(
+            cancelled,
+            Err(StopReason::Cancelled { at: Some(_) })
+        ));
+    }
+
+    #[test]
+    fn a_physical_handler_row_split_across_the_field_chain_keeps_the_refusal() {
+        let (analysis, operations, fields, copies) = direct_candidate();
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("SSA table is present");
+        let canonical = ir.canonical().expect("canonical CFG is present");
+        let code = ir.code().expect("decoded Code facts are present");
+        let field_bci = code
+            .instructions
+            .iter()
+            .find_map(|instruction| match operations.get(instruction.bci) {
+                Some(Operation::Field {
+                    access: FieldAccess::Read,
+                    is_static: false,
+                    ..
+                }) => Some(instruction.bci),
+                _ => None,
+            })
+            .expect("fixture method has an instance field read");
+        let tail = code
+            .instructions
+            .iter()
+            .find(|instruction| {
+                matches!(
+                    operations.get(instruction.bci),
+                    Some(Operation::Invoke(target)) if target.name() == "toString"
+                )
+            })
+            .expect("fixture method has a String tail");
+        let tail_index = code
+            .instructions
+            .iter()
+            .position(|instruction| instruction.bci == tail.bci)
+            .expect("tail is in the decoded instructions");
+        let consumer = &code.instructions[tail_index + 1];
+        let end = consumer.bci.saturating_add(consumer.width);
+        // These rows are added to the real Code rows used by the planner. Their boundary is at
+        // the actual getfield BCI; no claim is made that the modified class bytes would verify.
+        let split_code = MethodCodeFacts::from_parts(
+            code.max_stack,
+            code.max_locals,
+            code.code_span.clone(),
+            code.instructions
+                .iter()
+                .cloned()
+                .zip(code.operands().iter().cloned())
+                .collect(),
+            vec![
+                ExceptionHandlerFact {
+                    ordinal: 0,
+                    start_bci: code.instructions[0].bci,
+                    end_bci: field_bci,
+                    handler_bci: consumer.bci,
+                    catch_type_index: None,
+                },
+                ExceptionHandlerFact {
+                    ordinal: 1,
+                    start_bci: field_bci,
+                    end_bci: end,
+                    handler_bci: consumer.bci,
+                    catch_type_index: None,
+                },
+            ],
+            2,
+            code.execution.clone(),
+            code.stopped_at.clone(),
+            code.debug().clone(),
+        );
+        let mut budget = Budget::new(limits());
+        let plan = plan_with_ordered_field_operands(
+            ssa,
+            canonical,
+            &operations,
+            &copies,
+            &fields,
+            &split_code,
+            &mut budget,
+        )
+        .expect("coverage rejection is an ordinary shape refusal");
+        assert!(plan.chains.is_empty());
+        assert!(
+            plan.refused
+                .iter()
+                .any(|refused| { refused.refusal.code() == "jre_concat_interleaved_effect" })
+        );
+    }
+
+    #[test]
+    fn an_unclaimed_field_read_cannot_complete_the_concat_refusal() {
+        let (analysis, operations, _claimed_fields, copies) = direct_candidate();
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("SSA table is present");
+        let canonical = ir.canonical().expect("canonical CFG is present");
+        let code = ir.code().expect("decoded Code facts are present");
+        let mut budget = Budget::new(limits());
+        let plan = plan_with_ordered_field_operands(
+            ssa,
+            canonical,
+            &operations,
+            &copies,
+            &crate::field::Plan::empty(),
+            code,
+            &mut budget,
+        )
+        .expect("an unclaimed read remains an ordinary refusal");
+        assert!(plan.chains.is_empty());
+        assert!(
+            plan.refused
+                .iter()
+                .any(|refused| { refused.refusal.code() == "jre_concat_interleaved_effect" })
+        );
+    }
 }
 
 /// One bounded step of [`consumes_the_instance`]: `steps` is what the whole walk has left.
@@ -1760,16 +2831,38 @@ fn reaches_the_allocation(
     built: &[u32],
     value: ValueId,
     steps: usize,
+    mut meter: Option<&mut VerifyMeter<'_>>,
 ) -> bool {
     if steps == 0 {
         return false;
     }
     match ssa.value(value).def() {
         Definition::Instruction { bci, .. } => {
-            if built.contains(bci) {
-                return true;
+            for produced in built {
+                if meter
+                    .as_deref_mut()
+                    .is_some_and(|meter| !meter.step(Some(*bci)))
+                {
+                    return false;
+                }
+                if produced == bci {
+                    return true;
+                }
             }
-            let Some(instruction) = all.iter().find(|instruction| instruction.bci() == *bci) else {
+            let mut instruction = None;
+            for candidate in all {
+                if meter
+                    .as_deref_mut()
+                    .is_some_and(|meter| !meter.step(Some(candidate.bci())))
+                {
+                    return false;
+                }
+                if candidate.bci() == *bci {
+                    instruction = Some(*candidate);
+                    break;
+                }
+            }
+            let Some(instruction) = instruction else {
                 return false;
             };
             let next = match operations.get(*bci) {
@@ -1777,37 +2870,81 @@ fn reaches_the_allocation(
                 Some(Operation::Invoke(target))
                     if target.owner() == ty && target.name() == "append" =>
                 {
-                    stack_operands(instruction).first().map(|(_, value)| *value)
+                    stack_operands_metered(instruction, &mut meter)
+                        .and_then(|operands| operands.first().map(|(_, value)| *value))
                 }
                 // The instance as a `Store` wrote it: the value the store read off the stack.
-                Some(Operation::Store { .. }) => {
-                    stack_operands(instruction).first().map(|(_, value)| *value)
-                }
+                Some(Operation::Store { .. }) => stack_operands_metered(instruction, &mut meter)
+                    .and_then(|operands| operands.first().map(|(_, value)| *value)),
                 // The instance as a `Load` read it: the value the slot held at that point.
-                Some(Operation::Load { .. }) => instruction
-                    .reads()
-                    .iter()
-                    .find_map(|(slot, value)| matches!(slot, Slot::Local(_)).then_some(*value)),
+                Some(Operation::Load { .. }) => {
+                    let mut local = None;
+                    for (slot, value) in instruction.reads() {
+                        if meter
+                            .as_deref_mut()
+                            .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+                        {
+                            return false;
+                        }
+                        if matches!(slot, Slot::Local(_)) {
+                            local = Some(*value);
+                            break;
+                        }
+                    }
+                    local
+                }
                 _ => None,
             };
             next.is_some_and(|next| {
-                reaches_the_allocation(ssa, operations, all, ty, built, next, steps - 1)
+                reaches_the_allocation(
+                    ssa,
+                    operations,
+                    all,
+                    ty,
+                    built,
+                    next,
+                    steps - 1,
+                    meter.as_deref_mut(),
+                )
             })
         }
         // The instance as the merge of a branch left it: one arm that reaches the allocation is
         // enough — the `toString` then reads a value the branch decides, which is the cut.
-        Definition::Phi { .. } => ssa
-            .phis()
-            .iter()
-            .find(|phi| phi.value() == value)
-            .is_some_and(|phi| {
-                phi.inputs().iter().any(|input| match input {
-                    PhiInput::Value(input) => {
-                        reaches_the_allocation(ssa, operations, all, ty, built, *input, steps - 1)
+        Definition::Phi { .. } => {
+            let mut phi = None;
+            for candidate in ssa.phis() {
+                if meter.as_deref_mut().is_some_and(|meter| !meter.step(None)) {
+                    return false;
+                }
+                if candidate.value() == value {
+                    phi = Some(candidate);
+                    break;
+                }
+            }
+            let Some(phi) = phi else {
+                return false;
+            };
+            for input in phi.inputs() {
+                if meter.as_deref_mut().is_some_and(|meter| !meter.step(None)) {
+                    return false;
+                }
+                if let PhiInput::Value(input) = input {
+                    if reaches_the_allocation(
+                        ssa,
+                        operations,
+                        all,
+                        ty,
+                        built,
+                        *input,
+                        steps - 1,
+                        meter.as_deref_mut(),
+                    ) {
+                        return true;
                     }
-                    PhiInput::Itself => false,
-                })
-            }),
+                }
+            }
+            false
+        }
         _ => false,
     }
 }
@@ -1826,6 +2963,70 @@ fn written_value(ssa: &SsaTable, bci: u32) -> Option<ValueId> {
         })
 }
 
+fn written_value_counted(
+    ssa: &SsaTable,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<ValueId>, StopReason> {
+    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(instruction.bci()),
+        )?;
+        poll(budget, Some(instruction.bci()))?;
+        if instruction.bci() != bci {
+            continue;
+        }
+        for (slot, value) in instruction.writes() {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            poll(budget, Some(instruction.bci()))?;
+            if matches!(slot, Slot::Stack(_)) {
+                return Ok(Some(*value));
+            }
+        }
+        return Ok(None);
+    }
+    Ok(None)
+}
+
+fn written_value_metered(
+    ssa: &SsaTable,
+    bci: u32,
+    meter: &mut Option<&mut VerifyMeter<'_>>,
+) -> Option<ValueId> {
+    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+        {
+            return None;
+        }
+        if instruction.bci() != bci {
+            continue;
+        }
+        for (slot, value) in instruction.writes() {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(instruction.bci())))
+            {
+                return None;
+            }
+            if matches!(slot, Slot::Stack(_)) {
+                return Some(*value);
+            }
+        }
+        return None;
+    }
+    None
+}
+
 /// The BCI the instruction that produced one value sits at, when an instruction produced it.
 fn produced_at(ssa: &SsaTable, value: ValueId) -> Option<u32> {
     match ssa.value(value).def() {
@@ -1840,26 +3041,71 @@ fn produced_at(ssa: &SsaTable, value: ValueId) -> Option<u32> {
 /// value is used after the chain — and writing it inside the expression would move it. So the
 /// value it produced must be read by an instruction of the same span, and it must not write a
 /// local slot of its own.
-fn produces_a_read_value(instruction: &SsaInstruction, block: &[&SsaInstruction], at: u32) -> bool {
-    if instruction
-        .writes()
-        .iter()
-        .any(|(slot, _)| matches!(slot, Slot::Local(_)))
-    {
+fn produces_a_read_value(
+    instruction: &SsaInstruction,
+    block: &[&SsaInstruction],
+    at: u32,
+    mut meter: Option<&mut VerifyMeter<'_>>,
+) -> bool {
+    let mut writes_local = false;
+    for (slot, _) in instruction.writes() {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(at)))
+        {
+            return false;
+        }
+        writes_local |= matches!(slot, Slot::Local(_));
+    }
+    if writes_local {
         return false;
     }
-    let values: Vec<ValueId> = instruction
-        .writes()
-        .iter()
-        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
-        .map(|(_, value)| *value)
-        .collect();
+    let mut values = Vec::new();
+    for (slot, value) in instruction.writes() {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(at)))
+        {
+            return false;
+        }
+        if matches!(slot, Slot::Stack(_)) {
+            values.push(*value);
+        }
+    }
     if values.is_empty() {
         return false;
     }
-    block.iter().any(|other| {
-        other.bci() > at && other.reads().iter().any(|(_, read)| values.contains(read))
-    })
+    for other in block {
+        if meter
+            .as_deref_mut()
+            .is_some_and(|meter| !meter.step(Some(other.bci())))
+        {
+            return false;
+        }
+        if other.bci() <= at {
+            continue;
+        }
+        for (_, read) in other.reads() {
+            if meter
+                .as_deref_mut()
+                .is_some_and(|meter| !meter.step(Some(other.bci())))
+            {
+                return false;
+            }
+            for value in &values {
+                if meter
+                    .as_deref_mut()
+                    .is_some_and(|meter| !meter.step(Some(other.bci())))
+                {
+                    return false;
+                }
+                if value == read {
+                    return true;
+                }
+            }
+        }
+    }
+    false
 }
 
 /// Whether an instruction's operation writes the values it reads into its text, so that dropping it
