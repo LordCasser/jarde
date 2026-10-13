@@ -1,0 +1,6 @@
+{
+  "source": "/private/tmp/jarde-ordinary-try-list-45-archive-prep-luna-v1/archive_45_supplement.py",
+  "source_sha256": "0ba8c9232e49dc73ade6d042c7fd6337e2decbd8dcc440cb478aed4a4de6534a",
+  "review": "Root read all 236 lines; old none receipt SHA typo corrected before any execution, no gates relaxed. Uses accepted v4 data; complete capture and receipt/raw/member pins retained. Does not invoke build tools or Git.",
+  "candidate_sha256": "1890360233e0633c52dd41810c2a8558da754ff2ee4d456c6240d3b1dc5c9f14"
+}

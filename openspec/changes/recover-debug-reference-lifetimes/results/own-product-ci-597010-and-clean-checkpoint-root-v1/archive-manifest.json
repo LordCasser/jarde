@@ -1,0 +1,305 @@
+{
+  "capture_execution_status": "captured_all_success",
+  "capture_product_sha": "597010a8cb9992eead8276b2f2a67186ada393d9",
+  "checkpoint_command_evidence_count": 43,
+  "checkpoint_raw_streams_present": false,
+  "checkpoint_status": "accepted_clean_main",
+  "members": [
+    {
+      "bytes": 40252,
+      "member": "capture/capture-execution.json",
+      "sha256": "0133f7a8b0d25ae74a845f76d11f5ac26325c33da02a9992c8b06f4cbda737a0",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/capture-execution.json"
+    },
+    {
+      "bytes": 289490,
+      "member": "capture/job-000.log.gz",
+      "sha256": "da33128182d0557f5dde605a0a3ef17ccc990c79e0d53bbdb7d19d0ea307f137",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-000.log.gz"
+    },
+    {
+      "bytes": 1836240,
+      "member": "capture/job-000.log.stdout.raw",
+      "sha256": "6d83be6661f3d5aa3c18763c1189437fe668e7f47d99224abb4baddf5ba1d1cb",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-000.log.stdout.raw"
+    },
+    {
+      "bytes": 0,
+      "member": "capture/job-000.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-000.stderr.raw"
+    },
+    {
+      "bytes": 1836240,
+      "member": "capture/job-000.stdout.raw",
+      "sha256": "6d83be6661f3d5aa3c18763c1189437fe668e7f47d99224abb4baddf5ba1d1cb",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-000.stdout.raw"
+    },
+    {
+      "bytes": 122141,
+      "member": "capture/job-001.log.gz",
+      "sha256": "da2ea8d330ae9fd755900a7ea9fbab86d4c63705689e456e43a3de3ede6c396e",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-001.log.gz"
+    },
+    {
+      "bytes": 1004725,
+      "member": "capture/job-001.log.stdout.raw",
+      "sha256": "a3d6121aa99f5557849b36d9af3eb1f9fa3a8a797d5c2017cec5855dda4ee0f4",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-001.log.stdout.raw"
+    },
+    {
+      "bytes": 0,
+      "member": "capture/job-001.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-001.stderr.raw"
+    },
+    {
+      "bytes": 1004725,
+      "member": "capture/job-001.stdout.raw",
+      "sha256": "a3d6121aa99f5557849b36d9af3eb1f9fa3a8a797d5c2017cec5855dda4ee0f4",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-001.stdout.raw"
+    },
+    {
+      "bytes": 15267,
+      "member": "capture/job-002.log.gz",
+      "sha256": "6bd46989b40d9e9b2b2151979dcba89b5eccda845256645a0ea65e0f5a0e4deb",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-002.log.gz"
+    },
+    {
+      "bytes": 116679,
+      "member": "capture/job-002.log.stdout.raw",
+      "sha256": "32d2b9a73f6c77f583eda384eb9a9d0bd93824b04babdc097ad01e3873d3e416",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-002.log.stdout.raw"
+    },
+    {
+      "bytes": 0,
+      "member": "capture/job-002.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-002.stderr.raw"
+    },
+    {
+      "bytes": 116679,
+      "member": "capture/job-002.stdout.raw",
+      "sha256": "32d2b9a73f6c77f583eda384eb9a9d0bd93824b04babdc097ad01e3873d3e416",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-002.stdout.raw"
+    },
+    {
+      "bytes": 11912,
+      "member": "capture/job-003.log.gz",
+      "sha256": "2a1e0cad824dac38497a5336dddac5be2e854c2b960d44a5a6d95e498bb314b5",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-003.log.gz"
+    },
+    {
+      "bytes": 76245,
+      "member": "capture/job-003.log.stdout.raw",
+      "sha256": "1ce00a20ad3423ccf0f8228d462dcaf8e66559dbe0bf78e856e4d7a1f7d00026",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-003.log.stdout.raw"
+    },
+    {
+      "bytes": 0,
+      "member": "capture/job-003.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-003.stderr.raw"
+    },
+    {
+      "bytes": 76245,
+      "member": "capture/job-003.stdout.raw",
+      "sha256": "1ce00a20ad3423ccf0f8228d462dcaf8e66559dbe0bf78e856e4d7a1f7d00026",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/job-003.stdout.raw"
+    },
+    {
+      "bytes": 0,
+      "member": "capture/run-summary.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/run-summary.stderr.raw"
+    },
+    {
+      "bytes": 10113,
+      "member": "capture/run-summary.stdout.raw",
+      "sha256": "6e22ebe366cb71e7958f09be4408184fb8a336400089a0f9b7ef64297edcc8db",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-capture-root-v1/run-summary.stdout.raw"
+    },
+    {
+      "bytes": 2152022,
+      "member": "acceptance/own-ci-acceptance.json",
+      "sha256": "5eaf3de8617d29e188f7f52e2c07c62282c37d8f279839d9160353f656ce958a",
+      "source": "/private/tmp/jarde-reference-prefix-own-product-ci-597010-acceptance-root-v1.json"
+    },
+    {
+      "bytes": 29765,
+      "member": "checkpoint-record/execution.json",
+      "sha256": "8c7300bce811cf4eded36e13dfbf5ba8a77b90617ad71c8b4f97803e44487bd5",
+      "source": "/private/tmp/jarde-reference-prefix-clean-main-checkpoint-root-v1/execution.json"
+    },
+    {
+      "bytes": 7368,
+      "member": "tools/collector/capture-own-ci.py",
+      "sha256": "484dca8612ace135b2860445bb1af4628c05c857d38d6bbce9c9384de7977c37",
+      "source": "/private/tmp/jarde-current-own-ci-verifier-prep-luna-v4/capture-own-ci.py"
+    },
+    {
+      "bytes": 39946,
+      "member": "tools/verifier/verify-own-ci.py",
+      "sha256": "06873a28ca1944531685b732a53a9027f254424185f62b5e8e742167b206dcb3",
+      "source": "/private/tmp/jarde-current-own-ci-verifier-prep-luna-v4/verify-own-ci.py"
+    },
+    {
+      "bytes": 57645,
+      "member": "tools/workspace-runner/workspace_runner.py",
+      "sha256": "691e7c073c202ff7782ec8323f0a8c1892ad8748fd55c6d952515f9809736c22",
+      "source": "/private/tmp/jarde-reference-prefix-workspace-prep-luna-v4/workspace_runner.py"
+    },
+    {
+      "bytes": 27647,
+      "member": "tools/workspace-acceptor/accept_workspace.py",
+      "sha256": "5f24f35d27d50a5fca7b128247a3bc094f2109de958af875cf9128a886105c79",
+      "source": "/private/tmp/jarde-reference-prefix-workspace-acceptor-root-v5/accept_workspace.py"
+    },
+    {
+      "bytes": 21782,
+      "member": "tools/clean-main-audit/audit-clean-main.py",
+      "sha256": "b85a461fdef0911de1d754cf0543b2e4fcbf68523105d397aeb96df2c3755925",
+      "source": "/private/tmp/jarde-reference-prefix-clean-main-audit-prep-luna-v2/audit-clean-main.py"
+    },
+    {
+      "bytes": 4549,
+      "member": "tools/focused-runner/jarde-loop-focused-runner-root-v1.py",
+      "sha256": "7209ad1732c097e555c0cda2eba8ffa39ab55bf109616cfaac5f15a1bb749b9f",
+      "source": "/private/tmp/jarde-loop-focused-runner-root-v1.py"
+    },
+    {
+      "bytes": 43302,
+      "member": "tools/ci-log-helper/verify-conditional-ci-root-v5.py",
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca",
+      "source": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py"
+    },
+    {
+      "bytes": 13865,
+      "member": "tools/archive-script/archive_evidence.py",
+      "sha256": "594a7732430bf480a95bfde9620cdcd204a22cbd73558d05f230f34c198c751e",
+      "source": "/private/tmp/jarde-reference-prefix-own-ci-clean-checkpoint-archive-prep-luna-v2/archive_evidence.py"
+    }
+  ],
+  "own_ci_status": "accepted_product_ci_observation",
+  "product_commit": "597010a8cb9992eead8276b2f2a67186ada393d9",
+  "run_id": 38321041720,
+  "schema": "jarde-own-ci-clean-checkpoint-archive-v2",
+  "verified_capture_streams": [
+    {
+      "bytes": 10113,
+      "path": "run-summary.stdout.raw",
+      "role": "capture command stdout",
+      "sha256": "6e22ebe366cb71e7958f09be4408184fb8a336400089a0f9b7ef64297edcc8db"
+    },
+    {
+      "bytes": 0,
+      "path": "run-summary.stderr.raw",
+      "role": "capture command stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1836240,
+      "path": "job-000.stdout.raw",
+      "role": "capture command stdout",
+      "sha256": "6d83be6661f3d5aa3c18763c1189437fe668e7f47d99224abb4baddf5ba1d1cb"
+    },
+    {
+      "bytes": 0,
+      "path": "job-000.stderr.raw",
+      "role": "capture command stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1004725,
+      "path": "job-001.stdout.raw",
+      "role": "capture command stdout",
+      "sha256": "a3d6121aa99f5557849b36d9af3eb1f9fa3a8a797d5c2017cec5855dda4ee0f4"
+    },
+    {
+      "bytes": 0,
+      "path": "job-001.stderr.raw",
+      "role": "capture command stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 116679,
+      "path": "job-002.stdout.raw",
+      "role": "capture command stdout",
+      "sha256": "32d2b9a73f6c77f583eda384eb9a9d0bd93824b04babdc097ad01e3873d3e416"
+    },
+    {
+      "bytes": 0,
+      "path": "job-002.stderr.raw",
+      "role": "capture command stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 76245,
+      "path": "job-003.stdout.raw",
+      "role": "capture command stdout",
+      "sha256": "1ce00a20ad3423ccf0f8228d462dcaf8e66559dbe0bf78e856e4d7a1f7d00026"
+    },
+    {
+      "bytes": 0,
+      "path": "job-003.stderr.raw",
+      "role": "capture command stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1836240,
+      "path": "job-000.log.stdout.raw",
+      "role": "job raw_log",
+      "sha256": "6d83be6661f3d5aa3c18763c1189437fe668e7f47d99224abb4baddf5ba1d1cb"
+    },
+    {
+      "bytes": 289490,
+      "path": "job-000.log.gz",
+      "raw_sha256": "6d83be6661f3d5aa3c18763c1189437fe668e7f47d99224abb4baddf5ba1d1cb",
+      "role": "job compressed_log",
+      "sha256": "da33128182d0557f5dde605a0a3ef17ccc990c79e0d53bbdb7d19d0ea307f137",
+      "uncompressed_bytes": 1836240
+    },
+    {
+      "bytes": 1004725,
+      "path": "job-001.log.stdout.raw",
+      "role": "job raw_log",
+      "sha256": "a3d6121aa99f5557849b36d9af3eb1f9fa3a8a797d5c2017cec5855dda4ee0f4"
+    },
+    {
+      "bytes": 122141,
+      "path": "job-001.log.gz",
+      "raw_sha256": "a3d6121aa99f5557849b36d9af3eb1f9fa3a8a797d5c2017cec5855dda4ee0f4",
+      "role": "job compressed_log",
+      "sha256": "da2ea8d330ae9fd755900a7ea9fbab86d4c63705689e456e43a3de3ede6c396e",
+      "uncompressed_bytes": 1004725
+    },
+    {
+      "bytes": 116679,
+      "path": "job-002.log.stdout.raw",
+      "role": "job raw_log",
+      "sha256": "32d2b9a73f6c77f583eda384eb9a9d0bd93824b04babdc097ad01e3873d3e416"
+    },
+    {
+      "bytes": 15267,
+      "path": "job-002.log.gz",
+      "raw_sha256": "32d2b9a73f6c77f583eda384eb9a9d0bd93824b04babdc097ad01e3873d3e416",
+      "role": "job compressed_log",
+      "sha256": "6bd46989b40d9e9b2b2151979dcba89b5eccda845256645a0ea65e0f5a0e4deb",
+      "uncompressed_bytes": 116679
+    },
+    {
+      "bytes": 76245,
+      "path": "job-003.log.stdout.raw",
+      "role": "job raw_log",
+      "sha256": "1ce00a20ad3423ccf0f8228d462dcaf8e66559dbe0bf78e856e4d7a1f7d00026"
+    },
+    {
+      "bytes": 11912,
+      "path": "job-003.log.gz",
+      "raw_sha256": "1ce00a20ad3423ccf0f8228d462dcaf8e66559dbe0bf78e856e4d7a1f7d00026",
+      "role": "job compressed_log",
+      "sha256": "2a1e0cad824dac38497a5336dddac5be2e854c2b960d44a5a6d95e498bb314b5",
+      "uncompressed_bytes": 76245
+    }
+  ]
+}

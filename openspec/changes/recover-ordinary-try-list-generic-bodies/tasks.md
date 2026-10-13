@@ -13,3 +13,5 @@
 前置：两前置change的产品自身CI与clean-main交付完成后应用代码。目前仅规划与基线观察，全部实现任务保持未关闭。持续目标继续，Luna在私有目录准备候选，root负责应用、工具链和验收。
 
 2026-10-13：1.1按[实际基线归档](results/baseline-product-597010-root-v1/README.md)关闭；root重放auditor-v2及独立复开276成员/108基线raw/134总raw绑定。第一次复开因排除全部jar的root断言误拦受控输入；第二次逐jar核仅含一个完整原class、与同模式同JDK输入逐字一致，安装二进制仍全部排除，原失败保留。44行整类运行同原，五个目标仍raw签名，unknowncall保留拒绝。当前1/6；对抗审查补handled正常完成行（候选至少45行）、multi-catch与合格try改名门，其余任务未实施，计数不变。
+
+2026-10-13：root另实际执行auditor-v4接受[45行补充基线](results/baseline-45-supplement-product-597010-root-v1/README.md)（errors空），逐成员复开251成员/118raw绑定；两mode/JDK原44行逐字完整保留，新增handled可变output正常完成/effects=2。冻结产品五个目标仍raw签名，当前仍1/6，实现任务未关闭。

@@ -1,0 +1,15 @@
+{
+  "status": "accepted_root_independent_archive_reopen",
+  "archive_bytes": 1119223,
+  "archive_sha256": "9a4705d119ee27e1857a5571376bcbf9fe1850bcc6b641548b35203b173a9166",
+  "members": 251,
+  "raw_bindings": 118,
+  "capture_raw_bindings": 108,
+  "old_oracle_raw_bindings": 8,
+  "final_clean_raw_bindings": 2,
+  "controlled_input_jars": 4,
+  "jar_class_matches_own_mode_jdk_original": true,
+  "member_bytes_and_sha_match": true,
+  "acceptance_sha256": "1b6678ebe34a0493c3110804afb92433b42047408a2e8e1e86b19a4199da0627",
+  "no_new_generic_implementation_claim": true
+}

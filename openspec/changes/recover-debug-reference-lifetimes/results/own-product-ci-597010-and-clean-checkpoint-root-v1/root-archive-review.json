@@ -1,0 +1,19 @@
+{
+  "status": "accepted_root_independent_archive_reopen",
+  "archive_bytes": 1791990,
+  "archive_sha256": "8455974586cffce44cef6f8f75eda51aa40ff93c0f20bd4070b77b002882b2e9",
+  "members": 30,
+  "pinned_members": 29,
+  "capture_streams_verified": 18,
+  "own_ci_product": "597010a8cb9992eead8276b2f2a67186ada393d9",
+  "run_id": 38321041720,
+  "jobs": 4,
+  "steps": 52,
+  "checkpoint_head": "bcf426e5ef4d2c49c4f1d519c5ef974393b6bf98",
+  "checkpoint_commands": 43,
+  "checkpoint_raw_streams_claimed": false,
+  "member_bytes_equal_to_original_sources": true,
+  "no_class_jar_cli_or_target_binaries": true,
+  "acceptance_sha256": "5eaf3de8617d29e188f7f52e2c07c62282c37d8f279839d9160353f656ce958a",
+  "checkpoint_sha256": "8c7300bce811cf4eded36e13dfbf5ba8a77b90617ad71c8b4f97803e44487bd5"
+}

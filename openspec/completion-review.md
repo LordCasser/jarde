@@ -9,11 +9,11 @@
 
 同时发现 JADX 1.5.6 在该合法 raw-alias 源码上消去别名、保留 `List<String>` 声明，输出 `target.add(Integer)`，default/rename-none 双 JDK 编译均失败。JADX 作为参考臂仍须核源码契约；当前实现应拒绝未闭合的 alias 用途，不能照搬这个错误。所有失败原样保留，新泛型实现尚未通过本片验收。
 
-## 2026-10-13 上述两项的联合候选验收（交付仍待全量门）
+## 2026-10-13 上述两项的联合候选验收与交付
 
 [引用生命周期与外层 try 联合证据](changes/recover-debug-reference-lifetimes/results/joint-fullclass-candidate-root-v1/README.md)已由 root 实际接受：双 JDK、debug/none、default/all 的 8 条未手修 Jarde 整类运行各 17 场景逐字同原，11 方法与物理来源完整；另 8 条 Jarde 整类运行各 10 异常边界场景亦同原。上文两项旧缺陷已在该候选上消除，不再把 raw 签名拒绝误记成正文失败。JADX 同输入的 raw alias 编译失败仍作为失败对照保留。
 
-两项各 5/6。workspace-v3 的命令已完成，execution receipt `/private/tmp/jarde-reference-prefix-full-workspace-run-root-v3/execution.json`（SHA256 `f3ef8761467bca849881ddcea9a8369583689652c7341907c61fe3126239e3b8`）记录 7094 passed / 0 failed / 196 ignored、每 seed 3547/0/98、96 batches / 365 targets、4860 source pins 与 finally cargo clean；root 已[独立验收并归档](changes/recover-debug-reference-lifetimes/results/full-workspace-accepted-root-v3/README.md)。2.3 仍未完成，候选产品提交/push、本次自身 CI 和真实最终 HEAD clean-main 均尚未发生或验收。历史 workspace-v1 的旧同名 LVT 失败要求已按 8 个实际同名整类对照修正；workspace-v2 只因本次 4 个新增夹具未登记指纹而失败，见[原始失败观察及最小清单差异](changes/recover-debug-reference-lifetimes/results/workspace-v2-fingerprint-failure-root-v1/README.md)。这些失败不拼接为成功。CF11 / CF18 / 71 / 612 完成计数不变。
+两项均6/6。产品597010的自身CI已独立接受，clean-main检查点bcf426的15个worktree与4860来源恒同已核；证据及关闭文档提交后真实HEAD审计路径见本文末尾交付记录。局部门680/0/3、fresh双seed工作区7094/0/196及finally exact clean保留在[完整工作区归档](changes/recover-debug-reference-lifetimes/results/full-workspace-accepted-root-v3/README.md)。历史workspace-v1的旧同名LVT失败要求已按8个实际同名整类对照修正；workspace-v2只因4个新增夹具未登记指纹而失败，见[原始失败及最小清单差异](changes/recover-debug-reference-lifetimes/results/workspace-v2-fingerprint-failure-root-v1/README.md)，不拼接历史失败为成功。CF11 / CF18 / 71 / 612 完成计数不变。
 
 `handled` 的参数泛型投影仍是独立下一 MVP：[本地 JADX 测试与算法分析](evidence/java-syntax-2026-10-13/try-list-signature-next-mvp-analysis-root-v1/README.md)。复用已证明的 ordinary try/foreach envelope 和现有 List 用途 census，按精确元素类型统一处理，至少验收 String/Integer；不去掉 raw alias、参数重赋值或重载歧义等既有拒绝门，不把局部 marker 消失当完整类成功。
 
@@ -379,3 +379,8 @@ PY
 - 支持矩阵、路线、benchmark-review 中过期状态与归档链接已随本轮校正；历史 measurements/archives 不改写为当前运行结果。
 
 - 2026-10-12 CF11 预算探针发现既有 `enum_projection_stop_error` 将 `StopReason::Budget.written` 转为 `Error::BudgetExceeded.consumed`、requested固定1。analysis_steps限33427时实际33379，消息consumed12151（输出字节），停止维度和Partial仍准确；需独立审计各预算维度的转换，不能混入List用途证明本片。真实探针见 [add-boundary观察](changes/recover-structured-list-generic-bodies/results/add-boundary-observations-root-v1/README.md)。
+
+
+## 2026-10-13 两项关联语法 change 的交付关闭
+
+产品 `597010a8cb9992eead8276b2f2a67186ada393d9` 的自身 CI run `38321041720` 已独立接受：4 jobs / 52 steps 全成功，两 seed 各 365 targets、96 batches、3547 passed / 0 failed / 98 ignored，4860 source closure 与产品一致。产品后的 clean-main 检查点 `bcf426e5ef4d2c49c4f1d519c5ef974393b6bf98` 已接受：15 worktrees（14 aux detached）、clean、main ancestor、无 target，4860 source pins。捕获与检查点证据见[逐成员复核归档](changes/recover-debug-reference-lifetimes/results/own-product-ci-597010-and-clean-checkpoint-root-v1/README.md)。据此关闭 `recover-debug-reference-lifetimes` 与 `recover-protected-prefix-loop-sequences` 的 task 2.3；两项均为6/6。历史失败仍按原结果保留，CF11 / CF18 / 71 / 612 完成计数不变。关闭文档提交后的最终 HEAD 审计仍待 root 实际运行，结果路径 `/private/tmp/jarde-reference-prefix-clean-main-final-root-v1/execution.json`。下一 change `recover-ordinary-try-list-generic-bodies` 已规划1/6；44-row baseline已接受，45行补充基线已由root执行auditor-v4独立接受（errors为空，旧44行逐字作为前缀，handled正常完成/effects=2），[251成员归档](changes/recover-ordinary-try-list-generic-bodies/results/baseline-45-supplement-product-597010-root-v1/README.md)已逐成员复开；这仍是旧产品基线，不是新泛型实现通过。
