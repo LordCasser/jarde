@@ -1,0 +1,7 @@
+{
+  "status": "applied_uncommitted_pending_actual_validation",
+  "patch_sha256": "19449f7ab8e5d68ffa01ca0e8ae273c926b11d690644be26aff59403dcf18dae",
+  "files": 28,
+  "base_and_candidate_sha_checks": "all_match",
+  "git_index_or_commit_changed": false
+}

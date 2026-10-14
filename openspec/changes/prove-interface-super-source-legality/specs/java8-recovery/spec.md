@@ -2,9 +2,23 @@
 
 ### Requirement: Interface-qualified super calls require a legal source qualifier
 
+当非构造 `invokespecial` 已证明以入口 `this` 为接收者时，恢复只有同时满足以下两项源码条件才 SHALL 写出 `I.super.m(...)`：调用 owner 在当前类的直接父接口名单中恰好出现一次且并不冗余；在请求选定环境的完整接口声明链中，该限定调用能唯一绑定到与原调用相符的可访问 default 方法。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统判断接口限定 super 调用的源级 qualifier 合法性
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当非构造 `invokespecial` 已证明以入口 `this` 为接收者时，恢复只有同时满足以下两项源码条件才 SHALL 写出 `I.super.m(...)`：调用 owner 在当前类的直接父接口名单中恰好出现一次且并不冗余；在请求选定环境的完整接口声明链中，该限定调用能唯一绑定到与原调用相符的可访问 default 方法。非冗余要求当前类的任何其它直接父接口均不等于、也不继承该 owner，且从当前类的直接父类沿完整父类链所实现或继承的任一接口也不等于、继承该 owner。父类链只在 JVM 固定根 `java/lang/Object` 终止；其它父类缺定义不得冒充该根或视为空接口。目标接口自己或其中途父接口的更近抽象声明 SHALL 遮蔽祖先 default，不能因更远祖先存在同名实现就放行。证据缺失、选择歧义、重载绑定未证、已证冗余或目标抽象时，恢复 MUST 保留包含原调用方法和 BCI 的缺口，不得改写为类 `super`、普通虚调用或其它接口调用。预算/取消停止 MUST 如实报告停止，且不得发布未完成的源码结论。拒绝 MUST 保留已延期接收者和实参生产者的来源及效果。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统判断接口限定 super 调用的源级 qualifier 合法性
+- **THEN** 系统 MUST 满足以下全部约束：
+
 不涉及接口调用的 class-super、本类 private、构造器和普通调用 SHALL 保持其既有选择。报告的恢复质量、覆盖和执行状态 SHALL 如实反映缺口；JVM 可执行性本身不构成 Java 源码合法性证明。
+
 
 #### Scenario: One direct interface declares its own default
 

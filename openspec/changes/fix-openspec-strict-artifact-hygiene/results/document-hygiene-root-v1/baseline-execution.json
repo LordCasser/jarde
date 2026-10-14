@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+    "validate",
+    "--all",
+    "--strict",
+    "--no-interactive"
+  ],
+  "exit_code": 1,
+  "node": {
+    "path": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "bytes": 125989464,
+    "sha256": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12"
+  },
+  "cli": {
+    "path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+    "bytes": 79,
+    "sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6"
+  },
+  "stdout": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261014/openspec-hygiene-v2/baseline.stdout.raw",
+    "bytes": 15890,
+    "sha256": "d6cce5b03793d7e14c8c99650f494d7647ef33e0f8eae736de6a30c2c1a182dc"
+  },
+  "stderr": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261014/openspec-hygiene-v2/baseline.stderr.raw",
+    "bytes": 13115,
+    "sha256": "924351de5ca42e0ba3058cac20d9a48ffdd84b2e4993f93bb630da3de76f3cd3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "kind": "independent byte/condition review plus actual private overlay CLI",
+  "files": 28,
+  "body_relocations": 42,
+  "new_scenarios": 129,
+  "all_original_obligations_and_existing_scenario_suffixes_preserved": true,
+  "task_count_per_file": 7
+}

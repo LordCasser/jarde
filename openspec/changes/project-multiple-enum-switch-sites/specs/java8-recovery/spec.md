@@ -2,9 +2,23 @@
 
 ### Requirement: Complete class source projects multiple proved enum switches in one method
 
+当完整 class-source 恢复在同一方法中找到多个 Java 8 enum remap-array switch 站点，且同一 helper 中候选所选的全部不同 table 恰好封闭覆盖其 `<clinit>` 表初始化时，系统 SHALL 对 helper `<clinit>` 进行一次完整联合证明，并继续逐表验证物理 enum 定义及常量映射。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试在完整 class source 的同一方法中投影多个 enum switch 站点
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当完整 class-source 恢复在同一方法中找到多个 Java 8 enum remap-array switch 站点，且同一 helper 中候选所选的全部不同 table 恰好封闭覆盖其 `<clinit>` 表初始化时，系统 SHALL 对 helper `<clinit>` 进行一次完整联合证明，并继续逐表验证物理 enum 定义及常量映射。联合证明 MUST 将每条物理指令及 handler 恰好归属一个表初始化组或唯一最终 return；每组 MUST 具有实际 BCI 顺序上的 values/arraylength/int[]/putstatic 结构、逐常量 enum-field/ordinal/int-store 和独立 `NoSuchFieldError` handler。候选之外的额外表、未知操作、额外副作用、缺失或重复映射、或无法精确归属的 CFG/SSA 路径 SHALL 拒绝。联合证明不扩展候选发现或依赖读取。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试在完整 class source 的同一方法中投影多个 enum switch 站点
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当所有站点和选中表均证明成功时，系统 SHALL 将所有站点应用于同一份已恢复方法 AST，并作为一个原子结果投影。如果任一站点的证明、grouped AST 发射或预算执行失败/停止，完整方法 SHALL 保留原整数 table switch；输出 MUST NOT 只投影该方法内的部分站点。系统 MUST 保持每个站点的 selector、case 映射、求值顺序、null 行为和命中分支副作用。
+
 
 #### Scenario: Two independently mapped enum selectors
 

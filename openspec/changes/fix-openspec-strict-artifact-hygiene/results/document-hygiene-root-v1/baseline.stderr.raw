@@ -1,0 +1,76 @@
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+✗ spec/artifact-views
+  ⚠ [WARNING] requirements[1]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[2]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[3]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+✗ spec/java8-recovery
+  ⚠ [WARNING] requirements[0]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[4]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[7]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[8]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[10]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[11]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/present-proved-java-structure
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "A proved prefix survives a local gap": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "A named catch is written only when the region is not a refused guard": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "A proved lambda or anonymous body is shown at its use site": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Class source spells package, throws, and varargs from the class file": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "A special call, a compare, and a constant field keep the program they came from": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Constructed sources are accepted by a three-way comparison": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/project-integer-constant-names-with-refused-member-family
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "无 child report 的成员 family refusal 不阻止同类整数常量名称": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/project-multiple-enum-switch-sites
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Complete class source projects multiple proved enum switches in one method": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Functional adaptation retains provenance and bounded execution" - not found
+✗ change/prove-enum-int-arguments
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Proved enum constants preserve bounded integer constructor arguments": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/prove-interface-super-source-legality
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Interface-qualified super calls require a legal source qualifier": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ spec/query-api
+  ⚠ [WARNING] requirements[1]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-anonymous-supertype-return
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "根方法返回父类直接超类型的匿名类可内联": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: 参数收窄桥的消隐以契约属主的类型实参在类头可见为前置" - not found
+✗ change/recover-capture-ctor-super-order
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "捕获形伴生构造器的 super 次序 SHALL 可编译": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-debug-reference-lifetimes
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Debug names preserve proven distinct reference lifetimes": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-javac8-allocation-qualifier-null-check
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "分配限定符的成员构造在真 javac 8 的 null 检查下 SHALL 恢复": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-javac8-getclass-null-check-idiom
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "限定外部实例构造的 null 检查判据 SHALL 识别两种编译器拼写": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-lambda-primitive-array-capture
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "lambda 对原生数组捕获的 SHALL 以有据类型参与一致性判据": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-multi-resource-twr
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Multi-resource try-with-resources proves its nested levels": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-protected-prefix-loop-sequences
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "A protected prefix and loop retain one exception scope": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Presented invocation arguments retain the symbolic parameter types safely" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved generic class headers" - not found
+✗ change/recover-proved-enum-string-varargs
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Proved enum constants recover literal String varargs": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved method-local generic signatures" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved named member class families" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved method-local generic signatures" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved method-local generic signatures" - not found
+✗ change/recover-return-through-effectful-finally
+  ⚠ [WARNING] tasks.md: This change counts as 0 tasks: no line in its tracked task files is a checkbox, so "openspec list" and "openspec status" report no work and "openspec archive" has nothing to flag as incomplete. Write each task as "- [ ] 1.1 Description".
+✗ change/recover-shared-latch-nested-loops
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "外层 continue 与内层循环退出共享 latch 时可证明": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-structured-list-generic-bodies
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "Structured parameterized List bodies are projected as one source decision": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-switch-case-nonlocal-exits
+  ⚠ [WARNING] tasks.md: This change counts as 0 tasks: no line in its tracked task files is a checkbox, so "openspec list" and "openspec status" report no work and "openspec archive" has nothing to flag as incomplete. Write each task as "- [ ] 1.1 Description".
+✗ change/recover-twr-javac8-close-sequence
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "真 javac 8 的 TWR 关闭序列 SHALL 恢复为源级 try-with-resources": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ change/recover-write-accessor-field-types
+  ⚠ [WARNING] java8-recovery/spec.md: ADDED "返回值形写访问器 SHALL 按字段描述符恢复（封闭类型集）": Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+✗ spec/recovery-validation
+  ⚠ [WARNING] requirements[0]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[3]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[5]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[7]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.
+  ⚠ [WARNING] requirements[8]: Requirement text is very long (>500 characters). Move examples and edge cases into scenarios, or split it into separate requirements that each state one behavior.

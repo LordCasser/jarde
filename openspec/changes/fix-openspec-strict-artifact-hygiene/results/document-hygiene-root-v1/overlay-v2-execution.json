@@ -1,0 +1,34 @@
+[
+  {
+    "version": "1.14.1",
+    "cwd": "/home/lordcasser/.cache/jarde-review/20261014/openspec-hygiene-v2/validation-root-v1",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "cli_sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+    "stdout_sha256": "4179c17629c23f6e2faffd655c77f7581764ffc233d8df9750e0bcb4907bbd1c",
+    "stderr_sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+  },
+  {
+    "version": "1.11.0",
+    "cwd": "/home/lordcasser/.cache/jarde-review/20261014/openspec-hygiene-v2/validation-root-v1",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.pnpm/@fission-ai+openspec@1.11.0/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "cli_sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+    "stdout_sha256": "4179c17629c23f6e2faffd655c77f7581764ffc233d8df9750e0bcb4907bbd1c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

@@ -2,9 +2,23 @@
 
 ### Requirement: Debug names preserve proven distinct reference lifetimes
 
+当一个非参数、非资源局部槽有不同确切引用类型的多段生命周期，定义、现有读取、引用别名存活和正常控制流均已证明彼此独立，而且调试局部记录与这些身份一一对应时，恢复 MUST 保留不同变量身份及各自引用类型。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统判断引用局部生命周期的 debug names
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当一个非参数、非资源局部槽有不同确切引用类型的多段生命周期，定义、现有读取、引用别名存活和正常控制流均已证明彼此独立，而且调试局部记录与这些身份一一对应时，恢复 MUST 保留不同变量身份及各自引用类型。同名调试记录 MUST NOT 把身份合并成导致 Java 类型冲突的一个变量；名称冲突允许使用现有确定性后缀。初始化写入可位于调试范围开始之前，其归属 MUST 来自值所有权，MUST NOT 按最近偏移猜测。 对没有局部读取的身份，MUST 另以唯一已证明的真实Store、下一decoded instruction与row.start严格相等、row包含于该身份范围证明初始化邻接；MUST NOT 要求编译器生成多余aload，也MUST NOT 仅按row排序为无读取身份附名。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统判断引用局部生命周期的 debug names
+- **THEN** 系统 MUST 满足以下全部约束：
+
 记录空缺、重叠、额外或不能一一匹配、读取所有权不明、旧引用跨越下一次定义、未支持控制流或类型证据不足时，恢复 MUST 沿既有保守路径处理，MUST NOT 仅凭名称或调试表宣称拆分成功。原始检查转换、raw 别名、调用目标、异常、集合状态和副作用位置 MUST 保留。没有调试信息时 MUST 保持已有身份证明和确定性名称行为。
+
 
 #### Scenario: Equal debug names belong to different loop scopes
 

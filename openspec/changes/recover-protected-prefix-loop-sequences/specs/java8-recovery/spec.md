@@ -2,11 +2,30 @@
 
 ### Requirement: A protected prefix and loop retain one exception scope
 
+普通单range named catch保护的前置语句和已证明循环，当完整body都位于该保护范围内、内部continuation及唯一正常出口均已证明时，恢复 MUST 把它们完整置于同一try body。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试恢复 named catch 保护的前置语句与循环序列
+- **THEN** 系统 MUST 满足以下全部约束：
+
 普通单range named catch保护的前置语句和已证明循环，当完整body都位于该保护范围内、内部continuation及唯一正常出口均已证明时，恢复 MUST 把它们完整置于同一try body。前置iterator构造、循环条件、元素读取/检查转换和循环body的异常覆盖 MUST 与物理异常表一致；MUST NOT 只恢复前缀、把循环移到try外或以未owned块代替已证明的body。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试恢复 named catch 保护的前置语句与循环序列
+- **THEN** 系统 MUST 满足以下全部约束：
 
 范围末尾的跳转只有在它是无效果、无异常保护/handler入口、无竞争进入、仅通向try join的已证明纯transfer时，恢复 MUST 允许用try后的词法continuation呈现并保留来源。未证明出口、重复所有权、跨范围效果、fallback或未支持组合 MUST 沿既有保守路径处理，MUST NOT 通过正常流投影隐藏异常/调用边或猜测闭合。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试恢复 named catch 保护的前置语句与循环序列
+- **THEN** 系统 MUST 满足以下全部约束：
+
 新增续接的header、body和前缀的每条可触发异常边 MUST 精确属于当前Catches的range/types/handler及实际ordinal；MUST NOT 仅凭own_try起点节点或另一named row覆盖该块放行。此归属仅在已证明的ordinary候选传播，MUST NOT 全局扩大loop frame或替代finally等已有证书。nested Try/Guard、额外活动row及未支持scope组合 MUST 保持拒绝。
+
 
 #### Scenario: Iterator initialization and loop stay protected
 

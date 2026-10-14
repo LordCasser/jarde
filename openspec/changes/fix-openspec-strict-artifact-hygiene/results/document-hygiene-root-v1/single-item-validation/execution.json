@@ -1,0 +1,434 @@
+[
+  {
+    "item": "change/add-demand-driven-core-results",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "add-demand-driven-core-results",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "88299df04ceea53dca8ff75057ccd31f69a0873f6b38ac40f32acd07d10d00a0",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/make-required-conversions-explicit",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "make-required-conversions-explicit",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "e5cc712363a44005cab8b047b45efa1107775d09eaedfd208bfeab36de8ec1aa",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/present-proved-java-structure",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "present-proved-java-structure",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "59eb384babcce965bfbebe46f19d7dc77b08d1c8f2e876e1c3558c14f6eeeabe",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/project-integer-constant-names-with-refused-member-family",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "project-integer-constant-names-with-refused-member-family",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "c99aa76685c7101c02d98f40bba06b1ce50696e5469753de3883ffb8f372ea4d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/project-multiple-enum-switch-sites",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "project-multiple-enum-switch-sites",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "2402ce6651edd5279d36c71f4adf2ea24b16866419b959b0afa6445a76414a3e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/prove-enum-int-arguments",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "prove-enum-int-arguments",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "a01ff78947deae1b6e4710950a71e5fe50fbbda3e857c7b58b360c68a43fbb25",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/prove-interface-super-source-legality",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "prove-interface-super-source-legality",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "b24a85a484efa6ac2fc9c2d5ce0f68400e3370d2689444783c4370e39a22f6aa",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-anonymous-supertype-return",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-anonymous-supertype-return",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "5144f25d1a4c05fec06c0d584fb69b27ff02f9b34b1434ded541caca92194676",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-capture-ctor-super-order",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-capture-ctor-super-order",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "ee4cdca8cd807074b945acc7d1a0ddc5fc30f3186cbd4a3b482db573b7757bd1",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-debug-reference-lifetimes",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-debug-reference-lifetimes",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "7ac4d8cc122e07bccbc282c05989a7bc47d678b6a1d82e139dede89bccf0fd9b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-javac8-allocation-qualifier-null-check",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-javac8-allocation-qualifier-null-check",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "085ec786b898b08f652ef964b9cf5d4624ae78ecf1f2382c060a95df1edf346c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-javac8-getclass-null-check-idiom",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-javac8-getclass-null-check-idiom",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "8c05f728f7a6e39f0635b9fe8dd830c72c378bd930fb68f1fea0f16462f0eb21",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-lambda-primitive-array-capture",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-lambda-primitive-array-capture",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "91771a985495df0954be2f30417b0ffbf020107c920071178f59fe0d11ce775d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-multi-resource-twr",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-multi-resource-twr",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "cc406f851cb1b11d992e6ef0ddd544f7b9ce3e4bb21da8cd2d5d25b982611561",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-protected-prefix-loop-sequences",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-protected-prefix-loop-sequences",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "02f5bc2b4d172deb86e340d836271febfad6600eb741bc374a89b36b4609b502",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-proved-enum-string-varargs",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-proved-enum-string-varargs",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "e2a38c1aa8a1b00f67ccd82d21aa5a94c634b630503c2685edad09c2f6431d1d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-proved-local-reference-write-compatibility",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-proved-local-reference-write-compatibility",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "3b8ed0c2fd21d5d5cb80881d4b0258610f53a9e405dfdf6d2389c3aa91b1cb08",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-return-through-effectful-finally",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-return-through-effectful-finally",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "c3c1a2d6b4b735485ef1a301d4b3ad6ef230893db8b8a11dc8bc9c7ada9a940c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-shared-latch-nested-loops",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-shared-latch-nested-loops",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "72d8817f766bff550122058ce08f4a42ef619b6b7970615756a43b43684bf12a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-structured-list-generic-bodies",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-structured-list-generic-bodies",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "e87ab37d77b9f4c639eacbfc8e4da3872a6b4b0cf4c57e6e82af46094f38d48a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-switch-case-nonlocal-exits",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-switch-case-nonlocal-exits",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "df17962741c903c3fadd2e3a6788c54085415fd430b3eef2f4983ea0c05baac6",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-twr-javac8-close-sequence",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-twr-javac8-close-sequence",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "c5165fcbcd5bc6145bd7af416b28dbae6a7940786f14aaa1279006981d0e2273",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "change/recover-write-accessor-field-types",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recover-write-accessor-field-types",
+      "--type",
+      "change",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "70adae6b905386d8ae88e1dfa1c7624d4dd7f9be42c671a17ebcdc4171bfb003",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "spec/artifact-views",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "artifact-views",
+      "--type",
+      "spec",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "a50add99fc8e9174a87ddfe28e752749e9db7ceb838efbc365b8b4374a20f68e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "spec/java8-recovery",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "java8-recovery",
+      "--type",
+      "spec",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "5387318e6b8fd7c62055c56534eae5b9ef3ec824e07adfc253083a89a815ba79",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "spec/query-api",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "query-api",
+      "--type",
+      "spec",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "b1c28b20a65b2dc6061037888b7728234de56eec535b8a233510604def6e15ef",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "item": "spec/recovery-validation",
+    "argv": [
+      "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "validate",
+      "recovery-validation",
+      "--type",
+      "spec",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "219f4eae067b8787fdf1b9ab7a8c33c21b705a64d5d236358a84ea4f67eb8825",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

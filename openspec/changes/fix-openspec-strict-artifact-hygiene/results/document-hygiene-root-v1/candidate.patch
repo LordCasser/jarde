@@ -1,0 +1,1433 @@
+--- a/openspec/specs/artifact-views/spec.md
++++ b/openspec/specs/artifact-views/spec.md
+@@ -36,19 +36,62 @@
+ 
+ ### Requirement: Standard multi-release selection is evidence-backed
+ 
++系统 SHALL 以 container 为边界生成 MR selection report，并同时返回请求 RuntimeView、Manifest evidence、全部物理候选、每个候选的 logical path/variant/selection decision/有限合规状态、coverage、execution 和 diagnostics。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 以 container 为边界生成 MR selection report，并同时返回请求 RuntimeView、Manifest evidence、全部物理候选、每个候选的 logical path/variant/selection decision/有限合规状态、coverage、execution 和 diagnostics。`SnapshotAll` scope 只检查 root container；`ArtifactTree` scope 才调用显式 bounded tree provider 并分别检查已建立 child。选择只覆盖标准 JAR entry overlay，不跨 container、LoadRoot 或 loader 做唯一 definition resolution。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 标准 `Enabled` policy 表示请求标准 MR 处理，不覆盖物理 Manifest：只有一个可可靠解析的 root Manifest，其主段含 `Multi-Release` 属性且展开后的值以 ASCII 大小写不敏感方式等于 `true` 时才激活版本选择；named section 中的同名属性不激活 MR。唯一、可解析但未激活的归档按普通 JAR 选择 base；`Disabled` 总是 base-only。`Custom` 和 `Unknown` 在本阶段 MUST 保留物理候选、将所有 selection decision 标为 Unknown，并分别以 `multi_release_custom_policy` / `multi_release_unknown_policy` 的 Unsupported reason 返回 Failed execution，不得产生 selected fact。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Manifest candidate 的 raw path 按 JAR/JDK 行为与 `META-INF/MANIFEST.MF` 做 ASCII 大小写不敏感比较，原始大小写仍保留；非 canonical case 产生 `multi_release_manifest_noncanonical_path` diagnostic，但单一、可解析的 case variant 仍可作为激活 evidence。多个大小写等价 candidate 为 `Ambiguous`；单一 candidate 中重复 `Multi-Release` 主属性或语法错误为 `Malformed`；entry 读取未完成为 `Unknown`；没有 candidate 为 `Missing`；单一可靠 candidate 的值为 true/其他或属性缺失时分别为 `Active`/`Inactive`。Manifest parser SHALL 在 entry/read/elapsed/cancel 预算内线性解析主段的 CRLF/LF/CR 行、single-space continuation 与 `name: value`，额外内存不得超过已物化 Manifest 大小且不使用 class `attribute_bytes` 预算；属性名 ASCII 大小写不敏感，展开后的值除 continuation 语法外不 trim，因此 `TRUE` 激活而 `true ` 不激活。`Multi-Release` 主属性名重复（含不同大小写）、orphan continuation、NUL、缺少分隔符或未终止 header 均为 Malformed，selection 为 Unknown；实现不得采用 ZIP 顺序或 last-wins。未终止 header 包含主段未以空行结束（含 0 字节 Manifest）的情形，此时不得按已读属性猜测激活状态。未知属性和 individual sections 不需要解释，签名验证、完整 UTF-8/72-byte line 合规不属于本任务。
+ 
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 合法 versioned candidate 只允许精确 raw prefix `META-INF/versions/<N>/`，其中 `<N>` 满足 `[1-9][0-9]*`、可无损表示且 `N >= 9`，logical path 是去掉该前缀后的非空 raw bytes；不得进行 `.`、`..`、重复分隔符或反斜杠规范化。Java release 小于 9 或 MR 未激活时只选择 base；激活后对每个 logical path 选择唯一的最高 `N <= target` candidate，否则回退唯一 base。只有 versioned candidate 而无 base 时，标准 resource 或 non-public class 仍可被选择；`META-INF` 下 resource 不得通过 versioned path 选择。
+ 
++#### Scenario: 完整契约 5
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 同一 container、同一 logical path、同一 base/version 出现多个物理 entry 时 SHALL 保留所有 ordinal 并把实际 winning level 标为 Ambiguous，不得 first/last-wins；较高唯一 winning candidate 不因被其遮蔽的低版本重复而失去选择事实。合规诊断和 entry selection SHALL 分离：classfile 版本过高、可检测的 public class predecessor 问题或其他归档违规不得删除物理 candidate，也不得把“被 JAR entry overlay 选中”误写成“该类可加载、可链接或 API 兼容”。完整扫描后得到的 Inactive、Ambiguous、NonConformant 或 Manifest-Unknown 是可信 domain result，本身不使 execution/coverage 变成 Partial；只有工作因预算、取消、unsupported I/O/compression 或未知物理 suffix 未完成时才报告非 Complete execution。
+ 
++#### Scenario: 完整契约 6
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 公共 library API SHALL 为 `Engine::select_multi_release(snapshot, runtime_view, budget) -> Result<MultiReleaseViewReport>`。入口先验证 RuntimeView 的 snapshot 与 scope；`SnapshotAll` 只重新枚举 root，`ArtifactTree` 只接受该 snapshot 的真实 root container 并复用显式 tree provider。非 ZIP、view snapshot 不匹配和 tree root 不匹配分别返回 `multi_release_not_zip`、`multi_release_snapshot_mismatch`、`multi_release_root_container_mismatch` 的 InvalidInput；root ZIP open 的既有结构错误 code 原样保留。P1 1.3 不增加 CLI operation，CLI 暴露留给 3.2。
+ 
++#### Scenario: 完整契约 7
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 公共 Rust/JSON schema 固定如下；本节新增的 MR-owned struct 使用 `deny_unknown_fields`，带 payload 的 MR-owned enum 使用内部 `kind` tag 与 snake_case variant，unit enum 使用 snake_case string；复用的 P0/P1 类型保持其既有 serde 契约。后续增加 variant 需要新的 OpenSpec 修订，当前实现不得返回开放字符串 reason：
++
++#### Scenario: 完整契约 8
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ - `MultiReleaseViewReport { view: RuntimeView, physical: MultiReleasePhysicalEvidence, containers: Vec<MultiReleaseContainerReport>, coverage: Coverage, execution: ExecutionReport, diagnostics: Vec<MultiReleaseReportDiagnostic>, verification: VerificationStatus }`；`verification` MUST 为既有 `VerificationStatus::NotPerformed`；
+ - `MultiReleaseReportDiagnostic = Domain { diagnostic: MultiReleaseDiagnostic } | Terminal { diagnostic: Diagnostic }`；`MultiReleaseDiagnostic { code: MultiReleaseDiagnosticCode, severity: DiagnosticSeverity, message: String, provenance: Option<Provenance> }`。Domain code 使用下文闭合 enum 并在反序列化时拒绝未知值；Terminal 只包装本次 probe 从既有 `Error` 生成的 P0 `Diagnostic`，有意保留 P0 开放 String code 兼容性，生产端不得把 MR domain violation 塞进 Terminal；
+@@ -65,7 +108,17 @@
+ - `MultiReleaseNotApplicableReason = InvalidVersionPath | VersionedMetaInfResource | DirectoryEntry`；
+ - `MultiReleaseCompliance = NotApplicable | ConformantWithinChecks | NonConformant | Unknown { reason: MultiReleaseComplianceUnknownReason }`；`MultiReleaseComplianceUnknownReason = PhysicalEvidenceIncomplete | ProbeInterrupted | PredecessorAmbiguous | ModuleExportsNotInspected | PolicyUnsupported`。
+ 
++#### Scenario: 完整契约 9
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Version-path issue 每个 entry 只产生一条对应 Domain diagnostic：
++
++#### Scenario: 完整契约 10
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ | `MultiReleaseVersionPathIssue` | `MultiReleaseDiagnosticCode` |
+ | --- | --- |
+@@ -76,15 +129,45 @@
+ | ReleaseOverflow | `multi_release_version_overflow` |
+ | EmptyLogicalPath | `multi_release_version_path_invalid` |
+ 
++#### Scenario: 完整契约 11
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 因此 `META-INF/versions/9/` 是 Directory，`META-INF/versions/9` 是 InvalidVersioned/EmptyLogicalPath，`META-INF/versions//A.class` 是 EmptyRelease，`META-INF/versions/x/A.class` 是 NonDecimalRelease；specific below-nine/overflow 不再额外产生 generic invalid diagnostic。
+ 
++#### Scenario: 完整契约 12
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 在 MR item 预算允许时，physical report 中每个已返回 entry（包括 Directory、Manifest、InvalidVersioned 和普通 resource）恰有一个 `MultiReleaseEntryEvidence`；Directory 仍计 entry evidence item并进入 scanned ordinal coverage，但 decision 为 `NotApplicable(DirectoryEntry)`、logical_path 为 None，不创建 selection。所有 entry/winner 引用 MUST 使用完整 `PhysicalEntryId`，并且必须能在内嵌 physical report 中按完整 origin + ordinal + raw name 找到，不能只用 path/version。`Selected` outcome 与 candidate decision 必须一致；winning level 重复时 outcome 为 Ambiguous、重复 winners 为 Ambiguous、低层 candidates 以这些 winners 标为 Shadowed，不得回退。`NoSelection` 只允许完整 evidence 下确实没有 base 且 MR 未激活/没有适用 candidate；directory、invalid-version 和 versioned-META-INF entries 不形成 logical selection。不完整 evidence 必须用 Unknown。
+ 
++#### Scenario: 完整契约 13
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Decision precedence 固定为：Directory/InvalidVersioned/versioned-META-INF → NotApplicable；Custom/Unknown policy → Unknown 对应 policy reason；physical/Manifest 工作中断 → Unknown；完整 Manifest Ambiguous/Malformed → Unknown；Disabled → versioned PolicyDisabled；Enabled + Missing/Inactive → versioned ManifestMissing/ManifestInactive；Active + target `< 9` → versioned TargetBelowNine；Active + version `> target` → ReleaseAboveTarget；其余按最高可用 level 产生 Selected/Shadowed/Ambiguous。Base candidates 仅在 winning level duplicate 时 Ambiguous，否则在无适用 versioned winner 时 Selected、存在 winner 时 Shadowed。仅有 inactive versioned candidates时 outcome 为 `NoSelection(NoBaseWhileInactive)`；Active 且只有 target 以上版本、没有 Base 时为 `NoSelection(NoApplicableRelease)`。`java_release` 的所有 `0..=8` 值均按 target-below-nine 处理，不另报 invalid profile。
+ 
++#### Scenario: 完整契约 14
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Custom/Unknown policy 在 physical provider 后停止标准 Manifest/class probe：Manifest candidates 只记录 entries，state 为 Unknown、attribute fields 为 None；合法 entries 的 decision 为对应 policy Unknown、compliance 为 `Unknown(PolicyUnsupported)`，已由 raw path 直接证明的 InvalidVersioned/versioned-META-INF/duplicate 仍按闭合规则诊断。Aggregate 为 Failed/Unsupported，但 physical evidence 可保持 Complete。
+ 
++#### Scenario: 完整契约 15
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Runtime-resolution coverage 使用真实 ordinal 的单 entry ranges：`container:<id>:multi_release_selection_entries` 记录 path/Manifest decision evidence，`container:<id>:multi_release_compliance_entries` 记录 bounded Header checks；不存在用 path hash 或全局计数代替 ordinal 的范围。Artifact structural coverage 原样聚合。Result/resource accounting 固定为：
++
++#### Scenario: 完整契约 16
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ | 对象/动作 | `result_items` | archive/read/entry/class | `output_bytes` |
+ | --- | --- | --- | --- |
+@@ -98,9 +181,20 @@
+ | class compliance probe | 不创建临时 Header report item；成功 facts 嵌入已计费的 entry evidence，失败只为相应 diagnostic 计费 | root/nested replay 计 archive/read/entry；crate-private minimal probe 计 class bytes并 poll，不遍历/计未请求 attribute/code facts | 0 |
+ | Terminal diagnostic（Budget/Cancelled/I/O/unsupported/structural） | 0，延续控制元数据例外 | 已发生用量保留 | 0 |
+ 
++#### Scenario: 完整契约 17
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ MR API 内部只执行一次所选 physical provider，不接受外部 report。Containers 按 physical provider 顺序，entry evidence 按 central ordinal，logical selections 按 group 最小 ordinal返回。每个 container 在写入前原子预留 container + ManifestEvidence 两项；不足则不返回半个 container，并把其已知 ordinal 范围标 skipped。后续 entry/selection/ordinary diagnostic 分别在 append 前计费，耗尽时保留已返回可靠前缀和 physical evidence，不构造未计费 item。
+ 
++#### Scenario: 完整契约 18
++
++- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Root ZIP 或 RuntimeView identity 无法建立时入口返回 `Err`；root 已建立后返回 report。Aggregate 终止优先级固定为 Cancelled、实际阻止继续处理的 budget/physical provider error、unsupported policy、局部 compliance error；path selection 已证明后发生的 compliance budget/cancel 保留 selection，只将 compliance 与 aggregate execution 标为 Unknown/non-Complete。
++
+ 
+ #### Scenario: Manifest does not activate MR processing
+ 
+@@ -152,13 +246,41 @@
+ 
+ ### Requirement: Multi-release compliance diagnostics are bounded and non-selecting
+ 
++系统 SHALL 对本阶段可由物理路径、Manifest 和 bounded class Header 证明的 MR 违规给出 diagnostic：非法版本目录、versioned `META-INF` resource、versioned classfile major 高于以宽整数计算的 `N + 44`、可直接观察的 `ACC_PUBLIC` class 缺少 root 下同 logical path、同 `this_class` 且 `ACC_PUBLIC` 的 predecessor，以及重复 Manifest/candidate。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 对本阶段可由物理路径、Manifest 和 bounded class Header 证明的 MR 违规给出 diagnostic：非法版本目录、versioned `META-INF` resource、versioned classfile major 高于以宽整数计算的 `N + 44`、可直接观察的 `ACC_PUBLIC` class 缺少 root 下同 logical path、同 `this_class` 且 `ACC_PUBLIC` 的 predecessor，以及重复 Manifest/candidate。每个 candidate 的有限合规状态 SHALL 明确为 NotApplicable、ConformantWithinChecks、NonConformant 或 Unknown。Selection 规则仍按 entry overlay 独立计算；diagnostic 不证明完整 JVM 合法性，也不自动令较低 candidate 取代规范会先查到的较高 entry。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `MultiReleaseDiagnosticCode` 是闭合 unit enum，其 JSON string 与下列字面值完全一致：Warning 只有 `multi_release_manifest_noncanonical_path`；Error 为 `multi_release_manifest_duplicate`、`multi_release_manifest_malformed`、`multi_release_version_path_invalid`、`multi_release_version_below_nine`、`multi_release_version_overflow`、`multi_release_meta_inf_resource`、`multi_release_duplicate_candidate`、`multi_release_class_malformed`、`multi_release_class_version_too_new`、`multi_release_public_predecessor_missing`、`multi_release_public_predecessor_mismatch`。Constructor MUST 从 code 派生并验证固定 severity，JSON 中 code/severity 不一致时拒绝反序列化。Budget/Cancelled/I/O/unsupported probe termination 只进入 `MultiReleaseReportDiagnostic::Terminal`，复用既有 P0 code/severity，不改名为 MR-specific code。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `ExecutionReport`/`TerminationReason` 为 P0 共享公共类型，其 String code 保持向前兼容且 JSON 反序列化不因 MR 收窄；MR producer 只允许新增两个 Unsupported 输出 `multi_release_custom_policy`、`multi_release_unknown_policy`，其他 terminal reason 必须直接来自本次 physical/probe 的既有 Error。Manifest inactive/absent、target release 以上 candidate 和普通 NoSelection 不产生 diagnostic；新增 MR-specific domain code 或 producer-owned Unsupported code 需要后续 OpenSpec 修订。
+ 
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 对每个完整返回的 entry evidence，decision 与 compliance 按以下闭合规则组合：
++
++#### Scenario: 完整契约 5
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ | Entry / evidence | compliance | diagnostic / predecessor action |
+ | --- | --- | --- |
+@@ -174,7 +296,17 @@
+ | valid versioned non-public `.class`，Header/major checks 通过 | ConformantWithinChecks | 不要求 root predecessor |
+ | valid versioned public `.class` | 见下表 | major 与 predecessor violations 任一已证明即 NonConformant；没有已证明违规但证据中断则 Unknown |
+ 
++#### Scenario: 完整契约 6
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ Public predecessor truth table 只使用同 container、同 logical raw path 的 Base level，不搜索低 version、其他 container 或 LoadDomain：
++
++#### Scenario: 完整契约 7
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ | Base predecessor state | versioned public candidate compliance / diagnostic |
+ | --- | --- |
+@@ -187,9 +319,20 @@
+ | 唯一 Base `this_class` 与 versioned 不同，且没有 module evidence | NonConformant / `multi_release_public_predecessor_mismatch` |
+ | 唯一 Base 为 public、同 `this_class` | 若 versioned major check 通过则 ConformantWithinChecks，否则保持已知 NonConformant；module evidence 不影响已证明的正匹配 |
+ 
++#### Scenario: 完整契约 8
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 检查所有 valid versioned `.class`，不因目标 release 较低或 candidate 被 shadow 而跳过；Base 只在充当 public predecessor 时 probe。`.class` 后缀和 `META-INF/versions/` prefix 都按 raw bytes 大小写敏感。Root major/dialect、class logical path 与 `this_class` 的单独一致性不在本有限检查内；只要 minimal Header 能安全取得 access/name facts，future root major 仍可作为 predecessor evidence，不代表其可加载。
+ 
++#### Scenario: 完整契约 9
++
++- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ ClassFile `access_flags` 没有 `ACC_PROTECTED`；protected nested-class visibility 需要 `InnerClasses` metadata。Module descriptor 只作“可能适用 non-exported package 例外”的物理 gate，本阶段不解析 exports，也不把 missing/mismatch 误报为 definite violation。完整 public API 等价、module descriptor 合规、签名验证、classfile dialect/verifier 与 loader/linkage 成功均不属于本任务。后续 metadata/module consumer 或 resolver 必须保留这些 Unknown，而不能把本阶段 `ConformantWithinChecks` 或 diagnostic absence 当作完整合规证明。
++
+ 
+ #### Scenario: Selected entry is not a loadability claim
+ 
+@@ -208,9 +351,23 @@
+ 
+ ### Requirement: Bounded nested and Boot layout traversal
+ 
++系统 SHALL 仅在调用方显式请求 artifact-tree scope 时递归 nested JAR；普通 physical snapshot 枚举只保留 candidate，不把标准 JAR 内任意 archive 自动激活为运行时 classpath。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理 physical snapshot 枚举与显式 artifact-tree 请求的 nested、Boot 和 WAR 布局展开
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 仅在调用方显式请求 artifact-tree scope 时递归 nested JAR；普通 physical snapshot 枚举只保留 candidate，不把标准 JAR 内任意 archive 自动激活为运行时 classpath。Provider SHALL 将 nested JAR、`BOOT-INF/classes`、`BOOT-INF/lib`、WAR 的 `WEB-INF/classes` 和 `WEB-INF/lib` 表示为带 evidence 的物理布局节点，并 SHALL 允许通过 origin chain 从 root snapshot 逐层复核并重读 nested entry。递归展开 MUST 受 `nested_depth` 高水位、archive entry、read/entry bytes、elapsed 和取消预算约束，并且不得自动联网、执行 launcher 或推断唯一运行时选择。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理 physical snapshot 枚举与显式 artifact-tree 请求的 nested、Boot 和 WAR 布局展开
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `nested_depth` SHALL 以 root container 为 0、直接 child 为 1；它记录请求达到的最大已接受深度，不作为累加 charge。Root container 建立后的 child malformed、unsupported、budget 或 cancellation MUST 返回可靠前缀、定位到父 entry 的 diagnostic、已扫描/未扫描 coverage 与非 Complete execution；不得返回空 child 冒充成功。
++
+ 
+ #### Scenario: Nested candidate without explicit tree scope
+ 
+--- a/openspec/specs/java8-recovery/spec.md
++++ b/openspec/specs/java8-recovery/spec.md
+@@ -7,7 +7,16 @@
+ 
+ ### Requirement: Evidence-gated Java 8 recovery
+ 
++系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。值的正确性 SHALL 按生成代码实际求值的位置与顺序验证，嵌套表达式不能以其原始生产位置代替当前求值位置；当一个算术的结果作为另一个算术的操作数时，呈现 MUST 使用该操作数自己的值并保留这一嵌套，MUST NOT 省略外层运算、也不得把某个操作数改写成另一种运算（例如把 `i * (2 - d * i)` 写成 `i * 2 - d * i`）。**该嵌套也 MUST 体现在输出文本的分组上**：表达式树到文本的转换 MUST 按运算优先级与结合性补足括号（或写成不依赖默认结合的形式），使文本解析回同一棵树；仅凭「树是对的」不满足本要求，因为调用方收到的是文本。分组 MUST 按子表达式所在的**语法位置**判定，而不只按它的父运算符：同一个子表达式写在调用或字段读取的 receiver、方法引用限定符、一元操作数与数组位置时 MUST 同样保持自己的分组（例如 `return (a + b).substring(1);` 的接收者），而 Java 语法已经界定该子表达式的位置（调用/构造实参、下标、lambda 体）MUST NOT 增加无谓括号。层不能证明某操作数的值或求值点时 MUST 拒绝该区域而不是呈现，并保留被拒区域的 bytecode 与 origin；quality、content、execution 等结构性平面 MUST NOT 代替这一证据。fallback MUST 保留被省略表达式所依赖的可观察生产者及其物理 origin，包括字段读取、类初始化与可能抛异常的操作。
++
+ 
+ #### Scenario: Java 8 lambda and method reference
+ 
+@@ -138,11 +147,30 @@
+ 
+ ### Requirement: Recovery artifact content is observable independently
+ 
++恢复报告 SHALL 返回 `content`，取值为 `not_produced`、`explanation_only`、`contains_statements`。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理恢复报告与产物交付
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 恢复报告 SHALL 返回 `content`，取值为 `not_produced`、`explanation_only`、`contains_statements`。该字段 SHALL 描述最终交付产物：Stopped 为 not_produced；Produced 且只有包装、理由、BCI 引用等说明为 explanation_only；Produced 且含至少一个实际发射的 Java 语句为 contains_statements。Produced MUST 仅表示产物已交付，不能解释为存在语句、语义完整、可编译或已验证。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理恢复报告与产物交付
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 声明、赋值、调用、return 和控制流语句均可构成 contains_statements；该分类不改变 representation、quality、syntax、coverage、execution 或验证状态。分类 MUST 不依赖注释剥离、token 相似度或调用方二次解析文本。库与 CLI SHALL 返回同一分类。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理恢复报告与产物交付
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `Produced` 与 `content` MUST 分开统计与表述：同一轮 sweep 的 182,883 个请求中有 30,452 个是 Produced 而产物不含语句；报告、README、支持矩阵与 benchmark 协议 MUST NOT 把这类计数表述为语句恢复率或语义恢复率，MUST 分别命名「引擎 content 分类」与旧 token/启发式口径。content 与其余平面一样是结构性的，MUST NOT 被读作值等价或语义正确的证据。
++
+ 
+ #### Scenario: Explanation-only produced artifact
+ 
+@@ -219,9 +247,23 @@
+ 
+ ### Requirement: Recovery recursion is bounded and a stop is published
+ 
++恢复调用 MUST 返回 `RecoveryReport`，MUST NOT 因递归耗尽进程栈而让进程以 signal 终止。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统执行恢复调用（包含递归下降）
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 恢复调用 MUST 返回 `RecoveryReport`，MUST NOT 因递归耗尽进程栈而让进程以 signal 终止。恢复层 SHALL 只在能证明递归会完成时继续加深；每次递归下降前 MUST 检查一个显式的深度界，界内递归照常完成，超过界 MUST 在继续加深之前结束为已发布停止：`outcome = Stopped`、非 `Complete` 的 `execution`（Partial 或 Cancelled）、以及点名停止原因与位置的诊断，全部复用既有停止词汇与平面。停止 MUST 保留本次运行的真实 usage 与停止位置，MUST NOT 提交部分构建的文本/段表（`content = not_produced`，与既有停止语义一致），MUST NOT 以空产物冒充成功，也 MUST NOT 只记录日志后返回成功。结构性平面（representation/quality/content/execution）MUST NOT 被当作本要求的证据：本要求的证据是入口返回的报告与其中的停止平面。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统执行恢复调用（包含递归下降）
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 本要求同样约束恢复层**自己构造的表示**：一条拼接链在输入里的 append 数 MUST NOT 变成这一层的递归深度——链的构造、发射、克隆与释放（以及任何复制该表示所在结构的路径）的递归深度 MUST NOT 随该链的 append 数增长，增加一个片段 MUST NOT 加深这些路径的嵌套。片段**内部**真正嵌套的子表达式仍按既有的值嵌套界受限，本要求不改变那条界（真正的递归下降前仍 MUST 检查它），也不得用「更大的界」或「放大线程栈」（更大的 `RUST_MIN_STACK`、大栈线程或等价手段）替代上述性质。可观察结果：链长达到复核记录的区间（debug 构建在 N = 1536/2048 以 signal 结束、N = 1024 完成）与更大规模时，公开入口与 CLI MUST 返回报告而不是 signal；链**能**呈现时 MUST 正常完成（MUST NOT 把「2048 个片段必须停止」写成契约），不能呈现时 MUST 结束为既有已发布停止；预算或取消在深链的构建/发射过程中生效时，MUST 发布既有停止形态并在释放该结构后返回，MUST NOT abort。debug 与 release 是同一份代码的两条边界证据，两个构建 MUST 都返回报告；MUST NOT 用 release 对更深输入完成代替 debug 的 signal 证据，也 MUST NOT 用任一构建的完成深度代替界的依据。
++
+ 
+ #### Scenario: A request that used to abort now answers
+ 
+@@ -270,11 +312,30 @@
+ 
+ ### Requirement: Boolean contexts are presented as booleans
+ 
++值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。层不能证明上下文所要求的值是 boolean 时 MUST 拒绝该区域并保留 bytecode 与 origin，MUST NOT 发布另一个编译器拒绝的文本；上下文没有 boolean 要求的位置（真正 `int` 返回、两个 int 值的比较）MUST 保持原有整数形态。本要求只使用返回 descriptor、参数槽类型与既有 callee descriptor 证据，MUST NOT 由它引入通用类型系统或推断。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 本要求同样约束判定的**顺序与操作数范围**：某个位置是否要求 boolean MUST 在该位置的**全部**操作数被拼写之前判定，且 MUST 由该位置的形态与已证明的证据作出，而不是由操作数各自的值形态作出。值自身的类型证据（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取、被本 run 证明 boolean 的局部的读取，以及真正 `int` 操作数的整数形状）只回答「这个值是什么」；目标位置的要求回答「这个位置要不要 boolean」；`0`/`1` 到 `false`/`true` 的拼写只是后者的**适配**，MUST NOT 反过来成为前者的证据。因此整数二元比较（`if_icmp*` 形态）的两个操作数 MUST 保持各自的整数文本：`1 == n`、`n == 1`、`0 < n`、`n > 0` 的常量操作数写成 `1`/`0`，变量操作数按自己的值写出；常量在左、常量在右、相等与大小比较一律相同，MUST NOT 出现 `true == arg0`、`false < arg0`、`true < arg0` 一类 javac 拒绝的文本。**比较的结果是 boolean，这一事实 MUST NOT 被当作它操作数的类型证据。** 操作数被**证明**为 boolean 的零值测试（`ifeq`/`ifne` 形态）仍 MUST 写成真值测试（`if (b)`、`if (!b)`、`if (flag())`），而不是 `if (b != 0)`。同一个 `iconst_1` 在二元比较里 MUST 是 `1`，在真值测试与 `Z` 返回里 MUST 是 `true`。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 这条修正是对本项目自己上一轮 boolean 修正（已归档的 `type-boolean-contexts`，`5a8c36a`）所引入回归的纠正：该修正之前（`fa6dc6e`）`1 == n`、`0 < n`、`1 < n` 三个形状输出正确的整数文本；本要求 MUST NOT 被表述为新发现的缺陷，MUST NOT 重开该 change 的其它结论。前一轮已经落地的 boolean 形状与 int 形态 MUST 逐字保留。
++
+ 
+ #### Scenario: A boolean return presents true or false
+ 
+@@ -347,11 +408,30 @@
+ 
+ ### Requirement: One local variable's type is decided once, before its statements are built
+ 
++一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。同一个值在两条声明路径上 MUST 得到同一个类型：写在包含全部使用的区域起点上的**提升**声明与写在首个写入处的**就地**声明 MUST 一致，结论 MUST NOT 取决于遍历顺序（同一变量的两个分支先后不得改变其类型）。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 决定的证据 MUST 是一份有限、写清的清单：类文件 descriptor 的 boolean 事实（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取）、一次对本 run **已判为 boolean 的局部**的读取（传播，MUST NOT 跟随值链：一个 store 的 own value、由多个 push 合并出的值仍不证明）、以及帧为其它类型给出的既有类型事实。`0`/`1` 字面量 MUST NOT **发起** boolean 判断（`int x = 0;` 与 `boolean c = true;` 是同一份字节），但目标已经确定为 boolean 时 MUST 按其拼写（`true`/`false`）适配。**每个**写入（不只是第一次写入）MUST 按已决定的类型检查：写入的值不能拼成该类型时即为冲突。证据的传播 MUST 有界（不随输入规模无限增长），并 MUST 接线到本 run 既有的预算与取消检查；规划 MUST NOT 成为绕过预算的无限工作量，预算或取消在规划期停止时 MUST 发布既有停止。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 类型未知（没有可决定的类型）或冲突（写入与已决定的类型矛盾）时，本层 MUST 终止该结构的生成，而不是发布一个猜测：受影响结构按既有 refusal 契约处理（保留 bytecode 与 origin、representation=Mixed、quality=Fallback、诊断点名相关 BCI 与物理方法），MUST NOT 发布类型矛盾的赋值（例如 `int local3; … local3 = <boolean 值>; …`）。声明的结果 MUST 区分「没有声明到期」与「声明失败（fallback 已写）」两种含义；后者之后 MUST NOT 继续写出那条赋值。本要求 MUST NOT 被读作类型保真或语义等价的声明：字面量单独构成的提升声明按其与就地路径一致的既有答案呈现，这一类型差异 MUST 被记录为边界。
++
+ 
+ #### Scenario: The two declaration paths decide the same type
+ 
+@@ -405,11 +485,30 @@
+ 
+ ### Requirement: A presented concatenation keeps each append's own conversion
+ 
++一条被判为拼接链（`StringBuilder`/`StringBuffer` 链）的呈现 MUST 逐片段保留该 `append` overload 自己的转换语义：文本 MUST 计算与该链相同的值，且每个片段的转换 MUST 发生在该片段自己的位置。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试呈现 StringBuilder 或 StringBuffer 的 append 拼接链
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 一条被判为拼接链（`StringBuilder`/`StringBuffer` 链）的呈现 MUST 逐片段保留该 `append` overload 自己的转换语义：文本 MUST 计算与该链相同的值，且每个片段的转换 MUST 发生在该片段自己的位置。链的呈现 MUST 从一个**字符串上下文**开始：需要经 `String.valueOf` 转换的片段（int/long/float/double/boolean/对象）出现在第一个字符串操作数之前时，字符串拼接 MUST 从这些片段处开始（例如在它们之前插入一个空字符串片段，或用同等语义的 `String.valueOf` 形态），MUST NOT 先把相邻的数值片段加成数值、再对求和结果做一次转换——`append(a).append(b).append("!")` MUST NOT 呈现为 `arg0 + arg1 + "!"`（输入 `(1, 2)` 时原 class 返回 `"12!"`，该文本返回 `"3!"`）。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试呈现 StringBuilder 或 StringBuffer 的 append 拼接链
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ MUST 按 `append` 的参数 descriptor 拼写每个片段：参数类型为 `boolean` 的片段里的 `0`/`1` 字面量 MUST 呈现为 `true`/`false`，MUST NOT 呈现为 `1`/`0`（`append(true)` 的 `iconst_1` 在文本里不是数值 `1`）；`null` 片段 MUST 呈现为 `null` 字面量；对象片段 MUST 按其 overload 的转换呈现（对象经 `String.valueOf` 等价的转换）。呈现 MUST 保持每个片段的求值次数与左到右顺序（不重复调用、不移动可能抛异常的操作、不改变异常次序），每个片段 MUST 保留自己的 BCI/source-map 锚点，插入的空字符串片段 MUST 只携带由链派生的锚点而不是一条它没有执行的指令。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试呈现 StringBuilder 或 StringBuffer 的 append 拼接链
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 片段序列 MUST NOT 被任意平衡、合并或重排：把相邻片段合并、把片段移出它自己的求值位置、或为「少一层」改变某个片段被转换的时机都会改变值或副作用，MUST NOT 出现。片段自己的表达式 MUST 保持自己的分组，MUST NOT 被拆进链的加法：链 `append(int a).append(int b)`（**两个**片段）MUST 呈现为 `"" + arg0 + arg1`（两个转换各自发生，输入 `(1, 2)` 得 `"12!"`），而链 `append(int a + int b)`（**一个**片段，其表达式本身是加法）MUST 呈现为 `"" + (arg0 + arg1)` 的形态（该加法先按数值求出再转换，同一输入得 `"3!"`）；把后者的片段拆成两个片段、或把前者两个片段合并成一次数值加法，都改变值，MUST NOT 出现。链的识别与本规则接受的 overload 集合 MUST NOT 因此改变。某个片段的转换无法用呈现表达时，该区域 MUST 按既有 refusal 契约拒绝并保留 bytecode 与 origin。representation/quality/content/execution 与「两侧都能编译」MUST NOT 被当作本要求的证据：本要求的证据是原 class 与呈现文本在同一输入集合上的执行对照。
++
+ 
+ #### Scenario: A numeric fragment keeps its conversion where the chain converts it
+ 
+--- a/openspec/changes/present-proved-java-structure/specs/java8-recovery/spec.md
++++ b/openspec/changes/present-proved-java-structure/specs/java8-recovery/spec.md
+@@ -2,11 +2,30 @@
+ 
+ ### Requirement: A proved prefix survives a local gap
+ 
++一次方法恢复里，走法已经证明为语句的块 MUST 作为语句进入产物。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理方法恢复中的已证明前缀、当前形状、分支与汇合后的走法
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 一次方法恢复里，走法已经证明为语句的块 MUST 作为语句进入产物。当前形状证明不了时，fallback MUST 只引用该形状自己的块与未认领的臂，MUST NOT 把已证明前缀的指令放进 fallback 的 BCI 集合，也 MUST NOT 因此停止对已证明汇合点之后的走法。没有证明过的汇合点时，走法 MUST 停止扩展，其余活块仍由既有的未覆盖引用命名。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理方法恢复中的已证明前缀、当前形状、分支与汇合后的走法
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 每个活块 MUST 恰好属于一个区域：结构化区域或一条 fallback 引用，二者不得重叠，也不得遗漏。图没有覆盖、也没有标成不可达的指令，MUST 继续走既有的整方法引用，MUST NOT 因本要求变成半段语句。`content` MUST 仍只有 `not_produced`、`explanation_only`、`contains_statements`。产物里至少有一条语句时 content 为 `contains_statements`，同时存在 fallback 时 quality 保持 `Fallback`。只有引用、没有语句的方法 MUST 仍是 `explanation_only`。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理方法恢复中的已证明前缀、当前形状、分支与汇合后的走法
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代替一条引用。MUST NOT 引入字节码和常量池里不存在的类型或常量。
++
+ 
+ #### Scenario: A branch that cannot be proved keeps the statements before it
+ 
+@@ -130,9 +149,23 @@
+ 
+ ### Requirement: A named catch is written only when the region is not a refused guard
+ 
++异常表记录的 `catch_type` 非 0，且守卫检查认定该区域不是 try-with-resources 或 monitor 时，恢复 MUST 把保护范围写成 `try`，把处理器写成 `catch`，类型 MUST 是该 `catch_type` 的类名，不得改成其父类或 `Throwable`。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统判断并恢复异常表保护范围及处理器
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 异常表记录的 `catch_type` 非 0，且守卫检查认定该区域不是 try-with-resources 或 monitor 时，恢复 MUST 把保护范围写成 `try`，把处理器写成 `catch`，类型 MUST 是该 `catch_type` 的类名，不得改成其父类或 `Throwable`。同一保护范围的多条此类记录 MUST 按异常表顺序出现。两条记录指向同一个处理器入口时 MUST 写成一个 `catch (A | B …)`，处理器体只走一遍，MUST NOT 写成两个子句。指向不同入口的记录仍是多个子句。某一条处理器体证明不了时，该 `catch` MUST 仍出现，其体为指名 BCI 的缺口，MUST NOT 省略这条 `catch`。两条记录从同一条指令开始但结束位置不同、且较窄记录的处理器落在较宽的范围里时，MUST 写成嵌套的 `try`：外层的体是内层 `try`，MUST NOT 收成同一个 `try` 的并列 `catch`。范围互相交叉时 MUST NOT 写 `try`。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统判断并恢复异常表保护范围及处理器
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `catch_type` 为 0 的记录 MUST NOT 写成 `catch` 或 `finally`。try-with-resources 或 monitor 规则声明拥有的区域，无论它领取该区域还是按其形状拒绝，MUST NOT 被改写成 `catch`。普通 `try/catch` 的正面形状对不上 TWR 时，守卫检查 MUST 结论为不是守卫，使本要求适用。无法证明的 TWR close/suppress 顺序 MUST 继续按既有 TWR 场景降级，而不是变成普通 `catch`。
++
+ 
+ #### Scenario: A typed handler becomes catch
+ 
+@@ -332,17 +365,51 @@
+ 
+ ### Requirement: A proved lambda or anonymous body is shown at its use site
+ 
++类源码视图装配一个类时，MUST 使用各方法已经产出的语句，MUST NOT 再跑一套方法恢复。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 类源码视图装配一个类时，MUST 使用各方法已经产出的语句，MUST NOT 再跑一套方法恢复。lambda 合成方法的 `content` 为 `contains_statements` 且正文 `quality=structured`、无 fallback/引用缺口、完整 AST 可取得，只是内联候选；同次 bootstrap/调用点证据还 MUST 证明捕获参数与 SAM 参数按实现描述符逐槽对应、必要的类型适配与方法目标不变、捕获值在创建时的求值不被推迟或复制。全证时使用点 MUST 在 lambda 箭头内呈现该体，MUST NOT 写成对该 `lambda$` 方法的转发调用；多条语句只能在箭头块体中出现，MUST NOT 把体里的语句搬到使用点之前。任一证明缺失时使用点 MUST 保持转发调用。合成方法的物理身份、正文及可追溯报告 MUST 仍保留；只有同一物理类中所有有 `Code` 的方法完整扫描、指向该合成方法的每个 lambda 使用点均已原子改写，才带 `// jarde:` 标记说明体已在使用点呈现；有未扫描或未改写的使用点时 MUST NOT 加标记。候选不能从按需 `RuleDetails` 或已发射文本逆推。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 类源码保留原 `lambda$...` 方法声明且另发出箭头时，`javac --release 8` 可能为箭头生成同名 helper，致使完整类编译失败。对同类 synthetic `lambda$` 实现方法，只要类源码发出指向它的箭头，类级呈现 MUST 为原物理方法确定性分配无冲突的源码别名，并将已证的同类直接调用按物理成员身份一致改名；无须预测编译器给箭头分配的序号。源映射和报告仍指向原方法。无法证明全部相关调用可同步改名时 MUST 明示编译限制，MUST NOT 声称完整类可重编。方法不得只因 synthetic 标志而隐藏。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 匿名类的 `InnerClasses.inner_name` 为空、`EnclosingMethod` 指向当前方法，且调用者类所有有 `Code` 的方法中只有一处分配点调用该候选类的构造器，只是候选；所选物理输入范围内候选站点以外的构造或类身份使用（包括调用者自身与其它类）也 MUST 被完整排除。范围扫描不完整、可能指向候选却无法解析、兄弟 class 缺失或身份/分配点不唯一时不得按当前类的文本猜。每个待内联方法 MUST 是已产出 Java 语句、`quality=structured`、无 fallback/引用缺口的完整正文；`contains_statements` 单独不足以证明完整。唯一构造器的每个参数 MUST 划入两类之一：按原描述符和顺序传给直接基类的唯一 `invokespecial <init>`，或在创建时恰好写入一个合成捕获字段；除此之外的构造器指令、字段写入或实例初始化效果若不能按原时序表达，MUST 拒绝内联。每个捕获字段的全部读取 MUST 映射回该参数和分配点词法范围内同一稳定值，不能只凭字段名或字段类型推断；创建时求值、异常顺序不得改变。证明齐全时方法体 SHALL 出现在匿名类花括号中。`new Base(args) { ... }` 的实参 SHALL 仅为真实基类构造实参；实现接口时 `new Interface() { ... }` MUST NOT 携带合成捕获实参。非静态成员基类的构造器描述符包含限定外层实例；若不能另外证明 `outer.new Base(args) { ... }` 的限定接收者及其空值检查，MUST 拒绝内联，MUST NOT 把该实例印成普通 `Base` 实参。缺少任何证明或正文时 MUST NOT 内联：使用点保持该类的二进制名，该类单独装配。`Outer.this` 仅在分配点值流证明该值就是当前词法外层接收者、且正文读该捕获时可用，MUST NOT 凭字段名或同型对象发明。
+ 
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 合成捕获字段若在字节码里先于基类构造调用写入，MUST 保留该可观察时序，MUST NOT 为使独立二进制名类的源码通过 Java 8 编译而无条件把字段写入搬到 `super(...)` 后。基类构造期间可能虚调用匿名覆写并读该捕获；只有类级匿名语法及完整值流证明能让 Java 编译器重建等价前置合成写入时，才 SHALL 将使用点投影为 `new Base(...) { ... }`。不能证明时保留分开的类与使用点，并声明独立构造器文本的编译限制（P02/P06）。
+ 
++#### Scenario: 完整契约 5
++
++- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 唯一性计数 MUST 包含同次解码中所有指向该匿名类的 `Allocate`，包括 `new@1` 未验证的候选和被其它规则预留的分配；调用者任一有 `Code` 的方法未完整扫描时 MUST 拒绝唯一性，MUST NOT 把空的已验证 site 列表解释为零分配。所选物理输入范围内调用者和其它类的 Code/metadata XRef 覆盖 MUST 完整，并按同一解析环境确认目标物理身份；出现另一处分配、构造器句柄或可观察类身份引用时 MUST 拒绝内联，覆盖不完整或目标可能相同而未决时也 MUST 拒绝。此证书只说明所选输入范围，不宣称排除范围外的开放世界调用者。
+ 
++#### Scenario: 完整契约 6
++
++- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 这些类级事实 MUST 来自 reader 已经解析的 `InnerClasses` 与 `EnclosingMethod`，MUST NOT 由单方法 IR 重建，也 MUST NOT 重新扫描属性字节。
++
+ 
+ #### Scenario: A recovered lambda body replaces the forward call
+ 
+@@ -411,13 +478,37 @@
+ 
+ ### Requirement: Class source spells package, throws, and varargs from the class file
+ 
++类源码视图的类声明 MUST 使用 `package` 与简单名：二进制名在最后一个 `/` 之前的部分写成包名（`/` 改为 `.`），最后一段写成简单名；简单名中的 `$` MUST 保留。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 类源码视图的类声明 MUST 使用 `package` 与简单名：二进制名在最后一个 `/` 之前的部分写成包名（`/` 改为 `.`），最后一段写成简单名；简单名中的 `$` MUST 保留。二进制名不含 `/` 时 MUST NOT 写 `package`。MUST NOT 再把完整二进制名写在 `class` 或 `interface` 关键字后面。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 方法的 `throws` MUST 等于该方法 `Exceptions` 属性中的类名，顺序与属性一致，内部名写成点分名。属性不存在时 MUST NOT 写 `throws`，也 MUST NOT 从 `athrow` 或处理器类型推断。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 方法 access flags 的 `0x0080` MUST 按 `ACC_VARARGS` 解读。该标志置位且描述符的最后一个参数是数组时，声明的最后一个参数 MUST 写成 `T...`，MUST NOT 写成 `T[]`。标志置位但最后一个参数不是数组时，MUST NOT 写 `...`，MUST 按描述符声明参数，并加一条 `// jarde:` 标记。字段的 `ACC_TRANSIENT` 拼写 MUST 不变。
+ 
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 这些事实 MUST 来自 reader 已经解析的方法属性与 access flags，MUST NOT 重新解码属性。
++
+ 
+ #### Scenario: A packaged class uses a simple name
+ 
+@@ -545,13 +636,37 @@
+ 
+ ### Requirement: A special call, a compare, and a constant field keep the program they came from
+ 
++`invokespecial` 的方法名不是 `<init>`、池项引用的是当前类声明的直接父类、且接收者已证明为入口实例 `this` 时，调用 MUST 写成 `super.name(...)`。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `invokespecial` 的方法名不是 `<init>`、池项引用的是当前类声明的直接父类、且接收者已证明为入口实例 `this` 时，调用 MUST 写成 `super.name(...)`。池项引用的是直接父接口且接收者同样已证明时，MUST 写成 `接口类型.super.name(...)`。当前类已声明为 private 的目标 MUST 保留实际接收者，包括其它同类实例。其余证据不足的特殊调用 MUST 引用，MUST NOT 仅凭属主不同写成 super 或默认写成虚调用；独立验收由 `preserve-special-call-dispatch` 承担。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `lcmp`、`fcmpg`、`fcmpl`、`dcmpg`、`dcmpl` 的结果唯一供给同块紧邻零分支、且外围结构与操作数可恢复时，文本 SHALL 组合成保持 NaN 偏置及分支方向的条件。无序时为真的关系 SHALL 使用正确的取反关系，MUST NOT 直接换成 NaN 上为假的相反关系。其它消费者 MUST 保留有来源的缺口；独立验收由 `recover-numeric-comparison-conditions` 承担。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 字段的 `ConstantValue` 属性 MUST 写成该字段的初值。没有该属性时 MUST NOT 从 `<clinit>` 或从使用点的字面量反推初值。使用点的字节码若是字面量而不是读取该字段，MUST 保持字面量。
+ 
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 同名重载的调用参数呈现 SHALL 保留池目标的参数类型选择；没有足够安全转换证据时 MUST 拒绝，不得合成会新增异常的检查。该范围由 `preserve-invocation-argument-types` 独立验收。桥方法 MUST 保留，MUST NOT 写成对所在方法自身的调用，也 MUST NOT 添加 `@Override` 或删去该成员；其声明和返回类型区分仍是独立范围。
++
+ 
+ #### Scenario: An invokespecial of the superclass is super
+ 
+@@ -575,9 +690,23 @@
+ 
+ ### Requirement: Constructed sources are accepted by a three-way comparison
+ 
++P01–P08 的每个场景 MUST 有一份由本 change 编写的 Java 源码，MUST NOT 从既有应用语料裁剪。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统验证构造得到的源码
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ P01–P08 的每个场景 MUST 有一份由本 change 编写的 Java 源码，MUST NOT 从既有应用语料裁剪。该源码 MUST 用记录了版本与 `--release` 的 `javac` 编译。同一组 class 文件 MUST 分别由 jadx 1.5.6 与 jarde 类源码视图反编译。验收记录 MUST 对每个场景同时留下源码摘录、jadx 摘录与 jarde 摘录。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统验证构造得到的源码
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 通过条件 MUST 以本规格的结构证明和原 class 的执行行为、异常顺序、classfile 属性为准，而不是以 jadx 文本为准。手写源码证明该结构可由 Java 表达，不要求从可能对应多种源码的字节码逐字还原；jarde 写出的结构 MUST 满足相应证明，能完整重编的场景其运行结果 MUST 与原 class 一致。要求不写的结构，即使出现在 jadx 文本里，jarde MUST NOT 照抄。与 jadx 逐字相同 MUST NOT 作为通过条件。规格明确允许缺口的场景，jarde MUST 给出指名 BCI 的引用，而不是空结构。既有应用语料上的计数 MUST NOT 代替这组场景。
++
+ 
+ #### Scenario: A structure the source has must appear in jarde
+ 
+--- a/openspec/changes/project-integer-constant-names-with-refused-member-family/specs/java8-recovery/spec.md
++++ b/openspec/changes/project-integer-constant-names-with-refused-member-family/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: 无 child report 的成员 family refusal 不阻止同类整数常量名称
+ 
++当完整 Java 8 类源码请求的 root report 执行为 Complete、成员 family 为 `Absent` 或 `Refused { child: None }`，且 nested enum、nested annotation、anonymous-interface 三个 sibling family 均为 `Absent` 时，系统 SHALL 继续执行已有同类整数常量名称投影。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理同类整数常量名称投影及其成员 family 准入
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当完整 Java 8 类源码请求的 root report 执行为 Complete、成员 family 为 `Absent` 或 `Refused { child: None }`，且 nested enum、nested annotation、anonymous-interface 三个 sibling family 均为 `Absent` 时，系统 SHALL 继续执行已有同类整数常量名称投影。该例外 MUST NOT 依赖或解析 `Refused.reason`。投影 MUST 继续使用当前 root 的完整物理字段候选与同轮 root method AST，并保持唯一值/名称、词法遮蔽、current-text/full-writer equality、物理 anchors、精确范围、预算和原子发布契约。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理同类整数常量名称投影及其成员 family 准入
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 该规则 MUST 保持 `Refused { child: Some(..) }`、`RefusedPair`、所有 Prepared member-family variants 及任何非 Absent sibling family 对该投影的阻止作用。它 MUST NOT 增加 child/nested source text，亦 MUST NOT 将引用解析到 enclosing/outer/inherited class。
++
+ 
+ #### Scenario: root self row 与 direct child 同时存在
+ 
+--- a/openspec/changes/project-multiple-enum-switch-sites/specs/java8-recovery/spec.md
++++ b/openspec/changes/project-multiple-enum-switch-sites/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Complete class source projects multiple proved enum switches in one method
+ 
++当完整 class-source 恢复在同一方法中找到多个 Java 8 enum remap-array switch 站点，且同一 helper 中候选所选的全部不同 table 恰好封闭覆盖其 `<clinit>` 表初始化时，系统 SHALL 对 helper `<clinit>` 进行一次完整联合证明，并继续逐表验证物理 enum 定义及常量映射。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试在完整 class source 的同一方法中投影多个 enum switch 站点
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当完整 class-source 恢复在同一方法中找到多个 Java 8 enum remap-array switch 站点，且同一 helper 中候选所选的全部不同 table 恰好封闭覆盖其 `<clinit>` 表初始化时，系统 SHALL 对 helper `<clinit>` 进行一次完整联合证明，并继续逐表验证物理 enum 定义及常量映射。联合证明 MUST 将每条物理指令及 handler 恰好归属一个表初始化组或唯一最终 return；每组 MUST 具有实际 BCI 顺序上的 values/arraylength/int[]/putstatic 结构、逐常量 enum-field/ordinal/int-store 和独立 `NoSuchFieldError` handler。候选之外的额外表、未知操作、额外副作用、缺失或重复映射、或无法精确归属的 CFG/SSA 路径 SHALL 拒绝。联合证明不扩展候选发现或依赖读取。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试在完整 class source 的同一方法中投影多个 enum switch 站点
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当所有站点和选中表均证明成功时，系统 SHALL 将所有站点应用于同一份已恢复方法 AST，并作为一个原子结果投影。如果任一站点的证明、grouped AST 发射或预算执行失败/停止，完整方法 SHALL 保留原整数 table switch；输出 MUST NOT 只投影该方法内的部分站点。系统 MUST 保持每个站点的 selector、case 映射、求值顺序、null 行为和命中分支副作用。
++
+ 
+ #### Scenario: Two independently mapped enum selectors
+ 
+--- a/openspec/changes/prove-enum-int-arguments/specs/java8-recovery/spec.md
++++ b/openspec/changes/prove-enum-int-arguments/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Proved enum constants preserve bounded integer constructor arguments
+ 
++完整 Java 8 enum 类源码投影 SHALL 保留每个 enum 常量的已证明 int 构造实参，包括整数 literal、一次 `int` 静态字段读取，以及该读取与一个整数 literal 的直接加法表达式。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复 enum 常量的整数构造实参
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 完整 Java 8 enum 类源码投影 SHALL 保留每个 enum 常量的已证明 int 构造实参，包括整数 literal、一次 `int` 静态字段读取，以及该读取与一个整数 literal 的直接加法表达式。静态字段的属主、字段名、类型、实参顺序及求值位置 SHALL 与同次类源码运行读取的物理引用和指令证据一致；系统 MUST NOT 把静态字段读折叠成常量或改变其求值次数。该实参 grammar MUST 拒绝方法调用、存储、分支、额外或重复字段读取及未声明支持的算术。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复 enum 常量的整数构造实参
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 静态字段叶 SHALL 仅在选定环境中唯一解析到完整 Java 8 顶层、同包可访问的 class facts，并在唯一匹配的字段表项上证明 descriptor 为 `I`、`static`、非 `final` 且非 synthetic 时进入投影。系统 MUST 拒绝同枚举 owner、跨包 owner、含 `$` 的二进制 owner、private/protected、synthetic 或 interface/annotation owner、带 `EnclosingMethod` 或声明自身为 member 的 owner class attributes、字段缺失或歧义，以及依赖读取不完整的情况。source spelling SHALL 使用同包短类型名；若 enum 的完整 `InnerClasses` facts 存在遮蔽该短名的 member type，则 MUST 拒绝。预算或取消停止必须保持为 stopped，不得转为正常 refusal 或部分投影。
++
+ 
+ #### Scenario: One integer static field and field-plus-literal arguments
+ - **WHEN** 一个 Java 8 enum 的完整常量初始化前缀在 constructor call 处依次传递 `Ints.THREE` 与 `Ints.THREE + 1`，且所有表达式都由该次 class-source 读取中的精确字段引用、int literal 和加法指令证明
+--- a/openspec/changes/prove-interface-super-source-legality/specs/java8-recovery/spec.md
++++ b/openspec/changes/prove-interface-super-source-legality/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Interface-qualified super calls require a legal source qualifier
+ 
++当非构造 `invokespecial` 已证明以入口 `this` 为接收者时，恢复只有同时满足以下两项源码条件才 SHALL 写出 `I.super.m(...)`：调用 owner 在当前类的直接父接口名单中恰好出现一次且并不冗余；在请求选定环境的完整接口声明链中，该限定调用能唯一绑定到与原调用相符的可访问 default 方法。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统判断接口限定 super 调用的源级 qualifier 合法性
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当非构造 `invokespecial` 已证明以入口 `this` 为接收者时，恢复只有同时满足以下两项源码条件才 SHALL 写出 `I.super.m(...)`：调用 owner 在当前类的直接父接口名单中恰好出现一次且并不冗余；在请求选定环境的完整接口声明链中，该限定调用能唯一绑定到与原调用相符的可访问 default 方法。非冗余要求当前类的任何其它直接父接口均不等于、也不继承该 owner，且从当前类的直接父类沿完整父类链所实现或继承的任一接口也不等于、继承该 owner。父类链只在 JVM 固定根 `java/lang/Object` 终止；其它父类缺定义不得冒充该根或视为空接口。目标接口自己或其中途父接口的更近抽象声明 SHALL 遮蔽祖先 default，不能因更远祖先存在同名实现就放行。证据缺失、选择歧义、重载绑定未证、已证冗余或目标抽象时，恢复 MUST 保留包含原调用方法和 BCI 的缺口，不得改写为类 `super`、普通虚调用或其它接口调用。预算/取消停止 MUST 如实报告停止，且不得发布未完成的源码结论。拒绝 MUST 保留已延期接收者和实参生产者的来源及效果。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统判断接口限定 super 调用的源级 qualifier 合法性
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 不涉及接口调用的 class-super、本类 private、构造器和普通调用 SHALL 保持其既有选择。报告的恢复质量、覆盖和执行状态 SHALL 如实反映缺口；JVM 可执行性本身不构成 Java 源码合法性证明。
++
+ 
+ #### Scenario: One direct interface declares its own default
+ 
+--- a/openspec/specs/query-api/spec.md
++++ b/openspec/specs/query-api/spec.md
+@@ -21,7 +21,16 @@
+ 
+ ### Requirement: Coverage and pagination are explicit
+ 
++每个查询结果 SHALL 独立返回 artifact/runtime/dynamic coverage、execution（Complete/Partial/Cancelled/Failed）、预算消耗、snapshot/view identity、evidence 和已扫描范围。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统执行查询请求
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 每个查询结果 SHALL 独立返回 artifact/runtime/dynamic coverage、execution（Complete/Partial/Cancelled/Failed）、预算消耗、snapshot/view identity、evidence 和已扫描范围。Unknown 是候选/解析状态，MUST 不与 execution 混为同一枚举。分页游标 SHALL 绑定 snapshot、完整 query identity、view、排序/扫描边界和 schema 版本；完整 query identity MUST 包括 relation、完整 target（symbol kind/owner/name/descriptor 或 literal kind/原始值与浮点位模式）和 consumer schema。改变 target MUST 在重放扫描边界前拒绝，不得按另一目标的匹配序号跳过结果。每页 max_items 和预算是执行参数，可以改变，但不能改变查询含义。page.has_more 不等于搜索完成。取消、缺失搜索范围和预算耗尽 MUST 不得映射为 NoMatch。
++
+ 
+ #### Scenario: Cancelled full-range search
+ 
+--- a/openspec/changes/recover-anonymous-supertype-return/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-anonymous-supertype-return/specs/java8-recovery/spec.md
+@@ -2,7 +2,16 @@
+ 
+ ### Requirement: 根方法返回父类直接超类型的匿名类可内联
+ 
++系统 SHALL 在匿名类分配点位于根方法的直接返回位置、且根方法的声明返回类型 `T` 是该匿名类直接父类 `P` 的**已证一层直接超类型**（`T == P` ∨ `T == P` 的 `super_class` ∨ `T ∈ P` 的 `interfaces`，均按 internal name 全等从 `P` 的 class file 事实读取）时，把该匿名类投影为源级 `new P(…) { … }`，并把根方法的返回位置按 `T` 拼写。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理根方法返回父类直接超类型的匿名类内联
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 在匿名类分配点位于根方法的直接返回位置、且根方法的声明返回类型 `T` 是该匿名类直接父类 `P` 的**已证一层直接超类型**（`T == P` ∨ `T == P` 的 `super_class` ∨ `T ∈ P` 的 `interfaces`，均按 internal name 全等从 `P` 的 class file 事实读取）时，把该匿名类投影为源级 `new P(…) { … }`，并把根方法的返回位置按 `T` 拼写。`T` 与 `P` **两者**都 SHALL 通过既有的可拼写检查（不含 `$`、每段合法 Java 标识符、与根类同包）。匿名类自身方法体内以匿名类为符号 owner 的 `InvokeVirtual` 自调用（javac 对匿名体内 `this` 上继承/自有方法的常量池拼写）SHALL 由共享 owner 普查在**且仅在**父类路径的直返站点形下放行；接口路径与局部声明初始化位形 SHALL 保持共享普查的既有拒绝（该普查为多路径共享件，放宽须按判别类型显式遏制）。`T` 是 `P` 的间接超类型（祖父类或间接接口）、`T` 非引用类型（数组或基本类型）、`T` 与 `P` 无层级关系、或任一名字不可拼写时，系统 SHALL 保持物理类文本并记录拒绝原因，不得发射不可编译或改变构造器绑定的文本。
++
+ 
+ #### Scenario: 返回父类直接实现的接口时可内联
+ 
+--- a/openspec/changes/recover-capture-ctor-super-order/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-capture-ctor-super-order/specs/java8-recovery/spec.md
+@@ -3,10 +3,29 @@
+ ### Requirement: 捕获形伴生构造器的 super 次序 SHALL 可编译
+ 
+ 当匿名/内部类伴生的构造器在字节码中把捕获字段赋值（`this.val$x = argN`）发射在 `super()` 调用**之前**、且满足（1）super 前语句**全部**是捕获字段赋值、（2）super() 实参不读取任何被赋值的 val$x（按实参值的 SSA 依赖闭包判定——实参只依赖参数/常量/this 外的值时成立）、（3）该调用无法观察到这些字段时，系统 SHALL 把渲染次序重排为 `super(); this.val$x = argN; …实例块语句…`——使渲染源在标准 Java（含 8）下合法。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复捕获形伴生构造器的 super 调用次序
++- **THEN** 系统 MUST 满足以下全部约束：
++
++当匿名/内部类伴生的构造器在字节码中把捕获字段赋值（`this.val$x = argN`）发射在 `super()` 调用**之前**、且满足（1）super 前语句**全部**是捕获字段赋值、（2）super() 实参不读取任何被赋值的 val$x（按实参值的 SSA 依赖闭包判定——实参只依赖参数/常量/this 外的值时成立）、（3）该调用无法观察到这些字段时，系统 SHALL 把渲染次序重排为 `super(); this.val$x = argN; …实例块语句…`——使渲染源在标准 Java（含 8）下合法。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复捕获形伴生构造器的 super 调用次序
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ （3）有两档证明，都取自本运行自身的事实：`java/lang/Object.<init>()V`（owner/name/descriptor 三重匹配——final 且空的构造器，构造期不可能运行任何用户代码）；或该类的**方法表除构造器与类初始化器外不声明任何成员**（合成捕获字段只有本类自己的代码能读到——没有父类是针对它编译的——故调用期能读到它的代码只能是本类自己的，经父类构造器的虚分派抵达；本类不声明这样的代码即不可观察。另一构造器不是正在运行的那个，类初始化器在任何实例存在之前已运行，JLS 12.4.2）。第二档同时要求（2）成立，因为实参在调用**之前**求值而赋值组移到调用**之后**。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试恢复捕获形伴生构造器的 super 调用次序
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 任一条件不满足（super 前有非捕获语句、super 实参读取捕获字段或运行本运行不持有其方法体的代码、或调用可观察到捕获字段）时 SHALL 保持既有字节码次序呈现（渲染头声明 not claimed to compile——响亮）。无捕获形伴生的既有呈现 SHALL 逐字不变。
++
+ 
+ #### Scenario: 捕获形双括号恢复
+ 
+--- a/openspec/changes/recover-debug-reference-lifetimes/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-debug-reference-lifetimes/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Debug names preserve proven distinct reference lifetimes
+ 
++当一个非参数、非资源局部槽有不同确切引用类型的多段生命周期，定义、现有读取、引用别名存活和正常控制流均已证明彼此独立，而且调试局部记录与这些身份一一对应时，恢复 MUST 保留不同变量身份及各自引用类型。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统判断引用局部生命周期的 debug names
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当一个非参数、非资源局部槽有不同确切引用类型的多段生命周期，定义、现有读取、引用别名存活和正常控制流均已证明彼此独立，而且调试局部记录与这些身份一一对应时，恢复 MUST 保留不同变量身份及各自引用类型。同名调试记录 MUST NOT 把身份合并成导致 Java 类型冲突的一个变量；名称冲突允许使用现有确定性后缀。初始化写入可位于调试范围开始之前，其归属 MUST 来自值所有权，MUST NOT 按最近偏移猜测。 对没有局部读取的身份，MUST 另以唯一已证明的真实Store、下一decoded instruction与row.start严格相等、row包含于该身份范围证明初始化邻接；MUST NOT 要求编译器生成多余aload，也MUST NOT 仅按row排序为无读取身份附名。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统判断引用局部生命周期的 debug names
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 记录空缺、重叠、额外或不能一一匹配、读取所有权不明、旧引用跨越下一次定义、未支持控制流或类型证据不足时，恢复 MUST 沿既有保守路径处理，MUST NOT 仅凭名称或调试表宣称拆分成功。原始检查转换、raw 别名、调用目标、异常、集合状态和副作用位置 MUST 保留。没有调试信息时 MUST 保持已有身份证明和确定性名称行为。
++
+ 
+ #### Scenario: Equal debug names belong to different loop scopes
+ 
+--- a/openspec/changes/recover-javac8-allocation-qualifier-null-check/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-javac8-allocation-qualifier-null-check/specs/java8-recovery/spec.md
+@@ -3,10 +3,29 @@
+ ### Requirement: 分配限定符的成员构造在真 javac 8 的 null 检查下 SHALL 恢复
+ 
+ 系统 SHALL 把分配限定符形 `new Outer().new Inner(…)` 中被**丢弃**的 null 检查（`dup; <discarded null check>; pop`，两种拼写之一：javac 9+ 的 `Objects.requireNonNull` 或真 javac 8 的 `Object.getClass`）识别为**消费该外层实例的成员构造站点自身的一部分**，而不是外层分配站点的一个游离读者；从而真 javac 8 产物（其对新分配外层实例无条件插入该检查）与 javac 9+ 产物（其不插入）**都**恢复为源级限定语法 `new Outer().new Inner(…)`。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理分配限定符成员构造并核验被丢弃的 null 检查
++- **THEN** 系统 MUST 满足以下全部约束：
++
++系统 SHALL 把分配限定符形 `new Outer().new Inner(…)` 中被**丢弃**的 null 检查（`dup; <discarded null check>; pop`，两种拼写之一：javac 9+ 的 `Objects.requireNonNull` 或真 javac 8 的 `Object.getClass`）识别为**消费该外层实例的成员构造站点自身的一部分**，而不是外层分配站点的一个游离读者；从而真 javac 8 产物（其对新分配外层实例无条件插入该检查）与 javac 9+ 产物（其不插入）**都**恢复为源级限定语法 `new Outer().new Inner(…)`。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理分配限定符成员构造并核验被丢弃的 null 检查
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 识别 null 检查 SHALL 复用既有谓词 `facts.rs::is_discarded_null_check`（`recover-javac8-getclass-null-check-idiom` 交付），**不得**新建第二套拼写判据。系统 SHALL **不得**引入 `java_release`/`major_version` 或任何按产出编译器版本分支的判据（两种产物 major version 均为 52，且违反 `classfile.rs` 的"never over the compiler that produced it"原则）。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理分配限定符成员构造并核验被丢弃的 null 检查
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ **核心不变量 SHALL 保持**：外层实例被**多处真实消费**（非被丢弃的 null 检查）时仍 SHALL 拒绝——"一个构造实例只有一个 Java 拼写位"（`single_use_at`、读者门 `readers.len() != 1`）的语义不得因本能力放宽。只有"被 `is_discarded_null_check` 证明、且返回值被紧随的 `pop` 丢弃"的三元组才归入站点自有。用户显式写的 `o.getClass();` 语句（其值不被丢弃，或不在分配序列内紧邻构造器）SHALL 保留为一条语句，不得被误折叠。
++
+ 
+ #### Scenario: 真 javac 8 的分配限定符形可恢复
+ 
+--- a/openspec/changes/recover-javac8-getclass-null-check-idiom/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-javac8-getclass-null-check-idiom/specs/java8-recovery/spec.md
+@@ -2,18 +2,52 @@
+ 
+ ### Requirement: 限定外部实例构造的 null 检查判据 SHALL 识别两种编译器拼写
+ 
++系统 SHALL 把源级限定表达式 `outer.new Inner(…)` 的 null 检查判据建立在**该检查的事实**上——分配序列内一条**返回值被丢弃**的调用——而不是建立在某一个编译器对该事实的**拼写**上。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 把源级限定表达式 `outer.new Inner(…)` 的 null 检查判据建立在**该检查的事实**上——分配序列内一条**返回值被丢弃**的调用——而不是建立在某一个编译器对该事实的**拼写**上。具体地，`init.rs` 的成员构造证明与 `member_inner.rs` 的成员调用路径 SHALL 各自把自己读取的表示投影为同一组事实（调用种类、符号 owner、符号 name、符号 descriptor、是否接口引用），并调用**同一个**谓词判定，该谓词 SHALL 成对接受且仅接受两种拼写：
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ - `invokestatic java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;`（javac 9+）
+ - `invokevirtual java/lang/Object.getClass:()Ljava/lang/Class;`（真 javac 8）
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 调用种类与符号 SHALL **成对匹配**，其叉积（`invokestatic Object.getClass`、`invokevirtual Objects.requireNonNull`）SHALL 被拒绝，因为那不是任何 javac 的产物，接受它会把允许集放宽到本判据没有证据支撑的形。
++
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 系统 SHALL **不得**引入 `java_release`、`major_version` 或任何按产出编译器版本分支的判据：两种拼写的产物 class 文件 major version 均为 52，版本字段无法区分；且 `classfile.rs` 已固化"答案 stated over the facts that class really carries — never over the compiler that produced it"。
+ 
++#### Scenario: 完整契约 5
++
++- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 既有的**位置约束 SHALL 逐字保留**，不因增加拼写而放宽：`[qualifier, copy, check, pop]` 的连续性、`check` 锚定在分配点、`pop` 的 opcode `0x57`、以及成员调用路径的实参区间检查（实参 BCI 须落在 `pop` 之后、构造器调用之前）。"返回值被 `pop` 丢弃"是**调用点**的事实，SHALL 保留在两处调用点各自检查，不得移入拼写谓词。
+ 
++#### Scenario: 完整契约 6
++
++- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当两种拼写都不成立时，系统 SHALL 保持既有拒绝语义（响亮失败、整方法不投影），且拒绝文本 SHALL 不再指称单一拼写，以免文本与判据不符。
++
+ 
+ #### Scenario: 真 javac 8 产物的限定外部实例构造可恢复
+ 
+--- a/openspec/changes/recover-lambda-primitive-array-capture/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-lambda-primitive-array-capture/specs/java8-recovery/spec.md
+@@ -3,10 +3,29 @@
+ ### Requirement: lambda 对原生数组捕获的 SHALL 以有据类型参与一致性判据
+ 
+ 当 lambda 站点（`invokedynamic`）捕获一个**原生数组**局部（`newarray` 产物，如 `int[] t`；描述符 `[I`..`[J` 十种之一）且站点描述符与实现描述符对该捕获**一致**陈述为数组类型时，系统 SHALL 以**有据可查的该数组类型**参与捕获三方一致性判据（帧/站点/实现），而不得以帧层对 `newarray` 的保守 `Unknown` 引用（呈现为 `Object`）将其判为不一致——从而该形恢复为源级 lambda 捕获（与引用类型捕获同构的内联呈现）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复 invokedynamic lambda 站点的原生数组局部捕获
++- **THEN** 系统 MUST 满足以下全部约束：
++
++当 lambda 站点（`invokedynamic`）捕获一个**原生数组**局部（`newarray` 产物，如 `int[] t`；描述符 `[I`..`[J` 十种之一）且站点描述符与实现描述符对该捕获**一致**陈述为数组类型时，系统 SHALL 以**有据可查的该数组类型**参与捕获三方一致性判据（帧/站点/实现），而不得以帧层对 `newarray` 的保守 `Unknown` 引用（呈现为 `Object`）将其判为不一致——从而该形恢复为源级 lambda 捕获（与引用类型捕获同构的内联呈现）。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复 invokedynamic lambda 站点的原生数组局部捕获
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 三方一致性判据本身（`frame_type != site_type || site_type != implementation_type` 则拒，`jre_lambda_sam_types`）SHALL **逐字保留**：站点与实现真不一致、或捕获值类型无可据陈述时仍 SHALL 拒绝。若实现走帧层给名（方向 A），`RefType::Unknown` 的既有消费面 SHALL 逐一核对无行为依赖（记录存证据）；若走陈述类型（方向 B），类型陈述 SHALL 来自字节码陈述的事实（LVT 或 `newarray` 的 `atype` 码），不得发明。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试恢复 invokedynamic lambda 站点的原生数组局部捕获
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ `multianewarray` 产物的捕获（`int[][]` 等）与 `anewarray` 路径（已恢复）不在本能力范围内。
++
+ 
+ #### Scenario: 原生数组捕获恢复
+ 
+--- a/openspec/changes/recover-multi-resource-twr/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-multi-resource-twr/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Multi-resource try-with-resources proves its nested levels
+ 
++两个及以上资源的 try-with-resources，在每层行的几何与每层的 close/`addSuppressed` 链都可证明时，SHALL 呈现为一条带多个资源的 `try` 头语句，资源顺序 = 初始化顺序。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复两个及以上资源的 try-with-resources
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 两个及以上资源的 try-with-resources，在每层行的几何与每层的 close/`addSuppressed` 链都可证明时，SHALL 呈现为一条带多个资源的 `try` 头语句，资源顺序 = 初始化顺序。层级几何 MUST 从字节码证明：每层主异常表行从其资源初始化之后的受保护指令开始，止于该层正常 close 组的精确起点；内层 handler 的异常清理 MUST 由外层主行完整覆盖，或由范围恰好等于该清理段、且 catch 类型与目标 handler 均和外层主行相同的另一行覆盖。该证明 MUST NOT 单凭外层行是否止于内层 handler 的 span 末判定成功，也 MUST NOT 忽略任何额外保护行。任一层几何、close 顺序或抑制链不可证明时 MUST 保持整方法引用，不得部分呈现。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复两个及以上资源的 try-with-resources
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 资源头中的 `new`、`dup`、构造器及实参效果 MUST 由对应的已证 `new@1` 站点和资源 Store 的 SSA 值流共同归属给该资源初始化，按资源逐一验证。任一站点缺失、构造结果不是该 Store 所读值、站点指令不在完整头部范围，或范围中夹有其它效果时 MUST 保持引用；不得无条件略过这些指令。成功呈现的头部及其来源映射 MUST 保留每项资源的 allocation、dup、constructor、Store 和 close/suppression 锚点。
++
+ 
+ #### Scenario: Two resources present as one header
+ 
+--- a/openspec/changes/recover-protected-prefix-loop-sequences/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-protected-prefix-loop-sequences/specs/java8-recovery/spec.md
+@@ -2,11 +2,30 @@
+ 
+ ### Requirement: A protected prefix and loop retain one exception scope
+ 
++普通单range named catch保护的前置语句和已证明循环，当完整body都位于该保护范围内、内部continuation及唯一正常出口均已证明时，恢复 MUST 把它们完整置于同一try body。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复 named catch 保护的前置语句与循环序列
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 普通单range named catch保护的前置语句和已证明循环，当完整body都位于该保护范围内、内部continuation及唯一正常出口均已证明时，恢复 MUST 把它们完整置于同一try body。前置iterator构造、循环条件、元素读取/检查转换和循环body的异常覆盖 MUST 与物理异常表一致；MUST NOT 只恢复前缀、把循环移到try外或以未owned块代替已证明的body。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复 named catch 保护的前置语句与循环序列
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 范围末尾的跳转只有在它是无效果、无异常保护/handler入口、无竞争进入、仅通向try join的已证明纯transfer时，恢复 MUST 允许用try后的词法continuation呈现并保留来源。未证明出口、重复所有权、跨范围效果、fallback或未支持组合 MUST 沿既有保守路径处理，MUST NOT 通过正常流投影隐藏异常/调用边或猜测闭合。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试恢复 named catch 保护的前置语句与循环序列
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 新增续接的header、body和前缀的每条可触发异常边 MUST 精确属于当前Catches的range/types/handler及实际ordinal；MUST NOT 仅凭own_try起点节点或另一named row覆盖该块放行。此归属仅在已证明的ordinary候选传播，MUST NOT 全局扩大loop frame或替代finally等已有证书。nested Try/Guard、额外活动row及未支持scope组合 MUST 保持拒绝。
++
+ 
+ #### Scenario: Iterator initialization and loop stay protected
+ 
+--- a/openspec/changes/recover-proved-enum-string-varargs/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-proved-enum-string-varargs/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Proved enum constants recover literal String varargs
+ 
++对于完整的 Java 8 普通 enum group，class-source 只有在同次选中 run 证明唯一物理构造器 `(Ljava/lang/String;I[Ljava/lang/String;)V`、`ACC_VARARGS`、源 Signature `([Ljava/lang/String;)V`、隐式 `Enum(String,int)` 调用，以及第三参数只写入唯一实例 `String[]` 字段时，才 SHALL 恢复 `String...` 构造器和有序常量实参。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复 Java 8 普通 enum group 的 String varargs 构造器与常量实参
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 对于完整的 Java 8 普通 enum group，class-source 只有在同次选中 run 证明唯一物理构造器 `(Ljava/lang/String;I[Ljava/lang/String;)V`、`ACC_VARARGS`、源 Signature `([Ljava/lang/String;)V`、隐式 `Enum(String,int)` 调用，以及第三参数只写入唯一实例 `String[]` 字段时，才 SHALL 恢复 `String...` 构造器和有序常量实参。证明 SHALL 将每个常量绑定到其物理 enum 字段、ordinal、数组分配、构造调用、字段写入，以及已有的完整 `$VALUES`、`values()`、`valueOf()`、构造器调用 census 和初始化 suffix census。生成源码 SHALL 保留每个数组的有序字符串值和新数组构造语义。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复 Java 8 普通 enum group 的 String varargs 构造器与常量实参
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 本切片只接受最多 64 个元素且每个 classfile modified UTF-8 字符串字节均为 ASCII 的 literal。非 ASCII 字节、modified UTF-8 NUL 编码和无效 UTF-8 SHALL 整组拒绝；不得使用 lossy 解码。字符串使用既有 Java literal 转义函数输出。
++
+ 
+ #### Scenario: Literal arrays and empty varargs
+ - **WHEN** 完整普通 enum group 的常量实参是新分配的 `String[]`，长度不超过 64，元素在 `0..n-1` 按序写入 ASCII 字符串 literal，且包含实际分配的零长度数组
+--- a/openspec/changes/recover-shared-latch-nested-loops/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-shared-latch-nested-loops/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: 外层 continue 与内层循环退出共享 latch 时可证明
+ 
++系统 SHALL 在满足三条 CFG 结构事实时接受循环 latch 共享：内层循环块集完全包含于外层循环体、内层循环的**每个退出都路由到**外层 latch 块（直接落在 latch 上，**或经其自身的一次 transfer（`goto`）落到 latch**）、外层 continue 边目标等于同一 latch 块；归属按边语义分派（continue 与内层退出均回外层 header）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统判断外层 continue 与内层循环退出共享 latch 的 CFG 证明
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 在满足三条 CFG 结构事实时接受循环 latch 共享：内层循环块集完全包含于外层循环体、内层循环的**每个退出都路由到**外层 latch 块（直接落在 latch 上，**或经其自身的一次 transfer（`goto`）落到 latch**）、外层 continue 边目标等于同一 latch 块；归属按边语义分派（continue 与内层退出均回外层 header）。此外循环的后边 SHALL **恰好**是本形状所解释的路由（不多不少），且被重选举的 continue 臂 SHALL 是**恰一块**的 `Straight`。单层 continue、无跳转嵌套、同一循环体内双跳转（既有片）与全部既有循环形态 SHALL 逐字不变；内层退出**逃逸过** back edge（如带标签 `break outer`）或**分歧**（落在不经单一 transfer 到 latch 的块上）SHALL 保持既有拒绝。多层（含三层）共享 latch 若**逐层满足**上述三事实与后边闭合，SHALL 由同一机制组合恢复（不另立泛化判据）；不满足者保持既有拒绝。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统判断外层 continue 与内层循环退出共享 latch 的 CFG 证明
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ > **root 验收更正（2026-10-04）**：本 Requirement 原文写"内层循环退出边目标**等于**外层 latch 块"与"三层以上共享 SHALL 保持既有拒绝或登记"，两处均经实测更正。(1) "等于"过窄：必收锚 `S3.nestedBreak`（`Svc.lookup` 业务形）的内层退出是 `84: ifeq 153` → `153: goto 20`，即**经一次自身 transfer** 落到 latch 20，故判据须为"路由到"（直接或经其自身一次 transfer）；其阻断力由 `ExitDiverges`（分歧）与 `LabeledBreakOuter`（逃逸）两个负例实证。(2) 三层形**并非一律拒绝**：root 实测 `ThreeLevel` 冻结 fixture 渲染 quotes=0、恢复成功，且两腿运行输出 SHA 一致（`68ca3fba…`）——它是同一机制逐层组合的结果，行为已证。
++
+ 
+ #### Scenario: 双层过滤循环恢复
+ 
+--- a/openspec/changes/recover-structured-list-generic-bodies/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-structured-list-generic-bodies/specs/java8-recovery/spec.md
+@@ -2,9 +2,23 @@
+ 
+ ### Requirement: Structured parameterized List bodies are projected as one source decision
+ 
++对于完整、无异常处理器、参数局部未重赋值的结构化void方法，若方法Signature给出确切 `java.util.List<S>`，且所有这些参数的真实源级用途均被有限平台契约证明，系统 MUST 同时恢复参数化声明和合法调用实参。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试投影结构化参数化 List 方法的声明与正文调用
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 对于完整、无异常处理器、参数局部未重赋值的结构化void方法，若方法Signature给出确切 `java.util.List<S>`，且所有这些参数的真实源级用途均被有限平台契约证明，系统 MUST 同时恢复参数化声明和合法调用实参。系统 MUST 支持固定CF11的嵌套迭代、条件、元素add、对象remove、size及clear，以及至少一种不同元素类型的同类正文。不能仅因正文含多个块、循环Phi而退化为raw参数，也 MUST NOT 单凭Signature擦除相同或参数未重赋值发布未证明的泛型声明。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试投影结构化参数化 List 方法的声明与正文调用
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 投影 MUST 保持物理检查转换、对象/索引重载选择、循环条件和副作用执行位置、值/异常及可观察集合状态。仅已核准的源级擦除参数包装可去除，未证明来源、参数重赋值、raw别名escape、wildcard capture、不完整结构、handler或未支持平台调用 MUST 沿既有泛型refusal保持可靠原正文，不能全局删cast或猜测未知层级。声明和正文 MUST 在同次有界投影中原子发布；中止不发布部分泛型源码或来源。optional evidence选择 MUST 不影响正文决定。
++
+ 
+ #### Scenario: Nested String lists retain their generic declaration and behavior
+ 
+--- a/openspec/changes/recover-twr-javac8-close-sequence/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-twr-javac8-close-sequence/specs/java8-recovery/spec.md
+@@ -3,10 +3,29 @@
+ ### Requirement: 真 javac 8 的 TWR 关闭序列 SHALL 恢复为源级 try-with-resources
+ 
+ 当方法的异常表与 CFG 呈现真 javac 8 的 try-with-resources 关闭序列几何——**primary-exception 空槽引导**（`aconst_null` + 局部槽）、**守卫式主 close**（资源 `ifnull` 与 primary 槽 `ifnull` 双守卫）、**重抛-再捕获回路**（primary 异常存槽后 `athrow`，被 `any` 行再捕获进入 close 抑制链）、以及**抑制链 handler 块**（`addSuppressed` 路径，带自己的 `Throwable` 行与 `any` 行）——且资源初始化/使用/返回的既有 `Shape::Resources` 事实成立时，系统 SHALL 把该语句恢复为源级 TWR（`try (R r = …) { … }`），呈现与 javac 9+ `--release 8` 产物同构（不含 `addSuppressed` 等编译器合成文本）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复 javac 8 try-with-resources 关闭序列
++- **THEN** 系统 MUST 满足以下全部约束：
++
++当方法的异常表与 CFG 呈现真 javac 8 的 try-with-resources 关闭序列几何——**primary-exception 空槽引导**（`aconst_null` + 局部槽）、**守卫式主 close**（资源 `ifnull` 与 primary 槽 `ifnull` 双守卫）、**重抛-再捕获回路**（primary 异常存槽后 `athrow`，被 `any` 行再捕获进入 close 抑制链）、以及**抑制链 handler 块**（`addSuppressed` 路径，带自己的 `Throwable` 行与 `any` 行）——且资源初始化/使用/返回的既有 `Shape::Resources` 事实成立时，系统 SHALL 把该语句恢复为源级 TWR（`try (R r = …) { … }`），呈现与 javac 9+ `--release 8` 产物同构（不含 `addSuppressed` 等编译器合成文本）。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复 javac 8 try-with-resources 关闭序列
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 识别 SHALL 以**结构事实**（块集/异常表行集的 CFG 关系）表达；SHALL NOT 引入 `java_release`/`major_version` 或任何按产出编译器分支的判据（两形产物 major version 均 52）。既有 javac 9+ 形的 `Shape::Resources` 判据 SHALL **逐字不变**——本能力只能以**新增**几何事实（在 javac 9+ 形上恒假的抑制链/守卫事实）容纳 javac 8 形，任何对既有判据的放宽均不允许。抑制链块与守卫 close 是编译器合成、源级不可见的证据，SHALL 不在呈现中出现。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试恢复 javac 8 try-with-resources 关闭序列
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 削弱任一几何事实（缺一条 `any` 行、守卫目标错乱、抑制链断头）SHALL 保持既有拒绝——新判据是必需的而非装饰。
++
+ 
+ #### Scenario: 真 javac 8 单资源 TWR 恢复
+ 
+--- a/openspec/changes/recover-write-accessor-field-types/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-write-accessor-field-types/specs/java8-recovery/spec.md
+@@ -2,11 +2,30 @@
+ 
+ ### Requirement: 返回值形写访问器 SHALL 按字段描述符恢复（封闭类型集）
+ 
++当合成写访问器（`access$NNN`）的方法体为 `aload_0; <load_1>; <dup 复制>; putfield; <return>`——即"内部类写外部私有字段"的真 javac 产物形——系统 SHALL 在字段描述符属于**封闭类型集**（`Z`/`I`/`B`/`S`/`C`/`F`/`J`/`D`/引用型）时把它恢复为 `arg0.<field> = arg1; return arg1;`，与 boolean 现状同形。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试恢复返回值形合成字段写访问器
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 当合成写访问器（`access$NNN`）的方法体为 `aload_0; <load_1>; <dup 复制>; putfield; <return>`——即"内部类写外部私有字段"的真 javac 产物形——系统 SHALL 在字段描述符属于**封闭类型集**（`Z`/`I`/`B`/`S`/`C`/`F`/`J`/`D`/引用型）时把它恢复为 `arg0.<field> = arg1; return arg1;`，与 boolean 现状同形。每型的装载/复制/返回 opcode 与槽宽 SHALL 以该封闭表为准（单槽：`dup_x1`；`J`/`D` 双槽：`dup2_x1`；下限 stack/locals 相应为 3/2 与 5/3），**不得**外推表外类型。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试恢复返回值形合成字段写访问器
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 处理器的**结构判据**（单 SSA 块、无异常表、无 clone 块、BCI 布局 `[0,1,2,3,6]`、`Operation` 序列含 `Load{slot:0}`/`Load{slot:1}`/`Other`/`Field{Write,!static}`/`Return`、字段属于本类、预算语义）SHALL **逐字保留**——本能力只把"类型事实"从 boolean 常量改为查表，不放宽任何结构证明。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试恢复返回值形合成字段写访问器
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ static 字段的写访问器与无复制形的返回值写访问器 SHALL 维持既有拒绝（后者属 `accessor@1` 折叠路径的既有语义）。
++
+ 
+ #### Scenario: 9 类型全部恢复且整类可编译
+ 
+--- a/openspec/specs/recovery-validation/spec.md
++++ b/openspec/specs/recovery-validation/spec.md
+@@ -7,9 +7,23 @@
+ 
+ ### Requirement: Separate representation and validation statuses
+ 
++每个 source result SHALL 独立返回 representation（Java/Bytecode/Mixed）、quality（Structured/Conservative/Fallback）、syntax_status（Checked/Unchecked/NotJava）、compile_status（NotAttempted/Compiles/Failed）、semantic_validation（LocalInvariants/FixtureDifferential/Unproven）、verification（Performed/NotPerformed/Failed）、recovery profile、coverage 和 diagnostics；`Mixed` 只表示 representation，禁止把它当作 quality。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统发布 source result 或验收返回值、可观察行为与 fallback 来源
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 每个 source result SHALL 独立返回 representation（Java/Bytecode/Mixed）、quality（Structured/Conservative/Fallback）、syntax_status（Checked/Unchecked/NotJava）、compile_status（NotAttempted/Compiles/Failed）、semantic_validation（LocalInvariants/FixtureDifferential/Unproven）、verification（Performed/NotPerformed/Failed）、recovery profile、coverage 和 diagnostics；`Mixed` 只表示 representation，禁止把它当作 quality。未实际编译时 compile_status MUST 为 NotAttempted；只通过局部不变量可记录 LocalInvariants，受控语料对照通过才记录 FixtureDifferential，无相应证据时记录 Unproven。生成 Java 文本不得自动意味着可重编译或语义等价。验收 SHALL 独立核对已知反例的返回值/可观察行为与 fallback 的生产者来源完整性；语义已知错误的输出不得因 Unproven 或既有门禁绿色被计为完成。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统发布 source result 或验收返回值、可观察行为与 fallback 来源
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 每个平面 SHALL 只被读作它自己的结构性问题：representation 说明表示形态，quality 说明区域结构的强度，syntax/compile/semantic/verification 各自说明对应证据是否存在，coverage 与 execution 说明工作范围与完成度，content 说明交付物是否含发射语句。任意组合——包括 quality=Structured、content=contains_statements、execution=complete、coverage=CompleteWithinSchema 且无诊断同时成立——MUST NOT 构成语义等价或值正确的声明；已知反例中存在这样同时成立、却计算了与字节码不同值的产物。需要语义证据的调用方 MUST 执行受控编译/执行对照，或把产物当作假设并保留其未证明状态；MUST NOT 用任一平面组合代替该动作。
++
+ 
+ #### Scenario: Structured output cannot compile
+ 
+@@ -81,9 +95,23 @@
+ 
+ ### Requirement: A signal is not an acceptable answer
+ 
++恢复验收 SHALL 把「修正前以进程 signal 结束」的输入纳入永久回归，并在公开入口核对修正后得到的是报告。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统验收曾以进程 signal 结束的恢复输入
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 恢复验收 SHALL 把「修正前以进程 signal 结束」的输入纳入永久回归，并在公开入口核对修正后得到的是报告。该回归 MUST 在独立进程内运行这个输入，因为 signal 是进程级事实，进程内的断言捕获不到它。验收证据 MUST 是报告的 `outcome`、`execution`、诊断与 CLI 退出状态；MUST NOT 以「stderr 没有 stack overflow」「进程存活」或「日志里没有 abort」单独算作通过，也 MUST NOT 通过扩大预算、在测试外重跑或降低输入来绕过。修正前该回归 MUST 失败，且失败现象是 signal/无报告，而不是断言缺失或编译错误。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统验收曾以进程 signal 结束的恢复输入
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 对**深拼接链**这一族，输入 MUST 由受控、确定性的构造给出并直接产出字节：链长是本检查的参数（复核区间 N = 1536/2048 与更大规模都要跑），生成器能确定地给出它，而 `javac -J-Xss64m` 一类「放大编译器栈」的产出手段 MUST NOT 进入回归。生成器 MUST 点名它镜像的复现（同一 `StringBuilder` 链、同一 overload、同一直线、同一区间），库入口与进程入口 MUST 使用同一份字节。检查 MUST 在**子进程级**运行，并 MUST 覆盖 debug 与 release 两个构建：两个构建都 MUST 返回报告，正常完成与预算停止后的清理都 MUST 被覆盖，MUST NOT 出现 signal、空 stdout 或 abort。界与完成性 MUST NOT 依赖线程栈：检查 MUST 在默认栈上运行，MUST NOT 通过 `RUST_MIN_STACK`、大栈线程或等价手段取得结论——放大线程栈不是界的替代。修正前的 signal MUST 在 verification 里记录一次（命令、exit 状态、stderr 的栈溢出行与空 stdout 的事实），MUST NOT 变成常备断言——常备断言的对象是「返回报告」，不是崩溃。debug 与 release 两个构建边界的原始测量 MUST 分开记录：MUST NOT 用 release 对更深输入完成替代 debug 的 signal 证据，也 MUST NOT 用任一构建的完成深度代替界的依据。
++
+ 
+ #### Scenario: Counterexample fails on the pre-fix behaviour
+ 
+@@ -181,9 +209,23 @@
+ 
+ ### Requirement: A boolean context's artifact compiles and agrees when executed
+ 
++boolean 上下文的验收 SHALL 以「用本次运行自己的事实派生成员声明、把产物交给 javac 编译、并以同一输入集合执行两侧」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统验收 boolean 上下文的恢复产物与拒绝区域
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ boolean 上下文的验收 SHALL 以「用本次运行自己的事实派生成员声明、把产物交给 javac 编译、并以同一输入集合执行两侧」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。`Z` 返回与 boolean 条件样本的呈现文本 MUST 能在方法自己的 descriptor 下编译；两侧返回值 MUST 逐项相同。修正前的 `return 1;`/`return 0;` 与 `if (flag() != 0)` MUST 被记录为 javac 的拒绝，MUST NOT 因为该成员没有执行而被算作边界通过。MUST NOT 用 representation/quality/content/execution 任一平面或「文本看起来像 Java」代替编译与执行。选择拒绝的区域 MUST 以拒绝范围、被引用 BCI 与物理方法映射作为其边界证据。
+ 
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统验收 boolean 上下文的恢复产物与拒绝区域
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 本要求同样覆盖**整数二元比较**这一族：验收 MUST 把 `if (1 == n)`、`if (0 < n)`、`if (1 < n)` 一类形状的呈现文本包进由本次运行事实派生的成员声明，交给 javac 编译，并以同一输入集合执行两侧。覆盖 MUST 包含常量在左与常量在右、相等与大小两个比较方向；MUST NOT 只以左操作数或单一比较方向作为本族的证据。修正前的 `if (true == arg0)`、`if (false < arg0)`、`if (true < arg0)`（`incomparable types`／`bad operand types` 一类 javac 拒绝）MUST 在 verification 里作为实测边界记录，不得作为通过；这是本项目上一轮 boolean 修正（`5a8c36a`）引入的回归，MUST NOT 被写成新发现。变异把字面量映射放回「先按值转换左操作数、再按测试形态取舍」的顺序 MUST 让本要求的至少一个已提交检查变红，失败现象是该形状的精确文本不符或 javac 拒绝；MUST NOT 用其它用例的红代替，变异恢复后不遗留调试改动。
++
+ 
+ #### Scenario: The artifact compiles under the member's own descriptor
+ 
+@@ -256,7 +298,16 @@
+ 
+ ### Requirement: A local's decided type compiles and agrees when executed
+ 
++局部类型决定的验收 SHALL 以「用本次运行自己的事实派生成员声明、把呈现文本交给 `javac --release 8` 编译、并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统验收局部类型决定的恢复产物与拒绝区域
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 局部类型决定的验收 SHALL 以「用本次运行自己的事实派生成员声明、把呈现文本交给 `javac --release 8` 编译、并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。提升声明与就地声明对同一个值的决定 MUST 被同一份样本覆盖；MUST NOT 用 representation/quality/content/execution 任一平面、「文本看起来像 Java」、或某条文本断言代替编译与执行。修正前的 `int local3; … local3 = <boolean 值>; … if (local3 != 0)` 一类正文（`boolean cannot be converted to int` 一类拒绝）MUST 在 verification 里作为实测边界记录，不得作为通过。验收 MUST 覆盖：交换分支顺序后仍得同一结论、经另一个 boolean 局部的复制链、纯 `int` 对照与既有的 descriptor 证据局部；选择拒绝的区域 MUST 以拒绝范围、被引用 BCI 与物理方法映射作为其边界证据。变异让提升路径退回 descriptor-only 证据、或让一致性检查只读第一次写入时，至少一个已提交检查 MUST 变红；MUST NOT 用其它用例的红代替。
++
+ 
+ #### Scenario: The hoisted shape compiles under the member's own descriptor
+ 
+@@ -295,7 +346,16 @@
+ 
+ ### Requirement: A presented concatenation is compared by execution
+ 
++拼接转换的验收 SHALL 以受控执行对照为准：用本次运行自己的事实派生成员声明，把呈现文本交给 `javac --release 8` 编译，并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统验收拼接链的恢复产物与拒绝区域
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 拼接转换的验收 SHALL 以受控执行对照为准：用本次运行自己的事实派生成员声明，把呈现文本交给 `javac --release 8` 编译，并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。MUST NOT 用「两侧都能编译」、representation/quality/content/execution 任一平面、或「该链被记录为 presented」代替该对照——已知反例正是两侧都能编译而值不同。反例 MUST 在修正前记录：`append(a).append(b).append("!")` 的呈现是 `arg0 + arg1 + "!"`，输入 `(1, 2)` 时原 class 返回 `"12!"`、呈现文本返回 `"3!"`，两侧都编译通过；MUST NOT 以「文本看起来像 Java」或结构平面代替这条记录。对照 MUST 覆盖多个数值/字符串顺序（至少：两个数值在前、需要转换的片段在最后、全字符串），MUST 覆盖 boolean、`null` 与对象片段的转换，MUST 覆盖「片段本身是加法」与「两个独立片段」这一对分组形态（两者在同一输入上的值不同，任何合并或拆分都会让对照变红），并 MUST 包含一个可能抛异常/可观察的片段用于比较求值次数与顺序。变异恢复「从第一个原始值起左折叠、不建立字符串上下文」的行为后，对照 MUST 在至少一个输入上以值不同变红；MUST NOT 用其它用例的红代替，变异恢复后不遗留调试改动。选择拒绝的区域 MUST 以拒绝范围、被引用 BCI 与物理方法映射作为其边界证据。
++
+ 
+ #### Scenario: The counterexample's two values are recorded
+ 
+--- a/openspec/changes/add-demand-driven-core-results/specs/java8-recovery/spec.md
++++ b/openspec/changes/add-demand-driven-core-results/specs/java8-recovery/spec.md
+@@ -2,11 +2,30 @@
+ 
+ ### Requirement: Evidence-gated Java 8 recovery
+ 
++系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。值的正确性 SHALL 按生成代码实际求值的位置与顺序验证，嵌套表达式不能以其原始生产位置代替当前求值位置；当一个算术的结果作为另一个算术的操作数时，呈现 MUST 使用该操作数自己的值并保留这一嵌套，MUST NOT 省略外层运算、也不得把某个操作数改写成另一种运算（例如把 `i * (2 - d * i)` 写成 `i * 2 - d * i`）。**该嵌套也 MUST 体现在输出文本的分组上**：表达式树到文本的转换 MUST 按运算优先级与结合性补足括号（或写成不依赖默认结合的形式），使文本解析回同一棵树；仅凭「树是对的」不满足本要求，因为调用方收到的是文本。分组 MUST 按子表达式所在的**语法位置**判定，而不只按它的父运算符：同一个子表达式写在调用或字段读取的 receiver、方法引用限定符、一元操作数与数组位置时 MUST 同样保持自己的分组（例如 `return (a + b).substring(1);` 的接收者），而 Java 语法已经界定该子表达式的位置（调用/构造实参、下标、lambda 体）MUST NOT 增加无谓括号。层不能证明某操作数的值或求值点时 MUST 拒绝该区域而不是呈现，并保留被拒区域的 bytecode 与 origin；quality、content、execution 等结构性平面 MUST NOT 代替这一证据。fallback MUST 保留被省略表达式所依赖的可观察生产者及其物理 origin，包括字段读取、类初始化与可能抛异常的操作。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 证据选择只改变可选证据的物化与交付，不改变规则前提、值/控制流/effect 验证、Structured 接受集或拒绝决定。规则验证仍必须完整执行到本次请求允许的范围；完整证据选择 SHALL 保留本 requirement 原有的全部审计语义，任何较精简选择都必须交付核心缺口、拒绝原因、可观察生产者及可按精确产物重建的 origin。关闭详细规则、区域、命名或映射明细 MUST NOT 改变正文、名称、类型、分组、求值顺序、quality/content 或拒绝范围；若详细证据本身在正文提交后停止，必须单独报告证据覆盖与真实 execution。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 本 capability 中有关规则审计记录及公开 source map 的交付要求统一遵循所选证据范围：完整选择继续执行原场景的全部交付断言；未选择时保留内部依据、核心拒绝与可核对的产物绑定，不构造完整公开明细。所有模式的值、类型、分组、求值顺序、异常与副作用要求不受选择影响。
++
+ 
+ #### Scenario: Java 8 lambda and method reference
+ 
+--- a/openspec/changes/add-demand-driven-core-results/specs/query-api/spec.md
++++ b/openspec/changes/add-demand-driven-core-results/specs/query-api/spec.md
+@@ -2,7 +2,20 @@
+ 
+ ### Requirement: Coverage and pagination are explicit
+ 
++每个查询结果 SHALL 独立返回 artifact/runtime/dynamic coverage、execution（Complete/Partial/Cancelled/Failed）、预算消耗、snapshot/view identity、evidence 和已扫描范围。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统执行查询请求
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 每个查询结果 SHALL 独立返回 artifact/runtime/dynamic coverage、execution（Complete/Partial/Cancelled/Failed）、预算消耗、snapshot/view identity、evidence 和已扫描范围。Unknown 是候选/解析状态，MUST 不与 execution 混为同一枚举。分页游标 SHALL 绑定 snapshot、完整 query identity、view、排序/扫描边界和 schema 版本；完整 query identity MUST 包括 relation、完整 target（symbol kind/owner/name/descriptor 或 literal kind/原始值与浮点位模式）和 consumer schema。改变 target MUST 在重放扫描边界前拒绝，不得按另一目标的匹配序号跳过结果。每页 max_items 和预算是执行参数，可以改变，但不能改变查询含义。page.has_more 不等于搜索完成。取消、缺失搜索范围和预算耗尽 MUST 不得映射为 NoMatch。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统执行查询请求
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 查询 SHALL 将续扫位置推进到实际 consumer/provider 边界，而不是只保存已返回结果的序号。页达到 `max_items` 时 MUST 停止后续 provider/consumer 工作，未访问 consumer、未解释位置和未验证后缀保持未知；游标 MUST 保留足以从该边界继续的排序、consumer 内偏移、必要的可复核结构边界和 schema 身份。必要的边界验证在续页重放时可重新读取，但其读取与解码费用 MUST 记入当前页的 usage，不能把旧页的工作当作免费命中。
+ 
+--- a/openspec/changes/make-required-conversions-explicit/specs/java8-recovery/spec.md
++++ b/openspec/changes/make-required-conversions-explicit/specs/java8-recovery/spec.md
+@@ -2,11 +2,30 @@
+ 
+ ### Requirement: Boolean contexts are presented as booleans
+ 
++值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。层不能证明上下文所要求的值是 boolean 时 MUST 拒绝该区域并保留 bytecode 与 origin，MUST NOT 发布另一个编译器拒绝的文本；上下文没有 boolean 要求的位置（真正 `int` 返回、两个 int 值的比较）MUST 保持原有整数形态。本要求只使用返回 descriptor、参数槽类型与既有 callee descriptor 证据，MUST NOT 由它引入通用类型系统或推断。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 本要求同样约束判定的**顺序与操作数范围**：某个位置是否要求 boolean MUST 在该位置的**全部**操作数被拼写之前判定，且 MUST 由该位置的形态与已证明的证据作出，而不是由操作数各自的值形态作出。值自身的类型证据（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取、被本 run 证明 boolean 的局部的读取，以及真正 `int` 操作数的整数形状）只回答「这个值是什么」；目标位置的要求回答「这个位置要不要 boolean」；`0`/`1` 到 `false`/`true` 的拼写只是后者的**适配**，MUST NOT 反过来成为前者的证据。因此整数二元比较（`if_icmp*` 形态）的两个操作数 MUST 保持各自的整数文本：`1 == n`、`n == 1`、`0 < n`、`n > 0` 的常量操作数写成 `1`/`0`，变量操作数按自己的值写出；常量在左、常量在右、相等与大小比较一律相同，MUST NOT 出现 `true == arg0`、`false < arg0`、`true < arg0` 一类 javac 拒绝的文本。**比较的结果是 boolean，这一事实 MUST NOT 被当作它操作数的类型证据。** 操作数被**证明**为 boolean 的零值测试（`ifeq`/`ifne` 形态）仍 MUST 写成真值测试（`if (b)`、`if (!b)`、`if (flag())`），而不是 `if (b != 0)`。同一个 `iconst_1` 在二元比较里 MUST 是 `1`，在真值测试与 `Z` 返回里 MUST 是 `true`。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 这条修正是对本项目自己上一轮 boolean 修正（已归档的 `type-boolean-contexts`，`5a8c36a`）所引入回归的纠正：该修正之前（`fa6dc6e`）`1 == n`、`0 < n`、`1 < n` 三个形状输出正确的整数文本；本要求 MUST NOT 被表述为新发现的缺陷，MUST NOT 重开该 change 的其它结论。前一轮已经落地的 boolean 形状与 int 形态 MUST 逐字保留。
++
+ 
+ #### Scenario: A boolean return presents true or false
+ 
+--- a/openspec/changes/recover-proved-local-reference-write-compatibility/specs/java8-recovery/spec.md
++++ b/openspec/changes/recover-proved-local-reference-write-compatibility/specs/java8-recovery/spec.md
+@@ -2,13 +2,37 @@
+ 
+ ### Requirement: One local variable's type is decided once, before its statements are built
+ 
++一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。
++系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
++
++#### Scenario: 完整契约 1
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。同一个值在两条声明路径上 MUST 得到同一个类型：写在包含全部使用的区域起点上的**提升**声明与写在首个写入处的**就地**声明 MUST 一致，结论 MUST NOT 取决于遍历顺序（同一变量的两个分支先后不得改变其类型）。
++
++#### Scenario: 完整契约 2
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
+ 
+ 决定的证据 MUST 是一份有限、写清的清单：类文件 descriptor 的 boolean 事实（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取）、一次对本 run **已判为 boolean 的局部**的读取（传播，MUST NOT 跟随值链：一个 store 的 own value、由多个 push 合并出的值仍不证明）、以及帧为其它类型给出的既有类型事实。`0`/`1` 字面量 MUST NOT **发起** boolean 判断（`int x = 0;` 与 `boolean c = true;` 是同一份字节），但目标已经确定为 boolean 时 MUST 按其拼写（`true`/`false`）适配。**每个**写入（不只是第一次写入）MUST 按已决定的类型检查：写入的值不能拼成该类型时即为冲突。证据的传播 MUST 有界（不随输入规模无限增长），并 MUST 接线到本 run 既有的预算与取消检查；规划 MUST NOT 成为绕过预算的无限工作量，预算或取消在规划期停止时 MUST 发布既有停止。
+ 
++#### Scenario: 完整契约 3
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 普通首写定型的非参数标量引用局部，当另一物理写入准确给出 Object、所有写均可赋给 Object、全部局部读取的完整消费仅是直接 Object 返回时，系统 MUST 统一选择 Object，保留各写入和返回的执行位置及物理来源。Unknown frame 的 Object 拼写、debug类型、名称或物理slot相同 MUST NOT 单独作为这项证明；参数、专门类型证明、数组形状和未完整覆盖的handler访问 MUST NOT 被该候选放宽。准确Object写与原窄声明矛盾且读侧未闭合时，系统 MUST 按既有冲突/refusal契约停止受影响结构，MUST NOT 继续发布该矛盾赋值或自行插入cast。
+ 
++#### Scenario: 完整契约 4
++
++- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
++- **THEN** 系统 MUST 满足以下全部约束：
++
+ 类型未知（没有可决定的类型）或冲突（写入与已决定的类型矛盾）时，本层 MUST 终止该结构的生成，而不是发布一个猜测：受影响结构按既有 refusal 契约处理（保留 bytecode 与 origin、representation=Mixed、quality=Fallback、诊断点名相关 BCI 与物理方法），MUST NOT 发布类型矛盾的赋值（例如 `int local3; … local3 = <boolean 值>; …`）。声明的结果 MUST 区分「没有声明到期」与「声明失败（fallback 已写）」两种含义；后者之后 MUST NOT 继续写出那条赋值。本要求 MUST NOT 被读作类型保真或语义等价的声明：字面量单独构成的提升声明按其与就地路径一致的既有答案呈现，这一类型差异 MUST 被记录为边界。
++
+ 
+ #### Scenario: The two declaration paths decide the same type
+ 
+--- a/openspec/changes/recover-return-through-effectful-finally/tasks.md
++++ b/openspec/changes/recover-return-through-effectful-finally/tasks.md
+@@ -1,12 +1,12 @@
+ ## 1. 取证与基线
+-- 1.1 复跑 patrol fixture（FX/FY/FO），确认矩阵与 README 一致
+-- 1.2 回答 Q-i/Q-ii（插桩结论写入 instrumentation.md）
++- [ ] 1.1 复跑 patrol fixture（FX/FY/FO），确认矩阵与 README 一致
++- [ ] 1.2 回答 Q-i/Q-ii（插桩结论写入 instrumentation.md）
+ 
+ ## 2. 实现
+-- 2.1 MVP：单 return 出口 + 单副作用 finally（temp 绑定形，判据零放宽）
+-- 2.2 FO 求值序判别测试入测试集（1/100）
+-- 2.3 对照零回退：emptyFin/finContinue/finBreak/finally-return-value 逐字节不变
++- [ ] 2.1 MVP：单 return 出口 + 单副作用 finally（temp 绑定形，判据零放宽）
++- [ ] 2.2 FO 求值序判别测试入测试集（1/100）
++- [ ] 2.3 对照零回退：emptyFin/finContinue/finBreak/finally-return-value 逐字节不变
+ 
+ ## 3. 验证
+-- 3.1 三方行为：FY/FX 全锚 + FO 判别；jadx 对照
+-- 3.2 全门禁：workspace tests 基线不回退；fmt/clippy CI 逐字
++- [ ] 3.1 三方行为：FY/FX 全锚 + FO 判别；jadx 对照
++- [ ] 3.2 全门禁：workspace tests 基线不回退；fmt/clippy CI 逐字
+--- a/openspec/changes/recover-switch-case-nonlocal-exits/tasks.md
++++ b/openspec/changes/recover-switch-case-nonlocal-exits/tasks.md
+@@ -1,12 +1,12 @@
+ ## 1. 取证与基线
+-- 1.1 复跑 patrol fixture（SL/SM/SN），确认矩阵与 README 一致
+-- 1.2 回答 Q-i/Q-ii（插桩结论写入 instrumentation.md）
++- [ ] 1.1 复跑 patrol fixture（SL/SM/SN），确认矩阵与 README 一致
++- [ ] 1.2 回答 Q-i/Q-ii（插桩结论写入 instrumentation.md）
+ 
+ ## 2. 实现
+-- 2.1 MVP：case 内 return 恢复（按 Q-i 落点，判据零放宽）
+-- 2.2 第二步：case 内 break outer 标签重建（等价证明）
+-- 2.3 对照零回退：SM 五对照形逐字节不变
++- [ ] 2.1 MVP：case 内 return 恢复（按 Q-i 落点，判据零放宽）
++- [ ] 2.2 第二步：case 内 break outer 标签重建（等价证明）
++- [ ] 2.3 对照零回退：SM 五对照形逐字节不变
+ 
+ ## 3. 验证
+-- 3.1 三方行为：SN 四锚 + 判别输入 {9,1,5}→10；jadx labBreak 已知错码为反例
+-- 3.2 全门禁：workspace tests 基线不回退；fmt/clippy CI 逐字
++- [ ] 3.1 三方行为：SN 四锚 + 判别输入 {9,1,5}→10；jadx labBreak 已知错码为反例
++- [ ] 3.2 全门禁：workspace tests 基线不回退；fmt/clippy CI 逐字

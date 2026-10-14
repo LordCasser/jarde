@@ -1,0 +1,145 @@
+{
+  "status": "passed",
+  "kind": "pure text/parser checks; not actual CLI validation",
+  "requirements": 42,
+  "checks": [
+    {
+      "file": "openspec/specs/artifact-views/spec.md",
+      "requirementTitlesPreserved": 8,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 12,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/present-proved-java-structure/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 24,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/project-integer-constant-names-with-refused-member-family/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/project-multiple-enum-switch-sites/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/prove-enum-int-arguments/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 2,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/prove-interface-super-source-legality/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/specs/query-api/spec.md",
+      "requirementTitlesPreserved": 2,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-anonymous-supertype-return/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-capture-ctor-super-order/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-debug-reference-lifetimes/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-javac8-allocation-qualifier-null-check/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-javac8-getclass-null-check-idiom/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-lambda-primitive-array-capture/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-multi-resource-twr/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-protected-prefix-loop-sequences/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-proved-enum-string-varargs/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 2,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-shared-latch-nested-loops/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-structured-list-generic-bodies/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-twr-javac8-close-sequence/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-write-accessor-field-types/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/specs/recovery-validation/spec.md",
+      "requirementTitlesPreserved": 9,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/add-demand-driven-core-results/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/add-demand-driven-core-results/specs/query-api/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/make-required-conversions-explicit/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-proved-local-reference-write-compatibility/specs/java8-recovery/spec.md",
+      "requirementTitlesPreserved": 1,
+      "unmodifiedRequirementBlocksAndAllExistingSuffixesPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "uncheckedTasks": 7
+    },
+    {
+      "file": "openspec/changes/recover-switch-case-nonlocal-exits/tasks.md",
+      "uncheckedTasks": 7
+    }
+  ]
+}

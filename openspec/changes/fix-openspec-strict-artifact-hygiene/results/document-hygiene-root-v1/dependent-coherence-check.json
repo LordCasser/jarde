@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "file": "openspec/changes/add-demand-driven-core-results/specs/java8-recovery/spec.md",
+      "title": "Evidence-gated Java 8 recovery",
+      "requiredMainScenarioNames": [
+        "完整契约 1"
+      ],
+      "dependentScenarioNames": [
+        "完整契约 1",
+        "完整契约 2",
+        "完整契约 3"
+      ],
+      "originalBodySha256": "2fbdd30e91efc1e65777f5586d2d37bbd170745ca716ef26b41ccb12440fbfc4",
+      "deltaOwnBodyPreserved": true
+    },
+    {
+      "file": "openspec/changes/add-demand-driven-core-results/specs/query-api/spec.md",
+      "title": "Coverage and pagination are explicit",
+      "requiredMainScenarioNames": [
+        "完整契约 1"
+      ],
+      "dependentScenarioNames": [
+        "完整契约 1",
+        "完整契约 2"
+      ],
+      "originalBodySha256": "99bfa4c78bb7ce84527ffc11c7d0c5c8a5024ea3e9e80374d3257f6a9cacabd5",
+      "deltaOwnBodyPreserved": true
+    },
+    {
+      "file": "openspec/changes/make-required-conversions-explicit/specs/java8-recovery/spec.md",
+      "title": "Boolean contexts are presented as booleans",
+      "requiredMainScenarioNames": [
+        "完整契约 1",
+        "完整契约 2",
+        "完整契约 3"
+      ],
+      "dependentScenarioNames": [
+        "完整契约 1",
+        "完整契约 2",
+        "完整契约 3"
+      ],
+      "originalBodySha256": "eda7d18b84ade774c9c927644ba60161a045fd9aac83519dff5ef5ecfc156e7f",
+      "deltaOwnBodyPreserved": true
+    },
+    {
+      "file": "openspec/changes/recover-proved-local-reference-write-compatibility/specs/java8-recovery/spec.md",
+      "title": "One local variable's type is decided once, before its statements are built",
+      "requiredMainScenarioNames": [
+        "完整契约 1",
+        "完整契约 2",
+        "完整契约 3"
+      ],
+      "dependentScenarioNames": [
+        "完整契约 1",
+        "完整契约 2",
+        "完整契约 3",
+        "完整契约 4"
+      ],
+      "originalBodySha256": "f3e720a94540210002ca520d4250fc04e7a00531857ba4ec288b12df36b6c7db",
+      "deltaOwnBodyPreserved": true
+    }
+  ]
+}

@@ -2,11 +2,30 @@
 
 ### Requirement: Evidence-gated Java 8 recovery
 
+系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
+- **THEN** 系统 MUST 满足以下全部约束：
+
 系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。值的正确性 SHALL 按生成代码实际求值的位置与顺序验证，嵌套表达式不能以其原始生产位置代替当前求值位置；当一个算术的结果作为另一个算术的操作数时，呈现 MUST 使用该操作数自己的值并保留这一嵌套，MUST NOT 省略外层运算、也不得把某个操作数改写成另一种运算（例如把 `i * (2 - d * i)` 写成 `i * 2 - d * i`）。**该嵌套也 MUST 体现在输出文本的分组上**：表达式树到文本的转换 MUST 按运算优先级与结合性补足括号（或写成不依赖默认结合的形式），使文本解析回同一棵树；仅凭「树是对的」不满足本要求，因为调用方收到的是文本。分组 MUST 按子表达式所在的**语法位置**判定，而不只按它的父运算符：同一个子表达式写在调用或字段读取的 receiver、方法引用限定符、一元操作数与数组位置时 MUST 同样保持自己的分组（例如 `return (a + b).substring(1);` 的接收者），而 Java 语法已经界定该子表达式的位置（调用/构造实参、下标、lambda 体）MUST NOT 增加无谓括号。层不能证明某操作数的值或求值点时 MUST 拒绝该区域而不是呈现，并保留被拒区域的 bytecode 与 origin；quality、content、execution 等结构性平面 MUST NOT 代替这一证据。fallback MUST 保留被省略表达式所依赖的可观察生产者及其物理 origin，包括字段读取、类初始化与可能抛异常的操作。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
+- **THEN** 系统 MUST 满足以下全部约束：
 
 证据选择只改变可选证据的物化与交付，不改变规则前提、值/控制流/effect 验证、Structured 接受集或拒绝决定。规则验证仍必须完整执行到本次请求允许的范围；完整证据选择 SHALL 保留本 requirement 原有的全部审计语义，任何较精简选择都必须交付核心缺口、拒绝原因、可观察生产者及可按精确产物重建的 origin。关闭详细规则、区域、命名或映射明细 MUST NOT 改变正文、名称、类型、分组、求值顺序、quality/content 或拒绝范围；若详细证据本身在正文提交后停止，必须单独报告证据覆盖与真实 execution。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
+- **THEN** 系统 MUST 满足以下全部约束：
+
 本 capability 中有关规则审计记录及公开 source map 的交付要求统一遵循所选证据范围：完整选择继续执行原场景的全部交付断言；未选择时保留内部依据、核心拒绝与可核对的产物绑定，不构造完整公开明细。所有模式的值、类型、分组、求值顺序、异常与副作用要求不受选择影响。
+
 
 #### Scenario: Java 8 lambda and method reference
 

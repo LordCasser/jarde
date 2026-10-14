@@ -2,9 +2,23 @@
 
 ### Requirement: Proved enum constants recover literal String varargs
 
+对于完整的 Java 8 普通 enum group，class-source 只有在同次选中 run 证明唯一物理构造器 `(Ljava/lang/String;I[Ljava/lang/String;)V`、`ACC_VARARGS`、源 Signature `([Ljava/lang/String;)V`、隐式 `Enum(String,int)` 调用，以及第三参数只写入唯一实例 `String[]` 字段时，才 SHALL 恢复 `String...` 构造器和有序常量实参。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试恢复 Java 8 普通 enum group 的 String varargs 构造器与常量实参
+- **THEN** 系统 MUST 满足以下全部约束：
+
 对于完整的 Java 8 普通 enum group，class-source 只有在同次选中 run 证明唯一物理构造器 `(Ljava/lang/String;I[Ljava/lang/String;)V`、`ACC_VARARGS`、源 Signature `([Ljava/lang/String;)V`、隐式 `Enum(String,int)` 调用，以及第三参数只写入唯一实例 `String[]` 字段时，才 SHALL 恢复 `String...` 构造器和有序常量实参。证明 SHALL 将每个常量绑定到其物理 enum 字段、ordinal、数组分配、构造调用、字段写入，以及已有的完整 `$VALUES`、`values()`、`valueOf()`、构造器调用 census 和初始化 suffix census。生成源码 SHALL 保留每个数组的有序字符串值和新数组构造语义。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试恢复 Java 8 普通 enum group 的 String varargs 构造器与常量实参
+- **THEN** 系统 MUST 满足以下全部约束：
+
 本切片只接受最多 64 个元素且每个 classfile modified UTF-8 字符串字节均为 ASCII 的 literal。非 ASCII 字节、modified UTF-8 NUL 编码和无效 UTF-8 SHALL 整组拒绝；不得使用 lossy 解码。字符串使用既有 Java literal 转义函数输出。
+
 
 #### Scenario: Literal arrays and empty varargs
 - **WHEN** 完整普通 enum group 的常量实参是新分配的 `String[]`，长度不超过 64，元素在 `0..n-1` 按序写入 ASCII 字符串 literal，且包含实际分配的零长度数组

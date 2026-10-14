@@ -1,0 +1,246 @@
+{
+  "baseline": {
+    "passed": 341,
+    "failed": 24,
+    "total": 365,
+    "longWarnings": 38
+  },
+  "files": [
+    {
+      "path": "openspec/specs/artifact-views/spec.md",
+      "baseSha256": "6788467fd1a7e2e1b40315bb3b51fc5cf421ecdb8c79dc4ba08072fca7299e80",
+      "candidateSha256": "173570b1b97df205a8463d4f4b01027e6f8d3deb0cf8ec074097d499467b8419",
+      "requirements": [
+        "Standard multi-release selection is evidence-backed",
+        "Multi-release compliance diagnostics are bounded and non-selecting",
+        "Bounded nested and Boot layout traversal"
+      ]
+    },
+    {
+      "path": "openspec/specs/java8-recovery/spec.md",
+      "baseSha256": "6873b20d18e17d77b0b3c37c1d13054d7a828401dac36103d09fff09acab067f",
+      "candidateSha256": "697d17aca0e2452a6e4ce271fb2c3b041d6d66ddb1eb8549acc3509163c749c7",
+      "requirements": [
+        "Evidence-gated Java 8 recovery",
+        "Recovery artifact content is observable independently",
+        "Recovery recursion is bounded and a stop is published",
+        "Boolean contexts are presented as booleans",
+        "One local variable's type is decided once, before its statements are built",
+        "A presented concatenation keeps each append's own conversion"
+      ]
+    },
+    {
+      "path": "openspec/changes/present-proved-java-structure/specs/java8-recovery/spec.md",
+      "baseSha256": "b6065e9f9d987679c63b55da3e49e0c49376eb3b8c884eecf02e07493de867af",
+      "candidateSha256": "4527358f1e8e742f48a043ba4e6371c149a1c98b1e5e87d141d48cf11d7112a9",
+      "requirements": [
+        "A proved prefix survives a local gap",
+        "A named catch is written only when the region is not a refused guard",
+        "A proved lambda or anonymous body is shown at its use site",
+        "Class source spells package, throws, and varargs from the class file",
+        "A special call, a compare, and a constant field keep the program they came from",
+        "Constructed sources are accepted by a three-way comparison"
+      ]
+    },
+    {
+      "path": "openspec/changes/project-integer-constant-names-with-refused-member-family/specs/java8-recovery/spec.md",
+      "baseSha256": "b06dd38ae86c83aac665063f3ca215e6f75b87906ce02c3d3fbea38bde66eae7",
+      "candidateSha256": "d1dd0a4753c2981506fc5e3693ec3326ced58950a44d60cd2a43b224d778d509",
+      "requirements": [
+        "无 child report 的成员 family refusal 不阻止同类整数常量名称"
+      ]
+    },
+    {
+      "path": "openspec/changes/project-multiple-enum-switch-sites/specs/java8-recovery/spec.md",
+      "baseSha256": "3552c27d1e466be3ddc53641b4327fad313a8cdbcc8dc007fa821fd37504192d",
+      "candidateSha256": "12c2fb280b2104b6e164ac43c455a96e0de8cf795d7886c55bead3edfdf33495",
+      "requirements": [
+        "Complete class source projects multiple proved enum switches in one method"
+      ]
+    },
+    {
+      "path": "openspec/changes/prove-enum-int-arguments/specs/java8-recovery/spec.md",
+      "baseSha256": "a8a06c0460ac0d3378f24c835f05250135c4892a69ce0ca50ffc68489f8ad555",
+      "candidateSha256": "dbb3a5125837f71bacddd7436cf705a025376ac2097ccd26637ec2df162af2d0",
+      "requirements": [
+        "Proved enum constants preserve bounded integer constructor arguments"
+      ]
+    },
+    {
+      "path": "openspec/changes/prove-interface-super-source-legality/specs/java8-recovery/spec.md",
+      "baseSha256": "2c81609a58e63fbd7435ead44aff19f58d16c6c02b3e3b5b24494ec844c82960",
+      "candidateSha256": "d6c10bcc27494edfc9e38cf6a31345765792e9917516d540bbaed9f2578e0500",
+      "requirements": [
+        "Interface-qualified super calls require a legal source qualifier"
+      ]
+    },
+    {
+      "path": "openspec/specs/query-api/spec.md",
+      "baseSha256": "afb8156ca1ce7ec614d9f86ded6f89a0ba1e33d9c5178c67acedf8c680d76e9d",
+      "candidateSha256": "c2bf84fe26337e8c5c6ef57a1d2869f1f532149e149d601757971439dfc38a29",
+      "requirements": [
+        "Coverage and pagination are explicit"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-anonymous-supertype-return/specs/java8-recovery/spec.md",
+      "baseSha256": "6d72787a6e277d0451456cf185a9a7891080ece56f7d857dc3147d8bbf77b64e",
+      "candidateSha256": "a3e36365168e829d8cb22a6ae9cf0b03e7e16b317f265579aeba08f36131f47f",
+      "requirements": [
+        "根方法返回父类直接超类型的匿名类可内联"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-capture-ctor-super-order/specs/java8-recovery/spec.md",
+      "baseSha256": "2fe91b37e043b93f2e2f033664fd8d646145eae56e849f05263ae718d5399670",
+      "candidateSha256": "66712d77d2f5169ba97e142550ed6939a6356be1814b5070d082b4a97ee2cf76",
+      "requirements": [
+        "捕获形伴生构造器的 super 次序 SHALL 可编译"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-debug-reference-lifetimes/specs/java8-recovery/spec.md",
+      "baseSha256": "4d165ec4508688ec8f3137963337df5383d2df609123af72225256336b206322",
+      "candidateSha256": "fcaff6b85fa3ae0e6837c02f79cdd211f81d5c0f9da08e81a534e1e909661ab5",
+      "requirements": [
+        "Debug names preserve proven distinct reference lifetimes"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-javac8-allocation-qualifier-null-check/specs/java8-recovery/spec.md",
+      "baseSha256": "e03821880caf3133f8ecd5f2c3cc681fa57abe45cfd168dbc8e3cbf5d94e7eaf",
+      "candidateSha256": "ba6e2d3111335740fc3010b03db8f51238b10e55194fc71b8c2974268cd17162",
+      "requirements": [
+        "分配限定符的成员构造在真 javac 8 的 null 检查下 SHALL 恢复"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-javac8-getclass-null-check-idiom/specs/java8-recovery/spec.md",
+      "baseSha256": "402358b94773c17b82086a66b36df9cfadf07acae6146fb5597857247d366e71",
+      "candidateSha256": "a7ae71f7265e5f5deda2fea89550d51ba6ee53cf4cc2f6c4eb12ec7e61873a4b",
+      "requirements": [
+        "限定外部实例构造的 null 检查判据 SHALL 识别两种编译器拼写"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-lambda-primitive-array-capture/specs/java8-recovery/spec.md",
+      "baseSha256": "93c1268cb16822728119f899ccaeb584203cfc28eb2811c074731b3fc485ac1c",
+      "candidateSha256": "1a28c7bc0334627a92599b06375328418461e5c054d37c0234f30ae45a754855",
+      "requirements": [
+        "lambda 对原生数组捕获的 SHALL 以有据类型参与一致性判据"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-multi-resource-twr/specs/java8-recovery/spec.md",
+      "baseSha256": "7eb113c995b80bcdf1bf185a664b6cab862b222b23329a14afd0eb4986e3b02b",
+      "candidateSha256": "f22b43e93d4ccc83bd53640b4c5ad8a2fda200705383a783fc747c0e9dc3a206",
+      "requirements": [
+        "Multi-resource try-with-resources proves its nested levels"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-protected-prefix-loop-sequences/specs/java8-recovery/spec.md",
+      "baseSha256": "4fdb8822e26cd60b820e6238a44c51ca71d9404da30c25bab1601423456c5e0b",
+      "candidateSha256": "60fa9dec0eea8cf5c47b59b0e6a26dc065a74d8b1c580427ad9ee866bb370d81",
+      "requirements": [
+        "A protected prefix and loop retain one exception scope"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-proved-enum-string-varargs/specs/java8-recovery/spec.md",
+      "baseSha256": "bc6c2d181c28a10a1ee1c7c413712394bba6e7bfee1cd5f496aef40c231997e5",
+      "candidateSha256": "a0533402e0447d82604a0cb15b3a8e83b8ea3acc4db2a122ae295a0bfee620dc",
+      "requirements": [
+        "Proved enum constants recover literal String varargs"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-shared-latch-nested-loops/specs/java8-recovery/spec.md",
+      "baseSha256": "303261a733df5a3ad43d008d8f4df75ad241260925edaad93bcdf041f2bed87b",
+      "candidateSha256": "d020971890937b63bb56210eeb47392939573bf777d62f9549e7ef5e4f5c509e",
+      "requirements": [
+        "外层 continue 与内层循环退出共享 latch 时可证明"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-structured-list-generic-bodies/specs/java8-recovery/spec.md",
+      "baseSha256": "7fa94bac6d0534048eced4f52c33a332b19857c11a591e345e66aa0bb00d562e",
+      "candidateSha256": "2f835f25a1a6948dd121f458b5cc462c364f6ec8f5cebde71cfefcf5be868b90",
+      "requirements": [
+        "Structured parameterized List bodies are projected as one source decision"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-twr-javac8-close-sequence/specs/java8-recovery/spec.md",
+      "baseSha256": "d82b2631a05296c0c560932245d84b51ee2e8fb9446b242edf9d39f5835431d8",
+      "candidateSha256": "fa6be655f268ef32c189c3c924b65ab3fe7cdeee7f5bb55d579583ab1d851bf5",
+      "requirements": [
+        "真 javac 8 的 TWR 关闭序列 SHALL 恢复为源级 try-with-resources"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-write-accessor-field-types/specs/java8-recovery/spec.md",
+      "baseSha256": "310db414f3f3d4abdbb4fe60509375c206ccfd0f771d32b59fc1a44b60495e29",
+      "candidateSha256": "9f0821051b6984f66f5bc884334a3d1a6b8d0534bcf39701bd17e4edfba9f30c",
+      "requirements": [
+        "返回值形写访问器 SHALL 按字段描述符恢复（封闭类型集）"
+      ]
+    },
+    {
+      "path": "openspec/specs/recovery-validation/spec.md",
+      "baseSha256": "64ca3dd0c286632a527b65ea25ae973c7377fb3cdbf6f9ec8603819b7e71d69b",
+      "candidateSha256": "a71d05fca8861c61144a21f35501dd8aa45ce927cd47c362fe112a4aee27103a",
+      "requirements": [
+        "Separate representation and validation statuses",
+        "A signal is not an acceptable answer",
+        "A boolean context's artifact compiles and agrees when executed",
+        "A local's decided type compiles and agrees when executed",
+        "A presented concatenation is compared by execution"
+      ]
+    },
+    {
+      "path": "openspec/changes/add-demand-driven-core-results/specs/java8-recovery/spec.md",
+      "baseSha256": "77ebbd0b6d0554f7ef86ad2e65e7418ae80e171046b5c9aa2dfda529916364ea",
+      "candidateSha256": "bf460d65000bd357edabe17891fc76d0b62410b1cec3ada359f1b4d2f5a71713",
+      "requirements": [
+        "Evidence-gated Java 8 recovery"
+      ]
+    },
+    {
+      "path": "openspec/changes/add-demand-driven-core-results/specs/query-api/spec.md",
+      "baseSha256": "6d5edfc844665f9eb1ee4379422d0dc9ec35262a903030dd0a18acbe74107423",
+      "candidateSha256": "97296633c73797d38d5b420dc7d8df3d4c72c4f58ae1d74e85552f668e2d99be",
+      "requirements": [
+        "Coverage and pagination are explicit"
+      ]
+    },
+    {
+      "path": "openspec/changes/make-required-conversions-explicit/specs/java8-recovery/spec.md",
+      "baseSha256": "96741c18c72798ccf32362b8a9f12fa568ba8ee4b6c9f05d9e29ea02e7222e8f",
+      "candidateSha256": "f9de12e363cfc3f29ca21a16f8e9b4be233f889de2f2918374f30193da0bfad4",
+      "requirements": [
+        "Boolean contexts are presented as booleans"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-proved-local-reference-write-compatibility/specs/java8-recovery/spec.md",
+      "baseSha256": "182aa6a6036bca3f5173256bcb49398eb2cc158b3a1bb5ecfe26fcf14400755c",
+      "candidateSha256": "30e69f612c2cad1a63145cdb4d9b23fab17f3d018677c559dfcd00978869f138",
+      "requirements": [
+        "One local variable's type is decided once, before its statements are built"
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "baseSha256": "4b3d80c95cffc72b24366448cf5db449931e7ca8fc3e2108783149dd59dc32a0",
+      "candidateSha256": "8b01675b5e47df0d90928a73497a8bce2b3bd3106781d002a1c97a8d9a389939",
+      "requirements": []
+    },
+    {
+      "path": "openspec/changes/recover-switch-case-nonlocal-exits/tasks.md",
+      "baseSha256": "f0756c895356f3a8ef8ed18b0f34669c9fd0e0db17f80e1b41768e75054dff45",
+      "candidateSha256": "5afecb7c0ca067c716caed6796489f1c56be87ec2b124311835bd4157965dc14",
+      "requirements": []
+    }
+  ]
+}

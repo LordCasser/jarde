@@ -36,19 +36,62 @@
 
 ### Requirement: Standard multi-release selection is evidence-backed
 
+系统 SHALL 以 container 为边界生成 MR selection report，并同时返回请求 RuntimeView、Manifest evidence、全部物理候选、每个候选的 logical path/variant/selection decision/有限合规状态、coverage、execution 和 diagnostics。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 系统 SHALL 以 container 为边界生成 MR selection report，并同时返回请求 RuntimeView、Manifest evidence、全部物理候选、每个候选的 logical path/variant/selection decision/有限合规状态、coverage、execution 和 diagnostics。`SnapshotAll` scope 只检查 root container；`ArtifactTree` scope 才调用显式 bounded tree provider 并分别检查已建立 child。选择只覆盖标准 JAR entry overlay，不跨 container、LoadRoot 或 loader 做唯一 definition resolution。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 标准 `Enabled` policy 表示请求标准 MR 处理，不覆盖物理 Manifest：只有一个可可靠解析的 root Manifest，其主段含 `Multi-Release` 属性且展开后的值以 ASCII 大小写不敏感方式等于 `true` 时才激活版本选择；named section 中的同名属性不激活 MR。唯一、可解析但未激活的归档按普通 JAR 选择 base；`Disabled` 总是 base-only。`Custom` 和 `Unknown` 在本阶段 MUST 保留物理候选、将所有 selection decision 标为 Unknown，并分别以 `multi_release_custom_policy` / `multi_release_unknown_policy` 的 Unsupported reason 返回 Failed execution，不得产生 selected fact。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 Manifest candidate 的 raw path 按 JAR/JDK 行为与 `META-INF/MANIFEST.MF` 做 ASCII 大小写不敏感比较，原始大小写仍保留；非 canonical case 产生 `multi_release_manifest_noncanonical_path` diagnostic，但单一、可解析的 case variant 仍可作为激活 evidence。多个大小写等价 candidate 为 `Ambiguous`；单一 candidate 中重复 `Multi-Release` 主属性或语法错误为 `Malformed`；entry 读取未完成为 `Unknown`；没有 candidate 为 `Missing`；单一可靠 candidate 的值为 true/其他或属性缺失时分别为 `Active`/`Inactive`。Manifest parser SHALL 在 entry/read/elapsed/cancel 预算内线性解析主段的 CRLF/LF/CR 行、single-space continuation 与 `name: value`，额外内存不得超过已物化 Manifest 大小且不使用 class `attribute_bytes` 预算；属性名 ASCII 大小写不敏感，展开后的值除 continuation 语法外不 trim，因此 `TRUE` 激活而 `true ` 不激活。`Multi-Release` 主属性名重复（含不同大小写）、orphan continuation、NUL、缺少分隔符或未终止 header 均为 Malformed，selection 为 Unknown；实现不得采用 ZIP 顺序或 last-wins。未终止 header 包含主段未以空行结束（含 0 字节 Manifest）的情形，此时不得按已读属性猜测激活状态。未知属性和 individual sections 不需要解释，签名验证、完整 UTF-8/72-byte line 合规不属于本任务。
+
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 合法 versioned candidate 只允许精确 raw prefix `META-INF/versions/<N>/`，其中 `<N>` 满足 `[1-9][0-9]*`、可无损表示且 `N >= 9`，logical path 是去掉该前缀后的非空 raw bytes；不得进行 `.`、`..`、重复分隔符或反斜杠规范化。Java release 小于 9 或 MR 未激活时只选择 base；激活后对每个 logical path 选择唯一的最高 `N <= target` candidate，否则回退唯一 base。只有 versioned candidate 而无 base 时，标准 resource 或 non-public class 仍可被选择；`META-INF` 下 resource 不得通过 versioned path 选择。
 
+#### Scenario: 完整契约 5
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 同一 container、同一 logical path、同一 base/version 出现多个物理 entry 时 SHALL 保留所有 ordinal 并把实际 winning level 标为 Ambiguous，不得 first/last-wins；较高唯一 winning candidate 不因被其遮蔽的低版本重复而失去选择事实。合规诊断和 entry selection SHALL 分离：classfile 版本过高、可检测的 public class predecessor 问题或其他归档违规不得删除物理 candidate，也不得把“被 JAR entry overlay 选中”误写成“该类可加载、可链接或 API 兼容”。完整扫描后得到的 Inactive、Ambiguous、NonConformant 或 Manifest-Unknown 是可信 domain result，本身不使 execution/coverage 变成 Partial；只有工作因预算、取消、unsupported I/O/compression 或未知物理 suffix 未完成时才报告非 Complete execution。
+
+#### Scenario: 完整契约 6
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 公共 library API SHALL 为 `Engine::select_multi_release(snapshot, runtime_view, budget) -> Result<MultiReleaseViewReport>`。入口先验证 RuntimeView 的 snapshot 与 scope；`SnapshotAll` 只重新枚举 root，`ArtifactTree` 只接受该 snapshot 的真实 root container 并复用显式 tree provider。非 ZIP、view snapshot 不匹配和 tree root 不匹配分别返回 `multi_release_not_zip`、`multi_release_snapshot_mismatch`、`multi_release_root_container_mismatch` 的 InvalidInput；root ZIP open 的既有结构错误 code 原样保留。P1 1.3 不增加 CLI operation，CLI 暴露留给 3.2。
 
+#### Scenario: 完整契约 7
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 公共 Rust/JSON schema 固定如下；本节新增的 MR-owned struct 使用 `deny_unknown_fields`，带 payload 的 MR-owned enum 使用内部 `kind` tag 与 snake_case variant，unit enum 使用 snake_case string；复用的 P0/P1 类型保持其既有 serde 契约。后续增加 variant 需要新的 OpenSpec 修订，当前实现不得返回开放字符串 reason：
+
+#### Scenario: 完整契约 8
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 - `MultiReleaseViewReport { view: RuntimeView, physical: MultiReleasePhysicalEvidence, containers: Vec<MultiReleaseContainerReport>, coverage: Coverage, execution: ExecutionReport, diagnostics: Vec<MultiReleaseReportDiagnostic>, verification: VerificationStatus }`；`verification` MUST 为既有 `VerificationStatus::NotPerformed`；
 - `MultiReleaseReportDiagnostic = Domain { diagnostic: MultiReleaseDiagnostic } | Terminal { diagnostic: Diagnostic }`；`MultiReleaseDiagnostic { code: MultiReleaseDiagnosticCode, severity: DiagnosticSeverity, message: String, provenance: Option<Provenance> }`。Domain code 使用下文闭合 enum 并在反序列化时拒绝未知值；Terminal 只包装本次 probe 从既有 `Error` 生成的 P0 `Diagnostic`，有意保留 P0 开放 String code 兼容性，生产端不得把 MR domain violation 塞进 Terminal；
@@ -65,7 +108,17 @@ Manifest candidate 的 raw path 按 JAR/JDK 行为与 `META-INF/MANIFEST.MF` 做
 - `MultiReleaseNotApplicableReason = InvalidVersionPath | VersionedMetaInfResource | DirectoryEntry`；
 - `MultiReleaseCompliance = NotApplicable | ConformantWithinChecks | NonConformant | Unknown { reason: MultiReleaseComplianceUnknownReason }`；`MultiReleaseComplianceUnknownReason = PhysicalEvidenceIncomplete | ProbeInterrupted | PredecessorAmbiguous | ModuleExportsNotInspected | PolicyUnsupported`。
 
+#### Scenario: 完整契约 9
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 Version-path issue 每个 entry 只产生一条对应 Domain diagnostic：
+
+#### Scenario: 完整契约 10
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 | `MultiReleaseVersionPathIssue` | `MultiReleaseDiagnosticCode` |
 | --- | --- |
@@ -76,15 +129,45 @@ Version-path issue 每个 entry 只产生一条对应 Domain diagnostic：
 | ReleaseOverflow | `multi_release_version_overflow` |
 | EmptyLogicalPath | `multi_release_version_path_invalid` |
 
+#### Scenario: 完整契约 11
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 因此 `META-INF/versions/9/` 是 Directory，`META-INF/versions/9` 是 InvalidVersioned/EmptyLogicalPath，`META-INF/versions//A.class` 是 EmptyRelease，`META-INF/versions/x/A.class` 是 NonDecimalRelease；specific below-nine/overflow 不再额外产生 generic invalid diagnostic。
+
+#### Scenario: 完整契约 12
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 在 MR item 预算允许时，physical report 中每个已返回 entry（包括 Directory、Manifest、InvalidVersioned 和普通 resource）恰有一个 `MultiReleaseEntryEvidence`；Directory 仍计 entry evidence item并进入 scanned ordinal coverage，但 decision 为 `NotApplicable(DirectoryEntry)`、logical_path 为 None，不创建 selection。所有 entry/winner 引用 MUST 使用完整 `PhysicalEntryId`，并且必须能在内嵌 physical report 中按完整 origin + ordinal + raw name 找到，不能只用 path/version。`Selected` outcome 与 candidate decision 必须一致；winning level 重复时 outcome 为 Ambiguous、重复 winners 为 Ambiguous、低层 candidates 以这些 winners 标为 Shadowed，不得回退。`NoSelection` 只允许完整 evidence 下确实没有 base 且 MR 未激活/没有适用 candidate；directory、invalid-version 和 versioned-META-INF entries 不形成 logical selection。不完整 evidence 必须用 Unknown。
 
+#### Scenario: 完整契约 13
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 Decision precedence 固定为：Directory/InvalidVersioned/versioned-META-INF → NotApplicable；Custom/Unknown policy → Unknown 对应 policy reason；physical/Manifest 工作中断 → Unknown；完整 Manifest Ambiguous/Malformed → Unknown；Disabled → versioned PolicyDisabled；Enabled + Missing/Inactive → versioned ManifestMissing/ManifestInactive；Active + target `< 9` → versioned TargetBelowNine；Active + version `> target` → ReleaseAboveTarget；其余按最高可用 level 产生 Selected/Shadowed/Ambiguous。Base candidates 仅在 winning level duplicate 时 Ambiguous，否则在无适用 versioned winner 时 Selected、存在 winner 时 Shadowed。仅有 inactive versioned candidates时 outcome 为 `NoSelection(NoBaseWhileInactive)`；Active 且只有 target 以上版本、没有 Base 时为 `NoSelection(NoApplicableRelease)`。`java_release` 的所有 `0..=8` 值均按 target-below-nine 处理，不另报 invalid profile。
+
+#### Scenario: 完整契约 14
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 Custom/Unknown policy 在 physical provider 后停止标准 Manifest/class probe：Manifest candidates 只记录 entries，state 为 Unknown、attribute fields 为 None；合法 entries 的 decision 为对应 policy Unknown、compliance 为 `Unknown(PolicyUnsupported)`，已由 raw path 直接证明的 InvalidVersioned/versioned-META-INF/duplicate 仍按闭合规则诊断。Aggregate 为 Failed/Unsupported，但 physical evidence 可保持 Complete。
 
+#### Scenario: 完整契约 15
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 Runtime-resolution coverage 使用真实 ordinal 的单 entry ranges：`container:<id>:multi_release_selection_entries` 记录 path/Manifest decision evidence，`container:<id>:multi_release_compliance_entries` 记录 bounded Header checks；不存在用 path hash 或全局计数代替 ordinal 的范围。Artifact structural coverage 原样聚合。Result/resource accounting 固定为：
+
+#### Scenario: 完整契约 16
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
 
 | 对象/动作 | `result_items` | archive/read/entry/class | `output_bytes` |
 | --- | --- | --- | --- |
@@ -98,9 +181,20 @@ Runtime-resolution coverage 使用真实 ordinal 的单 entry ranges：`containe
 | class compliance probe | 不创建临时 Header report item；成功 facts 嵌入已计费的 entry evidence，失败只为相应 diagnostic 计费 | root/nested replay 计 archive/read/entry；crate-private minimal probe 计 class bytes并 poll，不遍历/计未请求 attribute/code facts | 0 |
 | Terminal diagnostic（Budget/Cancelled/I/O/unsupported/structural） | 0，延续控制元数据例外 | 已发生用量保留 | 0 |
 
+#### Scenario: 完整契约 17
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 MR API 内部只执行一次所选 physical provider，不接受外部 report。Containers 按 physical provider 顺序，entry evidence 按 central ordinal，logical selections 按 group 最小 ordinal返回。每个 container 在写入前原子预留 container + ManifestEvidence 两项；不足则不返回半个 container，并把其已知 ordinal 范围标 skipped。后续 entry/selection/ordinary diagnostic 分别在 append 前计费，耗尽时保留已返回可靠前缀和 physical evidence，不构造未计费 item。
 
+#### Scenario: 完整契约 18
+
+- **WHEN** 系统处理按请求 RuntimeView 和 scope 生成 container 的 MR selection report
+- **THEN** 系统 MUST 满足以下全部约束：
+
 Root ZIP 或 RuntimeView identity 无法建立时入口返回 `Err`；root 已建立后返回 report。Aggregate 终止优先级固定为 Cancelled、实际阻止继续处理的 budget/physical provider error、unsupported policy、局部 compliance error；path selection 已证明后发生的 compliance budget/cancel 保留 selection，只将 compliance 与 aggregate execution 标为 Unknown/non-Complete。
+
 
 #### Scenario: Manifest does not activate MR processing
 
@@ -152,13 +246,41 @@ Central-directory ordinal 没有按 logical path 分区，因此任何未知 suf
 
 ### Requirement: Multi-release compliance diagnostics are bounded and non-selecting
 
+系统 SHALL 对本阶段可由物理路径、Manifest 和 bounded class Header 证明的 MR 违规给出 diagnostic：非法版本目录、versioned `META-INF` resource、versioned classfile major 高于以宽整数计算的 `N + 44`、可直接观察的 `ACC_PUBLIC` class 缺少 root 下同 logical path、同 `this_class` 且 `ACC_PUBLIC` 的 predecessor，以及重复 Manifest/candidate。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
+
 系统 SHALL 对本阶段可由物理路径、Manifest 和 bounded class Header 证明的 MR 违规给出 diagnostic：非法版本目录、versioned `META-INF` resource、versioned classfile major 高于以宽整数计算的 `N + 44`、可直接观察的 `ACC_PUBLIC` class 缺少 root 下同 logical path、同 `this_class` 且 `ACC_PUBLIC` 的 predecessor，以及重复 Manifest/candidate。每个 candidate 的有限合规状态 SHALL 明确为 NotApplicable、ConformantWithinChecks、NonConformant 或 Unknown。Selection 规则仍按 entry overlay 独立计算；diagnostic 不证明完整 JVM 合法性，也不自动令较低 candidate 取代规范会先查到的较高 entry。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
 
 `MultiReleaseDiagnosticCode` 是闭合 unit enum，其 JSON string 与下列字面值完全一致：Warning 只有 `multi_release_manifest_noncanonical_path`；Error 为 `multi_release_manifest_duplicate`、`multi_release_manifest_malformed`、`multi_release_version_path_invalid`、`multi_release_version_below_nine`、`multi_release_version_overflow`、`multi_release_meta_inf_resource`、`multi_release_duplicate_candidate`、`multi_release_class_malformed`、`multi_release_class_version_too_new`、`multi_release_public_predecessor_missing`、`multi_release_public_predecessor_mismatch`。Constructor MUST 从 code 派生并验证固定 severity，JSON 中 code/severity 不一致时拒绝反序列化。Budget/Cancelled/I/O/unsupported probe termination 只进入 `MultiReleaseReportDiagnostic::Terminal`，复用既有 P0 code/severity，不改名为 MR-specific code。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
+
 `ExecutionReport`/`TerminationReason` 为 P0 共享公共类型，其 String code 保持向前兼容且 JSON 反序列化不因 MR 收窄；MR producer 只允许新增两个 Unsupported 输出 `multi_release_custom_policy`、`multi_release_unknown_policy`，其他 terminal reason 必须直接来自本次 physical/probe 的既有 Error。Manifest inactive/absent、target release 以上 candidate 和普通 NoSelection 不产生 diagnostic；新增 MR-specific domain code 或 producer-owned Unsupported code 需要后续 OpenSpec 修订。
 
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
+
 对每个完整返回的 entry evidence，decision 与 compliance 按以下闭合规则组合：
+
+#### Scenario: 完整契约 5
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
 
 | Entry / evidence | compliance | diagnostic / predecessor action |
 | --- | --- | --- |
@@ -174,7 +296,17 @@ Central-directory ordinal 没有按 logical path 分区，因此任何未知 suf
 | valid versioned non-public `.class`，Header/major checks 通过 | ConformantWithinChecks | 不要求 root predecessor |
 | valid versioned public `.class` | 见下表 | major 与 predecessor violations 任一已证明即 NonConformant；没有已证明违规但证据中断则 Unknown |
 
+#### Scenario: 完整契约 6
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
+
 Public predecessor truth table 只使用同 container、同 logical raw path 的 Base level，不搜索低 version、其他 container 或 LoadDomain：
+
+#### Scenario: 完整契约 7
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
 
 | Base predecessor state | versioned public candidate compliance / diagnostic |
 | --- | --- |
@@ -187,9 +319,20 @@ Public predecessor truth table 只使用同 container、同 logical raw path 的
 | 唯一 Base `this_class` 与 versioned 不同，且没有 module evidence | NonConformant / `multi_release_public_predecessor_mismatch` |
 | 唯一 Base 为 public、同 `this_class` | 若 versioned major check 通过则 ConformantWithinChecks，否则保持已知 NonConformant；module evidence 不影响已证明的正匹配 |
 
+#### Scenario: 完整契约 8
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
+
 检查所有 valid versioned `.class`，不因目标 release 较低或 candidate 被 shadow 而跳过；Base 只在充当 public predecessor 时 probe。`.class` 后缀和 `META-INF/versions/` prefix 都按 raw bytes 大小写敏感。Root major/dialect、class logical path 与 `this_class` 的单独一致性不在本有限检查内；只要 minimal Header 能安全取得 access/name facts，future root major 仍可作为 predecessor evidence，不代表其可加载。
 
+#### Scenario: 完整契约 9
+
+- **WHEN** 系统处理物理路径、Manifest 与 bounded class Header 的 MR 合规检查及诊断
+- **THEN** 系统 MUST 满足以下全部约束：
+
 ClassFile `access_flags` 没有 `ACC_PROTECTED`；protected nested-class visibility 需要 `InnerClasses` metadata。Module descriptor 只作“可能适用 non-exported package 例外”的物理 gate，本阶段不解析 exports，也不把 missing/mismatch 误报为 definite violation。完整 public API 等价、module descriptor 合规、签名验证、classfile dialect/verifier 与 loader/linkage 成功均不属于本任务。后续 metadata/module consumer 或 resolver 必须保留这些 Unknown，而不能把本阶段 `ConformantWithinChecks` 或 diagnostic absence 当作完整合规证明。
+
 
 #### Scenario: Selected entry is not a loadability claim
 
@@ -208,9 +351,23 @@ ClassFile `access_flags` 没有 `ACC_PROTECTED`；protected nested-class visibil
 
 ### Requirement: Bounded nested and Boot layout traversal
 
+系统 SHALL 仅在调用方显式请求 artifact-tree scope 时递归 nested JAR；普通 physical snapshot 枚举只保留 candidate，不把标准 JAR 内任意 archive 自动激活为运行时 classpath。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理 physical snapshot 枚举与显式 artifact-tree 请求的 nested、Boot 和 WAR 布局展开
+- **THEN** 系统 MUST 满足以下全部约束：
+
 系统 SHALL 仅在调用方显式请求 artifact-tree scope 时递归 nested JAR；普通 physical snapshot 枚举只保留 candidate，不把标准 JAR 内任意 archive 自动激活为运行时 classpath。Provider SHALL 将 nested JAR、`BOOT-INF/classes`、`BOOT-INF/lib`、WAR 的 `WEB-INF/classes` 和 `WEB-INF/lib` 表示为带 evidence 的物理布局节点，并 SHALL 允许通过 origin chain 从 root snapshot 逐层复核并重读 nested entry。递归展开 MUST 受 `nested_depth` 高水位、archive entry、read/entry bytes、elapsed 和取消预算约束，并且不得自动联网、执行 launcher 或推断唯一运行时选择。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理 physical snapshot 枚举与显式 artifact-tree 请求的 nested、Boot 和 WAR 布局展开
+- **THEN** 系统 MUST 满足以下全部约束：
+
 `nested_depth` SHALL 以 root container 为 0、直接 child 为 1；它记录请求达到的最大已接受深度，不作为累加 charge。Root container 建立后的 child malformed、unsupported、budget 或 cancellation MUST 返回可靠前缀、定位到父 entry 的 diagnostic、已扫描/未扫描 coverage 与非 Complete execution；不得返回空 child 冒充成功。
+
 
 #### Scenario: Nested candidate without explicit tree scope
 
