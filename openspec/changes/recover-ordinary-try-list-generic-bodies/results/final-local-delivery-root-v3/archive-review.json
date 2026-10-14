@@ -1,0 +1,11 @@
+{
+  "status": "accepted_local_evidence_and_compiled_source_identity",
+  "payload_members_verified": 1642,
+  "final_source_members_verified": 9,
+  "source_closure_count": 4876,
+  "focused_receipt_sha256": "393fb9131fda0c3f3d361336f696d4df4784c4a62c83953b830b4fc4d0bfdffa",
+  "workspace_receipt_sha256": "bb605489f6712d39c18f686eb84e5b7645c39687360a070b95d4f3a795014aa4",
+  "archive_sha256": "7d5cf9f04b83f8e4c54d078c7b10b07a65376023a291506c36c3543f5eb6d36a",
+  "target_absent": true,
+  "scope": "Local validation accepted; own product CI and final clean-main remain open"
+}

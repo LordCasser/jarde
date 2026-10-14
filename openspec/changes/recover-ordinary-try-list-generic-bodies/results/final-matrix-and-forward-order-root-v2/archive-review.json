@@ -1,0 +1,13 @@
+{
+  "status": "root_every_member_reopened",
+  "members": 665,
+  "bytes": 5050035,
+  "sha256": "baa48dd991893868d5e285ae846ba79c988630fd26250d58a73aeaaaa41b618a",
+  "matrix_status": "accepted",
+  "matrix_errors": [],
+  "jarde_cells": 16,
+  "baseline_rows": 45,
+  "admission_rows": 33,
+  "order_cells": 4,
+  "order_rows": 12
+}

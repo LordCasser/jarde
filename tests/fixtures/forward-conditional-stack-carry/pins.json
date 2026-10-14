@@ -1,0 +1,40 @@
+{
+  "source_level": "Java 8",
+  "compiler_flags": [
+    "-g",
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-encoding",
+    "UTF-8",
+    "-classpath",
+    "EMPTY",
+    "-sourcepath",
+    "EMPTY"
+  ],
+  "files": [
+    {
+      "path": "ForwardCarryProbe.java",
+      "bytes": 2833,
+      "sha256": "a86fc44d9bce9705713c3eafc0d0c0a37e5c8a496d54b785abb3066944217c3c"
+    },
+    {
+      "path": "Runner.java",
+      "bytes": 3832,
+      "sha256": "f5c3cc16932fc6841cb8ea094d641c8c09d32e6c239927b1f73c45b129092ad3"
+    },
+    {
+      "path": "javac23/ForwardCarryProbe.class",
+      "bytes": 2696,
+      "sha256": "dc50f68b58145a3bf5e4f4b61db450198e6967900ea5ce7b3d7ff06285761ecd"
+    },
+    {
+      "path": "javac8/ForwardCarryProbe.class",
+      "bytes": 2696,
+      "sha256": "164341b700e72bd08ed1cd7cb716fb04d04e3dc2399fe8f4328ffcd2c718d39b"
+    }
+  ],
+  "oracle_rows": 12,
+  "oracle_sha256": "115862c1b9ac2e857cf2b26f1a7f09836c9735c6857077df7d7c0d55374a279a"
+}

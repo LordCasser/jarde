@@ -4786,6 +4786,160 @@ fn child(path: &[u32], index: u32) -> RegionPath {
     nested
 }
 
+/// The region held at one child index, in the same order `collect_paths` uses.
+fn child_region_at(region: &Region, index: usize) -> Option<&Region> {
+    match region {
+        Region::Sequence { regions } => regions.get(index),
+        Region::If {
+            then_arm, else_arm, ..
+        }
+        | Region::CompoundIf {
+            then_arm, else_arm, ..
+        } => match index {
+            0 => Some(then_arm),
+            1 => Some(else_arm),
+            _ => None,
+        },
+        Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+            groups.get(index).map(|group| group.arm.as_ref())
+        }
+        Region::Loop { body, .. } => body.get(index),
+        Region::Try { body, catches, .. } => match index {
+            0 => Some(body),
+            _ => catches.get(index - 1).map(CatchClause::body),
+        },
+        Region::Guard {
+            body, finally_body, ..
+        } => match index {
+            0 => body.as_deref(),
+            1 => finally_body.as_deref(),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// Whether `path` descends through the protected-body child of exactly one named single-type
+/// catch whose handler entry physically stores the caught value into `slot`.
+///
+/// This is the narrow declaration-plan exception for an initialized iterator row that shares a
+/// local slot reserved by its own ordinary try's catch header. The region tree supplies the typed
+/// handler association; the method's operations and SSA supply the exact `astore` fact. A catch
+/// in a sibling try, a catch-all/multi-catch, a different slot, or a path through a catch body does
+/// not certify the ordinary protected-body declaration.
+fn named_catch_slot_for_protected_path(
+    regions: &[Region],
+    path: &[u32],
+    slot: u16,
+    operations: &Operations,
+    instructions: &BTreeMap<u32, &SsaInstruction>,
+    ssa: &SsaTable,
+    budget: &mut Budget,
+    at: u32,
+) -> Result<bool, StopReason> {
+    let Some((&root_index, remaining)) = path.split_first() else {
+        return Ok(false);
+    };
+    let Some(mut region) = regions.get(usize::try_from(root_index).unwrap_or(usize::MAX)) else {
+        return Ok(false);
+    };
+    let mut certified = false;
+    let mut protected_try_seen = false;
+    for depth in 0..path.len() {
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        if matches!(region, Region::Guard { .. }) {
+            return Ok(false);
+        }
+        let Some(&child_index) = remaining.get(depth) else {
+            break;
+        };
+        if matches!(region, Region::Try { .. }) && child_index != 0 {
+            return Ok(false);
+        }
+        if child_index == 0
+            && let Region::Try {
+                catches,
+                transparent,
+                ..
+            } = region
+        {
+            if transparent.is_some() || protected_try_seen || catches.len() != 1 {
+                return Ok(false);
+            }
+            protected_try_seen = true;
+            let mut matching = 0usize;
+            for clause in catches {
+                let handler_bci = clause.handler().bci();
+                poll(budget, Some(handler_bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(handler_bci),
+                )?;
+                if clause.parameter() != slot
+                    || !matches!(clause.types(), crate::guard::CatchTypes::Named(types) if types.len() == 1)
+                {
+                    continue;
+                }
+                let handler_instruction = instructions.get(&handler_bci);
+                if let Some(instruction) = handler_instruction {
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(
+                            instruction
+                                .reads()
+                                .len()
+                                .saturating_add(instruction.writes().len()),
+                        )
+                        .unwrap_or(u64::MAX),
+                        Some(handler_bci),
+                    )?;
+                }
+                let caught_store = matches!(operations.get(handler_bci),
+                    Some(Operation::Store { slot: stored_slot }) if *stored_slot == slot)
+                    && handler_instruction.is_some_and(|instruction| {
+                        matches!(instruction.opcode(), 0x3a | 0x4b..=0x4e)
+                            && instruction
+                                .reads()
+                                .iter()
+                                .filter(|(read, _)| matches!(read, Slot::Stack(_)))
+                                .count()
+                                == 1
+                            && instruction.writes().len() == 1
+                            && instruction.writes().iter().any(|(written, value)| {
+                                *written == Slot::Local(slot)
+                                    && matches!(ssa.value(*value).def(),
+                                        Definition::Instruction { bci, .. } if *bci == handler_bci)
+                            })
+                    })
+                    && ssa.block(clause.handler()).is_some_and(|block| {
+                        block
+                            .instructions()
+                            .first()
+                            .is_some_and(|instruction| instruction.bci() == handler_bci)
+                    });
+                if caught_store {
+                    matching = matching.saturating_add(1);
+                }
+            }
+            if matching == 1 {
+                certified = true;
+            } else {
+                return Ok(false);
+            }
+        }
+        let child_index = usize::try_from(child_index).unwrap_or(usize::MAX);
+        let Some(child) = child_region_at(region, child_index) else {
+            return Ok(false);
+        };
+        region = child;
+    }
+    Ok(certified)
+}
+
 /// Which region holds each block, as the path from the method body down to it.
 struct RegionPaths {
     paths: BTreeMap<CanonicalBlockId, RegionPath>,
@@ -6897,6 +7051,145 @@ fn prove_carried_conditional_use(
     Ok(Some(next.consumer_bci))
 }
 
+/// A saved stack producer carried through one complete, top-level forward diamond.
+/// This is separate from concatenation cuts: its producer must stay before the test.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ForwardConditionalCarry {
+    producer: u32,
+    consumer: u32,
+    join: CanonicalBlockId,
+}
+
+fn prove_forward_conditional_carry(
+    value: ValueId,
+    regions: &[Region],
+    folded: Option<ValueId>,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<Option<ForwardConditionalCarry>, StopReason> {
+    let [
+        region @ Region::If {
+            prefix,
+            branch,
+            branch_bci,
+            then_arm,
+            else_arm,
+            join: Some(join),
+        },
+        Region::Straight { blocks },
+    ] = regions
+    else {
+        return Ok(None);
+    };
+    if !prefix.is_empty()
+        || blocks.len() != 1
+        || blocks.first() != Some(join)
+        || code.exception_handler_count != 0
+        || folded.is_none()
+        || ssa.value(value).uses().len() != 3
+        // This admission is for an integer expression carry, not an object receiver whose
+        // construction/concat ownership still belongs to its existing complete-chain proof.
+        || ssa.value(value).ty() != &Value::Int
+        || canonical.blocks().len() != 4
+        || !canonical.unreachable().is_empty()
+    {
+        return Ok(None);
+    }
+    let (
+        Region::Straight {
+            blocks: then_blocks,
+        },
+        Region::Straight {
+            blocks: else_blocks,
+        },
+    ) = (then_arm.as_ref(), else_arm.as_ref())
+    else {
+        return Ok(None);
+    };
+    if then_blocks.len() != 1 || else_blocks.len() != 1 {
+        return Ok(None);
+    }
+    let Definition::Instruction {
+        block,
+        bci: producer,
+    } = ssa.value(value).def()
+    else {
+        return Ok(None);
+    };
+    if block != branch || producer >= branch_bci {
+        return Ok(None);
+    }
+    poll(budget, Some(*producer))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            canonical
+                .edges()
+                .len()
+                .saturating_add(canonical.blocks().len()),
+        )
+        .unwrap_or(u64::MAX),
+        Some(*producer),
+    )?;
+    if canonical
+        .blocks()
+        .iter()
+        .any(|block| !block.id().path().is_empty())
+        || canonical.edges().iter().any(|edge| {
+            edge.kind() != CanonicalEdgeKind::Normal || edge.from().bci() >= edge.to().bci()
+        })
+    {
+        return Ok(None);
+    }
+    let Some(branch_names) = ssa.block(branch) else {
+        return Ok(None);
+    };
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(branch_names.instructions().len()).unwrap_or(u64::MAX),
+        Some(*producer),
+    )?;
+    let Some(instruction) = branch_names
+        .instructions()
+        .iter()
+        .find(|instruction| instruction.bci() == *producer)
+    else {
+        return Ok(None);
+    };
+    let [(slot @ Slot::Stack(_), written)] = instruction.writes() else {
+        return Ok(None);
+    };
+    if *written != value {
+        return Ok(None);
+    }
+    let ConditionalValueAttempt::Proved(proof) =
+        prove_conditional_value(region, canonical, ssa, operations, budget)?
+    else {
+        return Ok(None);
+    };
+    if folded != Some(proof.phi)
+        || proof.join != *join
+        || prove_carried_conditional_use(value, *slot, &proof, region, canonical, ssa, budget)?
+            != Some(proof.consumer_bci)
+    {
+        return Ok(None);
+    }
+    charge(budget, CountedBudgetDimension::IrItems, 1, Some(*producer))?;
+    // A ledger observer can cancel after the permitted charge completes. Observe it before
+    // returning a certificate, without changing the ledger's acquired-permit semantics.
+    poll(budget, Some(*producer))?;
+    Ok(Some(ForwardConditionalCarry {
+        producer: *producer,
+        consumer: proof.consumer_bci,
+        join: join.clone(),
+    }))
+}
+
 /// Checks either shared-producer diamond without changing the complete-quote fallback.
 /// The charge covers two bounded edge passes, all SSA instructions and phis, plus their local
 /// value walks. A refusal never stores a partial expression or suppresses a region instruction.
@@ -8537,6 +8830,7 @@ pub(crate) fn build(
     let mut builder = Builder {
         canonical,
         ssa,
+        regions,
         code: inputs.code,
         operations,
         pool: inputs.pool,
@@ -8597,6 +8891,7 @@ pub(crate) fn build(
         accessors: Vec::new(),
         deferred: Vec::new(),
         binding_plans: BTreeMap::new(),
+        forward_conditional_carries: BTreeMap::new(),
         guarded_return_exits,
         binding_rejections: BTreeMap::new(),
         bindings: BTreeMap::new(),
@@ -9664,6 +9959,9 @@ fn nonempty_if_join_transfer(
 struct Builder<'a> {
     canonical: &'a CanonicalCfg,
     ssa: &'a SsaTable,
+    /// The complete region tree: ordinary iterator rewrites use its enclosing try/catch path to
+    /// distinguish a catch-reserved slot from an unplaced ordinary local.
+    regions: &'a [Region],
     code: &'a MethodCodeFacts,
     operations: &'a Operations,
     /// The class's pool: where a dynamic site's own entry, the bootstrap handles and the method
@@ -9814,6 +10112,8 @@ struct Builder<'a> {
     /// constructor for a construction site), so the declaration is written before the old deferred
     /// value could be rendered at its consumer.
     binding_plans: BTreeMap<u32, BindingPlan>,
+    /// Complete same-value carry certificates; no unproved Phi use changes its consumer count.
+    forward_conditional_carries: BTreeMap<ValueId, ForwardConditionalCarry>,
     /// Producer positions whose final consumer or dependency closure could not be proved. They
     /// are quoted at the producer so an unproved value never falls back to the old late inline.
     binding_rejections: BTreeMap<u32, BindingRejection>,
@@ -12307,10 +12607,10 @@ struct SnapshotConsumer {
     bci: u32,
 }
 
-/// Finds the current-list declaration, or verifies the complete visible owner for an already
-/// emitted ancestor declaration. `None` means the facts are incomplete; the inner index names
-/// only a current-list declaration eligible for removal. The boolean marks a declaration absent
-/// from this list, whose proved ancestor owner requires the stricter empty-declaration gap rule.
+/// Finds a removable current-list declaration, or verifies the complete visible owner for an
+/// already emitted ancestor declaration. `None` means the facts are incomplete; the inner index
+/// names a separate blank row. The boolean marks a declaration absent from this list, whose
+/// proved ancestor owner requires the stricter empty-declaration gap rule.
 fn iterator_declaration_for_loop(
     declarations: &Declarations,
     declared: &BTreeSet<LocalVariable>,
@@ -12320,7 +12620,9 @@ fn iterator_declaration_for_loop(
     path: &[u32],
     iterator_name: &str,
     slot: u16,
+    named_catch_slot: bool,
     init_index: usize,
+    init_call_bci: u32,
     access_bcis: [u32; 3],
     init_store_bci: u32,
     budget: &mut Budget,
@@ -12362,6 +12664,61 @@ fn iterator_declaration_for_loop(
         Some(init_store_bci),
     )?;
     let Some(placement) = declarations.placements.get(&variable) else {
+        let mut has_prior_blank = false;
+        for statement in &statements[..init_index] {
+            let at = statement.origin.primary().bci();
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            has_prior_blank |= matches!(
+                &statement.kind,
+                StmtKind::Declare {
+                    ty: Type::Reference(ty),
+                    name,
+                    value: None,
+                    ..
+                } if name == iterator_name
+                    && (ty == "java.util.Iterator" || ty == "Iterator")
+                    && reuse.variable_at(slot, at) == Some(variable)
+            );
+        }
+        poll(budget, Some(init_store_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(init_store_bci),
+        )?;
+        let exact_init_row = !has_prior_blank
+            && statements.get(init_index).is_some_and(|statement| {
+                statement.origin.primary().bci() == init_store_bci
+                    && matches!(
+                        &statement.kind,
+                        StmtKind::Declare {
+                            ty: Type::Reference(ty),
+                            name,
+                            value: Some(value),
+                            ..
+                        } if name == iterator_name
+                            && (ty == "java.util.Iterator" || ty == "Iterator")
+                            && value.origin.primary().bci() == init_call_bci
+                            && matches!(
+                                &value.kind,
+                                ExprKind::Call {
+                                    receiver: Some(receiver),
+                                    name,
+                                    args,
+                                } if name == "iterator"
+                                    && args.is_empty()
+                                    && matches!(&receiver.kind, ExprKind::Local(_))
+                            )
+                    )
+            });
+        if named_catch_slot && exact_init_row {
+            // The initialized row is at the enclosing Try owner. Keep the ordinary ancestor-owner
+            // check below: it permits only blank declarations in the protected gap, so moving
+            // this initializer into the foreach header cannot cross a visible assignment.
+            return Ok(Some((None, true)));
+        }
         return Ok(None);
     };
     let owner = match placement {
@@ -12383,10 +12740,6 @@ fn iterator_declaration_for_loop(
         return Ok(None);
     }
 
-    // RegionPath identifies declaration planning locations, not the physical statement Vec that
-    // owns an emitted declaration. A strict-prefix owner can still have emitted its row into this
-    // active list (for a single-level loop); use the identity-checked row in `statements` to keep
-    // the old same-list removal/gap behavior.
     let mut statement_index = None;
     for (index, statement) in statements[..init_index].iter().enumerate() {
         let at = statement.origin.primary().bci();
@@ -12402,10 +12755,9 @@ fn iterator_declaration_for_loop(
             } if name == iterator_name
                 && (ty == "java.util.Iterator" || ty == "Iterator")
                 && reuse.variable_at(slot, at) == Some(variable)
-        ) {
-            if statement_index.replace(index).is_some() {
-                return Ok(None);
-            }
+        ) && statement_index.replace(index).is_some()
+        {
+            return Ok(None);
         }
     }
 
@@ -12461,6 +12813,30 @@ fn iterator_phi_use_ownership(
     allowed_loads: [u32; 2],
     budget: &mut Budget,
 ) -> Result<bool, StopReason> {
+    iterator_phi_use_ownership_with_terminal_phi(ssa, iterator_value, allowed_loads, None, budget)
+}
+
+fn is_terminal_mixed_iterator_phi(
+    slot_matches_iterator: bool,
+    replaced_by: Option<ValueId>,
+    has_uses: bool,
+    has_other_value_input: bool,
+) -> bool {
+    slot_matches_iterator && replaced_by.is_none() && !has_uses && has_other_value_input
+}
+
+/// The ordinary protected foreach can leave one additional SSA use: a local phi at the
+/// try/catch continuation that merges the live iterator value with the caught-store value. It is
+/// safe to ignore only when that exact local phi is terminal (no SSA consumers) and unresolved
+/// (not a replacement alias). Every use of the iterator and every phi operand is still inventoried
+/// below; a live handler/catch use remains a rejection.
+fn iterator_phi_use_ownership_with_terminal_phi(
+    ssa: &SsaTable,
+    iterator_value: ValueId,
+    allowed_loads: [u32; 2],
+    terminal_local_slot: Option<u16>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
     fn resolves_to(
         ssa: &SsaTable,
         mut value: ValueId,
@@ -12492,6 +12868,17 @@ fn iterator_phi_use_ownership(
                 return Ok(false);
             }
         } else {
+            if terminal_local_slot.is_some() {
+                let fresh_block = !none_uses_by_block.contains_key(use_.block());
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(use_.block().path().len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_add(u64::from(fresh_block)),
+                    Some(at),
+                )?;
+            }
             let count = none_uses_by_block.entry(use_.block().clone()).or_default();
             let Some(next_count) = count.checked_add(1) else {
                 return Ok(false);
@@ -12511,6 +12898,7 @@ fn iterator_phi_use_ownership(
                 continue;
             }
             let mut phi_occurrences = 0usize;
+            let mut has_other_value_input = false;
             for input in phi.inputs() {
                 poll(budget, Some(at))?;
                 charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
@@ -12521,6 +12909,8 @@ fn iterator_phi_use_ownership(
                                 return Ok(false);
                             };
                             phi_occurrences = next_count;
+                        } else {
+                            has_other_value_input = true;
                         }
                     }
                     PhiInput::Itself => {}
@@ -12540,16 +12930,26 @@ fn iterator_phi_use_ownership(
             poll(budget, Some(at))?;
             charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
             let phi_value = ssa.value(phi.value());
-            if phi_value.replaced_by().is_none()
-                || !phi_value.uses().is_empty()
-                || !resolves_to(ssa, phi.value(), iterator_value, budget, at)?
-            {
+            let terminal_mixed_phi = is_terminal_mixed_iterator_phi(
+                terminal_local_slot.is_some_and(|slot| phi.slot() == Slot::Local(slot)),
+                phi_value.replaced_by(),
+                !phi_value.uses().is_empty(),
+                has_other_value_input,
+            );
+            let replacement_proves_iterator = if terminal_mixed_phi {
+                false
+            } else {
+                phi_value.replaced_by().is_some()
+                    && phi_value.uses().is_empty()
+                    && resolves_to(ssa, phi.value(), iterator_value, budget, at)?
+            };
+            if !terminal_mixed_phi && !replacement_proves_iterator {
                 return Ok(false);
             }
             for input in phi.inputs() {
                 poll(budget, Some(at))?;
                 charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
-                if let PhiInput::Value(value) = input {
+                if !terminal_mixed_phi && let PhiInput::Value(value) = input {
                     if !resolves_to(ssa, *value, iterator_value, budget, at)? {
                         return Ok(false);
                     }
@@ -12855,7 +13255,7 @@ impl Builder<'_> {
                         shared = true;
                         break;
                     };
-                    let Some(end) = self.terminal_consumer(output, 0)? else {
+                    let Some(end) = self.terminal_consumer(output, 0, None)? else {
                         shared = true;
                         break;
                     };
@@ -19701,7 +20101,7 @@ impl Builder<'_> {
             None
         };
         let iterable_projected = if for_header.is_none() && tests.len() == 1 {
-            self.iterable_for_each_candidate(first_test_bci, path, &kind, body)?
+            self.iterable_for_each_candidate(first_test_bci, path, &kind, body, region)?
         } else {
             None
         };
@@ -21943,6 +22343,7 @@ impl Builder<'_> {
         path: &[u32],
         kind: &StmtKind,
         regions: &[Region],
+        loop_region: &Region,
     ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
         let StmtKind::While { cond, body, .. } = kind else {
             return Ok(None);
@@ -22157,6 +22558,34 @@ impl Builder<'_> {
             {
                 return None;
             }
+            let Some(iterator_variable) = self.reuse.variable_at(*iterator_slot, init_store_bci)
+            else {
+                return None;
+            };
+            let named_catch_slot = if self
+                .declarations
+                .placements
+                .contains_key(&iterator_variable)
+            {
+                false
+            } else {
+                match named_catch_slot_for_protected_path(
+                    self.regions,
+                    path,
+                    *iterator_slot,
+                    self.operations,
+                    &self.instructions,
+                    self.ssa,
+                    self.budget,
+                    test_bci,
+                ) {
+                    Ok(certified) => certified,
+                    Err(stop) => {
+                        proof_stop = Some(stop);
+                        return None;
+                    }
+                }
+            };
             let (declaration_index, ancestor_owner) = match iterator_declaration_for_loop(
                 &self.declarations,
                 &self.declared,
@@ -22166,7 +22595,9 @@ impl Builder<'_> {
                 path,
                 iterator_name,
                 *iterator_slot,
+                named_catch_slot,
                 init_index,
+                init_bci,
                 [init_store_bci, test_load_bci, next_load_bci],
                 init_store_bci,
                 self.budget,
@@ -22178,6 +22609,16 @@ impl Builder<'_> {
                     return None;
                 }
             };
+            let protected_loop = self
+                .ssa
+                .effects()
+                .instructions()
+                .iter()
+                .find(|effect| {
+                    effect.bci() == has_next_bci
+                        && Some(effect.block()) == self.block_of.get(&has_next_bci)
+                })
+                .is_some_and(|effect| effect.may_throw() && !effect.handlers().is_empty());
             let only_blank_declarations = self.stmts[init_index + 1..]
                 .iter()
                 .all(|stmt| matches!(stmt.kind, StmtKind::Declare { value: None, .. }));
@@ -22185,7 +22626,7 @@ impl Builder<'_> {
                 matches!(&stmt.kind, StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. }
                     if name == iterable_name || name == iterator_name)
             });
-            let safe_gap = if ancestor_owner {
+            let safe_gap = if ancestor_owner || protected_loop {
                 only_blank_declarations
             } else {
                 !self.stmts[init_index + 1..]
@@ -22218,6 +22659,48 @@ impl Builder<'_> {
             {
                 return None;
             }
+            let loop_owned_blocks = if !protected_loop {
+                None
+            } else {
+                let loop_blocks =
+                    match crate::region::candidate_region_blocks(loop_region, self.budget, true) {
+                        Ok(Some(blocks)) => blocks,
+                        Ok(None) => return None,
+                        Err(stop) => {
+                            proof_stop = Some(stop);
+                            return None;
+                        }
+                    };
+                let mut owned = BTreeSet::new();
+                for block in loop_blocks {
+                    if let Err(stop) = poll(self.budget, Some(block.bci())) {
+                        proof_stop = Some(stop);
+                        return None;
+                    }
+                    if let Err(stop) = charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(block.bci()),
+                    ) {
+                        proof_stop = Some(stop);
+                        return None;
+                    }
+                    if let Err(stop) = charge(
+                        self.budget,
+                        CountedBudgetDimension::IrItems,
+                        u64::try_from(block.path().len())
+                            .unwrap_or(u64::MAX)
+                            .saturating_add(1),
+                        Some(block.bci()),
+                    ) {
+                        proof_stop = Some(stop);
+                        return None;
+                    }
+                    owned.insert(block);
+                }
+                Some(owned)
+            };
             let header = self.block_of.get(&test_bci)?;
             if self
                 .ssa
@@ -22271,13 +22754,16 @@ impl Builder<'_> {
                 })
                 || !resolves(phi.value())
                 || self.ssa.blocks().iter().any(|block| {
-                    block.instructions().iter().any(|instruction| {
-                        instruction.bci() != init_store_bci
-                            && instruction
-                                .writes()
-                                .iter()
-                                .any(|(slot, _)| *slot == Slot::Local(*iterator_slot))
-                    })
+                    loop_owned_blocks
+                        .as_ref()
+                        .is_none_or(|owners| owners.contains(block.block()))
+                        && block.instructions().iter().any(|instruction| {
+                            instruction.bci() != init_store_bci
+                                && instruction
+                                    .writes()
+                                    .iter()
+                                    .any(|(slot, _)| *slot == Slot::Local(*iterator_slot))
+                        })
                 })
             {
                 return None;
@@ -22305,12 +22791,23 @@ impl Builder<'_> {
                 return None;
             }
             for value in [iterator_value, phi.value()] {
-                match iterator_phi_use_ownership(
-                    self.ssa,
-                    value,
-                    [test_load_bci, next_load_bci],
-                    self.budget,
-                ) {
+                let ownership = if protected_loop {
+                    iterator_phi_use_ownership_with_terminal_phi(
+                        self.ssa,
+                        value,
+                        [test_load_bci, next_load_bci],
+                        Some(*iterator_slot),
+                        self.budget,
+                    )
+                } else {
+                    iterator_phi_use_ownership(
+                        self.ssa,
+                        value,
+                        [test_load_bci, next_load_bci],
+                        self.budget,
+                    )
+                };
+                match ownership {
                     Ok(true) => {}
                     Ok(false) => return None,
                     Err(stop) => {
@@ -22386,11 +22883,19 @@ impl Builder<'_> {
                 })
             };
             let handlers = effect(has_next_bci)?.handlers();
-            if effect(init_bci)?.handlers() != handlers
+            let test_effect = effect(test_bci)?;
+            if test_effect.may_throw()
+                || !test_effect.handlers().is_empty()
+                || !effect(init_bci)?.may_throw()
+                || !effect(has_next_bci)?.may_throw()
+                || !effect(next_bci)?.may_throw()
+                || effect(init_bci)?.handlers() != handlers
                 || effect(next_bci)?.handlers() != handlers
-                || effect(test_bci)?.handlers() != handlers
-                || inline_cast_bci
-                    .is_some_and(|bci| effect(bci).map(|e| e.handlers()) != Some(handlers))
+                || inline_cast_bci.is_some_and(|bci| {
+                    effect(bci).is_none_or(|cast_effect| {
+                        !cast_effect.may_throw() || cast_effect.handlers() != handlers
+                    })
+                })
             {
                 return None;
             }
@@ -23592,7 +24097,40 @@ impl Builder<'_> {
                 continue;
             };
             let crosses_cut = self.crosses_a_proved_cut(value);
-            let consumers = self.binding_consumers(value, crosses_cut);
+            let mut pending_carry = None;
+            if !crosses_cut && value_facts.uses().len() == 3 {
+                let folded = self.regions.first().and_then(|region| {
+                    let Region::If { branch_bci, .. } = region else {
+                        return None;
+                    };
+                    match self.conditional_branches.get(branch_bci) {
+                        Some(ConditionalBranchPlan::Folded(phi))
+                            if self.conditional_values.contains_key(phi) =>
+                        {
+                            Some(*phi)
+                        }
+                        _ => None,
+                    }
+                });
+                if let Some(carry) = prove_forward_conditional_carry(
+                    value,
+                    self.regions,
+                    folded,
+                    self.canonical,
+                    self.ssa,
+                    self.operations,
+                    self.code,
+                    self.budget,
+                )? {
+                    pending_carry = Some(carry);
+                }
+            }
+            let original_consumers = self.binding_consumers(value, crosses_cut);
+            let consumers = if pending_carry.is_some() {
+                1
+            } else {
+                original_consumers
+            };
             if consumers != 1 {
                 rejections.push(BindingRejection {
                     value,
@@ -23604,21 +24142,33 @@ impl Builder<'_> {
                 });
                 continue;
             }
-            let Some(reader) = self.terminal_consumer(value, 0)? else {
+            // The same-value carry is provisional until the complete final-consumer walk
+            // succeeds. A failed walk must retain the original multi-consumer refusal, rather
+            // than changing other values' walks or the method's whole-quote decision.
+            let Some(reader) = self.terminal_consumer(value, 0, pending_carry.as_ref())? else {
                 rejections.push(BindingRejection {
                     value,
                     anchor,
                     producer,
-                    reason: format!(
-                        "the saved producer at BCI {anchor} has no bounded final expression consumer"
-                    ),
+                    reason: if pending_carry.is_some() {
+                        format!(
+                            "the saved producer at BCI {anchor} has {original_consumers} consumers, so one local binding cannot prove its execution count"
+                        )
+                    } else {
+                        format!(
+                            "the saved producer at BCI {anchor} has no bounded final expression consumer"
+                        )
+                    },
                 });
                 continue;
             };
             if reader <= last {
                 continue;
             }
-            if !self.shares_a_declaration_region(anchor, reader, crosses_cut) {
+            let forward_carry = pending_carry.as_ref().is_some_and(|carry| {
+                carry.producer == producer && self.block_of.get(&reader) == Some(&carry.join)
+            });
+            if !forward_carry && !self.shares_a_declaration_region(anchor, reader, crosses_cut) {
                 rejections.push(BindingRejection {
                     value,
                     anchor,
@@ -23641,8 +24191,20 @@ impl Builder<'_> {
                 )
             );
             match self.has_independent_boundary(value, last, reader, owned_exit)? {
+                Some(true) | Some(false) if folding || forward_carry => {
+                    if let Some(carry) = pending_carry {
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::IrItems,
+                            1,
+                            Some(anchor),
+                        )?;
+                        poll(self.budget, Some(anchor))?;
+                        self.forward_conditional_carries.insert(value, carry);
+                    }
+                    candidates.push((value, producer, anchor));
+                }
                 Some(true) => candidates.push((value, producer, anchor)),
-                Some(false) if folding => candidates.push((value, producer, anchor)),
                 Some(false) => {}
                 None => rejections.push(BindingRejection {
                     value,
@@ -23682,6 +24244,12 @@ impl Builder<'_> {
             .collect();
         let mut retained = Vec::with_capacity(candidates.len());
         for candidate @ (value, producer, _) in candidates {
+            // This producer was deliberately saved before the conditional. A join-local
+            // boundary walk cannot justify absorbing it into another saved initializer.
+            if self.forward_conditional_carries.contains_key(&value) {
+                retained.push(candidate);
+                continue;
+            }
             let Some(reader) = self
                 .ssa
                 .value(value)
@@ -23847,7 +24415,9 @@ impl Builder<'_> {
     /// counting them would refuse a shape whose evaluation count is stated.
     fn binding_consumers(&self, value: ValueId, crosses_cut: bool) -> usize {
         let uses = self.ssa.value(value).uses();
-        if crosses_cut {
+        if self.forward_conditional_carries.contains_key(&value) {
+            1
+        } else if crosses_cut {
             uses.iter().filter(|use_| use_.bci().is_some()).count()
         } else {
             uses.len()
@@ -24082,17 +24652,24 @@ impl Builder<'_> {
         &mut self,
         value: ValueId,
         depth: usize,
+        pending_carry: Option<&ForwardConditionalCarry>,
     ) -> Result<Option<u32>, StopReason> {
         if depth > MAX_VALUE_DEPTH {
             return Ok(None);
         }
         let uses = self.ssa.value(value).uses();
-        if self.binding_consumers(value, self.crosses_a_proved_cut(value)) != 1 {
+        let carry = pending_carry.or_else(|| self.forward_conditional_carries.get(&value));
+        if carry.is_none() && self.binding_consumers(value, self.crosses_a_proved_cut(value)) != 1 {
             return Ok(None);
         }
         let Some(reader) = uses.iter().find_map(|use_| use_.bci()) else {
             return Ok(None);
         };
+        if carry.is_some_and(|carry| {
+            reader != carry.consumer || self.block_of.get(&reader) != Some(&carry.join)
+        }) {
+            return Ok(None);
+        }
         poll(self.budget, Some(reader))?;
         charge(
             self.budget,
@@ -24113,7 +24690,7 @@ impl Builder<'_> {
         else {
             return Ok(None);
         };
-        self.terminal_consumer(output, depth + 1)
+        self.terminal_consumer(output, depth + 1, None)
     }
 
     /// An already supported expression-producing instruction that may be followed to the
@@ -34500,6 +35077,444 @@ mod tests {
         analyze_test_method(class, "ownGridDirect", "()[[LBase;", java_release)
     }
 
+    #[test]
+    fn forward_conditional_carry_proves_real_retired_stack_phi_and_rejects_wrong_values() {
+        let class = include_bytes!(
+            "../../../tests/fixtures/cf11-ordinary-try-list-generic/admission/OrdinaryTryListFixture.class"
+        );
+        let context = iterator_test_context(class, "consume", "(Ljava/lang/Object;)V", 8);
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().unwrap();
+        let canonical = ir.canonical().unwrap();
+        let code = ir.code().unwrap();
+        let operations = Operations::of(code, ir.constant_pool());
+        let mut budget = child_array_test_budget();
+        let ConditionalValueAttempt::Proved(proof) = prove_conditional_value(
+            &context.regions[0],
+            canonical,
+            ssa,
+            &operations,
+            &mut budget,
+        )
+        .unwrap() else {
+            panic!("the real conditional is already proved");
+        };
+        let producer = ssa
+            .values_with_ids()
+            .find_map(|(value, facts)| {
+                matches!(facts.def(), Definition::Instruction { bci: 0, .. }).then_some(value)
+            })
+            .unwrap();
+        let carry = prove_forward_conditional_carry(
+            producer,
+            &context.regions,
+            Some(proof.phi),
+            canonical,
+            ssa,
+            &operations,
+            code,
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(
+            (carry.producer, carry.consumer, carry.join.bci()),
+            (0, 12, 12)
+        );
+        let phi = ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.slot() == Slot::Stack(0))
+            .unwrap();
+        assert_eq!(
+            phi.inputs(),
+            [PhiInput::Value(producer), PhiInput::Value(producer)]
+        );
+        assert_eq!(ssa.value(phi.value()).replaced_by(), Some(producer));
+        assert!(ssa.value(phi.value()).uses().is_empty());
+        // The real varying conditional Phi is live and has mixed inputs; neither it nor an
+        // unrelated value or an unstaged conditional can claim the retired carry certificate.
+        for value in [proof.phi, proof.when_true, proof.when_false] {
+            assert!(
+                prove_forward_conditional_carry(
+                    value,
+                    &context.regions,
+                    Some(proof.phi),
+                    canonical,
+                    ssa,
+                    &operations,
+                    code,
+                    &mut budget
+                )
+                .unwrap()
+                .is_none()
+            );
+        }
+        assert!(
+            prove_forward_conditional_carry(
+                producer,
+                &context.regions,
+                None,
+                canonical,
+                ssa,
+                &operations,
+                code,
+                &mut budget
+            )
+            .unwrap()
+            .is_none()
+        );
+        let mut handler_code = code.clone();
+        handler_code.exception_handler_count = 1;
+        assert!(
+            prove_forward_conditional_carry(
+                producer,
+                &context.regions,
+                Some(proof.phi),
+                canonical,
+                ssa,
+                &operations,
+                &handler_code,
+                &mut budget
+            )
+            .unwrap()
+            .is_none()
+        );
+        let mut extra_regions = context.regions.clone();
+        extra_regions.push(context.regions[1].clone());
+        assert!(
+            prove_forward_conditional_carry(
+                producer,
+                &extra_regions,
+                Some(proof.phi),
+                canonical,
+                ssa,
+                &operations,
+                code,
+                &mut budget
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn forward_conditional_carry_rejects_physical_mixed_and_extra_reader_controls() {
+        use jarde_reader::classfile::test_class::single_method;
+        // The same four-block diamond, with an independently evaluated carried int. Both
+        // variants are real bytecode fed through frames/SSA; the SSA API stays read-only.
+        let cases: &[(&[u8], bool)] = &[
+            (
+                &[
+                    0x10, 42, 0x03, 0x99, 0, 7, 0x04, 0xa7, 0, 4, 0x05, 0x60, 0x57, 0xb1,
+                ],
+                true,
+            ),
+            // One arm replaces the carried value: its Stack(0) Phi is mixed and remains live.
+            (
+                &[
+                    0x10, 42, 0x03, 0x99, 0, 10, 0x57, 0x10, 43, 0x04, 0xa7, 0, 4, 0x05, 0x60,
+                    0x57, 0xb1,
+                ],
+                false,
+            ),
+            // Both arms read the original in dup; their new alias definitions meet at the join.
+            (
+                &[
+                    0x10, 42, 0x03, 0x99, 0, 8, 0x59, 0x04, 0xa7, 0, 5, 0x59, 0x05, 0x60, 0x57,
+                    0x57, 0xb1,
+                ],
+                false,
+            ),
+            // Three physical arms meet at one join; even a same-value carry has three inputs.
+            (
+                &[
+                    0x10, 42, 0x03, 0x99, 0, 7, 0x04, 0xa7, 0, 12, 0x03, 0x99, 0, 7, 0x05, 0xa7, 0,
+                    4, 0x06, 0x60, 0x57, 0xb1,
+                ],
+                false,
+            ),
+        ];
+        for (index, (bytes, accepted)) in cases.iter().enumerate() {
+            let class = single_method(52, 4, 0, bytes);
+            let context = iterator_test_context(&class, "method", "()V", 8);
+            let ir = context.analysis.ir();
+            let ssa = ir.ssa().unwrap();
+            let canonical = ir.canonical().unwrap();
+            let code = ir.code().unwrap();
+            let operations = Operations::of(code, ir.constant_pool());
+            let producer = ssa
+                .values_with_ids()
+                .find_map(|(value, facts)| {
+                    matches!(facts.def(), Definition::Instruction { bci: 0, .. }).then_some(value)
+                })
+                .unwrap();
+            let mut budget = child_array_test_budget();
+            let folded = ssa
+                .phis()
+                .iter()
+                .find(|phi| phi.slot() == Slot::Stack(if index == 2 { 2 } else { 1 }))
+                .unwrap()
+                .value();
+            if index == 1 {
+                let mixed = ssa
+                    .phis()
+                    .iter()
+                    .find(|phi| phi.slot() == Slot::Stack(0))
+                    .unwrap();
+                assert_ne!(mixed.inputs()[0], mixed.inputs()[1]);
+                assert!(ssa.value(mixed.value()).replaced_by().is_none());
+                assert!(!ssa.value(mixed.value()).uses().is_empty());
+            }
+            if index == 2 {
+                assert!(
+                    ssa.value(producer)
+                        .uses()
+                        .iter()
+                        .filter(|use_| use_.bci().is_some())
+                        .count()
+                        >= 2
+                );
+            }
+            if index == 3 {
+                let carry = ssa
+                    .phis()
+                    .iter()
+                    .find(|phi| phi.slot() == Slot::Stack(0))
+                    .unwrap();
+                assert_eq!(carry.inputs().len(), 3);
+            }
+            assert_eq!(
+                prove_forward_conditional_carry(
+                    producer,
+                    &context.regions,
+                    Some(folded),
+                    canonical,
+                    ssa,
+                    &operations,
+                    code,
+                    &mut budget
+                )
+                .unwrap()
+                .is_some(),
+                *accepted,
+                "physical variant {index}"
+            );
+        }
+        for class in [
+            include_bytes!("../../../tests/fixtures/recover-inline-conditional-concat-operands/v8/ICN.class").as_slice(),
+            include_bytes!("../../../tests/fixtures/recover-inline-conditional-concat-operands/v8-javac8/ICN.class").as_slice(),
+        ] {
+            let context = iterator_test_context(class, "armCall", "(Z)V", 8);
+            let ir = context.analysis.ir();
+            let ssa = ir.ssa().unwrap();
+            let canonical = ir.canonical().unwrap();
+            let code = ir.code().unwrap();
+            let operations = Operations::of(code, ir.constant_pool());
+            let mut budget = child_array_test_budget();
+            let ConditionalValueAttempt::Proved(proof) = prove_conditional_value(
+                &context.regions[0], canonical, ssa, &operations, &mut budget,
+            ).unwrap() else {
+                panic!("the original refused concat has a folded calling-arm conditional");
+            };
+            let (producer, facts) = ssa.values_with_ids().find(|(_, facts)| {
+                matches!(facts.def(), Definition::Instruction { bci: 16, .. })
+            }).expect("the real append receiver at BCI 16");
+            assert!(matches!(facts.ty(), Value::Ref(_)));
+            assert_eq!(facts.uses().len(), 3);
+            assert_eq!(canonical.blocks().len(), 4);
+            let Definition::Instruction { block, .. } = facts.def() else { unreachable!() };
+            let instruction = ssa.block(block).unwrap().instructions().iter()
+                .find(|instruction| instruction.bci() == 16).unwrap();
+            let [(slot @ Slot::Stack(_), value)] = instruction.writes() else {
+                panic!("append writes its one receiver result");
+            };
+            assert_eq!(*value, producer);
+            assert_eq!(
+                prove_carried_conditional_use(producer, *slot, &proof,
+                    &context.regions[0], canonical, ssa, &mut budget).unwrap(),
+                Some(proof.consumer_bci),
+                "the generic same-value carry premises alone match this refused object chain",
+            );
+            assert!(prove_forward_conditional_carry(producer, &context.regions,
+                Some(proof.phi), canonical, ssa, &operations, code, &mut budget)
+                .unwrap().is_none(),
+                "object construction/concat receivers retain their original ownership proof");
+        }
+        let bi = include_bytes!(
+            "../../../tests/fixtures/recover-conditional-rhs-field-compound/v8/BI.class"
+        );
+        let context = iterator_test_context(bi, "earlyRet", "([I)Z", 8);
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().unwrap();
+        let canonical = ir.canonical().unwrap();
+        assert!(
+            canonical
+                .edges()
+                .iter()
+                .any(|edge| edge.from().bci() >= edge.to().bci())
+        );
+        let code = ir.code().unwrap();
+        let operations = Operations::of(code, ir.constant_pool());
+        let producer = ssa
+            .values_with_ids()
+            .find_map(|(value, facts)| {
+                matches!(facts.def(), Definition::Instruction { bci: 22, .. }).then_some(value)
+            })
+            .unwrap();
+        assert_eq!(ssa.value(producer).uses().len(), 3);
+        assert!(
+            prove_forward_conditional_carry(
+                producer,
+                &context.regions,
+                Some(producer),
+                canonical,
+                ssa,
+                &operations,
+                code,
+                &mut child_array_test_budget()
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn forward_conditional_carry_late_budget_and_ledger_cancellation_return_no_certificate() {
+        use jarde_reader::budget::CancellationToken;
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct ChargeObserver {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for ChargeObserver {
+            fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    let n = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                    if self.cancel_at == Some(n) {
+                        self.token.cancel();
+                    }
+                }
+            }
+            fn refusal(
+                &self,
+                _site: LedgerSite,
+                _dimension: Option<jarde_reader::budget::BudgetDimension>,
+            ) {
+            }
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/cf11-ordinary-try-list-generic/admission/OrdinaryTryListFixture.class"
+        );
+        let context = iterator_test_context(class, "consume", "(Ljava/lang/Object;)V", 8);
+        let ir = context.analysis.ir();
+        let ssa = ir.ssa().unwrap();
+        let canonical = ir.canonical().unwrap();
+        let code = ir.code().unwrap();
+        let operations = Operations::of(code, ir.constant_pool());
+        let producer = ssa
+            .values_with_ids()
+            .find_map(|(value, facts)| {
+                matches!(facts.def(), Definition::Instruction { bci: 0, .. }).then_some(value)
+            })
+            .unwrap();
+        let folded = ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.slot() == Slot::Stack(1))
+            .unwrap()
+            .value();
+        let token = CancellationToken::new();
+        let observer = Arc::new(ChargeObserver {
+            charges: AtomicUsize::new(0),
+            cancel_at: None,
+            token: token.clone(),
+        });
+        let mut measured = child_array_test_budget();
+        measured.with_ledger(
+            OperationLedger::new(&measured).with_observer(observer.clone()),
+            UsageOwner::Methods,
+        );
+        assert!(
+            prove_forward_conditional_carry(
+                producer,
+                &context.regions,
+                Some(folded),
+                canonical,
+                ssa,
+                &operations,
+                code,
+                &mut measured
+            )
+            .unwrap()
+            .is_some()
+        );
+        let mut limits = measured.limits().clone();
+        limits.ir_items = measured.usage().ir_items - 1;
+        let mut stopped = Budget::new(limits);
+        assert!(matches!(
+            prove_forward_conditional_carry(
+                producer,
+                &context.regions,
+                Some(folded),
+                canonical,
+                ssa,
+                &operations,
+                code,
+                &mut stopped
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                written: 0,
+                at: Some(0),
+                ..
+            })
+        ));
+        assert!(
+            stopped.usage().analysis_steps > 0,
+            "stop follows the actual conditional/carry census"
+        );
+        let charges = observer.charges.load(Ordering::SeqCst);
+        assert!(charges > 2);
+        let token = CancellationToken::new();
+        let observer = Arc::new(ChargeObserver {
+            charges: AtomicUsize::new(0),
+            cancel_at: Some(charges),
+            token: token.clone(),
+        });
+        let mut cancelled = Budget::with_cancellation_token(measured.limits().clone(), token);
+        cancelled.with_ledger(
+            OperationLedger::new(&cancelled).with_observer(observer.clone()),
+            UsageOwner::Methods,
+        );
+        assert_eq!(
+            prove_forward_conditional_carry(
+                producer,
+                &context.regions,
+                Some(folded),
+                canonical,
+                ssa,
+                &operations,
+                code,
+                &mut cancelled
+            ),
+            Err(StopReason::Cancelled { at: Some(0) })
+        );
+        assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+        assert!(
+            cancelled.usage().analysis_steps > 0,
+            "cancellation is in the last proof charge, not pre-cancelled"
+        );
+    }
+
     struct IteratorTestContext {
         analysis: jarde_jvm::method_ir::MethodIrAnalysis,
         regions: Vec<Region>,
@@ -35775,7 +36790,9 @@ mod tests {
             path,
             name,
             5,
+            false,
             statements.len(),
+            0,
             [33, 35, 45],
             33,
             budget,
@@ -35986,6 +37003,254 @@ mod tests {
     }
 
     #[test]
+    fn iterator_declaration_gate_requires_catch_certificate_for_unplaced_init_row() {
+        let context = iterator_test_context(
+            ORDINARY_TRY_LIST_CLASS,
+            "handled",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            8,
+        );
+        let ir = context.analysis.ir();
+        let code = ir.code().expect("ordinary try method bytecode");
+        let operations = Operations::of(code, ir.constant_pool());
+        let init_call_bci = operations
+            .iter()
+            .find_map(|(bci, operation)| match operation {
+                Operation::Invoke(target)
+                    if target.name() == "iterator"
+                        && target.descriptor() == "()Ljava/util/Iterator;" =>
+                {
+                    Some(*bci)
+                }
+                _ => None,
+            })
+            .expect("the protected loop calls iterator()");
+        let (slot, init_store_bci, _) = iterator_source_store(&context.analysis);
+        let [test_load_bci, next_load_bci] =
+            iterator_receiver_load_pair(&context.analysis, &["hasNext", "next"]);
+        let ssa = context.analysis.ir().ssa().expect("fixture SSA");
+        let has_next_bci = operations
+            .iter()
+            .find_map(|(bci, operation)| match operation {
+                Operation::Invoke(target) if target.name() == "hasNext" => Some(*bci),
+                _ => None,
+            })
+            .expect("the protected loop calls hasNext()");
+        let has_next_block = ssa
+            .effects()
+            .instructions()
+            .iter()
+            .find(|effect| effect.bci() == has_next_bci)
+            .expect("hasNext has a physical effect record")
+            .block();
+        fn find_loop_path(
+            region: &Region,
+            path: &[u32],
+            test_block: &CanonicalBlockId,
+        ) -> Option<Vec<u32>> {
+            if matches!(region, Region::Loop { tests, .. }
+                if tests.iter().any(|(block, _, _)| block == test_block))
+            {
+                return Some(path.to_vec());
+            }
+            let child_count = match region {
+                Region::Sequence { regions } | Region::Loop { body: regions, .. } => regions.len(),
+                Region::If { .. } | Region::CompoundIf { .. } => 2,
+                Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => groups.len(),
+                Region::Try { catches, .. } => catches.len().saturating_add(1),
+                Region::Guard {
+                    body, finally_body, ..
+                } => body.is_some() as usize + finally_body.is_some() as usize,
+                _ => 0,
+            };
+            for child_index in 0..child_count {
+                if let Some(child_region) = child_region_at(region, child_index)
+                    && let Some(found) = find_loop_path(
+                        child_region,
+                        &child(path, u32::try_from(child_index).ok()?),
+                        test_block,
+                    )
+                {
+                    return Some(found);
+                }
+            }
+            None
+        }
+        let actual_path = context
+            .regions
+            .iter()
+            .enumerate()
+            .find_map(|(index, region)| {
+                find_loop_path(region, &[u32::try_from(index).ok()?], has_next_block)
+            })
+            .expect("the hasNext test belongs to one recovered loop path");
+        let mut instructions = BTreeMap::new();
+        for block in ssa.blocks() {
+            for instruction in block.instructions() {
+                instructions.insert(instruction.bci(), instruction);
+            }
+        }
+        assert!(
+            named_catch_slot_for_protected_path(
+                &context.regions,
+                &actual_path,
+                slot,
+                &operations,
+                &instructions,
+                ssa,
+                &mut child_array_test_budget(),
+                has_next_bci,
+            )
+            .expect("the bounded typed-catch owner check completes")
+        );
+        let variable = context
+            .reuse
+            .variable_at(slot, init_store_bci)
+            .expect("the self-owned iterator store has one source lifetime");
+        assert_eq!(
+            context.reuse.variable_at(slot, test_load_bci),
+            Some(variable)
+        );
+        assert_eq!(
+            context.reuse.variable_at(slot, next_load_bci),
+            Some(variable)
+        );
+        let iterator_name = context
+            .names
+            .text(variable)
+            .expect("the loop iterator has a Java source name")
+            .to_owned();
+        let path = vec![7, 0, 2];
+        let receiver = Expr::direct(ExprKind::Local("input".to_owned()), init_call_bci);
+        let iterator_call = Expr::direct(
+            ExprKind::Call {
+                receiver: Some(Box::new(receiver)),
+                name: "iterator".to_owned(),
+                args: Vec::new(),
+            },
+            init_call_bci,
+        )
+        .presenting(Type::Reference("java.util.Iterator".to_owned()));
+        let init_row = Stmt::new(
+            StmtKind::Declare {
+                ty: Type::Reference("java.util.Iterator".to_owned()),
+                source_type_name: None,
+                name: iterator_name.clone(),
+                value: Some(iterator_call),
+            },
+            OriginSet::new(Origin::direct(init_store_bci)),
+        );
+        let declared = BTreeSet::from([variable]);
+        let check = |declarations: &Declarations,
+                     declared: &BTreeSet<LocalVariable>,
+                     row: &Stmt,
+                     owner_path: &[u32],
+                     call_bci: u32,
+                     named_catch_slot: bool| {
+            iterator_declaration_for_loop(
+                declarations,
+                declared,
+                &context.names,
+                &context.reuse,
+                std::slice::from_ref(row),
+                owner_path,
+                &iterator_name,
+                slot,
+                named_catch_slot,
+                0,
+                call_bci,
+                [init_store_bci, test_load_bci, next_load_bci],
+                init_store_bci,
+                &mut child_array_test_budget(),
+            )
+        };
+        assert_eq!(
+            check(
+                &Declarations::default(),
+                &declared,
+                &init_row,
+                &path,
+                init_call_bci,
+                true,
+            )
+            .expect("the exact catch-reserved initialization completes"),
+            Some((None, true)),
+            "only a typed-catch-certified exact initialized row bypasses missing placement"
+        );
+        assert_eq!(
+            check(
+                &Declarations::default(),
+                &declared,
+                &init_row,
+                &path,
+                init_call_bci,
+                false,
+            )
+            .expect("an ordinary missing placement is a conservative refusal"),
+            None,
+            "the exception stays limited to an independently proved catch slot"
+        );
+
+        let mut wrong_store = init_row.clone();
+        wrong_store.origin = OriginSet::new(Origin::direct(init_store_bci + 1));
+        assert_eq!(
+            check(
+                &context.declarations,
+                &declared,
+                &wrong_store,
+                &path,
+                init_call_bci,
+                true,
+            )
+            .expect("a changed store origin is a conservative refusal"),
+            None
+        );
+        assert_eq!(
+            check(
+                &context.declarations,
+                &declared,
+                &init_row,
+                &path,
+                init_call_bci + 1,
+                true,
+            )
+            .expect("a changed iterator call origin is a conservative refusal"),
+            None
+        );
+        assert_eq!(
+            check(
+                &context.declarations,
+                &BTreeSet::new(),
+                &init_row,
+                &path,
+                init_call_bci,
+                true,
+            )
+            .expect("a missing declared identity is a conservative refusal"),
+            None
+        );
+        let mut wrong_owner = Declarations::default();
+        wrong_owner.placements.insert(
+            variable,
+            DeclarationPlacement::Local {
+                owner: vec![u32::MAX],
+            },
+        );
+        assert_eq!(
+            check(
+                &wrong_owner,
+                &declared,
+                &init_row,
+                &path,
+                init_call_bci,
+                true
+            )
+            .expect("a different planned lexical owner is a conservative refusal"),
+            None
+        );
+    }
+
+    #[test]
     fn iterator_declaration_gate_rejects_real_split_slot_identity_changes() {
         let context = iterator_test_context(SCOPE_REUSE_CLASS, "reuse", "(ZI)I", 8);
         let first = context.reuse.variable_at(3, 8).expect("then-arm local");
@@ -36006,6 +37271,8 @@ mod tests {
                 &[],
                 context.names.text(first).expect("first split-local name"),
                 3,
+                false,
+                0,
                 0,
                 [8, 17, 8],
                 7,
@@ -36113,8 +37380,81 @@ mod tests {
         );
     }
 
+    #[test]
+    fn protected_iterator_phi_gate_accepts_only_terminal_dead_mixed_local_phi() {
+        let context = iterator_test_context(
+            ORDINARY_TRY_LIST_CLASS,
+            "handled",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            8,
+        );
+        let ssa = context
+            .analysis
+            .ir()
+            .ssa()
+            .expect("ordinary try fixture SSA");
+        let (slot, _, iterator) = iterator_source_store(&context.analysis);
+        let [has_next_load, next_load] =
+            iterator_receiver_load_pair(&context.analysis, &["hasNext", "next"]);
+        let dead_mixed =
+            ssa.phis()
+                .iter()
+                .find(|phi| {
+                    phi.slot() == Slot::Local(slot)
+                        && phi.inputs().contains(&PhiInput::Value(iterator))
+                        && phi.inputs().iter().any(
+                            |input| matches!(input, PhiInput::Value(value) if *value != iterator),
+                        )
+                        && ssa.value(phi.value()).replaced_by().is_none()
+                        && ssa.value(phi.value()).uses().is_empty()
+                })
+                .expect("the protected try has one terminal mixed continuation phi");
+        assert!(is_terminal_mixed_iterator_phi(
+            dead_mixed.slot() == Slot::Local(slot),
+            ssa.value(dead_mixed.value()).replaced_by(),
+            !ssa.value(dead_mixed.value()).uses().is_empty(),
+            dead_mixed
+                .inputs()
+                .iter()
+                .any(|input| matches!(input, PhiInput::Value(value) if *value != iterator),),
+        ));
+        assert!(
+            !is_terminal_mixed_iterator_phi(
+                dead_mixed.slot() == Slot::Local(slot),
+                ssa.value(dead_mixed.value()).replaced_by(),
+                true, // mutate the observed dead output into a live output
+                dead_mixed
+                    .inputs()
+                    .iter()
+                    .any(|input| matches!(input, PhiInput::Value(value) if *value != iterator),),
+            ),
+            "a live catch/continuation phi must not be excused"
+        );
+
+        let mut budget = child_array_test_budget();
+        assert!(
+            iterator_phi_use_ownership_with_terminal_phi(
+                ssa,
+                iterator,
+                [has_next_load, next_load],
+                Some(slot),
+                &mut budget,
+            )
+            .unwrap()
+        );
+        let mut budget = child_array_test_budget();
+        assert!(
+            !iterator_phi_use_ownership(ssa, iterator, [has_next_load, next_load], &mut budget)
+                .unwrap(),
+            "the historical no-handler gate keeps rejecting the mixed phi"
+        );
+    }
+
     const HOISTED_ITERATOR_PHI_CONTROLS_CLASS: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class"
+    );
+    const ORDINARY_TRY_LIST_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf11-ordinary-try-list-generic/UpstreamNestedLoops.class"
     );
 
     fn iterator_source_store(
@@ -36298,6 +37638,18 @@ mod tests {
         assert!(
             !iterator_phi_use_ownership(ssa, source, allowed, &mut budget).unwrap(),
             "after allowing actual hasNext/next loads, the real live unreplaced same-local phi is refused"
+        );
+        let mut budget = child_array_test_budget();
+        assert!(
+            !iterator_phi_use_ownership_with_terminal_phi(
+                ssa,
+                source,
+                allowed,
+                Some(slot),
+                &mut budget,
+            )
+            .unwrap(),
+            "the protected-only exception must still reject this real live mixed phi"
         );
     }
 
@@ -39339,7 +40691,7 @@ mod tests {
         direct_interfaces: &'a [jarde_reader::model::JvmString],
         class_methods: Option<&'a [jarde_reader::classfile::MemberHeader]>,
         chains: &'a crate::concat::Plan,
-        regions: &[Region],
+        regions: &'a [Region],
         names: &'a NameTable,
         reuse: &'a reuse::Plan,
         parameter_types: &'a BTreeMap<u16, Type>,
@@ -39395,6 +40747,7 @@ mod tests {
         Builder {
             canonical,
             ssa,
+            regions,
             code,
             operations,
             pool,
@@ -39455,6 +40808,7 @@ mod tests {
             accessors: Vec::new(),
             deferred: Vec::new(),
             binding_plans: BTreeMap::new(),
+            forward_conditional_carries: BTreeMap::new(),
             guarded_return_exits: BTreeMap::new(),
             binding_rejections: BTreeMap::new(),
             bindings: BTreeMap::new(),

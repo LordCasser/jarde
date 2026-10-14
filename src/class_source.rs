@@ -7561,12 +7561,10 @@ fn ordinary_parameterized_declaration(
                 // proved the variable's erasure is that parameter, so every read stays assignable to
                 // the context that accepted the erased reference. The same-run candidate refused any
                 // reassignment of the parameter locals, which is the write side this proof refuses.
-                GenericReturnValue::VoidBody {
-                    unread_parameter_slots,
-                    ..
-                } if parsed.result.is_none()
-                    && parsed.throws.is_empty()
-                    && void_body_parameters_proved =>
+                GenericReturnValue::VoidBody { .. }
+                    if parsed.result.is_none()
+                        && parsed.throws.is_empty()
+                        && void_body_parameters_proved =>
                 {
                     Some(Vec::new())
                 }
