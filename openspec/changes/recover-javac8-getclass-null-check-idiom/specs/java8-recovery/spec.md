@@ -2,18 +2,52 @@
 
 ### Requirement: 限定外部实例构造的 null 检查判据 SHALL 识别两种编译器拼写
 
+系统 SHALL 把源级限定表达式 `outer.new Inner(…)` 的 null 检查判据建立在**该检查的事实**上——分配序列内一条**返回值被丢弃**的调用——而不是建立在某一个编译器对该事实的**拼写**上。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
+- **THEN** 系统 MUST 满足以下全部约束：
+
 系统 SHALL 把源级限定表达式 `outer.new Inner(…)` 的 null 检查判据建立在**该检查的事实**上——分配序列内一条**返回值被丢弃**的调用——而不是建立在某一个编译器对该事实的**拼写**上。具体地，`init.rs` 的成员构造证明与 `member_inner.rs` 的成员调用路径 SHALL 各自把自己读取的表示投影为同一组事实（调用种类、符号 owner、符号 name、符号 descriptor、是否接口引用），并调用**同一个**谓词判定，该谓词 SHALL 成对接受且仅接受两种拼写：
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
+- **THEN** 系统 MUST 满足以下全部约束：
 
 - `invokestatic java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;`（javac 9+）
 - `invokevirtual java/lang/Object.getClass:()Ljava/lang/Class;`（真 javac 8）
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
+- **THEN** 系统 MUST 满足以下全部约束：
+
 调用种类与符号 SHALL **成对匹配**，其叉积（`invokestatic Object.getClass`、`invokevirtual Objects.requireNonNull`）SHALL 被拒绝，因为那不是任何 javac 的产物，接受它会把允许集放宽到本判据没有证据支撑的形。
+
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
+- **THEN** 系统 MUST 满足以下全部约束：
 
 系统 SHALL **不得**引入 `java_release`、`major_version` 或任何按产出编译器版本分支的判据：两种拼写的产物 class 文件 major version 均为 52，版本字段无法区分；且 `classfile.rs` 已固化"答案 stated over the facts that class really carries — never over the compiler that produced it"。
 
+#### Scenario: 完整契约 5
+
+- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
+- **THEN** 系统 MUST 满足以下全部约束：
+
 既有的**位置约束 SHALL 逐字保留**，不因增加拼写而放宽：`[qualifier, copy, check, pop]` 的连续性、`check` 锚定在分配点、`pop` 的 opcode `0x57`、以及成员调用路径的实参区间检查（实参 BCI 须落在 `pop` 之后、构造器调用之前）。"返回值被 `pop` 丢弃"是**调用点**的事实，SHALL 保留在两处调用点各自检查，不得移入拼写谓词。
 
+#### Scenario: 完整契约 6
+
+- **WHEN** 系统判断限定外部实例构造的编译器 null 检查拼写
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当两种拼写都不成立时，系统 SHALL 保持既有拒绝语义（响亮失败、整方法不投影），且拒绝文本 SHALL 不再指称单一拼写，以免文本与判据不符。
+
 
 #### Scenario: 真 javac 8 产物的限定外部实例构造可恢复
 

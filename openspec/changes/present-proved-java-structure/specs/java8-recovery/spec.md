@@ -2,11 +2,30 @@
 
 ### Requirement: A proved prefix survives a local gap
 
+一次方法恢复里，走法已经证明为语句的块 MUST 作为语句进入产物。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理方法恢复中的已证明前缀、当前形状、分支与汇合后的走法
+- **THEN** 系统 MUST 满足以下全部约束：
+
 一次方法恢复里，走法已经证明为语句的块 MUST 作为语句进入产物。当前形状证明不了时，fallback MUST 只引用该形状自己的块与未认领的臂，MUST NOT 把已证明前缀的指令放进 fallback 的 BCI 集合，也 MUST NOT 因此停止对已证明汇合点之后的走法。没有证明过的汇合点时，走法 MUST 停止扩展，其余活块仍由既有的未覆盖引用命名。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理方法恢复中的已证明前缀、当前形状、分支与汇合后的走法
+- **THEN** 系统 MUST 满足以下全部约束：
 
 每个活块 MUST 恰好属于一个区域：结构化区域或一条 fallback 引用，二者不得重叠，也不得遗漏。图没有覆盖、也没有标成不可达的指令，MUST 继续走既有的整方法引用，MUST NOT 因本要求变成半段语句。`content` MUST 仍只有 `not_produced`、`explanation_only`、`contains_statements`。产物里至少有一条语句时 content 为 `contains_statements`，同时存在 fallback 时 quality 保持 `Fallback`。只有引用、没有语句的方法 MUST 仍是 `explanation_only`。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理方法恢复中的已证明前缀、当前形状、分支与汇合后的走法
+- **THEN** 系统 MUST 满足以下全部约束：
+
 MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代替一条引用。MUST NOT 引入字节码和常量池里不存在的类型或常量。
+
 
 #### Scenario: A branch that cannot be proved keeps the statements before it
 
@@ -130,9 +149,23 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 ### Requirement: A named catch is written only when the region is not a refused guard
 
+异常表记录的 `catch_type` 非 0，且守卫检查认定该区域不是 try-with-resources 或 monitor 时，恢复 MUST 把保护范围写成 `try`，把处理器写成 `catch`，类型 MUST 是该 `catch_type` 的类名，不得改成其父类或 `Throwable`。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统判断并恢复异常表保护范围及处理器
+- **THEN** 系统 MUST 满足以下全部约束：
+
 异常表记录的 `catch_type` 非 0，且守卫检查认定该区域不是 try-with-resources 或 monitor 时，恢复 MUST 把保护范围写成 `try`，把处理器写成 `catch`，类型 MUST 是该 `catch_type` 的类名，不得改成其父类或 `Throwable`。同一保护范围的多条此类记录 MUST 按异常表顺序出现。两条记录指向同一个处理器入口时 MUST 写成一个 `catch (A | B …)`，处理器体只走一遍，MUST NOT 写成两个子句。指向不同入口的记录仍是多个子句。某一条处理器体证明不了时，该 `catch` MUST 仍出现，其体为指名 BCI 的缺口，MUST NOT 省略这条 `catch`。两条记录从同一条指令开始但结束位置不同、且较窄记录的处理器落在较宽的范围里时，MUST 写成嵌套的 `try`：外层的体是内层 `try`，MUST NOT 收成同一个 `try` 的并列 `catch`。范围互相交叉时 MUST NOT 写 `try`。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统判断并恢复异常表保护范围及处理器
+- **THEN** 系统 MUST 满足以下全部约束：
+
 `catch_type` 为 0 的记录 MUST NOT 写成 `catch` 或 `finally`。try-with-resources 或 monitor 规则声明拥有的区域，无论它领取该区域还是按其形状拒绝，MUST NOT 被改写成 `catch`。普通 `try/catch` 的正面形状对不上 TWR 时，守卫检查 MUST 结论为不是守卫，使本要求适用。无法证明的 TWR close/suppress 顺序 MUST 继续按既有 TWR 场景降级，而不是变成普通 `catch`。
+
 
 #### Scenario: A typed handler becomes catch
 
@@ -332,17 +365,51 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 ### Requirement: A proved lambda or anonymous body is shown at its use site
 
+类源码视图装配一个类时，MUST 使用各方法已经产出的语句，MUST NOT 再跑一套方法恢复。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 类源码视图装配一个类时，MUST 使用各方法已经产出的语句，MUST NOT 再跑一套方法恢复。lambda 合成方法的 `content` 为 `contains_statements` 且正文 `quality=structured`、无 fallback/引用缺口、完整 AST 可取得，只是内联候选；同次 bootstrap/调用点证据还 MUST 证明捕获参数与 SAM 参数按实现描述符逐槽对应、必要的类型适配与方法目标不变、捕获值在创建时的求值不被推迟或复制。全证时使用点 MUST 在 lambda 箭头内呈现该体，MUST NOT 写成对该 `lambda$` 方法的转发调用；多条语句只能在箭头块体中出现，MUST NOT 把体里的语句搬到使用点之前。任一证明缺失时使用点 MUST 保持转发调用。合成方法的物理身份、正文及可追溯报告 MUST 仍保留；只有同一物理类中所有有 `Code` 的方法完整扫描、指向该合成方法的每个 lambda 使用点均已原子改写，才带 `// jarde:` 标记说明体已在使用点呈现；有未扫描或未改写的使用点时 MUST NOT 加标记。候选不能从按需 `RuleDetails` 或已发射文本逆推。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
+- **THEN** 系统 MUST 满足以下全部约束：
 
 类源码保留原 `lambda$...` 方法声明且另发出箭头时，`javac --release 8` 可能为箭头生成同名 helper，致使完整类编译失败。对同类 synthetic `lambda$` 实现方法，只要类源码发出指向它的箭头，类级呈现 MUST 为原物理方法确定性分配无冲突的源码别名，并将已证的同类直接调用按物理成员身份一致改名；无须预测编译器给箭头分配的序号。源映射和报告仍指向原方法。无法证明全部相关调用可同步改名时 MUST 明示编译限制，MUST NOT 声称完整类可重编。方法不得只因 synthetic 标志而隐藏。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 匿名类的 `InnerClasses.inner_name` 为空、`EnclosingMethod` 指向当前方法，且调用者类所有有 `Code` 的方法中只有一处分配点调用该候选类的构造器，只是候选；所选物理输入范围内候选站点以外的构造或类身份使用（包括调用者自身与其它类）也 MUST 被完整排除。范围扫描不完整、可能指向候选却无法解析、兄弟 class 缺失或身份/分配点不唯一时不得按当前类的文本猜。每个待内联方法 MUST 是已产出 Java 语句、`quality=structured`、无 fallback/引用缺口的完整正文；`contains_statements` 单独不足以证明完整。唯一构造器的每个参数 MUST 划入两类之一：按原描述符和顺序传给直接基类的唯一 `invokespecial <init>`，或在创建时恰好写入一个合成捕获字段；除此之外的构造器指令、字段写入或实例初始化效果若不能按原时序表达，MUST 拒绝内联。每个捕获字段的全部读取 MUST 映射回该参数和分配点词法范围内同一稳定值，不能只凭字段名或字段类型推断；创建时求值、异常顺序不得改变。证明齐全时方法体 SHALL 出现在匿名类花括号中。`new Base(args) { ... }` 的实参 SHALL 仅为真实基类构造实参；实现接口时 `new Interface() { ... }` MUST NOT 携带合成捕获实参。非静态成员基类的构造器描述符包含限定外层实例；若不能另外证明 `outer.new Base(args) { ... }` 的限定接收者及其空值检查，MUST 拒绝内联，MUST NOT 把该实例印成普通 `Base` 实参。缺少任何证明或正文时 MUST NOT 内联：使用点保持该类的二进制名，该类单独装配。`Outer.this` 仅在分配点值流证明该值就是当前词法外层接收者、且正文读该捕获时可用，MUST NOT 凭字段名或同型对象发明。
+
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
+- **THEN** 系统 MUST 满足以下全部约束：
 
 合成捕获字段若在字节码里先于基类构造调用写入，MUST 保留该可观察时序，MUST NOT 为使独立二进制名类的源码通过 Java 8 编译而无条件把字段写入搬到 `super(...)` 后。基类构造期间可能虚调用匿名覆写并读该捕获；只有类级匿名语法及完整值流证明能让 Java 编译器重建等价前置合成写入时，才 SHALL 将使用点投影为 `new Base(...) { ... }`。不能证明时保留分开的类与使用点，并声明独立构造器文本的编译限制（P02/P06）。
 
+#### Scenario: 完整契约 5
+
+- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 唯一性计数 MUST 包含同次解码中所有指向该匿名类的 `Allocate`，包括 `new@1` 未验证的候选和被其它规则预留的分配；调用者任一有 `Code` 的方法未完整扫描时 MUST 拒绝唯一性，MUST NOT 把空的已验证 site 列表解释为零分配。所选物理输入范围内调用者和其它类的 Code/metadata XRef 覆盖 MUST 完整，并按同一解析环境确认目标物理身份；出现另一处分配、构造器句柄或可观察类身份引用时 MUST 拒绝内联，覆盖不完整或目标可能相同而未决时也 MUST 拒绝。此证书只说明所选输入范围，不宣称排除范围外的开放世界调用者。
 
+#### Scenario: 完整契约 6
+
+- **WHEN** 系统处理类源码视图装配及 lambda 与匿名类使用点呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 这些类级事实 MUST 来自 reader 已经解析的 `InnerClasses` 与 `EnclosingMethod`，MUST NOT 由单方法 IR 重建，也 MUST NOT 重新扫描属性字节。
+
 
 #### Scenario: A recovered lambda body replaces the forward call
 
@@ -411,13 +478,37 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 ### Requirement: Class source spells package, throws, and varargs from the class file
 
+类源码视图的类声明 MUST 使用 `package` 与简单名：二进制名在最后一个 `/` 之前的部分写成包名（`/` 改为 `.`），最后一段写成简单名；简单名中的 `$` MUST 保留。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 类源码视图的类声明 MUST 使用 `package` 与简单名：二进制名在最后一个 `/` 之前的部分写成包名（`/` 改为 `.`），最后一段写成简单名；简单名中的 `$` MUST 保留。二进制名不含 `/` 时 MUST NOT 写 `package`。MUST NOT 再把完整二进制名写在 `class` 或 `interface` 关键字后面。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
+- **THEN** 系统 MUST 满足以下全部约束：
 
 方法的 `throws` MUST 等于该方法 `Exceptions` 属性中的类名，顺序与属性一致，内部名写成点分名。属性不存在时 MUST NOT 写 `throws`，也 MUST NOT 从 `athrow` 或处理器类型推断。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 方法 access flags 的 `0x0080` MUST 按 `ACC_VARARGS` 解读。该标志置位且描述符的最后一个参数是数组时，声明的最后一个参数 MUST 写成 `T...`，MUST NOT 写成 `T[]`。标志置位但最后一个参数不是数组时，MUST NOT 写 `...`，MUST 按描述符声明参数，并加一条 `// jarde:` 标记。字段的 `ACC_TRANSIENT` 拼写 MUST 不变。
 
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统处理来自 class file 的类声明、throws 与 varargs 呈现
+- **THEN** 系统 MUST 满足以下全部约束：
+
 这些事实 MUST 来自 reader 已经解析的方法属性与 access flags，MUST NOT 重新解码属性。
+
 
 #### Scenario: A packaged class uses a simple name
 
@@ -545,13 +636,37 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 ### Requirement: A special call, a compare, and a constant field keep the program they came from
 
+`invokespecial` 的方法名不是 `<init>`、池项引用的是当前类声明的直接父类、且接收者已证明为入口实例 `this` 时，调用 MUST 写成 `super.name(...)`。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
+- **THEN** 系统 MUST 满足以下全部约束：
+
 `invokespecial` 的方法名不是 `<init>`、池项引用的是当前类声明的直接父类、且接收者已证明为入口实例 `this` 时，调用 MUST 写成 `super.name(...)`。池项引用的是直接父接口且接收者同样已证明时，MUST 写成 `接口类型.super.name(...)`。当前类已声明为 private 的目标 MUST 保留实际接收者，包括其它同类实例。其余证据不足的特殊调用 MUST 引用，MUST NOT 仅凭属主不同写成 super 或默认写成虚调用；独立验收由 `preserve-special-call-dispatch` 承担。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
+- **THEN** 系统 MUST 满足以下全部约束：
 
 `lcmp`、`fcmpg`、`fcmpl`、`dcmpg`、`dcmpl` 的结果唯一供给同块紧邻零分支、且外围结构与操作数可恢复时，文本 SHALL 组合成保持 NaN 偏置及分支方向的条件。无序时为真的关系 SHALL 使用正确的取反关系，MUST NOT 直接换成 NaN 上为假的相反关系。其它消费者 MUST 保留有来源的缺口；独立验收由 `recover-numeric-comparison-conditions` 承担。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
+- **THEN** 系统 MUST 满足以下全部约束：
+
 字段的 `ConstantValue` 属性 MUST 写成该字段的初值。没有该属性时 MUST NOT 从 `<clinit>` 或从使用点的字面量反推初值。使用点的字节码若是字面量而不是读取该字段，MUST 保持字面量。
 
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统尝试呈现特殊调用、比较与常量字段
+- **THEN** 系统 MUST 满足以下全部约束：
+
 同名重载的调用参数呈现 SHALL 保留池目标的参数类型选择；没有足够安全转换证据时 MUST 拒绝，不得合成会新增异常的检查。该范围由 `preserve-invocation-argument-types` 独立验收。桥方法 MUST 保留，MUST NOT 写成对所在方法自身的调用，也 MUST NOT 添加 `@Override` 或删去该成员；其声明和返回类型区分仍是独立范围。
+
 
 #### Scenario: An invokespecial of the superclass is super
 
@@ -575,9 +690,23 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 ### Requirement: Constructed sources are accepted by a three-way comparison
 
+P01–P08 的每个场景 MUST 有一份由本 change 编写的 Java 源码，MUST NOT 从既有应用语料裁剪。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统验证构造得到的源码
+- **THEN** 系统 MUST 满足以下全部约束：
+
 P01–P08 的每个场景 MUST 有一份由本 change 编写的 Java 源码，MUST NOT 从既有应用语料裁剪。该源码 MUST 用记录了版本与 `--release` 的 `javac` 编译。同一组 class 文件 MUST 分别由 jadx 1.5.6 与 jarde 类源码视图反编译。验收记录 MUST 对每个场景同时留下源码摘录、jadx 摘录与 jarde 摘录。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统验证构造得到的源码
+- **THEN** 系统 MUST 满足以下全部约束：
+
 通过条件 MUST 以本规格的结构证明和原 class 的执行行为、异常顺序、classfile 属性为准，而不是以 jadx 文本为准。手写源码证明该结构可由 Java 表达，不要求从可能对应多种源码的字节码逐字还原；jarde 写出的结构 MUST 满足相应证明，能完整重编的场景其运行结果 MUST 与原 class 一致。要求不写的结构，即使出现在 jadx 文本里，jarde MUST NOT 照抄。与 jadx 逐字相同 MUST NOT 作为通过条件。规格明确允许缺口的场景，jarde MUST 给出指名 BCI 的引用，而不是空结构。既有应用语料上的计数 MUST NOT 代替这组场景。
+
 
 #### Scenario: A structure the source has must appear in jarde
 

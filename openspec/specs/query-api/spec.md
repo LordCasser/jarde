@@ -21,7 +21,16 @@
 
 ### Requirement: Coverage and pagination are explicit
 
+每个查询结果 SHALL 独立返回 artifact/runtime/dynamic coverage、execution（Complete/Partial/Cancelled/Failed）、预算消耗、snapshot/view identity、evidence 和已扫描范围。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统执行查询请求
+- **THEN** 系统 MUST 满足以下全部约束：
+
 每个查询结果 SHALL 独立返回 artifact/runtime/dynamic coverage、execution（Complete/Partial/Cancelled/Failed）、预算消耗、snapshot/view identity、evidence 和已扫描范围。Unknown 是候选/解析状态，MUST 不与 execution 混为同一枚举。分页游标 SHALL 绑定 snapshot、完整 query identity、view、排序/扫描边界和 schema 版本；完整 query identity MUST 包括 relation、完整 target（symbol kind/owner/name/descriptor 或 literal kind/原始值与浮点位模式）和 consumer schema。改变 target MUST 在重放扫描边界前拒绝，不得按另一目标的匹配序号跳过结果。每页 max_items 和预算是执行参数，可以改变，但不能改变查询含义。page.has_more 不等于搜索完成。取消、缺失搜索范围和预算耗尽 MUST 不得映射为 NoMatch。
+
 
 #### Scenario: Cancelled full-range search
 

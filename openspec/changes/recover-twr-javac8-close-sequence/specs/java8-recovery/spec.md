@@ -3,10 +3,29 @@
 ### Requirement: 真 javac 8 的 TWR 关闭序列 SHALL 恢复为源级 try-with-resources
 
 当方法的异常表与 CFG 呈现真 javac 8 的 try-with-resources 关闭序列几何——**primary-exception 空槽引导**（`aconst_null` + 局部槽）、**守卫式主 close**（资源 `ifnull` 与 primary 槽 `ifnull` 双守卫）、**重抛-再捕获回路**（primary 异常存槽后 `athrow`，被 `any` 行再捕获进入 close 抑制链）、以及**抑制链 handler 块**（`addSuppressed` 路径，带自己的 `Throwable` 行与 `any` 行）——且资源初始化/使用/返回的既有 `Shape::Resources` 事实成立时，系统 SHALL 把该语句恢复为源级 TWR（`try (R r = …) { … }`），呈现与 javac 9+ `--release 8` 产物同构（不含 `addSuppressed` 等编译器合成文本）。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试恢复 javac 8 try-with-resources 关闭序列
+- **THEN** 系统 MUST 满足以下全部约束：
+
+当方法的异常表与 CFG 呈现真 javac 8 的 try-with-resources 关闭序列几何——**primary-exception 空槽引导**（`aconst_null` + 局部槽）、**守卫式主 close**（资源 `ifnull` 与 primary 槽 `ifnull` 双守卫）、**重抛-再捕获回路**（primary 异常存槽后 `athrow`，被 `any` 行再捕获进入 close 抑制链）、以及**抑制链 handler 块**（`addSuppressed` 路径，带自己的 `Throwable` 行与 `any` 行）——且资源初始化/使用/返回的既有 `Shape::Resources` 事实成立时，系统 SHALL 把该语句恢复为源级 TWR（`try (R r = …) { … }`），呈现与 javac 9+ `--release 8` 产物同构（不含 `addSuppressed` 等编译器合成文本）。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试恢复 javac 8 try-with-resources 关闭序列
+- **THEN** 系统 MUST 满足以下全部约束：
 
 识别 SHALL 以**结构事实**（块集/异常表行集的 CFG 关系）表达；SHALL NOT 引入 `java_release`/`major_version` 或任何按产出编译器分支的判据（两形产物 major version 均 52）。既有 javac 9+ 形的 `Shape::Resources` 判据 SHALL **逐字不变**——本能力只能以**新增**几何事实（在 javac 9+ 形上恒假的抑制链/守卫事实）容纳 javac 8 形，任何对既有判据的放宽均不允许。抑制链块与守卫 close 是编译器合成、源级不可见的证据，SHALL 不在呈现中出现。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试恢复 javac 8 try-with-resources 关闭序列
+- **THEN** 系统 MUST 满足以下全部约束：
+
 削弱任一几何事实（缺一条 `any` 行、守卫目标错乱、抑制链断头）SHALL 保持既有拒绝——新判据是必需的而非装饰。
+
 
 #### Scenario: 真 javac 8 单资源 TWR 恢复
 

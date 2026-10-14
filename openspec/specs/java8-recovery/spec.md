@@ -7,7 +7,16 @@
 
 ### Requirement: Evidence-gated Java 8 recovery
 
+系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试从 IR、descriptor、异常/effect 与编译器模式证据恢复并呈现 Java 8 方法
+- **THEN** 系统 MUST 满足以下全部约束：
+
 系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。值的正确性 SHALL 按生成代码实际求值的位置与顺序验证，嵌套表达式不能以其原始生产位置代替当前求值位置；当一个算术的结果作为另一个算术的操作数时，呈现 MUST 使用该操作数自己的值并保留这一嵌套，MUST NOT 省略外层运算、也不得把某个操作数改写成另一种运算（例如把 `i * (2 - d * i)` 写成 `i * 2 - d * i`）。**该嵌套也 MUST 体现在输出文本的分组上**：表达式树到文本的转换 MUST 按运算优先级与结合性补足括号（或写成不依赖默认结合的形式），使文本解析回同一棵树；仅凭「树是对的」不满足本要求，因为调用方收到的是文本。分组 MUST 按子表达式所在的**语法位置**判定，而不只按它的父运算符：同一个子表达式写在调用或字段读取的 receiver、方法引用限定符、一元操作数与数组位置时 MUST 同样保持自己的分组（例如 `return (a + b).substring(1);` 的接收者），而 Java 语法已经界定该子表达式的位置（调用/构造实参、下标、lambda 体）MUST NOT 增加无谓括号。层不能证明某操作数的值或求值点时 MUST 拒绝该区域而不是呈现，并保留被拒区域的 bytecode 与 origin；quality、content、execution 等结构性平面 MUST NOT 代替这一证据。fallback MUST 保留被省略表达式所依赖的可观察生产者及其物理 origin，包括字段读取、类初始化与可能抛异常的操作。
+
 
 #### Scenario: Java 8 lambda and method reference
 
@@ -138,11 +147,30 @@
 
 ### Requirement: Recovery artifact content is observable independently
 
+恢复报告 SHALL 返回 `content`，取值为 `not_produced`、`explanation_only`、`contains_statements`。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理恢复报告与产物交付
+- **THEN** 系统 MUST 满足以下全部约束：
+
 恢复报告 SHALL 返回 `content`，取值为 `not_produced`、`explanation_only`、`contains_statements`。该字段 SHALL 描述最终交付产物：Stopped 为 not_produced；Produced 且只有包装、理由、BCI 引用等说明为 explanation_only；Produced 且含至少一个实际发射的 Java 语句为 contains_statements。Produced MUST 仅表示产物已交付，不能解释为存在语句、语义完整、可编译或已验证。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理恢复报告与产物交付
+- **THEN** 系统 MUST 满足以下全部约束：
 
 声明、赋值、调用、return 和控制流语句均可构成 contains_statements；该分类不改变 representation、quality、syntax、coverage、execution 或验证状态。分类 MUST 不依赖注释剥离、token 相似度或调用方二次解析文本。库与 CLI SHALL 返回同一分类。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理恢复报告与产物交付
+- **THEN** 系统 MUST 满足以下全部约束：
+
 `Produced` 与 `content` MUST 分开统计与表述：同一轮 sweep 的 182,883 个请求中有 30,452 个是 Produced 而产物不含语句；报告、README、支持矩阵与 benchmark 协议 MUST NOT 把这类计数表述为语句恢复率或语义恢复率，MUST 分别命名「引擎 content 分类」与旧 token/启发式口径。content 与其余平面一样是结构性的，MUST NOT 被读作值等价或语义正确的证据。
+
 
 #### Scenario: Explanation-only produced artifact
 
@@ -219,9 +247,23 @@
 
 ### Requirement: Recovery recursion is bounded and a stop is published
 
+恢复调用 MUST 返回 `RecoveryReport`，MUST NOT 因递归耗尽进程栈而让进程以 signal 终止。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统执行恢复调用（包含递归下降）
+- **THEN** 系统 MUST 满足以下全部约束：
+
 恢复调用 MUST 返回 `RecoveryReport`，MUST NOT 因递归耗尽进程栈而让进程以 signal 终止。恢复层 SHALL 只在能证明递归会完成时继续加深；每次递归下降前 MUST 检查一个显式的深度界，界内递归照常完成，超过界 MUST 在继续加深之前结束为已发布停止：`outcome = Stopped`、非 `Complete` 的 `execution`（Partial 或 Cancelled）、以及点名停止原因与位置的诊断，全部复用既有停止词汇与平面。停止 MUST 保留本次运行的真实 usage 与停止位置，MUST NOT 提交部分构建的文本/段表（`content = not_produced`，与既有停止语义一致），MUST NOT 以空产物冒充成功，也 MUST NOT 只记录日志后返回成功。结构性平面（representation/quality/content/execution）MUST NOT 被当作本要求的证据：本要求的证据是入口返回的报告与其中的停止平面。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统执行恢复调用（包含递归下降）
+- **THEN** 系统 MUST 满足以下全部约束：
+
 本要求同样约束恢复层**自己构造的表示**：一条拼接链在输入里的 append 数 MUST NOT 变成这一层的递归深度——链的构造、发射、克隆与释放（以及任何复制该表示所在结构的路径）的递归深度 MUST NOT 随该链的 append 数增长，增加一个片段 MUST NOT 加深这些路径的嵌套。片段**内部**真正嵌套的子表达式仍按既有的值嵌套界受限，本要求不改变那条界（真正的递归下降前仍 MUST 检查它），也不得用「更大的界」或「放大线程栈」（更大的 `RUST_MIN_STACK`、大栈线程或等价手段）替代上述性质。可观察结果：链长达到复核记录的区间（debug 构建在 N = 1536/2048 以 signal 结束、N = 1024 完成）与更大规模时，公开入口与 CLI MUST 返回报告而不是 signal；链**能**呈现时 MUST 正常完成（MUST NOT 把「2048 个片段必须停止」写成契约），不能呈现时 MUST 结束为既有已发布停止；预算或取消在深链的构建/发射过程中生效时，MUST 发布既有停止形态并在释放该结构后返回，MUST NOT abort。debug 与 release 是同一份代码的两条边界证据，两个构建 MUST 都返回报告；MUST NOT 用 release 对更深输入完成代替 debug 的 signal 证据，也 MUST NOT 用任一构建的完成深度代替界的依据。
+
 
 #### Scenario: A request that used to abort now answers
 
@@ -270,11 +312,30 @@
 
 ### Requirement: Boolean contexts are presented as booleans
 
+值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
+- **THEN** 系统 MUST 满足以下全部约束：
+
 值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。层不能证明上下文所要求的值是 boolean 时 MUST 拒绝该区域并保留 bytecode 与 origin，MUST NOT 发布另一个编译器拒绝的文本；上下文没有 boolean 要求的位置（真正 `int` 返回、两个 int 值的比较）MUST 保持原有整数形态。本要求只使用返回 descriptor、参数槽类型与既有 callee descriptor 证据，MUST NOT 由它引入通用类型系统或推断。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
+- **THEN** 系统 MUST 满足以下全部约束：
 
 本要求同样约束判定的**顺序与操作数范围**：某个位置是否要求 boolean MUST 在该位置的**全部**操作数被拼写之前判定，且 MUST 由该位置的形态与已证明的证据作出，而不是由操作数各自的值形态作出。值自身的类型证据（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取、被本 run 证明 boolean 的局部的读取，以及真正 `int` 操作数的整数形状）只回答「这个值是什么」；目标位置的要求回答「这个位置要不要 boolean」；`0`/`1` 到 `false`/`true` 的拼写只是后者的**适配**，MUST NOT 反过来成为前者的证据。因此整数二元比较（`if_icmp*` 形态）的两个操作数 MUST 保持各自的整数文本：`1 == n`、`n == 1`、`0 < n`、`n > 0` 的常量操作数写成 `1`/`0`，变量操作数按自己的值写出；常量在左、常量在右、相等与大小比较一律相同，MUST NOT 出现 `true == arg0`、`false < arg0`、`true < arg0` 一类 javac 拒绝的文本。**比较的结果是 boolean，这一事实 MUST NOT 被当作它操作数的类型证据。** 操作数被**证明**为 boolean 的零值测试（`ifeq`/`ifne` 形态）仍 MUST 写成真值测试（`if (b)`、`if (!b)`、`if (flag())`），而不是 `if (b != 0)`。同一个 `iconst_1` 在二元比较里 MUST 是 `1`，在真值测试与 `Z` 返回里 MUST 是 `true`。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试呈现 boolean 返回、分支测试与其它值上下文
+- **THEN** 系统 MUST 满足以下全部约束：
+
 这条修正是对本项目自己上一轮 boolean 修正（已归档的 `type-boolean-contexts`，`5a8c36a`）所引入回归的纠正：该修正之前（`fa6dc6e`）`1 == n`、`0 < n`、`1 < n` 三个形状输出正确的整数文本；本要求 MUST NOT 被表述为新发现的缺陷，MUST NOT 重开该 change 的其它结论。前一轮已经落地的 boolean 形状与 int 形态 MUST 逐字保留。
+
 
 #### Scenario: A boolean return presents true or false
 
@@ -347,11 +408,30 @@
 
 ### Requirement: One local variable's type is decided once, before its statements are built
 
+一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
+
 一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。同一个值在两条声明路径上 MUST 得到同一个类型：写在包含全部使用的区域起点上的**提升**声明与写在首个写入处的**就地**声明 MUST 一致，结论 MUST NOT 取决于遍历顺序（同一变量的两个分支先后不得改变其类型）。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
 
 决定的证据 MUST 是一份有限、写清的清单：类文件 descriptor 的 boolean 事实（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取）、一次对本 run **已判为 boolean 的局部**的读取（传播，MUST NOT 跟随值链：一个 store 的 own value、由多个 push 合并出的值仍不证明）、以及帧为其它类型给出的既有类型事实。`0`/`1` 字面量 MUST NOT **发起** boolean 判断（`int x = 0;` 与 `boolean c = true;` 是同一份字节），但目标已经确定为 boolean 时 MUST 按其拼写（`true`/`false`）适配。**每个**写入（不只是第一次写入）MUST 按已决定的类型检查：写入的值不能拼成该类型时即为冲突。证据的传播 MUST 有界（不随输入规模无限增长），并 MUST 接线到本 run 既有的预算与取消检查；规划 MUST NOT 成为绕过预算的无限工作量，预算或取消在规划期停止时 MUST 发布既有停止。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
+
 类型未知（没有可决定的类型）或冲突（写入与已决定的类型矛盾）时，本层 MUST 终止该结构的生成，而不是发布一个猜测：受影响结构按既有 refusal 契约处理（保留 bytecode 与 origin、representation=Mixed、quality=Fallback、诊断点名相关 BCI 与物理方法），MUST NOT 发布类型矛盾的赋值（例如 `int local3; … local3 = <boolean 值>; …`）。声明的结果 MUST 区分「没有声明到期」与「声明失败（fallback 已写）」两种含义；后者之后 MUST NOT 继续写出那条赋值。本要求 MUST NOT 被读作类型保真或语义等价的声明：字面量单独构成的提升声明按其与就地路径一致的既有答案呈现，这一类型差异 MUST 被记录为边界。
+
 
 #### Scenario: The two declaration paths decide the same type
 
@@ -405,11 +485,30 @@
 
 ### Requirement: A presented concatenation keeps each append's own conversion
 
+一条被判为拼接链（`StringBuilder`/`StringBuffer` 链）的呈现 MUST 逐片段保留该 `append` overload 自己的转换语义：文本 MUST 计算与该链相同的值，且每个片段的转换 MUST 发生在该片段自己的位置。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试呈现 StringBuilder 或 StringBuffer 的 append 拼接链
+- **THEN** 系统 MUST 满足以下全部约束：
+
 一条被判为拼接链（`StringBuilder`/`StringBuffer` 链）的呈现 MUST 逐片段保留该 `append` overload 自己的转换语义：文本 MUST 计算与该链相同的值，且每个片段的转换 MUST 发生在该片段自己的位置。链的呈现 MUST 从一个**字符串上下文**开始：需要经 `String.valueOf` 转换的片段（int/long/float/double/boolean/对象）出现在第一个字符串操作数之前时，字符串拼接 MUST 从这些片段处开始（例如在它们之前插入一个空字符串片段，或用同等语义的 `String.valueOf` 形态），MUST NOT 先把相邻的数值片段加成数值、再对求和结果做一次转换——`append(a).append(b).append("!")` MUST NOT 呈现为 `arg0 + arg1 + "!"`（输入 `(1, 2)` 时原 class 返回 `"12!"`，该文本返回 `"3!"`）。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试呈现 StringBuilder 或 StringBuffer 的 append 拼接链
+- **THEN** 系统 MUST 满足以下全部约束：
 
 MUST 按 `append` 的参数 descriptor 拼写每个片段：参数类型为 `boolean` 的片段里的 `0`/`1` 字面量 MUST 呈现为 `true`/`false`，MUST NOT 呈现为 `1`/`0`（`append(true)` 的 `iconst_1` 在文本里不是数值 `1`）；`null` 片段 MUST 呈现为 `null` 字面量；对象片段 MUST 按其 overload 的转换呈现（对象经 `String.valueOf` 等价的转换）。呈现 MUST 保持每个片段的求值次数与左到右顺序（不重复调用、不移动可能抛异常的操作、不改变异常次序），每个片段 MUST 保留自己的 BCI/source-map 锚点，插入的空字符串片段 MUST 只携带由链派生的锚点而不是一条它没有执行的指令。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试呈现 StringBuilder 或 StringBuffer 的 append 拼接链
+- **THEN** 系统 MUST 满足以下全部约束：
+
 片段序列 MUST NOT 被任意平衡、合并或重排：把相邻片段合并、把片段移出它自己的求值位置、或为「少一层」改变某个片段被转换的时机都会改变值或副作用，MUST NOT 出现。片段自己的表达式 MUST 保持自己的分组，MUST NOT 被拆进链的加法：链 `append(int a).append(int b)`（**两个**片段）MUST 呈现为 `"" + arg0 + arg1`（两个转换各自发生，输入 `(1, 2)` 得 `"12!"`），而链 `append(int a + int b)`（**一个**片段，其表达式本身是加法）MUST 呈现为 `"" + (arg0 + arg1)` 的形态（该加法先按数值求出再转换，同一输入得 `"3!"`）；把后者的片段拆成两个片段、或把前者两个片段合并成一次数值加法，都改变值，MUST NOT 出现。链的识别与本规则接受的 overload 集合 MUST NOT 因此改变。某个片段的转换无法用呈现表达时，该区域 MUST 按既有 refusal 契约拒绝并保留 bytecode 与 origin。representation/quality/content/execution 与「两侧都能编译」MUST NOT 被当作本要求的证据：本要求的证据是原 class 与呈现文本在同一输入集合上的执行对照。
+
 
 #### Scenario: A numeric fragment keeps its conversion where the chain converts it
 

@@ -2,9 +2,23 @@
 
 ### Requirement: 无 child report 的成员 family refusal 不阻止同类整数常量名称
 
+当完整 Java 8 类源码请求的 root report 执行为 Complete、成员 family 为 `Absent` 或 `Refused { child: None }`，且 nested enum、nested annotation、anonymous-interface 三个 sibling family 均为 `Absent` 时，系统 SHALL 继续执行已有同类整数常量名称投影。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理同类整数常量名称投影及其成员 family 准入
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当完整 Java 8 类源码请求的 root report 执行为 Complete、成员 family 为 `Absent` 或 `Refused { child: None }`，且 nested enum、nested annotation、anonymous-interface 三个 sibling family 均为 `Absent` 时，系统 SHALL 继续执行已有同类整数常量名称投影。该例外 MUST NOT 依赖或解析 `Refused.reason`。投影 MUST 继续使用当前 root 的完整物理字段候选与同轮 root method AST，并保持唯一值/名称、词法遮蔽、current-text/full-writer equality、物理 anchors、精确范围、预算和原子发布契约。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理同类整数常量名称投影及其成员 family 准入
+- **THEN** 系统 MUST 满足以下全部约束：
+
 该规则 MUST 保持 `Refused { child: Some(..) }`、`RefusedPair`、所有 Prepared member-family variants 及任何非 Absent sibling family 对该投影的阻止作用。它 MUST NOT 增加 child/nested source text，亦 MUST NOT 将引用解析到 enclosing/outer/inherited class。
+
 
 #### Scenario: root self row 与 direct child 同时存在
 

@@ -3,10 +3,29 @@
 ### Requirement: lambda 对原生数组捕获的 SHALL 以有据类型参与一致性判据
 
 当 lambda 站点（`invokedynamic`）捕获一个**原生数组**局部（`newarray` 产物，如 `int[] t`；描述符 `[I`..`[J` 十种之一）且站点描述符与实现描述符对该捕获**一致**陈述为数组类型时，系统 SHALL 以**有据可查的该数组类型**参与捕获三方一致性判据（帧/站点/实现），而不得以帧层对 `newarray` 的保守 `Unknown` 引用（呈现为 `Object`）将其判为不一致——从而该形恢复为源级 lambda 捕获（与引用类型捕获同构的内联呈现）。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试恢复 invokedynamic lambda 站点的原生数组局部捕获
+- **THEN** 系统 MUST 满足以下全部约束：
+
+当 lambda 站点（`invokedynamic`）捕获一个**原生数组**局部（`newarray` 产物，如 `int[] t`；描述符 `[I`..`[J` 十种之一）且站点描述符与实现描述符对该捕获**一致**陈述为数组类型时，系统 SHALL 以**有据可查的该数组类型**参与捕获三方一致性判据（帧/站点/实现），而不得以帧层对 `newarray` 的保守 `Unknown` 引用（呈现为 `Object`）将其判为不一致——从而该形恢复为源级 lambda 捕获（与引用类型捕获同构的内联呈现）。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试恢复 invokedynamic lambda 站点的原生数组局部捕获
+- **THEN** 系统 MUST 满足以下全部约束：
 
 三方一致性判据本身（`frame_type != site_type || site_type != implementation_type` 则拒，`jre_lambda_sam_types`）SHALL **逐字保留**：站点与实现真不一致、或捕获值类型无可据陈述时仍 SHALL 拒绝。若实现走帧层给名（方向 A），`RefType::Unknown` 的既有消费面 SHALL 逐一核对无行为依赖（记录存证据）；若走陈述类型（方向 B），类型陈述 SHALL 来自字节码陈述的事实（LVT 或 `newarray` 的 `atype` 码），不得发明。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试恢复 invokedynamic lambda 站点的原生数组局部捕获
+- **THEN** 系统 MUST 满足以下全部约束：
+
 `multianewarray` 产物的捕获（`int[][]` 等）与 `anewarray` 路径（已恢复）不在本能力范围内。
+
 
 #### Scenario: 原生数组捕获恢复
 

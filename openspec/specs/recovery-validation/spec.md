@@ -7,9 +7,23 @@
 
 ### Requirement: Separate representation and validation statuses
 
+每个 source result SHALL 独立返回 representation（Java/Bytecode/Mixed）、quality（Structured/Conservative/Fallback）、syntax_status（Checked/Unchecked/NotJava）、compile_status（NotAttempted/Compiles/Failed）、semantic_validation（LocalInvariants/FixtureDifferential/Unproven）、verification（Performed/NotPerformed/Failed）、recovery profile、coverage 和 diagnostics；`Mixed` 只表示 representation，禁止把它当作 quality。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统发布 source result 或验收返回值、可观察行为与 fallback 来源
+- **THEN** 系统 MUST 满足以下全部约束：
+
 每个 source result SHALL 独立返回 representation（Java/Bytecode/Mixed）、quality（Structured/Conservative/Fallback）、syntax_status（Checked/Unchecked/NotJava）、compile_status（NotAttempted/Compiles/Failed）、semantic_validation（LocalInvariants/FixtureDifferential/Unproven）、verification（Performed/NotPerformed/Failed）、recovery profile、coverage 和 diagnostics；`Mixed` 只表示 representation，禁止把它当作 quality。未实际编译时 compile_status MUST 为 NotAttempted；只通过局部不变量可记录 LocalInvariants，受控语料对照通过才记录 FixtureDifferential，无相应证据时记录 Unproven。生成 Java 文本不得自动意味着可重编译或语义等价。验收 SHALL 独立核对已知反例的返回值/可观察行为与 fallback 的生产者来源完整性；语义已知错误的输出不得因 Unproven 或既有门禁绿色被计为完成。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统发布 source result 或验收返回值、可观察行为与 fallback 来源
+- **THEN** 系统 MUST 满足以下全部约束：
+
 每个平面 SHALL 只被读作它自己的结构性问题：representation 说明表示形态，quality 说明区域结构的强度，syntax/compile/semantic/verification 各自说明对应证据是否存在，coverage 与 execution 说明工作范围与完成度，content 说明交付物是否含发射语句。任意组合——包括 quality=Structured、content=contains_statements、execution=complete、coverage=CompleteWithinSchema 且无诊断同时成立——MUST NOT 构成语义等价或值正确的声明；已知反例中存在这样同时成立、却计算了与字节码不同值的产物。需要语义证据的调用方 MUST 执行受控编译/执行对照，或把产物当作假设并保留其未证明状态；MUST NOT 用任一平面组合代替该动作。
+
 
 #### Scenario: Structured output cannot compile
 
@@ -81,9 +95,23 @@
 
 ### Requirement: A signal is not an acceptable answer
 
+恢复验收 SHALL 把「修正前以进程 signal 结束」的输入纳入永久回归，并在公开入口核对修正后得到的是报告。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统验收曾以进程 signal 结束的恢复输入
+- **THEN** 系统 MUST 满足以下全部约束：
+
 恢复验收 SHALL 把「修正前以进程 signal 结束」的输入纳入永久回归，并在公开入口核对修正后得到的是报告。该回归 MUST 在独立进程内运行这个输入，因为 signal 是进程级事实，进程内的断言捕获不到它。验收证据 MUST 是报告的 `outcome`、`execution`、诊断与 CLI 退出状态；MUST NOT 以「stderr 没有 stack overflow」「进程存活」或「日志里没有 abort」单独算作通过，也 MUST NOT 通过扩大预算、在测试外重跑或降低输入来绕过。修正前该回归 MUST 失败，且失败现象是 signal/无报告，而不是断言缺失或编译错误。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统验收曾以进程 signal 结束的恢复输入
+- **THEN** 系统 MUST 满足以下全部约束：
+
 对**深拼接链**这一族，输入 MUST 由受控、确定性的构造给出并直接产出字节：链长是本检查的参数（复核区间 N = 1536/2048 与更大规模都要跑），生成器能确定地给出它，而 `javac -J-Xss64m` 一类「放大编译器栈」的产出手段 MUST NOT 进入回归。生成器 MUST 点名它镜像的复现（同一 `StringBuilder` 链、同一 overload、同一直线、同一区间），库入口与进程入口 MUST 使用同一份字节。检查 MUST 在**子进程级**运行，并 MUST 覆盖 debug 与 release 两个构建：两个构建都 MUST 返回报告，正常完成与预算停止后的清理都 MUST 被覆盖，MUST NOT 出现 signal、空 stdout 或 abort。界与完成性 MUST NOT 依赖线程栈：检查 MUST 在默认栈上运行，MUST NOT 通过 `RUST_MIN_STACK`、大栈线程或等价手段取得结论——放大线程栈不是界的替代。修正前的 signal MUST 在 verification 里记录一次（命令、exit 状态、stderr 的栈溢出行与空 stdout 的事实），MUST NOT 变成常备断言——常备断言的对象是「返回报告」，不是崩溃。debug 与 release 两个构建边界的原始测量 MUST 分开记录：MUST NOT 用 release 对更深输入完成替代 debug 的 signal 证据，也 MUST NOT 用任一构建的完成深度代替界的依据。
+
 
 #### Scenario: Counterexample fails on the pre-fix behaviour
 
@@ -181,9 +209,23 @@
 
 ### Requirement: A boolean context's artifact compiles and agrees when executed
 
+boolean 上下文的验收 SHALL 以「用本次运行自己的事实派生成员声明、把产物交给 javac 编译、并以同一输入集合执行两侧」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统验收 boolean 上下文的恢复产物与拒绝区域
+- **THEN** 系统 MUST 满足以下全部约束：
+
 boolean 上下文的验收 SHALL 以「用本次运行自己的事实派生成员声明、把产物交给 javac 编译、并以同一输入集合执行两侧」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。`Z` 返回与 boolean 条件样本的呈现文本 MUST 能在方法自己的 descriptor 下编译；两侧返回值 MUST 逐项相同。修正前的 `return 1;`/`return 0;` 与 `if (flag() != 0)` MUST 被记录为 javac 的拒绝，MUST NOT 因为该成员没有执行而被算作边界通过。MUST NOT 用 representation/quality/content/execution 任一平面或「文本看起来像 Java」代替编译与执行。选择拒绝的区域 MUST 以拒绝范围、被引用 BCI 与物理方法映射作为其边界证据。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统验收 boolean 上下文的恢复产物与拒绝区域
+- **THEN** 系统 MUST 满足以下全部约束：
+
 本要求同样覆盖**整数二元比较**这一族：验收 MUST 把 `if (1 == n)`、`if (0 < n)`、`if (1 < n)` 一类形状的呈现文本包进由本次运行事实派生的成员声明，交给 javac 编译，并以同一输入集合执行两侧。覆盖 MUST 包含常量在左与常量在右、相等与大小两个比较方向；MUST NOT 只以左操作数或单一比较方向作为本族的证据。修正前的 `if (true == arg0)`、`if (false < arg0)`、`if (true < arg0)`（`incomparable types`／`bad operand types` 一类 javac 拒绝）MUST 在 verification 里作为实测边界记录，不得作为通过；这是本项目上一轮 boolean 修正（`5a8c36a`）引入的回归，MUST NOT 被写成新发现。变异把字面量映射放回「先按值转换左操作数、再按测试形态取舍」的顺序 MUST 让本要求的至少一个已提交检查变红，失败现象是该形状的精确文本不符或 javac 拒绝；MUST NOT 用其它用例的红代替，变异恢复后不遗留调试改动。
+
 
 #### Scenario: The artifact compiles under the member's own descriptor
 
@@ -256,7 +298,16 @@ boolean 上下文的验收 SHALL 以「用本次运行自己的事实派生成�
 
 ### Requirement: A local's decided type compiles and agrees when executed
 
+局部类型决定的验收 SHALL 以「用本次运行自己的事实派生成员声明、把呈现文本交给 `javac --release 8` 编译、并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统验收局部类型决定的恢复产物与拒绝区域
+- **THEN** 系统 MUST 满足以下全部约束：
+
 局部类型决定的验收 SHALL 以「用本次运行自己的事实派生成员声明、把呈现文本交给 `javac --release 8` 编译、并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为」为准（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。提升声明与就地声明对同一个值的决定 MUST 被同一份样本覆盖；MUST NOT 用 representation/quality/content/execution 任一平面、「文本看起来像 Java」、或某条文本断言代替编译与执行。修正前的 `int local3; … local3 = <boolean 值>; … if (local3 != 0)` 一类正文（`boolean cannot be converted to int` 一类拒绝）MUST 在 verification 里作为实测边界记录，不得作为通过。验收 MUST 覆盖：交换分支顺序后仍得同一结论、经另一个 boolean 局部的复制链、纯 `int` 对照与既有的 descriptor 证据局部；选择拒绝的区域 MUST 以拒绝范围、被引用 BCI 与物理方法映射作为其边界证据。变异让提升路径退回 descriptor-only 证据、或让一致性检查只读第一次写入时，至少一个已提交检查 MUST 变红；MUST NOT 用其它用例的红代替。
+
 
 #### Scenario: The hoisted shape compiles under the member's own descriptor
 
@@ -295,7 +346,16 @@ boolean 上下文的验收 SHALL 以「用本次运行自己的事实派生成�
 
 ### Requirement: A presented concatenation is compared by execution
 
+拼接转换的验收 SHALL 以受控执行对照为准：用本次运行自己的事实派生成员声明，把呈现文本交给 `javac --release 8` 编译，并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统验收拼接链的恢复产物与拒绝区域
+- **THEN** 系统 MUST 满足以下全部约束：
+
 拼接转换的验收 SHALL 以受控执行对照为准：用本次运行自己的事实派生成员声明，把呈现文本交给 `javac --release 8` 编译，并以同一输入集合分别运行原 class 与呈现文本、逐项比较返回值/可观察行为（沿用既有 `tests/p3_execution_comparison.rs` 的包装器路径）。MUST NOT 用「两侧都能编译」、representation/quality/content/execution 任一平面、或「该链被记录为 presented」代替该对照——已知反例正是两侧都能编译而值不同。反例 MUST 在修正前记录：`append(a).append(b).append("!")` 的呈现是 `arg0 + arg1 + "!"`，输入 `(1, 2)` 时原 class 返回 `"12!"`、呈现文本返回 `"3!"`，两侧都编译通过；MUST NOT 以「文本看起来像 Java」或结构平面代替这条记录。对照 MUST 覆盖多个数值/字符串顺序（至少：两个数值在前、需要转换的片段在最后、全字符串），MUST 覆盖 boolean、`null` 与对象片段的转换，MUST 覆盖「片段本身是加法」与「两个独立片段」这一对分组形态（两者在同一输入上的值不同，任何合并或拆分都会让对照变红），并 MUST 包含一个可能抛异常/可观察的片段用于比较求值次数与顺序。变异恢复「从第一个原始值起左折叠、不建立字符串上下文」的行为后，对照 MUST 在至少一个输入上以值不同变红；MUST NOT 用其它用例的红代替，变异恢复后不遗留调试改动。选择拒绝的区域 MUST 以拒绝范围、被引用 BCI 与物理方法映射作为其边界证据。
+
 
 #### Scenario: The counterexample's two values are recorded
 

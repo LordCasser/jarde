@@ -2,13 +2,37 @@
 
 ### Requirement: One local variable's type is decided once, before its statements are built
 
+一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
+
 一个局部变量（既有 `LocalVariable` 身份）的类型 MUST 在**语句被构建之前**、在既有的声明规划里决定一次，形成一个按该身份索引的类型结果，并由提升声明、就地声明、赋值、条件与返回共同消费；这些位置 MUST NOT 各自再作一次类型判定。同一个值在两条声明路径上 MUST 得到同一个类型：写在包含全部使用的区域起点上的**提升**声明与写在首个写入处的**就地**声明 MUST 一致，结论 MUST NOT 取决于遍历顺序（同一变量的两个分支先后不得改变其类型）。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
 
 决定的证据 MUST 是一份有限、写清的清单：类文件 descriptor 的 boolean 事实（`Z` 参数槽的读取、返回 descriptor 为 `Z` 的调用结果、descriptor 为 `Z` 的字段读取）、一次对本 run **已判为 boolean 的局部**的读取（传播，MUST NOT 跟随值链：一个 store 的 own value、由多个 push 合并出的值仍不证明）、以及帧为其它类型给出的既有类型事实。`0`/`1` 字面量 MUST NOT **发起** boolean 判断（`int x = 0;` 与 `boolean c = true;` 是同一份字节），但目标已经确定为 boolean 时 MUST 按其拼写（`true`/`false`）适配。**每个**写入（不只是第一次写入）MUST 按已决定的类型检查：写入的值不能拼成该类型时即为冲突。证据的传播 MUST 有界（不随输入规模无限增长），并 MUST 接线到本 run 既有的预算与取消检查；规划 MUST NOT 成为绕过预算的无限工作量，预算或取消在规划期停止时 MUST 发布既有停止。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
+
 普通首写定型的非参数标量引用局部，当另一物理写入准确给出 Object、所有写均可赋给 Object、全部局部读取的完整消费仅是直接 Object 返回时，系统 MUST 统一选择 Object，保留各写入和返回的执行位置及物理来源。Unknown frame 的 Object 拼写、debug类型、名称或物理slot相同 MUST NOT 单独作为这项证明；参数、专门类型证明、数组形状和未完整覆盖的handler访问 MUST NOT 被该候选放宽。准确Object写与原窄声明矛盾且读侧未闭合时，系统 MUST 按既有冲突/refusal契约停止受影响结构，MUST NOT 继续发布该矛盾赋值或自行插入cast。
 
+#### Scenario: 完整契约 4
+
+- **WHEN** 系统处理既有 LocalVariable 身份的类型决定、声明规划与语句构建
+- **THEN** 系统 MUST 满足以下全部约束：
+
 类型未知（没有可决定的类型）或冲突（写入与已决定的类型矛盾）时，本层 MUST 终止该结构的生成，而不是发布一个猜测：受影响结构按既有 refusal 契约处理（保留 bytecode 与 origin、representation=Mixed、quality=Fallback、诊断点名相关 BCI 与物理方法），MUST NOT 发布类型矛盾的赋值（例如 `int local3; … local3 = <boolean 值>; …`）。声明的结果 MUST 区分「没有声明到期」与「声明失败（fallback 已写）」两种含义；后者之后 MUST NOT 继续写出那条赋值。本要求 MUST NOT 被读作类型保真或语义等价的声明：字面量单独构成的提升声明按其与就地路径一致的既有答案呈现，这一类型差异 MUST 被记录为边界。
+
 
 #### Scenario: The two declaration paths decide the same type
 

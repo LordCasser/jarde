@@ -2,11 +2,30 @@
 
 ### Requirement: 返回值形写访问器 SHALL 按字段描述符恢复（封闭类型集）
 
+当合成写访问器（`access$NNN`）的方法体为 `aload_0; <load_1>; <dup 复制>; putfield; <return>`——即"内部类写外部私有字段"的真 javac 产物形——系统 SHALL 在字段描述符属于**封闭类型集**（`Z`/`I`/`B`/`S`/`C`/`F`/`J`/`D`/引用型）时把它恢复为 `arg0.<field> = arg1; return arg1;`，与 boolean 现状同形。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试恢复返回值形合成字段写访问器
+- **THEN** 系统 MUST 满足以下全部约束：
+
 当合成写访问器（`access$NNN`）的方法体为 `aload_0; <load_1>; <dup 复制>; putfield; <return>`——即"内部类写外部私有字段"的真 javac 产物形——系统 SHALL 在字段描述符属于**封闭类型集**（`Z`/`I`/`B`/`S`/`C`/`F`/`J`/`D`/引用型）时把它恢复为 `arg0.<field> = arg1; return arg1;`，与 boolean 现状同形。每型的装载/复制/返回 opcode 与槽宽 SHALL 以该封闭表为准（单槽：`dup_x1`；`J`/`D` 双槽：`dup2_x1`；下限 stack/locals 相应为 3/2 与 5/3），**不得**外推表外类型。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试恢复返回值形合成字段写访问器
+- **THEN** 系统 MUST 满足以下全部约束：
 
 处理器的**结构判据**（单 SSA 块、无异常表、无 clone 块、BCI 布局 `[0,1,2,3,6]`、`Operation` 序列含 `Load{slot:0}`/`Load{slot:1}`/`Other`/`Field{Write,!static}`/`Return`、字段属于本类、预算语义）SHALL **逐字保留**——本能力只把"类型事实"从 boolean 常量改为查表，不放宽任何结构证明。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统尝试恢复返回值形合成字段写访问器
+- **THEN** 系统 MUST 满足以下全部约束：
+
 static 字段的写访问器与无复制形的返回值写访问器 SHALL 维持既有拒绝（后者属 `accessor@1` 折叠路径的既有语义）。
+
 
 #### Scenario: 9 类型全部恢复且整类可编译
 

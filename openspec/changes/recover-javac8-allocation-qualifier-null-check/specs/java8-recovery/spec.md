@@ -3,10 +3,29 @@
 ### Requirement: 分配限定符的成员构造在真 javac 8 的 null 检查下 SHALL 恢复
 
 系统 SHALL 把分配限定符形 `new Outer().new Inner(…)` 中被**丢弃**的 null 检查（`dup; <discarded null check>; pop`，两种拼写之一：javac 9+ 的 `Objects.requireNonNull` 或真 javac 8 的 `Object.getClass`）识别为**消费该外层实例的成员构造站点自身的一部分**，而不是外层分配站点的一个游离读者；从而真 javac 8 产物（其对新分配外层实例无条件插入该检查）与 javac 9+ 产物（其不插入）**都**恢复为源级限定语法 `new Outer().new Inner(…)`。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统处理分配限定符成员构造并核验被丢弃的 null 检查
+- **THEN** 系统 MUST 满足以下全部约束：
+
+系统 SHALL 把分配限定符形 `new Outer().new Inner(…)` 中被**丢弃**的 null 检查（`dup; <discarded null check>; pop`，两种拼写之一：javac 9+ 的 `Objects.requireNonNull` 或真 javac 8 的 `Object.getClass`）识别为**消费该外层实例的成员构造站点自身的一部分**，而不是外层分配站点的一个游离读者；从而真 javac 8 产物（其对新分配外层实例无条件插入该检查）与 javac 9+ 产物（其不插入）**都**恢复为源级限定语法 `new Outer().new Inner(…)`。
+
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统处理分配限定符成员构造并核验被丢弃的 null 检查
+- **THEN** 系统 MUST 满足以下全部约束：
 
 识别 null 检查 SHALL 复用既有谓词 `facts.rs::is_discarded_null_check`（`recover-javac8-getclass-null-check-idiom` 交付），**不得**新建第二套拼写判据。系统 SHALL **不得**引入 `java_release`/`major_version` 或任何按产出编译器版本分支的判据（两种产物 major version 均为 52，且违反 `classfile.rs` 的"never over the compiler that produced it"原则）。
 
+#### Scenario: 完整契约 3
+
+- **WHEN** 系统处理分配限定符成员构造并核验被丢弃的 null 检查
+- **THEN** 系统 MUST 满足以下全部约束：
+
 **核心不变量 SHALL 保持**：外层实例被**多处真实消费**（非被丢弃的 null 检查）时仍 SHALL 拒绝——"一个构造实例只有一个 Java 拼写位"（`single_use_at`、读者门 `readers.len() != 1`）的语义不得因本能力放宽。只有"被 `is_discarded_null_check` 证明、且返回值被紧随的 `pop` 丢弃"的三元组才归入站点自有。用户显式写的 `o.getClass();` 语句（其值不被丢弃，或不在分配序列内紧邻构造器）SHALL 保留为一条语句，不得被误折叠。
+
 
 #### Scenario: 真 javac 8 的分配限定符形可恢复
 

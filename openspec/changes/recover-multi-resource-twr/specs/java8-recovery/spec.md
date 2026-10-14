@@ -2,9 +2,23 @@
 
 ### Requirement: Multi-resource try-with-resources proves its nested levels
 
+两个及以上资源的 try-with-resources，在每层行的几何与每层的 close/`addSuppressed` 链都可证明时，SHALL 呈现为一条带多个资源的 `try` 头语句，资源顺序 = 初始化顺序。
+系统 MUST 遵守本 requirement 下所有“完整契约”场景中的全部约束。
+
+#### Scenario: 完整契约 1
+
+- **WHEN** 系统尝试恢复两个及以上资源的 try-with-resources
+- **THEN** 系统 MUST 满足以下全部约束：
+
 两个及以上资源的 try-with-resources，在每层行的几何与每层的 close/`addSuppressed` 链都可证明时，SHALL 呈现为一条带多个资源的 `try` 头语句，资源顺序 = 初始化顺序。层级几何 MUST 从字节码证明：每层主异常表行从其资源初始化之后的受保护指令开始，止于该层正常 close 组的精确起点；内层 handler 的异常清理 MUST 由外层主行完整覆盖，或由范围恰好等于该清理段、且 catch 类型与目标 handler 均和外层主行相同的另一行覆盖。该证明 MUST NOT 单凭外层行是否止于内层 handler 的 span 末判定成功，也 MUST NOT 忽略任何额外保护行。任一层几何、close 顺序或抑制链不可证明时 MUST 保持整方法引用，不得部分呈现。
 
+#### Scenario: 完整契约 2
+
+- **WHEN** 系统尝试恢复两个及以上资源的 try-with-resources
+- **THEN** 系统 MUST 满足以下全部约束：
+
 资源头中的 `new`、`dup`、构造器及实参效果 MUST 由对应的已证 `new@1` 站点和资源 Store 的 SSA 值流共同归属给该资源初始化，按资源逐一验证。任一站点缺失、构造结果不是该 Store 所读值、站点指令不在完整头部范围，或范围中夹有其它效果时 MUST 保持引用；不得无条件略过这些指令。成功呈现的头部及其来源映射 MUST 保留每项资源的 allocation、dup、constructor、Store 和 close/suppression 锚点。
+
 
 #### Scenario: Two resources present as one header
 
