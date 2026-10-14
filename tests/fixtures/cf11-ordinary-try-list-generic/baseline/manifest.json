@@ -1,0 +1,33 @@
+{
+  "schema": "jarde-ordinary-try-list-baseline45-inputs-v1",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.UpstreamNestedLoops",
+      "source": "UpstreamNestedLoops.java",
+      "bytes": 7402,
+      "sha256": "edc6d5ab7258ad79eb13cc0163c042dcdc885dd3d3d160829a098a8b5d98a1ed",
+      "candidate_methods": [
+        "tryStringBranch",
+        "tryIntegerBranch",
+        "tryStringRemovePrefix",
+        "tryStringNested",
+        "tryStringUnknownCall"
+      ]
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 12601,
+    "sha256": "d810c2466b31edc6d9df9b7286dedc21ca77428fa329f86d98d8a36d6f7dee7d",
+    "runtime_rows_expected": 45
+  },
+  "invariants": [
+    "compile all target classes and this complete Runner from the same source set",
+    "JDK 8 and 23 compile/run the exact same source pins",
+    "debug and debug-none are separate runs using this same manifest",
+    "collector renders Jarde default and all and retains compile failures as no-runtime"
+  ]
+}

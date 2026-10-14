@@ -1136,6 +1136,46 @@
       "path": "tests/fixtures/cf08-two-level-effectful/cf08twolvl/VerifierRunner.java"
     },
     {
+      "blake3": "ac14234d95a3a038c617c566474440a87d9a45ea995ddfc70e5abb42dec1c1d5",
+      "bytes": 6887,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/UpstreamNestedLoops.class"
+    },
+    {
+      "blake3": "9184af08466bdac33361a424c8102f7fb77d7b47ea605b9285817ea3ee6ab89f",
+      "bytes": 5457,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/admission/OrdinaryTryListFixture.class"
+    },
+    {
+      "blake3": "0a21dfa8c7e0e4a9c7636cd7264ceb214551cbd3d115f605e8be371902289df7",
+      "bytes": 5432,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/admission/OrdinaryTryListFixture.java"
+    },
+    {
+      "blake3": "126b231a1c820e9e62469f8f0111cf1c525c8b2e8c2cfdeabfc9c592b4760735",
+      "bytes": 10678,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/admission/Runner.java"
+    },
+    {
+      "blake3": "e6f51d49ab5e5865b8ac450fd31196974b1c1e39d90214eeffe683a48ca05b07",
+      "bytes": 1171,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/admission/manifest.json"
+    },
+    {
+      "blake3": "47fb6adcfc3af9f9d0b68fabc636affe41cca47dd462d6874725fc4763f7920c",
+      "bytes": 12601,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/baseline/Runner.java"
+    },
+    {
+      "blake3": "d25013b436cfabca4b9c8c00f3da2cc3268906d479a85ab752f516dabe8d6fc8",
+      "bytes": 7402,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/baseline/UpstreamNestedLoops.java"
+    },
+    {
+      "blake3": "9f6237435a8115efd7e878377e13ca05b7009f77f70f8f13be30e7ec75188d54",
+      "bytes": 1062,
+      "path": "tests/fixtures/cf11-ordinary-try-list-generic/baseline/manifest.json"
+    },
+    {
       "blake3": "f0e6b862f473d21c32dfb05048d8d98aa0d9a843b5ce49dd2910c9330873f2d7",
       "bytes": 1320,
       "path": "tests/fixtures/cf11-structured-list-api/DistinctIntegerFixture.class"
@@ -1564,6 +1604,31 @@
       "blake3": "a73e73de23549d38a1f978282a8452847aa5c95c8ac10edf460b503097b6f118",
       "bytes": 65,
       "path": "tests/fixtures/enum-string-field-name/original-behavior.txt"
+    },
+    {
+      "blake3": "70f99ad8d66116b1326bfaa63e32750f6c1339bbce9662ca2bd003421f645630",
+      "bytes": 2833,
+      "path": "tests/fixtures/forward-conditional-stack-carry/ForwardCarryProbe.java"
+    },
+    {
+      "blake3": "7b11e713e80aa849afd73b3078b519a0c7695ec2ae4d9893c54514859eb3c9bf",
+      "bytes": 3832,
+      "path": "tests/fixtures/forward-conditional-stack-carry/Runner.java"
+    },
+    {
+      "blake3": "d8bb70d150fa69f0d7afaa7be93e7c8eda814c8c2e959500a87f19d5fad2d913",
+      "bytes": 2696,
+      "path": "tests/fixtures/forward-conditional-stack-carry/javac23/ForwardCarryProbe.class"
+    },
+    {
+      "blake3": "678722697258b7f0480dec2cac630ac8e026e4d5d61cc8ce99a69c534354cab2",
+      "bytes": 2696,
+      "path": "tests/fixtures/forward-conditional-stack-carry/javac8/ForwardCarryProbe.class"
+    },
+    {
+      "blake3": "961c4724b77f8822a9eb9ac946ed1b392a122497e6b93802eafdb7d12aecd15a",
+      "bytes": 967,
+      "path": "tests/fixtures/forward-conditional-stack-carry/pins.json"
     },
     {
       "blake3": "3856f83dd932214e8ebf98abe429ba5b3ab514ba9ea72da259081eaeda4e8527",

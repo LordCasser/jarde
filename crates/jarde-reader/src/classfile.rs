@@ -12255,7 +12255,10 @@ mod tests {
             // Protected-prefix-loop negative neighbors add one javac 23 --release 8
             // class, three Code bodies, two handlers and five direct branch targets; no jsr.
             // Independently measured from actual Code bytes and accepted javap.
-            (1165, 5163, 503, 3284, 10),
+            // The 2026-10-14 ordinary-Try List baseline/admission and two forward-carry
+            // compiler legs add four classes, sixty-two bodies, eighteen handler records and
+            // one hundred forty-five non-handler branch targets; no subroutine was added.
+            (1169, 5225, 521, 3429, 10),
             "fixture population changed: re-measure these counts"
         );
     }

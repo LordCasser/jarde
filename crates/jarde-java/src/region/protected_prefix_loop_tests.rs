@@ -546,7 +546,7 @@ fn handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once() {
         [Region::Straight { .. }, Region::Loop { .. }]
     ));
     assert!(protected_prefix_loop_shape(regions));
-    let loop_blocks = candidate_region_blocks(&regions[1], &mut recovery_budget)
+    let loop_blocks = candidate_region_blocks(&regions[1], &mut recovery_budget, false)
         .expect("candidate tree scan stays within budget")
         .expect("the actual loop contains no fallback, nested try or guard");
     assert_eq!(
@@ -572,7 +572,7 @@ fn handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once() {
     });
     assert!(protected_prefix_loop_shape(&incomplete_child));
     assert!(
-        candidate_region_blocks(&incomplete_child[1], &mut recovery_budget)
+        candidate_region_blocks(&incomplete_child[1], &mut recovery_budget, false)
             .expect("the incomplete child is a refusal, not a stop")
             .is_none()
     );
@@ -592,7 +592,7 @@ fn handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once() {
         transparent: None,
     });
     assert!(
-        candidate_region_blocks(&nested_try_child, &mut recovery_budget)
+        candidate_region_blocks(&nested_try_child, &mut recovery_budget, false)
             .expect("nested try refusal is not a stop")
             .is_none()
     );
@@ -716,7 +716,7 @@ fn handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once() {
     loop_body.push(Region::Straight {
         blocks: vec![repeated_physical_block.clone()],
     });
-    let duplicate_blocks = candidate_region_blocks(&duplicate_loop, &mut recovery_budget)
+    let duplicate_blocks = candidate_region_blocks(&duplicate_loop, &mut recovery_budget, false)
         .expect("duplicate physical owners are an ordinary refusal")
         .expect("the duplicate remains visible to the ownership gate");
     assert_eq!(
@@ -755,7 +755,7 @@ fn handled_keeps_its_prefix_loop_catch_bridge_and_join_owned_once() {
 
     let mut exact_owner_blocks = regions[0].blocks().into_iter().cloned().collect::<Vec<_>>();
     exact_owner_blocks.extend(
-        candidate_region_blocks(&regions[1], &mut recovery_budget)
+        candidate_region_blocks(&regions[1], &mut recovery_budget, false)
             .expect("the same complete loop candidate scan remains within budget")
             .expect("the real loop has complete physical ownership"),
     );
@@ -838,7 +838,7 @@ fn real_resource_guard_region_is_rejected_by_candidate_collector() {
         .find(|region| matches!(region, Region::Guard { .. }))
         .unwrap_or_else(|| panic!("the real TWR method is recognized as a Guard: {recovered:?}"));
     assert!(
-        candidate_region_blocks(guard, &mut recovery_budget)
+        candidate_region_blocks(guard, &mut recovery_budget, false)
             .expect("guard refusal is a bounded scan")
             .is_none()
     );
@@ -961,7 +961,7 @@ fn effect_suffix_inside_try_refuses_prefix_loop_and_restores_full_state() {
         one_loop,
         "the tested child must reach the loop candidate: {loop_run:?}"
     );
-    let child_blocks = candidate_region_blocks(&loop_run[0], probe.budget)
+    let child_blocks = candidate_region_blocks(&loop_run[0], probe.budget, false)
         .expect("the child ownership scan stays within budget")
         .expect("the child has complete structured ownership");
     assert_eq!(

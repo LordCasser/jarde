@@ -9111,6 +9111,31 @@ fn generic_void_unread_parameter_slots(
     )>,
     StopReason,
 > {
+    generic_void_unread_parameter_slots_with_scope(
+        code,
+        ssa,
+        operations,
+        parameter_slots,
+        None,
+        budget,
+    )
+}
+
+fn generic_void_unread_parameter_slots_with_scope(
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    ssa: &SsaTable,
+    operations: &Operations,
+    parameter_slots: &std::collections::BTreeSet<u16>,
+    try_scope: Option<&crate::region::OrdinaryTryListScope>,
+    budget: &mut Budget,
+) -> Result<
+    Option<(
+        Vec<u16>,
+        Vec<(u16, u32)>,
+        Vec<GenericVoidParameterReceiverCall>,
+    )>,
+    StopReason,
+> {
     let effects = ssa.effects().instructions();
     let code_instructions = &code.instructions;
     let code_operands = code.operands();
@@ -9125,10 +9150,21 @@ fn generic_void_unread_parameter_slots(
         )?;
         operations_len = operations_len.saturating_add(1);
     }
+    let exception_rows_match = match try_scope {
+        None => code.exception_handler_count == 0 && code.exception_handlers.is_empty(),
+        Some(scope) => {
+            code.exception_handler_count == 1
+                && matches!(code.exception_handlers.as_slice(), [row]
+                if row.ordinal == scope.ordinal
+                    && row.start_bci == scope.start_bci
+                    && row.end_bci == scope.end_bci
+                    && row.handler_bci == scope.handler_bci
+                    && row.catch_type_index == Some(scope.catch_type_index))
+        }
+    };
     if ssa.blocks().is_empty()
         || code.stopped_at.is_some()
-        || code.exception_handler_count != 0
-        || !code.exception_handlers.is_empty()
+        || !exception_rows_match
         || code_operands.len() != code_instructions.len()
         || effects.len() != code_instructions.len()
         || operations_len != code_instructions.len()
@@ -9301,8 +9337,17 @@ fn generic_void_unread_parameter_slots(
             || !raw_opcode_matches
             || operands.effective_opcode != instruction.opcode()
             || operands.effective_opcode != effect.opcode()
-            || !effect.handlers().is_empty()
         {
+            return Ok(None);
+        }
+        let inside_certified_range =
+            try_scope.is_some_and(|scope| raw.bci >= scope.start_bci && raw.bci < scope.end_bci);
+        let expected_handlers: &[u32] = if inside_certified_range && effect.may_throw() {
+            try_scope.map_or(&[], |scope| std::slice::from_ref(&scope.ordinal))
+        } else {
+            &[]
+        };
+        if effect.handlers() != expected_handlers {
             return Ok(None);
         }
 
@@ -9484,6 +9529,7 @@ fn generic_return_candidate(
     operations: &Operations,
     sites: &init::Sites,
     request: &RecoveryRequest<'_>,
+    try_scope: Option<&crate::region::OrdinaryTryListScope>,
     budget: &mut Budget,
 ) -> Result<Option<GenericReturnCandidate>, StopReason> {
     let Some(code) = request.ir.code() else {
@@ -9572,8 +9618,8 @@ fn generic_return_candidate(
         Some(StmtKind::Return { value: None })
     ) && !program.stmts.is_empty()
         && code.stopped_at.is_none()
-        && code.exception_handler_count == 0
-        && code.exception_handlers.is_empty()
+        && (try_scope.is_some()
+            || (code.exception_handler_count == 0 && code.exception_handlers.is_empty()))
         && !program.ragged
         && ssa.effects().instructions().len() == code.instructions.len()
     {
@@ -9586,8 +9632,19 @@ fn generic_return_candidate(
         )?;
         let parameter_slots: std::collections::BTreeSet<_> =
             parameter_types.keys().copied().collect();
-        let Some((unread_parameter_slots, parameter_read_bcis, parameter_receiver_calls)) =
+        let census = if let Some(scope) = try_scope {
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                operations,
+                &parameter_slots,
+                Some(scope),
+                budget,
+            )?
+        } else {
             generic_void_unread_parameter_slots(code, ssa, operations, &parameter_slots, budget)?
+        };
+        let Some((unread_parameter_slots, parameter_read_bcis, parameter_receiver_calls)) = census
         else {
             return Ok(None);
         };
@@ -12185,8 +12242,29 @@ fn recover_inner(
         });
     }
     if let Some(slot) = generic_return {
-        match generic_return_candidate(&program, &names, ssa, &operations, &sites, request, budget)
-        {
+        let try_scope = if (code.exception_handler_count != 0
+            || !code.exception_handlers.is_empty())
+            && matches!(
+                program.stmts.last().map(|statement| &statement.kind),
+                Some(StmtKind::Return { value: None })
+            ) {
+            match crate::region::ordinary_try_list_scope(&recovered, canonical, code, budget) {
+                Ok(scope) => scope,
+                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            }
+        } else {
+            None
+        };
+        match generic_return_candidate(
+            &program,
+            &names,
+            ssa,
+            &operations,
+            &sites,
+            request,
+            try_scope.as_ref(),
+            budget,
+        ) {
             Ok(candidate) => *slot = candidate,
             Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
         }
@@ -13945,8 +14023,11 @@ mod generic_void_parameter_census_tests {
     use jarde_jvm::environment::ResolutionEnvironment;
     use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
     use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-    use jarde_reader::budget::{Budget, Limits};
+    use jarde_reader::budget::{Budget, BudgetDimension, CancellationToken, Limits};
     use jarde_reader::classfile::{InstructionFact, InstructionOperands, MethodCodeFacts};
+    use jarde_reader::ledger::{
+        LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+    };
     use jarde_reader::model::{
         ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
         PhysicalMethodId, PhysicalVariant,
@@ -13957,12 +14038,48 @@ mod generic_void_parameter_census_tests {
         RuntimeView,
     };
     use std::collections::BTreeSet;
+    use std::sync::Arc;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    #[derive(Debug)]
+    struct CancelAfterLedgerEntries {
+        entries: AtomicUsize,
+        charges: AtomicUsize,
+        previous_charge: AtomicUsize,
+        last_charge: AtomicUsize,
+        cancel_on_charge: Option<usize>,
+        token: CancellationToken,
+    }
+
+    impl LedgerObserver for CancelAfterLedgerEntries {
+        fn entry(&self, _site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+            self.entries.fetch_add(1, Ordering::Relaxed);
+            if matches!(_site, LedgerSite::Charge(_)) {
+                let charge = self.charges.fetch_add(1, Ordering::Relaxed) + 1;
+                self.previous_charge.store(
+                    self.last_charge.swap(charge, Ordering::Relaxed),
+                    Ordering::Relaxed,
+                );
+                if self.cancel_on_charge == Some(charge) {
+                    self.token.cancel();
+                }
+            }
+        }
+
+        fn refusal(&self, _site: LedgerSite, _dimension: Option<BudgetDimension>) {}
+    }
 
     const FIXED: &[u8] = include_bytes!(
         "../../../tests/fixtures/cf11-structured-list-api/UpstreamNestedLoops.class"
     );
     const CONTROLS: &[u8] = include_bytes!(
         "../../../tests/fixtures/cf11-structured-list-controls/UpstreamNestedLoops.class"
+    );
+    const ORDINARY_TRY_LIST: &[u8] = include_bytes!(
+        "../../../tests/fixtures/cf11-ordinary-try-list-generic/UpstreamNestedLoops.class"
+    );
+    const RESOURCE_GUARD: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
     );
 
     fn limits() -> Limits {
@@ -14078,6 +14195,49 @@ mod generic_void_parameter_census_tests {
             .cloned()
             .zip(code.operands().iter().cloned())
             .collect()
+    }
+    fn recovered_from_fixture(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+    ) -> crate::region::Recovered {
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("fixture has canonical CFG");
+        let code = ir.code().expect("fixture has Code");
+        let ssa = ir.ssa().expect("fixture has SSA");
+        let operations = Operations::of(code, ir.constant_pool());
+        let mut budget = Budget::new(limits());
+        let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
+            .expect("normal-flow view completes");
+        let mut recovered = crate::region::recover(
+            canonical,
+            &view,
+            ssa,
+            &operations,
+            ir.constant_pool(),
+            &crate::concat::Plan::empty(),
+            &crate::init::Sites::empty(),
+            code,
+            Some(false),
+            false,
+            &crate::pass::JAVA_8,
+            &mut budget,
+        )
+        .expect("region recovery completes");
+        crate::region::project_string_switches(&mut recovered, ir, &mut budget)
+            .expect("string switch projection completes");
+        recovered
+    }
+    fn ordinary_scope_from_fixture(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+    ) -> crate::region::OrdinaryTryListScope {
+        let recovered = recovered_from_fixture(analysis);
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("fixture has canonical CFG");
+        let code = ir.code().expect("fixture has Code");
+        let mut budget = Budget::new(limits());
+        let scope =
+            crate::region::ordinary_try_list_scope(&recovered, canonical, code, &mut budget)
+                .expect("ordinary try scope check completes");
+        scope.expect("fixture has one certified ordinary try row")
     }
     fn refused(
         code: &MethodCodeFacts,
@@ -14251,6 +14411,536 @@ mod generic_void_parameter_census_tests {
             let ssa = ir.ssa().expect("control method has SSA");
             let operations = Operations::of(code, ir.constant_pool());
             refused(code, ssa, &operations, &slots);
+        }
+    }
+
+    #[test]
+    fn exact_named_try_scope_scans_catch_and_protected_effects_together() {
+        let (analysis, slots) = analyzed(
+            CONTROLS,
+            "handled",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            3,
+        );
+        let ir = analysis.ir();
+        let code = ir.code().expect("control method has Code");
+        let ssa = ir.ssa().expect("control method has SSA");
+        let operations = Operations::of(code, ir.constant_pool());
+        let [row] = code.exception_handlers.as_slice() else {
+            panic!("fixture uses one ordinary named catch row");
+        };
+        let scope = crate::region::OrdinaryTryListScope {
+            ordinal: row.ordinal,
+            catch_type_index: row.catch_type_index.expect("the row is named"),
+            handler_bci: row.handler_bci,
+            start_bci: row.start_bci,
+            end_bci: row.end_bci,
+        };
+        let mut complete_budget = Budget::new(limits());
+        let Some((unread, reads, _)) = generic_void_unread_parameter_slots_with_scope(
+            code,
+            ssa,
+            &operations,
+            &slots,
+            Some(&scope),
+            &mut complete_budget,
+        )
+        .expect("complete try census") else {
+            panic!("the exact row admits one complete physical census");
+        };
+        assert!(unread.is_empty());
+        assert!(reads.iter().any(|(slot, _)| *slot == 1));
+        assert!(reads.iter().any(|(slot, _)| *slot == 2));
+
+        let completed_usage = complete_budget.usage();
+        assert!(
+            completed_usage.analysis_steps > u64::try_from(code.instructions.len()).unwrap(),
+            "the later stop is reached after the physical body scan has begun"
+        );
+        let mut late_limits = limits();
+        late_limits.ir_items = completed_usage.ir_items;
+        late_limits.analysis_steps = completed_usage.analysis_steps.saturating_sub(1);
+        assert!(matches!(
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&scope),
+                &mut Budget::new(late_limits),
+            ),
+            Err(StopReason::Budget { .. })
+        ));
+
+        assert!(completed_usage.ir_items > 0);
+        let mut late_ir_limits = limits();
+        late_ir_limits.ir_items = completed_usage.ir_items - 1;
+        assert!(matches!(
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&scope),
+                &mut Budget::new(late_ir_limits),
+            ),
+            Err(StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                ..
+            })
+        ));
+
+        let mut wrong_range = scope;
+        wrong_range.end_bci = wrong_range.end_bci.saturating_add(1);
+        assert!(
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&wrong_range),
+                &mut Budget::new(limits()),
+            )
+            .expect("row mismatch is a refusal")
+            .is_none()
+        );
+
+        let mut wrong_effect_rows = code.exception_handlers.clone();
+        wrong_effect_rows[0].ordinal = wrong_effect_rows[0].ordinal.wrapping_add(1);
+        let wrong_effect_code = rebuilt_code(
+            code,
+            code_pairs(code),
+            wrong_effect_rows,
+            code.exception_handler_count,
+        );
+        let mut wrong_effect_scope = scope;
+        wrong_effect_scope.ordinal = wrong_effect_code.exception_handlers[0].ordinal;
+        assert!(
+            generic_void_unread_parameter_slots_with_scope(
+                &wrong_effect_code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&wrong_effect_scope),
+                &mut Budget::new(limits()),
+            )
+            .expect("handler effect disagreement is a refusal")
+            .is_none()
+        );
+
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled_budget = Budget::with_cancellation_token(limits(), cancellation);
+        assert!(matches!(
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&scope),
+                &mut cancelled_budget,
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+
+        let observed_token = CancellationToken::new();
+        let observer = Arc::new(CancelAfterLedgerEntries {
+            entries: AtomicUsize::new(0),
+            charges: AtomicUsize::new(0),
+            previous_charge: AtomicUsize::new(0),
+            last_charge: AtomicUsize::new(0),
+            cancel_on_charge: None,
+            token: observed_token.clone(),
+        });
+        let mut observed_budget = Budget::with_cancellation_token(limits(), observed_token);
+        let ledger = OperationLedger::new(&observed_budget).with_observer(observer.clone());
+        observed_budget.with_ledger(ledger, UsageOwner::Methods);
+        assert!(
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&scope),
+                &mut observed_budget,
+            )
+            .expect("observed full census")
+            .is_some()
+        );
+        let full_charge_count = observer.charges.load(Ordering::Relaxed);
+        assert!(full_charge_count > 10, "census has a meaningful late point");
+        let late_cancel_at = observer.previous_charge.load(Ordering::Relaxed);
+        assert!(late_cancel_at > 0, "a later checkpoint follows this charge");
+
+        let late_token = CancellationToken::new();
+        let late_observer = Arc::new(CancelAfterLedgerEntries {
+            entries: AtomicUsize::new(0),
+            charges: AtomicUsize::new(0),
+            previous_charge: AtomicUsize::new(0),
+            last_charge: AtomicUsize::new(0),
+            cancel_on_charge: Some(late_cancel_at),
+            token: late_token.clone(),
+        });
+        let mut late_budget = Budget::with_cancellation_token(limits(), late_token);
+        let ledger = OperationLedger::new(&late_budget).with_observer(late_observer.clone());
+        late_budget.with_ledger(ledger, UsageOwner::Methods);
+        assert!(matches!(
+            generic_void_unread_parameter_slots_with_scope(
+                code,
+                ssa,
+                &operations,
+                &slots,
+                Some(&scope),
+                &mut late_budget,
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+        assert_eq!(
+            late_observer.charges.load(Ordering::Relaxed),
+            late_cancel_at,
+            "the observer cancels during the selected successful Charge entry"
+        );
+    }
+
+    #[test]
+    fn ordinary_try_list_scope_is_reached_by_the_real_method_recovery() {
+        // These are physical Java 8 classfile methods. Their only route through the handler-bearing
+        // generic void gate is ordinary_try_list_scope followed by the full physical census.
+        for (name, descriptor, parameter_slots) in [
+            ("handled", "(Ljava/util/List;Ljava/util/List;)V", 3),
+            ("tryStringBranch", "(Ljava/util/List;Ljava/util/List;)V", 3),
+            ("tryIntegerBranch", "(Ljava/util/List;Ljava/util/List;)V", 3),
+            (
+                "tryStringRemovePrefix",
+                "(Ljava/util/List;Ljava/util/List;Ljava/lang/Object;)V",
+                4,
+            ),
+            (
+                "tryStringNested",
+                "(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V",
+                4,
+            ),
+        ] {
+            let (analysis, _) = analyzed(ORDINARY_TRY_LIST, name, descriptor, parameter_slots);
+            let scope = ordinary_scope_from_fixture(&analysis);
+            let code = analysis.ir().code().unwrap();
+            let row = &code.exception_handlers[0];
+            assert_eq!(scope.ordinal, row.ordinal, "{name}");
+            assert_eq!(
+                scope.catch_type_index,
+                row.catch_type_index.unwrap(),
+                "{name}"
+            );
+            assert_eq!(scope.handler_bci, row.handler_bci, "{name}");
+            assert_eq!(scope.start_bci, row.start_bci, "{name}");
+            assert_eq!(scope.end_bci, row.end_bci, "{name}");
+            let facts = crate::facts::RecoveryFacts::new(
+                crate::facts::MethodFacts::new(name, descriptor, parameter_slots)
+                    .with_access_flags(0x0001)
+                    .with_declaring_class(crate::facts::DeclaringClass::new(
+                        "UpstreamNestedLoops",
+                        0x0021,
+                    )),
+            );
+            let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+            let recovered = recover_for_class_source_with_anonymous_ast(
+                &request,
+                &mut Budget::new(limits()),
+                true,
+                false,
+                false,
+                false,
+                false,
+            );
+            let Some(GenericReturnCandidate {
+                value: GenericReturnValue::VoidBody { .. },
+                ..
+            }) = recovered.generic_return
+            else {
+                panic!(
+                    "{name}{descriptor} must enter the ordinary typed Try/prefix+foreach census: {:?}",
+                    recovered.report.execution
+                );
+            };
+        }
+    }
+
+    #[test]
+    fn ordinary_try_list_scope_refuses_owner_and_physical_row_mutations() {
+        let (analysis, _) = analyzed(
+            ORDINARY_TRY_LIST,
+            "tryStringBranch",
+            "(Ljava/util/List;Ljava/util/List;)V",
+            3,
+        );
+        let ir = analysis.ir();
+        let canonical = ir.canonical().unwrap();
+        let code = ir.code().unwrap();
+        let recovered = recovered_from_fixture(&analysis);
+        let mut budget = Budget::new(limits());
+        assert!(
+            crate::region::ordinary_try_list_scope(&recovered, canonical, code, &mut budget)
+                .unwrap()
+                .is_some()
+        );
+
+        let completed_scope_usage = budget.usage();
+        assert!(completed_scope_usage.ir_items > 1);
+        let mut low_inventory = limits();
+        low_inventory.ir_items = completed_scope_usage.ir_items - 1;
+        assert!(matches!(
+            crate::region::ordinary_try_list_scope(
+                &recovered,
+                canonical,
+                code,
+                &mut Budget::new(low_inventory),
+            ),
+            Err(StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                ..
+            })
+        ));
+
+        let mut missing_claim = recovered.clone();
+        let missing_index = *missing_claim.claimed.iter().next().unwrap();
+        assert!(missing_claim.claimed.remove(&missing_index));
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &missing_claim,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut substituted_claim = recovered.clone();
+        let missing_index = *substituted_claim.claimed.iter().next().unwrap();
+        assert!(substituted_claim.claimed.remove(&missing_index));
+        let replacement_index = canonical.blocks().len();
+        substituted_claim.claimed.insert(replacement_index);
+        assert_eq!(substituted_claim.claimed.len(), recovered.claimed.len());
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &substituted_claim,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none(),
+            "a same-sized but substituted claimed-index set cannot certify the method"
+        );
+
+        let mut missing_owner = recovered.clone();
+        missing_owner.regions.clear();
+        missing_owner.claimed.clear();
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &missing_owner,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut duplicate_owner = recovered.clone();
+        duplicate_owner
+            .regions
+            .push(duplicate_owner.regions[0].clone());
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &duplicate_owner,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut detached_catch = recovered.clone();
+        assert!(
+            crate::region::move_ordinary_try_catch_body_to_sibling_for_test(&mut detached_catch)
+        );
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &detached_catch,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let mut nested_try = recovered.clone();
+        let Some(Region::Try { body, .. }) = nested_try
+            .regions
+            .iter_mut()
+            .find(|region| matches!(region, Region::Try { .. }))
+        else {
+            panic!("the positive fixture has a top-level ordinary try");
+        };
+        let Region::Sequence { regions } = body.as_mut() else {
+            panic!("the ordinary try owns its prefix and loop as a sequence");
+        };
+        let Some(Region::Loop { body, .. }) = regions
+            .iter_mut()
+            .find(|region| matches!(region, Region::Loop { .. }))
+        else {
+            panic!("the ordinary try has a foreach loop");
+        };
+        body.push(Region::Try {
+            prefix: Vec::new(),
+            lead: (0, 0),
+            body: Box::new(Region::Sequence {
+                regions: Vec::new(),
+            }),
+            normal_exit_bci: None,
+            catches: Vec::new(),
+            transparent: None,
+        });
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &nested_try,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none(),
+            "a nested Try cannot inherit the outer row's certificate"
+        );
+
+        let (guard_analysis, _) = analyzed(RESOURCE_GUARD, "two", "()Ljava/lang/String;", 1);
+        let guard_recovered = recovered_from_fixture(&guard_analysis);
+        let guard = guard_recovered
+            .regions
+            .iter()
+            .find(|region| matches!(region, Region::Guard { .. }))
+            .expect("the resource fixture has a real Guard region")
+            .clone();
+        let mut nested_guard = recovered.clone();
+        let Some(Region::Try { body, .. }) = nested_guard
+            .regions
+            .iter_mut()
+            .find(|region| matches!(region, Region::Try { .. }))
+        else {
+            panic!("the positive fixture has a top-level ordinary try");
+        };
+        let Region::Sequence { regions } = body.as_mut() else {
+            panic!("the ordinary try owns its prefix and loop as a sequence");
+        };
+        let Some(Region::Loop { body, .. }) = regions
+            .iter_mut()
+            .find(|region| matches!(region, Region::Loop { .. }))
+        else {
+            panic!("the ordinary try has a foreach loop");
+        };
+        body.push(guard);
+        assert!(
+            crate::region::ordinary_try_list_scope(
+                &nested_guard,
+                canonical,
+                code,
+                &mut Budget::new(limits())
+            )
+            .unwrap()
+            .is_none(),
+            "a nested Guard cannot inherit the outer row's certificate"
+        );
+
+        let row = code.exception_handlers[0].clone();
+        for (rows, count) in [
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    rows[0].catch_type_index = None;
+                    rows
+                },
+                1,
+            ),
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    rows[0].catch_type_index = Some(row.catch_type_index.unwrap().wrapping_add(1));
+                    rows
+                },
+                1,
+            ),
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    rows[0].start_bci += 1;
+                    rows
+                },
+                1,
+            ),
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    rows[0].end_bci += 1;
+                    rows
+                },
+                1,
+            ),
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    let mut other_range = row.clone();
+                    other_range.start_bci = code
+                        .instructions
+                        .iter()
+                        .find(|instruction| {
+                            instruction.bci > row.start_bci && instruction.bci < row.end_bci
+                        })
+                        .expect("the protected row spans multiple instruction boundaries")
+                        .bci;
+                    assert_ne!(other_range.start_bci, row.start_bci);
+                    rows.push(other_range);
+                    rows
+                },
+                2,
+            ),
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    let mut other_type = row.clone();
+                    other_type.catch_type_index = Some(
+                        other_type
+                            .catch_type_index
+                            .expect("the accepted row is typed")
+                            .wrapping_add(1),
+                    );
+                    rows.push(other_type);
+                    rows
+                },
+                2,
+            ),
+            (
+                {
+                    let mut rows = code.exception_handlers.clone();
+                    rows.push(row.clone());
+                    rows
+                },
+                2,
+            ),
+        ] {
+            let mutant = rebuilt_code(code, code_pairs(code), rows, count);
+            assert!(
+                crate::region::ordinary_try_list_scope(
+                    &recovered,
+                    canonical,
+                    &mutant,
+                    &mut Budget::new(limits())
+                )
+                .unwrap()
+                .is_none()
+            );
         }
     }
 }

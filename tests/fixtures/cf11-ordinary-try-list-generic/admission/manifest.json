@@ -1,0 +1,38 @@
+{
+  "schema": "jarde-ordinary-try-list-admission-inputs-v1",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.OrdinaryTryListFixture",
+      "source": "OrdinaryTryListFixture.java",
+      "bytes": 5432,
+      "sha256": "4b548725ec08c31bcbb09b31a22a3e54c74481b3e7773eb8c9fe2c66c5b155f2",
+      "candidate_methods": [
+        "renamedTry",
+        "stringBranch",
+        "integerTry",
+        "nestedTry",
+        "stringRemovePrefix",
+        "catchVisibleIteratorGap",
+        "unknownCatchUse",
+        "reassignedInCatch",
+        "rawAliasInCatch",
+        "multiCatch",
+        "indexOverload"
+      ]
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 10678,
+    "sha256": "dee1e694ee91c71806bfeea4609876d11d3331304e469300c2247ea6c2e1fd98"
+  },
+  "invariants": [
+    "compile all target classes and this complete Runner from the same source set",
+    "JDK 8 and 23 compile/run the exact same source pins",
+    "debug and debug-none are separate runs using this same manifest",
+    "collector renders Jarde default and all and retains compile failures as no-runtime"
+  ]
+}

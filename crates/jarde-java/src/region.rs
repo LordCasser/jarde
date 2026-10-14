@@ -1222,14 +1222,64 @@ fn protected_prefix_loop_shape(body: &[Region]) -> bool {
     }
 }
 
+fn contains_guard_or_nested_try(region: &Region, budget: &mut Budget) -> Result<bool, StopReason> {
+    poll(budget, None)?;
+    charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+    let mut pending = vec![region];
+    while let Some(current) = pending.pop() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        // Charge collection-backed child lists before allocating the temporary traversal vector.
+        let child_count = match current {
+            Region::Sequence { regions } | Region::Loop { body: regions, .. } => regions.len(),
+            Region::If { .. } | Region::CompoundIf { .. } => 2,
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => groups.len(),
+            Region::ShortCircuitValue { tail, .. } => tail.len(),
+            _ => 0,
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(child_count).unwrap_or(u64::MAX),
+            None,
+        )?;
+        let children: Vec<&Region> = match current {
+            Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+                regions.iter().collect()
+            }
+            Region::If {
+                then_arm, else_arm, ..
+            }
+            | Region::CompoundIf {
+                then_arm, else_arm, ..
+            } => vec![then_arm, else_arm],
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+                groups.iter().map(|group| group.arm.as_ref()).collect()
+            }
+            Region::ShortCircuitValue { tail, .. } => tail.iter().collect(),
+            Region::Guard { .. } | Region::Try { .. } => return Ok(true),
+            _ => Vec::new(),
+        };
+        for child in children {
+            poll(budget, None)?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+            pending.push(child);
+        }
+    }
+    Ok(false)
+}
+
 fn candidate_direct_items<'a>(
     region: &'a Region,
     budget: &mut Budget,
+    allow_try: bool,
+    charge_inventory: bool,
 ) -> Result<Option<(Vec<&'a CanonicalBlockId>, Vec<&'a Region>)>, StopReason> {
     fn own<'a>(
         blocks: &mut Vec<&'a CanonicalBlockId>,
         block: &'a CanonicalBlockId,
         budget: &mut Budget,
+        charge_ir_items: bool,
     ) -> Result<(), StopReason> {
         poll(budget, Some(block.bci()))?;
         charge(
@@ -1238,6 +1288,14 @@ fn candidate_direct_items<'a>(
             1,
             Some(block.bci()),
         )?;
+        if charge_ir_items {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(block.bci()),
+            )?;
+        }
         blocks.push(block);
         Ok(())
     }
@@ -1245,6 +1303,7 @@ fn candidate_direct_items<'a>(
         blocks: &mut Vec<&'a CanonicalBlockId>,
         block: &'a CanonicalBlockId,
         budget: &mut Budget,
+        charge_ir_items: bool,
     ) -> Result<(), StopReason> {
         poll(budget, Some(block.bci()))?;
         charge(
@@ -1253,6 +1312,14 @@ fn candidate_direct_items<'a>(
             1,
             Some(block.bci()),
         )?;
+        if charge_ir_items {
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(block.bci()),
+            )?;
+        }
         if !blocks.contains(&block) {
             blocks.push(block);
         }
@@ -1262,25 +1329,32 @@ fn candidate_direct_items<'a>(
         children: &mut Vec<&'a Region>,
         region: &'a Region,
         budget: &mut Budget,
+        charge_ir_items: bool,
     ) -> Result<(), StopReason> {
         poll(budget, None)?;
         charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        if charge_ir_items {
+            charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+        }
         children.push(region);
         Ok(())
     }
 
     charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+    if charge_inventory {
+        charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+    }
     let mut blocks = Vec::new();
     let mut children = Vec::new();
     match region {
         Region::Sequence { regions } => {
             for region in regions {
-                child(&mut children, region, budget)?;
+                child(&mut children, region, budget, charge_inventory)?;
             }
         }
         Region::Straight { blocks: owned } => {
             for block in owned {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
         }
         Region::If {
@@ -1291,11 +1365,11 @@ fn candidate_direct_items<'a>(
             ..
         } => {
             for block in prefix {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
-            own(&mut blocks, branch, budget)?;
-            child(&mut children, then_arm, budget)?;
-            child(&mut children, else_arm, budget)?;
+            own(&mut blocks, branch, budget, charge_inventory)?;
+            child(&mut children, then_arm, budget, charge_inventory)?;
+            child(&mut children, else_arm, budget, charge_inventory)?;
         }
         Region::CompoundIf {
             prefix,
@@ -1305,13 +1379,13 @@ fn candidate_direct_items<'a>(
             ..
         } => {
             for block in prefix {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
             for test in tests {
-                own(&mut blocks, &test.block, budget)?;
+                own(&mut blocks, &test.block, budget, charge_inventory)?;
             }
-            child(&mut children, then_arm, budget)?;
-            child(&mut children, else_arm, budget)?;
+            child(&mut children, then_arm, budget, charge_inventory)?;
+            child(&mut children, else_arm, budget, charge_inventory)?;
         }
         Region::ShortCircuitValue {
             prefix,
@@ -1328,23 +1402,23 @@ fn candidate_direct_items<'a>(
                 return Ok(None);
             }
             for block in prefix {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
             for block in tests
                 .iter()
                 .map(|(block, _)| block)
                 .chain(gateways.iter().map(|(block, _)| block))
             {
-                own_once(&mut blocks, block, budget)?;
+                own_once(&mut blocks, block, budget, charge_inventory)?;
             }
             for block in [true_producer, false_producer] {
-                own_once(&mut blocks, block, budget)?;
+                own_once(&mut blocks, block, budget, charge_inventory)?;
             }
             if tail.is_empty() {
-                own_once(&mut blocks, consumer, budget)?;
+                own_once(&mut blocks, consumer, budget, charge_inventory)?;
             }
             for region in tail {
-                child(&mut children, region, budget)?;
+                child(&mut children, region, budget, charge_inventory)?;
             }
         }
         Region::TwoExitReturn {
@@ -1356,17 +1430,17 @@ fn candidate_direct_items<'a>(
             ..
         } => {
             for block in prefix {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
             for block in tests
                 .iter()
                 .map(|(block, _)| block)
                 .chain(gateways.iter().map(|(block, _)| block))
             {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
-            own(&mut blocks, true_return, budget)?;
-            own(&mut blocks, false_return, budget)?;
+            own(&mut blocks, true_return, budget, charge_inventory)?;
+            own(&mut blocks, false_return, budget, charge_inventory)?;
         }
         Region::SharedTailEarlyReturn {
             prefix,
@@ -1375,12 +1449,12 @@ fn candidate_direct_items<'a>(
             ..
         } => {
             for block in prefix {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
             for (block, _) in tests {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
-            own(&mut blocks, return_block, budget)?;
+            own(&mut blocks, return_block, budget, charge_inventory)?;
         }
         Region::Switch {
             prefix,
@@ -1389,21 +1463,21 @@ fn candidate_direct_items<'a>(
             ..
         } => {
             for block in prefix {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
-            own(&mut blocks, branch, budget)?;
+            own(&mut blocks, branch, budget, charge_inventory)?;
             for group in groups {
-                child(&mut children, &group.arm, budget)?;
+                child(&mut children, &group.arm, budget, charge_inventory)?;
             }
         }
         Region::StringSwitch {
             dispatch, groups, ..
         } => {
             for block in dispatch {
-                own(&mut blocks, block, budget)?;
+                own(&mut blocks, block, budget, charge_inventory)?;
             }
             for group in groups {
-                child(&mut children, &group.arm, budget)?;
+                child(&mut children, &group.arm, budget, charge_inventory)?;
             }
         }
         Region::Loop {
@@ -1414,12 +1488,30 @@ fn candidate_direct_items<'a>(
         } => {
             // The caller applies Region::blocks' body-ownership rule after finding all blocks
             // referenced in this loop's body. This raw list supports that bounded membership pass.
-            own(&mut blocks, header, budget)?;
+            own(&mut blocks, header, budget, charge_inventory)?;
             for (test, _, _) in tests {
-                own(&mut blocks, test, budget)?;
+                own(&mut blocks, test, budget, charge_inventory)?;
             }
             for region in body {
-                child(&mut children, region, budget)?;
+                child(&mut children, region, budget, charge_inventory)?;
+            }
+        }
+        Region::Try {
+            prefix,
+            body,
+            catches,
+            transparent,
+            ..
+        } if allow_try => {
+            for block in prefix {
+                own(&mut blocks, block, budget, charge_inventory)?;
+            }
+            child(&mut children, body, budget, charge_inventory)?;
+            for clause in catches {
+                child(&mut children, &clause.body, budget, charge_inventory)?;
+            }
+            if let Some(proof) = transparent {
+                own(&mut blocks, &proof.block, budget, charge_inventory)?;
             }
         }
         Region::Fallback { .. } | Region::Guard { .. } | Region::Try { .. } => return Ok(None),
@@ -1428,9 +1520,131 @@ fn candidate_direct_items<'a>(
     Ok(Some((blocks, children)))
 }
 
+fn candidate_region_owner_counts(
+    regions: &[Region],
+    budget: &mut Budget,
+    allow_try: bool,
+    charge_inventory: bool,
+) -> Result<Option<BTreeMap<CanonicalBlockId, usize>>, StopReason> {
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(regions.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    if charge_inventory {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(regions.len()).unwrap_or(u64::MAX),
+            None,
+        )?;
+    }
+    let mut pending = Vec::new();
+    for region in regions {
+        poll(budget, None)?;
+        pending.push(region);
+    }
+    let mut mentions = BTreeMap::<CanonicalBlockId, usize>::new();
+    while let Some(region) = pending.pop() {
+        poll(budget, None)?;
+        let Some((mut blocks, children)) =
+            candidate_direct_items(region, budget, allow_try, charge_inventory)?
+        else {
+            return Ok(None);
+        };
+        if !candidate_loop_direct_items(region, &mut blocks, budget, charge_inventory)? {
+            return Ok(None);
+        }
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(blocks.len()).unwrap_or(u64::MAX),
+            blocks.first().map(|block| block.bci()),
+        )?;
+        for block in blocks {
+            poll(budget, Some(block.bci()))?;
+            if charge_inventory {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(block.path().len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_add(1),
+                    Some(block.bci()),
+                )?;
+            }
+            let count = mentions.entry(block.clone()).or_default();
+            *count = count.saturating_add(1);
+        }
+        for child in children.into_iter().rev() {
+            poll(budget, None)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+            if charge_inventory {
+                charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+            }
+            pending.push(child);
+        }
+    }
+    Ok(Some(mentions))
+}
+
+fn candidate_loop_direct_items<'a>(
+    region: &'a Region,
+    direct: &mut Vec<&'a CanonicalBlockId>,
+    budget: &mut Budget,
+    charge_inventory: bool,
+) -> Result<bool, StopReason> {
+    let Region::Loop {
+        header,
+        tests,
+        form,
+        body,
+        ..
+    } = region
+    else {
+        return Ok(true);
+    };
+    // Match Region::blocks' ownership semantics: a do/while header may be owned by the body,
+    // and a while header is also the first test block. Count that physical owner once while
+    // retaining genuine duplicates across sibling/nested regions.
+    let body_mentions = if *form == LoopForm::While {
+        BTreeSet::new()
+    } else {
+        let Some(body_mentions) = candidate_region_mentions(body, budget, false, charge_inventory)?
+        else {
+            return Ok(false);
+        };
+        body_mentions
+    };
+    let body_owns = |block: &CanonicalBlockId| body_mentions.contains(block);
+    if charge_inventory {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(tests.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(1),
+            Some(header.bci()),
+        )?;
+    }
+    direct.clear();
+    if !body_owns(header) {
+        direct.push(header);
+    }
+    for (test, _, _) in tests {
+        if test != header && !body_owns(test) {
+            direct.push(test);
+        }
+    }
+    Ok(true)
+}
+
 fn candidate_region_mentions(
     regions: &[Region],
     budget: &mut Budget,
+    allow_try: bool,
+    charge_inventory: bool,
 ) -> Result<Option<BTreeSet<CanonicalBlockId>>, StopReason> {
     charge(
         budget,
@@ -1438,6 +1652,14 @@ fn candidate_region_mentions(
         u64::try_from(regions.len()).unwrap_or(u64::MAX),
         None,
     )?;
+    if charge_inventory {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(regions.len()).unwrap_or(u64::MAX),
+            None,
+        )?;
+    }
     let mut pending = Vec::new();
     for region in regions {
         poll(budget, None)?;
@@ -1446,7 +1668,9 @@ fn candidate_region_mentions(
     let mut mentions = BTreeSet::new();
     while let Some(region) = pending.pop() {
         poll(budget, None)?;
-        let Some((blocks, children)) = candidate_direct_items(region, budget)? else {
+        let Some((blocks, children)) =
+            candidate_direct_items(region, budget, allow_try, charge_inventory)?
+        else {
             return Ok(None);
         };
         charge(
@@ -1457,54 +1681,53 @@ fn candidate_region_mentions(
         )?;
         for block in blocks {
             poll(budget, Some(block.bci()))?;
+            if charge_inventory {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(block.path().len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_add(1),
+                    Some(block.bci()),
+                )?;
+            }
             mentions.insert(block.clone());
         }
         for child in children.into_iter().rev() {
             poll(budget, None)?;
             charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+            if charge_inventory {
+                charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+            }
             pending.push(child);
         }
     }
     Ok(Some(mentions))
 }
 
-fn candidate_region_blocks(
+pub(crate) fn candidate_region_blocks(
     region: &Region,
     budget: &mut Budget,
+    charge_inventory: bool,
 ) -> Result<Option<Vec<CanonicalBlockId>>, StopReason> {
     charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+    if charge_inventory {
+        charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+    }
     let mut pending = vec![region];
     let mut blocks = Vec::new();
     while let Some(region) = pending.pop() {
         poll(budget, None)?;
-        let Some((mut direct, children)) = candidate_direct_items(region, budget)? else {
+        let Some((mut direct, children)) =
+            candidate_direct_items(region, budget, false, charge_inventory)?
+        else {
             return Ok(None);
         };
-        if let Region::Loop {
-            header,
-            tests,
-            form,
-            body,
-            ..
-        } = region
-        {
-            let Some(body_mentions) = candidate_region_mentions(body, budget)? else {
-                return Ok(None);
-            };
-            let body_owns = |block: &CanonicalBlockId| {
-                *form != LoopForm::While && body_mentions.contains(block)
-            };
-            direct.clear();
-            if !body_owns(header) {
-                direct.push(header);
-            }
-            for (test, _, _) in tests {
-                if test != header && !body_owns(test) {
-                    direct.push(test);
-                }
-            }
-            // `children` is the loop body in execution order; `direct` is its header/test prefix.
+        if !candidate_loop_direct_items(region, &mut direct, budget, charge_inventory)? {
+            return Ok(None);
         }
+        // For loops, `children` is the body in execution order and `direct` is the normalized
+        // header/test prefix. The same ownership rule also feeds the try-scope multiplicity check.
         charge(
             budget,
             CountedBudgetDimension::AnalysisSteps,
@@ -1513,15 +1736,246 @@ fn candidate_region_blocks(
         )?;
         for block in direct {
             poll(budget, Some(block.bci()))?;
+            if charge_inventory {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(block.path().len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_add(1),
+                    Some(block.bci()),
+                )?;
+            }
             blocks.push(block.clone());
         }
         for child in children.into_iter().rev() {
             poll(budget, None)?;
             charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+            if charge_inventory {
+                charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+            }
             pending.push(child);
         }
     }
     Ok(Some(blocks))
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct OrdinaryTryListScope {
+    pub ordinal: u32,
+    pub catch_type_index: u16,
+    pub handler_bci: u32,
+    pub start_bci: u32,
+    pub end_bci: u32,
+}
+
+/// Certify the one ordinary named-catch row whose protected prefix and foreach loop may enter the
+/// complete physical List census. The returned range remains method-local and is rechecked against
+/// Code and effects by the report layer.
+pub(crate) fn ordinary_try_list_scope(
+    recovered: &Recovered,
+    canonical: &CanonicalCfg,
+    code: &MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<Option<OrdinaryTryListScope>, StopReason> {
+    if code.stopped_at.is_some()
+        || code.exception_handler_count as usize != code.exception_handlers.len()
+        || code.exception_handlers.len() != 1
+        || !recovered.is_structured()
+        || recovered.blocks != canonical.blocks().len()
+    {
+        return Ok(None);
+    }
+    let Some(owner_counts) = candidate_region_owner_counts(&recovered.regions, budget, true, true)?
+    else {
+        return Ok(None);
+    };
+    if owner_counts.len() != canonical.blocks().len()
+        || recovered.claimed.len() != canonical.blocks().len()
+        || owner_counts.len() != recovered.claimed.len()
+        || owner_counts.values().any(|count| *count != 1)
+    {
+        return Ok(None);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical.blocks().len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    for (index, block) in canonical.blocks().iter().enumerate() {
+        poll(budget, Some(block.id().bci()))?;
+        let in_regions = owner_counts.contains_key(block.id());
+        if in_regions != recovered.claimed.contains(&index) {
+            return Ok(None);
+        }
+    }
+
+    let mut found = None;
+    for region in &recovered.regions {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        if matches!(region, Region::Try { .. }) {
+            if found.replace(region).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+    let Some(Region::Try {
+        lead,
+        body,
+        catches,
+        transparent: None,
+        ..
+    }) = found
+    else {
+        return Ok(None);
+    };
+    let Region::Sequence {
+        regions: body_regions,
+    } = body.as_ref()
+    else {
+        return Ok(None);
+    };
+    if !protected_prefix_loop_shape(body_regions) || catches.len() != 1 {
+        return Ok(None);
+    }
+    for nested in body_regions
+        .iter()
+        .chain(catches.iter().map(|clause| clause.body.as_ref()))
+    {
+        if contains_guard_or_nested_try(nested, budget)? {
+            return Ok(None);
+        }
+    }
+    let clause = &catches[0];
+    let crate::guard::CatchTypes::Named(types) = &clause.types else {
+        return Ok(None);
+    };
+    let [catch_type_index] = types.as_slice() else {
+        return Ok(None);
+    };
+    let [row] = code.exception_handlers.as_slice() else {
+        return Ok(None);
+    };
+    if row.catch_type_index != Some(*catch_type_index)
+        || row.handler_bci != clause.handler.bci()
+        || row.start_bci != lead.1
+        || row.start_bci >= row.end_bci
+    {
+        return Ok(None);
+    }
+    let mut matching_rows = canonical
+        .handler_rows()
+        .iter()
+        .filter(|candidate| candidate.ordinal() == row.ordinal);
+    let Some(canonical_row) = matching_rows.next() else {
+        return Ok(None);
+    };
+    if matching_rows.next().is_some()
+        || canonical_row.catch_type_index() != row.catch_type_index
+        || canonical_row.handler_bci() != row.handler_bci
+        || canonical_row
+            .handler()
+            .is_none_or(|handler| handler != &clause.handler)
+    {
+        return Ok(None);
+    }
+
+    let Some(body_owners) = candidate_region_mentions(body_regions, budget, false, true)? else {
+        return Ok(None);
+    };
+    let Some(catch_owners) = candidate_region_mentions(
+        std::slice::from_ref(clause.body.as_ref()),
+        budget,
+        false,
+        true,
+    )?
+    else {
+        return Ok(None);
+    };
+    if !catch_owners.contains(&clause.handler)
+        || catch_owners.iter().any(|owner| body_owners.contains(owner))
+    {
+        return Ok(None);
+    }
+    let mut row_owners = BTreeSet::new();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical_row.protected().len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(u64::try_from(canonical.blocks().len()).unwrap_or(u64::MAX)),
+        Some(row.start_bci),
+    )?;
+    for protected in canonical_row.protected() {
+        poll(budget, Some(protected.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(protected.path().len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(1),
+            Some(protected.bci()),
+        )?;
+        if !row_owners.insert(protected.clone()) || !body_owners.contains(protected) {
+            return Ok(None);
+        }
+    }
+
+    // Region owners must cover exactly the byte interval the raw row protects. A shared block may
+    // begin before the protected prefix (the Try's `lead`), but its physical span must intersect
+    // the row; the final owned block must end at the row's exclusive boundary.
+    let mut body_end_bci = None::<u32>;
+    for block in canonical.blocks() {
+        poll(budget, Some(block.id().bci()))?;
+        let id = block.id();
+        let body_owned = body_owners.contains(id);
+        let overlaps_range = id.bci() < row.end_bci && row.start_bci < block.end_bci();
+        if body_owned != overlaps_range {
+            return Ok(None);
+        }
+        if body_owned {
+            if block.end_bci() > row.end_bci {
+                return Ok(None);
+            }
+            body_end_bci =
+                Some(body_end_bci.map_or(block.end_bci(), |end| end.max(block.end_bci())));
+        }
+    }
+    if body_end_bci != Some(row.end_bci) {
+        return Ok(None);
+    }
+    Ok(Some(OrdinaryTryListScope {
+        ordinal: row.ordinal,
+        catch_type_index: *catch_type_index,
+        handler_bci: row.handler_bci,
+        start_bci: row.start_bci,
+        end_bci: row.end_bci,
+    }))
+}
+
+#[cfg(test)]
+pub(crate) fn move_ordinary_try_catch_body_to_sibling_for_test(recovered: &mut Recovered) -> bool {
+    let Some(index) = recovered
+        .regions
+        .iter()
+        .position(|region| matches!(region, Region::Try { .. }))
+    else {
+        return false;
+    };
+    let Region::Try { catches, .. } = &mut recovered.regions[index] else {
+        unreachable!();
+    };
+    let Some(clause) = catches.first_mut() else {
+        return false;
+    };
+    let detached = std::mem::replace(
+        &mut clause.body,
+        Box::new(Region::Straight { blocks: Vec::new() }),
+    );
+    recovered.regions.push(*detached);
+    true
 }
 
 /// Bind one ordinary named-catch `Catches` shape to its exact immutable physical rows.
@@ -8360,7 +8814,7 @@ impl Walker<'_> {
                                 return Ok(None);
                             }
                             let Some(child_blocks) =
-                                candidate_region_blocks(&loop_run[0], self.budget)?
+                                candidate_region_blocks(&loop_run[0], self.budget, false)?
                             else {
                                 return Ok(None);
                             };

@@ -123,7 +123,10 @@ pub(crate) fn charge(
         // budget would name a limit that did not stop it.
         return Err(StopReason::Cancelled { at });
     }
-    if budget.charge(dimension, requested).is_err() {
+    if let Err(error) = budget.charge(dimension, requested) {
+        if matches!(error, jarde_reader::error::Error::Cancelled { .. }) {
+            return Err(StopReason::Cancelled { at });
+        }
         let limit = budget.limits().counted_limit(dimension);
         return Err(StopReason::Budget {
             dimension,
@@ -141,7 +144,10 @@ pub(crate) fn poll(budget: &Budget, at: Option<u32>) -> Result<(), StopReason> {
     if budget.cancellation_token().is_cancelled() {
         return Err(StopReason::Cancelled { at });
     }
-    if budget.poll().is_err() {
+    if let Err(error) = budget.poll() {
+        if matches!(error, jarde_reader::error::Error::Cancelled { .. }) {
+            return Err(StopReason::Cancelled { at });
+        }
         return Err(StopReason::Interrupted {
             code: BUDGET_INTERRUPTED_CODE,
             at,
@@ -154,6 +160,67 @@ pub(crate) fn poll(budget: &Budget, at: Option<u32>) -> Result<(), StopReason> {
 mod tests {
     use super::*;
     use jarde_reader::budget::{CancellationToken, Limits};
+    use jarde_reader::ledger::{
+        LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+    };
+    use std::sync::Arc;
+
+    #[derive(Debug)]
+    struct CancelAtCheckpoint(CancellationToken);
+
+    impl LedgerObserver for CancelAtCheckpoint {
+        fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+            if site == LedgerSite::Checkpoint {
+                self.0.cancel();
+            }
+        }
+
+        fn refusal(
+            &self,
+            _site: LedgerSite,
+            _dimension: Option<jarde_reader::budget::BudgetDimension>,
+        ) {
+        }
+    }
+
+    fn checkpoint_cancelled_budget() -> Budget {
+        let token = CancellationToken::new();
+        let mut budget = Budget::with_cancellation_token(
+            Limits {
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            token.clone(),
+        );
+        let ledger =
+            OperationLedger::new(&budget).with_observer(Arc::new(CancelAtCheckpoint(token)));
+        budget.with_ledger(ledger, UsageOwner::Methods);
+        budget
+    }
+
+    #[test]
+    fn cancellation_inside_budget_poll_keeps_the_cancelled_reason() {
+        let budget = checkpoint_cancelled_budget();
+        assert_eq!(
+            poll(&budget, Some(17)),
+            Err(StopReason::Cancelled { at: Some(17) })
+        );
+    }
+
+    #[test]
+    fn cancellation_inside_budget_charge_keeps_the_cancelled_reason() {
+        let mut budget = checkpoint_cancelled_budget();
+        assert_eq!(
+            charge(
+                &mut budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(19)
+            ),
+            Err(StopReason::Cancelled { at: Some(19) }),
+        );
+        assert_eq!(budget.usage().analysis_steps, 0);
+    }
 
     #[test]
     fn a_refused_charge_names_the_bound_it_refused_on() {
