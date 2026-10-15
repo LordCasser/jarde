@@ -162,7 +162,10 @@ pub struct CanonicalBlock {
     /// One `MethodPoint` member per entry of [`Self::blocks`]: a clone keeps **every** original
     /// BCI it stands for, in that order.
     pub(crate) origin: OriginSet,
-    /// Exception-table ordinals whose protected range covers this node, in declaration order.
+    /// Exception-table ordinals protecting an instruction of any real member of this node,
+    /// in declaration order. A fused node may be protected only in part; its envelope can
+    /// include gaps that are not members. This is physical range coverage, not the handler
+    /// rows or throwing effects used to decide exception inputs.
     /// The protected ranges of the table are mapped to the clone they were mapped for, because
     /// the node carries the path.
     pub(crate) protected: Vec<u32>,
@@ -189,7 +192,10 @@ impl CanonicalBlock {
         &self.origin
     }
 
-    /// Exception-table ordinals whose protected range covers this node, in declaration order.
+    /// Exception-table ordinals protecting an instruction of any real member of this node,
+    /// in declaration order. A fused node may be protected only in part; its envelope can
+    /// include gaps that are not members. This is physical range coverage, not the handler
+    /// rows or throwing effects used to decide exception inputs.
     pub fn protected(&self) -> &[u32] {
         &self.protected
     }
@@ -509,7 +515,10 @@ impl CanonicalCfg {
 /// `IrItems` before adding each covered identity to its retained seen and worklist slots, plus
 /// `AnalysisSteps` for edge-shape checks, worklist pops, edge examinations and clone checks. The
 /// fusion moves origin members and remapping rewrites existing records in place, so neither
-/// charges a second item.
+/// charges a second item. Each created node also pays one `AnalysisSteps` per physical handler
+/// scanned and one `IrItems` per intersecting ordinal before storing it. Fusion moves that
+/// storage, billing ordinal moves, comparisons and insertion shifts as `AnalysisSteps`;
+/// assembly consumes the already paid-for member and ordinal vectors.
 pub(crate) fn canonical_cfg(
     facts: &MethodCodeFacts,
     raw: &RawCfgOutcome,
@@ -669,8 +678,9 @@ impl CloneState<'_> {
     /// Creates the node for one identity, or reports that it already exists.
     ///
     /// The charge is made **before** the node exists: one `NormalizationClones` for a clone node
-    /// and one `IrItems` for the block together with the origin member its own BCI contributes. An
-    /// identity that already has a node is neither created nor charged twice.
+    /// and two `IrItems` for the block and the origin member its own BCI contributes. Each
+    /// physical handler scan costs one step; each intersecting ordinal costs one item before
+    /// insertion. An identity that already has a node is neither created nor charged twice.
     fn create(
         &mut self,
         id: CanonicalBlockId,
@@ -691,12 +701,20 @@ impl CloneState<'_> {
             self.clones += 1;
         }
         budget.charge(CountedBudgetDimension::IrItems, 2)?;
+        let mut protected = Vec::new();
+        for handler in &self.cfg.handlers {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if block.bci < handler.end_bci && handler.start_bci < block.end_bci {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                protected.push(handler.ordinal);
+            }
+        }
         self.index_of.insert(id.clone(), self.drafts.len());
         self.drafts.push(Draft {
             id,
             blocks: vec![block.bci],
             end_bci: block.end_bci,
-            protected: Vec::new(),
+            protected,
         });
         Ok(true)
     }
@@ -1257,12 +1275,12 @@ fn fuse(
             fused_edges.insert(edge_index);
             owner.insert(to.clone(), head.clone());
             let tail = drafts
-                .iter()
+                .iter_mut()
                 .find(|draft| draft.id == *to)
                 .expect("a node the edge names");
-            let mut merged = tail.blocks.clone();
+            let mut merged = std::mem::take(&mut tail.blocks);
             let end_bci = tail.end_bci;
-            let protected = tail.protected.clone();
+            let protected = std::mem::take(&mut tail.protected);
             let head_draft = drafts
                 .iter_mut()
                 .find(|draft| draft.id == head)
@@ -1272,11 +1290,31 @@ fn fuse(
             head_draft.blocks.dedup();
             head_draft.end_bci = end_bci;
             for ordinal in protected {
-                if !head_draft.protected.contains(&ordinal) {
-                    head_draft.protected.push(ordinal);
+                // The tail's storage was paid for at creation. Move each ordinal into the
+                // ordered union, billing the actual work before comparing or shifting.
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                let mut position = 0;
+                let mut duplicate = false;
+                while position < head_draft.protected.len() {
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    match head_draft.protected[position].cmp(&ordinal) {
+                        std::cmp::Ordering::Equal => {
+                            duplicate = true;
+                            break;
+                        }
+                        std::cmp::Ordering::Greater => break,
+                        std::cmp::Ordering::Less => position += 1,
+                    }
+                }
+                if !duplicate {
+                    let shifted = head_draft.protected.len() - position;
+                    budget.charge(
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(shifted).expect("a vector length fits u64"),
+                    )?;
+                    head_draft.protected.insert(position, ordinal);
                 }
             }
-            head_draft.protected.sort_unstable();
             let tail_out = outgoing.get(to).cloned().unwrap_or_default();
             outgoing.insert(head.clone(), tail_out);
             outgoing.remove(to);
@@ -1305,14 +1343,9 @@ fn fuse(
         owner.insert(id.clone(), head);
     }
     let mut fused = Vec::new();
-    for draft in &drafts {
-        if owner.get(&draft.id).cloned() == Some(draft.id.clone()) {
-            fused.push(Draft {
-                id: draft.id.clone(),
-                blocks: draft.blocks.clone(),
-                end_bci: draft.end_bci,
-                protected: draft.protected.clone(),
-            });
+    for draft in drafts {
+        if owner.get(&draft.id) == Some(&draft.id) {
+            fused.push(draft);
         }
     }
     let edges = edges
@@ -1489,16 +1522,14 @@ fn assemble(
 ) -> std::result::Result<CanonicalCfg, Norm> {
     let _ = (facts, method);
     let mut blocks = Vec::with_capacity(drafts.len());
-    for draft in &drafts {
-        let mut protected = draft.protected.clone();
-        protected.sort_unstable();
-        protected.dedup();
+    for draft in drafts {
+        let origin = origin_of(&draft.blocks, method);
         blocks.push(CanonicalBlock {
-            id: draft.id.clone(),
-            blocks: draft.blocks.clone(),
+            id: draft.id,
+            blocks: draft.blocks,
             end_bci: draft.end_bci,
-            origin: origin_of(&draft.blocks, method),
-            protected,
+            origin,
+            protected: draft.protected,
         });
     }
     let ids: BTreeSet<CanonicalBlockId> = blocks.iter().map(|block| block.id.clone()).collect();
@@ -1758,7 +1789,10 @@ mod tests {
         match canonical_cfg(facts, &raw, &contexts, &method(), &mut budget())
             .expect("the budget is ample")
         {
-            CanonicalOutcome::Canonical(graph) => *graph,
+            CanonicalOutcome::Canonical(graph) => {
+                assert_protection(&raw, &graph);
+                *graph
+            }
             CanonicalOutcome::Fallback { message } => {
                 panic!("the fixture must normalize, but stopped: {message}")
             }
@@ -1801,6 +1835,7 @@ mod tests {
                 panic!("the historical fixture must normalize, but stopped: {message}")
             }
         };
+        assert_protection(&raw, &graph);
         (facts, method, graph)
     }
 
@@ -3300,5 +3335,415 @@ mod tests {
         );
         assert_eq!(graph.handler_rows[0].handler, Some(coverage_id(7, &[0])));
         assert_eq!(graph.handler_rows[0].protected, vec![coverage_id(4, &[0])]);
+    }
+    /// Independent oracle over actual raw members, including nodes with no SSA payload.
+    fn assert_protection(raw: &RawCfgOutcome, graph: &CanonicalCfg) {
+        for block in &graph.blocks {
+            let expected: Vec<u32> = raw
+                .cfg
+                .handlers
+                .iter()
+                .filter(|handler| {
+                    block.blocks.iter().any(|bci| {
+                        let member = raw
+                            .cfg
+                            .blocks
+                            .iter()
+                            .find(|member| member.bci == *bci)
+                            .expect("each member is a real raw block");
+                        member.bci < handler.end_bci && handler.start_bci < member.end_bci
+                    })
+                })
+                .map(|handler| handler.ordinal)
+                .collect();
+            assert_eq!(block.protected, expected, "real members of {:?}", block.id);
+            assert_eq!(block.origin_bcis(), block.blocks);
+        }
+        if !raw.cfg.handlers.is_empty() {
+            assert!(
+                graph.blocks.iter().any(|block| !block.protected.is_empty()),
+                "a physical protected instruction has a published range fact"
+            );
+        }
+    }
+
+    fn goto(bci: u32, target: u32) -> (InstructionFact, InstructionOperands) {
+        instruction(
+            bci,
+            0xa7,
+            3,
+            InstructionOperands {
+                branch_offset: Some(i32::try_from(target).unwrap() - i32::try_from(bci).unwrap()),
+                ..operands(0xa7)
+            },
+        )
+    }
+
+    #[test]
+    fn physical_ranges_include_nonthrowing_members_and_keep_edge_owners_separate() {
+        let facts = body(
+            vec![
+                plain(0, 0x03),
+                instruction(
+                    1,
+                    0x99,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(4),
+                        ..operands(0x99)
+                    },
+                ),
+                plain(4, 0xb1),
+                plain(5, 0x03),
+                plain(6, 0x6c),
+                plain(7, 0xb1),
+                plain(8, 0xbf),
+            ],
+            vec![catch(0, 0, 7, 8, None)],
+            9,
+        );
+        let graph = normalize(&facts);
+        let nonthrowing = nodes_at(&graph, 0)[0];
+        assert_eq!(nonthrowing.protected, vec![0]);
+        assert!(
+            !graph.handler_rows[0].protected.contains(&nonthrowing.id),
+            "the row owns only the actual throwing block"
+        );
+        assert_eq!(graph.handler_rows[0].protected, vec![coverage_id(5, &[])]);
+        assert_eq!(
+            graph
+                .throw_sites
+                .iter()
+                .map(|site| site.bci)
+                .collect::<Vec<_>>(),
+            vec![6, 8]
+        );
+    }
+
+    #[test]
+    fn half_open_midblock_overlaps_catchall_and_repeated_handler_rows_are_physical() {
+        let facts = body(
+            vec![
+                plain(0, 0x00),
+                plain(1, 0x00),
+                plain(2, 0x00),
+                plain(3, 0xb1),
+                plain(4, 0xbf),
+            ],
+            vec![
+                catch(0, 1, 2, 4, None),
+                catch(1, 2, 4, 4, Some(1)),
+                catch(2, 1, 4, 4, None),
+                catch(3, 4, 5, 4, None),
+            ],
+            5,
+        );
+        let graph = normalize(&facts);
+        assert_eq!(nodes_at(&graph, 0)[0].protected, vec![0, 1, 2]);
+        assert_eq!(
+            nodes_at(&graph, 4)[0].protected,
+            vec![3],
+            "the endpoint at BCI 4 belongs only to the range beginning there"
+        );
+        assert_eq!(
+            graph
+                .handler_rows
+                .iter()
+                .map(|row| row.ordinal)
+                .collect::<Vec<_>>(),
+            vec![0, 1, 2, 3],
+            "rows sharing a handler retain separate ordinals"
+        );
+    }
+
+    #[test]
+    fn fusion_uses_real_members_and_excludes_a_skipped_protected_gap() {
+        let partial = body(
+            vec![
+                goto(0, 4),
+                plain(3, 0xb1),
+                plain(4, 0x00),
+                plain(5, 0xb1),
+                plain(6, 0xbf),
+            ],
+            vec![catch(0, 4, 5, 6, None)],
+            7,
+        );
+        let graph = normalize(&partial);
+        assert_eq!(nodes_at(&graph, 0)[0].blocks, vec![0, 4]);
+        assert_eq!(nodes_at(&graph, 0)[0].protected, vec![0]);
+        let gap = body(
+            vec![
+                goto(0, 10),
+                jsr(3, 4),
+                plain(6, 0xb1),
+                astore(7, 0),
+                ret(8, 0),
+                plain(10, 0xb1),
+                plain(11, 0xbf),
+            ],
+            vec![catch(0, 3, 6, 11, None)],
+            12,
+        );
+        let graph = normalize(&gap);
+        assert_eq!(nodes_at(&graph, 0)[0].blocks, vec![0, 10]);
+        assert!(nodes_at(&graph, 0)[0].protected.is_empty());
+        assert_eq!(nodes_at(&graph, 3)[0].protected, vec![0]);
+        assert!(graph.unreachable.contains(&coverage_id(3, &[])));
+    }
+
+    #[test]
+    fn protected_shared_nested_and_dead_clones_keep_their_call_paths() {
+        // Synthetic decoded facts test normalization, not JVM verifier acceptance.
+        let facts = body(
+            vec![
+                jsr(0, 7),
+                jsr(3, 4),
+                plain(6, 0xb1),
+                astore(7, 0),
+                jsr(8, 5),
+                ret(11, 0),
+                astore(13, 1),
+                goto(14, 17),
+                ret(17, 1),
+                plain(19, 0xbf),
+            ],
+            vec![catch(0, 17, 19, 19, None)],
+            20,
+        );
+        let graph = normalize(&facts);
+        for path in [&[0, 8][..], &[3, 8][..]] {
+            let node = graph
+                .blocks
+                .iter()
+                .find(|node| node.id.bci == 13 && node.id.path == path)
+                .expect("nested clone");
+            assert_eq!(node.protected, vec![0]);
+            assert!(graph.handler_rows.iter().any(
+                |row| row.ordinal == 0 && row.protected.iter().all(|block| block.path == path)
+            ));
+        }
+        let dead = body(
+            vec![
+                goto(0, 6),
+                jsr(3, 4),
+                plain(6, 0xb1),
+                astore(7, 0),
+                goto(8, 11),
+                ret(11, 0),
+                plain(13, 0xbf),
+            ],
+            vec![catch(0, 11, 13, 13, None)],
+            14,
+        );
+        let graph = normalize(&dead);
+        let clone = graph
+            .blocks
+            .iter()
+            .find(|block| block.id == coverage_id(7, &[3]))
+            .expect("dead clone remains published");
+        assert_eq!(clone.protected, vec![0]);
+        assert!(graph.unreachable.contains(&clone.id));
+        assert!(
+            graph
+                .handler_rows
+                .iter()
+                .any(|row| row.protected.iter().any(|block| block.path == vec![3]))
+        );
+    }
+
+    fn create_state(cfg: &crate::cfg::RawCfg) -> CloneState<'_> {
+        CloneState {
+            cfg,
+            contexts_of: BTreeMap::new(),
+            returns_of: BTreeMap::new(),
+            block_ends: BTreeMap::new(),
+            transfers: Transfers {
+                by_block: BTreeMap::new(),
+            },
+            drafts: Vec::new(),
+            index_of: BTreeMap::new(),
+            edges: Vec::new(),
+            clones: 0,
+        }
+    }
+
+    #[test]
+    fn range_scans_and_ordinals_are_charged_before_create_growth() {
+        let facts = body(
+            vec![plain(0, 0x00), plain(1, 0xb1), plain(2, 0xbf)],
+            vec![
+                catch(0, 0, 2, 2, None),
+                catch(1, 0, 1, 2, Some(1)),
+                catch(2, 1, 2, 2, None),
+            ],
+            3,
+        );
+        let raw = raw_of(&facts);
+        let mut exact = budget();
+        let mut state = create_state(&raw.cfg);
+        assert!(state.create(coverage_id(0, &[]), &mut exact).unwrap());
+        assert_eq!(exact.usage().ir_items, 5);
+        assert_eq!(exact.usage().analysis_steps, 3);
+        assert_eq!(state.drafts[0].protected, vec![0, 1, 2]);
+        for (dimension, limit, consumed) in [
+            (CountedBudgetDimension::IrItems, 4, 4),
+            (CountedBudgetDimension::AnalysisSteps, 2, 2),
+        ] {
+            let mut exact = Budget::new(limits_bounded(dimension, limit + 1));
+            assert!(
+                create_state(&raw.cfg)
+                    .create(coverage_id(0, &[]), &mut exact)
+                    .unwrap()
+            );
+            let mut short = Budget::new(limits_bounded(dimension, limit));
+            let mut state = create_state(&raw.cfg);
+            match state.create(coverage_id(0, &[]), &mut short) {
+                Err(Norm::Halted(Error::BudgetExceeded {
+                    dimension: actual,
+                    limit: actual_limit,
+                    consumed: actual_consumed,
+                    requested,
+                })) => {
+                    assert_eq!(
+                        actual,
+                        if dimension == CountedBudgetDimension::IrItems {
+                            BudgetDimension::IrItems
+                        } else {
+                            BudgetDimension::AnalysisSteps
+                        }
+                    );
+                    assert_eq!(
+                        (actual_limit, actual_consumed, requested),
+                        (limit, consumed, 1)
+                    );
+                }
+                other => panic!("growth must stop, got {other:?}"),
+            }
+            assert!(state.drafts.is_empty() && state.index_of.is_empty());
+        }
+        let facts = body(vec![plain(0, 0xb1)], Vec::new(), 1);
+        let raw = raw_of(&facts);
+        let mut exact = budget();
+        create_state(&raw.cfg)
+            .create(coverage_id(0, &[]), &mut exact)
+            .unwrap();
+        assert_eq!(
+            (exact.usage().ir_items, exact.usage().analysis_steps),
+            (2, 0)
+        );
+    }
+
+    fn protected_union(budget: &mut Budget, protected: bool) -> std::result::Result<Fused, Norm> {
+        let drafts = vec![
+            Draft {
+                id: coverage_id(0, &[]),
+                blocks: vec![0],
+                end_bci: 1,
+                protected: if protected { vec![1, 3] } else { Vec::new() },
+            },
+            Draft {
+                id: coverage_id(1, &[]),
+                blocks: vec![1],
+                end_bci: 2,
+                protected: if protected {
+                    vec![0, 1, 2, 3, 4]
+                } else {
+                    Vec::new()
+                },
+            },
+        ];
+        fuse(
+            drafts,
+            vec![(
+                coverage_id(0, &[]),
+                coverage_id(1, &[]),
+                CanonicalEdgeKind::Normal,
+            )],
+            budget,
+        )
+    }
+
+    #[test]
+    fn ordered_union_moves_paid_storage_and_bounds_comparisons_and_shifts() {
+        let mut ample = budget();
+        let fused = protected_union(&mut ample, true).unwrap();
+        assert_eq!(fused.drafts[0].protected, vec![0, 1, 2, 3, 4]);
+        assert_eq!(
+            ample.usage().ir_items,
+            0,
+            "moving paid storage is no new retained copy"
+        );
+        // Five existing fusion/owner steps, five moves, fourteen comparisons, three shifts.
+        assert_eq!(ample.usage().analysis_steps, 27);
+        let mut exact = Budget::new(limits_bounded(CountedBudgetDimension::AnalysisSteps, 27));
+        assert_eq!(
+            protected_union(&mut exact, true).unwrap().drafts[0].protected,
+            vec![0, 1, 2, 3, 4]
+        );
+        let mut short = Budget::new(limits_bounded(CountedBudgetDimension::AnalysisSteps, 26));
+        match protected_union(&mut short, true) {
+            Err(Norm::Halted(Error::BudgetExceeded {
+                dimension,
+                limit,
+                consumed,
+                requested,
+            })) => {
+                assert_eq!(dimension, BudgetDimension::AnalysisSteps);
+                assert_eq!((limit, consumed, requested), (26, 26, 1));
+            }
+            _ => panic!("one less step must stop without a fused graph"),
+        }
+        let mut shift_short = Budget::new(limits_bounded(CountedBudgetDimension::AnalysisSteps, 4));
+        match protected_union(&mut shift_short, true) {
+            Err(Norm::Halted(Error::BudgetExceeded {
+                dimension,
+                limit,
+                consumed,
+                requested,
+            })) => {
+                assert_eq!(dimension, BudgetDimension::AnalysisSteps);
+                assert_eq!(
+                    (limit, consumed, requested),
+                    (4, 4, 2),
+                    "the first insertion's two retained ordinals are billed before shifting"
+                );
+            }
+            _ => panic!("an unadmitted insertion shift must stop without a fused graph"),
+        }
+        let mut plain = budget();
+        protected_union(&mut plain, false).unwrap();
+        assert_eq!(
+            (plain.usage().analysis_steps, plain.usage().ir_items),
+            (5, 0)
+        );
+    }
+
+    #[test]
+    fn cancelling_after_range_storage_at_fusion_publishes_no_complete_graph() {
+        let (facts, _) = exception_path_call();
+        let raw = raw_of(&facts);
+        let contexts = contexts_of(&facts, &raw);
+        let mut measured = budget();
+        {
+            let mut state = create_state(&raw.cfg);
+            state.create(coverage_id(0, &[]), &mut measured).unwrap();
+            assert_eq!(state.drafts[0].protected, vec![0]);
+            measured.cancellation_token().cancel();
+            assert!(matches!(
+                state.create(coverage_id(1, &[]), &mut measured),
+                Err(Norm::Halted(Error::Cancelled { .. }))
+            ));
+        }
+        let _seam = checkpoint_seam(Phase::Fusion);
+        let mut stopped = budget();
+        assert!(matches!(
+            canonical_cfg(&facts, &raw, &contexts, &method(), &mut stopped),
+            Err(Error::Cancelled { .. })
+        ));
+        assert!(
+            stopped.usage().ir_items > 2,
+            "already admitted protected drafts are discarded"
+        );
     }
 }

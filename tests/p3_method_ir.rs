@@ -214,15 +214,49 @@ fn read_payload(ir: &MethodIr) -> Reading {
         blocks_with_origin += 1;
         covered_starts.extend(block.blocks().iter().copied());
         intervals.push((block.blocks()[0], block.end_bci()));
-        for ordinal in block.protected() {
-            assert!(
-                canonical
-                    .handler_rows()
-                    .iter()
-                    .any(|row| row.ordinal() == *ordinal),
-                "a protected ordinal names a published handler row"
+        let code = ir.code().expect("this run retains its physical Code facts");
+        if let Some(member) = ssa
+            .blocks()
+            .iter()
+            .find(|member| member.block() == block.id())
+        {
+            let expected: Vec<u32> = code
+                .exception_handlers
+                .iter()
+                .filter(|handler| {
+                    member.instructions().iter().any(|instruction| {
+                        handler.start_bci <= instruction.bci()
+                            && instruction.bci() < handler.end_bci
+                    })
+                })
+                .map(|handler| handler.ordinal)
+                .collect();
+            assert_eq!(
+                block.protected(),
+                expected.as_slice(),
+                "physical ranges over this run's actual member instructions: {:?}",
+                block.id()
             );
         }
+        // Dead nodes may have no SSA block. The internal raw-member oracle covers those;
+        // absence of an SSA payload never proves that a physical range is empty.
+        for ordinal in block.protected() {
+            assert!(
+                code.exception_handlers
+                    .iter()
+                    .any(|handler| handler.ordinal == *ordinal),
+                "a range ordinal names the physical exception table, independently of edge rows"
+            );
+        }
+    }
+    if !ir.code().expect("Code facts").exception_handlers.is_empty() {
+        assert!(
+            canonical
+                .blocks()
+                .iter()
+                .any(|block| !block.protected().is_empty()),
+            "physical protected members must publish nonempty range facts"
+        );
     }
     // Every instruction a later table names has to sit inside a block the graph published: the
     // graph's own coverage of the body, read from the blocks' intervals.
@@ -725,6 +759,134 @@ fn a_request_that_publishes_only_the_graph_hands_over_only_that_table() {
         stage_states(analysis.report()),
         "and they state the same phase results"
     );
+}
+
+#[test]
+fn physical_protection_publication_fits_exact_canonical_budgets_and_stops_one_less() {
+    let fixture = fixture_of(V45, b"finallyPath", b"(I)I");
+    let mut ample = Budget::new(limits());
+    let measured = analyze_method_ir(
+        slice::from_ref(&fixture.snapshot),
+        &request(&fixture, vec![AnalysisStage::CanonicalCfg]),
+        &mut ample,
+    )
+    .expect("canonical measurement completes");
+    let graph = measured.ir().canonical().expect("measured complete graph");
+    assert!(
+        graph
+            .blocks()
+            .iter()
+            .any(|block| !block.protected().is_empty())
+    );
+    for (dimension, needed) in [
+        (BudgetDimension::IrItems, ample.usage().ir_items),
+        (BudgetDimension::AnalysisSteps, ample.usage().analysis_steps),
+    ] {
+        let bounded = |bound| {
+            let mut limits = limits();
+            match dimension {
+                BudgetDimension::IrItems => limits.ir_items = bound,
+                BudgetDimension::AnalysisSteps => limits.analysis_steps = bound,
+                _ => unreachable!("these are the range fact's dimensions"),
+            }
+            limits
+        };
+        let mut exact_budget = Budget::new(bounded(needed));
+        let exact = analyze_method_ir(
+            slice::from_ref(&fixture.snapshot),
+            &request(&fixture, vec![AnalysisStage::CanonicalCfg]),
+            &mut exact_budget,
+        )
+        .expect("the measured limit admits the same complete graph");
+        assert_eq!(exact.ir().canonical(), Some(graph));
+        assert_eq!(stage_states(exact.report()), vec![StageState::Completed; 4]);
+        let used = |budget: &Budget| match dimension {
+            BudgetDimension::IrItems => budget.usage().ir_items,
+            BudgetDimension::AnalysisSteps => budget.usage().analysis_steps,
+            _ => unreachable!(),
+        };
+        assert_eq!(used(&exact_budget), needed);
+        let mut short_budget = Budget::new(bounded(needed - 1));
+        let short = analyze_method_ir(
+            slice::from_ref(&fixture.snapshot),
+            &request(&fixture, vec![AnalysisStage::Ssa]),
+            &mut short_budget,
+        )
+        .expect("the stopped request returns its ordinary partial result");
+        assert_eq!(used(&short_budget), needed - 1);
+        assert_eq!(
+            stage_states(short.report()),
+            vec![
+                StageState::Completed,
+                StageState::Completed,
+                StageState::Completed,
+                StageState::Partial,
+                StageState::NotPerformed,
+                StageState::NotPerformed
+            ]
+        );
+        assert_eq!(
+            short
+                .report()
+                .stages
+                .iter()
+                .rev()
+                .find(|stage| stage.state == StageState::Completed)
+                .unwrap()
+                .stage,
+            AnalysisStage::LegacyNormalization,
+            "the last valid phase is preserved"
+        );
+        assert!(short.ir().canonical().is_none());
+        assert!(short.ir().frames().is_none() && short.ir().ssa().is_none());
+        let stable_code = |ir: &MethodIr| {
+            let mut code = ir
+                .code()
+                .expect("completed decode facts are retained")
+                .clone();
+            assert!(
+                matches!(&code.execution, ExecutionReport::Complete { .. }),
+                "the physical decode completed before canonical normalization stopped"
+            );
+            code.execution = ExecutionReport::Complete {
+                usage: counted_usage(&code.execution),
+            };
+            code
+        };
+        // Eq checks every physical field, operands and both debug tables as well as the
+        // fixed decode charges; only the independent requests' elapsed time is removed.
+        assert_eq!(stable_code(short.ir()), stable_code(measured.ir()));
+        assert_eq!(short.ir().constant_pool(), measured.ir().constant_pool());
+        assert_eq!(short.ir().declaration(), measured.ir().declaration());
+        assert!(
+            !short.report().reads.is_empty(),
+            "the completed header read is retained"
+        );
+        assert_eq!(short.report().reads, measured.report().reads);
+        assert!(
+            matches!(&short.report().execution, ExecutionReport::Partial {
+            reason: TerminationReason::Error { code }, ..
+        } if code == "ir_legacy_normalization_unbounded")
+        );
+        let diagnostic = short
+            .report()
+            .diagnostics
+            .iter()
+            .find(|diagnostic| diagnostic.code == "ir_legacy_normalization_unbounded")
+            .expect("normalization keeps its existing bound diagnostic");
+        assert!(diagnostic.message.contains(&format!("{dimension:?}")));
+        assert!(
+            diagnostic
+                .message
+                .contains(&format!("limit={}", needed - 1))
+        );
+        assert!(
+            diagnostic
+                .message
+                .contains(&format!("consumed={}", needed - 1))
+        );
+        assert!(diagnostic.message.contains("requested=1"));
+    }
 }
 
 #[test]

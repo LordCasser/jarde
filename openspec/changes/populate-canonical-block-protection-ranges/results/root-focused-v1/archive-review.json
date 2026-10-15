@@ -1,0 +1,15 @@
+{
+  "status": "accepted_local_combined_archive_only",
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 19786087,
+    "sha256": "85aec3874a1334af6b7c2648e8c7e940bb6d298272687533e88a74ef47b5d128"
+  },
+  "payloads": 75,
+  "commands": 18,
+  "raw_streams": 36,
+  "distinct_accepted_tests": 149,
+  "additional_recorder_executions": 1,
+  "v1_failed_preserved": true,
+  "own_ci_accepted": false
+}

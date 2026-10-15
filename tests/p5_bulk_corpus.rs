@@ -722,6 +722,10 @@ impl Billing {
         output_bytes: 2638,
     };
     /// `many-method-class`: 107 members behind three read classes, one of them generated wide.
+    // 2026-10-15 canonical physical protection: real range ordinals and their scans/union
+    // bill +68 IrItems and +335 AnalysisSteps for MANY_METHOD_CLASS and each whole-corpus
+    // arm. The unchanged recorder measures all six cases; the arms measure their own requests.
+    // No fixture, output, comparison or other dimension changes.
     const MANY_METHOD_CLASS: Self = Self {
         archive_entries: 6,
         entry_bytes: 7683,
@@ -800,14 +804,14 @@ impl Billing {
         // `Guarded` holds the two shapes that are asked (the two-copy `fin`/`catchFinally`
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
-        ir_items: 21390,
+        ir_items: 21458,
         // +44 with `recover-loop-body-try-catch`: the new retry candidate proof is also
         // examined before declining three ordinary named catches in `Guarded`.
         // The pinned old/current CLI comparison measures +13 for `syncThrowsCatching`,
         // +13 for `secondInitFailsCatching`, and +18 for `suppressedCatching`;
         // text, outcome, content, source map, and every other counted dimension stand.
         // `record_the_billing_table` independently measures this case's same +44.
-        analysis_steps: 12104,
+        analysis_steps: 12439,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -891,10 +895,10 @@ impl Billing {
         // field-copy proof's own scan of every body, charged to `IrItems`, and no other dimension.
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
-        ir_items: 35586,
+        ir_items: 35654,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
-        analysis_steps: 19955,
+        analysis_steps: 20290,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -932,10 +936,10 @@ impl Billing {
         // and retention still touches only the read dimensions.
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
-        ir_items: 35586,
+        ir_items: 35654,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
-        analysis_steps: 19955,
+        analysis_steps: 20290,
         result_items: 26,
         output_bytes: 39617,
     };
