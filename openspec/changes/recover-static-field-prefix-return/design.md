@@ -1,0 +1,33 @@
+# Design
+
+## Context
+
+动机与用户行为见proposal及delta。当前实际产品ba3fa76af的冻结CLI c44bde2c…fa396来自4907项源码输入；本片尚无产品修改。两原FO的10B Code分别为 `b20007046059b30007ac` 与 `b20002046059b30002ac`，CP编号不同而目标同为FO.i:I；实际BCI为getstatic0、常量3、iadd4、dup5、putstatic6、ireturn9，无handler。完整FO输出在两腿均因bump说明体缺return而javac退出1；evalThenFin的临时值与finally已恢复，整个类尚未重建运行。
+
+现有FieldIncrements只从DUP_X1证明实例八指令receiver形；void-only单位字段更新不承载新值返回，postfix snapshot承载旧值。新增独立driver原类控制共6命令、四次双JVM运行匹配60B六行oracle，不能把原类控制当修后验收。可移交证据见results/repro-v1。
+
+## Goals / Non-Goals
+
+**Goals:** 在现有字段/SSA/预算/Return接缝证明并呈现静态int新值返回，整链原子认领，复用物理来源与公共报告；完整FO两腿实际重编运行。
+
+**Non-Goals:** 不把本例推广为任意dup消费者，不修改finally/局部作用域，不重写旧实例更新规则；详细能力边界见proposal，不从本片断言任意JAR/WAR等价。
+
+## Decisions
+
+1. **复用本项目语义证据。** 使用已有field@1读写声明、当前类字段可更新int核验、SSA/effects、预算meter和Return发射；外部库没有这些私有物理身份/SSA/来源，不新增依赖或通用更新框架，无许可维护面变化。固定窗口检查需预算与取消，不能把新增扫描挂进旧无Result的OnceCell计算。
+2. **整链证书先于认领。** 候选完整同块、物理无clone/handler，getstatic/putstatic同owner/name/I/staticness并绑定本类nonfinal/nonvolatile声明。证明旧值与literal1是iadd输入，新sum是dup输入，dup的两份实际category1值分别且仅由写回与return消费；没有额外消费者或夹入效果。BCI列表只作fixture来源，不作通用准入常量。失败不改变原ownership/visited；停止传播原原因。
+3. **新值不是再读取。** 在Return唯一发射一次前置更新，复用adapt_return。目标按现有静态Field节点与合法owner类型拼写，read保留字段子来源，write为更新主锚，常量/add/dup为派生来源，return保留自身主锚。优先采用最小真实前置更新AST节点及既有分组/遍历/预算发射；不仿照legacy实例把整句新文本塞进Local，不为迁移旧表示扩围。赋值后再getstatic的替代方案会多读字段，不能满足原消费者身份。
+4. **兼容控制与拒绝分开。** 不放宽现有instance receiver、void单位更新或postfix旧值判据。构造异字段、错误新旧值、非一/非add、额外alias、效果/handler/跨块及缺失声明等边界；若其它既有规则能正确恢复，不把必须拒绝写成所有规则的全局限制。解析/方言/运行选择/verifier保持原管线，源码恢复成功必须另由完整编译执行证明。
+5. **双编译腿完整重放。** 原FO.java与driver冻结，不改原类/Runner/oracle，不从产物删bump以单测finally。最终CLI每腿完整report.text原样编译，rebuilt-only执行固定main与独立driver，核0/0、8/8、MIN/MIN、8/100、MIN/100、1/100；保留所有失败及未执行步骤。可按需补当前JADX完整对照，JVM原类行为与证书才是判据。
+
+## Risks / Trade-offs
+
+- [把copy的producer BCI相同误当两份值相同] → 核实际SSA输入/输出及唯一consumer，而非只凭opcode或comes_from(copy)放行。
+- [字段类初始化、可见性或写回语义变化] → 首片限当前已证明本类普通int声明，读写各一次，非法/缺失/volatile/final保持现有拒绝或其它正确规则。
+- [新AST漏掉来源或递归/发射路径] → 核所有相关遍历/优先级/借用与预算发射匹配点，加入最窄分组和source-map控制，不建立泛化框架。
+- [正常首停被半证书覆盖] → 证明完成后才认领，真实证明期收费/取消和输出停止各自验证，不退款或重试。
+- [FO辅助方法与finally错误混为一谈] → 保持完整类编译门和逐方法原因，FY/FX的独立finally缺口仍留原计划，不以此次修复冒称关闭。
+
+## Migration Plan
+
+先等reference片自身CI验收/归档/主线源码绑定，再应用本片；实施开始重取实际基线，冻结永久红例及控制，局部实现后运行定向兼容门、完整双腿源码对照和自身产品CI。只有真实验收后才勾tasks、同步delta并归档；失败保留，不把本规划或旧CI当实现成功。
