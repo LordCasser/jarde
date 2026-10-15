@@ -1,0 +1,83 @@
+{
+  "schema": "static-prefix-proposal-review-v1",
+  "status": "reviewed_no_material_contradiction",
+  "change": "recover-static-field-prefix-return",
+  "artifact_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/proposal.md",
+      "bytes": 2320,
+      "sha256": "6477899057db61838eff4c826e7d0d67f8899f5523d2e5fb266743c1d4f7f7b1"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/design.md",
+      "bytes": 4660,
+      "sha256": "1c2f8dbeac2927fc43595f247ca2e932be5838b6cd6e14522fd6a960afa57152"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "bytes": 2848,
+      "sha256": "7f31e3bfa3a90af26afb7f1f1baf05f02989cefafe94e0899c3d5e4c91b16513"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/specs/java8-recovery/spec.md",
+      "bytes": 3635,
+      "sha256": "2eb355ec5e5e5bf829b8b3982edddb93b1cf68fb9c060daa4dc7c80e42cb4990"
+    }
+  ],
+  "repro": {
+    "tar": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/results/repro-v1/capture.tar.gz",
+      "bytes": 1529757,
+      "sha256": "1b8846d04c3e5ab41bae055820908fc8ccd7ae36216c986e18d02dde947ad998"
+    },
+    "manifest": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/results/repro-v1/manifest.json",
+      "bytes": 39448,
+      "sha256": "677e47f178ea3de54cf8f1cf8c3655fdbdeb73ad1d4f8a759859941887fd7f03"
+    },
+    "execution": {
+      "status": "packaged_and_reopened_verified",
+      "archive": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-planning-evidence-package-v1/capture.tar.gz",
+        "bytes": 1529757,
+        "sha256": "1b8846d04c3e5ab41bae055820908fc8ccd7ae36216c986e18d02dde947ad998"
+      },
+      "manifest": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-planning-evidence-package-v1/manifest.json",
+        "bytes": 39448,
+        "sha256": "677e47f178ea3de54cf8f1cf8c3655fdbdeb73ad1d4f8a759859941887fd7f03"
+      },
+      "payload_files": 103,
+      "members": 104,
+      "raw_files": 64
+    },
+    "archive_members": 104,
+    "payload_files": 103,
+    "raw_files": 64,
+    "payload_mismatches": [],
+    "unsafe_paths": [],
+    "non_regular_members": []
+  },
+  "checks": {
+    "four_artifacts_present": true,
+    "plan_not_implemented": true,
+    "archive_pin_matches_receipt": true,
+    "archive_manifest_safe_and_complete": true,
+    "raw_payload_count_64": true,
+    "no_manifest_payload_mismatch": true
+  },
+  "scope_review": {
+    "narrow_behavior": "Only a proved own-class, ordinary static int +1 update returning its newly computed sum; guard clauses include complete single-block/no-handler candidate, same declared field identity, single read/write and exact sum-to-write-and-return consumption.",
+    "separation": "Clearly excludes changing finally or generic dup handling; separates instance receiver prefix/postfix, static postfix old-value, and void-only/unit-update behavior. Other rules may still accept another form where their own contract applies.",
+    "FO_attribution": "FO.evalThenFin already emits a saved return value before the finally store. The whole-class compile red is attributed to bump() fallback at BCI 5/copy diagnostics, not to finally recovery.",
+    "evidence_vs_claim": "README/design distinguish original-only FO/driver controls from future rebuilt-only acceptance; two compiler legs provide real original behavior, but there is no complete generated FO compile or generated runtime success in this package. New static-prefix capability remains not implemented (0/6 tasks).",
+    "contract_alignment": "Proposal, design, delta, and tasks share the same field/value guard; tasks require actual producer/consumer/source-map, stop, compatibility, whole-source rebuild, Java8/23 and CI proof. The independent driver/oracles are unchanged controls, not product proof.",
+    "external_tool_boundary": "Archive includes captured inputs, original/generated classes and sources, argv/receipts/raw; the JDK and CLI are pinned externally, as the README states."
+  },
+  "limitations": [
+    "This review checks document coherence and packaged evidence integrity, not implementation readiness beyond the stated scope.",
+    "The separately reported CI fixture-fingerprint omission is an external prerequisite already recorded in tasks and is not evidence of implementation or plan inconsistency.",
+    "The reported two-version OpenSpec strict counts were provided by the parent; I did not rerun OpenSpec."
+  ],
+  "blockers": []
+}
