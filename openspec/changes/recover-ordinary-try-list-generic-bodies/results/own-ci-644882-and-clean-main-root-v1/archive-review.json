@@ -1,0 +1,29 @@
+{
+  "status": "accepted_exact_product_ci_and_clean_primary_checkpoint",
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 1963263,
+    "sha256": "313f51277f92120653d5dfda18074f2234ae8258306b72e7dd70663499c0066b"
+  },
+  "payloads": 329,
+  "ci_checks": 742,
+  "jobs": 4,
+  "steps": 52,
+  "seeds": [
+    {
+      "seed": "5350648285461741569",
+      "suites": 365,
+      "passed": 3565,
+      "failed": 0,
+      "ignored": 98
+    },
+    {
+      "seed": "5350648285461741570",
+      "suites": 365,
+      "passed": 3565,
+      "failed": 0,
+      "ignored": 98
+    }
+  ],
+  "source_files": 4886
+}
