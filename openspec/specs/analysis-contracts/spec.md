@@ -141,6 +141,26 @@
 - **WHEN** 类声明已确认，但相关成员表在目标选择完成前中断
 - **THEN** 保留成员表停止和已确认前缀，不把未到达的成员宣称为不存在，也不把部分重载集合宣称为唯一匹配
 
+#### Scenario: Listed body identity does not select one duplicate record
+
+- **WHEN** 完整类成员表含两个或更多 raw name 与完整 descriptor 相同的物理记录，调用方用其中任一列举项提供的不含 member ordinal 的物理方法身份请求 class-view 方法体
+- **THEN** 操作 SHALL 返回既有歧义结果与全部匹配记录，保留每项原 index、flags 和物理来源；无论记录为 abstract、native 或有 Code，也无论记录顺序，MUST NOT 首取某项或返回唯一的无方法体结论
+
+#### Scenario: Body name and identity share duplicate ambiguity
+
+- **WHEN** 调用方对同一完整物理成员表分别用名称加精确 descriptor，以及任一匹配项的物理方法身份请求方法体
+- **THEN** 两种请求 SHALL 使用一致的歧义判定与候选顺序；歧义结果 MUST 在类准备和方法体解码前产生，method_bodies、code_bytes 及 IR 用量不得因该歧义请求而增加
+
+#### Scenario: Foreign owner remains an input error before body ambiguity
+
+- **WHEN** 请求的物理方法 owner 不属于已绑定的类，而该类中存在相同 raw name/descriptor 的一个或多个记录
+- **THEN** 操作 MUST 保留原 foreign-owner 输入错误，MUST NOT 用这些记录替代请求，也不得把该错误改为本类的歧义或无方法体结果
+
+#### Scenario: Unique declarations retain their own body kind
+
+- **WHEN** 完整成员表中请求的 raw name/descriptor 唯一，目标分别为 abstract、native 或有 Code 的声明
+- **THEN** class-view SHALL 保留原逐 body 结果、原无方法体种类及实际 Code 解码；唯一 abstract/native 声明不得新增方法体准入，正常 Code 声明不得因新增歧义门而被拒绝
+
 ### Requirement: Task-oriented operations publish their stages and effective configuration
 
 任务导向操作 SHALL 按固定 pass 表选择其所需 stage 并在报告中发布实际执行的 stage 集合，`Engine::analyze_method` 的显式 stage 列表保持为可用的底层控制且语义不变。操作 SHALL 应用有界默认预算、只允许少量显式覆盖，并在结果中发布生效的完整 `Limits` 与 `UsageSnapshot`；未知或不可用的覆盖 MUST 是输入错误，MUST NOT 静默取默认，也 MUST NOT 用默认值掩盖预算造成的停止。
