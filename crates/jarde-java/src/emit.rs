@@ -60,7 +60,7 @@ use crate::declaration::Declaration;
 use crate::evidence::{EvidencePhase, Materialized, SegmentPublication};
 use crate::facts::RecoveryFacts;
 use crate::source_map::{OriginSet, Segment, SourceMap};
-use crate::stop::{StopReason, poll};
+use crate::stop::{StopReason, charge, poll};
 
 /// One produced artifact: the text, and what the emission that wrote it did.
 ///
@@ -1589,20 +1589,18 @@ impl<'a> Emitter<'a> {
             return Err(Halt::Stop(stop));
         }
         let bytes = u64::try_from(text.len()).unwrap_or(u64::MAX);
-        let allowed = self
-            .budget
-            .check(CountedBudgetDimension::OutputBytes, bytes)
-            .is_ok()
-            && self
-                .budget
-                .charge(CountedBudgetDimension::OutputBytes, bytes)
-                .is_ok();
-        if !allowed {
-            let stop = StopReason::Budget {
-                dimension: CountedBudgetDimension::OutputBytes,
-                written: self.written,
-                limit: self.limit,
-                at,
+        if let Err(stop) = charge(self.budget, CountedBudgetDimension::OutputBytes, bytes, at) {
+            let stop = match stop {
+                StopReason::Budget {
+                    dimension: CountedBudgetDimension::OutputBytes,
+                    ..
+                } => StopReason::Budget {
+                    dimension: CountedBudgetDimension::OutputBytes,
+                    written: self.written,
+                    limit: self.limit,
+                    at,
+                },
+                stop => stop,
             };
             self.discard();
             return Err(Halt::Stop(stop));
@@ -1963,6 +1961,11 @@ mod tests {
     use crate::facts::{MethodFacts, RecoveryFacts};
     use crate::source_map::Origin;
     use jarde_reader::budget::{CancellationToken, Limits};
+    use jarde_reader::ledger::{
+        LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+    };
+    use std::sync::Arc;
+    use std::sync::atomic::{AtomicUsize, Ordering};
 
     fn budget_with(output_bytes: u64) -> Budget {
         Budget::new(Limits {
@@ -1973,6 +1976,101 @@ mod tests {
             elapsed_millis: u64::MAX,
             ..Limits::default()
         })
+    }
+
+    #[derive(Debug)]
+    struct CancelAtCheckpoint {
+        token: CancellationToken,
+        checkpoints: AtomicUsize,
+        cancel_at: usize,
+    }
+
+    impl LedgerObserver for CancelAtCheckpoint {
+        fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+            if site == LedgerSite::Checkpoint
+                && self.checkpoints.fetch_add(1, Ordering::SeqCst) + 1 == self.cancel_at
+            {
+                self.token.cancel();
+            }
+        }
+
+        fn refusal(
+            &self,
+            _site: LedgerSite,
+            _dimension: Option<jarde_reader::budget::BudgetDimension>,
+        ) {
+        }
+    }
+
+    fn checkpoint_observer(token: CancellationToken, cancel_at: usize) -> Arc<CancelAtCheckpoint> {
+        Arc::new(CancelAtCheckpoint {
+            token,
+            checkpoints: AtomicUsize::new(0),
+            cancel_at,
+        })
+    }
+
+    fn attach_checkpoint_observer(budget: &mut Budget, observer: Arc<CancelAtCheckpoint>) {
+        let ledger = OperationLedger::new(budget).with_observer(observer);
+        budget.with_ledger(ledger, UsageOwner::Methods);
+    }
+
+    #[test]
+    fn output_admission_preserves_cancellation_after_initial_poll() {
+        let token = CancellationToken::new();
+        let mut budget =
+            Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
+        let observer = checkpoint_observer(token.clone(), 2);
+        assert!(!token.is_cancelled());
+        attach_checkpoint_observer(&mut budget, observer.clone());
+        let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+
+        let result = emitter.put("candidate", Some(17));
+
+        assert!(
+            matches!(
+                &result,
+                Err(Halt::Stop(StopReason::Cancelled { at: Some(17) }))
+            ),
+            "actual stop: {result:?}"
+        );
+        assert_eq!(observer.checkpoints.load(Ordering::SeqCst), 2);
+        assert!(token.is_cancelled());
+        assert!(emitter.text.is_empty(), "stopped output must be discarded");
+        assert_eq!(emitter.written, 0);
+        assert_eq!(emitter.budget.usage().output_bytes, 0);
+    }
+
+    #[test]
+    fn cancellation_after_a_prior_write_discards_text_and_keeps_only_prior_charge() {
+        let token = CancellationToken::new();
+        let mut budget =
+            Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
+        let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+        emitter.put("first", Some(11)).unwrap();
+        let observer = checkpoint_observer(token.clone(), 2);
+        assert!(!token.is_cancelled());
+        let ledger = OperationLedger::new(&*emitter.budget).with_observer(observer.clone());
+        emitter.budget.with_ledger(ledger, UsageOwner::Methods);
+
+        let result = emitter.put("second", Some(29));
+
+        assert!(
+            matches!(
+                &result,
+                Err(Halt::Stop(StopReason::Cancelled { at: Some(29) }))
+            ),
+            "actual stop: {result:?}"
+        );
+        assert_eq!(observer.checkpoints.load(Ordering::SeqCst), 2);
+        assert!(token.is_cancelled());
+        assert!(
+            emitter.text.is_empty(),
+            "a stopped emission has no partial text"
+        );
+        assert_eq!(emitter.written, 5);
+        assert_eq!(emitter.budget.usage().output_bytes, 5);
+        assert_eq!(emitter.limit, 128);
     }
 
     fn facts() -> RecoveryFacts {
