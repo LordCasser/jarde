@@ -1,3 +1,5 @@
+> **历史范围说明（2026-10-15）：** 本片source/component的准确store证据及名称终点范围见下文既有场景；它沿用[先前实参header链规则](../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md)，并与[早期snapshot双侧MVP](../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md)的历史范围相衔接。[子数组条款](../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md)保留必须读取Mid的负控；[已归档class-source停止设计](../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md)已说明Mid与直接由header命名的Greet终点之别。source或必读中间证据缺失不能靠名称补齐，名称终点也不等于已选物理target；各场景的恢复、停止和验收边界保持原文，method站点快照外用户interface终点和terminal重复定义政策仍独立未决。
+
 ## ADDED Requirements
 
 ### Requirement: 数组初始化器元素 SHALL 按本次可证明的赋值兼容关系恢复

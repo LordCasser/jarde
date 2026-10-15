@@ -1,3 +1,5 @@
+> **历史范围说明（2026-10-15）：** 以下“双侧物理定义/单边快照外”的表述记录本片最初MVP范围。后续[实参单边扩宽](../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md)及其[standalone用户子类到外部用户父类的pin迁移与Root追认](../../../recover-platform-interface-argument-widening/verification.md)、[异构数组元素条款](../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md)已各自说明适用的header名称终点。旧two-sided正负fixtures继续作为原支持子情形；source及实际必经的中间header仍需既有环境证据。参见[缺少Mid的负控](../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md)与[已归档停止设计的Mid/Greet边界](../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md)。这些引用按各自站点解释；method站点快照外用户interface终点及terminal重复物理定义的独立政策在本次文档澄清中保持未决。
+
 ## ADDED Requirements
 
 ### Requirement: 同快照用户类层级的实参上转型可呈现

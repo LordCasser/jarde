@@ -1,3 +1,5 @@
+> **历史范围说明（2026-10-15）：** 本条款的header命名终点与“两-sided快照零回退”共同保留各自已批准范围。[验证记录](../../verification.md)的“移动的既有pin”和“Root独立验收”明确记载仅含B的standalone快照到外部用户父类A的迁移及追认；目标名称来自已读header，不表示已选择或读取目标物理定义。[早期snapshot规划](../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md)的双侧要求是其MVP范围，[后续数组元素条款](../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md)另有具体store场景。这里的引用不把数组验收扩成全部method快照外用户interface场景，terminal重复物理定义政策也未在本次文档澄清中裁定。
+
 ## ADDED Requirements
 
 ### Requirement: 快照内类到平台接口的实参单边扩宽

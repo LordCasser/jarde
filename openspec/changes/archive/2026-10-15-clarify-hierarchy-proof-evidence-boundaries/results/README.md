@@ -1,0 +1,9 @@
+# 文档澄清交付
+
+3/3任务已按实际apply验收，正常archive返回specsUpdated=false，metadata保留skip_specs:true，无delta同步和main需求变化。三份历史spec仅各追加首段范围注记，原全文逐字保留；12个相对链接均已核实，standalone用户父类追认直接指向原verification，已归档Mid/Greet设计未改。
+
+本轮明确必读source/intermediate与header名称terminal，保留既有two-sided及适用one-sided场景，method站点快照外用户interface终点和terminal重复物理定义政策仍独立未决。原验收/WHEN/THEN/raw不改，本片未执行产品测试或增加产品能力。
+
+local-v1保存原始CLI输出、命令收据、实际1.11/1.14版本、引用Git blob/bytes/SHA、注记prefix、独审及逐字副本清单。归档前两strict各365/0，归档后两strict各364/0；这些是实际不同阶段，不改写成相同计数。全部4905产品输入与已冻CLI构建相同。main需求和已归档设计与固定原pin相同；三份旧spec可按prefix_bytes去掉注记后复核原SHA，其他引用可按原Git blob复核。cache绝对路径为历史记录，不代表可直接覆盖重跑。
+
+当前产品aadf71自身CI仍单独验收，不以本片文档通过代替workspace/MSRV或后续direct-parent归档。

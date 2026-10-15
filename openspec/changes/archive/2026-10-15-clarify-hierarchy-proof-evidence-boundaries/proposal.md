@@ -9,7 +9,7 @@
 - 在旧snapshot、后续platform和array规划的必要位置添加最小历史范围注记与相互引用，保留原正负场景及历史验收原文。
 - 说明实际需要读取的source/intermediate必须沿已有运行环境取得证据；可信header直接命名terminal时，按各自已经批准的站点范围解释，不额外声称选中物理target。
 - 引用已归档preserve-class-source-dependency-proof-stops设计中选择Mid负控的现有依据，保留用户父类追认及two-sided已支持子情形。
-- 明确method用户interface终点、terminal重复定义政策不在本片裁定范围；不把某一站点的验收扩成全部Java可赋值性。
+- 明确method站点快照外用户interface终点、terminal重复定义政策不在本片裁定范围；不把某一站点的验收扩成全部Java可赋值性。
 
 ## Capabilities
 
