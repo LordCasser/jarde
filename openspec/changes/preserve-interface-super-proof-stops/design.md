@@ -27,11 +27,11 @@
 
 ## Decisions
 
-1. **在证明结果处显式分流。** 保留 `prove_interface_super_calls` 的既有 `Result<Vec<_>, Error>`，或只调整其最窄包装；`Ok(empty)` 表示没有得到源码证书，预算/取消 `Err` 必须进入停止分支。普通 missing/ambiguous/redundant/abstract 结论不转换为执行停止。反对仅删除 catch 后直接向公共入口 `?`：合法请求仍须带 analysis 和恢复停止报告，不能变成裸 Error。
+1. **在证明结果处显式分流。** 将 `prove_interface_super_calls` 的最窄私有结果通道调整为保留原 `Error` 或 resolver 原 `ExecutionReport` 与完整诊断集合；接口依赖读取显式选择该通道，其他 legacy caller 保持原行为；`Ok(empty)` 表示没有得到源码证书，预算/取消 `Err` 必须进入停止分支。普通 missing/ambiguous/redundant/abstract 结论不转换为执行停止。反对仅删除 catch 后直接向公共入口 `?`：合法请求仍须带 analysis 和恢复停止报告，不能变成裸 Error。
 
 2. **最小 crate 边界停止构造。** 由拥有原 Error 的门面在正文恢复前选择停止路径；复用 `jarde-java::report` 的 `stopped` 字段初始化，通过一个最小的跨 crate 停止构造入口交付 `RecoveryReport`。该入口只组织现有请求身份、evidence pending、not-produced artifact、诊断和执行平面，不运行 Region/AST/emitter，也不重新读 class 或重跑分析。不要在 facade 手工复制一整份 RecoveryReport 默认字段。
 
-   映射必须从原 Error 做，不能再试一次 `charge` 或 `poll` 重建理由。现有 `StopReason::Budget` 只容纳 counted dimension，`DependencyDepth`/`ElapsedMillis` 不能强塞为 OutputBytes 或 IrItems。选定方案是保留既有 `StopReason::Interrupted` 词汇用于这些非 counted 中断，由最小停止构造同时使用原 Error 生成明确的 `ExecutionReport::Partial/BudgetExceeded { dimension }` 与原 Error 诊断；取消保持 Cancelled，counted 预算保持原维度。报告初始化时直接写入这套一致状态，MUST NOT 在正文工作完成后再把 Complete 涂成 Partial。实现时应复用/对齐 facade 既有错误到 execution 的映射，避免复制第二套不一致规则；如需抽取，只抽取这一错误映射，不建通用运行框架。位置只保留真实已有的 BCI/物理方法，无法定位指令时声明无 BCI，不能伪造。
+   映射必须从原 Error 或原 resolver report 做，不能再试一次 `charge` 或 `poll` 重建理由。真实 counted 控制发现，ClassHeaders 的 resolver report 停止后 ledger 已将共享 token 置位，再调用 legacy helper 会将原预算停止改成 Cancelled；接口读取必须在这次报告返回时直接传播，不继续调用该 helper。原 Error 的 counted 数字原样保留；report-only 通道没有结构化 limit/consumed/requested，使用现有 `StopReason::Interrupted`，同时原样交付 report 的 execution（包括原预算维度）和全部诊断，不能解析诊断文字或从调用者预算推造 Error 数字。现有 `StopReason::Budget` 只容纳 counted dimension，`DependencyDepth`/`ElapsedMillis` 不能强塞为 OutputBytes 或 IrItems。选定方案是保留既有 `StopReason::Interrupted` 词汇用于这些非 counted 中断，由最小停止构造同时使用原 Error 生成明确的 `ExecutionReport::Partial/BudgetExceeded { dimension }` 与原 Error 诊断；取消保持 Cancelled，counted 预算保持原维度。报告初始化时直接写入这套一致状态，MUST NOT 在正文工作完成后再把 Complete 涂成 Partial。实现时应复用/对齐 facade 既有错误到 execution 的映射，避免复制第二套不一致规则；如需抽取，只抽取这一错误映射，不建通用运行框架。位置只保留真实已有的 BCI/物理方法，无法定位指令时声明无 BCI，不能伪造。
 
 3. **保留分析与停止点的记账。** `RecoveredMethod.analysis` 仍是本次已发布 report；停止 recovery 只改变尚未交付的恢复部分。请求不执行之后的 reference/hierarchy proof、正文恢复及 optional evidence，不为诊断重新申请已耗尽的结果预算。class-source 继续使用已有成员 execution 合并，兄弟成员/可靠 raw prefix 保留；测试需证明停止后无 recovery 工作，而不仅检查末态标签。
 

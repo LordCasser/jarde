@@ -1,0 +1,9 @@
+# 接口证明停止：根本地验收
+
+产品基线为class-view e8c；本片保留原Error或resolver原execution与完整诊断。报告型预算没有结构化quota数字，沿用Interrupted并保留真实预算维度；未修改全局ledger/merge或三个相邻wrapper。停止前analysis保留，尚未生成的方法保持not_produced，class-source的可靠前缀与免费generic回滚保留。
+
+归档包含原公共depth0反例与各次失败、最终本地受影响测试及完整源码实验。修后公共6+真实observer5项通过；最终boxed同源受影响门合计813通过/0失败/1默认忽略，12实际成功命令/24raw，包含fmt、原CI Clippy、两版strict366/0、Java库424、门面229、公共integration159、显式JDK完整special-dispatch1。仅复用v3前五项实际成功门；v3随后143/86的javac启动环境失败不计通过，v4受控JDK23重新执行余项。4901输入从运行开始闭合，exact clean后target不存在。
+
+完整源码继续使用未改accept-jarde.py（aa47…）、原Runner/helper、JDK23 --release8。8组完整生成源均与实际CLI文本逐字一致，javac/java成功且原程序与重建输出一致，共12行oracle。16组拒绝控制的原断言保留。178命令中4个AbstractMethodError exit1和2个evidence-range exit4均为原脚本预期负控制。CLI额外两项ClassHeaders=2实际exit4；原analysis、预算维度/诊断及已提交构造器前缀正确。CLI无dependency_depth覆盖，早先exit2的无效测试命令已排除产品反例。
+
+冻结CLI为59624672字节/SHA958a5da0be4921942c07d27bb8c6521c50b3a6f6c47baecfd0b5c18569157f25，未将可执行文件写入仓库。tar内manifest逐项列bytes/SHA，所有成员由根重新打开核验。新最终组合产品自身workspace/CI仍待完成，任务5.1/5.2未勾选；本地通过不代表CF11/CF18整体恢复率增加。

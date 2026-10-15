@@ -1,0 +1,11 @@
+{
+  "status": "accepted_local_archive_integrity",
+  "payloads": 641,
+  "members_reopened": 642,
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 6777734,
+    "sha256": "5140b07be746fc376055376064da480113e3e2027cb9ca89ce9c96ccfda74975"
+  },
+  "own_ci_accepted": false
+}
