@@ -1,0 +1,29 @@
+{
+  "status": "copied_exact_verified",
+  "items": [
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/reference-overload-planning-evidence-v1.tar.gz",
+      "destination": "capture.tar.gz",
+      "bytes": 1024592,
+      "sha256": "e3304b9e8cf59c26ed6418af254d8b79d18fbf340000053a8293c193809a54e8"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/manifest.json",
+      "destination": "manifest.json",
+      "bytes": 33096,
+      "sha256": "552aaf7545e235c5024322be5fd5f4904b765e16624bbbb1ba604dc9843f50c8"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/execution.json",
+      "destination": "package-execution.json",
+      "bytes": 1457,
+      "sha256": "336f332e770fa531b5c6a30ee1573af49a9463e0da9ef1fb9aac2a26822b9f63"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/independent-package-audit-v1.json",
+      "destination": "independent-package-audit.json",
+      "bytes": 1713,
+      "sha256": "a0a2bc3c994600ce2de2af1e076f1fa0bc087b1fb1d5f66b25e4387b51cb3881"
+    }
+  ]
+}

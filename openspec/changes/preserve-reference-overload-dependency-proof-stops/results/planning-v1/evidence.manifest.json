@@ -1,0 +1,173 @@
+{
+  "status": "copied_exact_verified",
+  "items": [
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/plan-only-source-parity.json",
+      "destination": "plan-only-source-parity.json",
+      "bytes": 731,
+      "sha256": "9aad704124e69528d41979ddba49a8d588a9ec0d1cefe2eb90aae037d785ad6c"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/independent-plan-review-v1.json",
+      "destination": "independent-plan-review-v1.json",
+      "bytes": 5387,
+      "sha256": "f98734698077b6d2da24df99010cca108a09caaea2131700a87b444b421990c9"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/strict-execution.json",
+      "destination": "strict-execution.json",
+      "bytes": 1822,
+      "sha256": "25362fb03ccb9e4f45977c619bc769aca83d8b067c404e9c895341e7297743f4"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/ci-strict.stdout.raw",
+      "destination": "ci-strict.stdout.raw",
+      "bytes": 16845,
+      "sha256": "c4b125af0ff3f1c95e2b74f544c23e130f1fda1884faef3b3da07b81ae845d41"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/ci-strict.stderr.raw",
+      "destination": "ci-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/local-strict.stdout.raw",
+      "destination": "local-strict.stdout.raw",
+      "bytes": 16845,
+      "sha256": "c4b125af0ff3f1c95e2b74f544c23e130f1fda1884faef3b3da07b81ae845d41"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/local-strict.stderr.raw",
+      "destination": "local-strict.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-proposal.execution.json",
+      "destination": "instructions-proposal.execution.json",
+      "bytes": 842,
+      "sha256": "fc3ccee6e8967cc35782fd02b127abb0d473659708d7d206bb3d5b5041be55cc"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-proposal.stdout.raw",
+      "destination": "instructions-proposal.stdout.raw",
+      "bytes": 7996,
+      "sha256": "2300fc0c48f7916bbb5e0cea3e54eb522e241b60bb1dedc9364a09ca5e855941"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-proposal.stderr.raw",
+      "destination": "instructions-proposal.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-specs.execution.json",
+      "destination": "instructions-specs.execution.json",
+      "bytes": 834,
+      "sha256": "0aa5621ec059be5058f9d00630068f135895c0348db26b76416c6c957725709e"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-specs.stdout.raw",
+      "destination": "instructions-specs.stdout.raw",
+      "bytes": 10605,
+      "sha256": "77c8156df90ad87b2257013792783eef75f1cf7e67a5113e73bd4ada5152ae18"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-specs.stderr.raw",
+      "destination": "instructions-specs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-design.execution.json",
+      "destination": "instructions-design.execution.json",
+      "bytes": 836,
+      "sha256": "536ae15b9403e7c49a298c8c2e5fbf7d8f1483ec53dbb7cca3fd25408f9846c6"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-design.stdout.raw",
+      "destination": "instructions-design.stdout.raw",
+      "bytes": 5854,
+      "sha256": "d71eaae52f219bb20f08cb4182edfb74ad6ec9bb52761f013752201f2c3bcb23"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-design.stderr.raw",
+      "destination": "instructions-design.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-tasks.execution.json",
+      "destination": "instructions-tasks.execution.json",
+      "bytes": 833,
+      "sha256": "4a44bdc19d303b8d93a0fc4f12d686b2a1239ecc9283e15cb9e453cc7eecc503"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-tasks.stdout.raw",
+      "destination": "instructions-tasks.stdout.raw",
+      "bytes": 6883,
+      "sha256": "3154ad5e48facaa12fbb3d97fa60da79308977fd72fb1dc35a0189da8bdfa05a"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-tasks.stderr.raw",
+      "destination": "instructions-tasks.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/status-final.execution.json",
+      "destination": "status-final.execution.json",
+      "bytes": 802,
+      "sha256": "7451c5dbb0b81a4a591d494316c1a99255dd035fefae08ecc7d67272dac07d15"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/status-final.stdout.raw",
+      "destination": "status-final.stdout.raw",
+      "bytes": 3587,
+      "sha256": "1da1578d59978ab24ca8bc1f57bdb577ca09206ce7a233784a027c105975e925"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/status-final.stderr.raw",
+      "destination": "status-final.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/status-summary.execution.json",
+      "destination": "status-summary.execution.json",
+      "bytes": 792,
+      "sha256": "167fecd4210369c94c04c89a832ae66a28f7aaec2986c022280a14dbf1d161a8"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/status-summary.stdout.raw",
+      "destination": "status-summary.stdout.raw",
+      "bytes": 430,
+      "sha256": "ea8865071307016554d02d8789d81b8fc34a21247c9d3c36930ffe4ac643e747"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/status-summary.stderr.raw",
+      "destination": "status-summary.stderr.raw",
+      "bytes": 27,
+      "sha256": "f5532db4d58c0113f96c1eeb6b68000dc0d68199da671c1095a78b21dae7aa71"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/validate-change.execution.json",
+      "destination": "validate-change.execution.json",
+      "bytes": 818,
+      "sha256": "38831a0d7c85a3ad8e68e94dd3c5876680f8771306a38b8b4bbef57e7158c80d"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/validate-change.stdout.raw",
+      "destination": "validate-change.stdout.raw",
+      "bytes": 69,
+      "sha256": "19ea1767597dd2b35a447d4019aa11952c90943f54d3c9108dbebbba2eb68625"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/validate-change.stderr.raw",
+      "destination": "validate-change.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

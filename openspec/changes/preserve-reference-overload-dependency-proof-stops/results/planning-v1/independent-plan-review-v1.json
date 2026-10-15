@@ -1,0 +1,109 @@
+{
+  "schema": "reference-overload-planning-independent-review-v1",
+  "status": "accepted_read_only_plan_consistency_review",
+  "scope": "Planning consistency only; no repository edits and no Git/native/toolchain/OpenSpec execution.",
+  "artifacts": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/proposal.md",
+      "bytes": 1802,
+      "sha256": "65157c4dfe1ff0a23bc62a385b24bf64798bbd7801d6df978c32677b5915bbac"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/design.md",
+      "bytes": 7294,
+      "sha256": "35de96a167620241e9d5611c25b22bb15e05cea6f6aa0261c693a516df6fa9a4"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/specs/java8-recovery/spec.md",
+      "bytes": 3798,
+      "sha256": "29e76acc037d7aa0a23516353f71cde9bee461af3b2ae20dc1d0b1d6eaf4f27a"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/tasks.md",
+      "bytes": 2982,
+      "sha256": "b19c34b9710ef893d3deae534b668d8ae7413fab4e3c4f23e778f25831fc5bfb"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/README.md",
+      "bytes": 1837,
+      "sha256": "ad96ce2b9c15d5bd2ec865562e141bc6432e2e1f58bc0f106f1ea446defa0a3e"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/manifest.json",
+      "bytes": 33096,
+      "sha256": "552aaf7545e235c5024322be5fd5f4904b765e16624bbbb1ba604dc9843f50c8"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/capture.tar.gz",
+      "bytes": 1024592,
+      "sha256": "e3304b9e8cf59c26ed6418af254d8b79d18fbf340000053a8293c193809a54e8"
+    }
+  ],
+  "planning_state": {
+    "tasks_checked": 0,
+    "tasks_unchecked": 6,
+    "all_six_open": true,
+    "delta_requirements": 1,
+    "delta_scenarios": 7,
+    "results_repro_exists": true
+  },
+  "evidence_review": {
+    "repro_manifest_status": "packaged_and_reopened_verified",
+    "repro_manifest_item_count": 49,
+    "archive_member_count": 50,
+    "archive_members_unique_regular_files": true,
+    "screen_audit_status": "accepted_initial_screen_scope_only",
+    "screen_audit_errors": [],
+    "screen_matrix": [
+      {
+        "cap": 4096,
+        "exit": 0
+      },
+      {
+        "cap": 1,
+        "exit": 4
+      },
+      {
+        "cap": 2,
+        "exit": 4
+      },
+      {
+        "cap": 3,
+        "exit": 0
+      },
+      {
+        "cap": 4,
+        "exit": 0
+      }
+    ],
+    "original_runner_oracle": true,
+    "seven_original_classes_match": true,
+    "gdb_cap1_refusal_count": 2,
+    "gdb_cap2_refusal_count": 1,
+    "trace_audit_status": "accepted_observation_scope_only",
+    "trace_audit_errors": [],
+    "dynamic_claim_boundary": "The raw GDB evidence shows cap1 refusal stacks in order: first at reference-overload/raw-reader, then later at typed snapshot proof; cap2 shows only the typed snapshot-proof refusal. GDB only broke at Budget::exceeded, printed stack, and continued. It did not display Error/Report return values or whether a catch ran. The low-cap CLI outcomes were already Partial/exit4.",
+    "static_source_boundary": "The plan correctly labels direct Error swallowing and raw resolver Report-to-None as static risks, not GDB findings. It requires separately observed regressions for both channels before claiming fix coverage."
+  },
+  "invariant_review": {
+    "u64_max_preserved": true,
+    "platform_predicate_preserved": true,
+    "ordinary_missing_ambiguity_and_existing_matching_preserved": true,
+    "no_broadened_framework_or_global_policy": true,
+    "evidence_basis": "Design explicitly fixes snapshot hierarchy at u64::MAX; platform exception keeps Java 8/ArrayList→List/ParentFirst/ClassPath/no external override/no transformation, while platform absence requires Missing + Complete + no environment problems/unresolved dependencies/candidates."
+  },
+  "future_acceptance_review": {
+    "seven_full_generated_java_sources_exact_recompile_required": true,
+    "original_runner_five_line_oracle_and_both_jvms_required": true,
+    "no_original_jar_in_rebuilt_classpath": true,
+    "own_final_commit_ci_required": true,
+    "clearly_unimplemented": true,
+    "not_claimed_as_current_evidence": true,
+    "evidence_basis": "Tasks 3.1 requires all seven complete generated Java sources unchanged, Java 8/23 oracle; design and repro README explicitly state no fresh full Jarde generated-source rebuild exists yet. Tasks remain 0/6 and task 3.2 requires this change’s own CI."
+  },
+  "findings": [],
+  "notes": [
+    "No scope-changing gap found. Historical EM11 Java source/Runner execution is correctly distinguished from the future full generated-source rebuild and dual-JVM oracle gate.",
+    "The archived parent’s CI is not represented as this proposed change’s own CI; all implementation tasks remain unchecked."
+  ]
+}

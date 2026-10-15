@@ -1,0 +1,12 @@
+Change: preserve-reference-overload-dependency-proof-stops
+Schema: spec-driven
+Change root: /home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops
+Progress: 4/4 artifacts complete
+
+[x] proposal
+[x] specs
+[x] design
+[x] tasks
+
+All planning artifacts complete!
+Next: openspec instructions apply --change "preserve-reference-overload-dependency-proof-stops" --json

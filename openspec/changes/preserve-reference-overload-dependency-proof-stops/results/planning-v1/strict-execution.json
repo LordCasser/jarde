@@ -1,0 +1,50 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/ci-strict.stdout.raw",
+          "bytes": 16845,
+          "sha256": "c4b125af0ff3f1c95e2b74f544c23e130f1fda1884faef3b3da07b81ae845d41"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/ci-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/local-strict.stdout.raw",
+          "bytes": 16845,
+          "sha256": "c4b125af0ff3f1c95e2b74f544c23e130f1fda1884faef3b3da07b81ae845d41"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/local-strict.stderr.raw",
+          "bytes": 2201,
+          "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+        }
+      }
+    }
+  ]
+}

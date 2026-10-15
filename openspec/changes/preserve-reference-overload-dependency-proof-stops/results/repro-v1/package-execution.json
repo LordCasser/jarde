@@ -1,0 +1,23 @@
+{
+  "status": "packaged_and_reopened_verified",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/reference-overload-planning-evidence-v1.tar.gz",
+    "bytes": 1024592,
+    "sha256": "e3304b9e8cf59c26ed6418af254d8b79d18fbf340000053a8293c193809a54e8"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/manifest.json",
+    "bytes": 33096,
+    "sha256": "552aaf7545e235c5024322be5fd5f4904b765e16624bbbb1ba604dc9843f50c8"
+  },
+  "packager": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-planning-evidence-package-v1/package.py",
+    "bytes": 6359,
+    "sha256": "bd900ba849e19f244df70ac804850473080078934e02a294537d8a1f047d748d"
+  },
+  "payload_files": 49,
+  "tar_members": 50,
+  "receipt_bound_raw_files": 28,
+  "external_historical_pin_records": 44,
+  "scope": "EM11 dynamic refused-charge stack order only: cap1 reference-overload then typed snapshot; cap2 typed snapshot. Error/Report catch path not dynamically verified; no fix, future implementation or CI evidence; no fresh compilation of complete Jarde generated source. Original seven class/Code and five-line Runner observations retain their limited historical scope. CLI/JDK/GDB/runtime/native executables and full workspace remain external."
+}

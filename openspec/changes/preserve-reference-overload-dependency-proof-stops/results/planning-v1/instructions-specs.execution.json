@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/home/lordcasser/.local/bin/openspec",
+    "instructions",
+    "specs",
+    "--change",
+    "preserve-reference-overload-dependency-proof-stops",
+    "--json"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-specs.stdout.raw",
+      "bytes": 10605,
+      "sha256": "77c8156df90ad87b2257013792783eef75f1cf7e67a5113e73bd4ada5152ae18"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-propose-root-v1/instructions-specs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

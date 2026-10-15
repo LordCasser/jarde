@@ -1,0 +1,28 @@
+{
+  "status": "accepted_plan_only_no_product_or_main_spec_changes",
+  "base": "f30df5d929cf88d0e97514ea4d5b0806eeecfe2e",
+  "product": "aadf71f3b4f5658485196edb63fb553f8c107380",
+  "branch": "codex/reference-overload-proof-stops",
+  "source_count": 4905,
+  "all_frozen_source_hashes_match": true,
+  "target_absent": true,
+  "main_java8_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+  "implementation_tasks": {
+    "total": 6,
+    "complete": 0
+  },
+  "planning_artifacts": {
+    "total": 4,
+    "complete": 4
+  },
+  "delta": {
+    "requirements": 1,
+    "scenarios": 7
+  },
+  "strict_each": {
+    "passed": 364,
+    "failed": 0
+  },
+  "implementation_started": false,
+  "own_ci_for_new_fix": false
+}
