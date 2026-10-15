@@ -1,0 +1,16 @@
+{
+  "status": "accepted_doc_closure_supplement",
+  "payloads": 19,
+  "members_reopened": 20,
+  "archive": {
+    "path": "closure-supplement.tar.gz",
+    "bytes": 15125,
+    "sha256": "467ff304879aad5df153a1f661e251b3c8963014edf95e2f01b66ccaa540aa8f"
+  },
+  "all_strict_local_and_ci": {
+    "passed": 365,
+    "failed": 0
+  },
+  "source_changes": false,
+  "final_head_pending": true
+}

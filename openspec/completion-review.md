@@ -1,5 +1,14 @@
 # 实现完成复核（2026-09-21）
 
+## 2026-10-15 class-view 歧义修复已交付并归档
+
+产品e8c749252a71a857838d0cb854f5a6d80a5c2704已进入main，自身[CI38679565191](https://github.com/LordCasser/jarde/actions/runs/38679565191)由根802项/独立1462项核查接受：4jobs52steps，两seed各365suites、3589/0/98，79具名门及既有额外JDK/examples/层级/fuzz门通过。修复保留foreign-owner优先级，重复Name及listed identity都在body准入前按完整候选返回歧义。既有76/0/2本地门、九组27库请求及三CLI请求保持原范围。
+
+[自身CI与交付证据](changes/archive/2026-10-15-reject-ambiguous-class-view-body-selection/results/root-own-ci-v1/README.md)逐成员复开；4900测试来源同primary字节。4/4完成，analysis-contracts新增四scenario并归档。产品CI头与后续文档头区分；不增加CF11/CF18/71/612总数。
+
+接口停止修复在独立AUX已有cc305fe6a本地检查点，813/0/1及八组完整源对照通过，尚待最终组合产品workspace/自身CI；snapshot/double-brace保持独立规划，当前冻结接口CLI已复现原H1 ClassHeaders8/15仍Complete，未冒称修复通过。
+
+
 ## 2026-10-15 四工程联合产品已接受
 
 产品 **d3e2b2457338b61660b842f5705b225bba08a73a** 包含共享facts容量、no-Code重复方法选择、canonical真实保护范围及emitter停止分类四项修复，四项均4/4；已同步四份主规格并归档。自身[CI38673548915](https://github.com/LordCasser/jarde/actions/runs/38673548915)4jobs/52steps成功，两seed各3587通过/0失败/98忽略，77具名门一次通过；native Rust1.99/Temurin25.0.4+7，strict367/0。另实际九额外编译执行测试、两examples及12依赖层配置通过。 同步归档后的两版本strict均363/0；旧reuse-selected-class-read已补齐新增容量场景，首次362/1失败raw保留。
@@ -8,7 +17,7 @@
 
 历史运行来源闭包为4887项；额外13个fuzz遍历输入只按audit-time sidecar记录，未倒填历史运行开始来源。实际P5测试和标准再生成均核全2219corpus项。最终文档/main HEAD须与产品来源恒同、clean和target absent另核，不将产品CI说成文档提交自身CI。持续goal active，不增加CF11/CF18/71/612整体完成数。
 
-下一批三个已独立核验的计划仍 **0/27**：`reject-ambiguous-class-view-body-selection` 0/4、`preserve-interface-super-proof-stops` 0/12、`preserve-class-source-dependency-proof-stops` 0/11。先仅复制各manifest覆盖的change子树，再逐项取status/apply上下文，旧生产实际复现后才修复；私有静态候选未编译、未运行，不能计作实现完成。根串行独占Git/Cargo/rustfmt/JDK/JADX/CLI，子agent只在隔离cache准备与审阅，不操作其他聊天checkout。
+7d0检查点当时下一批三个已独立核验的计划为 **0/27**：`reject-ambiguous-class-view-body-selection` 0/4、`preserve-interface-super-proof-stops` 0/12、`preserve-class-source-dependency-proof-stops` 0/11。先仅复制各manifest覆盖的change子树，再逐项取status/apply上下文，旧生产实际复现后才修复；私有静态候选未编译、未运行，不能计作实现完成。根串行独占Git/Cargo/rustfmt/JDK/JADX/CLI，子agent只在隔离cache准备与审阅，不操作其他聊天checkout。
 
 ## 2026-10-15 普通 try List 与整数 carry 局部交付接受
 
