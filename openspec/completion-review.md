@@ -1,5 +1,15 @@
 # 实现完成复核（2026-09-21）
 
+## 2026-10-15 四工程联合产品已接受
+
+产品 **d3e2b2457338b61660b842f5705b225bba08a73a** 包含共享facts容量、no-Code重复方法选择、canonical真实保护范围及emitter停止分类四项修复，四项均4/4；已同步四份主规格并归档。自身[CI38673548915](https://github.com/LordCasser/jarde/actions/runs/38673548915)4jobs/52steps成功，两seed各3587通过/0失败/98忽略，77具名门一次通过；native Rust1.99/Temurin25.0.4+7，strict367/0。另实际九额外编译执行测试、两examples及12依赖层配置通过。 同步归档后的两版本strict均363/0；旧reuse-selected-class-read已补齐新增容量场景，首次362/1失败raw保留。
+
+[联合证据](changes/archive/2026-10-15-preserve-emitter-output-stop-reasons/results/root-joint-integration-v1/README.md)保存1771 payload/12721464B/SHA f723dfa3e3e8bf3f91ed194453401464bfef295d474e20983abc0a5f91330073，1772成员由根逐字复开；focused-v3为462/0/2，fresh workspace-v3为7174/0/196、730suites、195命令/390raw。完整matrix-v2的16 Jarde单元全部重新编译运行，45/33行oracle同原，JADX八baseline编译失败/no-runtime、八admission成功。d3重建CLI与实际matrix所用c814 CLI同59602720B及SHA cdf06694fafcb4e8cef5a4b9452676489e8cf02495c0254ce38a21e44ee4c7d5，按字节恒同复用，不冒称d3重跑。早期canonical/emitter/c814 CI、workspace-v1/v2失败与真实计费修正全部保留。
+
+历史运行来源闭包为4887项；额外13个fuzz遍历输入只按audit-time sidecar记录，未倒填历史运行开始来源。实际P5测试和标准再生成均核全2219corpus项。最终文档/main HEAD须与产品来源恒同、clean和target absent另核，不将产品CI说成文档提交自身CI。持续goal active，不增加CF11/CF18/71/612整体完成数。
+
+下一批三个已独立核验的计划仍 **0/27**：`reject-ambiguous-class-view-body-selection` 0/4、`preserve-interface-super-proof-stops` 0/12、`preserve-class-source-dependency-proof-stops` 0/11。先仅复制各manifest覆盖的change子树，再逐项取status/apply上下文，旧生产实际复现后才修复；私有静态候选未编译、未运行，不能计作实现完成。根串行独占Git/Cargo/rustfmt/JDK/JADX/CLI，子agent只在隔离cache准备与审阅，不操作其他聊天checkout。
+
 ## 2026-10-15 普通 try List 与整数 carry 局部交付接受
 
 修复产品 `644882d6db69f7d5b0bc1165c035a12b4f7cd8aa` 的[自身CI 38665083468](https://github.com/LordCasser/jarde/actions/runs/38665083468)已由根独立复开：742 checks、4jobs/52steps成功，两seed各365suites、3565通过/0失败/98忽略；native Rust1.99.0、Temurin25.0.4+7、OpenSpec1.11.0 strict367/0、55具名门每seed一次通过。另核primary为main、HEAD/remote main同644882、clean、无target，4886编译来源同最终冻结CLI。[自身CI与检查点归档](changes/recover-ordinary-try-list-generic-bodies/results/own-ci-644882-and-clean-main-root-v1/README.md)329payload逐一复开。普通try List 6/6、forward carry 10/10及strict文档4/4的既定交付关闭；文档提交后再核最终真实HEAD。

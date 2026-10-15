@@ -43,3 +43,17 @@ v2 在同一最终实现源码上执行以下六项：
 ## 尚未完成
 
 本地 focused 与合并 scope 不替代 workspace 全量验证、实现提交自身 CI、独立提交及后续同步/归档流程。相应集成门仍未完成，见 `tasks.md` 的 2.2。
+
+
+## 2026-10-15 Final joint integration acceptance
+
+以上局部记录与早期“待验”状态保留为历史，本节为最终验收。联合产品为 **d3e2b2457338b61660b842f5705b225bba08a73a**。cache自身CI38666595543与method自身CI38667091612已通过；canonical早期CI38668303129、emitter早期CI38669205597及c814 CI38672017137确实失败，均未改记成功。最终产品修正了真实P2计费golden、输出probe方法局部额度契约及corpus指纹，原bulk断言和Java/Runner/oracle未修改。
+
+[联合证据归档](../2026-10-15-preserve-emitter-output-stop-reasons/results/root-joint-integration-v1/README.md)保存1771 payload，12721464字节，SHA-256 `f723dfa3e3e8bf3f91ed194453401464bfef295d474e20983abc0a5f91330073`，根重新打开1772成员逐字核对。
+
+- focused-v3：462通过/0失败/2忽略，10命令/20raw；原bulk、完整P2/P5、fmt、当前CI Clippy、OpenSpec1.11.0及1.14.1 strict367/0、CLI build、finally exact clean通过。
+- workspace-v3：195命令/390raw、730 suites；两seed各3587通过/0失败/98忽略，共7174/0/196，77具名门各一次通过；默认stack，守卫通过，target absent。本地Java25/javac23不冒称native CI。
+- [自身CI38673548915](https://github.com/LordCasser/jarde/actions/runs/38673548915)：4 jobs/52 steps全成功，两seed各365 suites、3587/0/98；Rust1.99、Temurin25.0.4+7、Node22、strict367/0。根654checks和独立最终1173checks接受；不是把早期失败拼接成绿CI。
+- 双JDK/debug-none/default-all完整matrix-v2：16 Jarde cells全部编译运行，baseline45/admission33行同原；JADX八baseline编译失败无runtime、八admission成功。矩阵实际用c814 CLI；d3重建CLI同59602720字节/SHA `cdf06694fafcb4e8cef5a4b9452676489e8cf02495c0254ce38a21e44ee4c7d5`，按字节恒同复用，不声称d3另跑16cells。
+
+历史编译来源闭包4887项在运行前后恒同，且根按Git blob绑定到d3。额外13项fuzz遍历输入只在audit-time sidecar固定，不倒填为运行开始来源；实际corpus测试及根再生成核全2219项。最终doc/main HEAD另验来源、clean及target，不将产品CI说成未来文档提交自身CI。四项各4/4；后三项新计划仍0/27，CF11/CF18/71/612总体计数不增加。
