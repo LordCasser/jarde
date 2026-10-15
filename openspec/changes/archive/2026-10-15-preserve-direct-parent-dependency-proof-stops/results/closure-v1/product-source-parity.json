@@ -1,0 +1,11 @@
+{
+  "status": "accepted_archived_docs_preserve_exact_product_sources",
+  "product": "aadf71f3b4f5658485196edb63fb553f8c107380",
+  "source_count": 4905,
+  "all_file_sha256_and_product_git_blobs_match": true,
+  "target_absent": true,
+  "main_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+  "analysis_contracts_sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684",
+  "own_ci_run": 38703952159,
+  "own_ci_accepted": true
+}

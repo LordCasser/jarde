@@ -1,0 +1,20 @@
+{
+  "status": "accepted_agent_sync_one_added_requirement_eight_scenarios",
+  "delta": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-direct-parent-dependency-proof-stops/specs/java8-recovery/spec.md",
+  "delta_sha256": "0c3ef42487577c33e254214ab7f471f810d1a98538867802f9fbe7b6a3c508f8",
+  "rules_snapshot_sha256": "554f91f6fa5c58a53ce86c034c8ab349b4f0fdb7766aabf53664bb71df732fb8",
+  "main": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/java8-recovery/spec.md",
+  "before_sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d",
+  "after_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+  "before": [
+    17,
+    110
+  ],
+  "after": [
+    18,
+    118
+  ],
+  "original_prefix_exact": true,
+  "synced_requirement_exact": true,
+  "remaining_delta": false
+}

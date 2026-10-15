@@ -1,0 +1,98 @@
+{
+  "status": "accepted_synced_main_and_actual6of6",
+  "commands": [
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--specs",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/specs-validate.stdout.raw",
+          "bytes": 515,
+          "sha256": "be7f29110b68fd3a163e3493f0b599437452668b69093de484c0863fca237956"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/specs-validate.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/ci-prearchive-strict.stdout.raw",
+          "bytes": 16840,
+          "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/ci-prearchive-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/local-prearchive-strict.stdout.raw",
+          "bytes": 16840,
+          "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/local-prearchive-strict.stderr.raw",
+          "bytes": 2201,
+          "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "preserve-direct-parent-dependency-proof-stops",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/apply-final.stdout.raw",
+          "bytes": 7260,
+          "sha256": "74fd82cf3c7096892bc7f991df8706672f64ad9fa4ff726cb6a95f8e33d812cf"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/apply-final.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

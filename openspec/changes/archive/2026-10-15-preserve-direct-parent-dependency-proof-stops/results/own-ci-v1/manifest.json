@@ -1,0 +1,1922 @@
+{
+  "status": "packaged_and_reopened_verified",
+  "product_sha": "aadf71f3b4f5658485196edb63fb553f8c107380",
+  "run_id": 38703952159,
+  "items": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/package.py",
+      "bytes": 8088,
+      "sha256": "121a434f3818fcd491c32dd351bd842ef981bf1563c0fb98b5752add8aa32ff8",
+      "archive_path": "direct-parent-own-ci-v1/CORE/direct-parent-own-ci-evidence-package-v1/package.py"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-direct-parent-aadf-independent-audit-prepared-v2/audit-result-v1.json",
+      "bytes": 128586,
+      "sha256": "9c6f3f3dbdcde0333f8f775dd5c43db8bed399efbe52610421ae91bc2c3e8b5a",
+      "archive_path": "direct-parent-own-ci-v1/CORE/own-ci-direct-parent-aadf-independent-audit-prepared-v2/audit-result-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-direct-parent-aadf-independent-audit-prepared-v2/audit_own_ci.py",
+      "bytes": 24205,
+      "sha256": "f99ce781878f15655705e60e137b19fb089177f65f580a3b08d9ce3b631713e1",
+      "archive_path": "direct-parent-own-ci-v1/CORE/own-ci-direct-parent-aadf-independent-audit-prepared-v2/audit_own_ci.py"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-direct-parent-aadf-independent-audit-prepared-v2/preparation-pins.json",
+      "bytes": 4292,
+      "sha256": "807367069702a54919f3f5dc3e44c7033eeba9483af755717f7637cfb3775d9f",
+      "archive_path": "direct-parent-own-ci-v1/CORE/own-ci-direct-parent-aadf-independent-audit-prepared-v2/preparation-pins.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/accept_product_ci_v3.py",
+      "bytes": 5211,
+      "sha256": "39a28282f3df1d53fb9ead0db13f7e1f50cd71a3e0af6ef5c68dddcce6be09f0",
+      "archive_path": "direct-parent-own-ci-v1/accept_product_ci_v3.py"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/capture_product_ci_v3.py",
+      "bytes": 1909,
+      "sha256": "7070184fed2450094b0b4d0cb062934e8f66c632e302c3c7c6c74ab100dad0e8",
+      "archive_path": "direct-parent-own-ci-v1/capture_product_ci_v3.py"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-all-ci-gates-root-v1.json",
+      "bytes": 9453,
+      "sha256": "571333000e2a95d19f7b176fcb49185a86c3d8d1f5016b878cab1611d06ec8a3",
+      "archive_path": "direct-parent-own-ci-v1/combined-proof-all-ci-gates-root-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/execution.json",
+      "bytes": 2244996,
+      "sha256": "f3489cfeb16cd06d96a758cf5b27a878af143ab27a6726eac4be4e7b9862eb23",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-focused-root-v1/execution.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-future-own-ci-gates-v1.json",
+      "bytes": 11317,
+      "sha256": "5d9b2b4a7012786829f7dfd643f8b9d99ed1e078011ee6069e3878b019e511d4",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-future-own-ci-gates-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-audit-argv-v1.json",
+      "bytes": 6988,
+      "sha256": "5576a76d611debe71958ce9f0441ca06df7d361c1cf3bca733859b7d96228035",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-audit-argv-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-independent-auditor-execution-v2.json",
+      "bytes": 744,
+      "sha256": "11ca65512b4aa4d29b8b8645017a2c7f8f38cd60b95da3081c5f77c057d3c744",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-independent-auditor-execution-v2.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-independent-auditor-v2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-independent-auditor-v2.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-independent-auditor-v2.stdout.raw",
+      "bytes": 249,
+      "sha256": "f0c1a4ed03ff9963d7185f8cb3cec82134226efd7b6a786f93a6444f481ae3f8",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-independent-auditor-v2.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-root-acceptance-v1.json",
+      "bytes": 12765,
+      "sha256": "df5e6c76d6c9552aadeb94e066fa8fa738edc1d2556291939d362576bdc6fd4b",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-root-acceptance-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-root-auditor-execution-v1.json",
+      "bytes": 7852,
+      "sha256": "07b558b7e6b9129fb370f45a432f5248aec13d8a9bdc3c6fbfeae6b77ef48936",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-root-auditor-execution-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-root-auditor-v1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-root-auditor-v1.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-own-ci-root-auditor-v1.stdout.raw",
+      "bytes": 1176,
+      "sha256": "d7e242ed6abe26192d3be35d6e2d552e5b6e8dba5f9accd59f230de58c1c6ab0",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-root-auditor-v1.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-product-commit-source-binding-v1.json",
+      "bytes": 630,
+      "sha256": "923c1b7a5553a45a32fc0fcf6b75d1f6a9541a1d506668932b27bd79a86efc77",
+      "archive_path": "direct-parent-own-ci-v1/direct-parent-product-commit-source-binding-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/.github/workflows/ci.yml",
+      "bytes": 17361,
+      "sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+      "archive_path": "direct-parent-own-ci-v1/metadata/frozen-workflow-ci.yml"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/workspace-forward-v10/root-acceptance.json",
+      "bytes": 15587,
+      "sha256": "22b80f3ef4a95fb8fccf7aab55e296955c7236e0fdd8c5c4d5eec81547b85d8e",
+      "archive_path": "direct-parent-own-ci-v1/metadata/old55-root-acceptance.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/0-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/0-jobs.stdout.raw",
+      "bytes": 9841,
+      "sha256": "1118e00cd29475ba068ab3ced85e132d937def8223a1ff08f6c59eca180d4a2c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/0-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/0-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/1-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/1-jobs.stdout.raw",
+      "bytes": 10564,
+      "sha256": "d49c896a7ccf21e012391fc724520eef3f246831ee32b553fa5d254f425cada3",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/1-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/1-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/10-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/10-jobs.stdout.raw",
+      "bytes": 11299,
+      "sha256": "51cef97191d698b5e3a48adcd6525f5c9de770dda51e45c025626987bba5c7d5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/10-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/10-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/11-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/11-jobs.stdout.raw",
+      "bytes": 11299,
+      "sha256": "51cef97191d698b5e3a48adcd6525f5c9de770dda51e45c025626987bba5c7d5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/11-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/11-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/12-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/12-jobs.stdout.raw",
+      "bytes": 11299,
+      "sha256": "51cef97191d698b5e3a48adcd6525f5c9de770dda51e45c025626987bba5c7d5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/12-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/12-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/13-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/13-jobs.stdout.raw",
+      "bytes": 11342,
+      "sha256": "5190f9f526e0d21540f4e589fd1afe06ab02ebfbc44c81aae4e700fecec859b3",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/13-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/13-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/14-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/14-jobs.stdout.raw",
+      "bytes": 11646,
+      "sha256": "e732ef8e57f3b536c33b0e80e10105c5c7f8696b6c4a38cbec2508c8f6073957",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/14-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/14-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/15-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/15-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/15-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/15-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/16-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/16-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/16-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/16-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/17-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/17-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/17-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/17-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/18-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/18-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/18-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/18-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/19-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/19-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/19-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/19-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/2-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/2-jobs.stdout.raw",
+      "bytes": 10650,
+      "sha256": "f1c694900936e22c84d19dd1d351580006ef6139782e2448bd4e76a935666cd4",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/2-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/2-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/20-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/20-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/20-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/20-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/21-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/21-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/21-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/21-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/22-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/22-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/22-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/22-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/23-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/23-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/23-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/23-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/24-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/24-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/24-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/24-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/25-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/25-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/25-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/25-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/26-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/26-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/26-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/26-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/27-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/27-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/27-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/27-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/28-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/28-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/28-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/28-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/29-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/29-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/29-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/29-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/3-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/3-jobs.stdout.raw",
+      "bytes": 10650,
+      "sha256": "f1c694900936e22c84d19dd1d351580006ef6139782e2448bd4e76a935666cd4",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/3-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/3-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/30-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/30-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/30-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/30-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/31-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/31-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/31-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/31-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/32-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/32-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/32-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/32-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/33-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/33-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/33-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/33-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/34-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/34-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/34-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/34-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/35-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/35-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/35-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/35-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/36-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/36-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/36-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/36-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/37-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/37-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/37-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/37-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/38-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/38-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/38-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/38-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/39-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/39-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/39-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/39-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/4-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/4-jobs.stdout.raw",
+      "bytes": 10974,
+      "sha256": "ef4dfd10f99ae1e3eb5bf3a368f71b3d02b2d8429dcc1dec21395223dfdcf640",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/4-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/4-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/40-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/40-jobs.stdout.raw",
+      "bytes": 11667,
+      "sha256": "f5b0d55989ceda1f60ab5613c1abdcc9172831452032c1adfd8b3edce0ad2e54",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/40-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/40-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/41-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/41-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/41-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/41-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/42-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/42-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/42-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/42-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/43-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/43-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/43-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/43-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/44-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/44-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/44-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/44-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/45-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/45-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/45-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/45-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/46-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/46-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/46-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/46-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/47-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/47-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/47-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/47-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/48-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/48-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/48-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/48-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/49-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/49-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/49-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/49-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/5-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/5-jobs.stdout.raw",
+      "bytes": 10974,
+      "sha256": "ef4dfd10f99ae1e3eb5bf3a368f71b3d02b2d8429dcc1dec21395223dfdcf640",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/5-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/5-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/50-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/50-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/50-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/50-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/51-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/51-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/51-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/51-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/52-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/52-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/52-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/52-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/53-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/53-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/53-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/53-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/54-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/54-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/54-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/54-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/55-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/55-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/55-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/55-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/56-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/56-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/56-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/56-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/57-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/57-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/57-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/57-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/58-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/58-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/58-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/58-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/59-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/59-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/59-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/59-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/6-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/6-jobs.stdout.raw",
+      "bytes": 10974,
+      "sha256": "ef4dfd10f99ae1e3eb5bf3a368f71b3d02b2d8429dcc1dec21395223dfdcf640",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/6-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/6-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/60-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/60-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/60-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/60-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/61-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/61-jobs.stdout.raw",
+      "bytes": 11710,
+      "sha256": "ed039b1a9bf6cdc98c2423d8da972ba08389175af79c2c3abcffc1bfcd65523c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/61-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/61-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/62-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/62-jobs.stdout.raw",
+      "bytes": 11753,
+      "sha256": "9b2ca329812fb568ebd86a1d5b3cef82bce2a2b357066c8045161c420ab5b02c",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/62-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/62-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/63-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/63-jobs.stdout.raw",
+      "bytes": 11796,
+      "sha256": "73057c5601cc57750f21a832eda35c41eb01785a61af9019198c3f72aa676185",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/63-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/63-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/64-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/64-jobs.stdout.raw",
+      "bytes": 11796,
+      "sha256": "73057c5601cc57750f21a832eda35c41eb01785a61af9019198c3f72aa676185",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/64-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/64-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/65-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/65-jobs.stdout.raw",
+      "bytes": 11796,
+      "sha256": "73057c5601cc57750f21a832eda35c41eb01785a61af9019198c3f72aa676185",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/65-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/65-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/66-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/66-jobs.stdout.raw",
+      "bytes": 11796,
+      "sha256": "73057c5601cc57750f21a832eda35c41eb01785a61af9019198c3f72aa676185",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/66-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/66-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/67-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/67-jobs.stdout.raw",
+      "bytes": 11796,
+      "sha256": "73057c5601cc57750f21a832eda35c41eb01785a61af9019198c3f72aa676185",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/67-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/67-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/68-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/68-jobs.stdout.raw",
+      "bytes": 11839,
+      "sha256": "349538a56b0a83335a8021f082b120b7af3f76a29e7aaf3720095506ff49aa90",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/68-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/68-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/69-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/69-jobs.stdout.raw",
+      "bytes": 11839,
+      "sha256": "349538a56b0a83335a8021f082b120b7af3f76a29e7aaf3720095506ff49aa90",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/69-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/69-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/7-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/7-jobs.stdout.raw",
+      "bytes": 11299,
+      "sha256": "51cef97191d698b5e3a48adcd6525f5c9de770dda51e45c025626987bba5c7d5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/7-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/7-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/70-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/70-jobs.stdout.raw",
+      "bytes": 12183,
+      "sha256": "197d5a057bdcf91bc55efa7bf869cff54e72961914e0ba697155bcd3ddb63865",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/70-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/70-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/71-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/71-jobs.stdout.raw",
+      "bytes": 12594,
+      "sha256": "e8df2cce10b9b7516ad66532c7b332111cdab8399726c05d0c06c5826a214ce4",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/71-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/71-run.stdout.raw",
+      "bytes": 12292,
+      "sha256": "f4252b338ee123c5652f04c0cdbb8483a3200b0826a189d9ac25db3ce16a3831",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/8-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/8-jobs.stdout.raw",
+      "bytes": 11299,
+      "sha256": "51cef97191d698b5e3a48adcd6525f5c9de770dda51e45c025626987bba5c7d5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/8-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/8-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/9-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-jobs.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/9-jobs.stdout.raw",
+      "bytes": 11299,
+      "sha256": "51cef97191d698b5e3a48adcd6525f5c9de770dda51e45c025626987bba5c7d5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-jobs.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/9-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-run.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/9-run.stdout.raw",
+      "bytes": 12289,
+      "sha256": "d5afe9baf7bd5a584ecd852bc9d4a0bd48a464e6a288a05e856dc5c411006671",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-run.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/completed-log-zip.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/completed-log-zip.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/completed-log-zip.stdout.raw",
+      "bytes": 878502,
+      "sha256": "983037e23f0a44794e6402b5f289e990bf65e7e4067f03d83fc4c7af572d6db5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/completed-log-zip.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/execution.json",
+      "bytes": 120068,
+      "sha256": "1ed834e174447a9e13911abf7c0f4f3c21c9283669e372ab48ef55b6cb4a6463",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/execution.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-direct-parent-aadf-root-v1/logs.zip",
+      "bytes": 878502,
+      "sha256": "983037e23f0a44794e6402b5f289e990bf65e7e4067f03d83fc4c7af572d6db5",
+      "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/logs.zip"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/wait_and_accept_direct_parent_ci_independent_v2.py",
+      "bytes": 1054,
+      "sha256": "829ad4cc66719d5956d123e2a2b23ec37500d1f13a9c7a9684cd5cc5746f9034",
+      "archive_path": "direct-parent-own-ci-v1/wait_and_accept_direct_parent_ci_independent_v2.py"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/wait_and_accept_direct_parent_ci_root_v1.py",
+      "bytes": 1193,
+      "sha256": "b756c1b0107812bbdf2cecdb5ceb6a155f0b3d1a1657860a4e18dea8c035fcf4",
+      "archive_path": "direct-parent-own-ci-v1/wait_and_accept_direct_parent_ci_root_v1.py"
+    }
+  ],
+  "raw_receipt_bound_count": 294,
+  "external_local_evidence_archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/run-v1/direct-parent-local-fix-evidence-v1.tar.gz",
+    "bytes": 4686292,
+    "sha256": "ac025d0974ff090d038948e25d4e972a2ecd567a3a3cfd7bedc66ab441a055b0"
+  },
+  "metrics": {
+    "root_checks": 826,
+    "independent_checks": 1549,
+    "jobs": 4,
+    "steps": 52,
+    "seeds": [
+      {
+        "seed": "5350648285461741569",
+        "suites": 368,
+        "passed": 3631,
+        "failed": 0,
+        "ignored": 98
+      },
+      {
+        "seed": "5350648285461741570",
+        "suites": 368,
+        "passed": 3631,
+        "failed": 0,
+        "ignored": 98
+      }
+    ],
+    "gates": 121,
+    "strict_items": 364
+  },
+  "scope": "CI belongs to aadf product only. Preserve historical captured_pending_root_acceptance and source_binding own_ci_accepted=false snapshots; terminal acceptances are separate records. Later documentation source parity does not create new own-CI evidence. Native CLI/JDK/runtime, EM11 and duplicate local archive excluded."
+}

@@ -1,6 +1,6 @@
 # 实施与实际源码效果
 
-当前5/6完成；修复自身commit CI尚待，旧c871 CI不作为本片验收。归档、同步和最终main源码绑定均须在自身CI实际成功并独审后完成。
+当前6/6完成；自身产品aadf71的CI38703952159已通过并独审。主规范已同步1需求/8场景并正常归档；归档后两版strict各363/0，4905产品源绑定核实见closure-v1。最终main交付以实际Git记录为准。旧c871 CI不作为本片验收。
 
 ## 生产边界
 
@@ -30,3 +30,9 @@ Java23和Java8分别运行原JAR及重编结果，共四次-Xverify:all输出均
 同CLI另三次JSON/all预算4096/1/2真实exit0/4/4。宽预算保留三条父owner cast和物理access$002调用；低预算保留analysis Complete、原ClassHeaders维度/诊断、constructor文本和source map，setter为Stopped/not_produced且无正文及map。低预算报告未拿去编译。
 
 所有执行源码/输入before与after相同；最终focused和专项均exact cargo clean成功、target缺失。外置CLI/JDK原生二进制以收据pin绑定；可移交证据包保留原始绝对路径及历史状态，不将旧red、预备脚本或包生成成功改写为产品全绿。
+
+## 自身提交CI
+
+实际产品aadf71f3b4f5658485196edb63fb553f8c107380的CI38703952159完成，4job/52step成功。两个固定seed各368个summary、3631通过/0失败/98忽略；共7262通过/0失败/196忽略。每seed121个具名门实际通过，现有MSRV1.88、供应链、fuzz、JDK/full-class及strict364/0均按本次原始日志复核。root826/0、独审1549/0，日志zip878502B SHA983037e23f0a44794e6402b5f289e990bf65e7e4067f03d83fc4c7af572d6db5。忽略测试不等于已全部单独重放。
+
+本地后续纯文档提交保留相同4905产品输入；自身CI只声称绑定aadf71产品，不声称后续文档head另有同一run。原red/局部封存时待CI文字及原收据保持历史状态，最终集成见本节与own-ci-v1。

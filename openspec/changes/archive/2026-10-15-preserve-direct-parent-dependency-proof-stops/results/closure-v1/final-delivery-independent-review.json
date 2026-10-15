@@ -1,0 +1,199 @@
+{
+  "schema": "direct-parent-sync-archive-final-delivery-independent-review-v1",
+  "status": "accepted_read_only_document_and_evidence_delivery_review",
+  "scope": "Archive delivery only. No Git, toolchain, CLI, or OpenSpec command was run; no repository file was written. This does not claim CI for the later documentation-only HEAD.",
+  "archive_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops",
+  "checks": [
+    {
+      "check": "own-ci four copied files",
+      "manifest_status": "copied_exact_verified",
+      "items": 4,
+      "unique_destinations": 4,
+      "all_copy_pins_match": true,
+      "errors": []
+    },
+    {
+      "check": "closure 26 copied evidence files",
+      "manifest_status": "copied_exact_verified",
+      "items": 26,
+      "unique_destinations": 26,
+      "all_copy_pins_match": true,
+      "errors": []
+    }
+  ],
+  "task_state": {
+    "checked": 6,
+    "unchecked": 0,
+    "six_of_six": true,
+    "active_change_absent": true
+  },
+  "own_ci_package": {
+    "copy_count": 4,
+    "copy_pins_match": true,
+    "package_status": "packaged_and_reopened_verified",
+    "product_sha": "aadf71f3b4f5658485196edb63fb553f8c107380",
+    "run_id": 38703952159,
+    "independent_package_audit_status": "accepted",
+    "independent_package_audit_errors": [],
+    "copied_historical_receipts_and_raw_preserved": true,
+    "readme_scope_note": "own-ci-v1 README explicitly retains historical raw paths/pending fields and binds own CI to product aadf71; it does not claim a later documentation HEAD CI."
+  },
+  "closure_evidence": {
+    "copy_count": 26,
+    "copy_pins_match": true,
+    "archive_status": "accepted_archive_after_verified_agent_sync",
+    "archive_command_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "archive_cli_skip_specs": true,
+    "skip_specs_reason": "Agent sync already applied and exact delta/main comparison found nothing remaining; preserve synced main bytes.",
+    "prearchive_status": "accepted_synced_main_and_actual6of6",
+    "actual_commands_exit_zero": true
+  },
+  "spec_sync": {
+    "sync_status": "accepted_agent_sync_one_added_requirement_eight_scenarios",
+    "before_bytes": 63029,
+    "before_sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d",
+    "current_main_bytes": 66674,
+    "current_main_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+    "exact_old_prefix_preserved": true,
+    "delta_bytes": 3681,
+    "delta_sha256": "0c3ef42487577c33e254214ab7f471f810d1a98538867802f9fbe7b6a3c508f8",
+    "one_added_requirement_eight_scenarios": true,
+    "synced_requirement_scenario_body_exact": true,
+    "before_counts": [
+      17,
+      110
+    ],
+    "after_counts": [
+      18,
+      118
+    ],
+    "actual_main_counts": {
+      "requirements": 18,
+      "when_scenarios": 118
+    },
+    "analysis_contracts_unchanged_pin": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/analysis-contracts/spec.md",
+      "bytes": 22886,
+      "sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684"
+    },
+    "analysis_contracts_expected_sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684",
+    "analysis_contracts_matches": true
+  },
+  "strict_and_source_parity": {
+    "postarchive_strict": {
+      "postarchive-ci-strict.stdout.raw": {
+        "pin": {
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/postarchive-ci-strict.stdout.raw",
+          "bytes": 16783,
+          "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+        },
+        "last_totals": "Totals: 363 passed, 0 failed (363 items)",
+        "has_363_zero": true
+      },
+      "postarchive-local-strict.stdout.raw": {
+        "pin": {
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/postarchive-local-strict.stdout.raw",
+          "bytes": 16783,
+          "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+        },
+        "last_totals": "Totals: 363 passed, 0 failed (363 items)",
+        "has_363_zero": true
+      }
+    },
+    "product_source_parity": {
+      "status": "accepted_archived_docs_preserve_exact_product_sources",
+      "product": "aadf71f3b4f5658485196edb63fb553f8c107380",
+      "source_count": 4905,
+      "all_file_sha256_and_product_git_blobs_match": true,
+      "target_absent": true,
+      "main_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+      "analysis_contracts_sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684",
+      "own_ci_run": 38703952159,
+      "own_ci_accepted": true
+    },
+    "parity_accepted": true,
+    "product_commit_ci_binding": {
+      "product": "aadf71f3b4f5658485196edb63fb553f8c107380",
+      "own_ci_run": 38703952159,
+      "own_ci_accepted": true
+    },
+    "limit": "This is archived product-source parity and the prior product commit CI receipt. It does not assert the later documentation HEAD had its own CI."
+  },
+  "artifact_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/tasks.md",
+      "bytes": 4825,
+      "sha256": "543cdf2cce70a634bc927bf760889acfa8be90ac90378b2c2e5025d9aa92bd92"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/own-ci-v1/evidence.manifest.json",
+      "bytes": 1333,
+      "sha256": "043c3755754e8e302ceea3cf14738fb982c35199bbe38448c2d33783a553df62"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/own-ci-v1/manifest.json",
+      "bytes": 111671,
+      "sha256": "28d2ce1741d82e0e150564029dada8809c716299a1549a3852169da0ba88479d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/own-ci-v1/capture.tar.gz",
+      "bytes": 2315516,
+      "sha256": "974cfafc3cff3d6c26e341d30d8ab3aecd47795fc024d3acad252f6dfae79f06"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/own-ci-v1/independent-package-audit.json",
+      "bytes": 76394,
+      "sha256": "ebec85f9d6710de5d02e2cd9c1233c05a4702c60d1837a93ada470a5fbe0f3b5"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/evidence.manifest.json",
+      "bytes": 8207,
+      "sha256": "7b10571cd1a67e867ff19939ca956b57bf8118a986ad77fb3fb2efc294ef2d0c"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/main-before.md",
+      "bytes": 63029,
+      "sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/sync-receipt.json",
+      "bytes": 863,
+      "sha256": "ceecf97490b8570ef8f7108f37af5d8b284231f663536fb6497e204916814801"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/product-source-parity.json",
+      "bytes": 473,
+      "sha256": "5aaaf039c2e7736f011f5fc13d31d35bb098fbe0cf20a9bf9a2c711580213da2"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/archive-execution.json",
+      "bytes": 3650,
+      "sha256": "2fbf1dd25165fbe738bd7138d8dfc33f0bfa746587e8b0a90ee3e030eb3037bb"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/postarchive-ci-strict.stdout.raw",
+      "bytes": 16783,
+      "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops/results/closure-v1/postarchive-local-strict.stdout.raw",
+      "bytes": 16783,
+      "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/java8-recovery/spec.md",
+      "bytes": 66674,
+      "sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/analysis-contracts/spec.md",
+      "bytes": 22886,
+      "sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684"
+    }
+  ],
+  "errors": []
+}

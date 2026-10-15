@@ -1,0 +1,2230 @@
+{
+  "schema": "direct-parent-own-ci-package-independent-audit-v1",
+  "status": "accepted",
+  "package": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/direct-parent-own-ci-evidence-v1.tar.gz",
+    "bytes": 2315516,
+    "sha256": "974cfafc3cff3d6c26e341d30d8ab3aecd47795fc024d3acad252f6dfae79f06"
+  },
+  "checks": 1013,
+  "errors": [],
+  "archive": {
+    "member_count": 315,
+    "payload_count": 314,
+    "unsafe_members": [],
+    "duplicate_names": 0
+  },
+  "manifest": {
+    "status": "packaged_and_reopened_verified",
+    "payloads_matching_manifest": 314,
+    "payloads_total": 314,
+    "original_sources_matching_manifest": 314,
+    "original_sources_total": 314,
+    "raw_count": 294,
+    "raw_receipt_references_matching": 294,
+    "raw_bindings": [
+      {
+        "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-independent-auditor-v2.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-independent-auditor-v2.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-root-auditor-v1.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/direct-parent-own-ci-root-auditor-v1.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/0-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/1-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/10-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/11-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/12-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/13-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/14-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/15-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/16-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/17-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/18-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/19-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/2-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/20-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/21-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/22-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/23-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/24-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/25-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/26-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/27-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/28-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/29-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/3-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/30-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/31-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/32-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/33-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/34-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/35-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/36-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/37-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/38-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/39-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/4-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/40-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/41-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/42-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/43-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/44-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/45-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/46-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/47-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/48-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/49-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/5-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/50-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/51-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/52-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/53-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/54-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/55-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/56-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/57-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/58-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/59-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/6-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/60-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/61-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/62-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/63-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/64-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/65-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/66-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/67-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/68-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/69-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/7-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/70-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/71-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/8-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-jobs.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-jobs.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-run.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/9-run.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/completed-log-zip.stderr.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      },
+      {
+        "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/completed-log-zip.stdout.raw",
+        "reference_count": 2,
+        "matching_refs": 2,
+        "matches": true
+      }
+    ]
+  },
+  "logs_zip": {
+    "archive_path": "direct-parent-own-ci-v1/own-ci-direct-parent-aadf-root-v1/logs.zip",
+    "bytes": 878502,
+    "sha256": "983037e23f0a44794e6402b5f289e990bf65e7e4067f03d83fc4c7af572d6db5",
+    "member_count": 60,
+    "unique_members": 60,
+    "unsafe_paths": [],
+    "symlinks": [],
+    "crc_ok": true,
+    "root_independent_pins_equal": true,
+    "member_pins_matching": 60,
+    "members": [
+      {
+        "path": "0_fuzz smoke.txt",
+        "bytes": 707477,
+        "sha256": "1a46b90e0b14faac1b624880abc4ffd505f1184a7f2bccf7fe2910ff44623e4e",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/system.txt",
+        "bytes": 596,
+        "sha256": "c3f1b70f049ece22ce2b6d012adf063a17065bd5cd30ac6f352cbee8fdf4fc43",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/1_Set up job.txt",
+        "bytes": 2043,
+        "sha256": "bfb431475e048829927bb592deec4fa9489752686b092a60282968afe0df591c",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/2_Run actions_checkout@v7.0.1.txt",
+        "bytes": 14575,
+        "sha256": "e2cab3686d9ecc1426a98e4c1c888642d23b4d3b9827f75afac560e2770cf36d",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/3_Install nightly-2026-07-20.txt",
+        "bytes": 17639,
+        "sha256": "7a93d7ed26e71b21f7179879d0bc4819fe86a0bc48733158633bd82e276ceb83",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/4_Install cargo-fuzz 0.13.2.txt",
+        "bytes": 9865,
+        "sha256": "cdb281b8644ba573e4d309932d9597104e2b216fb1ea203accdfc259a0075c75",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/5_Prepare the C++ and sanitizer toolchain.txt",
+        "bytes": 1686,
+        "sha256": "f1b90616727d5070f6c7adc71c5dc5790ae6db6a6671766929c1b6e29504a049",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/6_Check the committed corpus against the targets.txt",
+        "bytes": 9714,
+        "sha256": "fd842d885f51b54f4e59ced7e92348aabc149024ddb1c4529d8c3744f6345a80",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/7_Run the bounded query smoke.txt",
+        "bytes": 205406,
+        "sha256": "c67221ad54e4d97189c529685f7fd0b490681470d2fa4556f4f859c6099053fa",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/8_Run the bounded artifact-tree smoke.txt",
+        "bytes": 150229,
+        "sha256": "a3a5d70df40cf03cd9acc7b4d817923a413b18221f09cab07f437c038f8b5446",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/9_Run the bounded method-analysis smoke.txt",
+        "bytes": 291586,
+        "sha256": "6c983416992772b9e0c1db342954335f1c59aec193fb2322775a567e484aa9bb",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/10_Ensure the smoke runs left the tracked tree unchanged.txt",
+        "bytes": 610,
+        "sha256": "0eb3cc1ed77dec66382ff51686e46400d1de4c26d3e59ac458b3ddb51eddfd86",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/20_Post Run actions_checkout@v7.0.1.txt",
+        "bytes": 4096,
+        "sha256": "42716ce12c396637088d6a91526923c23508d76ef9e577ea2fc5233094b388d6",
+        "matches": true
+      },
+      {
+        "path": "fuzz smoke/21_Complete job.txt",
+        "bytes": 61,
+        "sha256": "b01a62409e1ca2b46bf2f4debcae13c5b00dd45f02b502edbe308a0a946d3e4e",
+        "matches": true
+      },
+      {
+        "path": "1_stable _ test and specification.txt",
+        "bytes": 1260013,
+        "sha256": "5bf56cf105e37c8f72bbc14444e1980bd901a21bc8be8bec4097585b405a3cd6",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/system.txt",
+        "bytes": 592,
+        "sha256": "5b363cdd9eb050c2560a9738fa707be200bbef4d89bccffc102e3699f9dda7b9",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/1_Set up job.txt",
+        "bytes": 2319,
+        "sha256": "5b7b2e1748b91426d27eebf53b36ada16aec3e0f1634780689b799742e2b06bf",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/2_Run actions_checkout@v7.0.1.txt",
+        "bytes": 14771,
+        "sha256": "76b99c384b1a5fb67dcf857f26f5e6b785e99c6267dfdf8fdd9dce763a93b03b",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/3_Install stable Rust with lint components.txt",
+        "bytes": 17556,
+        "sha256": "788cfce4befd77bc5b51336f1a8226039a6adfa8bb0882b69126d9a11c2a6b0a",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/4_Install Temurin 25.0.4+7.txt",
+        "bytes": 3135,
+        "sha256": "8b0d1679bc07e0170746296118c0fb01877602e50c6e10e6f7ae0a9da60d1c0b",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/5_Install Node.js 22.txt",
+        "bytes": 1238,
+        "sha256": "f9f025776c9df607043f0e9746b854b6e74cd1752e42445b82af30ecbdd1eb67",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/6_Check formatting.txt",
+        "bytes": 815,
+        "sha256": "410ccc75789871cb2887c4823b55a40d8530a14e790f3192f1c6f6769aaeb92e",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/7_Run Clippy.txt",
+        "bytes": 14305,
+        "sha256": "64bd92626c148ff1aa43cac17b2a733dc65c5032cf657023c2cabaf36e9ad38c",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/8_Run workspace tests with two fixed independent seeds (pass 1).txt",
+        "bytes": 570810,
+        "sha256": "3ec96ac797df88edd6bdc80b6cc5bb80436df878401130ed3ba84acee4d0321d",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/9_Run workspace tests with two fixed independent seeds (pass 2).txt",
+        "bytes": 565619,
+        "sha256": "6750bd5408a19e2e9f310d215a1db8d32f8e52812b1fdb2145dfdab0c6dd8654",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/10_Run ignored JDK 25 instruction-boundary oracle.txt",
+        "bytes": 2598,
+        "sha256": "c65a002876e974ca75c42c51cec9bcfeb8be382385373624f1f88f58010983f3",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/11_Run the ignored P3 Java 8 compile-and-execute comparison.txt",
+        "bytes": 1823,
+        "sha256": "353ca26be34441e81f5a4ad58cadfb3a908a2f8b79de4fae87ed8cffc342beaf",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/12_Run the functional-constructor full-class comparison.txt",
+        "bytes": 2507,
+        "sha256": "2e6c119ed23b756318bdec718debc1b1a0d02c3b15c9b8f583706bbbd908357b",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/13_Run the BigDecimal Number full-class comparisons.txt",
+        "bytes": 1754,
+        "sha256": "cccf5cb104d912c10147afeb6ef3f2cf16a39681912f28958e5fab008b348286",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/14_Run the nested int array full-class comparisons.txt",
+        "bytes": 1787,
+        "sha256": "d49ff0c0790d695df9ba3528772f7d36e2251abf365c78ff8e6c33c853f280f2",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/15_Run the returned int array full-class comparison.txt",
+        "bytes": 1720,
+        "sha256": "bfd56c4301f7206ad81e41c16cba9c2744bf734332a50a013ec12550f3fe9d14",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/16_Run public API example.txt",
+        "bytes": 9537,
+        "sha256": "e081cfe844ef132ab96586f0b40b864b5daca4506897ac76598a261e11f050c0",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/17_Check resolved feature tree.txt",
+        "bytes": 3784,
+        "sha256": "8ef159cc8e05c8e32cab0286ecd5b21288050b91a9a186d47bce06ec71117651",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/18_Check normal dependency tree boundary.txt",
+        "bytes": 1714,
+        "sha256": "0b6c46d705d3d8e9db2331f56df9ca49dd00416022935014b90702ac2a7f38bf",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/19_Check layered crate dependency closure.txt",
+        "bytes": 7855,
+        "sha256": "90e29d36ebee89c50a8c6d0e93dddd9ba11660011be0caac343fbdae4a6271ce",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/20_Install OpenSpec 1.11.0.txt",
+        "bytes": 1095,
+        "sha256": "2e6ca48a31143eb28a16d3570cdd696e1caa68565228d65918f45611527abc39",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/21_Validate OpenSpec strictly.txt",
+        "bytes": 28286,
+        "sha256": "5fde7263bcd09f807bed03ff661f80f6fa5f4b78c5dc1b9b554df7637addcbe3",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/22_Ensure tracked files remain unchanged.txt",
+        "bytes": 803,
+        "sha256": "9d5c770c18539640888698884dd34c5071473ee546b65fa97b09a039e9b30b2b",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/42_Post Install Node.js 22.txt",
+        "bytes": 50,
+        "sha256": "e82d405b7d27a95e7aa6bd0d93da000be840bb280e15d6350790a0a647a4c8a2",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/43_Post Install Temurin 25.0.4+7.txt",
+        "bytes": 50,
+        "sha256": "b12db954b68bdaea3d6c5d7a776a1ec348afb28328e6636fdea392a05e5c3770",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/44_Post Run actions_checkout@v7.0.1.txt",
+        "bytes": 4096,
+        "sha256": "63e6a062611a9405148b13be9ad17a4916f5ca54fd0e470a24af6a3266fa472a",
+        "matches": true
+      },
+      {
+        "path": "stable _ test and specification/45_Complete job.txt",
+        "bytes": 61,
+        "sha256": "793b23c1a4f50fa47c70c175beb0a004681357d94e88b0017830ff5a13ad0e95",
+        "matches": true
+      },
+      {
+        "path": "2_supply chain.txt",
+        "bytes": 71977,
+        "sha256": "f25cb5f2e5dedba0e96e4e07c9cd421fd8844a59ba8204e41873995bf1a73d1a",
+        "matches": true
+      },
+      {
+        "path": "supply chain/system.txt",
+        "bytes": 598,
+        "sha256": "6737ddb6dc757107b9cb80926cd0c789cb49f1afcc1b80596e93d6d461c5567f",
+        "matches": true
+      },
+      {
+        "path": "supply chain/1_Set up job.txt",
+        "bytes": 2038,
+        "sha256": "051f4312c6dc1b0ec76cddb6f975af84d314a8fb8aa47ee310bb386710e9c115",
+        "matches": true
+      },
+      {
+        "path": "supply chain/2_Run actions_checkout@v7.0.1.txt",
+        "bytes": 14769,
+        "sha256": "9caf5604547e29dd146bea93d9fda3adc582768f48f5a85571e653c2cbefb99d",
+        "matches": true
+      },
+      {
+        "path": "supply chain/3_Install stable Rust for cargo-deny.txt",
+        "bytes": 17241,
+        "sha256": "c9ebd6dc6325a463e834ee6f3b80d32fb3f48a0029af49cdcf533991aada48ad",
+        "matches": true
+      },
+      {
+        "path": "supply chain/4_Install cargo-deny 0.20.2.txt",
+        "bytes": 22060,
+        "sha256": "431d0c7964733596b50c5b3fe793b0d36f381bcb73e7d2df9ff14cf41b58ceb6",
+        "matches": true
+      },
+      {
+        "path": "supply chain/5_Check root workspace advisories, licenses, bans, and sources.txt",
+        "bytes": 5967,
+        "sha256": "fe15ecac612e1c06b2d94ff0e342bcb8d7057c493c067e7ad3cd20d850674987",
+        "matches": true
+      },
+      {
+        "path": "supply chain/6_Check fuzz workspace advisories, licenses, bans, and sources.txt",
+        "bytes": 5766,
+        "sha256": "abab4280fcfaee75158b054bde854ddf5ad64ff1835f917edd6aa828737b17dc",
+        "matches": true
+      },
+      {
+        "path": "supply chain/12_Post Run actions_checkout@v7.0.1.txt",
+        "bytes": 4096,
+        "sha256": "758e2ccae7bac8e66856712a35e0aa3a8c017a7d2bb1c2a8574f2248aba533ba",
+        "matches": true
+      },
+      {
+        "path": "supply chain/13_Complete job.txt",
+        "bytes": 61,
+        "sha256": "3f43d6559b1f161eb7a523e0a3016d2b8a7dc69f9b6009e6dc7b0d962fb161fd",
+        "matches": true
+      },
+      {
+        "path": "3_MSRV 1.88.0.txt",
+        "bytes": 50722,
+        "sha256": "2040bc2cfb16affce5f48a7989d4879dc8e1ff9fa138cf4a510310115c262dbf",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/system.txt",
+        "bytes": 590,
+        "sha256": "d584f61ce85cd082334f2fba59bb7139d0e2c4840b71f20864da60a4b917042e",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/1_Set up job.txt",
+        "bytes": 2036,
+        "sha256": "b745d9616d4dca05fd72581084c1478889744c9bf21501706b10ba445663b60a",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/2_Run actions_checkout@v7.0.1.txt",
+        "bytes": 14835,
+        "sha256": "ec55c015862c2b389f3d6c29c72ed9125c8c0efdb8611ff2d31f7c3d92f2d86d",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/3_Install Rust 1.88.0.txt",
+        "bytes": 17407,
+        "sha256": "de14bd72626e91ec1dbdb80848f08f9bd721b4914d3fcaae21b016aa8366d705",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/4_Check workspace on MSRV.txt",
+        "bytes": 12302,
+        "sha256": "baf8c92baefe4b7c7dfe98e37d7d5c4baf3ed621c08d1744587eddc0899e480d",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/8_Post Run actions_checkout@v7.0.1.txt",
+        "bytes": 4096,
+        "sha256": "20db17edacef9e28bc76cb7ac8f7310ad68c3011d113749a6a63fcc0111d78f9",
+        "matches": true
+      },
+      {
+        "path": "MSRV 1.88.0/9_Complete job.txt",
+        "bytes": 61,
+        "sha256": "f51b900705890facdc34bc3fd085037491149af891f96bb38aa89313891b45fd",
+        "matches": true
+      }
+    ]
+  },
+  "product_ci": {
+    "head": "aadf71f3b4f5658485196edb63fb553f8c107380",
+    "run_id": 38703952159,
+    "root_acceptance": {
+      "status": "accepted_exact_product_ci",
+      "checks": 826,
+      "errors": [],
+      "jobs": 4,
+      "steps": 52
+    },
+    "independent_review": {
+      "status": "accepted_independent_exact_product_ci_review",
+      "checks": 1549,
+      "errors": [],
+      "jobs": 4,
+      "steps": 52
+    },
+    "capture": {
+      "status": "captured_pending_root_acceptance",
+      "run_status": "completed",
+      "conclusion": "success",
+      "job_count": 4,
+      "all_jobs_match_head_success": true
+    },
+    "source_binding": {
+      "head": "aadf71f3b4f5658485196edb63fb553f8c107380",
+      "source_count": 4905,
+      "source_bytes_git_blobs_match": true,
+      "own_ci_accepted_historical_value": false,
+      "status": "accepted_clean_committed_product_exact_frozen_source"
+    }
+  },
+  "gate_inventory": {
+    "prior105": 105,
+    "new16": 16,
+    "unique_total": 121,
+    "status": "prepared_gate_inventory_not_execution_evidence",
+    "seed_log_summaries": [
+      {
+        "seed": "5350648285461741569",
+        "summary_count": 368,
+        "passed": 3631,
+        "failed": 0,
+        "ignored": 98,
+        "named_test_outcomes": 3729,
+        "matched_green_gates": 121,
+        "all_121_gates_green": true,
+        "missing_gates": []
+      },
+      {
+        "seed": "5350648285461741570",
+        "summary_count": 368,
+        "passed": 3631,
+        "failed": 0,
+        "ignored": 98,
+        "named_test_outcomes": 3729,
+        "matched_green_gates": 121,
+        "all_121_gates_green": true,
+        "missing_gates": []
+      }
+    ]
+  },
+  "scope": "CI belongs to aadf product only. Preserve historical captured_pending_root_acceptance and source_binding own_ci_accepted=false snapshots; terminal acceptances are separate records. Later documentation source parity does not create new own-CI evidence. Native CLI/JDK/runtime, EM11 and duplicate local archive excluded.",
+  "audit_note": "Read-only package/log audit; no native CI tests or toolchain rerun."
+}

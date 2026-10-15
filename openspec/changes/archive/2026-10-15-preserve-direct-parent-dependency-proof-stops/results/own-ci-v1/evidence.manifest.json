@@ -1,0 +1,29 @@
+{
+  "status": "copied_exact_verified",
+  "items": [
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/direct-parent-own-ci-evidence-v1.tar.gz",
+      "destination": "capture.tar.gz",
+      "bytes": 2315516,
+      "sha256": "974cfafc3cff3d6c26e341d30d8ab3aecd47795fc024d3acad252f6dfae79f06"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/manifest.json",
+      "destination": "manifest.json",
+      "bytes": 111671,
+      "sha256": "28d2ce1741d82e0e150564029dada8809c716299a1549a3852169da0ba88479d"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/execution.json",
+      "destination": "package-execution.json",
+      "bytes": 1538,
+      "sha256": "ef69afe9c6d61dae35b4de70b3948c8461a0129098ab80c48930b7faeb86b7f5"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/independent-package-audit-v1.json",
+      "destination": "independent-package-audit.json",
+      "bytes": 76394,
+      "sha256": "ebec85f9d6710de5d02e2cd9c1233c05a4702c60d1837a93ada470a5fbe0f3b5"
+    }
+  ]
+}

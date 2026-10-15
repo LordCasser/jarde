@@ -1,0 +1,32 @@
+{
+  "status": "packaged_and_reopened_verified",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/direct-parent-own-ci-evidence-v1.tar.gz",
+    "bytes": 2315516,
+    "sha256": "974cfafc3cff3d6c26e341d30d8ab3aecd47795fc024d3acad252f6dfae79f06"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/manifest.json",
+    "bytes": 111671,
+    "sha256": "28d2ce1741d82e0e150564029dada8809c716299a1549a3852169da0ba88479d"
+  },
+  "allowlist": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/allowlist.json",
+    "bytes": 110460,
+    "sha256": "ce40763d86f297bf99de6261606dcf4dde21d376479e9aaddb4de24b082bc9e2"
+  },
+  "packager": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-own-ci-evidence-package-v1/package.py",
+    "bytes": 8088,
+    "sha256": "121a434f3818fcd491c32dd351bd842ef981bf1563c0fb98b5752add8aa32ff8"
+  },
+  "payload_files": 314,
+  "tar_members": 315,
+  "raw_files": 294,
+  "zip_members": 60,
+  "external_local_evidence_archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/run-v1/direct-parent-local-fix-evidence-v1.tar.gz",
+    "bytes": 4686292,
+    "sha256": "ac025d0974ff090d038948e25d4e972a2ecd567a3a3cfd7bedc66ab441a055b0"
+  }
+}

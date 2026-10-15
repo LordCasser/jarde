@@ -1,0 +1,88 @@
+{
+  "status": "accepted_archive_after_verified_agent_sync",
+  "archive_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-direct-parent-dependency-proof-stops",
+  "spec_sync_already_verified": true,
+  "cli_skip_specs_reason": "Agent sync already applied and exact delta/main comparison found nothing remaining; preserve synced main bytes.",
+  "sync_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/sync-receipt.json",
+    "bytes": 863,
+    "sha256": "ceecf97490b8570ef8f7108f37af5d8b284231f663536fb6497e204916814801"
+  },
+  "main": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/java8-recovery/spec.md",
+    "bytes": 66674,
+    "sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "archive",
+        "preserve-direct-parent-dependency-proof-stops",
+        "--yes",
+        "--skip-specs",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive.stdout.raw",
+          "bytes": 453,
+          "sha256": "baa2be6453fb13e8ba41b6284ed1fe54016d9490f4517a035b70cdeef26d63fd"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-ci-strict.stdout.raw",
+          "bytes": 16783,
+          "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-ci-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-local-strict.stdout.raw",
+          "bytes": 16783,
+          "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-local-strict.stderr.raw",
+          "bytes": 2201,
+          "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+        }
+      }
+    }
+  ]
+}

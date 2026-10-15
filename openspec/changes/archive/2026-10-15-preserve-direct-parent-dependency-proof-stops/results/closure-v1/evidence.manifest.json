@@ -1,0 +1,161 @@
+{
+  "status": "copied_exact_verified",
+  "items": [
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/apply-final.stderr.raw",
+      "destination": "apply-final.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/apply-final.stdout.raw",
+      "destination": "apply-final.stdout.raw",
+      "bytes": 7260,
+      "sha256": "74fd82cf3c7096892bc7f991df8706672f64ad9fa4ff726cb6a95f8e33d812cf"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive-execution.json",
+      "destination": "archive-execution.json",
+      "bytes": 3650,
+      "sha256": "2fbf1dd25165fbe738bd7138d8dfc33f0bfa746587e8b0a90ee3e030eb3037bb"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive-instructions.stderr.raw",
+      "destination": "archive-instructions.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive-instructions.stdout.raw",
+      "destination": "archive-instructions.stdout.raw",
+      "bytes": 2472,
+      "sha256": "688b7b54da3c783d602bd6f0cb570df2ee228bb9abbcfc6d83e977a7acebed2b"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive.stderr.raw",
+      "destination": "archive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/archive.stdout.raw",
+      "destination": "archive.stdout.raw",
+      "bytes": 453,
+      "sha256": "baa2be6453fb13e8ba41b6284ed1fe54016d9490f4517a035b70cdeef26d63fd"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/ci-prearchive-strict.stderr.raw",
+      "destination": "ci-prearchive-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/ci-prearchive-strict.stdout.raw",
+      "destination": "ci-prearchive-strict.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/finish_archive.py",
+      "destination": "finish_archive.py",
+      "bytes": 2474,
+      "sha256": "c6e98e4079c3b0ffbccf890708fc0eb5307aee695e3c750cedbed23d4534c0d8"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/local-prearchive-strict.stderr.raw",
+      "destination": "local-prearchive-strict.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/local-prearchive-strict.stdout.raw",
+      "destination": "local-prearchive-strict.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/main-before.md",
+      "destination": "main-before.md",
+      "bytes": 63029,
+      "sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-ci-strict.stderr.raw",
+      "destination": "postarchive-ci-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-ci-strict.stdout.raw",
+      "destination": "postarchive-ci-strict.stdout.raw",
+      "bytes": 16783,
+      "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-local-strict.stderr.raw",
+      "destination": "postarchive-local-strict.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/postarchive-local-strict.stdout.raw",
+      "destination": "postarchive-local-strict.stdout.raw",
+      "bytes": 16783,
+      "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/prearchive-validation-execution.json",
+      "destination": "prearchive-validation-execution.json",
+      "bytes": 3591,
+      "sha256": "8212cb1be387db81d5292bb12da2bba7ad65ac0e5e89a47687adfeb200a642f3"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/product-source-parity.json",
+      "destination": "product-source-parity.json",
+      "bytes": 473,
+      "sha256": "5aaaf039c2e7736f011f5fc13d31d35bb098fbe0cf20a9bf9a2c711580213da2"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/specs-instructions.stderr.raw",
+      "destination": "specs-instructions.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/specs-instructions.stdout.raw",
+      "destination": "specs-instructions.stdout.raw",
+      "bytes": 10746,
+      "sha256": "554f91f6fa5c58a53ce86c034c8ab349b4f0fdb7766aabf53664bb71df732fb8"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/specs-validate.stderr.raw",
+      "destination": "specs-validate.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/specs-validate.stdout.raw",
+      "destination": "specs-validate.stdout.raw",
+      "bytes": 515,
+      "sha256": "be7f29110b68fd3a163e3493f0b599437452668b69093de484c0863fca237956"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/status.stderr.raw",
+      "destination": "status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/status.stdout.raw",
+      "destination": "status.stdout.raw",
+      "bytes": 3532,
+      "sha256": "7d299c37b79328afb46ac040f930f2f947a73561eefd18ef680944c236d6d5dc"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-sync-archive-root-v1/sync-receipt.json",
+      "destination": "sync-receipt.json",
+      "bytes": 863,
+      "sha256": "ceecf97490b8570ef8f7108f37af5d8b284231f663536fb6497e204916814801"
+    }
+  ]
+}
