@@ -60,7 +60,7 @@ use crate::declaration::Declaration;
 use crate::evidence::{EvidencePhase, Materialized, SegmentPublication};
 use crate::facts::RecoveryFacts;
 use crate::source_map::{OriginSet, Segment, SourceMap};
-use crate::stop::{StopReason, charge, poll};
+use crate::stop::{StopReason, charge, check, poll};
 
 /// One produced artifact: the text, and what the emission that wrote it did.
 ///
@@ -1589,7 +1589,14 @@ impl<'a> Emitter<'a> {
             return Err(Halt::Stop(stop));
         }
         let bytes = u64::try_from(text.len()).unwrap_or(u64::MAX);
-        if let Err(stop) = charge(self.budget, CountedBudgetDimension::OutputBytes, bytes, at) {
+        if let Err(stop) = check(
+            &*self.budget,
+            CountedBudgetDimension::OutputBytes,
+            bytes,
+            at,
+        )
+        .and_then(|()| charge(self.budget, CountedBudgetDimension::OutputBytes, bytes, at))
+        {
             let stop = match stop {
                 StopReason::Budget {
                     dimension: CountedBudgetDimension::OutputBytes,
@@ -2017,60 +2024,64 @@ mod tests {
 
     #[test]
     fn output_admission_preserves_cancellation_after_initial_poll() {
-        let token = CancellationToken::new();
-        let mut budget =
-            Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
-        let observer = checkpoint_observer(token.clone(), 2);
-        assert!(!token.is_cancelled());
-        attach_checkpoint_observer(&mut budget, observer.clone());
-        let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+        for cancel_at in [2, 3] {
+            let token = CancellationToken::new();
+            let mut budget =
+                Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
+            let observer = checkpoint_observer(token.clone(), cancel_at);
+            assert!(!token.is_cancelled());
+            attach_checkpoint_observer(&mut budget, observer.clone());
+            let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
 
-        let result = emitter.put("candidate", Some(17));
+            let result = emitter.put("candidate", Some(17));
 
-        assert!(
-            matches!(
-                &result,
-                Err(Halt::Stop(StopReason::Cancelled { at: Some(17) }))
-            ),
-            "actual stop: {result:?}"
-        );
-        assert_eq!(observer.checkpoints.load(Ordering::SeqCst), 2);
-        assert!(token.is_cancelled());
-        assert!(emitter.text.is_empty(), "stopped output must be discarded");
-        assert_eq!(emitter.written, 0);
-        assert_eq!(emitter.budget.usage().output_bytes, 0);
+            assert!(
+                matches!(
+                    &result,
+                    Err(Halt::Stop(StopReason::Cancelled { at: Some(17) }))
+                ),
+                "cancel_at={cancel_at}, actual stop: {result:?}"
+            );
+            assert_eq!(observer.checkpoints.load(Ordering::SeqCst), cancel_at);
+            assert!(token.is_cancelled());
+            assert!(emitter.text.is_empty(), "stopped output must be discarded");
+            assert_eq!(emitter.written, 0);
+            assert_eq!(emitter.budget.usage().output_bytes, 0);
+        }
     }
 
     #[test]
     fn cancellation_after_a_prior_write_discards_text_and_keeps_only_prior_charge() {
-        let token = CancellationToken::new();
-        let mut budget =
-            Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
-        let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
-        emitter.put("first", Some(11)).unwrap();
-        let observer = checkpoint_observer(token.clone(), 2);
-        assert!(!token.is_cancelled());
-        let ledger = OperationLedger::new(&*emitter.budget).with_observer(observer.clone());
-        emitter.budget.with_ledger(ledger, UsageOwner::Methods);
+        for cancel_at in [2, 3] {
+            let token = CancellationToken::new();
+            let mut budget =
+                Budget::with_cancellation_token(budget_with(128).limits().clone(), token.clone());
+            let mut emitter = Emitter::commit(&mut budget, None, None, &[]);
+            emitter.put("first", Some(11)).unwrap();
+            let observer = checkpoint_observer(token.clone(), cancel_at);
+            assert!(!token.is_cancelled());
+            let ledger = OperationLedger::new(&*emitter.budget).with_observer(observer.clone());
+            emitter.budget.with_ledger(ledger, UsageOwner::Methods);
 
-        let result = emitter.put("second", Some(29));
+            let result = emitter.put("second", Some(29));
 
-        assert!(
-            matches!(
-                &result,
-                Err(Halt::Stop(StopReason::Cancelled { at: Some(29) }))
-            ),
-            "actual stop: {result:?}"
-        );
-        assert_eq!(observer.checkpoints.load(Ordering::SeqCst), 2);
-        assert!(token.is_cancelled());
-        assert!(
-            emitter.text.is_empty(),
-            "a stopped emission has no partial text"
-        );
-        assert_eq!(emitter.written, 5);
-        assert_eq!(emitter.budget.usage().output_bytes, 5);
-        assert_eq!(emitter.limit, 128);
+            assert!(
+                matches!(
+                    &result,
+                    Err(Halt::Stop(StopReason::Cancelled { at: Some(29) }))
+                ),
+                "cancel_at={cancel_at}, actual stop: {result:?}"
+            );
+            assert_eq!(observer.checkpoints.load(Ordering::SeqCst), cancel_at);
+            assert!(token.is_cancelled());
+            assert!(
+                emitter.text.is_empty(),
+                "a stopped emission has no partial text"
+            );
+            assert_eq!(emitter.written, 5);
+            assert_eq!(emitter.budget.usage().output_bytes, 5);
+            assert_eq!(emitter.limit, 128);
+        }
     }
 
     fn facts() -> RecoveryFacts {

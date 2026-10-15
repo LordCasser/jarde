@@ -108,7 +108,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 59,
+          "analysis_steps": 61,
           "archive_entries": 0,
           "attribute_bytes": 122,
           "class_bytes": 147,
@@ -118,7 +118,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 3,
-          "ir_items": 10061,
+          "ir_items": 10062,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 0,
@@ -147,7 +147,7 @@
         "entry_bytes": 16777216,
         "input_bytes": 16777216,
         "ir_edges": 16777216,
-        "ir_items": 10062,
+        "ir_items": 10063,
         "method_bodies": 10,
         "nested_depth": 8,
         "normalization_clones": 16,
@@ -196,7 +196,7 @@
         "diagnostics": [
           {
             "code": "budget_exceeded_ir_items",
-            "message": "budget exceeded for IrItems: limit=10062, consumed=10061, requested=10000",
+            "message": "budget exceeded for IrItems: limit=10063, consumed=10062, requested=10000",
             "provenance": null,
             "severity": "warning"
           }
@@ -253,7 +253,7 @@
           },
           "status": "partial",
           "usage": {
-            "analysis_steps": 59,
+            "analysis_steps": 61,
             "archive_entries": 0,
             "attribute_bytes": 122,
             "class_bytes": 147,
@@ -263,7 +263,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 3,
-            "ir_items": 10061,
+            "ir_items": 10062,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 0,
@@ -551,7 +551,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 58,
+          "analysis_steps": 60,
           "archive_entries": 0,
           "attribute_bytes": 122,
           "class_bytes": 147,
@@ -561,7 +561,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 3,
-          "ir_items": 61,
+          "ir_items": 62,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 0,
@@ -685,7 +685,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 58,
+            "analysis_steps": 60,
             "archive_entries": 0,
             "attribute_bytes": 122,
             "class_bytes": 147,
@@ -695,7 +695,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 3,
-            "ir_items": 61,
+            "ir_items": 62,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 0,
@@ -978,7 +978,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 95,
+          "analysis_steps": 97,
           "archive_entries": 0,
           "attribute_bytes": 122,
           "class_bytes": 147,
@@ -988,7 +988,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 3,
-          "ir_items": 280088,
+          "ir_items": 280089,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 0,
@@ -1112,7 +1112,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 95,
+            "analysis_steps": 97,
             "archive_entries": 0,
             "attribute_bytes": 122,
             "class_bytes": 147,
@@ -1122,7 +1122,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 3,
-            "ir_items": 280088,
+            "ir_items": 280089,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 0,
@@ -1411,7 +1411,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 599,
+          "analysis_steps": 601,
           "archive_entries": 0,
           "attribute_bytes": 570,
           "class_bytes": 371,
@@ -1421,7 +1421,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 3,
-          "ir_items": 1960592,
+          "ir_items": 1960593,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 0,
@@ -1545,7 +1545,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 599,
+            "analysis_steps": 601,
             "archive_entries": 0,
             "attribute_bytes": 570,
             "class_bytes": 371,
@@ -1555,7 +1555,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 3,
-            "ir_items": 1960592,
+            "ir_items": 1960593,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 0,
@@ -2284,7 +2284,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 169,
+          "analysis_steps": 171,
           "archive_entries": 0,
           "attribute_bytes": 122,
           "class_bytes": 147,
@@ -2294,7 +2294,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 36,
-          "ir_items": 300446,
+          "ir_items": 300447,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 0,
@@ -2418,7 +2418,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 169,
+            "analysis_steps": 171,
             "archive_entries": 0,
             "attribute_bytes": 122,
             "class_bytes": 147,
@@ -2428,7 +2428,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 36,
-            "ir_items": 300446,
+            "ir_items": 300447,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 0,

@@ -125,27 +125,51 @@ pub(crate) fn charge(
         return Err(StopReason::Cancelled { at });
     }
     if let Err(error) = budget.charge(dimension, requested) {
-        return Err(match error {
-            Error::Cancelled { .. } => StopReason::Cancelled { at },
-            Error::BudgetExceeded {
-                dimension: BudgetDimension::ElapsedMillis,
-                ..
-            } => StopReason::Interrupted {
-                code: BUDGET_INTERRUPTED_CODE,
-                at,
-            },
-            _ => {
-                let limit = budget.limits().counted_limit(dimension);
-                StopReason::Budget {
-                    dimension,
-                    written: budget.usage().output_bytes,
-                    limit,
-                    at,
-                }
-            }
-        });
+        return Err(stop_from_error(budget, dimension, error, at));
     }
     Ok(())
+}
+
+/// Checks whether a counted operation may proceed without consuming its allowance.
+///
+/// Kept beside [`charge`] so a probe and its admission charge report failures through the same
+/// recovery stop vocabulary.
+pub(crate) fn check(
+    budget: &Budget,
+    dimension: CountedBudgetDimension,
+    requested: u64,
+    at: Option<u32>,
+) -> Result<(), StopReason> {
+    budget
+        .check(dimension, requested)
+        .map_err(|error| stop_from_error(budget, dimension, error, at))
+}
+
+fn stop_from_error(
+    budget: &Budget,
+    dimension: CountedBudgetDimension,
+    error: Error,
+    at: Option<u32>,
+) -> StopReason {
+    match error {
+        Error::Cancelled { .. } => StopReason::Cancelled { at },
+        Error::BudgetExceeded {
+            dimension: BudgetDimension::ElapsedMillis,
+            ..
+        } => StopReason::Interrupted {
+            code: BUDGET_INTERRUPTED_CODE,
+            at,
+        },
+        _ => {
+            let limit = budget.limits().counted_limit(dimension);
+            StopReason::Budget {
+                dimension,
+                written: budget.usage().output_bytes,
+                limit,
+                at,
+            }
+        }
+    }
 }
 
 /// The poll every stage runs before starting a step, so that a cancellation is noticed even where no
