@@ -1576,6 +1576,11 @@
       "path": "tests/fixtures/em01-member-pair/replay.sh"
     },
     {
+      "blake3": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+      "bytes": 5001,
+      "path": "tests/fixtures/em11-reference-overload.jar"
+    },
+    {
       "blake3": "814fd5c9afd42261cf7c0efd7c796bb895a02efe6ec2ad40eee756c3a5553a68",
       "bytes": 649,
       "path": "tests/fixtures/em20-monitor-reuse/LocalScopes.class"

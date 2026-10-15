@@ -1,0 +1,2166 @@
+{
+  "schema": "reference-overload-own-ci-failure-audit-v1",
+  "status": "independent_cache_only_failure_review",
+  "scope": "Read-only review of preserved API capture/raw streams and failed CI logs ZIP. No CI, source tests, native tools, or network calls were run.",
+  "product": {
+    "head": "ba3fa76af4241304ce06fdf2722355826c80402b",
+    "head_length": 40,
+    "branch": "codex/reference-overload-proof-stops",
+    "run_id": 38717487054,
+    "run_status": "completed",
+    "conclusion": "failure"
+  },
+  "capture": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/execution.json",
+    "bytes": 76103,
+    "sha256": "d6f3cc300aa821b8b83d8f86c025f758020465d31396f692439fc51c3ef53801"
+  },
+  "logs_zip": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/logs.zip",
+    "bytes": 459893,
+    "sha256": "b7264ec6b6f702a3f06008e9c824c40e9a3fd45b4e3581fced33622ee3deb763"
+  },
+  "api_observations": 81,
+  "api_raw_stream_count": 162,
+  "api_endpoint_counts": {
+    "repos/LordCasser/jarde/actions/runs/38717487054": 40,
+    "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100": 40,
+    "repos/LordCasser/jarde/actions/runs/38717487054/logs": 1
+  },
+  "api_raw_pins": [
+    {
+      "observation": 0,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/0-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 0,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/0-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 1,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/0-jobs.stdout.raw",
+      "bytes": 9861,
+      "sha256": "edde77f7b7faff588f3630f5b9d97524a758a556e79e8a299c3f0b0357e0dbfb"
+    },
+    {
+      "observation": 1,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/0-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 2,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/1-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 2,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/1-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 3,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/1-jobs.stdout.raw",
+      "bytes": 10584,
+      "sha256": "3f0c26e5c8ab4da856a9761be8e054870eee129420f31715f1dea1115fd75a51"
+    },
+    {
+      "observation": 3,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/1-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 4,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/2-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 4,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/2-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 5,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/2-jobs.stdout.raw",
+      "bytes": 10584,
+      "sha256": "3f0c26e5c8ab4da856a9761be8e054870eee129420f31715f1dea1115fd75a51"
+    },
+    {
+      "observation": 5,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/2-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 6,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/3-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 6,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/3-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 7,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/3-jobs.stdout.raw",
+      "bytes": 10670,
+      "sha256": "d3d107eaa55314bb473635c20e3331087f4395b9155dffc63d06661cae021888"
+    },
+    {
+      "observation": 7,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/3-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 8,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/4-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 8,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/4-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 9,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/4-jobs.stdout.raw",
+      "bytes": 10908,
+      "sha256": "3848f21727e45404d6f20173b60f627f72a9833fae5931d0abec9994bbcd002f"
+    },
+    {
+      "observation": 9,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/4-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 10,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/5-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 10,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/5-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 11,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/5-jobs.stdout.raw",
+      "bytes": 10951,
+      "sha256": "4d8a09ec0acda32271aee1d3b6753d216a8943bbf3bf1f0a9388721d287d547b"
+    },
+    {
+      "observation": 11,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/5-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 12,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/6-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 12,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/6-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 13,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/6-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 13,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/6-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 14,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/7-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 14,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/7-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 15,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/7-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 15,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/7-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 16,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/8-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 16,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/8-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 17,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/8-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 17,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/8-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 18,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/9-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 18,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/9-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 19,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/9-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 19,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/9-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 20,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/10-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 20,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/10-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 21,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/10-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 21,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/10-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 22,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/11-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 22,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/11-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 23,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/11-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 23,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/11-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 24,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/12-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 24,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/12-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 25,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/12-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 25,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/12-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 26,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/13-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 26,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/13-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 27,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/13-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 27,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/13-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 28,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/14-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 28,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/14-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 29,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/14-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 29,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/14-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 30,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/15-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 30,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/15-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 31,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/15-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 31,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/15-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 32,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/16-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 32,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/16-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 33,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/16-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 33,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/16-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 34,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/17-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 34,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/17-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 35,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/17-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 35,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/17-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 36,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/18-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 36,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/18-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 37,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/18-jobs.stdout.raw",
+      "bytes": 11319,
+      "sha256": "7d192bd7e7bde11194184fae5f177225f5147f5d953313a970444e36f94bef11"
+    },
+    {
+      "observation": 37,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/18-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 38,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/19-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 38,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/19-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 39,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/19-jobs.stdout.raw",
+      "bytes": 11362,
+      "sha256": "62621ac106cb26ebf76092acb7fc782b83ab959f0c8f0a0690f998382937e813"
+    },
+    {
+      "observation": 39,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/19-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 40,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/20-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 40,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/20-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 41,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/20-jobs.stdout.raw",
+      "bytes": 11491,
+      "sha256": "725b67a355d20f0ca346a9bb511d23f4ce99818c3d34f65a585bf15206dd6231"
+    },
+    {
+      "observation": 41,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/20-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 42,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/21-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 42,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/21-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 43,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/21-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 43,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/21-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 44,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/22-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 44,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/22-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 45,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/22-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 45,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/22-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 46,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/23-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 46,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/23-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 47,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/23-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 47,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/23-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 48,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/24-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 48,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/24-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 49,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/24-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 49,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/24-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 50,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/25-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 50,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/25-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 51,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/25-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 51,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/25-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 52,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/26-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 52,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/26-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 53,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/26-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 53,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/26-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 54,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/27-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 54,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/27-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 55,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/27-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 55,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/27-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 56,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/28-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 56,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/28-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 57,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/28-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 57,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/28-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 58,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/29-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 58,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/29-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 59,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/29-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 59,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/29-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 60,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/30-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 60,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/30-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 61,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/30-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 61,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/30-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 62,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/31-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 62,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/31-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 63,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/31-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 63,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/31-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 64,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/32-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 64,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/32-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 65,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/32-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 65,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/32-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 66,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/33-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 66,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/33-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 67,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/33-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 67,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/33-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 68,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/34-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 68,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/34-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 69,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/34-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 69,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/34-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 70,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/35-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 70,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/35-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 71,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/35-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 71,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/35-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 72,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/36-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 72,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/36-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 73,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/36-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 73,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/36-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 74,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/37-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 74,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/37-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 75,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/37-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 75,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/37-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 76,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/38-run.stdout.raw",
+      "bytes": 11869,
+      "sha256": "336c9bc74341773ff6388502d47844e44ddc06b92942d971970e2fc49cdf83f7"
+    },
+    {
+      "observation": 76,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/38-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 77,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/38-jobs.stdout.raw",
+      "bytes": 11687,
+      "sha256": "2ed53e90f188a90dc91a06ae70182961bd75e0c3fec12381354bce3ccaf3ced3"
+    },
+    {
+      "observation": 77,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/38-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 78,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/39-run.stdout.raw",
+      "bytes": 11872,
+      "sha256": "6fd5256e38f2cf9192dd177a35fa6292db387417a608102fba80c555ca99c9a7"
+    },
+    {
+      "observation": 78,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/39-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 79,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/39-jobs.stdout.raw",
+      "bytes": 12614,
+      "sha256": "fd21c6e2ba2b3b3d95a7d4411bb77899caf4d3097b90a51af2531b524126412a"
+    },
+    {
+      "observation": 79,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/jobs?per_page=100",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/39-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "observation": 80,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/logs",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/completed-log-zip.stdout.raw",
+      "bytes": 459893,
+      "sha256": "b7264ec6b6f702a3f06008e9c824c40e9a3fd45b4e3581fced33622ee3deb763"
+    },
+    {
+      "observation": 80,
+      "endpoint": "repos/LordCasser/jarde/actions/runs/38717487054/logs",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-reference-overload-ba3f-root-v1/completed-log-zip.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "terminal_api": {
+    "run": {
+      "id": 38717487054,
+      "head_sha": "ba3fa76af4241304ce06fdf2722355826c80402b",
+      "head_branch": "codex/reference-overload-proof-stops",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    "jobs_count": 4
+  },
+  "jobs": [
+    {
+      "name": "fuzz smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": 12,
+      "step_conclusions": {
+        "completed/success": 12
+      }
+    },
+    {
+      "name": "supply chain",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": 8,
+      "step_conclusions": {
+        "completed/success": 8
+      }
+    },
+    {
+      "name": "stable / test and specification",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": 26,
+      "step_conclusions": {
+        "completed/success": 10,
+        "completed/failure": 1,
+        "completed/skipped": 15
+      }
+    },
+    {
+      "name": "MSRV 1.88.0",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": 6,
+      "step_conclusions": {
+        "completed/success": 6
+      }
+    }
+  ],
+  "zip_members": [
+    {
+      "path": "0_MSRV 1.88.0.txt",
+      "bytes": 50588,
+      "sha256": "f68e029e67641b8fff37714507aae0a3dc5f6b7803ef252d1d0aeeb7872716cb"
+    },
+    {
+      "path": "MSRV 1.88.0/system.txt",
+      "bytes": 595,
+      "sha256": "4c228aff5362f9a428243f41c7b04a2f24ec0135690a499d085ffbb50cd87dcd"
+    },
+    {
+      "path": "MSRV 1.88.0/1_Set up job.txt",
+      "bytes": 2044,
+      "sha256": "f2641dcc7e95f88efcacd57cdb2fc1d8a0c3f610e9ebd80c74ebc53c0c8e09ce"
+    },
+    {
+      "path": "MSRV 1.88.0/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14691,
+      "sha256": "4df48c0c2b6e41a02c419868e5c151109d9e226b6021324ca917d72fd53075bc"
+    },
+    {
+      "path": "MSRV 1.88.0/3_Install Rust 1.88.0.txt",
+      "bytes": 17409,
+      "sha256": "7dfc15e932f3b74bfcd4e5f78c6f5add13c14f102b5986a6a4915ea6d622c973"
+    },
+    {
+      "path": "MSRV 1.88.0/4_Check workspace on MSRV.txt",
+      "bytes": 12302,
+      "sha256": "ddf5bff5b1eb3f7b3b6069e6541fca9e3d0b954a5bf4bdcdf2820e4467f52b79"
+    },
+    {
+      "path": "MSRV 1.88.0/8_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "aea7f40b0b39f9bd862615809b16c46ef50e0d02c7882471ee8517f6f9ce96cd"
+    },
+    {
+      "path": "MSRV 1.88.0/9_Complete job.txt",
+      "bytes": 61,
+      "sha256": "bfda6fe171d2ecb289c2d2103f5a7f8b4c23286ed55aed0e0519921018869b78"
+    },
+    {
+      "path": "1_fuzz smoke.txt",
+      "bytes": 643627,
+      "sha256": "1a1c54355e1df740ee10fded15dffae8c38c8f9f8605b2965c4ed3dda6e792f0"
+    },
+    {
+      "path": "fuzz smoke/system.txt",
+      "bytes": 601,
+      "sha256": "c973b28a48eff13b978b72f50842ca7e67a791961bbc248912e1e96cf49bcc00"
+    },
+    {
+      "path": "fuzz smoke/1_Set up job.txt",
+      "bytes": 2043,
+      "sha256": "a5030003c67d60e8f7c2a26dced8c743282e5d694a5f85b4f77915f9d9a0ced8"
+    },
+    {
+      "path": "fuzz smoke/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14885,
+      "sha256": "78f783314e055fbc22c9a55a0cb90afe4d764f04474f435083e2c2f50096d1c3"
+    },
+    {
+      "path": "fuzz smoke/3_Install nightly-2026-07-20.txt",
+      "bytes": 17640,
+      "sha256": "9a9547f16d3d61abd0a2c5d58bb54e02a4bd85efac0e3650bd38f162e9a07ea8"
+    },
+    {
+      "path": "fuzz smoke/4_Install cargo-fuzz 0.13.2.txt",
+      "bytes": 9865,
+      "sha256": "9757b874576f1716f66f4cb468cb8b8107a85ccd94243ae6018ffbd37a183c9c"
+    },
+    {
+      "path": "fuzz smoke/5_Prepare the C++ and sanitizer toolchain.txt",
+      "bytes": 1686,
+      "sha256": "4fb99129d999a3c6dffa57d59cf0a3c0c87714198932b9e5b5809237ec581442"
+    },
+    {
+      "path": "fuzz smoke/6_Check the committed corpus against the targets.txt",
+      "bytes": 9714,
+      "sha256": "b392b6909dbc28348ae02c136ea7d4b43ac9edfec5cbb075a5f6d2a1560169c5"
+    },
+    {
+      "path": "fuzz smoke/7_Run the bounded query smoke.txt",
+      "bytes": 173945,
+      "sha256": "51c9df78f10c91852d8afbf1f918036f2d51ef0cf25915704b6d68f09ce639a8"
+    },
+    {
+      "path": "fuzz smoke/8_Run the bounded artifact-tree smoke.txt",
+      "bytes": 141713,
+      "sha256": "63e10617c08e5d7940a8381fc0c7e2a7255bed0516bc95757c5cc0b2b6ec9015"
+    },
+    {
+      "path": "fuzz smoke/9_Run the bounded method-analysis smoke.txt",
+      "bytes": 267402,
+      "sha256": "de10338e9a93f090d4fa0021af2daeece9b42a66912d9ac24af80039858d1e37"
+    },
+    {
+      "path": "fuzz smoke/10_Ensure the smoke runs left the tracked tree unchanged.txt",
+      "bytes": 610,
+      "sha256": "9fdba8aa482881ae7254c1b34abccf21257290bedcad18c836f7b1f4a0872805"
+    },
+    {
+      "path": "fuzz smoke/20_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "5470bf982629505660b7ea4b4e5f3db1920f37d702e0a3a2078abee11261f1cd"
+    },
+    {
+      "path": "fuzz smoke/21_Complete job.txt",
+      "bytes": 61,
+      "sha256": "15bb65ac8be7fe657a7d2bfe25bfaa16a74823798f0b57451896951679d7fd7c"
+    },
+    {
+      "path": "2_stable _ test and specification.txt",
+      "bytes": 390994,
+      "sha256": "01e2d543c0021ecd7956e6d391e7a9d7337683304542e0774f43f9abc56a98a6"
+    },
+    {
+      "path": "stable _ test and specification/system.txt",
+      "bytes": 597,
+      "sha256": "ada0f42ff790e3ca3618bf980395bdc7ff19a7e6e2a20361f4d123ac4a3505f1"
+    },
+    {
+      "path": "stable _ test and specification/1_Set up job.txt",
+      "bytes": 2319,
+      "sha256": "ccfeef3c1303324be2b85f3e48c8c596ffc12032259c2d01540e25d85d2c2cad"
+    },
+    {
+      "path": "stable _ test and specification/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14363,
+      "sha256": "9b0f061fc4da10a70a1e0fbb2694e62bdb08d074e785ddb0f93934fed9123761"
+    },
+    {
+      "path": "stable _ test and specification/3_Install stable Rust with lint components.txt",
+      "bytes": 17553,
+      "sha256": "2e6ad9395a00d2e02de13fc4b420e9e93f3150f9b6d8300cf1a1b215948820d1"
+    },
+    {
+      "path": "stable _ test and specification/4_Install Temurin 25.0.4+7.txt",
+      "bytes": 3135,
+      "sha256": "21c537594d982435281ed6394341822ad794cb4134d0d7e88adf0b6b69892c1a"
+    },
+    {
+      "path": "stable _ test and specification/5_Install Node.js 22.txt",
+      "bytes": 1238,
+      "sha256": "89960e9b613fb3ff76733828e213746af8d9ed52419dd0becf9f3032f5e548c3"
+    },
+    {
+      "path": "stable _ test and specification/6_Check formatting.txt",
+      "bytes": 815,
+      "sha256": "6bc452dea2a142f753fbe40b67d7a46f6439df4588e15bf915e4096574d62fe5"
+    },
+    {
+      "path": "stable _ test and specification/7_Run Clippy.txt",
+      "bytes": 14305,
+      "sha256": "b17539926278e177607e2ba84aa667838fabb71d84c8551af79b6fb0fd9e884e"
+    },
+    {
+      "path": "stable _ test and specification/8_Run workspace tests with two fixed independent seeds (pass 1).txt",
+      "bytes": 333089,
+      "sha256": "d35581a7734875a957ef35a1f53776f7e430b8645909d78c7fd3d0d3b6b68ec4"
+    },
+    {
+      "path": "stable _ test and specification/43_Post Install Temurin 25.0.4+7.txt",
+      "bytes": 50,
+      "sha256": "8fda27dd8ad71791500814733db113c851fd6a2dadd572b1221640dacc3b2581"
+    },
+    {
+      "path": "stable _ test and specification/44_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "fc5304219c48d531adac48b4b253c5a3dc35f73a43aa5226cf02d3acbe1c279a"
+    },
+    {
+      "path": "stable _ test and specification/45_Complete job.txt",
+      "bytes": 61,
+      "sha256": "38d6dea22cc6709841c9089e5b214c1946a1e4483ac727a3e425802d3eb3cccd"
+    },
+    {
+      "path": "3_supply chain.txt",
+      "bytes": 71512,
+      "sha256": "12241a15f8072732dc61f41e5ef803aa202c31322dc84e3a98853eafe318c284"
+    },
+    {
+      "path": "supply chain/system.txt",
+      "bytes": 603,
+      "sha256": "01b17907b99d8088f5278a04c656b496b89281a106fa8194eb1da463a31e240e"
+    },
+    {
+      "path": "supply chain/1_Set up job.txt",
+      "bytes": 2040,
+      "sha256": "01035cb242f6bd83155176e2c8301646901f007ef6f0a96354560f8da5e089ac"
+    },
+    {
+      "path": "supply chain/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14299,
+      "sha256": "b37bb67b916ae466f3caeb83e3392cae9bd55ffe8b211d235951d0e943b4e652"
+    },
+    {
+      "path": "supply chain/3_Install stable Rust for cargo-deny.txt",
+      "bytes": 17244,
+      "sha256": "b233802c0108b96d71c1c1b411485706c19e6082f1f47ebc2cd655da210b8448"
+    },
+    {
+      "path": "supply chain/4_Install cargo-deny 0.20.2.txt",
+      "bytes": 22060,
+      "sha256": "50d9413f5545507c623960c721ded7c169df9efb0117449592ad9885441f365d"
+    },
+    {
+      "path": "supply chain/5_Check root workspace advisories, licenses, bans, and sources.txt",
+      "bytes": 5967,
+      "sha256": "116d892ff4e3457913f0ff28e6d25998b48cb1c5b58b0fb45d1b6d63c11652cb"
+    },
+    {
+      "path": "supply chain/6_Check fuzz workspace advisories, licenses, bans, and sources.txt",
+      "bytes": 5766,
+      "sha256": "a6ad5a549962392ef093dac99e3e40c11c8caa9481549528d9a9094fe48879cd"
+    },
+    {
+      "path": "supply chain/12_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "9870e56a4ae92c1e0d7cd1192af62d8690ddee2b229b81ca06ebb12e027e8b8b"
+    },
+    {
+      "path": "supply chain/13_Complete job.txt",
+      "bytes": 61,
+      "sha256": "85798fcf1abd1fa77be77695f2751fb013f5980683b4aed0f72fa403dcaeb595"
+    }
+  ],
+  "zip_member_count": 45,
+  "failure": {
+    "test": "p5_corpus_fingerprint::corpus_files_match_the_recorded_fingerprint",
+    "summary": "4 passed; 1 failed; 1 ignored",
+    "assertion": "the corpus moved under the fingerprint (1 file(s))",
+    "unlisted_path": "tests/fixtures/em11-reference-overload.jar",
+    "bytes": 5001,
+    "blake3": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+    "log_stated_reason": "fixture exists in corpus but has no entry in tests/fixtures/corpus-fingerprint.json",
+    "log_recommends": "review intended corpus change and regenerate corpus fingerprint; the current CI run did not do that"
+  },
+  "new11_named_gate_observations": [
+    {
+      "name": "facade::class_source_proof_inflight_tests::public_em11_reference_real_charge_cancellation_has_no_later_proof_work",
+      "observed_lines": [
+        "2026-10-15T10:15:52.6953457Z test facade::class_source_proof_inflight_tests::public_em11_reference_real_charge_cancellation_has_no_later_proof_work ... ok"
+      ],
+      "outcome": "passed"
+    },
+    {
+      "name": "facade::class_source_proof_inflight_tests::public_em11_reference_real_deadline_preserves_first_error",
+      "observed_lines": [
+        "2026-10-15T10:15:52.7050675Z test facade::class_source_proof_inflight_tests::public_em11_reference_real_deadline_preserves_first_error ... ok"
+      ],
+      "outcome": "passed"
+    },
+    {
+      "name": "facade::class_source_proof_inflight_tests::public_em11_reference_header_report_preserves_original_stop_and_diagnostics",
+      "observed_lines": [
+        "2026-10-15T10:15:52.6857212Z test facade::class_source_proof_inflight_tests::public_em11_reference_header_report_preserves_original_stop_and_diagnostics ... ok"
+      ],
+      "outcome": "passed"
+    },
+    {
+      "name": "em11_wide_keeps_the_actual_mid_overload_and_physical_call_bci",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_first_reference_header_ledger_stop_keeps_original_budget_cause",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_plain_header_stop_pays_no_later_snapshot_analysis_work",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_cap_two_keeps_the_existing_snapshot_stop_and_prefix",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_missing_leaf_is_an_ordinary_refusal",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_ambiguous_leaf_is_an_ordinary_refusal",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_cli_cap_one_does_not_pay_the_later_snapshot_proof",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    },
+    {
+      "name": "em11_cli_wide_keeps_the_physical_mid_overload",
+      "observed_lines": [],
+      "outcome": "not_observed_before_first_failing_test_binary_terminated"
+    }
+  ],
+  "new11_passed_count": 3,
+  "limits": [
+    "Only explicit test log lines count as observed results. Eight new gates have no logged outcome in the failed workspace run; they are not inferred green.",
+    "Pass 2, ignored JDK/P3/full-class comparisons, public API example, feature/dependency checks, strict OpenSpec, and tracked-tree final step were skipped after pass 1 failed.",
+    "The three passing EM11 entries are public module tests emitted before the failure; no later EM11 integration/CLI result was observed.",
+    "The manifest-membership conclusion is reported from the CI assertion text; this audit did not modify or regenerate the manifest."
+  ],
+  "checks": 468,
+  "errors": [],
+  "check_labels": [
+    "capture is preserved pending root acceptance",
+    "capture binds full ba3f commit and exact run",
+    "run reached terminal failure",
+    "API observation 0 exit code zero",
+    "API observation 0 has only stdout/stderr raw streams",
+    "API observation 0 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 0 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 1 exit code zero",
+    "API observation 1 has only stdout/stderr raw streams",
+    "API observation 1 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 1 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 2 exit code zero",
+    "API observation 2 has only stdout/stderr raw streams",
+    "API observation 2 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 2 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 3 exit code zero",
+    "API observation 3 has only stdout/stderr raw streams",
+    "API observation 3 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 3 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 4 exit code zero",
+    "API observation 4 has only stdout/stderr raw streams",
+    "API observation 4 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 4 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 5 exit code zero",
+    "API observation 5 has only stdout/stderr raw streams",
+    "API observation 5 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 5 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 6 exit code zero",
+    "API observation 6 has only stdout/stderr raw streams",
+    "API observation 6 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 6 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 7 exit code zero",
+    "API observation 7 has only stdout/stderr raw streams",
+    "API observation 7 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 7 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 8 exit code zero",
+    "API observation 8 has only stdout/stderr raw streams",
+    "API observation 8 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 8 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 9 exit code zero",
+    "API observation 9 has only stdout/stderr raw streams",
+    "API observation 9 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 9 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 10 exit code zero",
+    "API observation 10 has only stdout/stderr raw streams",
+    "API observation 10 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 10 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 11 exit code zero",
+    "API observation 11 has only stdout/stderr raw streams",
+    "API observation 11 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 11 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 12 exit code zero",
+    "API observation 12 has only stdout/stderr raw streams",
+    "API observation 12 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 12 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 13 exit code zero",
+    "API observation 13 has only stdout/stderr raw streams",
+    "API observation 13 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 13 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 14 exit code zero",
+    "API observation 14 has only stdout/stderr raw streams",
+    "API observation 14 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 14 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 15 exit code zero",
+    "API observation 15 has only stdout/stderr raw streams",
+    "API observation 15 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 15 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 16 exit code zero",
+    "API observation 16 has only stdout/stderr raw streams",
+    "API observation 16 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 16 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 17 exit code zero",
+    "API observation 17 has only stdout/stderr raw streams",
+    "API observation 17 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 17 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 18 exit code zero",
+    "API observation 18 has only stdout/stderr raw streams",
+    "API observation 18 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 18 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 19 exit code zero",
+    "API observation 19 has only stdout/stderr raw streams",
+    "API observation 19 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 19 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 20 exit code zero",
+    "API observation 20 has only stdout/stderr raw streams",
+    "API observation 20 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 20 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 21 exit code zero",
+    "API observation 21 has only stdout/stderr raw streams",
+    "API observation 21 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 21 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 22 exit code zero",
+    "API observation 22 has only stdout/stderr raw streams",
+    "API observation 22 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 22 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 23 exit code zero",
+    "API observation 23 has only stdout/stderr raw streams",
+    "API observation 23 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 23 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 24 exit code zero",
+    "API observation 24 has only stdout/stderr raw streams",
+    "API observation 24 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 24 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 25 exit code zero",
+    "API observation 25 has only stdout/stderr raw streams",
+    "API observation 25 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 25 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 26 exit code zero",
+    "API observation 26 has only stdout/stderr raw streams",
+    "API observation 26 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 26 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 27 exit code zero",
+    "API observation 27 has only stdout/stderr raw streams",
+    "API observation 27 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 27 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 28 exit code zero",
+    "API observation 28 has only stdout/stderr raw streams",
+    "API observation 28 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 28 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 29 exit code zero",
+    "API observation 29 has only stdout/stderr raw streams",
+    "API observation 29 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 29 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 30 exit code zero",
+    "API observation 30 has only stdout/stderr raw streams",
+    "API observation 30 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 30 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 31 exit code zero",
+    "API observation 31 has only stdout/stderr raw streams",
+    "API observation 31 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 31 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 32 exit code zero",
+    "API observation 32 has only stdout/stderr raw streams",
+    "API observation 32 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 32 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 33 exit code zero",
+    "API observation 33 has only stdout/stderr raw streams",
+    "API observation 33 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 33 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 34 exit code zero",
+    "API observation 34 has only stdout/stderr raw streams",
+    "API observation 34 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 34 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 35 exit code zero",
+    "API observation 35 has only stdout/stderr raw streams",
+    "API observation 35 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 35 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 36 exit code zero",
+    "API observation 36 has only stdout/stderr raw streams",
+    "API observation 36 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 36 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 37 exit code zero",
+    "API observation 37 has only stdout/stderr raw streams",
+    "API observation 37 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 37 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 38 exit code zero",
+    "API observation 38 has only stdout/stderr raw streams",
+    "API observation 38 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 38 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 39 exit code zero",
+    "API observation 39 has only stdout/stderr raw streams",
+    "API observation 39 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 39 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 40 exit code zero",
+    "API observation 40 has only stdout/stderr raw streams",
+    "API observation 40 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 40 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 41 exit code zero",
+    "API observation 41 has only stdout/stderr raw streams",
+    "API observation 41 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 41 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 42 exit code zero",
+    "API observation 42 has only stdout/stderr raw streams",
+    "API observation 42 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 42 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 43 exit code zero",
+    "API observation 43 has only stdout/stderr raw streams",
+    "API observation 43 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 43 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 44 exit code zero",
+    "API observation 44 has only stdout/stderr raw streams",
+    "API observation 44 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 44 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 45 exit code zero",
+    "API observation 45 has only stdout/stderr raw streams",
+    "API observation 45 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 45 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 46 exit code zero",
+    "API observation 46 has only stdout/stderr raw streams",
+    "API observation 46 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 46 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 47 exit code zero",
+    "API observation 47 has only stdout/stderr raw streams",
+    "API observation 47 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 47 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 48 exit code zero",
+    "API observation 48 has only stdout/stderr raw streams",
+    "API observation 48 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 48 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 49 exit code zero",
+    "API observation 49 has only stdout/stderr raw streams",
+    "API observation 49 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 49 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 50 exit code zero",
+    "API observation 50 has only stdout/stderr raw streams",
+    "API observation 50 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 50 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 51 exit code zero",
+    "API observation 51 has only stdout/stderr raw streams",
+    "API observation 51 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 51 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 52 exit code zero",
+    "API observation 52 has only stdout/stderr raw streams",
+    "API observation 52 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 52 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 53 exit code zero",
+    "API observation 53 has only stdout/stderr raw streams",
+    "API observation 53 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 53 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 54 exit code zero",
+    "API observation 54 has only stdout/stderr raw streams",
+    "API observation 54 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 54 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 55 exit code zero",
+    "API observation 55 has only stdout/stderr raw streams",
+    "API observation 55 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 55 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 56 exit code zero",
+    "API observation 56 has only stdout/stderr raw streams",
+    "API observation 56 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 56 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 57 exit code zero",
+    "API observation 57 has only stdout/stderr raw streams",
+    "API observation 57 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 57 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 58 exit code zero",
+    "API observation 58 has only stdout/stderr raw streams",
+    "API observation 58 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 58 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 59 exit code zero",
+    "API observation 59 has only stdout/stderr raw streams",
+    "API observation 59 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 59 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 60 exit code zero",
+    "API observation 60 has only stdout/stderr raw streams",
+    "API observation 60 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 60 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 61 exit code zero",
+    "API observation 61 has only stdout/stderr raw streams",
+    "API observation 61 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 61 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 62 exit code zero",
+    "API observation 62 has only stdout/stderr raw streams",
+    "API observation 62 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 62 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 63 exit code zero",
+    "API observation 63 has only stdout/stderr raw streams",
+    "API observation 63 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 63 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 64 exit code zero",
+    "API observation 64 has only stdout/stderr raw streams",
+    "API observation 64 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 64 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 65 exit code zero",
+    "API observation 65 has only stdout/stderr raw streams",
+    "API observation 65 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 65 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 66 exit code zero",
+    "API observation 66 has only stdout/stderr raw streams",
+    "API observation 66 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 66 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 67 exit code zero",
+    "API observation 67 has only stdout/stderr raw streams",
+    "API observation 67 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 67 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 68 exit code zero",
+    "API observation 68 has only stdout/stderr raw streams",
+    "API observation 68 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 68 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 69 exit code zero",
+    "API observation 69 has only stdout/stderr raw streams",
+    "API observation 69 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 69 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 70 exit code zero",
+    "API observation 70 has only stdout/stderr raw streams",
+    "API observation 70 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 70 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 71 exit code zero",
+    "API observation 71 has only stdout/stderr raw streams",
+    "API observation 71 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 71 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 72 exit code zero",
+    "API observation 72 has only stdout/stderr raw streams",
+    "API observation 72 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 72 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 73 exit code zero",
+    "API observation 73 has only stdout/stderr raw streams",
+    "API observation 73 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 73 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 74 exit code zero",
+    "API observation 74 has only stdout/stderr raw streams",
+    "API observation 74 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 74 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 75 exit code zero",
+    "API observation 75 has only stdout/stderr raw streams",
+    "API observation 75 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 75 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 76 exit code zero",
+    "API observation 76 has only stdout/stderr raw streams",
+    "API observation 76 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 76 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 77 exit code zero",
+    "API observation 77 has only stdout/stderr raw streams",
+    "API observation 77 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 77 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 78 exit code zero",
+    "API observation 78 has only stdout/stderr raw streams",
+    "API observation 78 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 78 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 79 exit code zero",
+    "API observation 79 has only stdout/stderr raw streams",
+    "API observation 79 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 79 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 80 exit code zero",
+    "API observation 80 has only stdout/stderr raw streams",
+    "API observation 80 stdout raw is unique, contained, and matches its byte/SHA pin",
+    "API observation 80 stderr raw is unique, contained, and matches its byte/SHA pin",
+    "capture has 81 actual API observations",
+    "all 162 API stream raws are uniquely pinned",
+    "terminal capture ends with run/jobs/logs API responses in order",
+    "terminal run API matches exact push identity and failure",
+    "terminal jobs API exactly matches four captured jobs",
+    "logs ZIP member names are unique",
+    "ZIP member is a safe regular file: 0_MSRV 1.88.0.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/system.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/1_Set up job.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/2_Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/3_Install Rust 1.88.0.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/4_Check workspace on MSRV.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/8_Post Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: MSRV 1.88.0/9_Complete job.txt",
+    "ZIP member is a safe regular file: 1_fuzz smoke.txt",
+    "ZIP member is a safe regular file: fuzz smoke/system.txt",
+    "ZIP member is a safe regular file: fuzz smoke/1_Set up job.txt",
+    "ZIP member is a safe regular file: fuzz smoke/2_Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: fuzz smoke/3_Install nightly-2026-07-20.txt",
+    "ZIP member is a safe regular file: fuzz smoke/4_Install cargo-fuzz 0.13.2.txt",
+    "ZIP member is a safe regular file: fuzz smoke/5_Prepare the C++ and sanitizer toolchain.txt",
+    "ZIP member is a safe regular file: fuzz smoke/6_Check the committed corpus against the targets.txt",
+    "ZIP member is a safe regular file: fuzz smoke/7_Run the bounded query smoke.txt",
+    "ZIP member is a safe regular file: fuzz smoke/8_Run the bounded artifact-tree smoke.txt",
+    "ZIP member is a safe regular file: fuzz smoke/9_Run the bounded method-analysis smoke.txt",
+    "ZIP member is a safe regular file: fuzz smoke/10_Ensure the smoke runs left the tracked tree unchanged.txt",
+    "ZIP member is a safe regular file: fuzz smoke/20_Post Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: fuzz smoke/21_Complete job.txt",
+    "ZIP member is a safe regular file: 2_stable _ test and specification.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/system.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/1_Set up job.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/2_Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/3_Install stable Rust with lint components.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/4_Install Temurin 25.0.4+7.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/5_Install Node.js 22.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/6_Check formatting.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/7_Run Clippy.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/8_Run workspace tests with two fixed independent seeds (pass 1).txt",
+    "ZIP member is a safe regular file: stable _ test and specification/43_Post Install Temurin 25.0.4+7.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/44_Post Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: stable _ test and specification/45_Complete job.txt",
+    "ZIP member is a safe regular file: 3_supply chain.txt",
+    "ZIP member is a safe regular file: supply chain/system.txt",
+    "ZIP member is a safe regular file: supply chain/1_Set up job.txt",
+    "ZIP member is a safe regular file: supply chain/2_Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: supply chain/3_Install stable Rust for cargo-deny.txt",
+    "ZIP member is a safe regular file: supply chain/4_Install cargo-deny 0.20.2.txt",
+    "ZIP member is a safe regular file: supply chain/5_Check root workspace advisories, licenses, bans, and sources.txt",
+    "ZIP member is a safe regular file: supply chain/6_Check fuzz workspace advisories, licenses, bans, and sources.txt",
+    "ZIP member is a safe regular file: supply chain/12_Post Run actions_checkout@v7.0.1.txt",
+    "ZIP member is a safe regular file: supply chain/13_Complete job.txt",
+    "ZIP matches capture path/size/SHA pin",
+    "unique pass-1 test log exists",
+    "pass-1 log names the corpus fingerprint test as the failing test",
+    "pass-1 log records exact unlisted fixture path/length/BLAKE3",
+    "failure is specifically one missing manifest entry",
+    "failed fingerprint test binary summary is 4/1/1",
+    "log advises intended corpus change requires reviewed fingerprint regeneration",
+    "exactly three of the eleven new named gates are observed passing in pass-1 log",
+    "four CI jobs were captured",
+    "three CI jobs succeeded",
+    "API observation pair 0 run JSON is bound to exact push identity",
+    "API observation pair 0 jobs JSON has four rows bound to run",
+    "API observation pair 1 run JSON is bound to exact push identity",
+    "API observation pair 1 jobs JSON has four rows bound to run",
+    "API observation pair 2 run JSON is bound to exact push identity",
+    "API observation pair 2 jobs JSON has four rows bound to run",
+    "API observation pair 3 run JSON is bound to exact push identity",
+    "API observation pair 3 jobs JSON has four rows bound to run",
+    "API observation pair 4 run JSON is bound to exact push identity",
+    "API observation pair 4 jobs JSON has four rows bound to run",
+    "API observation pair 5 run JSON is bound to exact push identity",
+    "API observation pair 5 jobs JSON has four rows bound to run",
+    "API observation pair 6 run JSON is bound to exact push identity",
+    "API observation pair 6 jobs JSON has four rows bound to run",
+    "API observation pair 7 run JSON is bound to exact push identity",
+    "API observation pair 7 jobs JSON has four rows bound to run",
+    "API observation pair 8 run JSON is bound to exact push identity",
+    "API observation pair 8 jobs JSON has four rows bound to run",
+    "API observation pair 9 run JSON is bound to exact push identity",
+    "API observation pair 9 jobs JSON has four rows bound to run",
+    "API observation pair 10 run JSON is bound to exact push identity",
+    "API observation pair 10 jobs JSON has four rows bound to run",
+    "API observation pair 11 run JSON is bound to exact push identity",
+    "API observation pair 11 jobs JSON has four rows bound to run",
+    "API observation pair 12 run JSON is bound to exact push identity",
+    "API observation pair 12 jobs JSON has four rows bound to run",
+    "API observation pair 13 run JSON is bound to exact push identity",
+    "API observation pair 13 jobs JSON has four rows bound to run",
+    "API observation pair 14 run JSON is bound to exact push identity",
+    "API observation pair 14 jobs JSON has four rows bound to run",
+    "API observation pair 15 run JSON is bound to exact push identity",
+    "API observation pair 15 jobs JSON has four rows bound to run",
+    "API observation pair 16 run JSON is bound to exact push identity",
+    "API observation pair 16 jobs JSON has four rows bound to run",
+    "API observation pair 17 run JSON is bound to exact push identity",
+    "API observation pair 17 jobs JSON has four rows bound to run",
+    "API observation pair 18 run JSON is bound to exact push identity",
+    "API observation pair 18 jobs JSON has four rows bound to run",
+    "API observation pair 19 run JSON is bound to exact push identity",
+    "API observation pair 19 jobs JSON has four rows bound to run",
+    "API observation pair 20 run JSON is bound to exact push identity",
+    "API observation pair 20 jobs JSON has four rows bound to run",
+    "API observation pair 21 run JSON is bound to exact push identity",
+    "API observation pair 21 jobs JSON has four rows bound to run",
+    "API observation pair 22 run JSON is bound to exact push identity",
+    "API observation pair 22 jobs JSON has four rows bound to run",
+    "API observation pair 23 run JSON is bound to exact push identity",
+    "API observation pair 23 jobs JSON has four rows bound to run",
+    "API observation pair 24 run JSON is bound to exact push identity",
+    "API observation pair 24 jobs JSON has four rows bound to run",
+    "API observation pair 25 run JSON is bound to exact push identity",
+    "API observation pair 25 jobs JSON has four rows bound to run",
+    "API observation pair 26 run JSON is bound to exact push identity",
+    "API observation pair 26 jobs JSON has four rows bound to run",
+    "API observation pair 27 run JSON is bound to exact push identity",
+    "API observation pair 27 jobs JSON has four rows bound to run",
+    "API observation pair 28 run JSON is bound to exact push identity",
+    "API observation pair 28 jobs JSON has four rows bound to run",
+    "API observation pair 29 run JSON is bound to exact push identity",
+    "API observation pair 29 jobs JSON has four rows bound to run",
+    "API observation pair 30 run JSON is bound to exact push identity",
+    "API observation pair 30 jobs JSON has four rows bound to run",
+    "API observation pair 31 run JSON is bound to exact push identity",
+    "API observation pair 31 jobs JSON has four rows bound to run",
+    "API observation pair 32 run JSON is bound to exact push identity",
+    "API observation pair 32 jobs JSON has four rows bound to run",
+    "API observation pair 33 run JSON is bound to exact push identity",
+    "API observation pair 33 jobs JSON has four rows bound to run",
+    "API observation pair 34 run JSON is bound to exact push identity",
+    "API observation pair 34 jobs JSON has four rows bound to run",
+    "API observation pair 35 run JSON is bound to exact push identity",
+    "API observation pair 35 jobs JSON has four rows bound to run",
+    "API observation pair 36 run JSON is bound to exact push identity",
+    "API observation pair 36 jobs JSON has four rows bound to run",
+    "API observation pair 37 run JSON is bound to exact push identity",
+    "API observation pair 37 jobs JSON has four rows bound to run",
+    "API observation pair 38 run JSON is bound to exact push identity",
+    "API observation pair 38 jobs JSON has four rows bound to run",
+    "API observation pair 39 run JSON is bound to exact push identity",
+    "API observation pair 39 jobs JSON has four rows bound to run"
+  ],
+  "api_response_semantics": {
+    "run_observations_checked": 40,
+    "jobs_observations_checked": 40,
+    "run_pairs_total": 40,
+    "all_run_observations_bound": true,
+    "all_jobs_observations_bound": true
+  }
+}

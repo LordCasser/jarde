@@ -1,0 +1,60 @@
+{
+  "status": "accepted_manifest_only_maintenance",
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/execution.json",
+    "bytes": 3224329,
+    "sha256": "2e5443672b54a96b88b8903034aa38087ce2dc0a6f3764f6943ffe9eabd60cfb"
+  },
+  "independent_audit": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/independent-audit-v1.json",
+    "bytes": 5316,
+    "sha256": "0de5ec4c91c7a6a5ed0b84517203e80abae3a74fd0b4d0dd66c15ab4150dc7ab"
+  },
+  "semantic_diff": {
+    "added": [
+      {
+        "path": "tests/fixtures/em11-reference-overload.jar",
+        "bytes": 5001,
+        "blake3": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97"
+      }
+    ],
+    "removed": [],
+    "changed_existing": [],
+    "all_nonfiles_fields_identical": true,
+    "old_count": 2219,
+    "new_count": 2220
+  },
+  "source_count": 4907,
+  "source_difference_from_old_focused": [
+    "tests/fixtures/corpus-fingerprint.json"
+  ],
+  "native_test_outcomes": {
+    "explicit_regenerator": [
+      1,
+      0,
+      0
+    ],
+    "normal_suite": [
+      5,
+      0,
+      1
+    ]
+  },
+  "fresh_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-fingerprint-v2",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396"
+  },
+  "previous_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396"
+  },
+  "cli_bytes_identical": true,
+  "runtime_evidence_reused_by_exact_binary_identity": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/execution.json",
+    "bytes": 2848327,
+    "sha256": "ceba74c24621973ffbce4aa75f1a6eea4b79032a2f27e3be61a32e47f2373f91"
+  },
+  "scope": "No new runtime execution asserted; same exact CLI bytes and unchanged EM11 inputs retain existing actual whole-source replay evidence. New successor commit ownCI still required."
+}

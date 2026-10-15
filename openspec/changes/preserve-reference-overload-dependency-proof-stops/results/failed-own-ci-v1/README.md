@@ -1,0 +1,7 @@
+# 产品ba3fa76自身CI失败记录
+
+run38717487054已终态failure，不能用作3.2成功证据。3个job（MSRV、供应链、fuzz）成功，stable在pass1的p5_corpus_fingerprint失败：有意新增的EM11 JAR尚未列入语料指纹。该binary实际4通过/1失败/1默认忽略；pass2及后续JDK/依赖/OpenSpec等步骤均跳过。新增11条只有3条native unit在此CI观察到通过，公共6与CLI2尚未执行，不能用本地325补成CI全绿。
+
+capture.tar.gz保存全部81 API observations、162 raw、45成员日志ZIP与失败收据；原pending捕获状态保持原样，另由独审确认终态failure。所有177归档成员为安全唯一regular，根代理已逐项回读176份payload并校SHA。包内元数据的own_ci_accepted=false是原快照，不因打包变绿。
+
+后续通过既有显式regenerator补入唯一缺失fixture记录，保留原2219条和分类字段；新提交必须取得自身CI。旧失败不重启、不覆盖。CLI/JDK二进制及本地源码实验包只外置pin。

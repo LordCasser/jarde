@@ -1,0 +1,36 @@
+{
+  "status": "packaged_failed_ci_evidence_not_success",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-own-ci-failure-package-v1/reference-overload-own-ci-failure-v1.tar.gz",
+    "bytes": 1447153,
+    "sha256": "d35b42e42c60bb975f4652a5d3df00e3c50749233748fff961d178b3488fa496"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-own-ci-failure-package-v1/manifest.json",
+    "bytes": 66650,
+    "sha256": "295d73cb86f8f0fe7d83b4e9ccf27bd733d142710466ef8569ea1118b7a04407"
+  },
+  "allowlist": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-own-ci-failure-package-v1/allowlist.json",
+    "bytes": 60713,
+    "sha256": "770c330d6c0f7c9b486c6f471f6fec75b623dae3990f16c84ff2158db9e70c81"
+  },
+  "payload_files": 176,
+  "tar_members": 177,
+  "api_observations": 81,
+  "api_raw_streams": 162,
+  "capture_files": 164,
+  "zip_members": 45,
+  "root_acceptance_present": false,
+  "independent_success_acceptance_present": false,
+  "external_local_package_pin": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-local-evidence-package-v1/run-v1/reference-overload-final-local-evidence-v1.tar.gz",
+    "bytes": 4850478,
+    "sha256": "1ebca2ca959c5c81663d75e4bad7cfdb5531da8498d35ac04a9ab07114f0b961"
+  },
+  "external_frozen_cli_pin": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396"
+  }
+}

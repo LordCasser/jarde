@@ -28,3 +28,6 @@
 - 移除typed空转wrapper并加入普通控制后的最终源码重新验证：11条命令全部成功，12条非空test summary合计325通过/0失败/1默认忽略；3 unit+6 public+2 CLI新增具名回归全绿。格式、当前CI参数Clippy、两版OpenSpec strict各364/0通过。未称focused为完整workspace，也未称默认忽略的reference-cast运行时用例已运行。
 - 最终4907输入清单前后相同；冻结CLI 59,657,968B，SHA256 c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396，0555；exact cargo clean后target缺失。独立审计88检查/0错误。完整七类实验已与该CLI及构建收据绑定并独审通过；不以前片CI替代当前产品门。
 - 最终CLI实际21条实验命令全部符合预期退出码；七份完整report.text原样重编成功，原Java七class逐字节匹配固定fixture。Java8/23的原JAR、全体重编类、原Runner单独重编后优先调用重编类，六次均匹配五行219B oracle，rebuilt classpath无原JAR。物理指令0/3/4/7/10及转换span的primary4、derived0/3/7均有实际raw；预算cap1/2为Partial退出4、cap3/4为Complete，前缀和limits保持。固定Runner结论不等于一般语义等价，未增加全局语法覆盖计数。
+- 产品ba3fa76af自身CI run38717487054已失败：pass1在语料指纹门发现新增EM11 JAR未列入manifest；另三job成功，后续pass2/JDK/strict等跳过，本片新增11仅3个native unit在CI已到达且通过，公共6与CLI2未执行，不能借本地325补绿。原失败capture和独审见results/failed-own-ci-v1。
+- 已通过既有显式regenerator补入唯一EM11记录；原2219条与分类字段不变，普通fingerprint测试5/0/1，新CLI重构建/clean通过并与旧c44字节完全相同。维护后4907输入仅语料清单与旧构建不同，不能冒称两清单全等；完整源码运行证据按相同CLI字节及未变输入复用，未声称本轮新执行。见results/fingerprint-maintenance-v1；3.2仍未完成，等待后续提交自身CI。
+- 新增独立static-prefix规划使当前本地OpenSpec strict为365/0；ba3fa76提交的CI快照仍是364项（且strict步骤未执行）。之后归档项数按实际规划集计算，不套用旧预期364→363。

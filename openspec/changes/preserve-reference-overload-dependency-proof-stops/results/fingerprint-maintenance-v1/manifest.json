@@ -1,0 +1,97 @@
+{
+  "status": "packaged_and_reopened_verified",
+  "items": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/corpus-fingerprint-after.json",
+      "bytes": 487861,
+      "sha256": "ef257554d3ad1f61b62a955fd11c3dde240daa321111252fd6b45cff116c5b46",
+      "archive_path": "fingerprint-maintenance-v1/corpus-fingerprint-after.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/corpus-fingerprint-before.json",
+      "bytes": 487684,
+      "sha256": "04e819424f8771b2272f4b089586a79afbdb1bb2779ebd2da757c69cfe62f6bc",
+      "archive_path": "fingerprint-maintenance-v1/corpus-fingerprint-before.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/independent-audit-v1.json",
+      "bytes": 5316,
+      "sha256": "0de5ec4c91c7a6a5ed0b84517203e80abae3a74fd0b4d0dd66c15ab4150dc7ab",
+      "archive_path": "fingerprint-maintenance-v1/independent-audit-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/root-acceptance.json",
+      "bytes": 2296,
+      "sha256": "691661d947ce9b555fee0f737b069e8cbd9ed21e673d9ca443d5acc84b5712ad",
+      "archive_path": "fingerprint-maintenance-v1/root-acceptance.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/1.stderr.raw",
+      "bytes": 3389,
+      "sha256": "14ff64071f91e410e1e3e308562bb92bdbeda15d9a5a077f99869b61059f1de0",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/1.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/1.stdout.raw",
+      "bytes": 233,
+      "sha256": "8977e6fbf2ee26b64ec769c1945b414ebba83c57fd57e5a40bbc1d57f7053947",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/1.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/2.stderr.raw",
+      "bytes": 190,
+      "sha256": "e93984ac757fd0d57da0a64ad69465dea83ad6fe63cd82dc8ed46c8f7a596f8d",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/2.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/2.stdout.raw",
+      "bytes": 565,
+      "sha256": "cbfca991c7674778e9f7def60638c3e9d9c9039fa45313ff306eaf8eb185323d",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/2.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/3.stderr.raw",
+      "bytes": 1638,
+      "sha256": "b6554889b2d8a11e58d22c39901dc38f3e8d9730c946357d41bb07f732feee19",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/3.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/3.stdout.raw",
+      "bytes": 56539,
+      "sha256": "3f92691c125ec4ff8e0d59f8eecf2748473895b7a6b2f4adf941d4ee1c304cab",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/3.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "8e525cc5413b1073906ef1dd747f83a2e694bdfa5a6c39e0a39862e13afc4b15",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/4.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/4.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/execution.json",
+      "bytes": 3224329,
+      "sha256": "2e5443672b54a96b88b8903034aa38087ce2dc0a6f3764f6943ffe9eabd60cfb",
+      "archive_path": "fingerprint-maintenance-v1/run-v1/execution.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run.py",
+      "bytes": 6555,
+      "sha256": "446eb79b2e31d848838573079a5b1ce705b15d4829620a14acbacb5a65b57375",
+      "archive_path": "fingerprint-maintenance-v1/run.py"
+    }
+  ],
+  "external_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-fingerprint-v2",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "scope": "No new runtime execution asserted; same exact CLI bytes and unchanged EM11 inputs retain existing actual whole-source replay evidence. New successor commit ownCI still required."
+}
