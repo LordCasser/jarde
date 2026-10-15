@@ -385,11 +385,11 @@ fn ample() -> Limits {
 ///
 /// Every one of them is also recorded, field by field, in the `usage` plane of the golden that
 /// measured it, so the comparison fails if any of them changes.
-const R10_CANONICAL_ITEMS: u64 = 61;
-const R10_FRAME_ITEMS_8_SITES: u64 = 280_088;
-const R10_FRAME_ITEMS_64_SITES: u64 = 1_960_592;
+const R10_CANONICAL_ITEMS: u64 = 62;
+const R10_FRAME_ITEMS_8_SITES: u64 = 280_089;
+const R10_FRAME_ITEMS_64_SITES: u64 = 1_960_593;
 const R10_FRAME_ITEMS_8_SITES_NO_HANDLER: u64 = 30_055;
-const R10_NAMES_ITEMS_8_SITES: u64 = 300_446;
+const R10_NAMES_ITEMS_8_SITES: u64 = 300_447;
 const DEEP_CHAIN_FRAME_STEPS: u64 = 1_396;
 const HIGH_FANOUT_CANONICAL_EDGES: u64 = 195;
 
