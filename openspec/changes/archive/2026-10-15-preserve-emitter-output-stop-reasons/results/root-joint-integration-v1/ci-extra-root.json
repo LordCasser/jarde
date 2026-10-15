@@ -1,0 +1,133 @@
+{
+  "status": "accepted_exact_d3_ci_extra_scopes",
+  "product": "d3e2b2457338b61660b842f5705b225bba08a73a",
+  "run": 38673548915,
+  "tests_passed": 9,
+  "examples": 2,
+  "layer_configurations": 12,
+  "entries": [
+    {
+      "member": "stable _ test and specification/10_Run ignored JDK 25 instruction-boundary oracle.txt",
+      "bytes": 2598,
+      "sha256": "85456ef24fa34199a631d482b6c3898883c91e1d14ce3c00bcb11a2d27b5fa47",
+      "commands": [
+        "cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection"
+      ],
+      "passed_tests": [
+        "jdk25_instruction_boundaries_match_public_bytecode_inspection"
+      ],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/11_Run the ignored P3 Java 8 compile-and-execute comparison.txt",
+      "bytes": 1823,
+      "sha256": "013aa445f4962fda9fe4bb8a50ebcec1596249566542a7f301352016b14622a9",
+      "commands": [
+        "cargo test --test p3_execution_comparison --locked -- --ignored"
+      ],
+      "passed_tests": [
+        "the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour",
+        "the_corpus_is_read_the_same_way_by_every_legal_flag_set",
+        "the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies"
+      ],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/12_Run the functional-constructor full-class comparison.txt",
+      "bytes": 2507,
+      "sha256": "4a23e67844601607bad68af3c0e08af33a85efd6f02970a7f52f10c5a9e4624b",
+      "commands": [
+        "cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "passed_tests": [
+        "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/13_Run the BigDecimal Number full-class comparisons.txt",
+      "bytes": 1754,
+      "sha256": "065893859b53d9c391f4dd320a2f0a53ef5bd32162cb542ce80cf88a369bd1a6",
+      "commands": [
+        "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored"
+      ],
+      "passed_tests": [
+        "bigdecimal_number_argument_generated_source_matches_frozen_runtime",
+        "main_only_bigdecimal_generated_source_matches_frozen_original_runtime"
+      ],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/14_Run the nested int array full-class comparisons.txt",
+      "bytes": 1787,
+      "sha256": "ba68f16c017e2a235fa0c931ccdb7f1c97e7c5ba8ea21e3f90e6fb2decbd112d",
+      "commands": [
+        "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle"
+      ],
+      "passed_tests": [
+        "nested_int_array_updates_match_the_frozen_runner_oracle"
+      ],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/15_Run the returned int array full-class comparison.txt",
+      "bytes": 1720,
+      "sha256": "2b2550831812acbff2b5cba5761c6f2450d401cbe56d222d9f33351e03936b89",
+      "commands": [
+        "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class"
+      ],
+      "passed_tests": [
+        "returned_int_array_updates_compile_and_execute_as_a_complete_class"
+      ],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/16_Run public API example.txt",
+      "bytes": 9537,
+      "sha256": "3bf99df59639e86671b769633813789844ffcdf8253959c8b9aba59b65226bce",
+      "commands": [
+        "cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class",
+        "cargo run --example resolve_and_analyze --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+      ],
+      "passed_tests": [],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/17_Check resolved feature tree.txt",
+      "bytes": 3784,
+      "sha256": "2e256a013483de263f78ee5cdae3ffb9015a269d307e92a193d2691d9ce29a91",
+      "commands": [],
+      "passed_tests": [],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/18_Check normal dependency tree boundary.txt",
+      "bytes": 1714,
+      "sha256": "3532b4701cd65ec42a8bc8270a96236247624b1c0749d447458e9faa675541c4",
+      "commands": [],
+      "passed_tests": [],
+      "closures": []
+    },
+    {
+      "member": "stable _ test and specification/19_Check layered crate dependency closure.txt",
+      "bytes": 7855,
+      "sha256": "85b60a505d5d6abad0055ffeea7d1e7ae864384f9906aed852b70664c5e2d2e7",
+      "commands": [],
+      "passed_tests": [],
+      "closures": [
+        "jarde-reader-normal closure: 26 packages, none of [jarde jarde-query jarde-jvm jarde-java petgraph]",
+        "jarde-query-normal closure: 27 packages, none of [jarde jarde-jvm jarde-java petgraph]",
+        "jarde-jvm-normal closure: 31 packages, none of [jarde jarde-java]",
+        "jarde-reader-normal-all-features closure: 26 packages, none of [jarde jarde-query jarde-jvm jarde-java petgraph]",
+        "jarde-query-normal-all-features closure: 27 packages, none of [jarde jarde-jvm jarde-java petgraph]",
+        "jarde-jvm-normal-all-features closure: 31 packages, none of [jarde jarde-java]",
+        "jarde-reader-all closure: 57 packages, none of [jarde jarde-query jarde-jvm jarde-java petgraph]",
+        "jarde-query-all closure: 34 packages, none of [jarde jarde-jvm jarde-java petgraph]",
+        "jarde-jvm-all closure: 38 packages, none of [jarde jarde-java]",
+        "jarde-reader-all-all-features closure: 57 packages, none of [jarde jarde-query jarde-jvm jarde-java petgraph]",
+        "jarde-query-all-all-features closure: 34 packages, none of [jarde jarde-jvm jarde-java petgraph]",
+        "jarde-jvm-all-all-features closure: 38 packages, none of [jarde jarde-java]"
+      ]
+    }
+  ]
+}

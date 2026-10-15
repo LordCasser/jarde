@@ -1,0 +1,10 @@
+{
+  "status": "accepted_doc_closure_source_identity_before_commit",
+  "head": "b973496d5b0c76c534b56d6ea03e4604dd3825ff",
+  "product": "d3e2b2457338b61660b842f5705b225bba08a73a",
+  "historical_compiled_source_count": 4887,
+  "current_end_time_total_with_fuzz_walk": 4900,
+  "historical_receipts_augmented": false,
+  "target_absent": true,
+  "captured_at": "2026-10-15T03:50:36.201225+00:00"
+}

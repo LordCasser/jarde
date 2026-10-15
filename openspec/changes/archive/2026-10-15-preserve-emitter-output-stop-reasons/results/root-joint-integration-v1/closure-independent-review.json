@@ -1,0 +1,134 @@
+{
+  "schema": "core-doc-closure-independent-review-v1",
+  "status": "accepted_read_only_crosscheck_with_history_noted",
+  "scope": {
+    "repository_written": false,
+    "git_cargo_jdk_cli_run_by_reviewer": false,
+    "changes": [
+      "2026-10-15-fix-facts-cache-capacity-accounting",
+      "2026-10-15-populate-canonical-block-protection-ranges",
+      "2026-10-15-preserve-emitter-output-stop-reasons",
+      "2026-10-15-reject-ambiguous-no-code-method-selection"
+    ]
+  },
+  "documents": {
+    "per_change_task_counts": {
+      "2026-10-15-fix-facts-cache-capacity-accounting": {
+        "checked_tasks": 4,
+        "open_tasks": 0,
+        "has_joint_evidence_link": true
+      },
+      "2026-10-15-populate-canonical-block-protection-ranges": {
+        "checked_tasks": 4,
+        "open_tasks": 0,
+        "has_joint_evidence_link": true
+      },
+      "2026-10-15-preserve-emitter-output-stop-reasons": {
+        "checked_tasks": 4,
+        "open_tasks": 0,
+        "has_joint_evidence_link": true
+      },
+      "2026-10-15-reject-ambiguous-no-code-method-selection": {
+        "checked_tasks": 4,
+        "open_tasks": 0,
+        "has_joint_evidence_link": true
+      }
+    },
+    "broken_relative_links": {},
+    "assessment": "四份verification-root均有指向联合README的本地相对链接，逐个解析存在；早期局部状态以显式Final joint integration acceptance作历史保留并覆盖，不把旧failed/待办回执改写成成功。各tasks的4项均已勾选。"
+  },
+  "joint_archive": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-emitter-output-stop-reasons/results/root-joint-integration-v1",
+    "sha256": "f723dfa3e3e8bf3f91ed194453401464bfef295d474e20983abc0a5f91330073",
+    "bytes": 12721464,
+    "receipt": {
+      "status": "accepted_archive_byte_integrity",
+      "archive": {
+        "path": "capture.tar.gz",
+        "bytes": 12721464,
+        "sha256": "f723dfa3e3e8bf3f91ed194453401464bfef295d474e20983abc0a5f91330073"
+      },
+      "payloads": 1771,
+      "all_members_reopened": 1772,
+      "workspace": {
+        "passed": 7174,
+        "failed": 0,
+        "ignored": 196
+      },
+      "focused": {
+        "passed": 462,
+        "failed": 0,
+        "ignored": 2
+      },
+      "own_ci": 38673548915,
+      "matrix_jarde_cells": 16,
+      "source_snapshot_count": 19
+    },
+    "manifest_payload_count": 1771,
+    "tar_member_count": 1772,
+    "payload_reopen_checks": 1771,
+    "mismatches": [],
+    "ci_extra_receipt": {
+      "status": "accepted_exact_d3_ci_extra_scopes",
+      "product": "d3e2b2457338b61660b842f5705b225bba08a73a",
+      "run": 38673548915,
+      "tests_passed": 9,
+      "examples": 2,
+      "layer_configurations": 12,
+      "named_test_count_sum": 9,
+      "all_entries_match_tar_members": false,
+      "note": "9 tests = 1+3+1+2+1+1 named passes; examples and 12 closure configurations separately count; raw ZIP members and SHA/byte pins are listed."
+    }
+  },
+  "strict_closure": {
+    "v1": "362 passed, 1 failed, 363 items",
+    "failure": "reuse-selected-class had MODIFIED requirement coverage missing three scenarios; preserve v1 stdout/stderr as a real historical failure, do not recast as pass.",
+    "v2": [
+      {
+        "version": "1.11.0",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+          "validate",
+          "--all",
+          "--strict"
+        ],
+        "exit_code": 0,
+        "summary": [
+          "Totals: 363 passed, 0 failed (363 items)"
+        ]
+      },
+      {
+        "version": "1.14.1",
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "validate",
+          "--all",
+          "--strict"
+        ],
+        "exit_code": 0,
+        "summary": [
+          "Totals: 363 passed, 0 failed (363 items)"
+        ]
+      }
+    ],
+    "assessment": "修复仅更新对应block后，两版OpenSpec strict均363/0；v1旧失败raw保留且不被v2覆盖。"
+  },
+  "source_closure": {
+    "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/core-doc-closure-source-root-v1.json",
+    "status": "accepted_doc_closure_source_identity_before_commit",
+    "product": "d3e2b2457338b61660b842f5705b225bba08a73a",
+    "head_at_doc_closure": "b973496d5b0c76c534b56d6ea03e4604dd3825ff",
+    "historical_compiled_source_count": 4887,
+    "current_end_time_total_with_fuzz_walk": 4900,
+    "historical_receipts_augmented": false,
+    "target_absent": true,
+    "interpretation": "4887是历史编译来源闭包；4900是结束时加上13个fuzz遍历输入的总数，不得倒填为编译开始来源或篡改旧receipt。"
+  },
+  "handoff_crosscheck": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/handoff.md",
+    "four_core_joint_claim": "product D3, four changes 4/4, own CI 38673548915, nine extra tests/two examples/12 layer configurations, archive f723...",
+    "third_plan": "0/27; not implementation complete",
+    "overall_CF_counts": "CF11/CF18/71/612 remain unchanged"
+  },
+  "conclusion": "联合归档的1771 payload均与manifest字节数/SHA匹配，tar共1772成员；四变更的文档相对链接有效且任务4/4。CI extras收据将9 named tests、2 examples、12 layer configurations明确分开。strict v1失败作为历史保留，v2两版本363/0；4887 historical source closure与4900 end-time total分层记录。没有发现本次文档交付中的具体状态/数字/链接矛盾。"
+}

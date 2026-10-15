@@ -1,0 +1,86 @@
+{
+  "schema": "joint-core-doc-supplements-v1",
+  "scope": "outside immutable tar; current doc closure",
+  "payloads": [
+    {
+      "path": "README.md",
+      "bytes": 2475,
+      "sha256": "8780de4d988b6ca9348331dea93c85e3f59428d93df5ef8c4ea387fdbee78a80"
+    },
+    {
+      "path": "archive-review.json",
+      "bytes": 491,
+      "sha256": "f21711c345bf98876cc3bf9ab22816e883c7e60487c67c74113c1b68c80d2204"
+    },
+    {
+      "path": "ci-extra-root.json",
+      "bytes": 6095,
+      "sha256": "fc41094051447929fa738d8476f4cdef378cd989a6418cdb8c594428cbf8026d"
+    },
+    {
+      "path": "closure-independent-review.json",
+      "bytes": 5568,
+      "sha256": "b0431579b68edc736fabc817d78d7440ad299064317d5aa03efb5909d8f57a53"
+    },
+    {
+      "path": "closure-source-root.json",
+      "bytes": 393,
+      "sha256": "9f1fa4f6fc6421a5ef458dddddafb6ffb942cd27f0452d28b274633abba1e296"
+    },
+    {
+      "path": "closure-strict-1.11.0.stderr.raw",
+      "bytes": 53,
+      "sha256": "382e72ebc1b8cebea5bdaad610b743223cbb3fc5ad001d29c23d1fda59edce2e"
+    },
+    {
+      "path": "closure-strict-1.11.0.stdout.raw",
+      "bytes": 16813,
+      "sha256": "21dab3253c81d55de24d1098a1ce0b7dfd3bdc05eb7d0da72b814711de23f59a"
+    },
+    {
+      "path": "closure-strict-v2-1.11.0.stderr.raw",
+      "bytes": 16,
+      "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+    },
+    {
+      "path": "closure-strict-v2-1.11.0.stdout.raw",
+      "bytes": 16783,
+      "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+    },
+    {
+      "path": "closure-strict-v2-1.14.1.stderr.raw",
+      "bytes": 2217,
+      "sha256": "09c12b38a9c33506eb2bde6f2772712d02f1b3cf029c82c2ce57348579be002b"
+    },
+    {
+      "path": "closure-strict-v2-1.14.1.stdout.raw",
+      "bytes": 16783,
+      "sha256": "77506412380f3af21d27a8d30620b0f69141783081141090b3c0632f3acee7da"
+    },
+    {
+      "path": "closure-strict-v2.json",
+      "bytes": 565,
+      "sha256": "77435ec11cbd68889b52a54c529154713770d3679c77095161dd93345cf64716"
+    },
+    {
+      "path": "delivery-independent-review.json",
+      "bytes": 8401,
+      "sha256": "030556c0de1b20013c073b82ac1e1c3f41f3bb72cade4a9a04bb3db9cf8936db"
+    },
+    {
+      "path": "reuse-selected-class-read-before-sync.md",
+      "bytes": 9092,
+      "sha256": "3bf63f8aafc3e5bb8bfc169708a7442f39758ed26e29c69fef79351194937a02"
+    },
+    {
+      "path": "sync-validate.stderr.raw",
+      "bytes": 16,
+      "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+    },
+    {
+      "path": "sync-validate.stdout.raw",
+      "bytes": 515,
+      "sha256": "be7f29110b68fd3a163e3493f0b599437452668b69093de484c0863fca237956"
+    }
+  ]
+}

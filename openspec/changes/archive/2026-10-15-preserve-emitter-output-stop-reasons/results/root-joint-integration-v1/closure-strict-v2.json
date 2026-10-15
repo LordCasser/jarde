@@ -1,0 +1,28 @@
+[
+  {
+    "version": "1.11.0",
+    "argv": [
+      "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+      "validate",
+      "--all",
+      "--strict"
+    ],
+    "exit_code": 0,
+    "summary": [
+      "Totals: 363 passed, 0 failed (363 items)"
+    ]
+  },
+  {
+    "version": "1.14.1",
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "validate",
+      "--all",
+      "--strict"
+    ],
+    "exit_code": 0,
+    "summary": [
+      "Totals: 363 passed, 0 failed (363 items)"
+    ]
+  }
+]

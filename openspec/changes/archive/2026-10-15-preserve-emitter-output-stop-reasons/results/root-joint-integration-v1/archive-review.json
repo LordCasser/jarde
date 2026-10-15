@@ -1,0 +1,23 @@
+{
+  "status": "accepted_archive_byte_integrity",
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 12721464,
+    "sha256": "f723dfa3e3e8bf3f91ed194453401464bfef295d474e20983abc0a5f91330073"
+  },
+  "payloads": 1771,
+  "all_members_reopened": 1772,
+  "workspace": {
+    "passed": 7174,
+    "failed": 0,
+    "ignored": 196
+  },
+  "focused": {
+    "passed": 462,
+    "failed": 0,
+    "ignored": 2
+  },
+  "own_ci": 38673548915,
+  "matrix_jarde_cells": 16,
+  "source_snapshot_count": 19
+}

@@ -1,0 +1,149 @@
+{
+  "schema": "core-joint-delivery-independent-review-v1",
+  "status": "independent_read_only_delivery_recommendation",
+  "scope": {
+    "repository_written": false,
+    "git_cargo_jdk_cli_run_by_reviewer": false,
+    "product_head": "d3e2b2457338b61660b842f5705b225bba08a73a",
+    "third_plan": {
+      "state": "planning_only",
+      "tasks": "0/27",
+      "implementation_complete": false
+    }
+  },
+  "independent_evidence": {
+    "own_ci": {
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-core-d3e2-root-v1/root-acceptance.json",
+      "status": "accepted_exact_product_ci",
+      "run_id": 38673548915,
+      "product_sha": "d3e2b2457338b61660b842f5705b225bba08a73a",
+      "checks": 654,
+      "jobs": 4,
+      "steps": 52,
+      "seeds": [
+        {
+          "seed": "5350648285461741569",
+          "suites": 365,
+          "passed": 3587,
+          "failed": 0,
+          "ignored": 98
+        },
+        {
+          "seed": "5350648285461741570",
+          "suites": 365,
+          "passed": 3587,
+          "failed": 0,
+          "ignored": 98
+        }
+      ],
+      "zip": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-core-d3e2-root-v1/logs.zip",
+        "bytes": 853475,
+        "sha256": "1e920679dc9daf6ca871b849bd726ff9f39cfcf834148f4ad56e746add6d4fe2",
+        "pinned_members": 60
+      }
+    },
+    "workspace": {
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/workspace-core-v3/root-acceptance.json",
+      "status": "accepted_local_workspace_only",
+      "source_pins": 4887,
+      "targets": 365,
+      "batches_per_seed": 96,
+      "seeds": [
+        "5350648285461741569",
+        "5350648285461741570"
+      ],
+      "native_execution_identity_verified": false,
+      "required_limit": "不得表述为CI、产品发布或已验证本机可执行文件解析身份"
+    },
+    "focused_and_matrix": {
+      "focused_receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/core-final-local-source-review-v1.json",
+      "focused_v3": {
+        "status": "accepted",
+        "checks": 4975,
+        "commands": 10,
+        "raw_streams": 20,
+        "passed": 462,
+        "failed": 0,
+        "ignored": 2
+      },
+      "matrix_receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/final-matrix-core-v2/root-audit/audit.json",
+      "matrix_cells_reused": {
+        "render": 16,
+        "compile_run": 16
+      },
+      "baseline_rows": 45,
+      "admission_rows": 33,
+      "scope_note": "v3与v2 CLI bytes/SHA相同；可记录复用既有16个真实compile/run单元，不能称本轮新跑16个。"
+    },
+    "ci_zip_independent_inspection": {
+      "examples": {
+        "count": 2,
+        "zip_member": "stable _ test and specification/16_Run public API example.txt",
+        "sha256": "3bf99df59639e86671b769633813789844ffcdf8253959c8b9aba59b65226bce",
+        "commands": [
+          "cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class",
+          "cargo run --example resolve_and_analyze --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+        ],
+        "evidence": "日志分别记录编译、运行和程序输出。"
+      },
+      "layer_configurations": {
+        "count": 12,
+        "zip_member": "stable _ test and specification/19_Check layered crate dependency closure.txt",
+        "sha256": "85b60a505d5d6abad0055ffeea7d1e7ae864384f9906aed852b70664c5e2d2e7",
+        "cross_product": "3 layers (jarde-reader/query/jvm) × 2 edge sets (normal/all) × 2 feature sets (default/all-features)",
+        "observed_package_counts": {
+          "reader": {
+            "normal": 26,
+            "all": 57
+          },
+          "query": {
+            "normal": 27,
+            "all": 34
+          },
+          "jvm": {
+            "normal": 31,
+            "all": 38
+          }
+        },
+        "result": "12条日志均列出closure并报告未触及禁止依赖。"
+      },
+      "nine_extra_tests": {
+        "claimed_count": 9,
+        "verification": "CI ZIP包含带时间戳的测试日志与全部named outcomes；acceptor代码将其作为重复--gate与55项required source合并验收。",
+        "gap": "root-acceptance.json只保存required_gate_source，没有持久化这9个额外--gate名称或acceptor完整argv；不能从验收JSON单独核对九项名单。建议joint归档加入原始acceptor命令/九项名称清单，并从ZIP测试日志逐项映射到精确名称和结果；不得猜造名称。"
+      }
+    },
+    "archive_pattern_review": {
+      "script": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/archive_cache_focus_v1.py",
+      "observation": "脚本示范将focused原始收据、执行器/验收器、共用guard/扫描器/闭包runner及四个改动源码按bytes+SHA256编目，写tar后逐成员回读比较。其README与receipt明确限定为local focused，own CI未通过。",
+      "recommendation": "joint归档复用该逐payload manifest、确定性tar元数据及解包逐字节复核；不要把单slice focused archive误称联合交付档。"
+    }
+  },
+  "minimal_joint_archive": [
+    "四个OpenSpec change各自的verification-root.md与tasks.md快照；保留各slice独立focused范围和当前勾选状态。",
+    "联合README/manifest：四项对应的精确D3 HEAD、各变更文件清单与SHA、4887源码闭包绑定回执、CI run ID与workspace/matrix各自scope。",
+    "四项accepted focused protocol-review/execution/command_spec及其全部raw streams；共享矩阵root-audit与CLI身份/复用依据。",
+    "workspace-core-v3 root acceptance、execution、focused receipt和必要runner/acceptor源码；保留native execution identity未验证的边界。",
+    "own-CI root acceptance、acceptor源码及SHA、原始logs.zip原件和60个成员bytes/SHA pin；补存完整acceptor invocation及九个额外gate的明文清单。",
+    "失败历史原始execution/raw/clean收据：workspace-core-v1、workspace-core-v2、canonical focused v1及旧产品CI/生产复现；分别标注已被后续范围解决、历史failed保留、或私有证据，不能覆写为成功。",
+    "归档工具本身及解包完整性回执；归档时逐payload重算长度和SHA256，并在创建后重开tar逐成员比较。"
+  ],
+  "verification_and_tasks_fields": {
+    "shared_fields": [
+      "精确产品HEAD D3；source closure 4887与manifest/绑定receipt；证据路径及SHA。",
+      "CI run ID 38673548915、exact_product_ci accepted、654 checks/4 jobs/52 steps；2 seeds各365 suites、3587 passed/0 failed/98 ignored。",
+      "workspace accepted_local_workspace_only、365 targets、每seed 96 batches；本机native executable identity未验证。",
+      "Focused每项真实checks/commands/raw/pass-fail-ignored与严格scope；matrix 16 render+16 compile/run系复用，45 baseline/33 admission rows。",
+      "原始失败记录的标识、scope、失败原因、后续修复/证据关系；明确不能抹掉failed历史。"
+    ],
+    "per_change_task_guidance": "只按各变更本身证据勾实现/局部验证任务；把joint CI/workspace作为新增跨变更证据附记，不将其改写成每个slice都分别执行的focused测试。自身CI可登记为精确D3产品CI通过。第三计划仍0/27，保持未实现/未完成。"
+  },
+  "failure_history_guidance": [
+    "workspace-core-v1曾在 bulk_recovery_delivery.rs:497 出现 actual 1 / expected 4；保留原失败与finally clean证据。",
+    "workspace-core-v2仅在P5 corpus fingerprint处因三份已批准P2 golden费用内容变更导致旧fingerprint失效；保留原失败，随后仅重生必要三项指纹并由v3验收。",
+    "canonical focused v1 的2个P5 pin失败历史保留；billing校准与v2通过不能改写v1为成功。",
+    "旧候选自身CI失败及emitter旧生产复现保留并区分产品SHA；私有运行不冒称root复跑。"
+  ],
+  "recommendation": "可以形成四项core的联合本地交付归档，并记录精确D3自身CI已通过；workspace证据仍只称accepted local workspace。归档前补齐9个额外gate名称及acceptor完整调用，避免数字有证据但范围清单不可独立复核。第三计划不列入实现完成。"
+}

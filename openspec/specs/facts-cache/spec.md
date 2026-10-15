@@ -45,7 +45,7 @@ cache/index 不得成为正确性前置条件；关闭、损坏或版本不兼�
 
 ### Requirement: Verified container facts are reusable within explicit bounds
 
-系统 SHALL 支持显式启用的内存 container facts 复用，绑定不可变 snapshot、完整物理 container origin 和解析/验证版本。仅完整、已验证事实可作为完整目录发布；MUST 保留同 raw name 的全部物理 entries 及稳定顺序。关闭复用时仍可执行相同语义的直接路径。保留事实与 backing 的总量 SHALL 同时受显式 entry 数与 retained-byte 上限约束，并报告命中、驻留权重及容量拒绝；容量不足不改变分析语义。
+系统 SHALL 支持显式启用的内存 container facts 复用，绑定不可变 snapshot、完整物理 container origin 和解析/验证版本。仅完整、已验证事实可作为完整目录发布；MUST 保留同 raw name 的全部物理 entries 及稳定顺序。关闭复用时仍可执行相同语义的直接路径。保留事实与 backing 的总量 SHALL 同时受显式 entry 数与 retained-byte 上限约束，并报告命中、驻留权重及容量拒绝；容量不足不改变分析语义。共享 store 中的 container、definition-read 与 CP/Header 已保留条目 MUST 全部计入同一总 entry 上限，与插入顺序无关。失效移除条目时 SHALL 同步扣减该 store 持有的权重，不把其他请求仍持有的引用声称为已释放内存。
 
 #### Scenario: Different methods reuse the same container
 
@@ -76,6 +76,21 @@ cache/index 不得成为正确性前置条件；关闭、损坏或版本不兼�
 
 - **WHEN** store 被清空或释放，而活动请求仍持有已验证目录或 backing 的有效引用
 - **THEN** 只释放 store 的持有关系，活动引用继续有效并允许该请求在自身剩余预算内消费事实；不得因此重建、悬挂或错误终止，不把仍被活动请求持有的内存报告为已经释放
+
+#### Scenario: Mixed retained layers share one entry allowance
+
+- **WHEN** entry 上限为二，store 已保留一个 container 和一个 definition-read，后续得到完整 CP/Header 事实；或同样三类事实以其他顺序到达
+- **THEN** 第三个新条目被拒绝保留，总条目数仍为二，报告 entry 容量拒绝而非字节容量拒绝，当前请求仍可消费已取得的完整事实
+
+#### Scenario: Incompatible facts release their store weight
+
+- **WHEN** store 的 CP/Header 项因 format、registry 或 product 不兼容被丢弃，随后相同容量下完成一次兼容解析
+- **THEN** store 的总条目及 retained-byte 权重只包含仍保留项；兼容结果可以再次保留，不因被移除项的旧权重永久拒绝，也不需要调用 clear 才恢复容量
+
+#### Scenario: Removing one entry preserves other retention and live payloads
+
+- **WHEN** 混合 store 中一个不兼容 CP/Header 项被移除，而其他层条目和一个先前请求的有效 payload 引用仍存在
+- **THEN** 仅扣减被移除项的 store 权重，其他保留项的命中和权重保持正确，活动 payload 引用继续有效
 
 ### Requirement: Reuse preserves current request limits and evidence
 
