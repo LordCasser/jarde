@@ -2112,13 +2112,17 @@ impl Engine {
             ) {
                 Ok(()) => {}
                 Err(error) => {
-                    merge_execution(&mut report.execution, stop_execution(&error, budget));
-                    report.diagnostics.push(stop_diagnostic(
-                        &error,
-                        Some(definition_provenance(&report.class)),
-                    ));
+                    let (stop, diagnostics) =
+                        error.into_execution(budget, Some(definition_provenance(&report.class)));
+                    merge_execution(&mut report.execution, stop);
+                    report.diagnostics.extend(diagnostics);
                 }
             }
+        }
+        if ends_the_request(&report.execution) {
+            report.usage = budget.usage();
+            report.execution = with_usage(report.execution, budget.usage());
+            return Ok(OperationOutcome::Performed(report));
         }
         if matches!(
             report.member_family,
@@ -4734,7 +4738,7 @@ impl Engine {
         )],
         root_nesting: &class_source::ClassSourceAssemblyContext,
         budget: &mut Budget,
-    ) -> Result<()> {
+    ) -> DependencyProofResult<()> {
         let Some(root_name) = root
             .declaration
             .as_ref()
@@ -4778,7 +4782,18 @@ impl Engine {
                 budget,
             ) {
                 Ok(projection) => projection,
-                Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+                Err(error) if error.ends_request(budget) => {
+                    // Earlier members may already have committed their source rewrite. Publish
+                    // those existing anchors before returning the later request stop.
+                    if !derived.is_empty() {
+                        root.anonymous_interface_projection =
+                            class_source::ClassSourceAnonymousInterfaceProjection::Projected {
+                                derived,
+                            };
+                        root.usage = budget.usage();
+                    }
+                    return Err(error);
+                }
                 Err(_) => continue,
             };
             let Some((index, projected)) = projection else {
@@ -4830,7 +4845,13 @@ impl Engine {
         site: &jarde_java::report::AnonymousAllocationCandidate,
         root_nesting: &class_source::ClassSourceAssemblyContext,
         budget: &mut Budget,
-    ) -> Result<Option<(usize, class_source::MemberFamilyMethodText)>> {
+    ) -> DependencyProofResult<Option<(usize, class_source::MemberFamilyMethodText)>> {
+        #[cfg(test)]
+        class_source_proof_inflight_tests::at(
+            ClassProofStage::DoubleBracePostbody,
+            root_method,
+            budget,
+        );
         let Some(root_name) = root
             .declaration
             .as_ref()
@@ -4856,7 +4877,7 @@ impl Engine {
         let mut execution = ExecutionReport::Complete {
             usage: budget.usage(),
         };
-        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+        let Some((child_definition, child_read)) = resolve_dependency_proof_read(
             content,
             environment,
             Some(root_method),
@@ -4917,7 +4938,7 @@ impl Engine {
         // stores. The companion-body projection reads the same two proofs for its mixed form.
         let mixed = match &capture {
             Some((field_name, field_descriptor)) => {
-                match self.prove_anonymous_super_val_capture(
+                match self.prove_anonymous_super_val_capture_for_proof(
                     content,
                     environment,
                     &child_definition,
@@ -4931,7 +4952,7 @@ impl Engine {
                     budget,
                 ) {
                     Ok(mixed) => Some(mixed),
-                    Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+                    Err(error) if error.ends_request(budget) => return Err(error),
                     Err(_) => return Ok(None),
                 }
             }
@@ -4942,7 +4963,7 @@ impl Engine {
             [b"L".as_slice(), root_name.as_slice(), b";"].concat(),
             |mixed| mixed.field_descriptor.clone(),
         );
-        if let Err(error) = self.prove_anonymous_owner_xrefs(
+        if let Err(error) = self.prove_anonymous_owner_xrefs_for_proof(
             content,
             environment,
             &root.class,
@@ -4959,7 +4980,7 @@ impl Engine {
             &mut execution,
             budget,
         ) {
-            if error_ends_the_request(&error, budget) {
+            if error.ends_request(budget) {
                 return Err(error);
             }
             return Ok(None);
@@ -4991,9 +5012,19 @@ impl Engine {
         );
         let (child, _, child_asts, _, _, _) = match prepared {
             Ok(prepared) => prepared,
-            Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+            Err(error) if error_ends_the_request(&error, budget) => return Err(error.into()),
             Err(_) => return Ok(None),
         };
+        if ends_the_request(&child.execution) {
+            let mut diagnostics = child.diagnostics;
+            for method in child.methods {
+                extend_request_ending_member_diagnostics(method.outcome, &mut diagnostics);
+            }
+            return Err(DependencyProofFailure::Report {
+                execution: Box::new(child.execution),
+                diagnostics,
+            });
+        }
         if !matches!(child.execution, ExecutionReport::Complete { .. })
             || child.methods.len() != child_facts.methods.len()
             || child_asts.len() != child_facts.methods.len()
@@ -5053,6 +5084,12 @@ impl Engine {
                     },
                     budget,
                 )?;
+                if ends_the_request(&analyzed.report().execution) {
+                    return Err(DependencyProofFailure::Report {
+                        execution: Box::new(analyzed.report().execution.clone()),
+                        diagnostics: analyzed.report().diagnostics.clone(),
+                    });
+                }
                 if analyzed.report().method != *root_method
                     || !matches!(
                         analyzed.report().execution,
@@ -6153,7 +6190,75 @@ impl Engine {
         execution: &mut ExecutionReport,
         budget: &mut Budget,
     ) -> Result<AnonymousSuperValCapture> {
-        let Some(proof) = prove_anonymous_capture(
+        self.prove_anonymous_super_val_capture_with_stop(
+            content,
+            environment,
+            child_definition,
+            child_facts,
+            outer_name,
+            field_name,
+            field_descriptor,
+            constructor_descriptor,
+            receiver,
+            execution,
+            budget,
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prove_anonymous_super_val_capture_for_proof(
+        &self,
+        content: &[ArtifactSnapshot],
+        environment: &ResolutionEnvironment,
+        child_definition: &PhysicalDefinitionId,
+        child_facts: &jarde_reader::classfile::ClassMemberFacts,
+        outer_name: &[u8],
+        field_name: &[u8],
+        field_descriptor: &[u8],
+        constructor_descriptor: &[u8],
+        receiver: crate::member_inner::CaptureReadReceiver,
+        execution: &mut ExecutionReport,
+        budget: &mut Budget,
+    ) -> DependencyProofResult<AnonymousSuperValCapture> {
+        let mut stopped = None;
+        let result = self.prove_anonymous_super_val_capture_with_stop(
+            content,
+            environment,
+            child_definition,
+            child_facts,
+            outer_name,
+            field_name,
+            field_descriptor,
+            constructor_descriptor,
+            receiver,
+            execution,
+            budget,
+            Some(&mut stopped),
+        );
+        match stopped {
+            Some(stop) => Err(stop),
+            None => result.map_err(DependencyProofFailure::from),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prove_anonymous_super_val_capture_with_stop(
+        &self,
+        content: &[ArtifactSnapshot],
+        environment: &ResolutionEnvironment,
+        child_definition: &PhysicalDefinitionId,
+        child_facts: &jarde_reader::classfile::ClassMemberFacts,
+        outer_name: &[u8],
+        field_name: &[u8],
+        field_descriptor: &[u8],
+        constructor_descriptor: &[u8],
+        receiver: crate::member_inner::CaptureReadReceiver,
+        execution: &mut ExecutionReport,
+        budget: &mut Budget,
+        mut stopped: Option<&mut Option<DependencyProofFailure>>,
+    ) -> Result<AnonymousSuperValCapture> {
+        let Some(proof) = prove_anonymous_capture_with_stop(
             content,
             environment,
             child_definition,
@@ -6162,6 +6267,7 @@ impl Engine {
             receiver,
             execution,
             budget,
+            stopped.as_deref_mut(),
         )?
         else {
             return Err(Error::unsupported(
@@ -6192,6 +6298,14 @@ impl Engine {
             budget,
         )?;
         merge_execution(execution, analyzed.report().execution.clone());
+        if let Some(stopped) = stopped.as_deref_mut()
+            && ends_the_request(&analyzed.report().execution)
+        {
+            *stopped = Some(DependencyProofFailure::Report {
+                execution: Box::new(analyzed.report().execution.clone()),
+                diagnostics: analyzed.report().diagnostics.clone(),
+            });
+        }
         if analyzed.report().method != constructor_id
             || !matches!(
                 analyzed.report().execution,
@@ -6244,6 +6358,90 @@ impl Engine {
         census_path: AnonymousOwnerCensusPath,
         execution: &mut ExecutionReport,
         budget: &mut Budget,
+    ) -> Result<()> {
+        self.prove_anonymous_owner_xrefs_with_stop(
+            content,
+            environment,
+            root,
+            child,
+            caller,
+            allocation_bci,
+            constructor_bci,
+            child_name,
+            capture_descriptor,
+            constructor_descriptor,
+            capture,
+            descendant_capture,
+            census_path,
+            execution,
+            budget,
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prove_anonymous_owner_xrefs_for_proof(
+        &self,
+        content: &[ArtifactSnapshot],
+        environment: &ResolutionEnvironment,
+        root: &PhysicalDefinitionId,
+        child: &PhysicalDefinitionId,
+        caller: &PhysicalMethodId,
+        allocation_bci: u32,
+        constructor_bci: u32,
+        child_name: &[u8],
+        capture_descriptor: &[u8],
+        constructor_descriptor: &[u8],
+        capture: Option<&class_source::MemberCaptureProof>,
+        descendant_capture: Option<&AnonymousDescendantCaptureXrefs<'_>>,
+        census_path: AnonymousOwnerCensusPath,
+        execution: &mut ExecutionReport,
+        budget: &mut Budget,
+    ) -> DependencyProofResult<()> {
+        let mut stopped = None;
+        let result = self.prove_anonymous_owner_xrefs_with_stop(
+            content,
+            environment,
+            root,
+            child,
+            caller,
+            allocation_bci,
+            constructor_bci,
+            child_name,
+            capture_descriptor,
+            constructor_descriptor,
+            capture,
+            descendant_capture,
+            census_path,
+            execution,
+            budget,
+            Some(&mut stopped),
+        );
+        match stopped {
+            Some(stop) => Err(stop),
+            None => result.map_err(DependencyProofFailure::from),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prove_anonymous_owner_xrefs_with_stop(
+        &self,
+        content: &[ArtifactSnapshot],
+        environment: &ResolutionEnvironment,
+        root: &PhysicalDefinitionId,
+        child: &PhysicalDefinitionId,
+        caller: &PhysicalMethodId,
+        allocation_bci: u32,
+        constructor_bci: u32,
+        child_name: &[u8],
+        capture_descriptor: &[u8],
+        constructor_descriptor: &[u8],
+        capture: Option<&class_source::MemberCaptureProof>,
+        descendant_capture: Option<&AnonymousDescendantCaptureXrefs<'_>>,
+        census_path: AnonymousOwnerCensusPath,
+        execution: &mut ExecutionReport,
+        budget: &mut Budget,
+        mut stopped: Option<&mut Option<DependencyProofFailure>>,
     ) -> Result<()> {
         use jarde_query::query::{XrefCertainty, XrefOperation, XrefTarget};
         use jarde_query::xref::{CandidateFilter, scan_candidates};
@@ -6328,6 +6526,14 @@ impl Engine {
                 budget,
             )?;
             merge_execution(execution, scan.execution.clone());
+            if let Some(stopped) = stopped.as_deref_mut()
+                && ends_the_request(&scan.execution)
+            {
+                *stopped = Some(DependencyProofFailure::Report {
+                    execution: Box::new(scan.execution.clone()),
+                    diagnostics: scan.diagnostics.clone(),
+                });
+            }
             if scan.has_more
                 || !matches!(scan.execution, ExecutionReport::Complete { .. })
                 || scan.coverage.dimensions.artifact_structural.state
@@ -7954,8 +8160,39 @@ impl Engine {
                     ),
                 }
             };
+            let publication_stopped = stops.iter().any(|stop| {
+                matches!(
+                    stop,
+                    ExecutionReport::Cancelled { .. }
+                        | ExecutionReport::Partial {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis
+                            },
+                            ..
+                        }
+                        | ExecutionReport::Failed {
+                            reason: TerminationReason::BudgetExceeded {
+                                dimension: jarde_reader::budget::BudgetDimension::ElapsedMillis
+                            },
+                            ..
+                        }
+                )
+            });
             for stop in stops {
                 merge_execution(&mut execution, stop);
+            }
+            if ends
+                && (publication_stopped
+                    || budget.cancellation_token().is_cancelled()
+                    || budget
+                        .ledger()
+                        .is_some_and(|ledger| ledger.stop_reason().is_some()))
+            {
+                // Cancellation and an observed deadline cannot admit a publication charge.
+                // A ledger stop also cancels its own token, which may differ from this budget's.
+                // Keep the original diagnostics without polling again or publishing an unpaid item.
+                extend_request_ending_member_diagnostics(record.outcome, &mut diagnostics);
+                break;
             }
             if let Err(error) = charge_item(budget) {
                 merge_execution(&mut execution, stop_execution(&error, budget));
@@ -21800,6 +22037,8 @@ impl DependencyProofFailure {
         budget: &Budget,
         provenance: Option<Provenance>,
     ) -> (ExecutionReport, Vec<Diagnostic>) {
+        #[cfg(test)]
+        class_source_proof_inflight_tests::at_stop(budget);
         match self {
             Self::Error(error) => (
                 stop_execution(&error, budget),
@@ -25683,6 +25922,48 @@ fn selected_reference_header(
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<Option<ReferenceClassHeader>> {
+    selected_reference_header_with(ir, owner, cache, budget, |budget| {
+        resolve_class_source_dependency_read_raw(
+            content,
+            &request.environment,
+            Some(&request.method),
+            owner,
+            execution,
+            budget,
+        )
+    })
+}
+
+fn selected_dependency_proof_header(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    owner: &[u8],
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> DependencyProofResult<Option<ReferenceClassHeader>> {
+    selected_reference_header_with(ir, owner, cache, budget, |budget| {
+        resolve_dependency_proof_read(
+            content,
+            &request.environment,
+            Some(&request.method),
+            owner,
+            execution,
+            budget,
+        )
+    })
+}
+
+fn selected_reference_header_with<E: From<Error>>(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    owner: &[u8],
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    budget: &mut Budget,
+    mut read: impl FnMut(
+        &mut Budget,
+    ) -> std::result::Result<Option<(PhysicalDefinitionId, ConfirmedRead)>, E>,
+) -> std::result::Result<Option<ReferenceClassHeader>, E> {
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
     if let Some(cached) = cache.get(owner) {
@@ -25694,15 +25975,7 @@ fn selected_reference_header(
     let selected = if current == Some(owner) {
         ReferenceClassHeader::from_ir(ir)
     } else {
-        resolve_class_source_dependency_read_raw(
-            content,
-            &request.environment,
-            Some(&request.method),
-            owner,
-            execution,
-            budget,
-        )?
-        .and_then(|(_, read)| ReferenceClassHeader::from_facts(&read.facts))
+        read(budget)?.and_then(|(_, read)| ReferenceClassHeader::from_facts(&read.facts))
     };
     cache.insert(owner.to_vec(), selected.clone());
     Ok(selected)
@@ -25800,8 +26073,18 @@ fn snapshot_header_chain_widens_with(
     target: &[u8],
     max_depth: u64,
     budget: &mut Budget,
-    mut header: impl FnMut(&[u8], &mut Budget) -> Result<Option<ReferenceClassHeader>>,
+    header: impl FnMut(&[u8], &mut Budget) -> Result<Option<ReferenceClassHeader>>,
 ) -> Result<bool> {
+    snapshot_header_chain_widens_try(source, target, max_depth, budget, header)
+}
+
+fn snapshot_header_chain_widens_try<E: From<Error>>(
+    source: &[u8],
+    target: &[u8],
+    max_depth: u64,
+    budget: &mut Budget,
+    mut header: impl FnMut(&[u8], &mut Budget) -> std::result::Result<Option<ReferenceClassHeader>, E>,
+) -> std::result::Result<bool, E> {
     if source == target {
         return Ok(false);
     }
@@ -25851,6 +26134,23 @@ fn snapshot_header_chain_widens(
 ) -> Result<bool> {
     snapshot_header_chain_widens_with(source, target, max_depth, budget, |owner, budget| {
         selected_reference_header(content, request, ir, owner, cache, execution, budget)
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
+fn snapshot_dependency_proof_widens(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    source: &[u8],
+    target: &[u8],
+    max_depth: u64,
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> DependencyProofResult<bool> {
+    snapshot_header_chain_widens_try(source, target, max_depth, budget, |owner, budget| {
+        selected_dependency_proof_header(content, request, ir, owner, cache, execution, budget)
     })
 }
 
@@ -26519,16 +26819,28 @@ const SNAPSHOT_HIERARCHY_WALK_DEPTH: u64 = 8;
 /// consumes: a receiver first for instance calls, then the parameters in descriptor order — a
 /// `long`/`double` is one value of two slots. The descriptor itself states the names; one the
 /// reader refuses states no site at all.
+#[cfg(test)]
 fn reference_parameter_sites<'a>(
     descriptor: &'a [u8],
     receiver_slots: usize,
     budget: &mut Budget,
 ) -> Option<Vec<(usize, &'a [u8])>> {
-    let facts = jarde_reader::classfile::descriptor_facts(
+    reference_parameter_sites_checked(descriptor, receiver_slots, budget)
+        .ok()
+        .flatten()
+}
+
+fn reference_parameter_sites_checked<'a>(
+    descriptor: &'a [u8],
+    receiver_slots: usize,
+    budget: &mut Budget,
+) -> Result<Option<Vec<(usize, &'a [u8])>>> {
+    let Ok(facts) = jarde_reader::classfile::descriptor_facts(
         descriptor,
         jarde_reader::classfile::DescriptorKind::Method,
-    )
-    .ok()?;
+    ) else {
+        return Ok(None);
+    };
     let mut sites = Vec::new();
     for (index, component) in facts.parameters().iter().enumerate() {
         if !component.is_array()
@@ -26540,13 +26852,11 @@ fn reference_parameter_sites<'a>(
             sites.push((receiver_slots + index, internal));
         }
     }
-    budget
-        .charge(
-            CountedBudgetDimension::AnalysisSteps,
-            u64::try_from(facts.parameters().len()).unwrap_or(u64::MAX),
-        )
-        .ok()?;
-    Some(sites)
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.parameters().len()).unwrap_or(u64::MAX),
+    )?;
+    Ok(Some(sites))
 }
 
 /// The class a named SSA reference states, in the internal form both descriptor and class-file
@@ -26753,7 +27063,13 @@ fn prove_snapshot_hierarchy_widenings(
     request: &crate::ir::MethodAnalysisRequest,
     ir: &jarde_jvm::method_ir::MethodIr,
     budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
+) -> DependencyProofResult<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
+    #[cfg(test)]
+    class_source_proof_inflight_tests::at(
+        ClassProofStage::SnapshotPrebody,
+        &request.method,
+        budget,
+    );
     use jarde_reader::classfile::{CpEntryKind, cp_entry};
     let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
         return Ok(Vec::new());
@@ -26776,7 +27092,7 @@ fn prove_snapshot_hierarchy_widenings(
                 if source.rank != target.rank || source.leaf_class == target.leaf_class {
                     continue;
                 }
-                if snapshot_header_chain_widens(
+                if snapshot_dependency_proof_widens(
                     content,
                     request,
                     ir,
@@ -26815,7 +27131,8 @@ fn prove_snapshot_hierarchy_widenings(
             | CpEntryKind::InterfaceMethodRef { descriptor, .. } => descriptor.0.as_slice(),
             _ => continue,
         };
-        let Some(sites) = reference_parameter_sites(descriptor, receiver_slots, budget) else {
+        let Some(sites) = reference_parameter_sites_checked(descriptor, receiver_slots, budget)?
+        else {
             continue;
         };
         if sites.is_empty() {
@@ -26866,7 +27183,7 @@ fn prove_snapshot_hierarchy_widenings(
             if presented == target {
                 continue;
             }
-            if snapshot_header_chain_widens(
+            if snapshot_dependency_proof_widens(
                 content,
                 request,
                 ir,
@@ -26891,19 +27208,6 @@ fn prove_snapshot_hierarchy_widenings(
         }
     }
     Ok(proved)
-}
-
-fn snapshot_hierarchy_widenings_presented(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
-    budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
-    match prove_snapshot_hierarchy_widenings(content, request, ir, budget) {
-        Ok(proved) => Ok(proved),
-        Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
-        Err(error) => Err(error),
-    }
 }
 
 #[cfg(test)]
@@ -27286,6 +27590,31 @@ fn prove_anonymous_capture(
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<Option<class_source::MemberCaptureProof>> {
+    prove_anonymous_capture_with_stop(
+        content,
+        environment,
+        child_definition,
+        outer_name,
+        child,
+        receiver,
+        execution,
+        budget,
+        None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn prove_anonymous_capture_with_stop(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    child_definition: &PhysicalDefinitionId,
+    outer_name: &[u8],
+    child: &jarde_reader::classfile::ClassMemberFacts,
+    receiver: crate::member_inner::CaptureReadReceiver,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+    mut stopped: Option<&mut Option<DependencyProofFailure>>,
+) -> Result<Option<class_source::MemberCaptureProof>> {
     if child.stopped_at.is_some()
         || child.fields.len() as u64 != child.field_count
         || child.methods.len() as u64 != child.method_count
@@ -27317,6 +27646,15 @@ fn prove_anonymous_capture(
             budget,
         )?;
         merge_execution(execution, analyzed.report().execution.clone());
+        if let Some(stopped) = stopped.as_deref_mut()
+            && ends_the_request(&analyzed.report().execution)
+        {
+            *stopped = Some(DependencyProofFailure::Report {
+                execution: Box::new(analyzed.report().execution.clone()),
+                diagnostics: analyzed.report().diagnostics.clone(),
+            });
+            return Ok(None);
+        }
         if analyzed.report().method != id
             || !matches!(
                 analyzed.report().execution,
@@ -41366,6 +41704,26 @@ fn publish_diagnostics(
     Ok(())
 }
 
+/// Move the original diagnostics of a request-ending member whose record is being discarded.
+/// Ordinary value-level refusals and successful members contribute no stop diagnostics here.
+fn extend_request_ending_member_diagnostics(
+    outcome: class_source::ClassSourceOutcome,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    match outcome {
+        class_source::ClassSourceOutcome::Recovered { report, .. }
+            if ends_the_request(&report.execution) =>
+        {
+            diagnostics.extend(report.diagnostics);
+        }
+        class_source::ClassSourceOutcome::Refused {
+            execution,
+            diagnostics: own,
+        } if ends_the_request(&execution) => diagnostics.extend(own),
+        _ => {}
+    }
+}
+
 /// Charges one item the caller will see, before it is published.
 ///
 /// `ResultItems` counts items a public result returns, so the items this layer adds to a report are
@@ -42357,87 +42715,102 @@ fn recovery_from_with_class_candidates(
         }
         None => Vec::new(),
     };
-    let interface_super_calls =
-        match prove_interface_super_calls(content, request, analyzed.ir(), budget) {
-            Ok(proved) => proved,
-            Err(stopped) if stopped.ends_request(budget) => {
-                #[cfg(test)]
-                if let DependencyProofFailure::Error(error) = &stopped {
-                    interface_super_proof_stop_tests::at_local_depth_stop(error, budget);
+    let proofs = (|| {
+        let interface_super_calls =
+            match prove_interface_super_calls(content, request, analyzed.ir(), budget) {
+                Ok(proved) => proved,
+                Err(stopped) => {
+                    #[cfg(test)]
+                    if let DependencyProofFailure::Error(error) = &stopped {
+                        interface_super_proof_stop_tests::at_local_depth_stop(error, budget);
+                    }
+                    return Err(stopped);
                 }
-                // The proof owns either the original error or the resolver's original report.
-                // Preserve it before any later poll, charge or recovery work can replace it.
-                let reason = stopped.recovery_reason();
-                let (execution, diagnostics) = stopped
-                    .into_execution(budget, Some(definition_provenance(&request.method.owner)));
-                let stopped_request =
-                    jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
-                        .with_evidence(evidence.clone());
-                let recovery = jarde_java::report::stopped_before_recovery(
-                    &stopped_request,
-                    reason,
-                    execution,
-                    diagnostics,
-                );
-                let analysis = analyzed.report();
-                crate::d0_counts::recovery_presented_run();
-                crate::d0_counts::owned_records(
-                    1 + u64::try_from(analysis.stages.len()).unwrap_or(u64::MAX)
-                        + u64::try_from(analysis.reads.len()).unwrap_or(u64::MAX)
-                        + u64::try_from(analysis.diagnostics.len()).unwrap_or(u64::MAX),
-                );
-                return Ok((
-                    RecoveredMethod {
-                        analysis: analysis.clone(),
-                        recovery,
-                        callees: callees.map(|read| read.without_read_details()),
-                        facts,
-                    },
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    Vec::new(),
-                    Vec::new(),
-                ));
+            };
+        let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
+            let mut calls =
+                reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
+            match prove_direct_parent_accessor_calls(content, request, analyzed.ir(), budget) {
+                Ok(accessors) => calls.extend(accessors),
+                Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => {}
+                Err(error) => return Err(error.into()),
             }
-            Err(DependencyProofFailure::Error(error)) => return Err(error),
-            Err(DependencyProofFailure::Report { .. }) => {
-                unreachable!("only request-ending resolver reports leave a dependency proof")
-            }
+            let fields =
+                match prove_direct_parent_field_writes(content, request, analyzed.ir(), budget) {
+                    Ok(fields) => fields,
+                    Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Vec::new(),
+                    Err(error) => return Err(error.into()),
+                };
+            (calls, fields)
+        } else {
+            (Vec::new(), Vec::new())
         };
-    let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
-        let mut calls =
-            reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
-        match prove_direct_parent_accessor_calls(content, request, analyzed.ir(), budget) {
-            Ok(accessors) => calls.extend(accessors),
-            Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => {}
-            Err(error) => return Err(error),
+        // The widening proofs this body's invocation arguments and reference-array stores state,
+        // read from the same selected snapshot hierarchy. A method-only request states none, like the
+        // other class-source proofs above.
+        let snapshot_hierarchy_widenings = if assembly_context.is_some() {
+            prove_snapshot_hierarchy_widenings(content, request, analyzed.ir(), budget)?
+        } else {
+            Vec::new()
+        };
+        Ok::<_, DependencyProofFailure>((
+            interface_super_calls,
+            reference_overload_calls,
+            superclass_field_writes,
+            snapshot_hierarchy_widenings,
+        ))
+    })();
+    let (
+        interface_super_calls,
+        reference_overload_calls,
+        superclass_field_writes,
+        snapshot_hierarchy_widenings,
+    ) = match proofs {
+        Ok(proved) => proved,
+        Err(DependencyProofFailure::Error(error)) if !error_ends_the_request(&error, budget) => {
+            return Err(error);
         }
-        let fields = match prove_direct_parent_field_writes(content, request, analyzed.ir(), budget)
-        {
-            Ok(fields) => fields,
-            Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Vec::new(),
-            Err(error) => return Err(error),
-        };
-        (calls, fields)
-    } else {
-        (Vec::new(), Vec::new())
-    };
-    // The widening proofs this body's invocation arguments and reference-array stores state,
-    // read from the same selected snapshot hierarchy. A method-only request states none, like the
-    // other class-source proofs above.
-    let snapshot_hierarchy_widenings = if assembly_context.is_some() {
-        snapshot_hierarchy_widenings_presented(content, request, analyzed.ir(), budget)?
-    } else {
-        Vec::new()
+        Err(stopped) => {
+            let reason = stopped.recovery_reason();
+            let (execution, diagnostics) =
+                stopped.into_execution(budget, Some(definition_provenance(&request.method.owner)));
+            let stopped_request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
+                .with_evidence(evidence.clone());
+            let recovery = jarde_java::report::stopped_before_recovery(
+                &stopped_request,
+                reason,
+                execution,
+                diagnostics,
+            );
+            let analysis = analyzed.report();
+            crate::d0_counts::recovery_presented_run();
+            crate::d0_counts::owned_records(
+                1 + u64::try_from(analysis.stages.len()).unwrap_or(u64::MAX)
+                    + u64::try_from(analysis.reads.len()).unwrap_or(u64::MAX)
+                    + u64::try_from(analysis.diagnostics.len()).unwrap_or(u64::MAX),
+            );
+            return Ok((
+                RecoveredMethod {
+                    analysis: analysis.clone(),
+                    recovery,
+                    callees: callees.map(|read| read.without_read_details()),
+                    facts,
+                },
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Vec::new(),
+                Vec::new(),
+            ));
+        }
     };
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
@@ -46479,6 +46852,593 @@ mod common_instance_array_initializer_tests {
             }
         };
         assert!(matches!(execution, ExecutionReport::Cancelled { .. }));
+    }
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ClassProofStage {
+    SnapshotPrebody,
+    DoubleBracePostbody,
+}
+
+#[cfg(test)]
+mod class_source_proof_inflight_tests {
+    use super::*;
+    use jarde_reader::budget::{BudgetDimension, CancellationToken};
+    use jarde_reader::ledger::{
+        LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+    };
+    use std::cell::RefCell;
+    use std::sync::{
+        Arc, Mutex,
+        atomic::{AtomicUsize, Ordering},
+    };
+
+    #[derive(Clone, Copy, Debug)]
+    pub(super) enum InFlightControl {
+        CancelAfterRealCharge,
+        ExpiredLedgerCheckpoint,
+        CountedClassHeaders,
+    }
+
+    #[derive(Debug)]
+    pub(super) struct Observation {
+        pub token: CancellationToken,
+        pub budget_token: CancellationToken,
+        pub usage_at_entry: UsageSnapshot,
+        pub usage_at_stop: Mutex<Option<UsageSnapshot>>,
+        pub entries: Mutex<Vec<LedgerSite>>,
+        pub refusals: Mutex<Vec<Option<BudgetDimension>>>,
+        pub first_refusal_index: Mutex<Option<usize>>,
+        charge_count: AtomicUsize,
+        control: InFlightControl,
+    }
+
+    impl LedgerObserver for Observation {
+        fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+            self.entries.lock().unwrap().push(site);
+            if matches!(site, LedgerSite::Charge(_)) {
+                let prior = self.charge_count.fetch_add(1, Ordering::SeqCst);
+                if matches!(self.control, InFlightControl::CancelAfterRealCharge) && prior == 0 {
+                    self.token.cancel();
+                }
+            }
+        }
+        fn refusal(&self, _site: LedgerSite, dimension: Option<BudgetDimension>) {
+            let mut refusals = self.refusals.lock().unwrap();
+            if refusals.is_empty() {
+                *self.first_refusal_index.lock().unwrap() =
+                    Some(self.entries.lock().unwrap().len().saturating_sub(1));
+            }
+            refusals.push(dimension);
+        }
+    }
+
+    #[derive(Clone, Copy)]
+    struct Armed {
+        stage: ClassProofStage,
+        control: InFlightControl,
+    }
+    thread_local! {
+        static ARMED: RefCell<Option<Armed>> = const { RefCell::new(None) };
+        static OBSERVED: RefCell<Option<Arc<Observation>>> = const { RefCell::new(None) };
+    }
+
+    pub(super) struct Guard;
+    impl Drop for Guard {
+        fn drop(&mut self) {
+            ARMED.with(|slot| {
+                slot.replace(None);
+            });
+            OBSERVED.with(|slot| {
+                slot.replace(None);
+            });
+        }
+    }
+
+    pub(super) fn arm(stage: ClassProofStage, control: InFlightControl) -> Guard {
+        ARMED.with(|slot| {
+            assert!(
+                slot.borrow().is_none(),
+                "class-source proof controls do not nest"
+            );
+            slot.replace(Some(Armed { stage, control }));
+        });
+        Guard
+    }
+
+    /// Called at the real proof boundary. The new operation ledger uses the current limits and
+    /// shared or independent token. Deadline/header modes change only their ledger limits; no stop
+    /// is injected.
+    pub(super) fn at(stage: ClassProofStage, method: &PhysicalMethodId, budget: &mut Budget) {
+        if method.name.0 != b"main" || method.descriptor.0 != b"([Ljava/lang/String;)V" {
+            return;
+        }
+        let armed = ARMED.with(|slot| {
+            if slot.borrow().is_some_and(|armed| armed.stage == stage) {
+                slot.borrow_mut().take()
+            } else {
+                None
+            }
+        });
+        let Some(armed) = armed else {
+            return;
+        };
+        let usage_at_entry = budget.usage();
+        let budget_token = budget.cancellation_token();
+        assert!(
+            !budget_token.is_cancelled(),
+            "control starts with a clear local token"
+        );
+        // with_ledger accepts a caller-owned ledger with its own cancellation token. Exercise
+        // that real API boundary for both prebody controls; postbody retains the shared token.
+        let token = if stage == ClassProofStage::SnapshotPrebody {
+            CancellationToken::new()
+        } else {
+            budget_token.clone()
+        };
+        assert!(!token.is_cancelled(), "the ledger token also starts clear");
+        let mut limits = budget.limits().clone();
+        match armed.control {
+            InFlightControl::CancelAfterRealCharge => {}
+            InFlightControl::ExpiredLedgerCheckpoint => limits.elapsed_millis = 0,
+            InFlightControl::CountedClassHeaders => limits.class_headers = 0,
+        }
+        let entry = Budget::with_cancellation_token(limits, token.clone());
+        let observer = Arc::new(Observation {
+            token,
+            budget_token,
+            usage_at_entry,
+            usage_at_stop: Mutex::new(None),
+            entries: Mutex::new(Vec::new()),
+            refusals: Mutex::new(Vec::new()),
+            first_refusal_index: Mutex::new(None),
+            charge_count: AtomicUsize::new(0),
+            control: armed.control,
+        });
+        let ledger = OperationLedger::new(&entry).with_observer(observer.clone());
+        budget.with_ledger(ledger, UsageOwner::Methods);
+        OBSERVED.with(|slot| {
+            assert!(
+                slot.borrow().is_none(),
+                "one proof-control observer is active"
+            );
+            slot.replace(Some(observer));
+        });
+    }
+
+    // Observe the original proof handoff without polling, charging, or changing its result.
+    pub(super) fn at_stop(budget: &Budget) {
+        OBSERVED.with(|slot| {
+            if let Some(observer) = slot.borrow().as_ref() {
+                let mut stopped = observer.usage_at_stop.lock().unwrap();
+                if stopped.is_none() {
+                    *stopped = Some(budget.usage());
+                }
+            }
+        });
+    }
+
+    pub(super) fn observation() -> Arc<Observation> {
+        OBSERVED.with(|slot| {
+            slot.borrow()
+                .as_ref()
+                .expect("proof boundary was reached")
+                .clone()
+        })
+    }
+
+    const H1_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar"
+    );
+
+    fn open_h1() -> (ArtifactSnapshot, ClassSourceRequest) {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        let snapshot = Engine::new()
+            .open(
+                ArtifactInput::bytes(H1_JAR.to_vec()),
+                &mut Budget::new(limits),
+            )
+            .unwrap();
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("H1"),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            },
+        };
+        (snapshot, request)
+    }
+
+    fn run_h1(snapshot: &ArtifactSnapshot, request: &ClassSourceRequest) -> ClassSourceReport {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.class_headers = u64::MAX;
+        let crate::OperationOutcome::Performed(report) = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(snapshot),
+                request,
+                &RecoveryEvidenceRequest::all(),
+                &mut Budget::new(limits),
+            )
+            .unwrap()
+        else {
+            panic!("H1 public class-source request is selected");
+        };
+        report
+    }
+
+    fn main_position(report: &ClassSourceReport) -> usize {
+        report
+            .methods
+            .iter()
+            .position(|member| {
+                member.item.identity.name.0 == b"main"
+                    && member.item.identity.descriptor.0 == b"([Ljava/lang/String;)V"
+            })
+            .expect("H1.main([Ljava/lang/String;)V is in the physical class method table")
+    }
+
+    fn assert_execution_stop(report: &ClassSourceReport, control: InFlightControl) {
+        match control {
+            InFlightControl::CancelAfterRealCharge => assert!(
+                matches!(report.execution, ExecutionReport::Cancelled { .. }),
+                "{:?}",
+                report.execution
+            ),
+            InFlightControl::ExpiredLedgerCheckpoint => assert!(
+                matches!(
+                    report.execution,
+                    ExecutionReport::Partial {
+                        reason: TerminationReason::BudgetExceeded {
+                            dimension: BudgetDimension::ElapsedMillis
+                        },
+                        ..
+                    }
+                ),
+                "{:?}",
+                report.execution
+            ),
+            InFlightControl::CountedClassHeaders => assert!(
+                matches!(
+                    report.execution,
+                    ExecutionReport::Partial {
+                        reason: TerminationReason::BudgetExceeded {
+                            dimension: BudgetDimension::ClassHeaders
+                        },
+                        ..
+                    }
+                ),
+                "{:?}",
+                report.execution
+            ),
+        }
+    }
+
+    fn assert_observer_stopped(observer: &Observation, control: InFlightControl) {
+        let entries = observer.entries.lock().unwrap();
+        let refusals = observer.refusals.lock().unwrap();
+        let first = observer
+            .first_refusal_index
+            .lock()
+            .unwrap()
+            .expect("the attached ledger observed a real refusal");
+        assert!(!entries.is_empty());
+        assert!(first < entries.len());
+        match control {
+            InFlightControl::CancelAfterRealCharge => {
+                assert!(
+                    entries[..=first]
+                        .iter()
+                        .any(|site| matches!(site, LedgerSite::Charge(_))),
+                    "cancellation is triggered only after an accepted real charge"
+                );
+                assert!(observer.token.is_cancelled());
+                assert_eq!(refusals.first(), Some(&None), "first stop is cancellation");
+            }
+            InFlightControl::ExpiredLedgerCheckpoint => {
+                assert_eq!(
+                    entries[first],
+                    LedgerSite::Checkpoint,
+                    "deadline is checked at a real checkpoint"
+                );
+                assert_eq!(
+                    refusals.first(),
+                    Some(&Some(BudgetDimension::ElapsedMillis))
+                );
+                assert!(
+                    observer.token.is_cancelled(),
+                    "recording the first ledger stop cancels its shared token"
+                );
+            }
+            InFlightControl::CountedClassHeaders => {
+                assert_eq!(
+                    entries[first],
+                    LedgerSite::Charge(UsageOwner::Methods),
+                    "the class-header bound refuses the actual proof's header charge"
+                );
+                assert_eq!(
+                    refusals.first(),
+                    Some(&Some(BudgetDimension::ClassHeaders)),
+                    "preserve the first counted refusal dimension"
+                );
+                assert_eq!(
+                    *refusals,
+                    vec![Some(BudgetDimension::ClassHeaders)],
+                    "the first refusal remains the only refusal"
+                );
+                assert!(
+                    observer.token.is_cancelled(),
+                    "the real counted ledger refusal cancels its independent ledger token"
+                );
+            }
+        }
+        let tail = &entries[first + 1..];
+        assert!(
+            tail.is_empty(),
+            "these real ledger stops already cancelled the token; no subsequent poll or charge is allowed: {tail:?}"
+        );
+    }
+
+    fn assert_no_post_stop_body_work(report: &ClassSourceReport, observer: &Observation) {
+        let at_stop = observer
+            .usage_at_stop
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("the actual original error/report reached the stop handoff");
+        for dimension in CountedBudgetDimension::ALL {
+            assert_eq!(
+                report.usage.counted_usage(dimension),
+                at_stop.counted_usage(dimension),
+                "no work after the actual proof stop for {dimension:?}"
+            );
+            assert!(
+                at_stop.counted_usage(dimension)
+                    >= observer.usage_at_entry.counted_usage(dimension),
+                "already admitted proof work is retained for {dimension:?}"
+            );
+        }
+    }
+
+    fn without_elapsed(value: serde_json::Value) -> serde_json::Value {
+        match value {
+            serde_json::Value::Object(fields) => serde_json::Value::Object(
+                fields
+                    .into_iter()
+                    .filter(|(key, _)| key != "elapsed_millis")
+                    .map(|(key, value)| (key, without_elapsed(value)))
+                    .collect(),
+            ),
+            serde_json::Value::Array(values) => {
+                serde_json::Value::Array(values.into_iter().map(without_elapsed).collect())
+            }
+            other => other,
+        }
+    }
+
+    fn exercise_h1_stage(stage: ClassProofStage, control: InFlightControl) {
+        let (snapshot, request) = open_h1();
+        let wide = run_h1(&snapshot, &request);
+        assert!(matches!(wide.execution, ExecutionReport::Complete { .. }));
+        let main_at = main_position(&wide);
+        let wide_main = &wide.methods[main_at];
+        let guard = arm(stage, control);
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.class_headers = u64::MAX;
+        let crate::OperationOutcome::Performed(stopped) = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut Budget::new(limits),
+            )
+            .unwrap()
+        else {
+            panic!("the public class-source request preserves its report");
+        };
+        let observer = observation();
+        drop(guard);
+        assert_execution_stop(&stopped, control);
+        if stage == ClassProofStage::SnapshotPrebody {
+            assert!(
+                !observer.budget_token.is_cancelled(),
+                "the attached ledger's independent stop must not require a matching local token"
+            );
+        } else {
+            assert!(observer.budget_token.is_cancelled());
+        }
+        assert_observer_stopped(&observer, control);
+        assert_no_post_stop_body_work(&stopped, &observer);
+        assert!(
+            !stopped.diagnostics.is_empty(),
+            "the proof stop remains diagnosed"
+        );
+        if matches!(control, InFlightControl::CountedClassHeaders) {
+            assert!(
+                stopped.diagnostics.iter().any(|diagnostic| {
+                    diagnostic.message
+                        == "budget exceeded for ClassHeaders: limit=0, consumed=0, requested=1"
+                }),
+                "the original class-header refusal remains in diagnostics: {:?}",
+                stopped.diagnostics
+            );
+            assert!(
+                !observer.budget_token.is_cancelled(),
+                "the independent ledger stop does not cancel the caller's local token"
+            );
+        }
+        match stage {
+            ClassProofStage::SnapshotPrebody => {
+                // Snapshot proof stops before recovery of H1.main. Physical records before it are
+                // reliable; cancellation may refuse publication of main's own stopped record.
+                assert!(
+                    stopped
+                        .methods
+                        .iter()
+                        .all(|member| member.item.index <= wide_main.item.index)
+                );
+                let expected_prefix: Vec<_> = wide
+                    .methods
+                    .iter()
+                    .filter(|member| member.item.index < wide_main.item.index)
+                    .collect();
+                let actual_prefix: Vec<_> = stopped
+                    .methods
+                    .iter()
+                    .filter(|member| member.item.index < wide_main.item.index)
+                    .collect();
+                assert_eq!(
+                    expected_prefix.len(),
+                    5,
+                    "the pinned H1 fixture has exactly five reliable siblings before main"
+                );
+                assert_eq!(
+                    actual_prefix.len(),
+                    expected_prefix.len(),
+                    "all five earlier physical methods remain in the reliable prefix"
+                );
+                for (actual, expected) in actual_prefix.iter().zip(expected_prefix.iter()) {
+                    assert_eq!(actual.item.identity, expected.item.identity);
+                    assert_eq!(actual.text, expected.text);
+                }
+                let stop_record = stopped
+                    .methods
+                    .iter()
+                    .find(|member| member.item.identity.name.0 == b"main");
+                if let Some(member) = stop_record {
+                    let class_source::ClassSourceOutcome::Recovered { report: body, .. } =
+                        &member.outcome
+                    else {
+                        panic!("an emitted main stop record retains its typed outcome");
+                    };
+                    assert_eq!(body.content, RecoveryContent::NotProduced);
+                    assert!(body.text.is_empty() && body.source_map.segments().is_empty());
+                }
+                assert!(
+                    stopped
+                        .coverage
+                        .artifact_structural
+                        .scanned
+                        .iter()
+                        .any(|range| range.label == "class_source_bodies"
+                            && range.end > wide_main.item.index)
+                );
+                let expected_suffix: Vec<_> = wide
+                    .methods
+                    .iter()
+                    .filter(|member| member.item.index > wide_main.item.index)
+                    .collect();
+                let skipped_suffix: Vec<_> = stopped
+                    .coverage
+                    .artifact_structural
+                    .skipped
+                    .iter()
+                    .filter(|range| {
+                        range.label == "class_source_bodies" && range.start > wide_main.item.index
+                    })
+                    .collect();
+                if expected_suffix.is_empty() {
+                    assert!(
+                        skipped_suffix.is_empty(),
+                        "the pinned H1.main is the last physical method; do not invent skipped suffix coverage"
+                    );
+                } else {
+                    assert!(
+                        skipped_suffix
+                            .iter()
+                            .any(|range| range.start == wide_main.item.index + 1
+                                && range.end == expected_suffix.last().unwrap().item.index + 1),
+                        "a real physical suffix after main must be represented as skipped"
+                    );
+                }
+            }
+            ClassProofStage::DoubleBracePostbody => {
+                // The stage runs after recovery has committed. Preserve every method identity and
+                // raw body/source map, including H1.main; only aggregate execution is stopped.
+                assert_eq!(stopped.methods.len(), wide.methods.len());
+                for (actual, expected) in stopped.methods.iter().zip(&wide.methods) {
+                    assert_eq!(actual.item.identity, expected.item.identity);
+                    assert_eq!(actual.text, expected.text);
+                    assert_eq!(
+                        without_elapsed(serde_json::to_value(&actual.outcome).unwrap()),
+                        without_elapsed(serde_json::to_value(&expected.outcome).unwrap())
+                    );
+                }
+                let class_source::ClassSourceOutcome::Recovered { report: body, .. } =
+                    &stopped.methods[main_at].outcome
+                else {
+                    panic!("H1.main's completed raw recovery remains committed");
+                };
+                let class_source::ClassSourceOutcome::Recovered {
+                    report: wide_body, ..
+                } = &wide_main.outcome
+                else {
+                    panic!("wide H1.main has its raw recovery report");
+                };
+                assert!(body.produced());
+                assert!(
+                    !wide_body.source_map.is_empty(),
+                    "wide all-evidence map is nonempty"
+                );
+                assert!(!body.source_map.is_empty());
+                assert_eq!(body.text, wide_body.text);
+                assert_eq!(body.source_map.segments(), wide_body.source_map.segments());
+                assert!(stopped.text.contains("public static void main"));
+            }
+        }
+    }
+
+    #[test]
+    fn public_h1_snapshot_proof_cancel_after_charge_retains_only_reliable_prefix() {
+        exercise_h1_stage(
+            ClassProofStage::SnapshotPrebody,
+            InFlightControl::CancelAfterRealCharge,
+        );
+    }
+
+    #[test]
+    fn public_h1_snapshot_proof_expired_checkpoint_stops_before_body_recovery() {
+        exercise_h1_stage(
+            ClassProofStage::SnapshotPrebody,
+            InFlightControl::ExpiredLedgerCheckpoint,
+        );
+    }
+
+    #[test]
+    fn public_h1_snapshot_proof_class_header_charge_refusal_keeps_partial_and_five_siblings() {
+        exercise_h1_stage(
+            ClassProofStage::SnapshotPrebody,
+            InFlightControl::CountedClassHeaders,
+        );
+    }
+
+    #[test]
+    fn public_h1_double_brace_cancel_after_charge_keeps_committed_main_and_siblings() {
+        exercise_h1_stage(
+            ClassProofStage::DoubleBracePostbody,
+            InFlightControl::CancelAfterRealCharge,
+        );
+    }
+
+    #[test]
+    fn public_h1_double_brace_expired_checkpoint_keeps_committed_main_and_siblings() {
+        exercise_h1_stage(
+            ClassProofStage::DoubleBracePostbody,
+            InFlightControl::ExpiredLedgerCheckpoint,
+        );
     }
 }
 

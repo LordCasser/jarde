@@ -16543,9 +16543,9 @@ fn stopped(
 
 /// Construct the uncommitted result of an upstream proof that stopped before recovery began.
 ///
-/// The caller owns the original error and supplies its execution and diagnostic without polling
-/// again. In particular, non-counted bounds retain their actual execution dimension even though
-/// the recovery outcome describes them with the existing interruption vocabulary.
+/// The caller retains the original Error or published report and supplies its execution and
+/// all diagnostics without polling again. Non-counted bounds retain their actual execution
+/// dimension even though recovery describes them with the existing interruption vocabulary.
 pub fn stopped_before_recovery(
     request: &RecoveryRequest<'_>,
     reason: StopReason,

@@ -1342,3 +1342,76 @@ fn every_category_of_the_vocabulary_is_a_selection_this_entry_answers() {
         assert!(chosen > 0, "{kind} was stated by the presented members");
     }
 }
+
+// The frozen H1 proof-stop evidence is also exercised through the process boundary. The JAR is
+// included from the repository evidence tree by the test target; it is never copied or rewritten.
+const H1_PROOF: &str = "../../openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar";
+
+fn h1_cap_output(cap: &str) -> Output {
+    let fixture = repository_fixture(H1_PROOF);
+    run(&[
+        "class-source",
+        "--input",
+        path_of(&fixture),
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        &format!("class_headers={cap}"),
+    ])
+}
+
+fn json_method<'a>(document: &'a Value, name: &str) -> &'a Value {
+    document["methods"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|method| method["item"]["name"]["escaped"] == name)
+        .unwrap_or_else(|| panic!("method {name} is present"))
+}
+
+#[test]
+fn h1_cap_eight_cli_exits_incomplete_before_main_body() {
+    let output = h1_cap_output("8");
+    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    assert_eq!(document["execution"]["status"], "partial");
+    assert_eq!(
+        document["execution"]["reason"]["dimension"],
+        "class_headers"
+    );
+    let main = json_method(&document, "main");
+    assert_eq!(main["outcome"]["kind"], "recovered");
+    assert_eq!(main["outcome"]["report"]["content"], "not_produced");
+    assert!(
+        main["outcome"]["report"]["outcome"]
+            .get("stopped")
+            .is_some()
+    );
+}
+
+#[test]
+fn h1_cap_fifteen_cli_exits_incomplete_and_keeps_main_body() {
+    let output = h1_cap_output("15");
+    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    assert_eq!(document["execution"]["status"], "partial");
+    assert_eq!(
+        document["execution"]["reason"]["dimension"],
+        "class_headers"
+    );
+    let main = json_method(&document, "main");
+    assert_eq!(main["outcome"]["kind"], "recovered");
+    assert_eq!(main["outcome"]["report"]["content"], "contains_statements");
+    assert!(
+        document["text"]
+            .as_str()
+            .unwrap()
+            .contains("public static void main(")
+    );
+}
