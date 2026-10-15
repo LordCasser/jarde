@@ -277,6 +277,10 @@ fn hier_variants_recompile_and_run_every_path() {
 #[test]
 fn negatives_keep_the_refusal_and_the_original_runtime() {
     let report = recover(HIER_NEG_JAR, "H2");
+    assert!(
+        matches!(&report.execution, ExecutionReport::Complete { .. }),
+        "ordinary proof refusal keeps the class-source request complete"
+    );
     let text = &report.text;
     assert_eq!(
         text.matches("no safe reference conversion evidence")
@@ -322,6 +326,10 @@ fn negatives_keep_the_refusal_and_the_original_runtime() {
 #[test]
 fn the_walk_proves_the_eighth_edge_and_refuses_the_ninth() {
     let report = recover(HIER_DEPTH_JAR, "H3");
+    assert!(
+        matches!(&report.execution, ExecutionReport::Complete { .. }),
+        "ordinary proof refusal keeps the class-source request complete"
+    );
     let text = &report.text;
     // `L7` reaches `Sig` in eight chain edges (`L7`..`L0` plus `Sig`): the last proved depth. The
     // walk still proves it — no refusal is written for `L7`, so the ninth edge's is the only

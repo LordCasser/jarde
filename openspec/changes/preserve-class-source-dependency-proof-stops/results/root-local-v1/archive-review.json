@@ -1,0 +1,55 @@
+{
+  "status": "accepted_local_archive_byte_integrity",
+  "payloads": 410,
+  "members_reopened": 411,
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 16210008,
+    "sha256": "7eb9d5488ae6af89f10e79dfec1704852a3b9408a8533c5e393bd1c78452b37a"
+  },
+  "future_outputs": {
+    "future_focused_terminal": {
+      "state": "not_requested",
+      "path": null,
+      "files_included": 0
+    },
+    "h1_full_source": {
+      "state": "present_raw_state_preserved",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-source-proof-full-source-root-v1",
+      "files_included": 72,
+      "recorded_statuses": [
+        {
+          "path": "build-receipt.json",
+          "status": "expected_command_outcomes_observed_pending_independent_acceptance"
+        },
+        {
+          "path": "execution.json",
+          "status": "expected_command_outcomes_observed_pending_independent_acceptance"
+        }
+      ],
+      "note": "原样保留现有状态；本打包器不推断或制造 accepted/terminal 状态。"
+    },
+    "interface_final_replay": {
+      "state": "not_requested",
+      "path": null,
+      "files_included": 0
+    },
+    "six_cap_cli_terminal": {
+      "state": "present_raw_state_preserved",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-source-six-cap-cli-root-v1",
+      "files_included": 20,
+      "recorded_statuses": [
+        {
+          "path": "execution.json",
+          "status": "six_expected_exits_and_json_documents_captured_pending_semantic_audit"
+        },
+        {
+          "path": "semantic-audit-v4.json",
+          "status": "semantic_and_provenance_checks_passed"
+        }
+      ],
+      "note": "原样保留现有状态；本打包器不推断或制造 accepted/terminal 状态。"
+    }
+  },
+  "own_ci_accepted": false
+}

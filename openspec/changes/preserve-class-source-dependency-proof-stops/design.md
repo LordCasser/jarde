@@ -36,7 +36,7 @@
 
 1. **保留原停止的最窄交接。** 不让依赖读取以一个裸 Option 抹掉非 Complete。只对本片消费者增加足够传递原 execution、diagnostics 与 proof 值的局部结果，或以局部状态输出并在 None/返回 Vec 前显式检查；其他调用者维持原契约。以现有 ends_the_request（facade:41329附近）/error_ends_the_request 的预算或取消分类确定是否结束共享请求，ElapsedMillis 仍是其预算维度；原 Err 保持原 Error，由现有映射生成执行/诊断；resolver 已吸收 Error 时传递它的原报告，而非再造 Error。非 Complete 不是充分条件：value-level Unsupported/decode 停止按既有隔离/汇总处理，不能一律终止兄弟工作。不要从 diagnostic message 解析数值、重 charge/poll 猜原因或编造 limit/consumed/requested。单改外层 `?` 既漏掉 Ok(None) 通道，也可能将合法公共请求变成无分析/恢复报告的裸错误，因此不采用。共享读取自身可作最小辅助改动，但不得引入新的全局运行模型。
 
-2. **前置复用最小 stopped 初始化。** 在 snapshot proof 发现原停止时、构造 Region/AST/emitter 前分流。沿用本次 analysis 所有权、物理方法、callee 与现有返回 tuple，不重新读 Header/Body，不重跑分析。通过 `preserve-interface-super-proof-stops` 拟引入的最小 stopped-before-recovery 构造或等价入口复用既有 report::stopped 初始化，保留 pending evidence/not_produced/unbound artifact；该前片目前仍是计划，不假定 API 已有。实施前先协调其真正可用的签名，避免重复构造一份 RecoveryReport。不得接受 Complete 来伪构造 stopped。counted 原预算维度保留；DependencyDepth、ElapsedMillis 等非 counted 不能塞进 OutputBytes/IrItems，必要时沿用既有 Interrupted 词汇但 execution/diagnostics 必须来自原停止且保留实际维度。Cancelled 不改写为预算。
+2. **前置复用最小 stopped 初始化。** 在 snapshot proof 发现原停止时、构造 Region/AST/emitter 前分流。沿用本次 analysis 所有权、物理方法、callee 与现有返回 tuple，不重新读 Header/Body，不重跑分析。通过 `preserve-interface-super-proof-stops` 拟引入的最小 stopped-before-recovery 构造或等价入口复用既有 report::stopped 初始化，保留 pending evidence/not_produced/unbound artifact；规划时前片尚未实施；本轮真实基线cc305已提供最小入口stopped_before_recovery(request, reason, original_execution, Vec<Diagnostic>)，两渠道与本地813项/完整源已验，最终产品CI仍待组合源码。本片直接复用该真实签名，不再复制RecoveryReport初始化。不得接受 Complete 来伪构造 stopped。counted 原预算维度保留；DependencyDepth、ElapsedMillis 等非 counted 不能塞进 OutputBytes/IrItems，必要时沿用既有 Interrupted 词汇但 execution/diagnostics 必须来自原停止且保留实际维度。Cancelled 不改写为预算。
 
 3. **后置只汇总，不撤销已交付正文。** double-brace 只在本次证明成功时提交它自己的改写；停止前已提交的 main/兄弟方法及其 raw/text/source-map 留在报告里。原停止直接合并到 class execution 并保存原诊断；不把 main 的 Complete 随意涂成 Partial，不调用前置 not_produced factory 删除正文。依赖读取或 child 报告非 Complete 且承载预算/取消/期限共享请求停止时，也在普通 None 分流之前交回该停止。预算停止为 class Partial 原维度，取消为 Cancelled；仅有合法普通拒绝不改变 Complete。
 
@@ -59,4 +59,13 @@
 
 ## Migration Plan
 
-无数据迁移。实施先固定最终源码基线和历史输入、确认前片最小 API 可用状态；添加永久公共回归，局部接线两个消费路径与报告汇总，验证停止/普通拒绝/原始来源；完成最终源码适用门禁与新产品自身 CI。局部接线失败时撤回本片修改并保留失败 raw/source pins，不改变 Budget 生命周期或历史证据。本轮仅完成规划，所有实施项未勾选。
+无数据迁移。实施先固定最终源码基线和历史输入、确认前片最小 API 可用状态；添加永久公共回归，局部接线两个消费路径与报告汇总，验证停止/普通拒绝/原始来源；完成最终源码适用门禁与新产品自身 CI。局部接线失败时撤回本片修改并保留失败 raw/source pins，不改变 Budget 生命周期或历史证据。本地实现与适用focus/六档CLI/完整H1源码已执行验收，产品自身workspace/MSRV/CI尚待，任务4.2/4.3保持开放。
+
+
+## Implementation boundary review
+
+实际交接复用cc305的boxed `DependencyProofFailure::{Error, Report}`，checked reference参数站点只对本片调用链保留真实Err；共享legacy adapter与三个邻居wrapper逐字保持。snapshot在恢复前分流并复用最小工厂；double-brace遇原报告或Error后保留已提交方法而直接结束后继投影。member publication先检查原stops的取消/期限，以及已有local token/ledger stop，再决定能否合法付费发布；不能发布时仅移动原诊断，避免重poll把原预算改报Cancelled或丢诊断。既有全局merge优先级没有改变。
+
+五个真实in-flight控制及六档公共入口已通过；本地无ledger的Elapsed分支仅作静态保留原诊断的修正，不冒称单独动态覆盖。ordinary控制必须破坏读取的中间Mid；终点Greet靠header中直接命名即能证明，删/重复它不构成应拒绝的前提。全部历史错误实验预期与修正raw保存，不将其记为产品缺陷或通过。
+
+本地441/0/1、同CLI六档及H1完整11源编译/原8行双JVM对照的范围和pins见results/root-local-v1；最终CI完成前不将产品集成任务勾选。
