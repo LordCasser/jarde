@@ -1056,49 +1056,49 @@
       "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stdout"
     },
     {
-      "path": "tests/fixtures/carry-dependency/CarryDependencyProbe.java",
+      "blake3": "4f3f3a6eb31e8184a8037edfd3068faed153780ac38bb3e6bfdc259a2137c411",
       "bytes": 882,
-      "blake3": "4f3f3a6eb31e8184a8037edfd3068faed153780ac38bb3e6bfdc259a2137c411"
+      "path": "tests/fixtures/carry-dependency/CarryDependencyProbe.java"
     },
     {
-      "path": "tests/fixtures/carry-dependency/Runner.java",
+      "blake3": "a86aaf49086337786c17c284eb7578afb5e795ae3f8aa726cbc782746453750f",
       "bytes": 1013,
-      "blake3": "a86aaf49086337786c17c284eb7578afb5e795ae3f8aa726cbc782746453750f"
+      "path": "tests/fixtures/carry-dependency/Runner.java"
     },
     {
-      "path": "tests/fixtures/carry-dependency/javac23/CarryDependencyProbe.class",
+      "blake3": "b28b7555db4cae063cfc2a9ec85626248d8cad72da49f55ea7f017cd50aa3b34",
       "bytes": 1563,
-      "blake3": "b28b7555db4cae063cfc2a9ec85626248d8cad72da49f55ea7f017cd50aa3b34"
+      "path": "tests/fixtures/carry-dependency/javac23/CarryDependencyProbe.class"
     },
     {
-      "path": "tests/fixtures/carry-dependency/javac8/CarryDependencyProbe.class",
+      "blake3": "c27661a1b55bf6e9e320af7abd17b4ae6bd375b9992f22c32bc09c9da6192be7",
       "bytes": 1566,
-      "blake3": "c27661a1b55bf6e9e320af7abd17b4ae6bd375b9992f22c32bc09c9da6192be7"
+      "path": "tests/fixtures/carry-dependency/javac8/CarryDependencyProbe.class"
     },
     {
-      "path": "tests/fixtures/carry-dependency/negative/CarryDependencyRefusalProbe.java",
+      "blake3": "d7e46f3f2f35f29de2dec7b533db55d89a02a596f46a5d0fafba580a6ace186f",
       "bytes": 333,
-      "blake3": "d7e46f3f2f35f29de2dec7b533db55d89a02a596f46a5d0fafba580a6ace186f"
+      "path": "tests/fixtures/carry-dependency/negative/CarryDependencyRefusalProbe.java"
     },
     {
-      "path": "tests/fixtures/carry-dependency/negative/Runner.java",
+      "blake3": "ef9d4a7173b38c2cdc64c0bbf763cc273574c18a566f4bd6272eb2c6ddb8b270",
       "bytes": 529,
-      "blake3": "ef9d4a7173b38c2cdc64c0bbf763cc273574c18a566f4bd6272eb2c6ddb8b270"
+      "path": "tests/fixtures/carry-dependency/negative/Runner.java"
     },
     {
-      "path": "tests/fixtures/carry-dependency/negative/javac23/CarryDependencyRefusalProbe.class",
+      "blake3": "e07569e967f079624af8df5432417ae9b6c6fd5dd36227238c2ba10de00e1457",
       "bytes": 693,
-      "blake3": "e07569e967f079624af8df5432417ae9b6c6fd5dd36227238c2ba10de00e1457"
+      "path": "tests/fixtures/carry-dependency/negative/javac23/CarryDependencyRefusalProbe.class"
     },
     {
-      "path": "tests/fixtures/carry-dependency/negative/javac8/CarryDependencyRefusalProbe.class",
+      "blake3": "5e17e14997f1dd14370e5831db22dc4718e3ea6e9970de2be7b93ffc5ed7903d",
       "bytes": 693,
-      "blake3": "5e17e14997f1dd14370e5831db22dc4718e3ea6e9970de2be7b93ffc5ed7903d"
+      "path": "tests/fixtures/carry-dependency/negative/javac8/CarryDependencyRefusalProbe.class"
     },
     {
-      "path": "tests/fixtures/carry-dependency/pins.json",
+      "blake3": "a184e4164ff4b931bbf98f5ed2dd0909d629d9b90578f126129a9c27e01efa02",
       "bytes": 1795,
-      "blake3": "a184e4164ff4b931bbf98f5ed2dd0909d629d9b90578f126129a9c27e01efa02"
+      "path": "tests/fixtures/carry-dependency/pins.json"
     },
     {
       "blake3": "19a3c93c93b45b775ba983810383fca13db5aa3cc1e2f5d698d5322b4a3ca90e",
@@ -1961,12 +1961,12 @@
       "path": "tests/fixtures/p1-golden/nested.json"
     },
     {
-      "blake3": "a6937b7d3cdc958edf6bfb6906a83427f37b879b5e24fb4cc2870a4cbfbd924e",
+      "blake3": "b9b804e2367e9bac2d187f1e4ba826f4474f482db4eebebd15e3fc066753dbb0",
       "bytes": 65045,
       "path": "tests/fixtures/p2-golden/exception-overlap.json"
     },
     {
-      "blake3": "2e9e1e75012880a405b14cfce6d56a96580924a299e96b751a7195da24b01beb",
+      "blake3": "3908a67cd7fd687ca3ad377f195d908906fca9b38ebdc1e896e1746096b25b30",
       "bytes": 100827,
       "path": "tests/fixtures/p2-golden/historical.json"
     },
@@ -1981,7 +1981,7 @@
       "path": "tests/fixtures/p2-golden/legacy-clone.json"
     },
     {
-      "blake3": "76d6c71ab99fb4f27f96fb811f92165b2573e39a3d93100110be38ff4907ef7f",
+      "blake3": "a9aa2d88d7b2b5a6e72f7ae1ab4cf0fb783ae116454551d8ecf4f411df1ae41f",
       "bytes": 109815,
       "path": "tests/fixtures/p2-golden/resource-boundary.json"
     },
