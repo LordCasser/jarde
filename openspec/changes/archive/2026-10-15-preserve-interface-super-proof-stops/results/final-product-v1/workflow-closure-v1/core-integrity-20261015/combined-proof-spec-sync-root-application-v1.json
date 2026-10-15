@@ -1,0 +1,24 @@
+{
+  "status": "applied_append_only_after_exact_product_ci_acceptance",
+  "target": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/java8-recovery/spec.md",
+  "old_sha256": "522a2e65603f1b37aae98a7696cfdf79cde5bd8fcbcd1b992b8a585467c926da",
+  "new_sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d",
+  "added_requirements": [
+    "### Requirement: Interface-super proof stops remain visible in recovery results",
+    "### Requirement: Class-source snapshot proof stops before body recovery",
+    "### Requirement: Class-source postbody dependency stops retain committed content",
+    "### Requirement: Dependency proof absence and execution stop remain distinct"
+  ],
+  "counts": {
+    "main_requirements": 13,
+    "main_scenarios": 94,
+    "added_requirements": 4,
+    "added_scenarios": 16,
+    "candidate_requirements": 17,
+    "candidate_scenarios": 110,
+    "existing_generic_complete_contract_heading_duplicates_preserved": 3
+  },
+  "unrelated_analysis_contracts_unchanged": true,
+  "next_direct_parent_delta_not_synced": true,
+  "validation": "pending actual strict commands"
+}

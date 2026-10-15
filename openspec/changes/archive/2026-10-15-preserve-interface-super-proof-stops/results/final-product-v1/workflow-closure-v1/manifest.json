@@ -1,0 +1,206 @@
+{
+  "status": "actual_sync_archive_and_final_doc_validation_copied",
+  "strict_after_two_archives_plus_next_plan": 364,
+  "strict_ci_product_snapshot": 365,
+  "post_validation_prose_correction": "next plan now states prerequisite CI has completed; no behavior/spec/task change",
+  "files": [
+    {
+      "path": "core-integrity-20261015/combined-proof-spec-sync-root-application-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-root-application-v1.json",
+      "bytes": 1132,
+      "sha256": "aad49eb2f9470f611ac17efc1ebb11d6cf36ac5bccf6f291bec599b14abbba79"
+    },
+    {
+      "path": "CORE/final-doc-peer-review-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/final-doc-peer-review-v1.json",
+      "bytes": 6742,
+      "sha256": "d788aebd51524e09e94c98516a748224330c7265b63523d50305e40211b1b782"
+    },
+    {
+      "path": "CORE/preserve-direct-parent-dependency-proof-stops-independent-planning-review-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/preserve-direct-parent-dependency-proof-stops-independent-planning-review-v1.json",
+      "bytes": 6503,
+      "sha256": "2074460641496d9a36ee6c5ef4708535be6799dafa15857369e1bdb0a6dac298"
+    },
+    {
+      "path": "combined-proof-spec-sync-validation-v1/archive-help.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/archive-help.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-spec-sync-validation-v1/archive-help.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/archive-help.stdout.raw",
+      "bytes": 566,
+      "sha256": "094e7c3a5e84562ac94eeb23f26a661b890abf8199b4866eff1f095600abf00b"
+    },
+    {
+      "path": "combined-proof-spec-sync-validation-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/execution.json",
+      "bytes": 1527,
+      "sha256": "4f9bf4b5844806da2ce5e617df5e6759cf3ab66b66af63a35240b5317b3c62ad"
+    },
+    {
+      "path": "combined-proof-spec-sync-validation-v1/specs-strict.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/specs-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-spec-sync-validation-v1/specs-strict.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/specs-strict.stdout.raw",
+      "bytes": 515,
+      "sha256": "be7f29110b68fd3a163e3493f0b599437452668b69093de484c0863fca237956"
+    },
+    {
+      "path": "combined-proof-archive-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/execution.json",
+      "bytes": 1677,
+      "sha256": "0cdaa6197042be72fe9e3a048b063790026519d1fe837941ab3ffd6917758cf6"
+    },
+    {
+      "path": "combined-proof-archive-root-v1/preserve-class-source-dependency-proof-stops.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-class-source-dependency-proof-stops.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-archive-root-v1/preserve-class-source-dependency-proof-stops.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-class-source-dependency-proof-stops.stdout.raw",
+      "bytes": 450,
+      "sha256": "1a0e54a7f7f5f9ee8fb360590a4da9f76f49a4e76322b36af458aeeb2243c22c"
+    },
+    {
+      "path": "combined-proof-archive-root-v1/preserve-interface-super-proof-stops.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-interface-super-proof-stops.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-archive-root-v1/preserve-interface-super-proof-stops.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-interface-super-proof-stops.stdout.raw",
+      "bytes": 426,
+      "sha256": "0f93c7e8e8e24266481f721c943e038ad05a606392ad73a2b87edd0f5d30351a"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/diff-check.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/diff-check.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/diff-check.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/diff-check.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/execution.json",
+      "bytes": 2369,
+      "sha256": "a674995254ff6700633a4e220af5710038f179dd62cd1187601dc098d79fc3d9"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/strict-ci-1.11.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/strict-ci-1.11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/strict-ci-1.11.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/strict-ci-1.11.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/strict-local-1.14.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/strict-local-1.14.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+    },
+    {
+      "path": "combined-proof-final-doc-validation-v1/strict-local-1.14.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-final-doc-validation-v1/strict-local-1.14.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/execution.json",
+      "bytes": 5229,
+      "sha256": "0605bac728d8a148c077b61346e3b3cab05efd60b9219c7b33452cb6c9a8159c"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-apply.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-apply.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-apply.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-apply.stdout.raw",
+      "bytes": 10392,
+      "sha256": "605c2efc97970d5b435c31cb1e5f2528c27ea25445123f32cb2a1d59c45cb168"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-archive.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-archive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-archive.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-archive.stdout.raw",
+      "bytes": 2471,
+      "sha256": "a0c7bdb1c66772ad4dd039515f420798663f448f13d6cd20ade1fea4098347e7"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-status.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-status.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-status.stdout.raw",
+      "bytes": 3521,
+      "sha256": "f4852f8bb746a49fbc09ed53da76da857da666e7349185b9abbbd9a68163e6f8"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-apply.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-apply.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-apply.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-apply.stdout.raw",
+      "bytes": 10580,
+      "sha256": "22c85f50d722837784b7796a3f1030668f353dbdd10ffde7fa2bff3c174187bb"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-archive.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-archive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-archive.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-archive.stdout.raw",
+      "bytes": 2463,
+      "sha256": "13ec190a6c0b50e3b62319dad27dc5c620a5d6268b24685d842bf06b106caeab"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-status.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-status.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-status.stdout.raw",
+      "bytes": 3433,
+      "sha256": "fac51ab1c6d760ed6803403fb35e795684a653b24a37c4cf66da2ebf06262a44"
+    }
+  ]
+}

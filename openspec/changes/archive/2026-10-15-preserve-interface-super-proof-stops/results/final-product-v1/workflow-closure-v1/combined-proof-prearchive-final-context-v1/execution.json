@@ -1,0 +1,138 @@
+[
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "status",
+      "--change",
+      "preserve-interface-super-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-status.stdout.raw",
+        "bytes": 3433,
+        "sha256": "fac51ab1c6d760ed6803403fb35e795684a653b24a37c4cf66da2ebf06262a44"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-status.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "instructions",
+      "apply",
+      "--change",
+      "preserve-interface-super-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-apply.stdout.raw",
+        "bytes": 10580,
+        "sha256": "22c85f50d722837784b7796a3f1030668f353dbdd10ffde7fa2bff3c174187bb"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-apply.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "instructions",
+      "archive",
+      "--change",
+      "preserve-interface-super-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-archive.stdout.raw",
+        "bytes": 2463,
+        "sha256": "13ec190a6c0b50e3b62319dad27dc5c620a5d6268b24685d842bf06b106caeab"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-interface-super-proof-stops-archive.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "status",
+      "--change",
+      "preserve-class-source-dependency-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-status.stdout.raw",
+        "bytes": 3521,
+        "sha256": "f4852f8bb746a49fbc09ed53da76da857da666e7349185b9abbbd9a68163e6f8"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-status.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "instructions",
+      "apply",
+      "--change",
+      "preserve-class-source-dependency-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-apply.stdout.raw",
+        "bytes": 10392,
+        "sha256": "605c2efc97970d5b435c31cb1e5f2528c27ea25445123f32cb2a1d59c45cb168"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-apply.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "instructions",
+      "archive",
+      "--change",
+      "preserve-class-source-dependency-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-archive.stdout.raw",
+        "bytes": 2471,
+        "sha256": "a0c7bdb1c66772ad4dd039515f420798663f448f13d6cd20ade1fea4098347e7"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-prearchive-final-context-v1/preserve-class-source-dependency-proof-stops-archive.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+]

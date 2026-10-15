@@ -1,0 +1,48 @@
+[
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "archive",
+      "preserve-interface-super-proof-stops",
+      "--skip-specs",
+      "--yes",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-interface-super-proof-stops.stdout.raw",
+        "bytes": 426,
+        "sha256": "0f93c7e8e8e24266481f721c943e038ad05a606392ad73a2b87edd0f5d30351a"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-interface-super-proof-stops.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "archive",
+      "preserve-class-source-dependency-proof-stops",
+      "--skip-specs",
+      "--yes",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-class-source-dependency-proof-stops.stdout.raw",
+        "bytes": 450,
+        "sha256": "1a0e54a7f7f5f9ee8fb360590a4da9f76f49a4e76322b36af458aeeb2243c22c"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-archive-root-v1/preserve-class-source-dependency-proof-stops.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+]

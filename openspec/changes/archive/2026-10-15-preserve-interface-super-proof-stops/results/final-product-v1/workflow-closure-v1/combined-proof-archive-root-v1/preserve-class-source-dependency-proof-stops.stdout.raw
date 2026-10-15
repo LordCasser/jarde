@@ -1,0 +1,12 @@
+{
+  "archive": {
+    "change": "preserve-class-source-dependency-proof-stops",
+    "archivedAs": "2026-10-15-preserve-class-source-dependency-proof-stops",
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops",
+    "specsUpdated": false
+  },
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "source": "nearest"
+  }
+}

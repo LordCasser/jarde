@@ -1,0 +1,128 @@
+{
+  "schema": "completed-change-final-doc-peer-review-v1",
+  "status": "accepted_read_only_document_review",
+  "scope": "Read-only review of completion-review.md, final task sections, interface final-product-v1 package, and third own-ci-v1 package; no repo/toolchain/Git/JDK/CLI mutations or runs.",
+  "product": {
+    "commit": "c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1",
+    "ci_run": 38692921405,
+    "source_manifest_files": 4902,
+    "frozen_cli_bytes": 59674128,
+    "frozen_cli_sha256": "2669b2064747f16ff883788bdf31811b67c5ed3da2da3c1676eed6e99eec04ac"
+  },
+  "completed_changes": [
+    {
+      "change": "preserve-interface-super-proof-stops",
+      "tasks": "12/12",
+      "local_contract": "8 legal full-source cases and 16 refusal cases; controlled JDK 23 only, explicitly not dual-JDK",
+      "own_ci": "same exact c871 product CI, not a separate run for this change"
+    },
+    {
+      "change": "preserve-class-source-dependency-proof-stops",
+      "tasks": "11/11",
+      "local_h1_contract": "11 Java 8-source rows, exercised under both JDK 8 and JDK 23; H1 fixture and original 8-row oracle retained",
+      "own_ci": "same exact c871 product CI, not a separate run for this change"
+    }
+  ],
+  "ci_count_reconciliation": {
+    "explicit_jdk_commands": 6,
+    "observed_passing_tests_across_commands": 9,
+    "semantic_gate_names": 7,
+    "explanation": "Independent report names seven semantic gate test functions; one command can report multiple passing tests. README correctly describes six explicit commands/nine test passes; no count inflation found."
+  },
+  "ci_facts": {
+    "jobs": 4,
+    "steps": 52,
+    "seeds": 2,
+    "suites_per_seed": 367,
+    "passed_per_seed": 3615,
+    "failed_per_seed": 0,
+    "ignored_per_seed": 98,
+    "root_acceptance_checks": 848,
+    "independent_ci_checks": 1644,
+    "package_independent_checks": 3504,
+    "errors": 0
+  },
+  "cross_scope_review": {
+    "ci_source_exactly_bound_to_c871": true,
+    "no_unrelated_ci_claimed": true,
+    "interface_jdk_scope_not_inflated": true,
+    "third_h1_dual_jdk_kept_distinct_from_interface_jdk23_contract": true,
+    "next_direct_parent_change_marked_incomplete_0_of_6": true,
+    "archive_claims_consistent_with_manifest_and_reviews": true
+  },
+  "actionable_issues": [
+    {
+      "severity": "minor_document_clarity_before_archive",
+      "file": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/completion-review.md",
+      "finding": "The appended final product evidence says direct-parent/reference neighbors are outside the accepted evidence, and each completed change says the next direct-parent slice is incomplete, but the newest completion-review status does not explicitly replace the earlier historical 0/27 planning snapshot with the current direct-parent 0/6 state.",
+      "suggestion": "Before archive, add one dated current-state sentence: class-view 4/4, interface 12/12, class-source 11/11, and preserve-direct-parent-dependency-proof-stops remains 0/6. Keep the 0/27 sentence marked as the earlier checkpoint."
+    }
+  ],
+  "reviewed_files": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/completion-review.md",
+      "bytes": 45329,
+      "sha256": "9caad20dd8ec8cf1096c6116a46d3479e637b9cc323ab616c0eee074e2b1d401"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/tasks.md",
+      "bytes": 6776,
+      "sha256": "52e3fc77fb4ad99f0397f79d47406ac0a2fd8da1611245ea9b5c99fd5ec936b8"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/results/final-product-v1/README.md",
+      "bytes": 1581,
+      "sha256": "73ca2307d9c5b83d954df289d3031bba477ab2f610c25fab9516bcfc5a04ba7e"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/results/final-product-v1/manifest.json",
+      "bytes": 1432,
+      "sha256": "197f5717a00c6cf43aa44ba08ea69cc90b26cc01a8de08a31816258a5c005a6e"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/results/final-product-v1/package-independent-review.json",
+      "bytes": 2794,
+      "sha256": "9d813f0e40afdd95c292ff463d78bd5d61911c0c913ca8396cf7ccc2cc7aeb79"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/results/final-product-v1/own-ci-root-acceptance.json",
+      "bytes": 12762,
+      "sha256": "8fdd3cd61b83b01383902c3a60b97c497401a806e96e532eee34ac284eccee60"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/results/final-product-v1/own-ci-independent-review.json",
+      "bytes": 131102,
+      "sha256": "e8cd4b96d6c99991e414b8d1f484a0d430d6aca0708bd3afa981ef22a444c4c1"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/tasks.md",
+      "bytes": 8270,
+      "sha256": "8e66061cd01ede57272d61694e3e6cbb77c09645bca8faeb2ab76b83ab4a69fe"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/results/own-ci-v1/README.md",
+      "bytes": 1436,
+      "sha256": "4e7ba4fd38b2fc01722d2528a62f82e0b7f79ff9b135fe0350f8cafbb67ba55b"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/results/own-ci-v1/manifest.json",
+      "bytes": 1222,
+      "sha256": "77b367f0658cd637dbea8f3baaeaabf60665140dc16e8a84fda65969e93a8e91"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/results/own-ci-v1/package-independent-review.json",
+      "bytes": 2794,
+      "sha256": "9d813f0e40afdd95c292ff463d78bd5d61911c0c913ca8396cf7ccc2cc7aeb79"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/results/own-ci-v1/own-ci-root-acceptance.json",
+      "bytes": 12762,
+      "sha256": "8fdd3cd61b83b01383902c3a60b97c497401a806e96e532eee34ac284eccee60"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/results/own-ci-v1/own-ci-independent-review.json",
+      "bytes": 131102,
+      "sha256": "e8cd4b96d6c99991e414b8d1f484a0d430d6aca0708bd3afa981ef22a444c4c1"
+    }
+  ]
+}

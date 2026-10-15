@@ -1,0 +1,46 @@
+[
+  {
+    "label": "specs-strict",
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "validate",
+      "--specs",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/specs-strict.stdout.raw",
+        "bytes": 515,
+        "sha256": "be7f29110b68fd3a163e3493f0b599437452668b69093de484c0863fca237956"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/specs-strict.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "label": "archive-help",
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "archive",
+      "--help"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/archive-help.stdout.raw",
+        "bytes": 566,
+        "sha256": "094e7c3a5e84562ac94eeb23f26a661b890abf8199b4866eff1f095600abf00b"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/combined-proof-spec-sync-validation-v1/archive-help.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+]

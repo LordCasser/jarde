@@ -20,8 +20,8 @@
 ## 4. Integration and final product evidence
 
 - [x] 4.1 用最终候选实际构建运行库与 JSON CLI 的 six-cap 公共矩阵及两渠道组合回归。验收：库/CLI同源，前后体状态和 content 分离，所有未完整命令退出4、普通完整拒绝不误标停，limits/usage/原诊断可复核；精确 argv、退出、raw/hash 与输入/完整编译源码 pins 留存，不以历史六次观察计作修复通过。
-- [ ] 4.2 对最终源码执行当前项目适用的格式、Clippy、workspace/MSRV、OpenSpec strict 与必要完整生成源等既有门禁，覆盖本片新增永久回归。验收：以真实实施基线 workflow 为准、各执行非空且 source pins 一致，保留失败/修复历史与适用范围，不增无关门槛、不以旧局部/矩阵或其他提交 CI 替代。
-- [ ] 4.3 将本片修复提交为可定位产品 commit，取得该最终源码自身项目 CI 成功并核验绑定；整理最终源码/测试/原始证据 manifest 与完成说明。验收：CI 对应实际 fix commit 和适用 workflow，pending/未跑/失败明确记录，尚未完成不得勾选；相邻债务及未覆盖范围保持，实施证据不覆盖历史 probe。
+- [x] 4.2 对最终源码执行当前项目适用的格式、Clippy、workspace/MSRV、OpenSpec strict 与必要完整生成源等既有门禁，覆盖本片新增永久回归。验收：以真实实施基线 workflow 为准、各执行非空且 source pins 一致，保留失败/修复历史与适用范围，不增无关门槛、不以旧局部/矩阵或其他提交 CI 替代。
+- [x] 4.3 将本片修复提交为可定位产品 commit，取得该最终源码自身项目 CI 成功并核验绑定；整理最终源码/测试/原始证据 manifest 与完成说明。验收：CI 对应实际 fix commit 和适用 workflow，pending/未跑/失败明确记录，尚未完成不得勾选；相邻债务及未覆盖范围保持，实施证据不覆盖历史 probe。
 
 ## Workflow follow-up
 
@@ -43,3 +43,9 @@
 - H1完整11份生成Java原text保存并整族javac23 --release8编译成功；真实Java8与Java23各运行原JAR和重编译类，四次-Xverify:all输出逐字相同原8行oracle。16命令/32raw与全部生成源码、classes/input/tool pins保留；不修Java、不trim、不加Runner，不增加CF统计。
 - 旧initial-v1/v2/v4编译失败、v3真实因丢失、focused-v1/v2编译失败、v3 1GiB guard中止及v4错误Greet实验预期均保留。删/重复终点Greet本应允许命名证明，修订只针对必须读取的Mid，未削弱有效断言。v5全部重跑，不拼旧成功前缀。
 - local evidence见results/root-local-v1；4.2/4.3继续等待最终产品自身workspace/MSRV/CI，不借用class-view e8c或接口cc305的旧验证。
+
+## 最终产品验收（2026-10-15）
+
+- c8718ae自身CI38692921405已成功：4jobs/52steps；两seed各367suites、3615/0/98，总7230/0/196。105具名回归逐seed通过，MSRV1.88、supply-chain、fuzz、显式JDK/full-class及该head的strict365/0均真实完成；root848项与独立1644项审计无错误。
+- 最终产品源4902项与冻结CLI2669绑定以原receipt为准：准确CLI字节59674128、SHA256 `2669b2064747f16ff883788bdf31811b67c5ed3da2da3c1676eed6e99eec04ac`，所有源仍匹配focused-v5，exact clean后target缺失。后续只改规划、证据和规格，不冒作再次产品运行。
+- 最终补包已独立逐字节审核；本片实现任务全部完成。此前本地段落的pending/开放数是历史时点，未覆盖失败记录；本片完成不等于全项目或下一direct-parent片完成。

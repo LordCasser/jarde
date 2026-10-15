@@ -1,0 +1,344 @@
+{
+  "status": "accepted_exact_product_ci",
+  "product_sha": "c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1",
+  "run_id": 38692921405,
+  "branch": "codex/interface-super-proof-stops",
+  "checks": 848,
+  "errors": [],
+  "jobs": 4,
+  "steps": 52,
+  "seeds": [
+    {
+      "seed": "5350648285461741569",
+      "suites": 367,
+      "passed": 3615,
+      "failed": 0,
+      "ignored": 98
+    },
+    {
+      "seed": "5350648285461741570",
+      "suites": 367,
+      "passed": 3615,
+      "failed": 0,
+      "ignored": 98
+    }
+  ],
+  "log_zip": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-combined-c871-root-v1/logs.zip",
+    "bytes": 861364,
+    "sha256": "2448f61c32a19338515c019a1f1d672dd0d5888f53480dc3aa35a3baa0bc6a40"
+  },
+  "log_member_pins": [
+    {
+      "path": "0_MSRV 1.88.0.txt",
+      "bytes": 50744,
+      "sha256": "44fd0b53590d0815d33b4ee2adc3fe8cd7f0ac48e0629d64f2bc0e5361ee8b2a"
+    },
+    {
+      "path": "MSRV 1.88.0/system.txt",
+      "bytes": 592,
+      "sha256": "e861fedab30758d7e80071e641acb86c06dd4c9a1b5c41a3a1d1f9a05a3c6314"
+    },
+    {
+      "path": "MSRV 1.88.0/1_Set up job.txt",
+      "bytes": 2037,
+      "sha256": "5145b5e43af596a7e0aad0d49f8024c5341099d109aac4d7f6574afa3510ef21"
+    },
+    {
+      "path": "MSRV 1.88.0/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14855,
+      "sha256": "cd48a2eb8a9ee343b5bfc7ab7c9749a1a6deb8c267aa3abc19ffe769c60a0bbf"
+    },
+    {
+      "path": "MSRV 1.88.0/3_Install Rust 1.88.0.txt",
+      "bytes": 17408,
+      "sha256": "f439d2195d4603f525b916edd475b1a8f825cdb1cd3466857d8352d877508c54"
+    },
+    {
+      "path": "MSRV 1.88.0/4_Check workspace on MSRV.txt",
+      "bytes": 12302,
+      "sha256": "44a53911f1e0b7a1f4783e3ebc779d6032ef248913b6bc82328ccf0a7dbd5c07"
+    },
+    {
+      "path": "MSRV 1.88.0/8_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "87e12c959c3251d13c8aa1ede5567e694313b008f6e75fcce790758970a01267"
+    },
+    {
+      "path": "MSRV 1.88.0/9_Complete job.txt",
+      "bytes": 61,
+      "sha256": "2bb0a6c95f40af3536677e01e867a44e873a6827e78f2f8e4b2eec4e6b6c39cb"
+    },
+    {
+      "path": "1_fuzz smoke.txt",
+      "bytes": 652969,
+      "sha256": "b348255c6232b5a7d8eb64448f70bb388f21a5421ccbcdc69aaaa639b5fa1446"
+    },
+    {
+      "path": "fuzz smoke/system.txt",
+      "bytes": 598,
+      "sha256": "aafcc3ffdede085237038a487511593d01b28a5131f7730a819b1d73ab36eb1d"
+    },
+    {
+      "path": "fuzz smoke/1_Set up job.txt",
+      "bytes": 2036,
+      "sha256": "c55cb849b83a64737e3c64bf9317cbeb65fa40398edcbd9489999c0b47dbe053"
+    },
+    {
+      "path": "fuzz smoke/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14854,
+      "sha256": "2ec3050d6d6368afb72c98a62e7257b6709c304ed3b38baba67e5f8a9305d86c"
+    },
+    {
+      "path": "fuzz smoke/3_Install nightly-2026-07-20.txt",
+      "bytes": 17639,
+      "sha256": "551c3c2dde0a1873e495523e8d24c8f88f25750a72eead40e911aaa8e64c4852"
+    },
+    {
+      "path": "fuzz smoke/4_Install cargo-fuzz 0.13.2.txt",
+      "bytes": 9865,
+      "sha256": "ff051f63544b2ea48acb445fe6f1b00ad9f5b37b072f70dda1f2d73fe9ecb404"
+    },
+    {
+      "path": "fuzz smoke/5_Prepare the C++ and sanitizer toolchain.txt",
+      "bytes": 1686,
+      "sha256": "b89a09045e5c478919e0a976fc94055cf68f59911594a6b6cf1530cb74515544"
+    },
+    {
+      "path": "fuzz smoke/6_Check the committed corpus against the targets.txt",
+      "bytes": 9714,
+      "sha256": "384d74ed3a8f0ed19d2eccfd1e158d304b7907b8d494fddd6fc7dc55f690a935"
+    },
+    {
+      "path": "fuzz smoke/7_Run the bounded query smoke.txt",
+      "bytes": 179390,
+      "sha256": "efb13e23ee3f9eee7ff6bcfcf4c8885b08d56035505a97a1e10812cdff982493"
+    },
+    {
+      "path": "fuzz smoke/8_Run the bounded artifact-tree smoke.txt",
+      "bytes": 140566,
+      "sha256": "e2275827c82b788bfa9116144756116cbed29eeff852a7a3d45059356fbbcaa1"
+    },
+    {
+      "path": "fuzz smoke/9_Run the bounded method-analysis smoke.txt",
+      "bytes": 272485,
+      "sha256": "31b3bdaf718d2d654476917e0153fc774d6aa9b057910a034be8e2b41fc7b691"
+    },
+    {
+      "path": "fuzz smoke/10_Ensure the smoke runs left the tracked tree unchanged.txt",
+      "bytes": 610,
+      "sha256": "bf0142a03db06e30a0d673abff5f7d831dd2da67ab0718c95f537fef5a07e64f"
+    },
+    {
+      "path": "fuzz smoke/20_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "18c1aa7b2ab8ed3c8831db83889a71fa0d46ab39ec03334b235cbefe4f88f988"
+    },
+    {
+      "path": "fuzz smoke/21_Complete job.txt",
+      "bytes": 61,
+      "sha256": "9af9078567dd340680097ca280aaf6ee7c5884d54634f8043e0795589e2dd192"
+    },
+    {
+      "path": "2_supply chain.txt",
+      "bytes": 71679,
+      "sha256": "8bb8e9f65640f77d2e8220cb44ab020051145f68e2799a2494d759960df342fa"
+    },
+    {
+      "path": "supply chain/system.txt",
+      "bytes": 600,
+      "sha256": "71ca2b264fd21e07bfd099a82b73dd63e7e2b61fc877301227278274977f7eb9"
+    },
+    {
+      "path": "supply chain/1_Set up job.txt",
+      "bytes": 2040,
+      "sha256": "1ebfafabb542cf5a8c31b13997cb16ee0e5d5ec473793570e15428836bd45694"
+    },
+    {
+      "path": "supply chain/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14465,
+      "sha256": "658116e57593a43b57e9e0573b582ae9b35267aee3e68c63df6b3823b04b5eb3"
+    },
+    {
+      "path": "supply chain/3_Install stable Rust for cargo-deny.txt",
+      "bytes": 17245,
+      "sha256": "543812b90e4c7e82b267b771f98cb9a9c7188648261e16335ad5a260b0546783"
+    },
+    {
+      "path": "supply chain/4_Install cargo-deny 0.20.2.txt",
+      "bytes": 22060,
+      "sha256": "6ca15258e6c6e6a4ef3e9b4889b9893939371d46df36ed2b0314edb1bd9bed9e"
+    },
+    {
+      "path": "supply chain/5_Check root workspace advisories, licenses, bans, and sources.txt",
+      "bytes": 5967,
+      "sha256": "3d95f2313e4390ecb0499cba831b6a7490225d14ae5b5ba6d3953f89f8cdeb8d"
+    },
+    {
+      "path": "supply chain/6_Check fuzz workspace advisories, licenses, bans, and sources.txt",
+      "bytes": 5766,
+      "sha256": "748a3ccff47f02f8b717c013496e292a5ddb2449a785b3bb52ffb792e9f86f43"
+    },
+    {
+      "path": "supply chain/12_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "26921d2681f23934d7513d1b1e4f111eb6b7bc9ab9d757be2f6699d6bc21c4c1"
+    },
+    {
+      "path": "supply chain/13_Complete job.txt",
+      "bytes": 61,
+      "sha256": "4a3edc558daffa6a2298d69c3e9d4e3b4ca622097d8694e3b6202b5df176df59"
+    },
+    {
+      "path": "3_stable _ test and specification.txt",
+      "bytes": 1255396,
+      "sha256": "01ff5e6658f64bd1dc417280f22e22c09952a1c391b08b1464e54a20a19a9544"
+    },
+    {
+      "path": "stable _ test and specification/system.txt",
+      "bytes": 594,
+      "sha256": "02f6eec6b3102f033371ac0a9c6ab363b4e68063d779697279b5e57af69a97a5"
+    },
+    {
+      "path": "stable _ test and specification/1_Set up job.txt",
+      "bytes": 2318,
+      "sha256": "39811ce54931d2c72cc9b0d065bfa2e0887e75fac4ab5bb90f769f129d18c107"
+    },
+    {
+      "path": "stable _ test and specification/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14921,
+      "sha256": "5bc900e38e02e19355ae2a1bcaf05faf5934c9ed237fc402a289524ab46ac31f"
+    },
+    {
+      "path": "stable _ test and specification/3_Install stable Rust with lint components.txt",
+      "bytes": 17553,
+      "sha256": "f679c221765e5caaffac7483d2e4a5e04daf6ff6b03916fb36002876dd40e378"
+    },
+    {
+      "path": "stable _ test and specification/4_Install Temurin 25.0.4+7.txt",
+      "bytes": 3135,
+      "sha256": "0aa3cf7964c975b2682f277a304eff27a5d87f186d998bce1bfab2783cfdc078"
+    },
+    {
+      "path": "stable _ test and specification/5_Install Node.js 22.txt",
+      "bytes": 1238,
+      "sha256": "2734eec69bac1b9491db87cefb906aac640930d113ef73a241ab191f4622d65d"
+    },
+    {
+      "path": "stable _ test and specification/6_Check formatting.txt",
+      "bytes": 815,
+      "sha256": "1869bf2b6670f918f7a4e301c3792f36213c8a4d1a790634220b212e3c8153e3"
+    },
+    {
+      "path": "stable _ test and specification/7_Run Clippy.txt",
+      "bytes": 14305,
+      "sha256": "1813a3355ca3170ede5c3eab9c70015e4598051b2fb51d76949ef460200301eb"
+    },
+    {
+      "path": "stable _ test and specification/8_Run workspace tests with two fixed independent seeds (pass 1).txt",
+      "bytes": 568391,
+      "sha256": "48c6035c9ab356603f2cad5e97fbbb4eb69da4dd47bbac2d0a8d9f28e99cb842"
+    },
+    {
+      "path": "stable _ test and specification/9_Run workspace tests with two fixed independent seeds (pass 2).txt",
+      "bytes": 563199,
+      "sha256": "8abf7ec73a536ebd6ddd178ed74478630a8dca18663feab25646dccb6b1abf7c"
+    },
+    {
+      "path": "stable _ test and specification/10_Run ignored JDK 25 instruction-boundary oracle.txt",
+      "bytes": 2598,
+      "sha256": "4665e7eba9b173770c50c90fe8b2a387b2745255b229e7a53942ff043f24f077"
+    },
+    {
+      "path": "stable _ test and specification/11_Run the ignored P3 Java 8 compile-and-execute comparison.txt",
+      "bytes": 1823,
+      "sha256": "174d69b73d6a40eeb15f5ec2ee6ffc30b924e1371e1729a0f2bc045bb8f96dfa"
+    },
+    {
+      "path": "stable _ test and specification/12_Run the functional-constructor full-class comparison.txt",
+      "bytes": 2507,
+      "sha256": "442c8b243d79cc844418b0e407b8e30a30f94b2af74dc32184d4ca88aaa98c69"
+    },
+    {
+      "path": "stable _ test and specification/13_Run the BigDecimal Number full-class comparisons.txt",
+      "bytes": 1754,
+      "sha256": "1c7051da21514c44e2fa4e32591a0ba215e352f63a93c1932799c307ac809a4a"
+    },
+    {
+      "path": "stable _ test and specification/14_Run the nested int array full-class comparisons.txt",
+      "bytes": 1787,
+      "sha256": "a9738d34d35890246598e00e53fe16fdf1482f4bbb8858a2946ad838b000118a"
+    },
+    {
+      "path": "stable _ test and specification/15_Run the returned int array full-class comparison.txt",
+      "bytes": 1720,
+      "sha256": "e965f09cfc4e217455ed586be63bd7e2e0122533d4b4378b65d199ca5e47ef43"
+    },
+    {
+      "path": "stable _ test and specification/16_Run public API example.txt",
+      "bytes": 9537,
+      "sha256": "21fa1edcde803844e528f9600daf34e858ff47129e7145f2a920d689c19c23f8"
+    },
+    {
+      "path": "stable _ test and specification/17_Check resolved feature tree.txt",
+      "bytes": 3784,
+      "sha256": "b227eab058dc9e67cbda46ee7f83242f5f9d5977746af1c86cb3920da542cca0"
+    },
+    {
+      "path": "stable _ test and specification/18_Check normal dependency tree boundary.txt",
+      "bytes": 1714,
+      "sha256": "6329e316648c2e1e2ea8f4e14df6f59aabef27c1d0aff7e2bbbc76a707965235"
+    },
+    {
+      "path": "stable _ test and specification/19_Check layered crate dependency closure.txt",
+      "bytes": 7855,
+      "sha256": "542ff287151af77a64cba2c907e3b3afa79d9e7c51e3a9f6aa3608013030dc79"
+    },
+    {
+      "path": "stable _ test and specification/20_Install OpenSpec 1.11.0.txt",
+      "bytes": 1095,
+      "sha256": "61f6a562a5c201d946edf69c4f17a799376b3717f5ed15bd21dcc56701c7c83a"
+    },
+    {
+      "path": "stable _ test and specification/21_Validate OpenSpec strictly.txt",
+      "bytes": 28362,
+      "sha256": "2b372ec4cf637f80b1be6ac6d80faf773c544587974ac760a9cadd273b98d4c3"
+    },
+    {
+      "path": "stable _ test and specification/22_Ensure tracked files remain unchanged.txt",
+      "bytes": 803,
+      "sha256": "b7dc7ec31502325a9ffd34cf1fa2ad8f2bf23afb6a5ac321d7124329f047c900"
+    },
+    {
+      "path": "stable _ test and specification/42_Post Install Node.js 22.txt",
+      "bytes": 50,
+      "sha256": "7305966cabf5238803007a82ff90344c0c29334e19592eeaee98c18f9ddd80ae"
+    },
+    {
+      "path": "stable _ test and specification/43_Post Install Temurin 25.0.4+7.txt",
+      "bytes": 50,
+      "sha256": "3c9f0d1901129ea0a271c529c614bd147fd39b6665438ef516b7a76ee922b1d8"
+    },
+    {
+      "path": "stable _ test and specification/44_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "1ccec80b1d362cf6d0255600cb2b9e24962f1c7985f7ba66f692bef0e08e60cf"
+    },
+    {
+      "path": "stable _ test and specification/45_Complete job.txt",
+      "bytes": 61,
+      "sha256": "d0ead90d05d34172202f139fa13121b30d31060e6bdf55905a2d2e507a7f25c7"
+    }
+  ],
+  "required_gate_source": {
+    "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/workspace-forward-v10/root-acceptance.json",
+    "bytes": 15587,
+    "sha256": "22b80f3ef4a95fb8fccf7aab55e296955c7236e0fdd8c5c4d5eec81547b85d8e"
+  },
+  "auditor": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/accept_product_ci_v3.py",
+    "bytes": 5211,
+    "sha256": "39a28282f3df1d53fb9ead0db13f7e1f50cd71a3e0af6ef5c68dddcce6be09f0"
+  },
+  "scope": "exact product CI only; final main integration and docs tracked separately"
+}

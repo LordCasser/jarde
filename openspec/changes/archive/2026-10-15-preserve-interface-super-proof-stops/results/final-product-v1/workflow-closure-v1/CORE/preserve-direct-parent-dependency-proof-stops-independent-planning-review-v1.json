@@ -1,0 +1,117 @@
+{
+  "schema": "preserve-direct-parent-dependency-proof-stops-independent-planning-review-v1",
+  "status": "planning_review_pass_with_one_minor_count_wording_recommendation",
+  "scope": {
+    "repository_modified": false,
+    "cli_jdk_cargo_git_executed": false,
+    "source_file_sha256_matches_design_baseline": true,
+    "implementation_started": false
+  },
+  "artifacts": {
+    "proposal.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-direct-parent-dependency-proof-stops/proposal.md",
+      "bytes": 1686,
+      "sha256": "090cb478cabe30648dafe1eb80d3f8fb0090080d891af1b40afc76f63dbe0c41"
+    },
+    "specs/java8-recovery/spec.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-direct-parent-dependency-proof-stops/specs/java8-recovery/spec.md",
+      "bytes": 3681,
+      "sha256": "0c3ef42487577c33e254214ab7f471f810d1a98538867802f9fbe7b6a3c508f8"
+    },
+    "design.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-direct-parent-dependency-proof-stops/design.md",
+      "bytes": 5926,
+      "sha256": "5a19e0e520f8f8cdd9cd1d53cd74de9f677ab6af0b4906947d709e44eccc9139"
+    },
+    "tasks.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-direct-parent-dependency-proof-stops/tasks.md",
+      "bytes": 2649,
+      "sha256": "1f8bacf52d1ef82beae78bf392273bccc72b6e34c5f912fddb25b6faaa0cf084"
+    },
+    ".openspec.yaml": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-direct-parent-dependency-proof-stops/.openspec.yaml",
+      "bytes": 40,
+      "sha256": "c5936a7e8ac90455175dd905c9e8fb9d33cf82476be795f24133b51ef95c3d96"
+    }
+  },
+  "planning_status": {
+    "context_receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-openspec-planning-context-root-v1/status-final.stdout.raw",
+      "bytes": 3532,
+      "sha256": "7d299c37b79328afb46ac040f930f2f947a73561eefd18ef680944c236d6d5dc"
+    },
+    "complete": true,
+    "schema": "spec-driven",
+    "strict_change_output": "Change 'preserve-direct-parent-dependency-proof-stops' is valid",
+    "strict_change_valid": true,
+    "task_count": 6,
+    "task_checkboxes_unchecked": 6,
+    "task_checkboxes_done": 0,
+    "spec_scenario_count": 8,
+    "archive_is_not_a_task_checkbox": true
+  },
+  "baseline_and_evidence": {
+    "frozen_baseline_commit_documented": true,
+    "facade_sha256": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/src/facade.rs",
+      "bytes": 2050847,
+      "sha256": "ee8146c1907e1a24e3a631f1106dfad261046acd037fab45c2cde6ce04d16bac"
+    },
+    "ordinary_screen_receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/neighbor-proof-dt29-screen-harness-v1/run-v1/execution.json",
+      "bytes": 1391654,
+      "sha256": "a025f2f222865d2ed9ba497dab760d8bdb24645034b58ab2127fa8e918e19444"
+    },
+    "ordinary_screen_commands_by_cli_variant": {
+      "interface-v4": 9,
+      "class-source-v5": 9
+    },
+    "screen_integrity": true,
+    "current_final_source_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-source-proof-final-focus-independent-review-v1.json",
+      "sha256": "f59cbc7e43370f1f3d8c65db173e5fc8844bab1c4c5f92e833aae4f28afadc9e",
+      "status": "accepted_static_receipt_and_extra_gate_audit",
+      "source_count": 4902
+    },
+    "wide_positive_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/neighbor-direct-parent-full-source-harness-v3/independent-review-v1.json",
+      "sha256": "43bb2d0fe33fe605fa95ef928d6e35c7b098a1e08587db27c2d576daa0b8329d",
+      "status": "accepted_static_audit_of_captured_wide_positive",
+      "four_runtime_oracle_match": true
+    },
+    "actual_gdb_tracepoints": {
+      "cap1_accessor_path": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/neighbor-proof-dt29-gdb-cap1-root-v1/2.stdout.raw",
+        "bytes": 5060,
+        "sha256": "3f7ad4844aa4f89809a36729f289c0552aeaae98093312561fa57bf344cca254"
+      },
+      "cap2_field_path": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/neighbor-proof-dt29-gdb-cap2-root-v1/2.stdout.raw",
+        "bytes": 2629,
+        "sha256": "dc7df98c325869ce80d6846da820337ec2ac1a4270e40c1d28447968b0c02a99"
+      },
+      "evidence_limit": "Stacks show Budget::exceeded through selected_reference_header within prove_direct_parent_accessor_calls/field_writes. They do not print requested owner/BCI or original numeric stop payload; current DT29 source relation is IR-provided, so this does not prove an external source-read stop. The plan explicitly requires an external-source public control and avoids overclaiming."
+    }
+  },
+  "review_checks": {
+    "eight_scenarios_specific_and_bounded": true,
+    "public_spec_does_not_require_internal_function_names": true,
+    "reference_overload_is_explicit_non_goal": true,
+    "ordinary_refusal_and_value_stop_isolation": true,
+    "external_source_read_control_is_a_task": true,
+    "source_read_remains_an_open_evidence_boundary": true,
+    "no_archiving_checkbox": "archive_is_not_a_task_checkbox is true",
+    "bounded_stop_work": true,
+    "no_budget_lifecycle_or_global_merge_scope": true,
+    "no_testing_or_ci_status_inflation": "0/6 tasks remain unchecked; design/proposal say current c871 CI is not this fix own CI"
+  },
+  "findings": [
+    {
+      "severity": "minor_actionable",
+      "location": "tasks.md:5",
+      "finding": "The phrase “18次旧CLI” can be read as 18 old-CLI invocations, while the captured screen is 18 total commands split 9 old interface-v4 + 9 final class-source-v5. The design correctly says each CLI runs the 9-point wide/cap1..8 matrix.",
+      "suggestion": "Say “两版CLI合计18次（各9次）” or specify the 9 old-version observations."
+    }
+  ],
+  "overall": "The four planning artifacts are internally aligned, keep the public spec behavioral rather than implementation-specific, distinguish proof stops from ordinary refusals and value-level failures, explicitly require real cancellation/deadline checkpoints, and defer archive until product and review work is complete. One minor baseline count wording should be clarified before implementation; no substantive design blocker found."
+}

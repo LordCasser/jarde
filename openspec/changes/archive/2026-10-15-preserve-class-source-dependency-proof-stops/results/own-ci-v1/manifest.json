@@ -1,0 +1,29 @@
+{
+  "status": "accepted_exact_c871_product_evidence",
+  "product_sha": "c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1",
+  "ci_run": 38692921405,
+  "archives": [
+    {
+      "path": "own-ci.tar.gz",
+      "bytes": 1833040,
+      "sha256": "cb6b17193dd27b252e75fca921dbd7eddf8d73fb0fc117514a34694e5f538b18",
+      "members": 345,
+      "payloads": 344
+    }
+  ],
+  "prior_local_archive_preserved": {
+    "interface-root-local-v1": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-interface-super-proof-stops/results/root-local-v1/capture.tar.gz",
+      "bytes": 6777734,
+      "sha256": "5140b07be746fc376055376064da480113e3e2027cb9ca89ce9c96ccfda74975",
+      "preserved_in_place": true
+    },
+    "class-source-root-local-v1": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-class-source-dependency-proof-stops/results/root-local-v1/capture.tar.gz",
+      "bytes": 16210008,
+      "sha256": "7eb9d5488ae6af89f10e79dfec1704852a3b9408a8533c5e393bd1c78452b37a",
+      "preserved_in_place": true
+    }
+  },
+  "scope": "same exact c871 own-CI supplement is copied for both changes; next direct-parent change remains unimplemented"
+}
