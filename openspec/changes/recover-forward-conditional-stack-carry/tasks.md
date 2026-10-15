@@ -11,7 +11,7 @@
 - [x] 2.4 冻结并逐字比较 BI/boolean-loop 当前产品的恢复或拒绝文本、身份、来源和循环拓扑；验证新 gate 对该回边候选在投影前拒绝（已由其他既有证明恢复的整体方法不降级）。
 - [x] 3.1 使用完整 admission class 与原 Runner 运行现有冻结 matrix：双 JDK、debug/none、default/all 的完整 16 个 Jarde cells；验证原 baseline 45 行及 admission 33 行 oracle，并按 manifest 记录 compiler/JADX 每项真实成功或失败。不得修改 fixture/helper 来规避方法或改写预期。
 - [x] 3.2 完成 focused/full-workspace 必需验证及 corpus/source-map 回归，记录 receipt、source pins 和 frozen result；保留独立 root acceptance。
-- [ ] 3.3 root 独立审查证明输入、拒绝范围、行为次序、原子停止与全量矩阵。只有全部条件满足才可标记完成；此前保持 pending。
+- [x] 3.3 root 独立审查证明输入、拒绝范围、行为次序、原子停止与全量矩阵。只有全部条件满足才可标记完成；此前保持 pending。
 
 2026-10-14 root：1.1/1.2按 design 实测裁定完成；后续任务仍开放，完整矩阵失败不接受。
 
@@ -32,3 +32,5 @@
 2026-10-14追加本地验证：focused-v18独立accepted 637/0/3、4886来源，CLI与v17逐字同（cd5e52dd…/59590432B）。新完整10方法receiver正例四cells/40maps/6行oracle及2方法真实赋值负例四cells/全BCI/ExplanationOnly/compile1-no-runtime接受，原matrix-v4/forward-order-v4/BI/ICN亦实测接受。多维数组下游静态风险经完整7方法/28maps/两行运行证伪，已有NewArray恢复而非Other。workspace-v9第65批在旧P5计费精确断言停止；原ignored recorder重新量六case、原187方法direct/shared已逐text/outcome比较，只有many-method与两arm各+6 IrItems，其他维度不动。按新增预算化扫描更新三个精确计数和原因，不删比较或改shape；原失败/重测raw保留。full-workspace及最终交付仍未接受。
 
 2026-10-15：按 sibling ordinary-Try 的 [final-local-delivery-root-v4](../recover-ordinary-try-list-generic-bodies/results/final-local-delivery-root-v4/README.md) 关闭2.2/3.1/3.2。root实际复开3536 payload及十个编译来源，focused-v19 642/0/4，fresh workspace-v10 7130/0/196，额外九ignored测试/两examples/依赖边界通过；新receiver正反完整类及原矩阵均绑定逐字相同最终CLI。当前9/10，修复产品自身CI和最终clean-main交付3.3仍开放。
+
+2026-10-15：修复产品644882d6db69f7d5b0bc1165c035a12b4f7cd8aa已提交推送main，[自身CI与clean-primary证据](../recover-ordinary-try-list-generic-bodies/results/own-ci-644882-and-clean-main-root-v1/README.md)根实际742项审查接受；4jobs/52steps成功，两seed各365suites、3565通过/0失败/98忽略，55具名门每seed一次通过。primary HEAD/remote main一致、Git clean、无target，4886编译来源逐字同最终冻结版本。关闭既定局部交付，文档提交后再核最终真实HEAD；不增加CF11/CF18/71/612总体计数。活动core候选、新问题与后续规格归档另行处理。

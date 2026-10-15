@@ -8,7 +8,7 @@
 ## 2. 集成验收与交付
 
 - [x] 2.1 与 coding root 协调且来源摘要相符后应用，用本地 1.14.1 实际运行受影响单项及全量 `openspec validate --all --strict --no-interactive`，再用 CI 固定 1.11.0 核兼容；分别记录 exit 0、真实项目总数及语义对应，保留失败历史和新 raw，不把缺失 header INFO 说成已解决。
-- [ ] 2.2 独立提交文档修复，保存当前 CLI/源码摘要、原文迁移审查和实际验证记录，并核与主实现共同使用的 CI OpenSpec 门；本纯文档修订无需新增或重复 Cargo/JDK 测试，规划完成或旧日志不作为验收证据。
+- [x] 2.2 独立提交文档修复，保存当前 CLI/源码摘要、原文迁移审查和实际验证记录，并核与主实现共同使用的 CI OpenSpec 门；本纯文档修订无需新增或重复 Cargo/JDK 测试，规划完成或旧日志不作为验收证据。
 
 ## Workflow follow-up
 
@@ -17,3 +17,5 @@
 2026-10-14：临时目录清空，先前私有候选和 raw 不再可用；仓库中的文档与规划保持。候选及验证记录改存持久目录，重新产生证据前保持全部任务未完成。
 
 2026-10-14：reviewer 完成无损审读、共享应用及两版本真实全量 365/0，1.14.1 对 27 个受影响对象的单项校验全通过；两份旧计划真实 list 为 0/7。关闭 1.1/1.2/2.1，独立 Git/CI 交付 2.2 仍开放。证据见 [verification-root.md](verification-root.md)。
+
+2026-10-15：修复产品644882d6db69f7d5b0bc1165c035a12b4f7cd8aa已提交推送main，[自身CI与clean-primary证据](../recover-ordinary-try-list-generic-bodies/results/own-ci-644882-and-clean-main-root-v1/README.md)根实际742项审查接受；4jobs/52steps成功，两seed各365suites、3565通过/0失败/98忽略，55具名门每seed一次通过。primary HEAD/remote main一致、Git clean、无target，4886编译来源逐字同最终冻结版本。关闭既定局部交付，文档提交后再核最终真实HEAD；不增加CF11/CF18/71/612总体计数。活动core候选、新问题与后续规格归档另行处理。

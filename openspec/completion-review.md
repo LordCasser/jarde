@@ -1,5 +1,11 @@
 # 实现完成复核（2026-09-21）
 
+## 2026-10-15 普通 try List 与整数 carry 局部交付接受
+
+修复产品 `644882d6db69f7d5b0bc1165c035a12b4f7cd8aa` 的[自身CI 38665083468](https://github.com/LordCasser/jarde/actions/runs/38665083468)已由根独立复开：742 checks、4jobs/52steps成功，两seed各365suites、3565通过/0失败/98忽略；native Rust1.99.0、Temurin25.0.4+7、OpenSpec1.11.0 strict367/0、55具名门每seed一次通过。另核primary为main、HEAD/remote main同644882、clean、无target，4886编译来源同最终冻结CLI。[自身CI与检查点归档](changes/recover-ordinary-try-list-generic-bodies/results/own-ci-644882-and-clean-main-root-v1/README.md)329payload逐一复开。普通try List 6/6、forward carry 10/10及strict文档4/4的既定交付关闭；文档提交后再核最终真实HEAD。
+
+工厂receiver错码与旧f014绿CI按历史保留，不能替代新证据。四工程topic集成、新class-view/interface-proof问题独立推进，主线目前未包含。本次不增加整CF11/CF18/71/612完成计数。
+
 ## 2026-10-14 当前 carry 交付重新验收
 
 普通try List/整数carry的f014产品已提交推送，但后续双编译器完整工厂receiver样本发现可编译错码：原8/7结果及MVT/MVTA轨迹被恢复成空效果。当前交付未接受，历史focused-v14/workspace-v8/matrix-v3只证明其原输入；forward change 2.2/3.1/3.2重新开放，最终交付仍待完成，不增加CF11/CF18/71/612计数。
