@@ -1400,6 +1400,11 @@ impl Engine {
             false,
             budget,
         )?;
+        if ends_the_request(&report.execution) {
+            report.usage = budget.usage();
+            report.execution = with_usage(report.execution, budget.usage());
+            return Ok(OperationOutcome::Performed(report));
+        }
         // The direct static member rows wait for the fold step below the enum and annotation
         // channels: those narrower projections keep their priority, and the fold only ever
         // replaces a text none of them claimed.
@@ -7969,343 +7974,93 @@ impl Engine {
         // when every body this presentation would run was decoded and scanned without a stop and
         // the class's shared bootstrap table was read; anything less keeps every held member on its
         // erased declaration with the existing refusal, so an unread body can never read as "no use".
-        if !(deferred_fields.is_empty()
-            && deferred_methods.is_empty()
-            && generic_call_projection_inputs.is_empty())
-        {
-            let inventory_complete = structure_complete
-                && !ended
-                && methods.len() == read.facts.methods.len()
-                && read
-                    .facts
-                    .methods
-                    .iter()
-                    .zip(&methods)
-                    .all(|(header, method)| {
-                        if !class_source_runs_body(header) {
-                            return true;
-                        }
-                        member_use_scans.iter().any(|scan| {
-                            scan.complete && scan.member.as_ref() == Some(&method.item.identity)
-                        })
-                    })
-                && (member_use_scans.iter().any(|scan| scan.bootstrap_captured)
-                    || read
+        let (
+            bridge_proofs,
+            enum_switch_proofs,
+            initializer_proof,
+            enum_constant_proof,
+            enum_constant_body_relations,
+            enum_projection,
+            initializer_field_order,
+            hidden_assert_fields,
+            array_helper_method_indices,
+            array_projection_markers,
+            array_projection_method_texts,
+            staged_member_emissions,
+        ) = if ends_the_request(&execution) {
+            // These are owned pre-projection records: restore the same erased body/metadata
+            // without proof work, including the record that might not have been published.
+            for input in &mut generic_call_projection_inputs {
+                if input.index < methods.len() {
+                    if methods[input.index].generic_signature_refused
+                        && !methods[input.index].generic_signature_projected
+                    {
+                        continue;
+                    }
+                    if let Some(state) = input.projection_state.take() {
+                        methods[input.index].install_generic_call_projection_state(state);
+                    }
+                }
+            }
+            generic_call_projection_inputs.clear();
+            (
+                Vec::new(),
+                Vec::new(),
+                if read.facts.access_flags & (ACC_ANNOTATION | 0x4000 | 0x8000) == 0 {
+                    ClassSourceInitializerProof::Refused {
+                        reason: "the class-source request stopped before initializer projection"
+                            .to_owned(),
+                    }
+                } else {
+                    ClassSourceInitializerProof::NotApplicable
+                },
+                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                    reason: "the class-source member run stopped before the complete enum proof"
+                        .to_owned(),
+                },
+                Vec::new(),
+                None,
+                None,
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+            )
+        } else {
+            if !(deferred_fields.is_empty()
+                && deferred_methods.is_empty()
+                && generic_call_projection_inputs.is_empty())
+            {
+                let inventory_complete = structure_complete
+                    && !ended
+                    && methods.len() == read.facts.methods.len()
+                    && read
                         .facts
                         .methods
                         .iter()
-                        .filter(|header| class_source_runs_body(header))
-                        .count()
-                        == 0);
-            let generic_projection_inventory_ready = generic_call_projection_inputs.is_empty()
-                || (inventory_complete && (!class_signature_present || class_scope.is_some()));
-            if !generic_projection_inventory_ready {
-                for input in &mut generic_call_projection_inputs {
-                    if input.index < methods.len() {
-                        if methods[input.index].generic_signature_refused
-                            && !methods[input.index].generic_signature_projected
-                        {
-                            continue;
-                        }
-                        if let Some(state) = input.projection_state.take() {
-                            methods[input.index].install_generic_call_projection_state(state);
-                        }
-                    }
-                }
-                generic_call_projection_inputs.clear();
-            }
-            let invokes: Vec<class_source::SameClassInvokeUse> = member_use_scans
-                .iter()
-                .flat_map(|scan| scan.invokes.iter().cloned())
-                .collect();
-            let mut field_uses: Vec<class_source::SameClassFieldUse> = member_use_scans
-                .iter()
-                .flat_map(|scan| scan.field_uses.iter().cloned())
-                .collect();
-            let mut receiver_by_site = std::collections::HashMap::new();
-            for receiver in &field_receiver_sites {
-                budget.poll()?;
-                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                budget.charge(CountedBudgetDimension::IrItems, 1)?;
-                let key = (
-                    receiver.method.clone(),
-                    receiver.bci,
-                    receiver.owner.clone(),
-                    receiver.name.clone(),
-                    receiver.descriptor.clone(),
-                );
-                if receiver_by_site
-                    .insert(key, Some(receiver.source.clone()))
-                    .is_some()
-                {
-                    let key = (
-                        receiver.method.clone(),
-                        receiver.bci,
-                        receiver.owner.clone(),
-                        receiver.name.clone(),
-                        receiver.descriptor.clone(),
-                    );
-                    receiver_by_site.insert(key, None);
-                }
-            }
-            let mut field_write_accessor_sites = std::collections::HashSet::new();
-            for accessor in &field_write_accessors {
-                budget.poll()?;
-                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                budget.charge(CountedBudgetDimension::IrItems, 1)?;
-                field_write_accessor_sites.insert((
-                    accessor.callee.clone(),
-                    accessor.owner.clone(),
-                    accessor.name.clone(),
-                    accessor.descriptor.clone(),
-                ));
-            }
-            for use_site in &mut field_uses {
-                budget.poll()?;
-                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                budget.charge(CountedBudgetDimension::IrItems, 1)?;
-                if use_site.opcode == 0xb5 {
-                    let key = (
-                        use_site.physical_method.clone(),
-                        use_site.bci,
-                        use_site.owner.clone(),
-                        use_site.name.clone(),
-                        use_site.descriptor.clone(),
-                    );
-                    if let Some(Some(source)) = receiver_by_site.get(&key) {
-                        use_site.receiver_source = match source {
-                            jarde_java::report::ClassSourceFieldReceiverSource::This => {
-                                Some(class_source::SameClassFieldReceiverSource::This)
+                        .zip(&methods)
+                        .all(|(header, method)| {
+                            if !class_source_runs_body(header) {
+                                return true;
                             }
-                            jarde_java::report::ClassSourceFieldReceiverSource::Parameter {
-                                slot,
-                            } => Some(class_source::SameClassFieldReceiverSource::Parameter {
-                                slot: *slot,
-                            }),
-                            jarde_java::report::ClassSourceFieldReceiverSource::RawLocal {
-                                ..
-                            } => Some(class_source::SameClassFieldReceiverSource::RawLocal),
-                        };
-                    }
-                }
-                // A presented setter call emits its caller's receiver expression. The setter's
-                // physical formal is therefore not the source-level receiver that selected this
-                // field, so only this closed sidecar is disabled and the old proof remains in use.
-                if field_write_accessor_sites.contains(&(
-                    use_site.physical_method.clone(),
-                    use_site.owner.clone(),
-                    use_site.name.clone(),
-                    use_site.descriptor.clone(),
-                )) {
-                    use_site.receiver_source = None;
-                }
-            }
-            budget.charge(
-                CountedBudgetDimension::AnalysisSteps,
-                u64::try_from(methods.len()).unwrap_or(u64::MAX),
-            )?;
-            let mut source_complete_methods = std::collections::HashSet::<PhysicalMethodId>::new();
-            for method in &methods {
-                budget.poll()?;
-                if matches!(
-                    &method.outcome,
-                    class_source::ClassSourceOutcome::Recovered { report, analysis }
-                        if matches!(report.execution, ExecutionReport::Complete { .. })
-                            && matches!(analysis.execution, ExecutionReport::Complete { .. })
-                            && report.quality == Quality::Structured
-                            && report.representation == crate::ir::Representation::Java
-                            && report.content == RecoveryContent::ContainsStatements
-                            && report.fallbacks.is_empty()
-                ) {
-                    source_complete_methods.insert(method.item.identity.clone());
-                }
-            }
-            for use_site in &mut field_uses {
-                budget.poll()?;
-                use_site.source_complete =
-                    source_complete_methods.contains(&use_site.physical_method);
-            }
-            let member_refs: Vec<class_source::SameClassMemberRef> = member_use_scans
-                .iter()
-                .flat_map(|scan| scan.member_refs.iter().cloned())
-                .collect();
-            let facts = class_source::SameClassUseFacts {
-                complete: inventory_complete,
-                invokes: &invokes,
-                field_uses: &field_uses,
-                member_refs: &member_refs,
-            };
-            if generic_projection_inventory_ready {
-                for (index, attributes, candidate, constructor_candidate) in deferred_methods {
-                    let binding = match class_source::prove_same_class_method_binding(
-                        &read.facts.this_class.raw().0,
-                        read.facts
-                            .super_class
-                            .as_ref()
-                            .map(|name| name.raw().0.as_slice()),
-                        &physical_interfaces_raw,
-                        &read.facts.methods,
-                        index,
-                        &facts,
-                        budget,
-                    ) {
-                        Ok(binding) => binding,
-                        Err(error) => {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            ended = true;
-                            break;
-                        }
-                    };
-                    let this_delegate_bci =
-                        match class_source::unproved_same_class_this_delegate_bci(
-                            &read.facts.this_class.raw().0,
-                            &read.facts.methods[index],
-                            &facts,
-                            budget,
-                        ) {
-                            Ok(bci) => bci,
-                            Err(error) => {
-                                merge_execution(&mut execution, stop_execution(&error, budget));
-                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                                ended = true;
-                                break;
-                            }
-                        };
-                    match class_source::project_method_signature(
-                        &mut methods[index],
-                        &read.facts.methods[index],
-                        &attributes,
-                        candidate.as_ref(),
-                        constructor_candidate.as_ref(),
-                        &read.facts.fields,
-                        &read.bytes,
-                        &pool,
-                        &read.facts.this_class.raw().0,
-                        read.facts.access_flags,
-                        read.facts
-                            .super_class
-                            .as_ref()
-                            .map(|name| name.raw().0.as_slice()),
-                        &physical_interfaces_raw,
-                        class_scope
-                            .as_ref()
-                            .map(|proof| proof.type_parameters.as_slice())
-                            .unwrap_or(&[]),
-                        class_signature_present,
-                        &assembly_context.resolved_inner_classes,
-                        binding,
-                        this_delegate_bci,
-                        budget,
-                    ) {
-                        Ok(_) => {}
-                        Err(error) => {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            ended = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            // A generic-call component can only commit against a closed class inventory. If a
-            // member stop or incomplete scan prevents that proof, discard first-pass generic
-            // headers from this class-local cohort before the independent field pass can observe
-            // them. These are owned pre-projection records, so restoration needs no clone or
-            // additional budget and preserves the exact erased body and metadata.
-            if generic_projection_inventory_ready && ended {
-                for input in &mut generic_call_projection_inputs {
-                    if input.index < methods.len() {
-                        if methods[input.index].generic_signature_refused
-                            && !methods[input.index].generic_signature_projected
-                        {
-                            continue;
-                        }
-                        if let Some(state) = input.projection_state.take() {
-                            methods[input.index].install_generic_call_projection_state(state);
-                        }
-                    }
-                }
-                generic_call_projection_inputs.clear();
-            }
-            if !ended
-                && inventory_complete
-                && !generic_call_projection_inputs.is_empty()
-                && (!class_signature_present || class_scope.is_some())
-            {
-                let mut pending_inputs = std::mem::take(&mut generic_call_projection_inputs);
-                let transaction = (|| -> Result<()> {
-                    let class_parameters = if class_signature_present {
-                        let shells = read
+                            member_use_scans.iter().any(|scan| {
+                                scan.complete && scan.member.as_ref() == Some(&method.item.identity)
+                            })
+                        })
+                    && (member_use_scans.iter().any(|scan| scan.bootstrap_captured)
+                        || read
                             .facts
-                            .attributes
+                            .methods
                             .iter()
-                            .filter(|attribute| attribute.name.raw().0 == b"Signature")
-                            .cloned()
-                            .collect::<Vec<_>>();
-                        if shells.len() == 1 {
-                            attribute_facts(&read.bytes, &shells, &pool, budget)?
-                                .signature
-                                .map(|signature| {
-                                    jarde_reader::signature::parse_class_signature(
-                                        &signature.0,
-                                        budget,
-                                    )
-                                    .map(|parsed| parsed.type_parameters)
-                                })
-                                .transpose()?
-                                .unwrap_or_default()
-                        } else {
-                            Vec::new()
-                        }
-                    } else {
-                        Vec::new()
-                    };
-                    project_generic_call_components(
-                        std::mem::take(&mut pending_inputs),
-                        &mut methods,
-                        &read.facts.methods,
-                        &invokes,
-                        &field_uses,
-                        &member_use_scans,
-                        &method_asts,
-                        &read.facts.this_class.raw().0,
-                        class_scope
-                            .as_ref()
-                            .map(|proof| proof.type_parameters.as_slice())
-                            .unwrap_or(&[]),
-                        &class_parameters,
-                        class_signature_present,
-                        read.facts.access_flags,
-                        read.facts
-                            .super_class
-                            .as_ref()
-                            .map(|name| name.raw().0.as_slice()),
-                        &physical_interfaces_raw,
-                        &assembly_context.resolved_inner_classes,
-                        &read.facts.fields,
-                        &read.bytes,
-                        &pool,
-                        facts,
-                        budget,
-                    )
-                })();
-                if let Err(error) = transaction {
-                    // Preparation can stop before ownership enters the component transaction.
-                    // Restore only this unsubmitted cohort by moving its saved overlays; the
-                    // component transaction itself handles its consumed inputs and preserves
-                    // groups it already committed before a later stop.
-                    for input in &mut pending_inputs {
+                            .filter(|header| class_source_runs_body(header))
+                            .count()
+                            == 0);
+                let generic_projection_inventory_ready = generic_call_projection_inputs.is_empty()
+                    || (inventory_complete && (!class_signature_present || class_scope.is_some()));
+                if !generic_projection_inventory_ready {
+                    for input in &mut generic_call_projection_inputs {
                         if input.index < methods.len() {
-                            if matches!(
-                                methods[input.index].outcome,
-                                class_source::ClassSourceOutcome::NoBody
-                            ) && methods[input.index].no_body_kind == Some(NoBodyKind::Abstract)
-                                && methods[input.index].generic_signature_projected
-                                && methods[input.index].declaration.is_some()
-                            {
-                                continue;
-                            }
                             if methods[input.index].generic_signature_refused
                                 && !methods[input.index].generic_signature_projected
                             {
@@ -8316,34 +8071,140 @@ impl Engine {
                             }
                         }
                     }
-                    merge_execution(&mut execution, stop_execution(&error, budget));
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    ended = true;
+                    generic_call_projection_inputs.clear();
                 }
-            }
-            if !ended {
-                let published_method_parameters = match same_class_published_method_parameters(
-                    &methods,
-                    &read.facts.methods,
-                    &field_uses,
-                    &read.bytes,
-                    &pool,
-                    budget,
-                ) {
-                    Ok(parameters) => parameters,
-                    Err(error) => {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        ended = true;
-                        Vec::new()
+                let invokes: Vec<class_source::SameClassInvokeUse> = member_use_scans
+                    .iter()
+                    .flat_map(|scan| scan.invokes.iter().cloned())
+                    .collect();
+                let mut field_uses: Vec<class_source::SameClassFieldUse> = member_use_scans
+                    .iter()
+                    .flat_map(|scan| scan.field_uses.iter().cloned())
+                    .collect();
+                let mut receiver_by_site = std::collections::HashMap::new();
+                for receiver in &field_receiver_sites {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                    let key = (
+                        receiver.method.clone(),
+                        receiver.bci,
+                        receiver.owner.clone(),
+                        receiver.name.clone(),
+                        receiver.descriptor.clone(),
+                    );
+                    if receiver_by_site
+                        .insert(key, Some(receiver.source.clone()))
+                        .is_some()
+                    {
+                        let key = (
+                            receiver.method.clone(),
+                            receiver.bci,
+                            receiver.owner.clone(),
+                            receiver.name.clone(),
+                            receiver.descriptor.clone(),
+                        );
+                        receiver_by_site.insert(key, None);
                     }
+                }
+                let mut field_write_accessor_sites = std::collections::HashSet::new();
+                for accessor in &field_write_accessors {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                    field_write_accessor_sites.insert((
+                        accessor.callee.clone(),
+                        accessor.owner.clone(),
+                        accessor.name.clone(),
+                        accessor.descriptor.clone(),
+                    ));
+                }
+                for use_site in &mut field_uses {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                    if use_site.opcode == 0xb5 {
+                        let key = (
+                            use_site.physical_method.clone(),
+                            use_site.bci,
+                            use_site.owner.clone(),
+                            use_site.name.clone(),
+                            use_site.descriptor.clone(),
+                        );
+                        if let Some(Some(source)) = receiver_by_site.get(&key) {
+                            use_site.receiver_source = match source {
+                                jarde_java::report::ClassSourceFieldReceiverSource::This => {
+                                    Some(class_source::SameClassFieldReceiverSource::This)
+                                }
+                                jarde_java::report::ClassSourceFieldReceiverSource::Parameter {
+                                    slot,
+                                } => Some(class_source::SameClassFieldReceiverSource::Parameter {
+                                    slot: *slot,
+                                }),
+                                jarde_java::report::ClassSourceFieldReceiverSource::RawLocal {
+                                    ..
+                                } => Some(class_source::SameClassFieldReceiverSource::RawLocal),
+                            };
+                        }
+                    }
+                    // A presented setter call emits its caller's receiver expression. The setter's
+                    // physical formal is therefore not the source-level receiver that selected this
+                    // field, so only this closed sidecar is disabled and the old proof remains in use.
+                    if field_write_accessor_sites.contains(&(
+                        use_site.physical_method.clone(),
+                        use_site.owner.clone(),
+                        use_site.name.clone(),
+                        use_site.descriptor.clone(),
+                    )) {
+                        use_site.receiver_source = None;
+                    }
+                }
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(methods.len()).unwrap_or(u64::MAX),
+                )?;
+                let mut source_complete_methods =
+                    std::collections::HashSet::<PhysicalMethodId>::new();
+                for method in &methods {
+                    budget.poll()?;
+                    if matches!(
+                        &method.outcome,
+                        class_source::ClassSourceOutcome::Recovered { report, analysis }
+                            if matches!(report.execution, ExecutionReport::Complete { .. })
+                                && matches!(analysis.execution, ExecutionReport::Complete { .. })
+                                && report.quality == Quality::Structured
+                                && report.representation == crate::ir::Representation::Java
+                                && report.content == RecoveryContent::ContainsStatements
+                                && report.fallbacks.is_empty()
+                    ) {
+                        source_complete_methods.insert(method.item.identity.clone());
+                    }
+                }
+                for use_site in &mut field_uses {
+                    budget.poll()?;
+                    use_site.source_complete =
+                        source_complete_methods.contains(&use_site.physical_method);
+                }
+                let member_refs: Vec<class_source::SameClassMemberRef> = member_use_scans
+                    .iter()
+                    .flat_map(|scan| scan.member_refs.iter().cloned())
+                    .collect();
+                let facts = class_source::SameClassUseFacts {
+                    complete: inventory_complete,
+                    invokes: &invokes,
+                    field_uses: &field_uses,
+                    member_refs: &member_refs,
                 };
-                if !ended {
-                    for (index, constant) in deferred_fields {
-                        let member_name = read.facts.fields[index].name.raw().0.clone();
-                        let binding = match class_source::prove_same_class_field_binding(
+                if generic_projection_inventory_ready {
+                    for (index, attributes, candidate, constructor_candidate) in deferred_methods {
+                        let binding = match class_source::prove_same_class_method_binding(
                             &read.facts.this_class.raw().0,
-                            &read.facts.fields,
+                            read.facts
+                                .super_class
+                                .as_ref()
+                                .map(|name| name.raw().0.as_slice()),
+                            &physical_interfaces_raw,
+                            &read.facts.methods,
                             index,
                             &facts,
                             budget,
@@ -8356,37 +8217,46 @@ impl Engine {
                                 break;
                             }
                         };
-                        let note = match class_source::same_class_field_use_note(
-                            &facts,
-                            &member_name,
-                            budget,
-                        ) {
-                            Ok(note) => note,
-                            Err(error) => {
-                                merge_execution(&mut execution, stop_execution(&error, budget));
-                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                                ended = true;
-                                break;
-                            }
-                        };
-                        match class_source::project_field_signature(
-                            &mut fields[index],
-                            &read.facts.fields[index],
+                        let this_delegate_bci =
+                            match class_source::unproved_same_class_this_delegate_bci(
+                                &read.facts.this_class.raw().0,
+                                &read.facts.methods[index],
+                                &facts,
+                                budget,
+                            ) {
+                                Ok(bci) => bci,
+                                Err(error) => {
+                                    merge_execution(&mut execution, stop_execution(&error, budget));
+                                    diagnostics
+                                        .push(stop_diagnostic(&error, class_provenance.clone()));
+                                    ended = true;
+                                    break;
+                                }
+                            };
+                        match class_source::project_method_signature(
+                            &mut methods[index],
+                            &read.facts.methods[index],
+                            &attributes,
+                            candidate.as_ref(),
+                            constructor_candidate.as_ref(),
+                            &read.facts.fields,
                             &read.bytes,
                             &pool,
-                            &declaration.item.declaration.this_class.raw().0,
-                            declaration.item.declaration.access_flags,
+                            &read.facts.this_class.raw().0,
+                            read.facts.access_flags,
+                            read.facts
+                                .super_class
+                                .as_ref()
+                                .map(|name| name.raw().0.as_slice()),
+                            &physical_interfaces_raw,
                             class_scope
                                 .as_ref()
                                 .map(|proof| proof.type_parameters.as_slice())
                                 .unwrap_or(&[]),
-                            class_scope.is_some(),
-                            constant.as_ref(),
+                            class_signature_present,
+                            &assembly_context.resolved_inner_classes,
                             binding,
-                            &note,
-                            &field_uses,
-                            &published_method_parameters,
-                            environment.runtime.profile.java_release,
+                            this_delegate_bci,
                             budget,
                         ) {
                             Ok(_) => {}
@@ -8399,629 +8269,865 @@ impl Engine {
                         }
                     }
                 }
-            }
-        }
-        let mut enum_switch_proofs = Vec::new();
-        let mut array_projection_method_texts: Vec<(u64, String)> = Vec::new();
-        let mut array_helper_method_indices: Vec<u64> = Vec::new();
-        let mut array_projection_markers = Vec::new();
-        let mut array_projection_members: Vec<(u64, Vec<u64>)> = Vec::new();
-        let mut array_original_member_texts: Vec<(u64, String)> = Vec::new();
-        // The re-spellable half of the lambda channel's staged members: the emitted body, the
-        // projection notes placed beside it, and the emission's own anchor table. Retained with
-        // the report so the member-fold channel can re-spell a reference inside a projected body
-        // without falling back to the physical text the projection replaced. Entries exist only
-        // for members whose staged text is a body placement — a rename composition is not one.
-        let mut staged_member_emissions: Vec<(
-            u64,
-            String,
-            Vec<String>,
-            Vec<class_source::ClassSourceBodySegment>,
-        )> = Vec::new();
-        // Keep the same-run census local until its class-level proof is implemented. Methods whose
-        // preparation or body run never happened are absent; they are not empty scans.
-        let enum_projection_complete = structure_complete
-            && !ended
-            && methods.len() == read.facts.methods.len()
-            && read
-                .facts
-                .methods
-                .iter()
-                .zip(&methods)
-                .all(|(header, method)| {
-                    if !class_source_runs_body(header) {
-                        return true;
-                    }
-                    enum_switch_scanned_members.contains(&method.item.identity)
-                        && matches!(
-                            &method.outcome,
-                            class_source::ClassSourceOutcome::Recovered { analysis, .. }
-                                if matches!(&analysis.execution, ExecutionReport::Complete { .. })
-                        )
-                });
-        let array_projection_complete = structure_complete
-            && !ended
-            && methods.len() == read.facts.methods.len()
-            && read
-                .facts
-                .methods
-                .iter()
-                .zip(&methods)
-                .all(|(header, method)| {
-                    if code_shell(header).is_none() {
-                        return true;
-                    }
-                    class_source_runs_body(header)
-                        && array_helper_use_runs.iter().any(|scan| {
-                            scan.complete && scan.member.as_ref() == Some(&method.item.identity)
-                        })
-                        && matches!(
-                            &method.outcome,
-                            class_source::ClassSourceOutcome::Recovered { analysis, .. }
-                                if matches!(&analysis.execution, ExecutionReport::Complete { .. })
-                        )
-                });
-        let mut staged_enum_projections: Vec<(usize, String, Vec<String>, Vec<usize>)> = Vec::new();
-        let mut enum_projection_stopped = false;
-        if enum_projection_complete && !enum_switch_candidate_runs.is_empty() {
-            let mut by_method: Vec<(
-                PhysicalMethodId,
-                Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>,
-            )> = Vec::new();
-            for candidate in enum_switch_candidate_runs.iter().cloned() {
-                if let Some(member) = &candidate.member {
-                    if let Some((_, candidates)) =
-                        by_method.iter_mut().find(|(known, _)| known == member)
-                    {
-                        candidates.push(candidate);
-                    } else {
-                        by_method.push((member.clone(), vec![candidate]));
-                    }
-                }
-            }
-            for (member, candidates) in by_method {
-                let Some(method_index) = methods
-                    .iter()
-                    .position(|method| method.item.identity == member)
-                else {
-                    continue;
-                };
-                let method_complete = matches!(
-                    &methods[method_index].outcome,
-                    class_source::ClassSourceOutcome::Recovered { report, analysis }
-                        if report.produced()
-                            && report.quality == Quality::Structured
-                            && report.fallbacks.is_empty()
-                            && matches!(&report.execution, ExecutionReport::Complete { .. })
-                            && matches!(&analysis.execution, ExecutionReport::Complete { .. })
-                );
-                if !method_complete {
-                    for candidate in &candidates {
-                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                            member: member.clone(),
-                            switch_bci: candidate.switch_bci,
-                            read_bci: candidate.read_bci,
-                            table_owner: candidate.table.owner.clone(),
-                            table_name: candidate.table.name.clone(),
-                            helper: None,
-                            enum_definition: None,
-                            entries: Vec::new(),
-                            projected: false,
-                            refusal: Some(
-                                "the candidate method did not recover completely as structured Java"
-                                    .to_owned(),
-                            ),
-                        });
-                    }
-                    continue;
-                }
-                let extra_table_uses = candidates
-                    .iter()
-                    .map(|candidate| {
-                        enum_switch_field_use_runs.iter().find(|use_site| {
-                            use_site.owner == candidate.table.owner
-                                && use_site.name == candidate.table.name
-                                && use_site.descriptor == candidate.table.descriptor
-                                && !candidates.iter().any(|owned| {
-                                    owned.member.as_ref() == Some(&member)
-                                        && owned.table.owner == use_site.owner
-                                        && owned.table.name == use_site.name
-                                        && owned.table.descriptor == use_site.descriptor
-                                        && owned.table.bci == use_site.bci
-                                        && use_site.member.as_ref() == Some(&member)
-                                        && use_site.is_static
-                                        && !use_site.write
-                                })
-                        })
-                    })
-                    .collect::<Vec<_>>();
-                let mut rejected = false;
-                for (candidate, extra_use) in candidates.iter().zip(&extra_table_uses) {
-                    if let Some(use_site) = extra_use {
-                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                            member: member.clone(),
-                            switch_bci: candidate.switch_bci,
-                            read_bci: candidate.read_bci,
-                            table_owner: candidate.table.owner.clone(),
-                            table_name: candidate.table.name.clone(),
-                            helper: None,
-                            enum_definition: None,
-                            entries: Vec::new(),
-                            projected: false,
-                            refusal: Some(format!(
-                                "visible method writes or reads the selected table outside the proved candidate at BCI {}",
-                                use_site.bci,
-                            )),
-                        });
-                        rejected = true;
-                    }
-                }
-                let mut method_staged: Vec<(
-                    &jarde_java::enumswitch::ClassSourceEnumSwitchCandidate,
-                    std::collections::BTreeMap<i64, String>,
-                    String,
-                    usize,
-                )> = Vec::new();
-                let map_results = match prove_class_source_enum_switch_group(
-                    content,
-                    &environment,
-                    &request.environment.policy,
-                    &definition,
-                    &candidates,
-                    &mut execution,
-                    budget,
-                ) {
-                    Ok(results) => results,
-                    Err(error) => {
-                        for candidate in &candidates {
-                            if enum_switch_proofs.iter().any(|proof| {
-                                proof.member == member && proof.switch_bci == candidate.switch_bci
-                            }) {
+                // A generic-call component can only commit against a closed class inventory. If a
+                // member stop or incomplete scan prevents that proof, discard first-pass generic
+                // headers from this class-local cohort before the independent field pass can observe
+                // them. These are owned pre-projection records, so restoration needs no clone or
+                // additional budget and preserves the exact erased body and metadata.
+                if generic_projection_inventory_ready && ended {
+                    for input in &mut generic_call_projection_inputs {
+                        if input.index < methods.len() {
+                            if methods[input.index].generic_signature_refused
+                                && !methods[input.index].generic_signature_projected
+                            {
                                 continue;
                             }
-                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                                member: member.clone(),
-                                switch_bci: candidate.switch_bci,
-                                read_bci: candidate.read_bci,
-                                table_owner: candidate.table.owner.clone(),
-                                table_name: candidate.table.name.clone(),
-                                helper: None,
-                                enum_definition: None,
-                                entries: Vec::new(),
-                                projected: false,
-                                refusal: Some(format!("cross-class proof stopped: {error}")),
-                            });
-                        }
-                        let stop = stop_execution(&error, budget);
-                        merge_execution(&mut execution, stop);
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_projection_stopped = true;
-                        break;
-                    }
-                };
-                for (candidate, map_result) in candidates.iter().zip(map_results) {
-                    if enum_switch_proofs.iter().any(|proof| {
-                        proof.member == member
-                            && proof.switch_bci == candidate.switch_bci
-                            && proof.refusal.is_some()
-                    }) {
-                        continue;
-                    }
-                    let map = match map_result {
-                        Ok(map) => map,
-                        Err(reason) => {
-                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                                member: member.clone(),
-                                switch_bci: candidate.switch_bci,
-                                read_bci: candidate.read_bci,
-                                table_owner: candidate.table.owner.clone(),
-                                table_name: candidate.table.name.clone(),
-                                helper: None,
-                                enum_definition: None,
-                                entries: Vec::new(),
-                                projected: false,
-                                refusal: Some(reason),
-                            });
-                            rejected = true;
-                            continue;
-                        }
-                    };
-                    let map_text = map
-                        .stores
-                        .iter()
-                        .map(|entry| {
-                            format!(
-                                "{}={}@{}[field {}, ordinal {}, read {}, handler {}:{}]",
-                                entry.key,
-                                String::from_utf8_lossy(&entry.constant),
-                                entry.store_bci,
-                                entry.constant_field_bci,
-                                entry.ordinal_bci,
-                                entry.table_read_bci,
-                                entry.handler_ordinal,
-                                entry.handler_bci,
-                            )
-                        })
-                        .collect::<Vec<_>>()
-                        .join(", ");
-                    let marker = format!(
-                        "// jarde: enum switch projected at BCI {} from {:?}.{} via {:?}; initializer stores [{}]",
-                        candidate.switch_bci,
-                        map.helper,
-                        candidate.table.name,
-                        map.enum_definition,
-                        map_text,
-                    );
-                    let proof_index = enum_switch_proofs.len();
-                    enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                        member: member.clone(),
-                        switch_bci: candidate.switch_bci,
-                        read_bci: candidate.read_bci,
-                        table_owner: candidate.table.owner.clone(),
-                        table_name: candidate.table.name.clone(),
-                        helper: Some(map.helper.clone()),
-                        enum_definition: Some(map.enum_definition.clone()),
-                        entries: map
-                            .stores
-                            .iter()
-                            .map(|entry| class_source::ClassSourceEnumSwitchEntry {
-                                key: entry.key,
-                                constant: entry.constant.clone(),
-                                constant_field_bci: entry.constant_field_bci,
-                                ordinal_bci: entry.ordinal_bci,
-                                table_read_bci: entry.table_read_bci,
-                                store_bci: entry.store_bci,
-                                handler_ordinal: entry.handler_ordinal,
-                                handler_bci: entry.handler_bci,
-                            })
-                            .collect(),
-                        projected: false,
-                        refusal: None,
-                    });
-                    method_staged.push((candidate, map.labels, marker, proof_index));
-                }
-                if rejected {
-                    for (_, _, _, proof_index) in method_staged {
-                        enum_switch_proofs[proof_index].refusal = Some(
-                            "group projection withheld because another site in this method was not proved"
-                                .to_owned(),
-                        );
-                    }
-                    if enum_projection_stopped {
-                        break;
-                    }
-                    continue;
-                }
-                let mut marker_stopped = false;
-                for (candidate, _, marker, proof_index) in &method_staged {
-                    if let Err(error) = budget.charge(
-                        CountedBudgetDimension::OutputBytes,
-                        u64::try_from(marker.len()).unwrap_or(u64::MAX),
-                    ) {
-                        let stop = stop_execution(&error, budget);
-                        enum_switch_proofs[*proof_index].refusal = Some(format!(
-                            "projection marker output for BCI {} was stopped: {error}",
-                            candidate.switch_bci,
-                        ));
-                        for (_, _, _, sibling_index) in &method_staged {
-                            if *sibling_index != *proof_index {
-                                enum_switch_proofs[*sibling_index].refusal = Some(
-                                    "group projection withheld because another site's marker exceeded the output budget"
-                                        .to_owned(),
-                                );
+                            if let Some(state) = input.projection_state.take() {
+                                methods[input.index].install_generic_call_projection_state(state);
                             }
                         }
-                        merge_execution(&mut execution, stop);
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_projection_stopped = true;
-                        marker_stopped = true;
-                        break;
                     }
+                    generic_call_projection_inputs.clear();
                 }
-                if marker_stopped {
-                    break;
-                }
-                let emitter_candidates = method_staged
-                    .iter()
-                    .map(|(candidate, labels, _, _)| (*candidate, labels))
-                    .collect::<Vec<_>>();
-                let recovery_text = match jarde_java::report::emit_class_source_enum_switch_group(
-                    &emitter_candidates,
-                    budget,
-                ) {
-                    Ok(Some(text)) => text,
-                    Ok(None) => {
-                        for (candidate, _, _, proof_index) in &method_staged {
-                            enum_switch_proofs[*proof_index].refusal = Some(format!(
-                                "the same-run AST did not contain the matching enum switch shape at BCI {}",
-                                candidate.switch_bci,
-                            ));
-                        }
-                        continue;
-                    }
-                    Err(stop) => {
-                        let error = enum_projection_stop_error(
-                            stop,
-                            "grouped enum switch projection",
-                            "enum_switch_ir_missing",
-                        );
-                        for (candidate, _, _, proof_index) in &method_staged {
-                            enum_switch_proofs[*proof_index].refusal = Some(format!(
-                                "grouped projection emission stopped at BCI {}: {error}",
-                                candidate.switch_bci,
-                            ));
-                        }
-                        let execution_stop = stop_execution(&error, budget);
-                        merge_execution(&mut execution, execution_stop);
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_projection_stopped = true;
-                        break;
-                    }
-                };
-                staged_enum_projections.push((
-                    method_index,
-                    recovery_text,
-                    method_staged
-                        .iter()
-                        .map(|(_, _, marker, _)| marker.clone())
-                        .collect(),
-                    method_staged
-                        .iter()
-                        .map(|(_, _, _, proof_index)| *proof_index)
-                        .collect(),
-                ));
-            }
-        }
-        if !enum_projection_stopped {
-            let mut projected_methods = methods.clone();
-            let mut projected_proof_indices = Vec::new();
-            for (method_index, recovery_text, markers, proof_indices) in staged_enum_projections {
-                if !projected_methods[method_index]
-                    .project_enum_switch_group(&recovery_text, markers)
+                if !ended
+                    && inventory_complete
+                    && !generic_call_projection_inputs.is_empty()
+                    && (!class_signature_present || class_scope.is_some())
                 {
-                    enum_projection_stopped = true;
-                    for proof_index in proof_indices {
-                        enum_switch_proofs[proof_index].refusal = Some(
-                            "the emitted method could not be atomically placed in its physical member"
-                                .to_owned(),
-                        );
-                    }
-                    break;
-                }
-                projected_proof_indices.extend(proof_indices);
-            }
-            if !enum_projection_stopped {
-                methods = projected_methods;
-                for proof_index in projected_proof_indices {
-                    enum_switch_proofs[proof_index].projected = true;
-                }
-            }
-        }
-        if enum_projection_stopped {
-            for proof in &mut enum_switch_proofs {
-                if proof.refusal.is_none() && !proof.projected {
-                    proof.refusal = Some(
-                        "the class-source enum projection batch stopped before commit".to_owned(),
-                    );
-                }
-            }
-        }
-        let mut array_projection_stopped = false;
-        if array_projection_complete && !array_constructor_candidate_runs.is_empty() {
-            let mut by_helper: Vec<(
-                PhysicalMethodId,
-                Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>,
-            )> = Vec::new();
-            for candidate in array_constructor_candidate_runs.iter().cloned() {
-                if let Some((_, sites)) = by_helper
-                    .iter_mut()
-                    .find(|(helper, _)| *helper == candidate.helper)
-                {
-                    sites.push(candidate);
-                } else {
-                    by_helper.push((candidate.helper.clone(), vec![candidate]));
-                }
-            }
-            for (helper, candidates) in by_helper {
-                if array_projection_stopped {
-                    break;
-                }
-                let census = array_helper_census_refusal(
-                    &candidates[0],
-                    &candidates,
-                    &array_helper_use_runs,
-                    budget,
-                );
-                let refusal = match census {
-                    Ok(refusal) => refusal,
-                    Err(error) => {
+                    let mut pending_inputs = std::mem::take(&mut generic_call_projection_inputs);
+                    let transaction = (|| -> Result<()> {
+                        let class_parameters = if class_signature_present {
+                            let shells = read
+                                .facts
+                                .attributes
+                                .iter()
+                                .filter(|attribute| attribute.name.raw().0 == b"Signature")
+                                .cloned()
+                                .collect::<Vec<_>>();
+                            if shells.len() == 1 {
+                                attribute_facts(&read.bytes, &shells, &pool, budget)?
+                                    .signature
+                                    .map(|signature| {
+                                        jarde_reader::signature::parse_class_signature(
+                                            &signature.0,
+                                            budget,
+                                        )
+                                        .map(|parsed| parsed.type_parameters)
+                                    })
+                                    .transpose()?
+                                    .unwrap_or_default()
+                            } else {
+                                Vec::new()
+                            }
+                        } else {
+                            Vec::new()
+                        };
+                        project_generic_call_components(
+                            std::mem::take(&mut pending_inputs),
+                            &mut methods,
+                            &read.facts.methods,
+                            &invokes,
+                            &field_uses,
+                            &member_use_scans,
+                            &method_asts,
+                            &read.facts.this_class.raw().0,
+                            class_scope
+                                .as_ref()
+                                .map(|proof| proof.type_parameters.as_slice())
+                                .unwrap_or(&[]),
+                            &class_parameters,
+                            class_signature_present,
+                            read.facts.access_flags,
+                            read.facts
+                                .super_class
+                                .as_ref()
+                                .map(|name| name.raw().0.as_slice()),
+                            &physical_interfaces_raw,
+                            &assembly_context.resolved_inner_classes,
+                            &read.facts.fields,
+                            &read.bytes,
+                            &pool,
+                            facts,
+                            budget,
+                        )
+                    })();
+                    if let Err(error) = transaction {
+                        // Preparation can stop before ownership enters the component transaction.
+                        // Restore only this unsubmitted cohort by moving its saved overlays; the
+                        // component transaction itself handles its consumed inputs and preserves
+                        // groups it already committed before a later stop.
+                        for input in &mut pending_inputs {
+                            if input.index < methods.len() {
+                                if matches!(
+                                    methods[input.index].outcome,
+                                    class_source::ClassSourceOutcome::NoBody
+                                ) && methods[input.index].no_body_kind
+                                    == Some(NoBodyKind::Abstract)
+                                    && methods[input.index].generic_signature_projected
+                                    && methods[input.index].declaration.is_some()
+                                {
+                                    continue;
+                                }
+                                if methods[input.index].generic_signature_refused
+                                    && !methods[input.index].generic_signature_projected
+                                {
+                                    continue;
+                                }
+                                if let Some(state) = input.projection_state.take() {
+                                    methods[input.index]
+                                        .install_generic_call_projection_state(state);
+                                }
+                            }
+                        }
                         merge_execution(&mut execution, stop_execution(&error, budget));
                         diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        break;
+                        ended = true;
                     }
-                };
-                if refusal.is_none() {
-                    let collides_with_enum_switch = candidates.iter().any(|candidate| {
-                        enum_switch_proofs
-                            .iter()
-                            .any(|proof| proof.projected && proof.member == candidate.member)
-                    });
-                    let collides_with_bridge = candidates.iter().any(|candidate| {
-                        _bridge_candidate_runs.iter().any(|bridge| {
-                            bridge.presented && bridge.member.as_ref() == Some(&candidate.member)
-                        })
-                    });
-                    if collides_with_enum_switch || collides_with_bridge {
-                        continue;
-                    }
-                    let mut helper_members = methods
-                        .iter()
-                        .filter(|method| method.item.identity == helper);
-                    let Some(helper_method) = helper_members.next() else {
-                        continue;
+                }
+                if !ended {
+                    let published_method_parameters = match same_class_published_method_parameters(
+                        &methods,
+                        &read.facts.methods,
+                        &field_uses,
+                        &read.bytes,
+                        &pool,
+                        budget,
+                    ) {
+                        Ok(parameters) => parameters,
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            ended = true;
+                            Vec::new()
+                        }
                     };
-                    if helper_members.next().is_some() {
-                        continue;
-                    }
-                    let mut candidate_by_member: Vec<(
-                        PhysicalMethodId,
-                        jarde_java::report::ClassSourceArrayConstructorCandidate,
-                    )> = Vec::new();
-                    for candidate in candidates {
-                        if let Some((_, grouped)) = candidate_by_member
-                            .iter_mut()
-                            .find(|(member, _)| *member == candidate.member)
-                        {
-                            grouped.sites.extend(candidate.sites);
-                        } else {
-                            candidate_by_member.push((candidate.member.clone(), candidate));
-                        }
-                    }
-                    let mut staged = Vec::new();
-                    let mut accepted = true;
-                    for (member, candidate) in candidate_by_member {
-                        let mut member_matches = methods
-                            .iter()
-                            .enumerate()
-                            .filter(|(_, method)| method.item.identity == member);
-                        let Some((method_index, method)) = member_matches.next() else {
-                            accepted = false;
-                            break;
-                        };
-                        if member_matches.next().is_some() {
-                            accepted = false;
-                            break;
-                        }
-                        if !array_target_declaration_matches(&candidate, method) {
-                            accepted = false;
-                            break;
-                        }
-                        let class_source::ClassSourceOutcome::Recovered { report, analysis } =
-                            &method.outcome
-                        else {
-                            accepted = false;
-                            break;
-                        };
-                        if !matches!(analysis.execution, ExecutionReport::Complete { .. })
-                            || !report.outcome.produced()
-                            || report.quality != jarde_jvm::ir::Quality::Structured
-                            || !report.fallbacks.is_empty()
-                        {
-                            accepted = false;
-                            break;
-                        }
-                        let projected_body =
-                            match jarde_java::report::emit_class_source_array_constructors(
-                                &candidate, budget,
+                    if !ended {
+                        for (index, constant) in deferred_fields {
+                            let member_name = read.facts.fields[index].name.raw().0.clone();
+                            let binding = match class_source::prove_same_class_field_binding(
+                                &read.facts.this_class.raw().0,
+                                &read.facts.fields,
+                                index,
+                                &facts,
+                                budget,
                             ) {
-                                Ok(Some(text)) => text,
-                                Ok(None) => {
-                                    accepted = false;
-                                    break;
-                                }
-                                Err(stop) => {
-                                    let error = enum_projection_stop_error(
-                                        stop,
-                                        "array-constructor projection",
-                                        "array_constructor_projection_stopped",
-                                    );
+                                Ok(binding) => binding,
+                                Err(error) => {
                                     merge_execution(&mut execution, stop_execution(&error, budget));
                                     diagnostics
                                         .push(stop_diagnostic(&error, class_provenance.clone()));
-                                    accepted = false;
-                                    array_projection_stopped = true;
+                                    ended = true;
                                     break;
                                 }
                             };
-                        let marker = format!(
-                            "// jarde: projected {} array-constructor site(s) at {:?} from exact helper {:?}",
-                            candidate.sites.len(),
-                            candidate
-                                .sites
-                                .iter()
-                                .map(|site| site.use_site)
-                                .collect::<Vec<_>>(),
-                            helper.name,
-                        );
-                        let Some(full_text) = method.array_projection_text(&projected_body, marker)
-                        else {
-                            accepted = false;
-                            break;
-                        };
-                        if let Err(error) = budget.charge(
-                            CountedBudgetDimension::OutputBytes,
-                            u64::try_from(full_text.len()).unwrap_or(u64::MAX),
-                        ) {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            let note = match class_source::same_class_field_use_note(
+                                &facts,
+                                &member_name,
+                                budget,
+                            ) {
+                                Ok(note) => note,
+                                Err(error) => {
+                                    merge_execution(&mut execution, stop_execution(&error, budget));
+                                    diagnostics
+                                        .push(stop_diagnostic(&error, class_provenance.clone()));
+                                    ended = true;
+                                    break;
+                                }
+                            };
+                            match class_source::project_field_signature(
+                                &mut fields[index],
+                                &read.facts.fields[index],
+                                &read.bytes,
+                                &pool,
+                                &declaration.item.declaration.this_class.raw().0,
+                                declaration.item.declaration.access_flags,
+                                class_scope
+                                    .as_ref()
+                                    .map(|proof| proof.type_parameters.as_slice())
+                                    .unwrap_or(&[]),
+                                class_scope.is_some(),
+                                constant.as_ref(),
+                                binding,
+                                &note,
+                                &field_uses,
+                                &published_method_parameters,
+                                environment.runtime.profile.java_release,
+                                budget,
+                            ) {
+                                Ok(_) => {}
+                                Err(error) => {
+                                    merge_execution(&mut execution, stop_execution(&error, budget));
+                                    diagnostics
+                                        .push(stop_diagnostic(&error, class_provenance.clone()));
+                                    ended = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            let mut enum_switch_proofs = Vec::new();
+            let mut array_projection_method_texts: Vec<(u64, String)> = Vec::new();
+            let mut array_helper_method_indices: Vec<u64> = Vec::new();
+            let mut array_projection_markers = Vec::new();
+            let mut array_projection_members: Vec<(u64, Vec<u64>)> = Vec::new();
+            let mut array_original_member_texts: Vec<(u64, String)> = Vec::new();
+            // The re-spellable half of the lambda channel's staged members: the emitted body, the
+            // projection notes placed beside it, and the emission's own anchor table. Retained with
+            // the report so the member-fold channel can re-spell a reference inside a projected body
+            // without falling back to the physical text the projection replaced. Entries exist only
+            // for members whose staged text is a body placement — a rename composition is not one.
+            let mut staged_member_emissions: Vec<(
+                u64,
+                String,
+                Vec<String>,
+                Vec<class_source::ClassSourceBodySegment>,
+            )> = Vec::new();
+            // Keep the same-run census local until its class-level proof is implemented. Methods whose
+            // preparation or body run never happened are absent; they are not empty scans.
+            let enum_projection_complete = structure_complete
+                && !ended
+                && methods.len() == read.facts.methods.len()
+                && read
+                    .facts
+                    .methods
+                    .iter()
+                    .zip(&methods)
+                    .all(|(header, method)| {
+                        if !class_source_runs_body(header) {
+                            return true;
+                        }
+                        enum_switch_scanned_members.contains(&method.item.identity)
+                            && matches!(
+                                &method.outcome,
+                                class_source::ClassSourceOutcome::Recovered { analysis, .. }
+                                    if matches!(&analysis.execution, ExecutionReport::Complete { .. })
+                            )
+                    });
+            let array_projection_complete = structure_complete
+                && !ended
+                && methods.len() == read.facts.methods.len()
+                && read
+                    .facts
+                    .methods
+                    .iter()
+                    .zip(&methods)
+                    .all(|(header, method)| {
+                        if code_shell(header).is_none() {
+                            return true;
+                        }
+                        class_source_runs_body(header)
+                            && array_helper_use_runs.iter().any(|scan| {
+                                scan.complete && scan.member.as_ref() == Some(&method.item.identity)
+                            })
+                            && matches!(
+                                &method.outcome,
+                                class_source::ClassSourceOutcome::Recovered { analysis, .. }
+                                    if matches!(&analysis.execution, ExecutionReport::Complete { .. })
+                            )
+                    });
+            let mut staged_enum_projections: Vec<(usize, String, Vec<String>, Vec<usize>)> =
+                Vec::new();
+            let mut enum_projection_stopped = false;
+            if enum_projection_complete && !enum_switch_candidate_runs.is_empty() {
+                let mut by_method: Vec<(
+                    PhysicalMethodId,
+                    Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>,
+                )> = Vec::new();
+                for candidate in enum_switch_candidate_runs.iter().cloned() {
+                    if let Some(member) = &candidate.member {
+                        if let Some((_, candidates)) =
+                            by_method.iter_mut().find(|(known, _)| known == member)
+                        {
+                            candidates.push(candidate);
+                        } else {
+                            by_method.push((member.clone(), vec![candidate]));
+                        }
+                    }
+                }
+                for (member, candidates) in by_method {
+                    let Some(method_index) = methods
+                        .iter()
+                        .position(|method| method.item.identity == member)
+                    else {
+                        continue;
+                    };
+                    let method_complete = matches!(
+                        &methods[method_index].outcome,
+                        class_source::ClassSourceOutcome::Recovered { report, analysis }
+                            if report.produced()
+                                && report.quality == Quality::Structured
+                                && report.fallbacks.is_empty()
+                                && matches!(&report.execution, ExecutionReport::Complete { .. })
+                                && matches!(&analysis.execution, ExecutionReport::Complete { .. })
+                    );
+                    if !method_complete {
+                        for candidate in &candidates {
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member: member.clone(),
+                                switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci,
+                                table_owner: candidate.table.owner.clone(),
+                                table_name: candidate.table.name.clone(),
+                                helper: None,
+                                enum_definition: None,
+                                entries: Vec::new(),
+                                projected: false,
+                                refusal: Some(
+                                    "the candidate method did not recover completely as structured Java"
+                                        .to_owned(),
+                                ),
+                            });
+                        }
+                        continue;
+                    }
+                    let extra_table_uses = candidates
+                        .iter()
+                        .map(|candidate| {
+                            enum_switch_field_use_runs.iter().find(|use_site| {
+                                use_site.owner == candidate.table.owner
+                                    && use_site.name == candidate.table.name
+                                    && use_site.descriptor == candidate.table.descriptor
+                                    && !candidates.iter().any(|owned| {
+                                        owned.member.as_ref() == Some(&member)
+                                            && owned.table.owner == use_site.owner
+                                            && owned.table.name == use_site.name
+                                            && owned.table.descriptor == use_site.descriptor
+                                            && owned.table.bci == use_site.bci
+                                            && use_site.member.as_ref() == Some(&member)
+                                            && use_site.is_static
+                                            && !use_site.write
+                                    })
+                            })
+                        })
+                        .collect::<Vec<_>>();
+                    let mut rejected = false;
+                    for (candidate, extra_use) in candidates.iter().zip(&extra_table_uses) {
+                        if let Some(use_site) = extra_use {
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member: member.clone(),
+                                switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci,
+                                table_owner: candidate.table.owner.clone(),
+                                table_name: candidate.table.name.clone(),
+                                helper: None,
+                                enum_definition: None,
+                                entries: Vec::new(),
+                                projected: false,
+                                refusal: Some(format!(
+                                    "visible method writes or reads the selected table outside the proved candidate at BCI {}",
+                                    use_site.bci,
+                                )),
+                            });
+                            rejected = true;
+                        }
+                    }
+                    let mut method_staged: Vec<(
+                        &jarde_java::enumswitch::ClassSourceEnumSwitchCandidate,
+                        std::collections::BTreeMap<i64, String>,
+                        String,
+                        usize,
+                    )> = Vec::new();
+                    let map_results = match prove_class_source_enum_switch_group(
+                        content,
+                        &environment,
+                        &request.environment.policy,
+                        &definition,
+                        &candidates,
+                        &mut execution,
+                        budget,
+                    ) {
+                        Ok(results) => results,
+                        Err(error) => {
+                            for candidate in &candidates {
+                                if enum_switch_proofs.iter().any(|proof| {
+                                    proof.member == member
+                                        && proof.switch_bci == candidate.switch_bci
+                                }) {
+                                    continue;
+                                }
+                                enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                    member: member.clone(),
+                                    switch_bci: candidate.switch_bci,
+                                    read_bci: candidate.read_bci,
+                                    table_owner: candidate.table.owner.clone(),
+                                    table_name: candidate.table.name.clone(),
+                                    helper: None,
+                                    enum_definition: None,
+                                    entries: Vec::new(),
+                                    projected: false,
+                                    refusal: Some(format!("cross-class proof stopped: {error}")),
+                                });
+                            }
+                            let stop = stop_execution(&error, budget);
+                            merge_execution(&mut execution, stop);
                             diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            accepted = false;
-                            array_projection_stopped = true;
+                            enum_projection_stopped = true;
                             break;
                         }
-                        staged.push((method_index, method.item.index, full_text));
-                    }
-                    let overlaps_existing = staged.iter().any(|(_, member_index, _)| {
-                        array_projection_members
+                    };
+                    for (candidate, map_result) in candidates.iter().zip(map_results) {
+                        if enum_switch_proofs.iter().any(|proof| {
+                            proof.member == member
+                                && proof.switch_bci == candidate.switch_bci
+                                && proof.refusal.is_some()
+                        }) {
+                            continue;
+                        }
+                        let map = match map_result {
+                            Ok(map) => map,
+                            Err(reason) => {
+                                enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                    member: member.clone(),
+                                    switch_bci: candidate.switch_bci,
+                                    read_bci: candidate.read_bci,
+                                    table_owner: candidate.table.owner.clone(),
+                                    table_name: candidate.table.name.clone(),
+                                    helper: None,
+                                    enum_definition: None,
+                                    entries: Vec::new(),
+                                    projected: false,
+                                    refusal: Some(reason),
+                                });
+                                rejected = true;
+                                continue;
+                            }
+                        };
+                        let map_text = map
+                            .stores
                             .iter()
-                            .any(|(_, members)| members.contains(member_index))
-                    });
-                    if accepted && !staged.is_empty() && !overlaps_existing {
+                            .map(|entry| {
+                                format!(
+                                    "{}={}@{}[field {}, ordinal {}, read {}, handler {}:{}]",
+                                    entry.key,
+                                    String::from_utf8_lossy(&entry.constant),
+                                    entry.store_bci,
+                                    entry.constant_field_bci,
+                                    entry.ordinal_bci,
+                                    entry.table_read_bci,
+                                    entry.handler_ordinal,
+                                    entry.handler_bci,
+                                )
+                            })
+                            .collect::<Vec<_>>()
+                            .join(", ");
                         let marker = format!(
-                            "// jarde: omitted physical helper {:?} after proving all same-class uses are projected",
-                            helper.name,
+                            "// jarde: enum switch projected at BCI {} from {:?}.{} via {:?}; initializer stores [{}]",
+                            candidate.switch_bci,
+                            map.helper,
+                            candidate.table.name,
+                            map.enum_definition,
+                            map_text,
                         );
+                        let proof_index = enum_switch_proofs.len();
+                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                            member: member.clone(),
+                            switch_bci: candidate.switch_bci,
+                            read_bci: candidate.read_bci,
+                            table_owner: candidate.table.owner.clone(),
+                            table_name: candidate.table.name.clone(),
+                            helper: Some(map.helper.clone()),
+                            enum_definition: Some(map.enum_definition.clone()),
+                            entries: map
+                                .stores
+                                .iter()
+                                .map(|entry| class_source::ClassSourceEnumSwitchEntry {
+                                    key: entry.key,
+                                    constant: entry.constant.clone(),
+                                    constant_field_bci: entry.constant_field_bci,
+                                    ordinal_bci: entry.ordinal_bci,
+                                    table_read_bci: entry.table_read_bci,
+                                    store_bci: entry.store_bci,
+                                    handler_ordinal: entry.handler_ordinal,
+                                    handler_bci: entry.handler_bci,
+                                })
+                                .collect(),
+                            projected: false,
+                            refusal: None,
+                        });
+                        method_staged.push((candidate, map.labels, marker, proof_index));
+                    }
+                    if rejected {
+                        for (_, _, _, proof_index) in method_staged {
+                            enum_switch_proofs[proof_index].refusal = Some(
+                                "group projection withheld because another site in this method was not proved"
+                                    .to_owned(),
+                            );
+                        }
+                        if enum_projection_stopped {
+                            break;
+                        }
+                        continue;
+                    }
+                    let mut marker_stopped = false;
+                    for (candidate, _, marker, proof_index) in &method_staged {
                         if let Err(error) = budget.charge(
                             CountedBudgetDimension::OutputBytes,
                             u64::try_from(marker.len()).unwrap_or(u64::MAX),
                         ) {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            let stop = stop_execution(&error, budget);
+                            enum_switch_proofs[*proof_index].refusal = Some(format!(
+                                "projection marker output for BCI {} was stopped: {error}",
+                                candidate.switch_bci,
+                            ));
+                            for (_, _, _, sibling_index) in &method_staged {
+                                if *sibling_index != *proof_index {
+                                    enum_switch_proofs[*sibling_index].refusal = Some(
+                                        "group projection withheld because another site's marker exceeded the output budget"
+                                            .to_owned(),
+                                    );
+                                }
+                            }
+                            merge_execution(&mut execution, stop);
                             diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            array_projection_stopped = true;
-                        } else {
-                            array_projection_method_texts.extend(
-                                staged.iter().map(|(_, index, text)| (*index, text.clone())),
-                            );
-                            array_helper_method_indices.push(helper_method.item.index);
-                            array_projection_markers.push(marker);
-                            let member_indices = staged
-                                .iter()
-                                .map(|(method_index, member_index, _)| {
-                                    array_original_member_texts
-                                        .push((*member_index, methods[*method_index].text.clone()));
-                                    *member_index
-                                })
-                                .collect();
-                            array_projection_members
-                                .push((helper_method.item.index, member_indices));
+                            enum_projection_stopped = true;
+                            marker_stopped = true;
+                            break;
                         }
                     }
-                    continue;
+                    if marker_stopped {
+                        break;
+                    }
+                    let emitter_candidates = method_staged
+                        .iter()
+                        .map(|(candidate, labels, _, _)| (*candidate, labels))
+                        .collect::<Vec<_>>();
+                    let recovery_text =
+                        match jarde_java::report::emit_class_source_enum_switch_group(
+                            &emitter_candidates,
+                            budget,
+                        ) {
+                            Ok(Some(text)) => text,
+                            Ok(None) => {
+                                for (candidate, _, _, proof_index) in &method_staged {
+                                    enum_switch_proofs[*proof_index].refusal = Some(format!(
+                                        "the same-run AST did not contain the matching enum switch shape at BCI {}",
+                                        candidate.switch_bci,
+                                    ));
+                                }
+                                continue;
+                            }
+                            Err(stop) => {
+                                let error = enum_projection_stop_error(
+                                    stop,
+                                    "grouped enum switch projection",
+                                    "enum_switch_ir_missing",
+                                );
+                                for (candidate, _, _, proof_index) in &method_staged {
+                                    enum_switch_proofs[*proof_index].refusal = Some(format!(
+                                        "grouped projection emission stopped at BCI {}: {error}",
+                                        candidate.switch_bci,
+                                    ));
+                                }
+                                let execution_stop = stop_execution(&error, budget);
+                                merge_execution(&mut execution, execution_stop);
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                enum_projection_stopped = true;
+                                break;
+                            }
+                        };
+                    staged_enum_projections.push((
+                        method_index,
+                        recovery_text,
+                        method_staged
+                            .iter()
+                            .map(|(_, _, marker, _)| marker.clone())
+                            .collect(),
+                        method_staged
+                            .iter()
+                            .map(|(_, _, _, proof_index)| *proof_index)
+                            .collect(),
+                    ));
                 }
             }
-        }
-        let mut lambda_projection_stopped = false;
-        // The lambda-body channel: every private synthetic `lambda$…` companion this class
-        // declares takes one of two projections — its single-return body inlined into the lambda
-        // expression that calls it (the physical method then omitted), or, for a body the inline
-        // proof refuses, a renamed non-conflicting declaration with the call rewritten. javac
-        // re-synthesizes the companion's name for the lambda expression itself, so keeping the
-        // physical name beside a lambda expression leaves the whole class uncompilable.
-        let relevant_lambda_headers: Vec<_> = read
-            .facts
-            .methods
-            .iter()
-            .filter(|member| {
-                member.name.raw().0.starts_with(b"lambda$")
-                    && member.access_flags & 0x1000 != 0
-                    && code_shell(member).is_some()
-            })
-            .collect();
-        if array_projection_complete && !relevant_lambda_headers.is_empty() {
-            let owned_candidates: Vec<_> = lambda_helper_candidate_runs
+            if !enum_projection_stopped {
+                let mut projected_methods = methods.clone();
+                let mut projected_proof_indices = Vec::new();
+                for (method_index, recovery_text, markers, proof_indices) in staged_enum_projections
+                {
+                    if !projected_methods[method_index]
+                        .project_enum_switch_group(&recovery_text, markers)
+                    {
+                        enum_projection_stopped = true;
+                        for proof_index in proof_indices {
+                            enum_switch_proofs[proof_index].refusal = Some(
+                                "the emitted method could not be atomically placed in its physical member"
+                                    .to_owned(),
+                            );
+                        }
+                        break;
+                    }
+                    projected_proof_indices.extend(proof_indices);
+                }
+                if !enum_projection_stopped {
+                    methods = projected_methods;
+                    for proof_index in projected_proof_indices {
+                        enum_switch_proofs[proof_index].projected = true;
+                    }
+                }
+            }
+            if enum_projection_stopped {
+                for proof in &mut enum_switch_proofs {
+                    if proof.refusal.is_none() && !proof.projected {
+                        proof.refusal = Some(
+                            "the class-source enum projection batch stopped before commit"
+                                .to_owned(),
+                        );
+                    }
+                }
+            }
+            let mut array_projection_stopped = false;
+            if array_projection_complete && !array_constructor_candidate_runs.is_empty() {
+                let mut by_helper: Vec<(
+                    PhysicalMethodId,
+                    Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>,
+                )> = Vec::new();
+                for candidate in array_constructor_candidate_runs.iter().cloned() {
+                    if let Some((_, sites)) = by_helper
+                        .iter_mut()
+                        .find(|(helper, _)| *helper == candidate.helper)
+                    {
+                        sites.push(candidate);
+                    } else {
+                        by_helper.push((candidate.helper.clone(), vec![candidate]));
+                    }
+                }
+                for (helper, candidates) in by_helper {
+                    if array_projection_stopped {
+                        break;
+                    }
+                    let census = array_helper_census_refusal(
+                        &candidates[0],
+                        &candidates,
+                        &array_helper_use_runs,
+                        budget,
+                    );
+                    let refusal = match census {
+                        Ok(refusal) => refusal,
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            break;
+                        }
+                    };
+                    if refusal.is_none() {
+                        let collides_with_enum_switch = candidates.iter().any(|candidate| {
+                            enum_switch_proofs
+                                .iter()
+                                .any(|proof| proof.projected && proof.member == candidate.member)
+                        });
+                        let collides_with_bridge = candidates.iter().any(|candidate| {
+                            _bridge_candidate_runs.iter().any(|bridge| {
+                                bridge.presented
+                                    && bridge.member.as_ref() == Some(&candidate.member)
+                            })
+                        });
+                        if collides_with_enum_switch || collides_with_bridge {
+                            continue;
+                        }
+                        let mut helper_members = methods
+                            .iter()
+                            .filter(|method| method.item.identity == helper);
+                        let Some(helper_method) = helper_members.next() else {
+                            continue;
+                        };
+                        if helper_members.next().is_some() {
+                            continue;
+                        }
+                        let mut candidate_by_member: Vec<(
+                            PhysicalMethodId,
+                            jarde_java::report::ClassSourceArrayConstructorCandidate,
+                        )> = Vec::new();
+                        for candidate in candidates {
+                            if let Some((_, grouped)) = candidate_by_member
+                                .iter_mut()
+                                .find(|(member, _)| *member == candidate.member)
+                            {
+                                grouped.sites.extend(candidate.sites);
+                            } else {
+                                candidate_by_member.push((candidate.member.clone(), candidate));
+                            }
+                        }
+                        let mut staged = Vec::new();
+                        let mut accepted = true;
+                        for (member, candidate) in candidate_by_member {
+                            let mut member_matches = methods
+                                .iter()
+                                .enumerate()
+                                .filter(|(_, method)| method.item.identity == member);
+                            let Some((method_index, method)) = member_matches.next() else {
+                                accepted = false;
+                                break;
+                            };
+                            if member_matches.next().is_some() {
+                                accepted = false;
+                                break;
+                            }
+                            if !array_target_declaration_matches(&candidate, method) {
+                                accepted = false;
+                                break;
+                            }
+                            let class_source::ClassSourceOutcome::Recovered { report, analysis } =
+                                &method.outcome
+                            else {
+                                accepted = false;
+                                break;
+                            };
+                            if !matches!(analysis.execution, ExecutionReport::Complete { .. })
+                                || !report.outcome.produced()
+                                || report.quality != jarde_jvm::ir::Quality::Structured
+                                || !report.fallbacks.is_empty()
+                            {
+                                accepted = false;
+                                break;
+                            }
+                            let projected_body =
+                                match jarde_java::report::emit_class_source_array_constructors(
+                                    &candidate, budget,
+                                ) {
+                                    Ok(Some(text)) => text,
+                                    Ok(None) => {
+                                        accepted = false;
+                                        break;
+                                    }
+                                    Err(stop) => {
+                                        let error = enum_projection_stop_error(
+                                            stop,
+                                            "array-constructor projection",
+                                            "array_constructor_projection_stopped",
+                                        );
+                                        merge_execution(
+                                            &mut execution,
+                                            stop_execution(&error, budget),
+                                        );
+                                        diagnostics.push(stop_diagnostic(
+                                            &error,
+                                            class_provenance.clone(),
+                                        ));
+                                        accepted = false;
+                                        array_projection_stopped = true;
+                                        break;
+                                    }
+                                };
+                            let marker = format!(
+                                "// jarde: projected {} array-constructor site(s) at {:?} from exact helper {:?}",
+                                candidate.sites.len(),
+                                candidate
+                                    .sites
+                                    .iter()
+                                    .map(|site| site.use_site)
+                                    .collect::<Vec<_>>(),
+                                helper.name,
+                            );
+                            let Some(full_text) =
+                                method.array_projection_text(&projected_body, marker)
+                            else {
+                                accepted = false;
+                                break;
+                            };
+                            if let Err(error) = budget.charge(
+                                CountedBudgetDimension::OutputBytes,
+                                u64::try_from(full_text.len()).unwrap_or(u64::MAX),
+                            ) {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                accepted = false;
+                                array_projection_stopped = true;
+                                break;
+                            }
+                            staged.push((method_index, method.item.index, full_text));
+                        }
+                        let overlaps_existing = staged.iter().any(|(_, member_index, _)| {
+                            array_projection_members
+                                .iter()
+                                .any(|(_, members)| members.contains(member_index))
+                        });
+                        if accepted && !staged.is_empty() && !overlaps_existing {
+                            let marker = format!(
+                                "// jarde: omitted physical helper {:?} after proving all same-class uses are projected",
+                                helper.name,
+                            );
+                            if let Err(error) = budget.charge(
+                                CountedBudgetDimension::OutputBytes,
+                                u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                            ) {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                array_projection_stopped = true;
+                            } else {
+                                array_projection_method_texts.extend(
+                                    staged.iter().map(|(_, index, text)| (*index, text.clone())),
+                                );
+                                array_helper_method_indices.push(helper_method.item.index);
+                                array_projection_markers.push(marker);
+                                let member_indices = staged
+                                    .iter()
+                                    .map(|(method_index, member_index, _)| {
+                                        array_original_member_texts.push((
+                                            *member_index,
+                                            methods[*method_index].text.clone(),
+                                        ));
+                                        *member_index
+                                    })
+                                    .collect();
+                                array_projection_members
+                                    .push((helper_method.item.index, member_indices));
+                            }
+                        }
+                        continue;
+                    }
+                }
+            }
+            let mut lambda_projection_stopped = false;
+            // The lambda-body channel: every private synthetic `lambda$…` companion this class
+            // declares takes one of two projections — its single-return body inlined into the lambda
+            // expression that calls it (the physical method then omitted), or, for a body the inline
+            // proof refuses, a renamed non-conflicting declaration with the call rewritten. javac
+            // re-synthesizes the companion's name for the lambda expression itself, so keeping the
+            // physical name beside a lambda expression leaves the whole class uncompilable.
+            let relevant_lambda_headers: Vec<_> = read
+                .facts
+                .methods
                 .iter()
-                .filter(|candidate| {
-                    candidate.helper_owner == read.facts.this_class.raw().clone()
-                        && relevant_lambda_headers.iter().any(|header| {
+                .filter(|member| {
+                    member.name.raw().0.starts_with(b"lambda$")
+                        && member.access_flags & 0x1000 != 0
+                        && code_shell(member).is_some()
+                })
+                .collect();
+            if array_projection_complete && !relevant_lambda_headers.is_empty() {
+                let owned_candidates: Vec<_> = lambda_helper_candidate_runs
+                    .iter()
+                    .filter(|candidate| {
+                        candidate.helper_owner == read.facts.this_class.raw().clone()
+                            && relevant_lambda_headers.iter().any(|header| {
+                                candidate.helper.name == *header.name.raw()
+                                    && candidate.helper.descriptor == *header.descriptor.raw()
+                                    && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
+                                    && ((candidate.implementation_kind() == 6
+                                        && header.access_flags & 0x0008 != 0)
+                                        || (candidate.implementation_kind() == 7
+                                            && header.access_flags & 0x0008 == 0))
+                            })
+                    })
+                    .cloned()
+                    .collect();
+                let all_owned = relevant_lambda_headers.iter().all(|header| {
+                    owned_candidates.iter().any(|candidate| {
+                        candidate.helper_owner == read.facts.this_class.raw().clone()
+                            && candidate.helper.name == *header.name.raw()
+                            && candidate.helper.descriptor == *header.descriptor.raw()
+                            && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
+                            && ((candidate.implementation_kind() == 6
+                                && header.access_flags & 0x0008 != 0)
+                                || (candidate.implementation_kind() == 7
+                                    && header.access_flags & 0x0008 == 0))
+                    })
+                });
+                if !all_owned {
+                    for header in &relevant_lambda_headers {
+                        let has_exact_handle = owned_candidates.iter().any(|candidate| {
                             candidate.helper.name == *header.name.raw()
                                 && candidate.helper.descriptor == *header.descriptor.raw()
                                 && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
@@ -9029,1003 +9135,1126 @@ impl Engine {
                                     && header.access_flags & 0x0008 != 0)
                                     || (candidate.implementation_kind() == 7
                                         && header.access_flags & 0x0008 == 0))
-                        })
-                })
-                .cloned()
-                .collect();
-            let all_owned = relevant_lambda_headers.iter().all(|header| {
-                owned_candidates.iter().any(|candidate| {
-                    candidate.helper_owner == read.facts.this_class.raw().clone()
-                        && candidate.helper.name == *header.name.raw()
-                        && candidate.helper.descriptor == *header.descriptor.raw()
-                        && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
-                        && ((candidate.implementation_kind() == 6
-                            && header.access_flags & 0x0008 != 0)
-                            || (candidate.implementation_kind() == 7
-                                && header.access_flags & 0x0008 == 0))
-                })
-            });
-            if !all_owned {
-                for header in &relevant_lambda_headers {
-                    let has_exact_handle = owned_candidates.iter().any(|candidate| {
-                        candidate.helper.name == *header.name.raw()
-                            && candidate.helper.descriptor == *header.descriptor.raw()
-                            && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
-                            && ((candidate.implementation_kind() == 6
-                                && header.access_flags & 0x0008 != 0)
-                                || (candidate.implementation_kind() == 7
-                                    && header.access_flags & 0x0008 == 0))
-                    });
-                    if !has_exact_handle {
-                        let flags_mismatch = lambda_helper_candidate_runs.iter().any(|candidate| {
-                            candidate.helper_owner == read.facts.this_class.raw().clone()
-                                && candidate.helper.name == *header.name.raw()
-                                && candidate.helper.descriptor == *header.descriptor.raw()
                         });
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &String::from_utf8_lossy(&header.name.raw().0),
-                            None,
-                            if flags_mismatch {
-                                "synthetic helper access flags disagree with private/synthetic status or exact implementation handle kind"
-                            } else {
-                                "synthetic helper has no exact supported owned LambdaMetafactory site"
-                            },
-                            class_provenance.clone(),
-                        ));
+                        if !has_exact_handle {
+                            let flags_mismatch =
+                                lambda_helper_candidate_runs.iter().any(|candidate| {
+                                    candidate.helper_owner == read.facts.this_class.raw().clone()
+                                        && candidate.helper.name == *header.name.raw()
+                                        && candidate.helper.descriptor == *header.descriptor.raw()
+                                });
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &String::from_utf8_lossy(&header.name.raw().0),
+                                None,
+                                if flags_mismatch {
+                                    "synthetic helper access flags disagree with private/synthetic status or exact implementation handle kind"
+                                } else {
+                                    "synthetic helper has no exact supported owned LambdaMetafactory site"
+                                },
+                                class_provenance.clone(),
+                            ));
+                        }
                     }
                 }
-            }
-            if all_owned {
-                let mut by_helper: Vec<(
-                    PhysicalMethodId,
-                    Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>,
-                )> = Vec::new();
-                for candidate in owned_candidates {
-                    if let Some((_, grouped)) = by_helper
-                        .iter_mut()
-                        .find(|(helper, _)| *helper == candidate.helper)
-                    {
-                        grouped.push(candidate);
-                    } else {
-                        by_helper.push((candidate.helper.clone(), vec![candidate]));
+                if all_owned {
+                    let mut by_helper: Vec<(
+                        PhysicalMethodId,
+                        Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>,
+                    )> = Vec::new();
+                    for candidate in owned_candidates {
+                        if let Some((_, grouped)) = by_helper
+                            .iter_mut()
+                            .find(|(helper, _)| *helper == candidate.helper)
+                        {
+                            grouped.push(candidate);
+                        } else {
+                            by_helper.push((candidate.helper.clone(), vec![candidate]));
+                        }
                     }
-                }
-                // One decision per companion. `omit` marks the body-inlined helper whose
-                // physical method leaves the text; a rename keeps the method under a name javac
-                // never synthesizes, with the lambda's call rewritten to it.
-                struct CompanionProjection {
-                    helper: PhysicalMethodId,
-                    helper_vec_index: usize,
-                    caller_vec_index: usize,
-                    omit: bool,
-                    renamed_declaration: Option<String>,
-                    edit: jarde_java::report::ClassSourceLambdaSiteEdit,
-                    note: String,
-                }
-                let mut projections: Vec<CompanionProjection> = Vec::new();
-                for (helper, candidates) in by_helper {
-                    if lambda_projection_stopped {
-                        break;
+                    // One decision per companion. `omit` marks the body-inlined helper whose
+                    // physical method leaves the text; a rename keeps the method under a name javac
+                    // never synthesizes, with the lambda's call rewritten to it.
+                    struct CompanionProjection {
+                        helper: PhysicalMethodId,
+                        helper_vec_index: usize,
+                        caller_vec_index: usize,
+                        omit: bool,
+                        renamed_declaration: Option<String>,
+                        edit: jarde_java::report::ClassSourceLambdaSiteEdit,
+                        note: String,
                     }
-                    let helper_name = String::from_utf8_lossy(&helper.name.0).to_string();
-                    let Some((helper_vec_index, helper_method)) = methods
-                        .iter()
-                        .enumerate()
-                        .find(|(_, method)| method.item.identity == helper)
-                    else {
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &helper_name,
-                            candidates.first().map(|candidate| candidate.use_site),
-                            "the helper's own member record is absent from the presentation",
-                            class_provenance.clone(),
-                        ));
-                        continue;
-                    };
-                    // A helper the array-constructor channel already projected is not this
-                    // channel's to touch.
-                    if array_projection_members
-                        .iter()
-                        .any(|(index, _)| *index == helper_method.item.index)
-                    {
-                        continue;
-                    }
-                    let census_sites = candidates
-                        .iter()
-                        .map(|candidate| LambdaHelperUseSite {
-                            member: candidate.member.clone(),
-                            helper: RawMethodReference {
-                                owner: candidate.helper_owner.clone(),
-                                name: candidate.helper.name.clone(),
-                                descriptor: candidate.helper.descriptor.clone(),
-                            },
-                            bootstrap_index: candidate.bootstrap_index,
-                            implementation_index: candidate.implementation_index,
-                            use_site: candidate.use_site,
-                            site_cp: candidate.site_cp,
-                        })
-                        .collect::<Vec<_>>();
-                    let refusal = match lambda_helper_census_refusal(
-                        &census_sites,
-                        &array_helper_use_runs,
-                        budget,
-                    ) {
-                        Ok(refusal) => refusal,
-                        Err(error) => {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            lambda_projection_stopped = true;
+                    let mut projections: Vec<CompanionProjection> = Vec::new();
+                    for (helper, candidates) in by_helper {
+                        if lambda_projection_stopped {
                             break;
                         }
-                    };
-                    if let Some(reason) = refusal {
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &helper_name,
-                            candidates.first().map(|candidate| candidate.use_site),
-                            &reason,
-                            class_provenance.clone(),
-                        ));
-                        continue;
-                    }
-                    // Single use is the inline and rename premise alike: a companion two lambdas
-                    // share is a shape javac never writes, and renaming it would make every
-                    // other site's text claim a member the class does not declare.
-                    if candidates.len() != 1 {
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &helper_name,
-                            candidates.first().map(|candidate| candidate.use_site),
-                            &format!(
-                                "the companion serves {} lambda sites; the physical presentation is kept",
-                                candidates.len()
-                            ),
-                            class_provenance.clone(),
-                        ));
-                        continue;
-                    }
-                    let candidate = &candidates[0];
-                    let Some((caller_vec_index, caller_method)) = methods
-                        .iter()
-                        .enumerate()
-                        .find(|(_, method)| method.item.identity == candidate.member)
-                    else {
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &helper_name,
-                            Some(candidate.use_site),
-                            "the site's own member record is absent from the presentation",
-                            class_provenance.clone(),
-                        ));
-                        continue;
-                    };
-                    // A member the array-constructor channel already rewrote is not a member this
-                    // channel may re-emit from the same retained AST.
-                    if array_projection_members.iter().any(|(_, members)| {
-                        members.contains(&caller_method.item.index)
-                            || members.contains(&helper_method.item.index)
-                    }) {
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &helper_name,
-                            Some(candidate.use_site),
-                            "the site's member is already covered by an array-constructor projection",
-                            class_provenance.clone(),
-                        ));
-                        continue;
-                    }
-                    let Some(helper_ast) = method_asts
-                        .iter()
-                        .find(|(member, _, _, _)| member == &helper)
-                        .map(|(_, ast, _, _)| ast)
-                    else {
-                        diagnostics.push(lambda_helper_refusal_diagnostic(
-                            &helper_name,
-                            Some(candidate.use_site),
-                            "complete same-run helper AST is absent",
-                            class_provenance.clone(),
-                        ));
-                        continue;
-                    };
-                    let caller_parameter_names: Vec<Option<String>> = method_asts
-                        .iter()
-                        .find(|(member, _, _, _)| member == &candidate.member)
-                        .map(|(_, ast, _, _)| jarde_java::report::class_source_parameter_names(ast))
-                        .unwrap_or_default();
-                    let plan = match jarde_java::report::plan_class_source_lambda_inline(
-                        candidate,
-                        helper_ast,
-                        &caller_parameter_names,
-                        budget,
-                    ) {
-                        Ok(plan) => plan,
-                        Err(stop) => {
+                        let helper_name = String::from_utf8_lossy(&helper.name.0).to_string();
+                        let Some((helper_vec_index, helper_method)) = methods
+                            .iter()
+                            .enumerate()
+                            .find(|(_, method)| method.item.identity == helper)
+                        else {
                             diagnostics.push(lambda_helper_refusal_diagnostic(
                                 &helper_name,
-                                Some(candidate.use_site),
+                                candidates.first().map(|candidate| candidate.use_site),
+                                "the helper's own member record is absent from the presentation",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        };
+                        // A helper the array-constructor channel already projected is not this
+                        // channel's to touch.
+                        if array_projection_members
+                            .iter()
+                            .any(|(index, _)| *index == helper_method.item.index)
+                        {
+                            continue;
+                        }
+                        let census_sites = candidates
+                            .iter()
+                            .map(|candidate| LambdaHelperUseSite {
+                                member: candidate.member.clone(),
+                                helper: RawMethodReference {
+                                    owner: candidate.helper_owner.clone(),
+                                    name: candidate.helper.name.clone(),
+                                    descriptor: candidate.helper.descriptor.clone(),
+                                },
+                                bootstrap_index: candidate.bootstrap_index,
+                                implementation_index: candidate.implementation_index,
+                                use_site: candidate.use_site,
+                                site_cp: candidate.site_cp,
+                            })
+                            .collect::<Vec<_>>();
+                        let refusal = match lambda_helper_census_refusal(
+                            &census_sites,
+                            &array_helper_use_runs,
+                            budget,
+                        ) {
+                            Ok(refusal) => refusal,
+                            Err(error) => {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                lambda_projection_stopped = true;
+                                break;
+                            }
+                        };
+                        if let Some(reason) = refusal {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                candidates.first().map(|candidate| candidate.use_site),
+                                &reason,
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        }
+                        // Single use is the inline and rename premise alike: a companion two lambdas
+                        // share is a shape javac never writes, and renaming it would make every
+                        // other site's text claim a member the class does not declare.
+                        if candidates.len() != 1 {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                candidates.first().map(|candidate| candidate.use_site),
                                 &format!(
-                                    "the inline projection stopped before atomic commit: {stop:?}"
+                                    "the companion serves {} lambda sites; the physical presentation is kept",
+                                    candidates.len()
                                 ),
                                 class_provenance.clone(),
                             ));
-                            let error = enum_projection_stop_error(
-                                stop,
-                                "lambda helper projection",
-                                "lambda_helper_projection_stopped",
-                            );
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            lambda_projection_stopped = true;
-                            break;
+                            continue;
                         }
-                    };
-                    match plan {
-                        Some(plan) => projections.push(CompanionProjection {
-                            helper: helper.clone(),
-                            helper_vec_index,
-                            caller_vec_index,
-                            omit: true,
-                            renamed_declaration: None,
-                            edit: jarde_java::report::ClassSourceLambdaSiteEdit::Inline {
-                                use_site: candidate.use_site,
-                                site_cp: candidate.site_cp,
-                                params: plan.params,
-                                body: plan.body,
-                            },
-                            note: format!(
-                                "lambda companion body inlined at invokedynamic@{}",
-                                candidate.use_site
-                            ),
-                        }),
-                        None => {
-                            // The rename branch: the companion stays visible under a name javac
-                            // never synthesizes, and the lambda's call names that member.
-                            let new_name = format!("{helper_name}$jarde");
-                            let Some(renamed) =
-                                helper_method.renamed_declaration(&helper_name, &new_name)
-                            else {
+                        let candidate = &candidates[0];
+                        let Some((caller_vec_index, caller_method)) = methods
+                            .iter()
+                            .enumerate()
+                            .find(|(_, method)| method.item.identity == candidate.member)
+                        else {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                Some(candidate.use_site),
+                                "the site's own member record is absent from the presentation",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        };
+                        // A member the array-constructor channel already rewrote is not a member this
+                        // channel may re-emit from the same retained AST.
+                        if array_projection_members.iter().any(|(_, members)| {
+                            members.contains(&caller_method.item.index)
+                                || members.contains(&helper_method.item.index)
+                        }) {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                Some(candidate.use_site),
+                                "the site's member is already covered by an array-constructor projection",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        }
+                        let Some(helper_ast) = method_asts
+                            .iter()
+                            .find(|(member, _, _, _)| member == &helper)
+                            .map(|(_, ast, _, _)| ast)
+                        else {
+                            diagnostics.push(lambda_helper_refusal_diagnostic(
+                                &helper_name,
+                                Some(candidate.use_site),
+                                "complete same-run helper AST is absent",
+                                class_provenance.clone(),
+                            ));
+                            continue;
+                        };
+                        let caller_parameter_names: Vec<Option<String>> = method_asts
+                            .iter()
+                            .find(|(member, _, _, _)| member == &candidate.member)
+                            .map(|(_, ast, _, _)| {
+                                jarde_java::report::class_source_parameter_names(ast)
+                            })
+                            .unwrap_or_default();
+                        let plan = match jarde_java::report::plan_class_source_lambda_inline(
+                            candidate,
+                            helper_ast,
+                            &caller_parameter_names,
+                            budget,
+                        ) {
+                            Ok(plan) => plan,
+                            Err(stop) => {
                                 diagnostics.push(lambda_helper_refusal_diagnostic(
                                     &helper_name,
                                     Some(candidate.use_site),
-                                    "the companion's declaration does not name it exactly once, so no rename is made",
+                                    &format!(
+                                        "the inline projection stopped before atomic commit: {stop:?}"
+                                    ),
+                                    class_provenance.clone(),
+                                ));
+                                let error = enum_projection_stop_error(
+                                    stop,
+                                    "lambda helper projection",
+                                    "lambda_helper_projection_stopped",
+                                );
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                lambda_projection_stopped = true;
+                                break;
+                            }
+                        };
+                        match plan {
+                            Some(plan) => projections.push(CompanionProjection {
+                                helper: helper.clone(),
+                                helper_vec_index,
+                                caller_vec_index,
+                                omit: true,
+                                renamed_declaration: None,
+                                edit: jarde_java::report::ClassSourceLambdaSiteEdit::Inline {
+                                    use_site: candidate.use_site,
+                                    site_cp: candidate.site_cp,
+                                    params: plan.params,
+                                    body: plan.body,
+                                },
+                                note: format!(
+                                    "lambda companion body inlined at invokedynamic@{}",
+                                    candidate.use_site
+                                ),
+                            }),
+                            None => {
+                                // The rename branch: the companion stays visible under a name javac
+                                // never synthesizes, and the lambda's call names that member.
+                                let new_name = format!("{helper_name}$jarde");
+                                let Some(renamed) =
+                                    helper_method.renamed_declaration(&helper_name, &new_name)
+                                else {
+                                    diagnostics.push(lambda_helper_refusal_diagnostic(
+                                        &helper_name,
+                                        Some(candidate.use_site),
+                                        "the companion's declaration does not name it exactly once, so no rename is made",
+                                        class_provenance.clone(),
+                                    ));
+                                    continue;
+                                };
+                                if read
+                                    .facts
+                                    .methods
+                                    .iter()
+                                    .any(|member| member.name.raw().0 == new_name.as_bytes())
+                                {
+                                    diagnostics.push(lambda_helper_refusal_diagnostic(
+                                        &helper_name,
+                                        Some(candidate.use_site),
+                                        "the renamed companion name is already declared by this class",
+                                        class_provenance.clone(),
+                                    ));
+                                    continue;
+                                }
+                                projections.push(CompanionProjection {
+                                    helper: helper.clone(),
+                                    helper_vec_index,
+                                    caller_vec_index,
+                                    omit: false,
+                                    renamed_declaration: Some(renamed),
+                                    edit:
+                                        jarde_java::report::ClassSourceLambdaSiteEdit::RenameCall {
+                                            use_site: candidate.use_site,
+                                            site_cp: candidate.site_cp,
+                                            to: new_name,
+                                        },
+                                    note: format!(
+                                        "lambda companion call renamed at invokedynamic@{}",
+                                        candidate.use_site
+                                    ),
+                                });
+                            }
+                        }
+                    }
+                    // Re-emit every edited member once, from its own same-run AST. A member whose
+                    // current text is not its own AST's emission — another projection already wrote
+                    // it — keeps every helper's physical presentation instead.
+                    let mut staged_member_texts: Vec<(usize, u64, String)> = Vec::new();
+                    let mut dropped_callers: Vec<usize> = Vec::new();
+                    let mut caller_order: Vec<usize> = projections
+                        .iter()
+                        .map(|projection| projection.caller_vec_index)
+                        .collect();
+                    caller_order.sort_unstable();
+                    caller_order.dedup();
+                    for caller_vec_index in caller_order {
+                        if lambda_projection_stopped {
+                            break;
+                        }
+                        let edits: Vec<jarde_java::report::ClassSourceLambdaSiteEdit> = projections
+                            .iter()
+                            .filter(|projection| projection.caller_vec_index == caller_vec_index)
+                            .map(|projection| projection.edit.clone())
+                            .collect();
+                        let Some(projection) = projections
+                            .iter()
+                            .find(|projection| projection.caller_vec_index == caller_vec_index)
+                        else {
+                            continue;
+                        };
+                        let Some(candidate) =
+                            lambda_helper_candidate_runs.iter().find(|candidate| {
+                                candidate.member == methods[caller_vec_index].item.identity
+                            })
+                        else {
+                            dropped_callers.push(caller_vec_index);
+                            continue;
+                        };
+                        let method = &methods[caller_vec_index];
+                        let notes: Vec<String> = projections
+                            .iter()
+                            .filter(|projection| projection.caller_vec_index == caller_vec_index)
+                            .map(|projection| format!("// jarde: {}", projection.note))
+                            .collect();
+                        let emitted = match jarde_java::report::emit_class_source_lambda_member(
+                            candidate, &edits, budget,
+                        ) {
+                            Ok(Some((unmodified, edited, edited_map))) => {
+                                if !method.matches_current_text(&unmodified) {
+                                    diagnostics.push(lambda_helper_refusal_diagnostic(
+                                        &String::from_utf8_lossy(&projection.helper.name.0),
+                                        None,
+                                        "the member's current text is not its own AST's emission, so the physical presentation is kept",
+                                        class_provenance.clone(),
+                                    ));
+                                    dropped_callers.push(caller_vec_index);
+                                    continue;
+                                }
+                                staged_member_emissions.push((
+                                    method.item.index,
+                                    edited.clone(),
+                                    notes.clone(),
+                                    edited_map
+                                        .segments()
+                                        .iter()
+                                        .filter(|segment| {
+                                            segment.origin().primary().method()
+                                                == Some(&method.item.identity)
+                                        })
+                                        .map(|segment| class_source::ClassSourceBodySegment {
+                                            start: u64::try_from(segment.start())
+                                                .unwrap_or(u64::MAX),
+                                            end: u64::try_from(segment.end()).unwrap_or(u64::MAX),
+                                            bcis: segment.origin().bcis().iter().copied().collect(),
+                                        })
+                                        .collect(),
+                                ));
+                                edited
+                            }
+                            Ok(None) => {
+                                dropped_callers.push(caller_vec_index);
+                                continue;
+                            }
+                            Err(stop) => {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &String::from_utf8_lossy(&projection.helper.name.0),
+                                    None,
+                                    &format!(
+                                        "the member projection stopped before atomic commit: {stop:?}"
+                                    ),
+                                    class_provenance.clone(),
+                                ));
+                                let error = enum_projection_stop_error(
+                                    stop,
+                                    "lambda helper projection",
+                                    "lambda_helper_projection_stopped",
+                                );
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                lambda_projection_stopped = true;
+                                break;
+                            }
+                        };
+                        let Some(full_text) = method.lambda_projection_text(&emitted, &notes)
+                        else {
+                            dropped_callers.push(caller_vec_index);
+                            continue;
+                        };
+                        staged_member_texts.push((caller_vec_index, method.item.index, full_text));
+                    }
+                    // A renamed helper's own member text is composed on top of its staged body — a
+                    // helper may itself hold a projected site — or of its current text.
+                    for projection in &projections {
+                        let Some(renamed_declaration) = &projection.renamed_declaration else {
+                            continue;
+                        };
+                        let method = &methods[projection.helper_vec_index];
+                        let marker = format!(
+                            "// jarde: renamed physical lambda helper {:?} to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)",
+                            String::from_utf8_lossy(&projection.helper.name.0)
+                        );
+                        let base = staged_member_texts
+                            .iter()
+                            .find(|(_, index, _)| *index == method.item.index)
+                            .map(|(_, _, text)| text.clone());
+                        let Some(text) = method.lambda_rename_text(
+                            renamed_declaration,
+                            &marker,
+                            base.as_deref(),
+                        ) else {
+                            continue;
+                        };
+                        match base {
+                            Some(_) => {
+                                if let Some(entry) = staged_member_texts
+                                    .iter_mut()
+                                    .find(|(_, index, _)| *index == method.item.index)
+                                {
+                                    entry.2 = text;
+                                }
+                            }
+                            None => staged_member_texts.push((
+                                projection.helper_vec_index,
+                                method.item.index,
+                                text,
+                            )),
+                        }
+                        // The renamed member's placed text is a rename composition, not a body
+                        // placement: its emitted body is no longer the text the report carries, so
+                        // no later channel may re-spell through it.
+                        staged_member_emissions
+                            .retain(|(member, _, _, _)| *member != method.item.index);
+                    }
+                    // Pay for every staged text and every marker before any member changes; a
+                    // refusal or a stop leaves the class exactly as the recovery wrote it.
+                    let mut commit_ready = !lambda_projection_stopped;
+                    if commit_ready {
+                        for (_, _, text) in &staged_member_texts {
+                            if let Err(error) = budget.charge(
+                                CountedBudgetDimension::OutputBytes,
+                                u64::try_from(text.len()).unwrap_or(u64::MAX),
+                            ) {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                commit_ready = false;
+                                break;
+                            }
+                        }
+                    }
+                    let mut commit_plan: Vec<(String, u64, bool, Vec<u64>)> = Vec::new();
+                    if commit_ready {
+                        'plan: for projection in &projections {
+                            let helper_index = methods[projection.helper_vec_index].item.index;
+                            let caller_index = methods[projection.caller_vec_index].item.index;
+                            let staged_of = |member_index: u64| {
+                                staged_member_texts
+                                    .iter()
+                                    .find(|(_, index, _)| *index == member_index)
+                            };
+                            let helper_name = String::from_utf8_lossy(&projection.helper.name.0);
+                            if dropped_callers.contains(&projection.caller_vec_index) {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &helper_name,
+                                    None,
+                                    "the companion's site member could not take its projection; the physical presentation is kept",
+                                    class_provenance.clone(),
+                                ));
+                                continue;
+                            }
+                            let (marker, group_members): (String, Vec<u64>) = if projection.omit {
+                                (
+                                    format!(
+                                        "// jarde: omitted physical lambda helper {helper_name:?} after proving its single class-wide use"
+                                    ),
+                                    vec![caller_index],
+                                )
+                            } else if staged_of(helper_index).is_some() {
+                                (
+                                    format!(
+                                        "// jarde: renamed physical lambda helper {helper_name:?} after proving its single class-wide use"
+                                    ),
+                                    vec![helper_index, caller_index],
+                                )
+                            } else {
+                                // The helper member's own rename text could not be composed: every
+                                // physical spelling stays.
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &helper_name,
+                                    None,
+                                    "the companion's renamed declaration could not be composed; the physical presentation is kept",
                                     class_provenance.clone(),
                                 ));
                                 continue;
                             };
-                            if read
-                                .facts
-                                .methods
-                                .iter()
-                                .any(|member| member.name.raw().0 == new_name.as_bytes())
-                            {
+                            if let Err(error) = budget.charge(
+                                CountedBudgetDimension::OutputBytes,
+                                u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                            ) {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                commit_ready = false;
+                                break 'plan;
+                            }
+                            commit_plan.push((
+                                marker,
+                                helper_index,
+                                projection.omit,
+                                group_members,
+                            ));
+                        }
+                    }
+                    if commit_ready && !commit_plan.is_empty() {
+                        let mut committed_members: Vec<u64> = Vec::new();
+                        for (marker, helper_index, omit, group_members) in commit_plan {
+                            let mut group_texts = Vec::new();
+                            let mut complete = true;
+                            for member_index in &group_members {
+                                if committed_members.contains(member_index) {
+                                    continue;
+                                }
+                                match staged_member_texts
+                                    .iter()
+                                    .find(|(_, index, _)| *index == *member_index)
+                                {
+                                    Some((vec_index, _, text)) => {
+                                        group_texts.push((*member_index, *vec_index, text.clone()));
+                                    }
+                                    None => {
+                                        complete = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if !complete {
                                 diagnostics.push(lambda_helper_refusal_diagnostic(
-                                    &helper_name,
-                                    Some(candidate.use_site),
-                                    "the renamed companion name is already declared by this class",
+                                    &String::from_utf8_lossy(
+                                        &methods
+                                            .iter()
+                                            .find(|method| method.item.index == helper_index)
+                                            .map(|method| method.item.identity.name.0.clone())
+                                            .unwrap_or_default(),
+                                    ),
+                                    None,
+                                    "the companion's group text could not be staged; the physical presentation is kept",
                                     class_provenance.clone(),
                                 ));
                                 continue;
                             }
-                            projections.push(CompanionProjection {
-                                helper: helper.clone(),
-                                helper_vec_index,
-                                caller_vec_index,
-                                omit: false,
-                                renamed_declaration: Some(renamed),
-                                edit: jarde_java::report::ClassSourceLambdaSiteEdit::RenameCall {
-                                    use_site: candidate.use_site,
-                                    site_cp: candidate.site_cp,
-                                    to: new_name,
-                                },
-                                note: format!(
-                                    "lambda companion call renamed at invokedynamic@{}",
-                                    candidate.use_site
-                                ),
-                            });
+                            for (member_index, vec_index, text) in group_texts {
+                                array_projection_method_texts.push((member_index, text.clone()));
+                                array_original_member_texts
+                                    .push((member_index, methods[vec_index].text.clone()));
+                                committed_members.push(member_index);
+                            }
+                            if omit {
+                                array_helper_method_indices.push(helper_index);
+                            }
+                            array_projection_markers.push(marker);
+                            array_projection_members.push((helper_index, group_members));
                         }
+                        // Only members whose staged text the commit actually placed stay
+                        // re-spellable: a staged emission whose group could not commit is not the
+                        // text the report carries.
+                        staged_member_emissions
+                            .retain(|(member, _, _, _)| committed_members.contains(member));
+                    } else {
+                        staged_member_emissions.clear();
                     }
                 }
-                // Re-emit every edited member once, from its own same-run AST. A member whose
-                // current text is not its own AST's emission — another projection already wrote
-                // it — keeps every helper's physical presentation instead.
-                let mut staged_member_texts: Vec<(usize, u64, String)> = Vec::new();
-                let mut dropped_callers: Vec<usize> = Vec::new();
-                let mut caller_order: Vec<usize> = projections
-                    .iter()
-                    .map(|projection| projection.caller_vec_index)
-                    .collect();
-                caller_order.sort_unstable();
-                caller_order.dedup();
-                for caller_vec_index in caller_order {
-                    if lambda_projection_stopped {
+            }
+            let mut bridge_proofs = prove_class_source_bridges(
+                content,
+                &environment,
+                &request.environment.policy,
+                &definition,
+                &read.bytes,
+                &read.facts,
+                &methods,
+                &_bridge_candidate_runs,
+                class_scope.is_some(),
+                &declaration.header_interface_arguments,
+                &mut execution,
+                budget,
+            );
+            // Stage every proof note and pay for all of its output before changing a member. If a
+            // later note cannot be funded (or cancellation is observed by the charge), the original
+            // method texts remain together as a complete, unprojected prefix.
+            let staged_bridge_projections =
+                stage_class_source_bridge_projections(&bridge_proofs, &methods);
+            let mut bridge_projection_ready = staged_bridge_projections.is_some();
+            if let Some(staged) = &staged_bridge_projections {
+                for (_, marker) in staged {
+                    if let Err(error) = budget.charge(
+                        CountedBudgetDimension::OutputBytes,
+                        u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                    ) {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        bridge_projection_ready = false;
                         break;
                     }
-                    let edits: Vec<jarde_java::report::ClassSourceLambdaSiteEdit> = projections
-                        .iter()
-                        .filter(|projection| projection.caller_vec_index == caller_vec_index)
-                        .map(|projection| projection.edit.clone())
-                        .collect();
-                    let Some(projection) = projections
-                        .iter()
-                        .find(|projection| projection.caller_vec_index == caller_vec_index)
-                    else {
-                        continue;
-                    };
-                    let Some(candidate) = lambda_helper_candidate_runs.iter().find(|candidate| {
-                        candidate.member == methods[caller_vec_index].item.identity
-                    }) else {
-                        dropped_callers.push(caller_vec_index);
-                        continue;
-                    };
-                    let method = &methods[caller_vec_index];
-                    let notes: Vec<String> = projections
-                        .iter()
-                        .filter(|projection| projection.caller_vec_index == caller_vec_index)
-                        .map(|projection| format!("// jarde: {}", projection.note))
-                        .collect();
-                    let emitted = match jarde_java::report::emit_class_source_lambda_member(
-                        candidate, &edits, budget,
-                    ) {
-                        Ok(Some((unmodified, edited, edited_map))) => {
-                            if !method.matches_current_text(&unmodified) {
-                                diagnostics.push(lambda_helper_refusal_diagnostic(
-                                    &String::from_utf8_lossy(&projection.helper.name.0),
-                                    None,
-                                    "the member's current text is not its own AST's emission, so the physical presentation is kept",
-                                    class_provenance.clone(),
-                                ));
-                                dropped_callers.push(caller_vec_index);
-                                continue;
-                            }
-                            staged_member_emissions.push((
-                                method.item.index,
-                                edited.clone(),
-                                notes.clone(),
-                                edited_map
-                                    .segments()
-                                    .iter()
-                                    .filter(|segment| {
-                                        segment.origin().primary().method()
-                                            == Some(&method.item.identity)
-                                    })
-                                    .map(|segment| class_source::ClassSourceBodySegment {
-                                        start: u64::try_from(segment.start()).unwrap_or(u64::MAX),
-                                        end: u64::try_from(segment.end()).unwrap_or(u64::MAX),
-                                        bcis: segment.origin().bcis().iter().copied().collect(),
-                                    })
-                                    .collect(),
-                            ));
-                            edited
-                        }
-                        Ok(None) => {
-                            dropped_callers.push(caller_vec_index);
-                            continue;
-                        }
-                        Err(stop) => {
-                            diagnostics.push(lambda_helper_refusal_diagnostic(
-                                &String::from_utf8_lossy(&projection.helper.name.0),
-                                None,
-                                &format!(
-                                    "the member projection stopped before atomic commit: {stop:?}"
-                                ),
-                                class_provenance.clone(),
-                            ));
-                            let error = enum_projection_stop_error(
-                                stop,
-                                "lambda helper projection",
-                                "lambda_helper_projection_stopped",
-                            );
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            lambda_projection_stopped = true;
-                            break;
-                        }
-                    };
-                    let Some(full_text) = method.lambda_projection_text(&emitted, &notes) else {
-                        dropped_callers.push(caller_vec_index);
-                        continue;
-                    };
-                    staged_member_texts.push((caller_vec_index, method.item.index, full_text));
-                }
-                // A renamed helper's own member text is composed on top of its staged body — a
-                // helper may itself hold a projected site — or of its current text.
-                for projection in &projections {
-                    let Some(renamed_declaration) = &projection.renamed_declaration else {
-                        continue;
-                    };
-                    let method = &methods[projection.helper_vec_index];
-                    let marker = format!(
-                        "// jarde: renamed physical lambda helper {:?} to its non-conflicting source name (javac re-synthesizes the physical one beside the lambda expression)",
-                        String::from_utf8_lossy(&projection.helper.name.0)
-                    );
-                    let base = staged_member_texts
-                        .iter()
-                        .find(|(_, index, _)| *index == method.item.index)
-                        .map(|(_, _, text)| text.clone());
-                    let Some(text) =
-                        method.lambda_rename_text(renamed_declaration, &marker, base.as_deref())
-                    else {
-                        continue;
-                    };
-                    match base {
-                        Some(_) => {
-                            if let Some(entry) = staged_member_texts
-                                .iter_mut()
-                                .find(|(_, index, _)| *index == method.item.index)
-                            {
-                                entry.2 = text;
-                            }
-                        }
-                        None => staged_member_texts.push((
-                            projection.helper_vec_index,
-                            method.item.index,
-                            text,
-                        )),
-                    }
-                    // The renamed member's placed text is a rename composition, not a body
-                    // placement: its emitted body is no longer the text the report carries, so
-                    // no later channel may re-spell through it.
-                    staged_member_emissions
-                        .retain(|(member, _, _, _)| *member != method.item.index);
-                }
-                // Pay for every staged text and every marker before any member changes; a
-                // refusal or a stop leaves the class exactly as the recovery wrote it.
-                let mut commit_ready = !lambda_projection_stopped;
-                if commit_ready {
-                    for (_, _, text) in &staged_member_texts {
-                        if let Err(error) = budget.charge(
-                            CountedBudgetDimension::OutputBytes,
-                            u64::try_from(text.len()).unwrap_or(u64::MAX),
-                        ) {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            commit_ready = false;
-                            break;
-                        }
-                    }
-                }
-                let mut commit_plan: Vec<(String, u64, bool, Vec<u64>)> = Vec::new();
-                if commit_ready {
-                    'plan: for projection in &projections {
-                        let helper_index = methods[projection.helper_vec_index].item.index;
-                        let caller_index = methods[projection.caller_vec_index].item.index;
-                        let staged_of = |member_index: u64| {
-                            staged_member_texts
-                                .iter()
-                                .find(|(_, index, _)| *index == member_index)
-                        };
-                        let helper_name = String::from_utf8_lossy(&projection.helper.name.0);
-                        if dropped_callers.contains(&projection.caller_vec_index) {
-                            diagnostics.push(lambda_helper_refusal_diagnostic(
-                                &helper_name,
-                                None,
-                                "the companion's site member could not take its projection; the physical presentation is kept",
-                                class_provenance.clone(),
-                            ));
-                            continue;
-                        }
-                        let (marker, group_members): (String, Vec<u64>) = if projection.omit {
-                            (
-                                format!(
-                                    "// jarde: omitted physical lambda helper {helper_name:?} after proving its single class-wide use"
-                                ),
-                                vec![caller_index],
-                            )
-                        } else if staged_of(helper_index).is_some() {
-                            (
-                                format!(
-                                    "// jarde: renamed physical lambda helper {helper_name:?} after proving its single class-wide use"
-                                ),
-                                vec![helper_index, caller_index],
-                            )
-                        } else {
-                            // The helper member's own rename text could not be composed: every
-                            // physical spelling stays.
-                            diagnostics.push(lambda_helper_refusal_diagnostic(
-                                &helper_name,
-                                None,
-                                "the companion's renamed declaration could not be composed; the physical presentation is kept",
-                                class_provenance.clone(),
-                            ));
-                            continue;
-                        };
-                        if let Err(error) = budget.charge(
-                            CountedBudgetDimension::OutputBytes,
-                            u64::try_from(marker.len()).unwrap_or(u64::MAX),
-                        ) {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            commit_ready = false;
-                            break 'plan;
-                        }
-                        commit_plan.push((marker, helper_index, projection.omit, group_members));
-                    }
-                }
-                if commit_ready && !commit_plan.is_empty() {
-                    let mut committed_members: Vec<u64> = Vec::new();
-                    for (marker, helper_index, omit, group_members) in commit_plan {
-                        let mut group_texts = Vec::new();
-                        let mut complete = true;
-                        for member_index in &group_members {
-                            if committed_members.contains(member_index) {
-                                continue;
-                            }
-                            match staged_member_texts
-                                .iter()
-                                .find(|(_, index, _)| *index == *member_index)
-                            {
-                                Some((vec_index, _, text)) => {
-                                    group_texts.push((*member_index, *vec_index, text.clone()));
-                                }
-                                None => {
-                                    complete = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if !complete {
-                            diagnostics.push(lambda_helper_refusal_diagnostic(
-                                &String::from_utf8_lossy(
-                                    &methods
-                                        .iter()
-                                        .find(|method| method.item.index == helper_index)
-                                        .map(|method| method.item.identity.name.0.clone())
-                                        .unwrap_or_default(),
-                                ),
-                                None,
-                                "the companion's group text could not be staged; the physical presentation is kept",
-                                class_provenance.clone(),
-                            ));
-                            continue;
-                        }
-                        for (member_index, vec_index, text) in group_texts {
-                            array_projection_method_texts.push((member_index, text.clone()));
-                            array_original_member_texts
-                                .push((member_index, methods[vec_index].text.clone()));
-                            committed_members.push(member_index);
-                        }
-                        if omit {
-                            array_helper_method_indices.push(helper_index);
-                        }
-                        array_projection_markers.push(marker);
-                        array_projection_members.push((helper_index, group_members));
-                    }
-                    // Only members whose staged text the commit actually placed stay
-                    // re-spellable: a staged emission whose group could not commit is not the
-                    // text the report carries.
-                    staged_member_emissions
-                        .retain(|(member, _, _, _)| committed_members.contains(member));
-                } else {
-                    staged_member_emissions.clear();
                 }
             }
-        }
-        let mut bridge_proofs = prove_class_source_bridges(
-            content,
-            &environment,
-            &request.environment.policy,
-            &definition,
-            &read.bytes,
-            &read.facts,
-            &methods,
-            &_bridge_candidate_runs,
-            class_scope.is_some(),
-            &declaration.header_interface_arguments,
-            &mut execution,
-            budget,
-        );
-        // Stage every proof note and pay for all of its output before changing a member. If a
-        // later note cannot be funded (or cancellation is observed by the charge), the original
-        // method texts remain together as a complete, unprojected prefix.
-        let staged_bridge_projections =
-            stage_class_source_bridge_projections(&bridge_proofs, &methods);
-        let mut bridge_projection_ready = staged_bridge_projections.is_some();
-        if let Some(staged) = &staged_bridge_projections {
-            for (_, marker) in staged {
-                if let Err(error) = budget.charge(
-                    CountedBudgetDimension::OutputBytes,
-                    u64::try_from(marker.len()).unwrap_or(u64::MAX),
+            if bridge_projection_ready {
+                if let Some(staged) = staged_bridge_projections {
+                    for (method_index, marker) in staged {
+                        methods[method_index].project_bridge(marker);
+                    }
+                    for proof in &mut bridge_proofs {
+                        proof.projected = proof.admitted;
+                    }
+                }
+            }
+            if let Some(stop) = &read.facts.stopped_at {
+                merge_execution(&mut execution, member_stop_execution(stop, budget));
+            }
+            let initializer_scope =
+                read.facts.access_flags & (ACC_ANNOTATION | 0x4000 | 0x8000) == 0;
+            let mut initializer_proof = if initializer_scope {
+                match prove_static_initializer_group(
+                    &declaration,
+                    &read.facts.fields,
+                    read.facts.field_count,
+                    read.facts.stopped_at.is_none(),
+                    &fields,
+                    &constant_value_spellable,
+                    &read.facts.methods,
+                    read.facts.method_count,
+                    read.facts.stopped_at.is_none(),
+                    &methods,
+                    &initializer_candidate_runs,
+                    budget,
                 ) {
-                    merge_execution(&mut execution, stop_execution(&error, budget));
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    bridge_projection_ready = false;
-                    break;
+                    Ok(proof) => proof,
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ClassSourceInitializerProof::Refused {
+                            reason: format!("initializer proof stopped: {error}"),
+                        }
+                    }
                 }
-            }
-        }
-        if bridge_projection_ready {
-            if let Some(staged) = staged_bridge_projections {
-                for (method_index, marker) in staged {
-                    methods[method_index].project_bridge(marker);
-                }
-                for proof in &mut bridge_proofs {
-                    proof.projected = proof.admitted;
-                }
-            }
-        }
-        if let Some(stop) = &read.facts.stopped_at {
-            merge_execution(&mut execution, member_stop_execution(stop, budget));
-        }
-        let initializer_scope = read.facts.access_flags & (ACC_ANNOTATION | 0x4000 | 0x8000) == 0;
-        let mut initializer_proof = if initializer_scope {
-            match prove_static_initializer_group(
-                &declaration,
-                &read.facts.fields,
-                read.facts.field_count,
-                read.facts.stopped_at.is_none(),
-                &fields,
-                &constant_value_spellable,
-                &read.facts.methods,
-                read.facts.method_count,
-                read.facts.stopped_at.is_none(),
+            } else {
+                ClassSourceInitializerProof::NotApplicable
+            };
+            let initializer_field_order = match project_static_initializer_group(
+                &initializer_proof,
+                &declaration.item.declaration.this_class.raw().0,
+                &nested_class_members,
+                &mut fields,
                 &methods,
                 &initializer_candidate_runs,
                 budget,
             ) {
-                Ok(proof) => proof,
-                Err(error) => {
-                    let stop = stop_execution(&error, budget);
-                    merge_execution(&mut execution, stop);
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    ClassSourceInitializerProof::Refused {
-                        reason: format!("initializer proof stopped: {error}"),
-                    }
+                Ok(order) => order,
+                Err(InitializerProjectionFailure::Refused(reason)) => {
+                    initializer_proof = ClassSourceInitializerProof::Refused { reason };
+                    None
                 }
-            }
-        } else {
-            ClassSourceInitializerProof::NotApplicable
-        };
-        let initializer_field_order = match project_static_initializer_group(
-            &initializer_proof,
-            &declaration.item.declaration.this_class.raw().0,
-            &nested_class_members,
-            &mut fields,
-            &methods,
-            &initializer_candidate_runs,
-            budget,
-        ) {
-            Ok(order) => order,
-            Err(InitializerProjectionFailure::Refused(reason)) => {
-                initializer_proof = ClassSourceInitializerProof::Refused { reason };
-                None
-            }
-            Err(InitializerProjectionFailure::Stopped(stop)) => {
-                let (stop, diagnostic) =
-                    initializer_projection_stop(&stop, budget, class_provenance.clone());
-                merge_execution(&mut execution, stop);
-                diagnostics.push(diagnostic);
-                None
-            }
-            Err(InitializerProjectionFailure::Error(error)) => {
-                merge_execution(&mut execution, stop_execution(&error, budget));
-                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                None
-            }
-        };
-        if capture_instance_array_ctor_asts
-            && !ended
-            && matches!(&execution, ExecutionReport::Complete { .. })
-        {
-            if let Err(error) = budget.charge(
-                CountedBudgetDimension::IrItems,
-                u64::try_from(staged_member_emissions.len()).unwrap_or(u64::MAX),
-            ) {
-                merge_execution(&mut execution, stop_execution(&error, budget));
-                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                ended = true;
-            }
-            let mut already_staged_members = Vec::with_capacity(staged_member_emissions.len());
-            for (member, _, _, _) in &staged_member_emissions {
-                if let Err(error) = budget.charge(CountedBudgetDimension::AnalysisSteps, 1) {
+                Err(InitializerProjectionFailure::Stopped(stop)) => {
+                    let (stop, diagnostic) =
+                        initializer_projection_stop(&stop, budget, class_provenance.clone());
+                    merge_execution(&mut execution, stop);
+                    diagnostics.push(diagnostic);
+                    None
+                }
+                Err(InitializerProjectionFailure::Error(error)) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    None
+                }
+            };
+            if capture_instance_array_ctor_asts
+                && !ended
+                && matches!(&execution, ExecutionReport::Complete { .. })
+            {
+                if let Err(error) = budget.charge(
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(staged_member_emissions.len()).unwrap_or(u64::MAX),
+                ) {
                     merge_execution(&mut execution, stop_execution(&error, budget));
                     diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                     ended = true;
-                    break;
                 }
-                already_staged_members.push(*member);
-            }
-            if !ended {
-                match project_instance_array_initializer_group(
-                    &declaration,
-                    &read.facts.methods,
-                    &mut fields,
-                    &methods,
-                    &method_asts,
-                    &read.facts.fields,
-                    initializer_field_order.as_deref(),
-                    &mut array_projection_method_texts,
-                    &already_staged_members,
-                    budget,
-                ) {
-                    Ok(()) => {}
-                    Err(InitializerProjectionFailure::Refused(_)) => {}
-                    Err(InitializerProjectionFailure::Stopped(stop)) => {
-                        let (stop, diagnostic) =
-                            initializer_projection_stop(&stop, budget, class_provenance.clone());
-                        merge_execution(&mut execution, stop);
-                        diagnostics.push(diagnostic);
-                    }
-                    Err(InitializerProjectionFailure::Error(error)) => {
+                let mut already_staged_members = Vec::with_capacity(staged_member_emissions.len());
+                for (member, _, _, _) in &staged_member_emissions {
+                    if let Err(error) = budget.charge(CountedBudgetDimension::AnalysisSteps, 1) {
                         merge_execution(&mut execution, stop_execution(&error, budget));
                         diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
                     }
+                    already_staged_members.push(*member);
                 }
-            }
-        }
-        let mut enum_constant_proof = if read.facts.stopped_at.is_some()
-            || !matches!(&execution, ExecutionReport::Complete { .. })
-        {
-            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                reason: "the class-source member run stopped before the complete enum proof"
-                    .to_owned(),
-            }
-        } else {
-            match crate::enum_constants::prove_group(
-                &declaration,
-                prepared.as_ref().map_or((0, 0), |prepared| {
-                    (
-                        prepared.class_facts().major_version,
-                        prepared.class_facts().minor_version,
-                    )
-                }),
-                &read.facts.fields,
-                read.facts.field_count,
-                read.facts.stopped_at.is_none(),
-                &fields,
-                &read.facts.methods,
-                read.facts.method_count,
-                read.facts.stopped_at.is_none(),
-                &methods,
-                &enum_code_candidates,
-                &initializer_candidate_runs,
-                &enum_constructor_candidate_runs,
-                budget,
-            ) {
-                Ok(proof) => proof,
-                Err(error) => {
-                    let stop = stop_execution(&error, budget);
-                    merge_execution(&mut execution, stop);
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                        reason: format!("enum constant proof stopped: {error}"),
-                    }
-                }
-            }
-        };
-        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
-            crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
-        ) = &enum_constant_proof
-        {
-            let clinit_index = usize::try_from(group.initializer_method_index).ok();
-            let clinit = clinit_index.and_then(|index| methods.get(index));
-            let certification = match clinit {
-                Some(clinit) => certify_enum_int_static_fields(
-                    content,
-                    &environment,
-                    &read.facts.this_class.raw().0,
-                    &read.bytes,
-                    &read.facts.attributes,
-                    &pool,
-                    &group.constants,
-                    &clinit.item.identity,
-                    &mut execution,
-                    budget,
-                ),
-                None => Ok(Some(
-                    "the proved enum initializer has no same-run physical method identity"
-                        .to_owned(),
-                )),
-            };
-            match certification {
-                Ok(None) => {}
-                Ok(Some(reason)) => {
-                    enum_constant_proof = if matches!(&execution, ExecutionReport::Complete { .. })
-                    {
-                        crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
-                    } else {
-                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped { reason }
-                    };
-                }
-                Err(error) => {
-                    let stop = stop_execution(&error, budget);
-                    merge_execution(&mut execution, stop.clone());
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    enum_constant_proof =
-                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                            reason: format!("enum int field certification stopped: {error}"),
-                        };
-                }
-            }
-        }
-        let mut enum_constant_body_relations = if capture_enum_group_code
-            && matches!(
-                &enum_constant_proof,
-                crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
-            )
-            && structure_complete
-            && matches!(&execution, ExecutionReport::Complete { .. })
-        {
-            let enum_interfaces = read
-                .facts
-                .interfaces
-                .iter()
-                .map(|name| name.raw().0.clone())
-                .collect::<Vec<_>>();
-            match resolve_enum_constant_body_relations(
-                content,
-                &environment,
-                &assembly_context,
-                &pool,
-                &read.facts.this_class.raw().0,
-                read.facts.access_flags,
-                &enum_interfaces,
-                &read.facts.fields,
-                &fields,
-                &read.facts.methods,
-                &enum_code_candidates,
-                &anonymous_allocation_scans,
-                &mut execution,
-                budget,
-            ) {
-                Ok(mut relations) => {
-                    match census_enum_constant_body_uses(
-                        content,
-                        &environment,
-                        &definition,
-                        &mut relations,
-                        &mut execution,
+                if !ended {
+                    match project_instance_array_initializer_group(
+                        &declaration,
+                        &read.facts.methods,
+                        &mut fields,
+                        &methods,
+                        &method_asts,
+                        &read.facts.fields,
+                        initializer_field_order.as_deref(),
+                        &mut array_projection_method_texts,
+                        &already_staged_members,
                         budget,
                     ) {
-                        Ok(()) => {
-                            if relations.iter().any(|relation| {
-                                relation.use_census.scans.iter().any(|scan| {
-                                    !matches!(&scan.execution, ExecutionReport::Complete { .. })
-                                })
-                            }) {
+                        Ok(()) => {}
+                        Err(InitializerProjectionFailure::Refused(_)) => {}
+                        Err(InitializerProjectionFailure::Stopped(stop)) => {
+                            let (stop, diagnostic) = initializer_projection_stop(
+                                &stop,
+                                budget,
+                                class_provenance.clone(),
+                            );
+                            merge_execution(&mut execution, stop);
+                            diagnostics.push(diagnostic);
+                        }
+                        Err(InitializerProjectionFailure::Error(error)) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        }
+                    }
+                }
+            }
+            let mut enum_constant_proof = if read.facts.stopped_at.is_some()
+                || !matches!(&execution, ExecutionReport::Complete { .. })
+            {
+                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                    reason: "the class-source member run stopped before the complete enum proof"
+                        .to_owned(),
+                }
+            } else {
+                match crate::enum_constants::prove_group(
+                    &declaration,
+                    prepared.as_ref().map_or((0, 0), |prepared| {
+                        (
+                            prepared.class_facts().major_version,
+                            prepared.class_facts().minor_version,
+                        )
+                    }),
+                    &read.facts.fields,
+                    read.facts.field_count,
+                    read.facts.stopped_at.is_none(),
+                    &fields,
+                    &read.facts.methods,
+                    read.facts.method_count,
+                    read.facts.stopped_at.is_none(),
+                    &methods,
+                    &enum_code_candidates,
+                    &initializer_candidate_runs,
+                    &enum_constructor_candidate_runs,
+                    budget,
+                ) {
+                    Ok(proof) => proof,
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                            reason: format!("enum constant proof stopped: {error}"),
+                        }
+                    }
+                }
+            };
+            if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+            ) = &enum_constant_proof
+            {
+                let clinit_index = usize::try_from(group.initializer_method_index).ok();
+                let clinit = clinit_index.and_then(|index| methods.get(index));
+                let certification = match clinit {
+                    Some(clinit) => certify_enum_int_static_fields(
+                        content,
+                        &environment,
+                        &read.facts.this_class.raw().0,
+                        &read.bytes,
+                        &read.facts.attributes,
+                        &pool,
+                        &group.constants,
+                        &clinit.item.identity,
+                        &mut execution,
+                        budget,
+                    ),
+                    None => Ok(Some(
+                        "the proved enum initializer has no same-run physical method identity"
+                            .to_owned(),
+                    )),
+                };
+                match certification {
+                    Ok(None) => {}
+                    Ok(Some(reason)) => {
+                        enum_constant_proof =
+                            if matches!(&execution, ExecutionReport::Complete { .. }) {
+                                crate::enum_constants::ClassSourceEnumConstantProof::Refused {
+                                    reason,
+                                }
+                            } else {
+                                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                    reason,
+                                }
+                            };
+                    }
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop.clone());
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: format!("enum int field certification stopped: {error}"),
+                            };
+                    }
+                }
+            }
+            let mut enum_constant_body_relations = if capture_enum_group_code
+                && matches!(
+                    &enum_constant_proof,
+                    crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+                )
+                && structure_complete
+                && matches!(&execution, ExecutionReport::Complete { .. })
+            {
+                let enum_interfaces = read
+                    .facts
+                    .interfaces
+                    .iter()
+                    .map(|name| name.raw().0.clone())
+                    .collect::<Vec<_>>();
+                match resolve_enum_constant_body_relations(
+                    content,
+                    &environment,
+                    &assembly_context,
+                    &pool,
+                    &read.facts.this_class.raw().0,
+                    read.facts.access_flags,
+                    &enum_interfaces,
+                    &read.facts.fields,
+                    &fields,
+                    &read.facts.methods,
+                    &enum_code_candidates,
+                    &anonymous_allocation_scans,
+                    &mut execution,
+                    budget,
+                ) {
+                    Ok(mut relations) => {
+                        match census_enum_constant_body_uses(
+                            content,
+                            &environment,
+                            &definition,
+                            &mut relations,
+                            &mut execution,
+                            budget,
+                        ) {
+                            Ok(()) => {
+                                if relations.iter().any(|relation| {
+                                    relation.use_census.scans.iter().any(|scan| {
+                                        !matches!(&scan.execution, ExecutionReport::Complete { .. })
+                                    })
+                                }) {
+                                    for relation in &mut relations {
+                                        relation.use_census.exclusive = false;
+                                        relation.use_census.refusal =
+                                            Some("the group owner census stopped".to_owned());
+                                    }
+                                    enum_constant_proof =
+                                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                            reason: "enum constant subclass use census stopped"
+                                                .to_owned(),
+                                        };
+                                }
+                                relations
+                            }
+                            Err(error) => {
                                 for relation in &mut relations {
                                     relation.use_census.exclusive = false;
                                     relation.use_census.refusal =
                                         Some("the group owner census stopped".to_owned());
                                 }
+                                let stop = stop_execution(&error, budget);
+                                merge_execution(&mut execution, stop);
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                                 enum_constant_proof =
                                     crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                        reason: "enum constant subclass use census stopped"
-                                            .to_owned(),
+                                        reason: format!(
+                                            "enum constant subclass use census stopped: {error}"
+                                        ),
                                     };
+                                relations
                             }
-                            relations
+                        }
+                    }
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop.clone());
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: format!("enum constant subclass relation stopped: {error}"),
+                            };
+                        Vec::new()
+                    }
+                }
+            } else {
+                Vec::new()
+            };
+            if matches!(
+                &enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+            ) {
+                for relation in &mut enum_constant_body_relations {
+                    if !relation.use_census.exclusive || relation.constructor_bridge.is_err() {
+                        continue;
+                    }
+                    match prove_enum_constant_child_body(
+                        self,
+                        content,
+                        request,
+                        relation,
+                        &read.facts.methods,
+                        budget,
+                    ) {
+                        Ok((proof, child_execution)) => {
+                            merge_execution(&mut execution, child_execution);
+                            relation.body_proof = Some(proof.map(std::sync::Arc::from));
                         }
                         Err(error) => {
-                            for relation in &mut relations {
-                                relation.use_census.exclusive = false;
-                                relation.use_census.refusal =
-                                    Some("the group owner census stopped".to_owned());
-                            }
                             let stop = stop_execution(&error, budget);
                             merge_execution(&mut execution, stop);
                             diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                             enum_constant_proof =
                                 crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
                                     reason: format!(
-                                        "enum constant subclass use census stopped: {error}"
+                                        "enum constant subclass body proof stopped: {error}"
                                     ),
                                 };
-                            relations
+                            break;
                         }
                     }
-                }
-                Err(error) => {
-                    let stop = stop_execution(&error, budget);
-                    merge_execution(&mut execution, stop.clone());
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    enum_constant_proof =
-                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                            reason: format!("enum constant subclass relation stopped: {error}"),
-                        };
-                    Vec::new()
+                    if !matches!(&execution, ExecutionReport::Complete { .. }) {
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: "enum constant subclass body recovery stopped".to_owned(),
+                            };
+                        break;
+                    }
                 }
             }
-        } else {
-            Vec::new()
-        };
-        if matches!(
-            &enum_constant_proof,
-            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
-        ) {
-            for relation in &mut enum_constant_body_relations {
-                if !relation.use_census.exclusive || relation.constructor_bridge.is_err() {
-                    continue;
-                }
-                match prove_enum_constant_child_body(
-                    self,
-                    content,
-                    request,
-                    relation,
-                    &read.facts.methods,
+            if matches!(
+                &enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+            ) && !enum_constant_body_relations.is_empty()
+                && matches!(&execution, ExecutionReport::Complete { .. })
+            {
+                enum_constant_proof = match prove_enum_constant_body_group(
+                    &declaration,
+                    &fields,
+                    &methods,
+                    &enum_code_candidates,
+                    &initializer_candidate_runs,
+                    &enum_constant_body_relations,
                     budget,
                 ) {
-                    Ok((proof, child_execution)) => {
-                        merge_execution(&mut execution, child_execution);
-                        relation.body_proof = Some(proof.map(std::sync::Arc::from));
+                    Ok(Ok(group)) => crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                        crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+                    ),
+                    Ok(Err(reason)) => {
+                        crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
                     }
                     Err(error) => {
                         let stop = stop_execution(&error, budget);
                         merge_execution(&mut execution, stop);
                         diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_constant_proof =
-                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                reason: format!(
-                                    "enum constant subclass body proof stopped: {error}"
-                                ),
-                            };
-                        break;
-                    }
-                }
-                if !matches!(&execution, ExecutionReport::Complete { .. }) {
-                    enum_constant_proof =
                         crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                            reason: "enum constant subclass body recovery stopped".to_owned(),
-                        };
-                    break;
+                            reason: format!("enum constant body group proof stopped: {error}"),
+                        }
+                    }
+                };
+            }
+            let mut projection_tail = None;
+            if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+            ) = &enum_constant_proof
+            {
+                if crate::enum_constants::has_only_terminal_initializer_return(
+                    group,
+                    &enum_code_candidates,
+                    &initializer_candidate_runs,
+                    &methods,
+                ) {
+                    projection_tail = Some((group.clone(), None));
+                } else {
+                    match crate::enum_constants::prove_static_assignment_suffix(
+                        crate::enum_constants::EnumStaticAssignmentInput {
+                            group,
+                            owner: &declaration.item.declaration.this_class.raw().0,
+                            field_headers: &read.facts.fields,
+                            source_fields: &fields,
+                            method_headers: &read.facts.methods,
+                            source_methods: &methods,
+                            code_candidates: &enum_code_candidates,
+                            initializer_candidates: &initializer_candidate_runs,
+                            budget,
+                        },
+                    ) {
+                        Ok(Some(suffix)) => {
+                            match jarde_java::report::emit_class_initializer_value(
+                                &suffix.value,
+                                &suffix.initializer_member,
+                                std::str::from_utf8(
+                                    declaration.item.declaration.this_class.raw().0.as_slice(),
+                                )
+                                .ok(),
+                                &nested_class_members,
+                                budget,
+                            ) {
+                                Ok(fragment) => {
+                                    let initializer_text = format!(
+                                        "    static {{\n        {}{};\n    }}\n",
+                                        suffix.field_name, fragment
+                                    );
+                                    projection_tail = Some((
+                                        group.clone(),
+                                        Some((suffix.field_index, initializer_text)),
+                                    ));
+                                }
+                                Err(stop) => {
+                                    let (stop_execution_report, diagnostic) =
+                                        initializer_projection_stop(
+                                            &stop,
+                                            budget,
+                                            class_provenance.clone(),
+                                        );
+                                    merge_execution(&mut execution, stop_execution_report);
+                                    diagnostics.push(diagnostic);
+                                    enum_constant_proof =
+                                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                            reason: format!(
+                                                "enum static suffix expression stopped: {stop:?}"
+                                            ),
+                                        };
+                                }
+                            }
+                        }
+                        Ok(None) => {
+                            match crate::enum_constants::prove_map_initializer_suffix(
+                                crate::enum_constants::EnumStaticAssignmentInput {
+                                    group,
+                                    owner: &declaration.item.declaration.this_class.raw().0,
+                                    field_headers: &read.facts.fields,
+                                    source_fields: &fields,
+                                    method_headers: &read.facts.methods,
+                                    source_methods: &methods,
+                                    code_candidates: &enum_code_candidates,
+                                    initializer_candidates: &initializer_candidate_runs,
+                                    budget,
+                                },
+                            ) {
+                                Ok(Some(suffix)) => {
+                                    match jarde_java::report::emit_class_enum_initializer_statements(
+                                        &suffix.statements,
+                                        &suffix.initializer_member,
+                                        std::str::from_utf8(
+                                            declaration
+                                                .item
+                                                .declaration
+                                                .this_class
+                                                .raw()
+                                                .0
+                                                .as_slice(),
+                                        )
+                                        .ok(),
+                                        &nested_class_members,
+                                        budget,
+                                    ) {
+                                        Ok(statements) => {
+                                            let initializer_text =
+                                                format!("    static {{\n{statements}    }}\n");
+                                            projection_tail = Some((
+                                                group.clone(),
+                                                Some((suffix.field_index, initializer_text)),
+                                            ));
+                                        }
+                                        Err(stop) => {
+                                            let (stop_execution_report, diagnostic) =
+                                                initializer_projection_stop(
+                                                    &stop,
+                                                    budget,
+                                                    class_provenance.clone(),
+                                                );
+                                            merge_execution(&mut execution, stop_execution_report);
+                                            diagnostics.push(diagnostic);
+                                            enum_constant_proof =
+                                                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                                    reason: format!("enum map suffix emission stopped: {stop:?}"),
+                                                };
+                                        }
+                                    }
+                                }
+                                Ok(None) => {}
+                                Err(error) => {
+                                    let stop = stop_execution(&error, budget);
+                                    merge_execution(&mut execution, stop);
+                                    diagnostics
+                                        .push(stop_diagnostic(&error, class_provenance.clone()));
+                                    enum_constant_proof =
+                                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                            reason: format!("enum map suffix proof stopped: {error}"),
+                                        };
+                                }
+                            }
+                        }
+                        Err(error) => {
+                            let stop = stop_execution(&error, budget);
+                            merge_execution(&mut execution, stop);
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            enum_constant_proof =
+                                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                    reason: format!("enum static suffix proof stopped: {error}"),
+                                };
+                        }
+                    }
                 }
             }
-        }
-        if matches!(
-            &enum_constant_proof,
-            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
-        ) && !enum_constant_body_relations.is_empty()
-            && matches!(&execution, ExecutionReport::Complete { .. })
-        {
-            enum_constant_proof = match prove_enum_constant_body_group(
-                &declaration,
-                &fields,
-                &methods,
-                &enum_code_candidates,
-                &initializer_candidate_runs,
-                &enum_constant_body_relations,
-                budget,
-            ) {
-                Ok(Ok(group)) => crate::enum_constants::ClassSourceEnumConstantProof::Proved(
-                    crate::enum_constants::ProvedEnumConstantGroup::Body(group),
-                ),
-                Ok(Err(reason)) => {
-                    crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
-                }
-                Err(error) => {
-                    let stop = stop_execution(&error, budget);
-                    merge_execution(&mut execution, stop);
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                        reason: format!("enum constant body group proof stopped: {error}"),
-                    }
-                }
-            };
-        }
-        let mut projection_tail = None;
-        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
-            crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
-        ) = &enum_constant_proof
-        {
-            if crate::enum_constants::has_only_terminal_initializer_return(
-                group,
-                &enum_code_candidates,
-                &initializer_candidate_runs,
-                &methods,
-            ) {
-                projection_tail = Some((group.clone(), None));
-            } else {
-                match crate::enum_constants::prove_static_assignment_suffix(
-                    crate::enum_constants::EnumStaticAssignmentInput {
-                        group,
-                        owner: &declaration.item.declaration.this_class.raw().0,
-                        field_headers: &read.facts.fields,
-                        source_fields: &fields,
-                        method_headers: &read.facts.methods,
-                        source_methods: &methods,
-                        code_candidates: &enum_code_candidates,
-                        initializer_candidates: &initializer_candidate_runs,
-                        budget,
-                    },
-                ) {
-                    Ok(Some(suffix)) => {
-                        match jarde_java::report::emit_class_initializer_value(
-                            &suffix.value,
-                            &suffix.initializer_member,
+            let mut enum_projection = match projection_tail {
+                Some((group, initializer)) => {
+                    let mut terminal_constructor_body = None;
+                    let mut terminal_emission_error = None;
+                    if let Some(body) = group.constructor_body.as_deref()
+                        && let Ok(index) = usize::try_from(group.constructor_method_index)
+                        && let Some(method) = methods.get(index)
+                    {
+                        match jarde_java::report::emit_class_enum_constructor_body(
+                            &body.candidate,
+                            &method.item.identity,
                             std::str::from_utf8(
                                 declaration.item.declaration.this_class.raw().0.as_slice(),
                             )
@@ -10033,300 +10262,205 @@ impl Engine {
                             &nested_class_members,
                             budget,
                         ) {
-                            Ok(fragment) => {
-                                let initializer_text = format!(
-                                    "    static {{\n        {}{};\n    }}\n",
-                                    suffix.field_name, fragment
-                                );
-                                projection_tail = Some((
-                                    group.clone(),
-                                    Some((suffix.field_index, initializer_text)),
-                                ));
-                            }
+                            Ok(text) => terminal_constructor_body = text,
                             Err(stop) => {
-                                let (stop_execution_report, diagnostic) =
-                                    initializer_projection_stop(
-                                        &stop,
-                                        budget,
-                                        class_provenance.clone(),
-                                    );
-                                merge_execution(&mut execution, stop_execution_report);
-                                diagnostics.push(diagnostic);
-                                enum_constant_proof =
-                                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                        reason: format!(
-                                            "enum static suffix expression stopped: {stop:?}"
-                                        ),
-                                    };
+                                terminal_emission_error = Some(enum_projection_stop_error(
+                                    stop,
+                                    "enum constructor source emission",
+                                    "enum_constructor_ir_missing",
+                                ));
                             }
                         }
                     }
-                    Ok(None) => {
-                        match crate::enum_constants::prove_map_initializer_suffix(
-                            crate::enum_constants::EnumStaticAssignmentInput {
-                                group,
-                                owner: &declaration.item.declaration.this_class.raw().0,
-                                field_headers: &read.facts.fields,
-                                source_fields: &fields,
-                                method_headers: &read.facts.methods,
-                                source_methods: &methods,
-                                code_candidates: &enum_code_candidates,
-                                initializer_candidates: &initializer_candidate_runs,
-                                budget,
-                            },
+                    if let Some(error) = terminal_emission_error {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: format!(
+                                    "enum constructor source emission stopped: {error}"
+                                ),
+                            };
+                        None
+                    } else {
+                        match class_source::prepare_enum_constant_source_projection(
+                            &declaration,
+                            &fields,
+                            &methods,
+                            &group,
+                            terminal_constructor_body,
+                            initializer,
+                            budget,
                         ) {
-                            Ok(Some(suffix)) => {
-                                match jarde_java::report::emit_class_enum_initializer_statements(
-                                    &suffix.statements,
-                                    &suffix.initializer_member,
-                                    std::str::from_utf8(
-                                        declaration.item.declaration.this_class.raw().0.as_slice(),
-                                    )
-                                    .ok(),
-                                    &nested_class_members,
-                                    budget,
-                                ) {
-                                    Ok(statements) => {
-                                        let initializer_text =
-                                            format!("    static {{\n{statements}    }}\n");
-                                        projection_tail = Some((
-                                            group.clone(),
-                                            Some((suffix.field_index, initializer_text)),
-                                        ));
-                                    }
-                                    Err(stop) => {
-                                        let (stop_execution_report, diagnostic) =
-                                            initializer_projection_stop(
-                                                &stop,
-                                                budget,
-                                                class_provenance.clone(),
-                                            );
-                                        merge_execution(&mut execution, stop_execution_report);
-                                        diagnostics.push(diagnostic);
-                                        enum_constant_proof =
-                                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                                reason: format!("enum map suffix emission stopped: {stop:?}"),
-                                            };
-                                    }
-                                }
-                            }
-                            Ok(None) => {}
+                            Ok(projection) => projection,
                             Err(error) => {
                                 let stop = stop_execution(&error, budget);
                                 merge_execution(&mut execution, stop);
                                 diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                                 enum_constant_proof =
                                     crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                        reason: format!("enum map suffix proof stopped: {error}"),
+                                        reason: format!("enum source projection stopped: {error}"),
+                                    };
+                                None
+                            }
+                        }
+                    }
+                }
+                None => None,
+            };
+            if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+            ) = &enum_constant_proof
+            {
+                match enum_constant_body_relations
+                    .first()
+                    .map(|relation| &relation.group_shape)
+                {
+                    Some(shape) => {
+                        match class_source::prepare_enum_constant_body_source_projection(
+                            &declaration,
+                            &fields,
+                            &methods,
+                            group,
+                            shape,
+                            budget,
+                        ) {
+                            Ok(Some(projection)) => enum_projection = Some(projection),
+                            Ok(None) => {
+                                enum_constant_proof =
+                                crate::enum_constants::ClassSourceEnumConstantProof::Refused {
+                                    reason: "a proved enum child body could not be emitted as source"
+                                        .to_owned(),
+                                };
+                            }
+                            Err(error) => {
+                                let stop = stop_execution(&error, budget);
+                                merge_execution(&mut execution, stop);
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                enum_constant_proof =
+                                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                        reason: format!(
+                                            "enum child body emission stopped: {error}"
+                                        ),
                                     };
                             }
                         }
                     }
-                    Err(error) => {
-                        let stop = stop_execution(&error, budget);
-                        merge_execution(&mut execution, stop);
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_constant_proof =
-                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                reason: format!("enum static suffix proof stopped: {error}"),
-                            };
-                    }
-                }
-            }
-        }
-        let mut enum_projection = match projection_tail {
-            Some((group, initializer)) => {
-                let mut terminal_constructor_body = None;
-                let mut terminal_emission_error = None;
-                if let Some(body) = group.constructor_body.as_deref()
-                    && let Ok(index) = usize::try_from(group.constructor_method_index)
-                    && let Some(method) = methods.get(index)
-                {
-                    match jarde_java::report::emit_class_enum_constructor_body(
-                        &body.candidate,
-                        &method.item.identity,
-                        std::str::from_utf8(
-                            declaration.item.declaration.this_class.raw().0.as_slice(),
-                        )
-                        .ok(),
-                        &nested_class_members,
-                        budget,
-                    ) {
-                        Ok(text) => terminal_constructor_body = text,
-                        Err(stop) => {
-                            terminal_emission_error = Some(enum_projection_stop_error(
-                                stop,
-                                "enum constructor source emission",
-                                "enum_constructor_ir_missing",
-                            ));
-                        }
-                    }
-                }
-                if let Some(error) = terminal_emission_error {
-                    let stop = stop_execution(&error, budget);
-                    merge_execution(&mut execution, stop);
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    enum_constant_proof =
-                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                            reason: format!("enum constructor source emission stopped: {error}"),
-                        };
-                    None
-                } else {
-                    match class_source::prepare_enum_constant_source_projection(
-                        &declaration,
-                        &fields,
-                        &methods,
-                        &group,
-                        terminal_constructor_body,
-                        initializer,
-                        budget,
-                    ) {
-                        Ok(projection) => projection,
-                        Err(error) => {
-                            let stop = stop_execution(&error, budget);
-                            merge_execution(&mut execution, stop);
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            enum_constant_proof =
-                                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                    reason: format!("enum source projection stopped: {error}"),
-                                };
-                            None
-                        }
-                    }
-                }
-            }
-            None => None,
-        };
-        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
-            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
-        ) = &enum_constant_proof
-        {
-            match enum_constant_body_relations
-                .first()
-                .map(|relation| &relation.group_shape)
-            {
-                Some(shape) => match class_source::prepare_enum_constant_body_source_projection(
-                    &declaration,
-                    &fields,
-                    &methods,
-                    group,
-                    shape,
-                    budget,
-                ) {
-                    Ok(Some(projection)) => enum_projection = Some(projection),
-                    Ok(None) => {
+                    None => {
                         enum_constant_proof =
                             crate::enum_constants::ClassSourceEnumConstantProof::Refused {
-                                reason: "a proved enum child body could not be emitted as source"
+                                reason: "a proved enum body group has no selected relation"
                                     .to_owned(),
                             };
                     }
-                    Err(error) => {
-                        let stop = stop_execution(&error, budget);
-                        merge_execution(&mut execution, stop);
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_constant_proof =
-                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
-                                reason: format!("enum child body emission stopped: {error}"),
-                            };
-                    }
-                },
-                None => {
-                    enum_constant_proof =
-                        crate::enum_constants::ClassSourceEnumConstantProof::Refused {
-                            reason: "a proved enum body group has no selected relation".to_owned(),
-                        };
                 }
             }
-        }
-        let invalid_array_helpers: std::collections::BTreeSet<u64> = array_projection_members
-            .iter()
-            .filter_map(|(helper_index, member_indices)| {
-                let changed = member_indices.iter().any(|member_index| {
-                    let originals = array_original_member_texts
-                        .iter()
-                        .filter(|(index, _)| index == member_index)
-                        .collect::<Vec<_>>();
-                    let current = methods
-                        .iter()
-                        .filter(|method| method.item.index == *member_index)
-                        .collect::<Vec<_>>();
-                    match (originals.as_slice(), current.as_slice()) {
-                        ([(_, original)], [method]) => method.text != *original,
-                        _ => true,
-                    }
-                });
-                changed.then_some(*helper_index)
-            })
-            .collect();
-        if !invalid_array_helpers.is_empty() {
-            let rejected_members: std::collections::BTreeSet<u64> = array_projection_members
+            let invalid_array_helpers: std::collections::BTreeSet<u64> = array_projection_members
                 .iter()
-                .filter(|(helper_index, _)| invalid_array_helpers.contains(helper_index))
-                .flat_map(|(_, members)| members.iter().copied())
-                .collect();
-            array_helper_method_indices.retain(|index| !invalid_array_helpers.contains(index));
-            array_projection_markers = array_helper_method_indices
-                .iter()
-                .filter_map(|index| {
-                    array_projection_members
-                        .iter()
-                        .position(|(helper_index, _)| helper_index == index)
-                        .and_then(|position| array_projection_markers.get(position).cloned())
+                .filter_map(|(helper_index, member_indices)| {
+                    let changed = member_indices.iter().any(|member_index| {
+                        let originals = array_original_member_texts
+                            .iter()
+                            .filter(|(index, _)| index == member_index)
+                            .collect::<Vec<_>>();
+                        let current = methods
+                            .iter()
+                            .filter(|method| method.item.index == *member_index)
+                            .collect::<Vec<_>>();
+                        match (originals.as_slice(), current.as_slice()) {
+                            ([(_, original)], [method]) => method.text != *original,
+                            _ => true,
+                        }
+                    });
+                    changed.then_some(*helper_index)
                 })
                 .collect();
-            array_projection_method_texts.retain(|(index, _)| !rejected_members.contains(index));
-            staged_member_emissions.retain(|(member, _, _, _)| !rejected_members.contains(member));
-            array_projection_members
-                .retain(|(helper_index, _)| !invalid_array_helpers.contains(helper_index));
-        }
-        // The javac assert pattern, proved and folded whole: every guard of the switch field
-        // becomes `assert`, the field and its `<clinit>` line go, and the staged texts travel in
-        // the member-text and omitted-method channels below. A refused proof (any unmet
-        // conjunct) keeps every member exactly as the recovery wrote it; a stop merges like the
-        // other projections and stages nothing.
-        let mut hidden_assert_fields: Vec<u64> = Vec::new();
-        {
-            let assert_asts: Vec<(PhysicalMethodId, jarde_java::report::ClassSourceMethodAst)> =
-                method_asts
+            if !invalid_array_helpers.is_empty() {
+                let rejected_members: std::collections::BTreeSet<u64> = array_projection_members
                     .iter()
-                    .map(|(member, ast, _, _)| (member.clone(), ast.clone()))
+                    .filter(|(helper_index, _)| invalid_array_helpers.contains(helper_index))
+                    .flat_map(|(_, members)| members.iter().copied())
                     .collect();
-            // The anonymous-interface channel rebuilds the root from unretained inputs, so any
-            // direct-return anonymous allocation this class holds (the precise site selection
-            // happens after assembly) keeps the physical presentation.
-            let anonymous_candidate = assert_asts.iter().any(|(_, ast)| {
-                jarde_java::report::class_source_anonymous_return_site(ast).is_some()
-            });
-            let prior_staged_texts = array_projection_method_texts.clone();
-            match project_class_source_assert_statements(
-                read.facts.access_flags,
-                &read.facts.this_class.raw().0,
-                &fields,
-                &mut methods,
-                &assert_asts,
-                &enum_switch_field_use_runs,
-                &assembly_context,
-                initializer_field_order.as_deref(),
-                enum_projection.is_some(),
-                anonymous_candidate,
-                &integer_constant_candidates,
-                &prior_staged_texts,
-                structure_complete,
-                &execution,
-                &mut array_projection_method_texts,
-                &mut staged_member_emissions,
-                &mut array_helper_method_indices,
-                budget,
-            ) {
-                Ok(Some(assert)) => hidden_assert_fields.push(assert.field_index),
-                Ok(None) => {}
-                Err(error) => {
-                    merge_execution(&mut execution, stop_execution(&error, budget));
-                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                array_helper_method_indices.retain(|index| !invalid_array_helpers.contains(index));
+                array_projection_markers = array_helper_method_indices
+                    .iter()
+                    .filter_map(|index| {
+                        array_projection_members
+                            .iter()
+                            .position(|(helper_index, _)| helper_index == index)
+                            .and_then(|position| array_projection_markers.get(position).cloned())
+                    })
+                    .collect();
+                array_projection_method_texts
+                    .retain(|(index, _)| !rejected_members.contains(index));
+                staged_member_emissions
+                    .retain(|(member, _, _, _)| !rejected_members.contains(member));
+                array_projection_members
+                    .retain(|(helper_index, _)| !invalid_array_helpers.contains(helper_index));
+            }
+            // The javac assert pattern, proved and folded whole: every guard of the switch field
+            // becomes `assert`, the field and its `<clinit>` line go, and the staged texts travel in
+            // the member-text and omitted-method channels below. A refused proof (any unmet
+            // conjunct) keeps every member exactly as the recovery wrote it; a stop merges like the
+            // other projections and stages nothing.
+            let mut hidden_assert_fields: Vec<u64> = Vec::new();
+            {
+                let assert_asts: Vec<(PhysicalMethodId, jarde_java::report::ClassSourceMethodAst)> =
+                    method_asts
+                        .iter()
+                        .map(|(member, ast, _, _)| (member.clone(), ast.clone()))
+                        .collect();
+                // The anonymous-interface channel rebuilds the root from unretained inputs, so any
+                // direct-return anonymous allocation this class holds (the precise site selection
+                // happens after assembly) keeps the physical presentation.
+                let anonymous_candidate = assert_asts.iter().any(|(_, ast)| {
+                    jarde_java::report::class_source_anonymous_return_site(ast).is_some()
+                });
+                let prior_staged_texts = array_projection_method_texts.clone();
+                match project_class_source_assert_statements(
+                    read.facts.access_flags,
+                    &read.facts.this_class.raw().0,
+                    &fields,
+                    &mut methods,
+                    &assert_asts,
+                    &enum_switch_field_use_runs,
+                    &assembly_context,
+                    initializer_field_order.as_deref(),
+                    enum_projection.is_some(),
+                    anonymous_candidate,
+                    &integer_constant_candidates,
+                    &prior_staged_texts,
+                    structure_complete,
+                    &execution,
+                    &mut array_projection_method_texts,
+                    &mut staged_member_emissions,
+                    &mut array_helper_method_indices,
+                    budget,
+                ) {
+                    Ok(Some(assert)) => hidden_assert_fields.push(assert.field_index),
+                    Ok(None) => {}
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    }
                 }
             }
-        }
+            (
+                bridge_proofs,
+                enum_switch_proofs,
+                initializer_proof,
+                enum_constant_proof,
+                enum_constant_body_relations,
+                enum_projection,
+                initializer_field_order,
+                hidden_assert_fields,
+                array_helper_method_indices,
+                array_projection_markers,
+                array_projection_method_texts,
+                staged_member_emissions,
+            )
+        };
         let text_context = class_source::ClassSourceTextContext {
             initializer_field_order: initializer_field_order.as_deref(),
             declared_methods: read.facts.method_count,
@@ -10339,7 +10473,9 @@ impl Engine {
             hidden_fields: Some(&hidden_assert_fields),
         };
         let mut text = class_source::source_text(&declaration, &fields, &methods, &text_context);
-        if read.facts.this_class.raw().0.ends_with(b"/package-info") {
+        if !ends_the_request(&execution)
+            && read.facts.this_class.raw().0.ends_with(b"/package-info")
+        {
             let projected = class_source::proved_package_info_source(
                 &declaration,
                 &read.facts,
@@ -10389,52 +10525,54 @@ impl Engine {
             declared_bodies,
             attempted == declared_bodies,
         );
-        let expected_scan_methods: Vec<PhysicalMethodId> = methods
-            .iter()
-            .filter(|method| {
-                usize::try_from(method.item.index)
-                    .ok()
-                    .and_then(|index| read.facts.methods.get(index))
-                    .is_some_and(|member| code_shell(member).is_some())
-            })
-            .map(|method| method.item.identity.clone())
-            .collect();
         let mut anonymous_return_sites = Vec::new();
-        for (member, ast, _, _) in method_asts.iter().filter(|_| {
-            structure_complete && to_u64(methods.len()).ok() == Some(read.facts.method_count)
-        }) {
-            let Some((origin_bcis, target, argument_bcis, site_shape)) =
-                jarde_java::report::class_source_anonymous_return_site(ast)
-            else {
-                continue;
-            };
-            let target_internal = target.replace('.', "/");
-            let Some(site) = unique_anonymous_allocation(
-                &anonymous_allocation_scans,
-                &expected_scan_methods,
-                &target_internal,
-            ) else {
-                continue;
-            };
-            if &site.member == member
-                && origin_bcis.contains(&site.head_bci)
-                && site
-                    .constructor_bci
-                    .is_some_and(|bci| origin_bcis.contains(&bci))
-                && site.argument_bcis == argument_bcis
-            {
-                // The site's statement shape travels with it (design
-                // `recover-anonymous-local-decl-site`, criterion 5): the shared scan feeds two
-                // projections, and only the superclass one may consume the local-declaration
-                // initializer shape.
-                anonymous_return_sites.push((
-                    member.clone(),
-                    site.head_bci,
-                    site.constructor_bci
-                        .expect("verified allocation has constructor BCI"),
-                    target,
-                    site_shape,
-                ));
+        if !ends_the_request(&execution) {
+            let expected_scan_methods: Vec<PhysicalMethodId> = methods
+                .iter()
+                .filter(|method| {
+                    usize::try_from(method.item.index)
+                        .ok()
+                        .and_then(|index| read.facts.methods.get(index))
+                        .is_some_and(|member| code_shell(member).is_some())
+                })
+                .map(|method| method.item.identity.clone())
+                .collect();
+            for (member, ast, _, _) in method_asts.iter().filter(|_| {
+                structure_complete && to_u64(methods.len()).ok() == Some(read.facts.method_count)
+            }) {
+                let Some((origin_bcis, target, argument_bcis, site_shape)) =
+                    jarde_java::report::class_source_anonymous_return_site(ast)
+                else {
+                    continue;
+                };
+                let target_internal = target.replace('.', "/");
+                let Some(site) = unique_anonymous_allocation(
+                    &anonymous_allocation_scans,
+                    &expected_scan_methods,
+                    &target_internal,
+                ) else {
+                    continue;
+                };
+                if &site.member == member
+                    && origin_bcis.contains(&site.head_bci)
+                    && site
+                        .constructor_bci
+                        .is_some_and(|bci| origin_bcis.contains(&bci))
+                    && site.argument_bcis == argument_bcis
+                {
+                    // The site's statement shape travels with it (design
+                    // `recover-anonymous-local-decl-site`, criterion 5): the shared scan feeds two
+                    // projections, and only the superclass one may consume the local-declaration
+                    // initializer shape.
+                    anonymous_return_sites.push((
+                        member.clone(),
+                        site.head_bci,
+                        site.constructor_bci
+                            .expect("verified allocation has constructor BCI"),
+                        target,
+                        site_shape,
+                    ));
+                }
             }
         }
         Ok((
@@ -21593,6 +21731,88 @@ fn resolve_class_source_dependency_read(
     )
 }
 
+/// An opt-in dependency proof retains the original error or request-ending resolver report.
+/// Legacy readers/proofs keep their existing behavior through the adapter with no stop sink.
+#[derive(Debug)]
+enum DependencyProofFailure {
+    Error(Error),
+    Report {
+        execution: Box<ExecutionReport>,
+        diagnostics: Vec<Diagnostic>,
+    },
+}
+
+type DependencyProofResult<T> = std::result::Result<T, DependencyProofFailure>;
+
+impl From<Error> for DependencyProofFailure {
+    fn from(error: Error) -> Self {
+        Self::Error(error)
+    }
+}
+
+impl DependencyProofFailure {
+    fn ends_request(&self, budget: &Budget) -> bool {
+        match self {
+            Self::Error(error) => error_ends_the_request(error, budget),
+            Self::Report { execution, .. } => ends_the_request(execution),
+        }
+    }
+
+    fn recovery_reason(&self) -> jarde_java::StopReason {
+        match self {
+            Self::Error(Error::Cancelled { .. }) => jarde_java::StopReason::Cancelled { at: None },
+            Self::Error(Error::BudgetExceeded {
+                dimension, limit, ..
+            }) => match CountedBudgetDimension::try_from(*dimension) {
+                Ok(dimension) => jarde_java::StopReason::Budget {
+                    dimension,
+                    written: 0,
+                    limit: *limit,
+                    at: None,
+                },
+                Err(_) => jarde_java::StopReason::Interrupted {
+                    code: "jre_budget_interrupted",
+                    at: None,
+                },
+            },
+            Self::Report { execution, .. } => match execution.as_ref() {
+                ExecutionReport::Cancelled { .. } => jarde_java::StopReason::Cancelled { at: None },
+                ExecutionReport::Partial {
+                    reason: TerminationReason::BudgetExceeded { .. },
+                    ..
+                }
+                | ExecutionReport::Failed {
+                    reason: TerminationReason::BudgetExceeded { .. },
+                    ..
+                } => jarde_java::StopReason::Interrupted {
+                    // Reports lack Error quota fields; preserve their execution and diagnostics.
+                    code: "jre_budget_interrupted",
+                    at: None,
+                },
+                _ => unreachable!("only request-ending reports leave a dependency proof"),
+            },
+            _ => unreachable!("only a request-ending proof stop stops recovery"),
+        }
+    }
+
+    fn into_execution(
+        self,
+        budget: &Budget,
+        provenance: Option<Provenance>,
+    ) -> (ExecutionReport, Vec<Diagnostic>) {
+        match self {
+            Self::Error(error) => (
+                stop_execution(&error, budget),
+                vec![stop_diagnostic(&error, provenance)],
+            ),
+            Self::Report {
+                execution,
+                diagnostics,
+            } => (*execution, diagnostics),
+        }
+    }
+}
+
 /// The same selected-definition read for a JVM internal name retained in its original bytes.
 fn resolve_class_source_dependency_read_raw(
     content: &[ArtifactSnapshot],
@@ -21601,6 +21821,50 @@ fn resolve_class_source_dependency_read_raw(
     owner: &[u8],
     execution: &mut ExecutionReport,
     budget: &mut Budget,
+) -> Result<Option<(PhysicalDefinitionId, ConfirmedRead)>> {
+    resolve_class_source_dependency_read_raw_with_stop(
+        content,
+        environment,
+        enclosing,
+        owner,
+        execution,
+        budget,
+        None,
+    )
+}
+
+fn resolve_dependency_proof_read(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enclosing: Option<&PhysicalMethodId>,
+    owner: &[u8],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> DependencyProofResult<Option<(PhysicalDefinitionId, ConfirmedRead)>> {
+    let mut stopped = None;
+    let result = resolve_class_source_dependency_read_raw_with_stop(
+        content,
+        environment,
+        enclosing,
+        owner,
+        execution,
+        budget,
+        Some(&mut stopped),
+    );
+    match stopped {
+        Some(stop) => Err(stop),
+        None => result.map_err(DependencyProofFailure::from),
+    }
+}
+
+fn resolve_class_source_dependency_read_raw_with_stop(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enclosing: Option<&PhysicalMethodId>,
+    owner: &[u8],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+    stopped: Option<&mut Option<DependencyProofFailure>>,
 ) -> Result<Option<(PhysicalDefinitionId, ConfirmedRead)>> {
     let resolution = jarde_jvm::resolve_symbol(
         content,
@@ -21619,6 +21883,15 @@ fn resolve_class_source_dependency_read_raw(
         budget,
     )?;
     merge_execution(execution, resolution.execution.clone());
+    if let Some(stopped) = stopped
+        && ends_the_request(&resolution.execution)
+    {
+        *stopped = Some(DependencyProofFailure::Report {
+            execution: Box::new(resolution.execution),
+            diagnostics: resolution.diagnostics,
+        });
+        return Ok(None);
+    }
     if resolution.state != Some(ResolutionState::Resolved)
         || !matches!(resolution.execution, ExecutionReport::Complete { .. })
         || !resolution.environment_problems.is_empty()
@@ -24983,7 +25256,7 @@ struct InterfaceSuperReads<'a> {
 }
 
 impl InterfaceSuperReads<'_> {
-    fn node(&mut self, owner: &[u8], depth: u64) -> Result<Option<usize>> {
+    fn node(&mut self, owner: &[u8], depth: u64) -> DependencyProofResult<Option<usize>> {
         self.budget.observe_dependency_depth(depth)?;
         if let Some(index) = self.by_name.get(owner) {
             return Ok(Some(*index));
@@ -24993,7 +25266,7 @@ impl InterfaceSuperReads<'_> {
         }
         self.budget
             .charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-        let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+        let Some((definition, read)) = resolve_dependency_proof_read(
             self.content,
             self.environment,
             Some(self.enclosing),
@@ -25002,10 +25275,8 @@ impl InterfaceSuperReads<'_> {
             self.budget,
         )?
         else {
-            member_inner_resolution_stop(&self.execution, self.budget)?;
             return Ok(None);
         };
-        member_inner_resolution_stop(&self.execution, self.budget)?;
         if read.facts.stopped_at.is_some() || read.facts.this_class.raw().0.as_slice() != owner {
             return Ok(None);
         }
@@ -25036,7 +25307,7 @@ fn ensure_interface_closure(
     graph: &mut std::collections::BTreeMap<Vec<u8>, Vec<Vec<u8>>>,
     heights: &mut std::collections::BTreeMap<Vec<u8>, u64>,
     active: &mut Vec<Vec<u8>>,
-) -> Result<bool> {
+) -> DependencyProofResult<bool> {
     reads.budget.poll()?;
     if active.iter().any(|ancestor| ancestor.as_slice() == owner) {
         return Ok(false);
@@ -25133,8 +25404,11 @@ fn prove_interface_super_calls(
     request: &crate::ir::MethodAnalysisRequest,
     ir: &jarde_jvm::method_ir::MethodIr,
     budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedInterfaceSuperCall>> {
+) -> DependencyProofResult<Vec<jarde_java::report::ProvedInterfaceSuperCall>> {
     use std::collections::{BTreeMap, BTreeSet};
+
+    #[cfg(test)]
+    interface_super_proof_stop_tests::at_proof_start(request, budget);
 
     let Some(code) = ir.code() else {
         return Ok(Vec::new());
@@ -25345,27 +25619,6 @@ fn prove_interface_super_calls(
         }
     }
     Ok(proved)
-}
-
-/// The interface-super proof as the presentation consumes it.
-///
-/// The proof is optional evidence of what the artifact may spell, and a run the budget or the
-/// caller's cancellation stopped cannot spend more work on it. It degrades here — to its
-/// conservative answer, nothing proved, so no `interface`-qualified super call is spelled — and
-/// the stop is stated where every other stop is: by the presentation's own execution plane.
-/// Raising a stop in the middle of the presentation path would answer a legal request with an
-/// error instead of the partial or cancelled run it can still publish.
-fn interface_super_calls_presented(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
-    budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedInterfaceSuperCall>> {
-    match prove_interface_super_calls(content, request, ir, budget) {
-        Ok(proved) => Ok(proved),
-        Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
-        Err(error) => Err(error),
-    }
 }
 
 #[derive(Clone)]
@@ -35513,10 +35766,10 @@ mod interface_super_proof_tests {
         .unwrap_err();
         assert!(matches!(
             error,
-            Error::BudgetExceeded {
+            DependencyProofFailure::Error(Error::BudgetExceeded {
                 dimension: jarde_reader::budget::BudgetDimension::DependencyDepth,
                 ..
-            }
+            })
         ));
 
         let (snapshot, request, analyzed) = fixture();
@@ -35529,7 +35782,10 @@ mod interface_super_proof_tests {
             &mut Budget::with_cancellation_token(budget().limits().clone(), cancellation),
         )
         .unwrap_err();
-        assert!(matches!(error, Error::Cancelled { .. }));
+        assert!(matches!(
+            error,
+            DependencyProofFailure::Error(Error::Cancelled { .. })
+        ));
     }
 
     #[test]
@@ -42102,7 +42358,61 @@ fn recovery_from_with_class_candidates(
         None => Vec::new(),
     };
     let interface_super_calls =
-        interface_super_calls_presented(content, request, analyzed.ir(), budget)?;
+        match prove_interface_super_calls(content, request, analyzed.ir(), budget) {
+            Ok(proved) => proved,
+            Err(stopped) if stopped.ends_request(budget) => {
+                #[cfg(test)]
+                if let DependencyProofFailure::Error(error) = &stopped {
+                    interface_super_proof_stop_tests::at_local_depth_stop(error, budget);
+                }
+                // The proof owns either the original error or the resolver's original report.
+                // Preserve it before any later poll, charge or recovery work can replace it.
+                let reason = stopped.recovery_reason();
+                let (execution, diagnostics) = stopped
+                    .into_execution(budget, Some(definition_provenance(&request.method.owner)));
+                let stopped_request =
+                    jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
+                        .with_evidence(evidence.clone());
+                let recovery = jarde_java::report::stopped_before_recovery(
+                    &stopped_request,
+                    reason,
+                    execution,
+                    diagnostics,
+                );
+                let analysis = analyzed.report();
+                crate::d0_counts::recovery_presented_run();
+                crate::d0_counts::owned_records(
+                    1 + u64::try_from(analysis.stages.len()).unwrap_or(u64::MAX)
+                        + u64::try_from(analysis.reads.len()).unwrap_or(u64::MAX)
+                        + u64::try_from(analysis.diagnostics.len()).unwrap_or(u64::MAX),
+                );
+                return Ok((
+                    RecoveredMethod {
+                        analysis: analysis.clone(),
+                        recovery,
+                        callees: callees.map(|read| read.without_read_details()),
+                        facts,
+                    },
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    Vec::new(),
+                    Vec::new(),
+                ));
+            }
+            Err(DependencyProofFailure::Error(error)) => return Err(error),
+            Err(DependencyProofFailure::Report { .. }) => {
+                unreachable!("only request-ending resolver reports leave a dependency proof")
+            }
+        };
     let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
         let mut calls =
             reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
@@ -46169,5 +46479,820 @@ mod common_instance_array_initializer_tests {
             }
         };
         assert!(matches!(execution, ExecutionReport::Cancelled { .. }));
+    }
+}
+
+#[cfg(test)]
+mod interface_super_proof_stop_tests {
+    use super::*;
+    use crate::{ClassNameQuery, ClassRef, EnvironmentPolicy, EnvironmentRequest, MethodRef};
+    use jarde_reader::budget::{BudgetDimension, CancellationToken};
+    use jarde_reader::ledger::{
+        LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+    };
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::cell::RefCell;
+    use std::io::{Cursor, Write};
+    use std::rc::Rc;
+    use std::sync::{
+        Arc, Mutex,
+        atomic::{AtomicUsize, Ordering},
+    };
+
+    // Only the selected method's real proof entry can consume this scoped test callback. A normal
+    // build has neither the callback nor its call site; an unconfigured test does nothing here.
+    type ProofStart = Box<dyn FnOnce(&mut Budget)>;
+    thread_local! {
+        static PROOF_START: RefCell<Option<ProofStart>> = const { RefCell::new(None) };
+        static PROOF_OBSERVER: RefCell<Option<Arc<ProofObserver>>> = const { RefCell::new(None) };
+    }
+
+    pub(super) fn at_proof_start(request: &crate::ir::MethodAnalysisRequest, budget: &mut Budget) {
+        if request.method.name.0 != b"defaultCall" || request.method.descriptor.0 != b"()I" {
+            return;
+        }
+        let start = PROOF_START.with(|slot| slot.borrow_mut().take());
+        if let Some(start) = start {
+            start(budget);
+        }
+    }
+
+    #[derive(Clone, Debug)]
+    struct LocalDepthStop {
+        dimension: BudgetDimension,
+        limit: u64,
+        consumed: u64,
+        requested: u64,
+        usage: UsageSnapshot,
+        observer_entries: Vec<LedgerSite>,
+    }
+
+    struct ProofStartGuard;
+
+    impl Drop for ProofStartGuard {
+        fn drop(&mut self) {
+            PROOF_START.with(|slot| {
+                slot.replace(None);
+            });
+            PROOF_OBSERVER.with(|slot| {
+                slot.replace(None);
+            });
+        }
+    }
+
+    #[derive(Clone, Copy, Debug)]
+    enum Control {
+        CancelAfterCharge,
+        AnalysisSteps,
+        ClassHeaders,
+        ExpiredLedger,
+        LocalDependencyDepth,
+    }
+
+    #[derive(Debug)]
+    struct ProofObserver {
+        cancel_after_charge: bool,
+        token: CancellationToken,
+        charges: AtomicUsize,
+        entries: Mutex<Vec<LedgerSite>>,
+        refusals: Mutex<Vec<Option<BudgetDimension>>>,
+        refused_entries: Mutex<Vec<usize>>,
+        local_depth_stop: Mutex<Option<LocalDepthStop>>,
+    }
+
+    impl LedgerObserver for ProofObserver {
+        fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+            self.entries.lock().unwrap().push(site);
+            if matches!(site, LedgerSite::Charge(_)) {
+                let previous = self.charges.fetch_add(1, Ordering::SeqCst);
+                if self.cancel_after_charge && previous == 0 {
+                    self.token.cancel();
+                }
+            }
+        }
+
+        fn refusal(&self, _site: LedgerSite, dimension: Option<BudgetDimension>) {
+            self.refusals.lock().unwrap().push(dimension);
+            self.refused_entries
+                .lock()
+                .unwrap()
+                .push(self.entries.lock().unwrap().len() - 1);
+        }
+    }
+
+    struct ObservedProof {
+        before: UsageSnapshot,
+        ledger: OperationLedger,
+        observer: Arc<ProofObserver>,
+    }
+
+    type ProofObservation = Rc<RefCell<Option<ObservedProof>>>;
+
+    /// Called only from the real proof `Err` arm. It records the local Budget error and the
+    /// operation-ledger observer position without polling or manufacturing a stop.
+    pub(super) fn at_local_depth_stop(error: &Error, budget: &Budget) {
+        let Error::BudgetExceeded {
+            dimension: BudgetDimension::DependencyDepth,
+            limit,
+            consumed,
+            requested,
+        } = error
+        else {
+            return;
+        };
+        PROOF_OBSERVER.with(|slot| {
+            let Some(observer) = slot.borrow().as_ref().cloned() else {
+                return;
+            };
+            let observer_entries = observer.entries.lock().unwrap().clone();
+            let stop = LocalDepthStop {
+                dimension: BudgetDimension::DependencyDepth,
+                limit: *limit,
+                consumed: *consumed,
+                requested: *requested,
+                usage: budget.usage(),
+                observer_entries,
+            };
+            let previous = observer.local_depth_stop.lock().unwrap().replace(stop);
+            assert!(
+                previous.is_none(),
+                "the proof records only its first local stop"
+            );
+        });
+    }
+
+    fn install(control: Control) -> (ProofStartGuard, ProofObservation) {
+        let observed = Rc::new(RefCell::new(None));
+        let output = Rc::clone(&observed);
+        PROOF_START.with(|slot| {
+            let mut slot = slot.borrow_mut();
+            assert!(slot.is_none(), "proof start controls do not nest");
+            *slot = Some(Box::new(move |budget| {
+                let before = budget.usage();
+                let token = budget.cancellation_token();
+                assert!(
+                    !token.is_cancelled(),
+                    "cancellation starts clear at the actual proof"
+                );
+                let mut limits = budget.limits().clone();
+                // A later emitter would fail too. It must never replace the proof's first stop.
+                if !matches!(control, Control::LocalDependencyDepth) {
+                    limits.output_bytes = 0;
+                }
+                match control {
+                    Control::AnalysisSteps => limits.analysis_steps = 0,
+                    Control::ClassHeaders => limits.class_headers = 0,
+                    Control::ExpiredLedger => limits.elapsed_millis = 0,
+                    Control::CancelAfterCharge => {}
+                    // The caller's local depth limit remains zero; only this attached operation
+                    // ledger sees a wide depth bound, so a local stop cannot latch it.
+                    Control::LocalDependencyDepth => limits.dependency_depth = u64::MAX,
+                }
+                // This new *operation ledger* starts at this precise boundary. The caller's
+                // existing local Budget, usage, token and completed analysis remain untouched.
+                // In the deadline case the next real proof poll observes its actual elapsed=0
+                // bound; no clock, StopReason or Error is injected by the test.
+                let entry = Budget::with_cancellation_token(limits, token.clone());
+                let observer = Arc::new(ProofObserver {
+                    cancel_after_charge: matches!(control, Control::CancelAfterCharge),
+                    token,
+                    charges: AtomicUsize::new(0),
+                    entries: Mutex::new(Vec::new()),
+                    refusals: Mutex::new(Vec::new()),
+                    refused_entries: Mutex::new(Vec::new()),
+                    local_depth_stop: Mutex::new(None),
+                });
+                let ledger = OperationLedger::new(&entry).with_observer(observer.clone());
+                if matches!(control, Control::LocalDependencyDepth) {
+                    PROOF_OBSERVER.with(|slot| {
+                        assert!(slot.borrow().is_none(), "proof observer is scoped");
+                        slot.replace(Some(observer.clone()));
+                    });
+                }
+                budget.with_ledger(ledger.clone(), UsageOwner::Methods);
+                *output.borrow_mut() = Some(ObservedProof {
+                    before,
+                    ledger,
+                    observer,
+                });
+            }));
+        });
+        (ProofStartGuard, observed)
+    }
+
+    fn budget() -> Budget {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        Budget::new(limits)
+    }
+
+    fn local_dependency_depth_zero_budget() -> Budget {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.dependency_depth = 0;
+        Budget::new(limits)
+    }
+
+    fn open() -> ArtifactSnapshot {
+        let mut archive = Cursor::new(Vec::new());
+        {
+            let mut writer = ZipArchiveWriter::new(&mut archive);
+            let entries: &[(&[u8], &[u8])] = &[
+                (
+                    b"SpecialProbe.class",
+                    include_bytes!("../tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class"),
+                ),
+                (
+                    b"BaseProbe.class",
+                    include_bytes!("../tests/fixtures/p3-special-dispatch/v8/BaseProbe.class"),
+                ),
+                (
+                    b"DefaultProbe.class",
+                    include_bytes!("../tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class"),
+                ),
+            ];
+            for (name, bytes) in entries {
+                let (mut entry, config) = writer
+                    .new_file(EntryPath::verbatim(name.to_vec()))
+                    .compression_method(CompressionMethod::new(0))
+                    .start()
+                    .unwrap();
+                let mut output = config.wrap(&mut entry);
+                output.write_all(bytes).unwrap();
+                let (_, descriptor) = output.finish().unwrap();
+                entry.finish(descriptor).unwrap();
+            }
+            writer.finish().unwrap();
+        }
+        Engine::new()
+            .open(ArtifactInput::bytes(archive.into_inner()), &mut budget())
+            .unwrap()
+    }
+
+    fn request(snapshot: &ArtifactSnapshot) -> MethodOperationRequest {
+        MethodOperationRequest {
+            method: MethodRef::Name {
+                class: ClassNameQuery::internal("SpecialProbe"),
+                name: JvmBytes(b"defaultCall".to_vec()),
+                descriptor: Some(JvmBytes(b"()I".to_vec())),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            },
+        }
+    }
+
+    fn recover(snapshot: &ArtifactSnapshot) -> MethodRecoveryReport {
+        let crate::OperationOutcome::Performed(report) = Engine::new()
+            .recover_target_with_evidence(
+                slice::from_ref(snapshot),
+                &request(snapshot),
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .unwrap()
+        else {
+            panic!("one physical method is selected");
+        };
+        report
+    }
+
+    fn without_elapsed(mut value: serde_json::Value) -> serde_json::Value {
+        fn clear(value: &mut serde_json::Value) {
+            match value {
+                serde_json::Value::Object(fields) => {
+                    for (key, value) in fields {
+                        if key == "elapsed_millis" {
+                            *value = 0.into();
+                        } else {
+                            clear(value);
+                        }
+                    }
+                }
+                serde_json::Value::Array(values) => {
+                    for value in values {
+                        clear(value);
+                    }
+                }
+                _ => {}
+            }
+        }
+        clear(&mut value);
+        value
+    }
+
+    fn assert_no_post_proof_work(report: &MethodRecoveryReport, observed: &ObservedProof) {
+        let recovery = report.recovered.recovery();
+        assert!(matches!(
+            report.recovered.analysis().execution,
+            ExecutionReport::Complete { .. }
+        ));
+        assert!(matches!(
+            recovery.outcome,
+            jarde_java::RecoveryOutcome::Stopped(_)
+        ));
+        assert_eq!(recovery.content, RecoveryContent::NotProduced);
+        assert!(recovery.text.is_empty());
+        assert!(recovery.source_map.is_empty());
+        assert!(recovery.declaration.is_none());
+        assert!(recovery.artifact.binding().is_none());
+        assert_eq!(report.presentation.execution, recovery.execution);
+        assert!(report.presentation.stop.is_some());
+        let proof_usage = observed.ledger.usage();
+        for dimension in CountedBudgetDimension::ALL {
+            assert_eq!(
+                report.usage.counted_usage(dimension),
+                observed.before.counted_usage(dimension) + proof_usage.counted_usage(dimension),
+                "only the real proof's admitted work follows the completed analysis: {dimension:?}"
+            );
+        }
+        assert_eq!(report.usage.output_bytes, observed.before.output_bytes);
+        assert_eq!(report.usage.output_bytes, 0);
+        let entries = observed.observer.entries.lock().unwrap();
+        let refused = observed.observer.refused_entries.lock().unwrap();
+        let first_refusal = *refused
+            .first()
+            .expect("the real proof observed its first stop");
+        for (index, entry) in entries.iter().enumerate().skip(first_refusal + 1) {
+            if matches!(entry, LedgerSite::Charge(_)) {
+                assert!(
+                    refused.contains(&index),
+                    "no new work can receive a charge permit after the first proof refusal"
+                );
+            }
+        }
+        for category in recovery.evidence.categories() {
+            assert_eq!(category.state, jarde_java::EvidenceState::NotPerformed);
+        }
+    }
+
+    #[test]
+    fn public_proof_charge_cancellation_keeps_analysis_and_no_artifact() {
+        let snapshot = open();
+        let wide = recover(&snapshot);
+        assert!(
+            wide.recovered
+                .recovery()
+                .text
+                .contains("DefaultProbe.super.value()")
+        );
+        let (_guard, observed) = install(Control::CancelAfterCharge);
+        let report = recover(&snapshot);
+        let observed = observed.borrow();
+        let observed = observed
+            .as_ref()
+            .expect("the public path reached the actual interface proof");
+        assert_no_post_proof_work(&report, observed);
+        assert!(matches!(
+            report.presentation.execution,
+            ExecutionReport::Cancelled { .. }
+        ));
+        assert!(matches!(
+            report.recovered.recovery().outcome,
+            jarde_java::RecoveryOutcome::Stopped(StopReason::Cancelled { at: None })
+        ));
+        assert_eq!(observed.observer.charges.load(Ordering::SeqCst), 1);
+        assert_eq!(observed.ledger.usage().analysis_steps, 1);
+        assert!(observed.observer.token.is_cancelled());
+        assert!(!observed.observer.refusals.lock().unwrap().is_empty());
+        assert_eq!(
+            without_elapsed(serde_json::to_value(report.recovered.analysis()).unwrap()),
+            without_elapsed(serde_json::to_value(wide.recovered.analysis()).unwrap())
+        );
+    }
+
+    #[test]
+    fn public_proof_counted_limits_preserve_analysis_and_metadata_dimensions() {
+        for (control, dimension) in [
+            (Control::AnalysisSteps, BudgetDimension::AnalysisSteps),
+            (Control::ClassHeaders, BudgetDimension::ClassHeaders),
+        ] {
+            let snapshot = open();
+            let (_guard, observed) = install(control);
+            let report = recover(&snapshot);
+            let observed = observed.borrow();
+            let observed = observed
+                .as_ref()
+                .expect("the public path reached the actual proof");
+            assert_no_post_proof_work(&report, observed);
+            assert!(
+                matches!(report.presentation.execution, ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded { dimension: actual }, .. } if actual == dimension)
+            );
+            match dimension {
+                BudgetDimension::AnalysisSteps => assert!(matches!(
+                    report.recovered.recovery().outcome,
+                    jarde_java::RecoveryOutcome::Stopped(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        written: 0,
+                        limit: 0,
+                        at: None,
+                    })
+                )),
+                BudgetDimension::ClassHeaders => assert!(matches!(
+                    report.recovered.recovery().outcome,
+                    jarde_java::RecoveryOutcome::Stopped(StopReason::Interrupted {
+                        code: "jre_budget_interrupted",
+                        at: None,
+                    })
+                )),
+                _ => unreachable!("this test selects the original-error and report-only channels"),
+            }
+            assert!(
+                observed
+                    .observer
+                    .refusals
+                    .lock()
+                    .unwrap()
+                    .contains(&Some(dimension))
+            );
+            assert_eq!(
+                report.recovered.recovery().diagnostics[0].message,
+                format!("budget exceeded for {dimension:?}: limit=0, consumed=0, requested=1")
+            );
+            // The ledger latches a budget refusal by cancelling its shared token. Keep the
+            // original Budget record/report even though a later poll would return Cancelled.
+            assert!(observed.observer.token.is_cancelled());
+            assert_eq!(
+                *observed.observer.refusals.lock().unwrap(),
+                vec![Some(dimension)],
+                "the original proof refusal is not followed by a synthetic re-charge"
+            );
+            let entries = observed.observer.entries.lock().unwrap();
+            let refused = observed.observer.refused_entries.lock().unwrap();
+            let first_refusal = *refused.first().expect("a real proof charge refused");
+            assert_eq!(
+                entries.len(),
+                first_refusal + 1,
+                "no poll, charge or proof work follows the first refusal"
+            );
+            drop(refused);
+            drop(entries);
+            let first_stop = observed
+                .ledger
+                .stop_reason()
+                .expect("the ledger records its budget stop");
+            assert_eq!(first_stop.kind, jarde_reader::ledger::BulkStopKind::Budget);
+            assert_eq!(first_stop.dimension, Some(dimension));
+        }
+    }
+
+    #[test]
+    fn public_proof_first_poll_observes_the_actual_expired_ledger_deadline() {
+        let snapshot = open();
+        let (_guard, observed) = install(Control::ExpiredLedger);
+        let report = recover(&snapshot);
+        let observed = observed.borrow();
+        let observed = observed
+            .as_ref()
+            .expect("analysis completed before the deadline control attached");
+        assert_no_post_proof_work(&report, observed);
+        assert!(matches!(
+            report.presentation.execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: BudgetDimension::ElapsedMillis
+                },
+                ..
+            }
+        ));
+        assert!(matches!(
+            report.recovered.recovery().outcome,
+            jarde_java::RecoveryOutcome::Stopped(StopReason::Interrupted {
+                code: "jre_budget_interrupted",
+                at: None
+            })
+        ));
+        assert_eq!(
+            *observed.observer.entries.lock().unwrap(),
+            vec![LedgerSite::Checkpoint]
+        );
+        assert_eq!(observed.observer.charges.load(Ordering::SeqCst), 0);
+        assert_eq!(
+            *observed.observer.refusals.lock().unwrap(),
+            vec![Some(BudgetDimension::ElapsedMillis)]
+        );
+        assert!(
+            report.recovered.recovery().diagnostics[0]
+                .message
+                .contains("ElapsedMillis: limit=0")
+        );
+        assert!(observed.observer.token.is_cancelled());
+        let first_stop = observed
+            .ledger
+            .stop_reason()
+            .expect("the ledger records its budget stop");
+        assert_eq!(first_stop.kind, jarde_reader::ledger::BulkStopKind::Budget);
+        assert_eq!(first_stop.dimension, Some(BudgetDimension::ElapsedMillis));
+
+        assert!(observed.before.method_bodies > 0);
+        assert!(observed.before.analysis_steps > 0);
+    }
+
+    #[test]
+    fn class_source_public_proof_cancellation_retains_the_reliable_prefix() {
+        let snapshot = open();
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("SpecialProbe"),
+            },
+            environment: request(&snapshot).environment,
+        };
+        let crate::OperationOutcome::Performed(wide) = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .unwrap()
+        else {
+            panic!("the wide control selects one physical class");
+        };
+        assert!(matches!(wide.execution, ExecutionReport::Complete { .. }));
+        let position = wide
+            .methods
+            .iter()
+            .position(|method| method.item.identity.name.0 == b"defaultCall")
+            .unwrap();
+        assert!(
+            wide.methods[position]
+                .text
+                .contains("DefaultProbe.super.value()")
+        );
+
+        let (_guard, observed) = install(Control::CancelAfterCharge);
+        let crate::OperationOutcome::Performed(report) = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .unwrap()
+        else {
+            panic!("one physical class is selected");
+        };
+        let observed = observed.borrow();
+        let observed = observed
+            .as_ref()
+            .expect("defaultCall reached its real interface proof");
+        assert_eq!(observed.observer.charges.load(Ordering::SeqCst), 1);
+        assert_eq!(observed.ledger.usage().analysis_steps, 1);
+        assert!(observed.observer.token.is_cancelled());
+        assert!(matches!(
+            report.execution,
+            ExecutionReport::Cancelled { .. }
+        ));
+
+        // The stop is merged before the member publication permit. With the token cancelled,
+        // ResultItems cannot be acquired, so defaultCall itself is not a published member.
+        assert_eq!(report.methods.len(), position);
+        for (published, completed) in report.methods.iter().zip(&wide.methods[..position]) {
+            assert_eq!(published.item.identity, completed.item.identity);
+            assert_eq!(published.text, completed.text);
+        }
+        assert!(report.methods.iter().any(|member|
+            matches!(&member.outcome, crate::ClassSourceOutcome::Recovered { report, .. } if report.produced())));
+
+        // Body coverage records work actually entered, including the unpublishable method.
+        // No body after defaultCall was entered, decoded or charged.
+        let attempted = u64::try_from(position + 1).unwrap();
+        assert!(
+            report
+                .coverage
+                .artifact_structural
+                .scanned
+                .iter()
+                .any(|range| range.label == "class_source_bodies"
+                    && range.start == 0
+                    && range.end == attempted)
+        );
+        assert!(
+            report
+                .coverage
+                .artifact_structural
+                .skipped
+                .iter()
+                .any(|range| range.label == "class_source_bodies"
+                    && range.start == attempted
+                    && range.end == u64::try_from(wide.methods.len()).unwrap())
+        );
+        assert_eq!(report.usage.method_bodies, observed.before.method_bodies);
+        assert_eq!(report.usage.code_bytes, observed.before.code_bytes);
+        assert_eq!(report.usage.result_items, observed.before.result_items);
+        assert_eq!(report.usage.output_bytes, observed.before.output_bytes);
+        let proof_usage = observed.ledger.usage();
+        for dimension in CountedBudgetDimension::ALL {
+            assert_eq!(
+                report.usage.counted_usage(dimension),
+                observed.before.counted_usage(dimension) + proof_usage.counted_usage(dimension),
+                "the admitted prefix and one real proof charge are the only charged work: {dimension:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn class_source_local_dependency_depth_stop_is_nonsticky_and_publishes_only_the_stop_record() {
+        let snapshot = open();
+        let class_request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("SpecialProbe"),
+            },
+            environment: request(&snapshot).environment,
+        };
+        let engine = Engine::new();
+        let crate::OperationOutcome::Performed(wide) = engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &class_request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .unwrap()
+        else {
+            panic!("the wide control selects one physical class");
+        };
+        assert!(matches!(&wide.execution, ExecutionReport::Complete { .. }));
+        let position = wide
+            .methods
+            .iter()
+            .position(|method| method.item.identity.name.0 == b"defaultCall")
+            .expect("proof member is present");
+        assert!(
+            position > 0,
+            "the control has a genuinely retained earlier member"
+        );
+        assert!(
+            wide.methods[position]
+                .text
+                .contains("DefaultProbe.super.value()")
+        );
+
+        let (_guard, observed) = install(Control::LocalDependencyDepth);
+        let mut local_budget = local_dependency_depth_zero_budget();
+        let crate::OperationOutcome::Performed(report) = engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &class_request,
+                &RecoveryEvidenceRequest::all(),
+                &mut local_budget,
+            )
+            .unwrap()
+        else {
+            panic!("local proof stop retains the selected class report");
+        };
+        let observed = observed.borrow();
+        let observed = observed
+            .as_ref()
+            .expect("the selected member reached the real proof");
+        let stop = observed
+            .observer
+            .local_depth_stop
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("the real catch branch captured its DependencyDepth error");
+        assert_eq!(stop.dimension, BudgetDimension::DependencyDepth);
+        assert_eq!((stop.limit, stop.consumed, stop.requested), (0, 0, 1));
+        assert_eq!(stop.usage.dependency_depth, 0);
+        assert!(!observed.observer.token.is_cancelled());
+        assert!(
+            observed.observer.refusals.lock().unwrap().is_empty(),
+            "the wide operation ledger did not refuse or latch the local depth error"
+        );
+        assert_eq!(
+            observed.ledger.usage().dependency_depth,
+            0,
+            "local rejection occurs before the attached ledger's depth observer"
+        );
+        assert_eq!(
+            stop.observer_entries.last(),
+            Some(&LedgerSite::Checkpoint),
+            "the captured observer position ends at the actual poll before the local check"
+        );
+
+        assert!(
+            matches!(
+                &report.execution,
+                ExecutionReport::Partial {
+                    reason: TerminationReason::BudgetExceeded {
+                        dimension: BudgetDimension::DependencyDepth
+                    },
+                    ..
+                }
+            ),
+            "{:?}",
+            report.execution
+        );
+        assert_eq!(
+            report.methods.len(),
+            position + 1,
+            "the already-admitted stopped member is published, but no later body is entered"
+        );
+        for (published, completed) in report.methods[..position]
+            .iter()
+            .zip(&wide.methods[..position])
+        {
+            assert_eq!(published.item.identity, completed.item.identity);
+            assert_eq!(published.text, completed.text);
+        }
+        assert_eq!(
+            report.methods[position].item.identity,
+            wide.methods[position].item.identity
+        );
+        let crate::ClassSourceOutcome::Recovered {
+            report: stopped,
+            analysis,
+        } = &report.methods[position].outcome
+        else {
+            panic!("the selected proof stop is retained in its member result");
+        };
+        assert!(matches!(
+            &analysis.execution,
+            ExecutionReport::Complete { .. }
+        ));
+        assert!(matches!(
+            &stopped.execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: BudgetDimension::DependencyDepth
+                },
+                ..
+            }
+        ));
+        assert!(matches!(
+            &stopped.outcome,
+            jarde_java::RecoveryOutcome::Stopped(jarde_java::StopReason::Interrupted {
+                code: "jre_budget_interrupted",
+                at: None,
+            })
+        ));
+        assert_eq!(stopped.content, RecoveryContent::NotProduced);
+        assert!(stopped.text.is_empty());
+        assert!(stopped.source_map.is_empty());
+        assert_eq!(stopped.diagnostics.len(), 1);
+        assert!(stopped.diagnostics[0].message.contains("DependencyDepth"));
+        let attempted = u64::try_from(position + 1).unwrap();
+        assert!(
+            report
+                .coverage
+                .artifact_structural
+                .scanned
+                .iter()
+                .any(|range| range.label == "class_source_bodies"
+                    && range.start == 0
+                    && range.end == attempted)
+        );
+        assert!(
+            report
+                .coverage
+                .artifact_structural
+                .skipped
+                .iter()
+                .any(|range| range.label == "class_source_bodies"
+                    && range.start == attempted
+                    && range.end == u64::try_from(wide.methods.len()).unwrap())
+        );
+
+        // The only post-catch counted work permitted is publishing this one stopped member's
+        // ResultItems record. Analysis/IR/class metadata/body work and output remain at catch values.
+        for dimension in CountedBudgetDimension::ALL {
+            let before = stop.usage.counted_usage(dimension);
+            let after = report.usage.counted_usage(dimension);
+            if dimension == CountedBudgetDimension::ResultItems {
+                assert_eq!(after, before + 1, "one stopped member is published");
+            } else {
+                assert_eq!(after, before, "no post-stop work for {dimension:?}");
+            }
+        }
+        assert_eq!(report.usage.dependency_depth, stop.usage.dependency_depth);
+        assert_eq!(report.usage.output_bytes, stop.usage.output_bytes);
+        let entries = observed.observer.entries.lock().unwrap();
+        assert!(entries.len() >= stop.observer_entries.len());
+        let after_catch = &entries[stop.observer_entries.len()..];
+        assert!(
+            after_catch.iter().all(|entry| matches!(
+                entry,
+                LedgerSite::Checkpoint | LedgerSite::Charge(UsageOwner::Methods)
+            )),
+            "only result-record publication may touch the ledger after the local stop: {after_catch:?}"
+        );
+        assert_eq!(
+            after_catch
+                .iter()
+                .filter(|entry| matches!(entry, LedgerSite::Charge(_)))
+                .count(),
+            1,
+            "publication uses one existing result-item charge"
+        );
     }
 }

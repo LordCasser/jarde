@@ -16530,6 +16530,54 @@ fn stopped(
     budget: &Budget,
 ) -> RecoveryReport {
     let execution = stop_execution(&reason, budget.usage());
+    let diagnostic = stop_diagnostic(&reason);
+    stopped_report(
+        method,
+        profile,
+        selection,
+        reason,
+        execution,
+        vec![diagnostic],
+    )
+}
+
+/// Construct the uncommitted result of an upstream proof that stopped before recovery began.
+///
+/// The caller owns the original error and supplies its execution and diagnostic without polling
+/// again. In particular, non-counted bounds retain their actual execution dimension even though
+/// the recovery outcome describes them with the existing interruption vocabulary.
+pub fn stopped_before_recovery(
+    request: &RecoveryRequest<'_>,
+    reason: StopReason,
+    execution: ExecutionReport,
+    diagnostics: Vec<Diagnostic>,
+) -> RecoveryReport {
+    assert!(
+        !matches!(execution, ExecutionReport::Complete { .. }),
+        "an upstream proof stop cannot have complete execution"
+    );
+    stopped_report(
+        format!(
+            "{}{}",
+            request.facts.method().name(),
+            request.facts.method().descriptor()
+        ),
+        request.profile.clone(),
+        &request.evidence,
+        reason,
+        execution,
+        diagnostics,
+    )
+}
+
+fn stopped_report(
+    method: String,
+    profile: RecoveryProfile,
+    selection: &RecoveryEvidenceRequest,
+    reason: StopReason,
+    execution: ExecutionReport,
+    diagnostics: Vec<Diagnostic>,
+) -> RecoveryReport {
     RecoveryReport {
         method,
         profile,
@@ -16566,7 +16614,7 @@ fn stopped(
         artifact: RecoveryArtifact::not_produced(selection.expected_artifact()),
         aliased_names: Vec::new(),
         parameter_names: Vec::new(),
-        diagnostics: vec![stop_diagnostic(&reason)],
+        diagnostics,
     }
 }
 
