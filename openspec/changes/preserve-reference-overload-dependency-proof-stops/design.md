@@ -6,7 +6,7 @@
 
 基线 main f30df5d929cf88d0e97514ea4d5b0806eeecfe2e 的产品输入与 aadf71、冻结CLI c2db4721a879c47493b537e946b0ff827986e1e58e7b021222df1e66a8c9c3cd 相同。EM11七个未改Java由受控javac23 --release8编译，各class SHA与历史实验一致；此次容器是新建5001B STORE JAR，不称原始JAR。InputHierarchyCalls.run()Ljava/lang/String; 的 NEW 位于BCI0，构造器调用BCI4，invokestatic take(HMid)位于BCI7；source-map的producer_bci4不能冒称NEW指令位置。
 
-已有实际8命令screen：宽预算4096及cap3/4 Complete，cap1/2 Partial、exit4且run正文空，原Java23 Runner为固定五行219B。实际GDB观察cap1有两次Budget::exceeded：先reference-overload/raw-reader，后typed snapshot；cap2只有后者。wrapper exit0与inferior exit4分别记录。仅归一收据记录的10个usage.elapsed_millis叶子后，整份JSON与普通同cap结果一致，所有limits保持原样。GDB未打印返回Error/Report或catch执行，因此渠道损失为绑定源码的静态风险；没有动态覆盖取消、期限或平台缺失停止。当前无fresh完整Jarde类族重编，不把旧实验或当前原Java运行冒称此证据。
+已有实际8命令screen：宽预算4096及cap3/4 Complete，cap1/2 Partial、exit4且run正文空，原Java23 Runner为固定五行219B。实际GDB观察cap1有两次Budget::exceeded：先reference-overload/raw-reader，后typed snapshot；cap2只有后者。wrapper exit0与inferior exit4分别记录。仅归一收据记录的10个usage.elapsed_millis叶子后，整份JSON与普通同cap结果一致，所有limits保持原样。GDB未打印返回Error/Report或catch执行，因此渠道损失为绑定源码的静态风险；没有动态覆盖取消、期限或平台缺失停止。立项时尚无fresh完整Jarde类族重编；后续实际实验以绑定最终CLI的收据为准，不把旧实验或仅原Java运行冒称此证据。
 
 ## Goals / Non-Goals
 
@@ -38,4 +38,4 @@
 
 ## Migration Plan
 
-先封存基线和可真正变红的永久回归，再局部接线并复核正常判据，运行局部门禁和最终CLI实验；exact clean保留无target，提交产品并等自身CI/独审。只有上述验收完成才勾选任务、同步主spec并正常归档，最终main绑定到该产品源码。当前仅计划，前片aadf71的CI不能完成本片。
+先封存基线和可真正变红的永久回归，再局部接线并复核正常判据，运行局部门禁和最终CLI实验；exact clean保留无target，提交产品并等自身CI/独审。只有上述验收完成才勾选任务、同步主spec并正常归档，最终main绑定到该产品源码。实施进展与勾选见tasks.md，前片aadf71的CI不能完成本片。

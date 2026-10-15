@@ -1,0 +1,342 @@
+{
+  "schema": "reference-overload-old-native-independent-audit-v1",
+  "status": "accepted_old_production_red_audit",
+  "audit_scope": "Read-only independent audit of pinned old-native capture; no native/toolchain/Git/OpenSpec execution and no repository writes.",
+  "capture": {
+    "execution_json": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/execution.json",
+    "schema": "class-view-guarded-validation-v1",
+    "capture_status": "expected_command_outcomes_observed_pending_independent_acceptance",
+    "workspace_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "captured_at": {
+      "started_at": "2026-10-15T09:23:28.883543+00:00",
+      "finished_at": "2026-10-15T09:25:07.063168+00:00"
+    },
+    "target_absent_after_cleanup": true
+  },
+  "source_integrity": {
+    "before_after_entry_count": 4907,
+    "before_after_manifests_equal": true,
+    "canonical_before_manifest_sha256": "ec2878782ad1ebee2d97d8f123c6e4ff68bfe66783281cd0eb44f35cc7f2b894",
+    "facade_old_observed_pin": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/facade-old-observed-v1.rs",
+      "bytes": 2081038,
+      "sha256": "0debb1aa5d1c52cd20eedb7f955b09332ab4630c07f70e407a33d0ebd2831612"
+    },
+    "current_facade_comparison": "intentionally not required; old source is anchored by the capture manifest and exact cached old facade pin"
+  },
+  "raw_integrity": {
+    "all_8_streams_match_receipt_bytes_and_sha256": true,
+    "streams": [
+      {
+        "command_index": 1,
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/1.stdout.raw",
+        "bytes": 75108,
+        "sha256": "693bd4adc020e4f78acfeddaf19690bef0e5fddd0c458eb56dfc084f35a9314c",
+        "verified": true
+      },
+      {
+        "command_index": 1,
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/1.stderr.raw",
+        "bytes": 13994,
+        "sha256": "1eccd15ea85825fc3ab7de97b8dca97c88fab50b2e7ac612f094620dfbb2f9fb",
+        "verified": true
+      },
+      {
+        "command_index": 2,
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/2.stdout.raw",
+        "bytes": 74161,
+        "sha256": "f3ef1c999a7ca9a16ba3e87da68cbba4edb73bf6163011cbd9f72596bea3564a",
+        "verified": true
+      },
+      {
+        "command_index": 2,
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/2.stderr.raw",
+        "bytes": 1327,
+        "sha256": "8a894a38579a780ba413c65f52da0046d40fe3b2edc12625138624578bc26e64",
+        "verified": true
+      },
+      {
+        "command_index": 3,
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/3.stdout.raw",
+        "bytes": 57721,
+        "sha256": "89b12f7a785e68b39218deda7f3734686740f73c8759ae2dbfeb7866ef233d33",
+        "verified": true
+      },
+      {
+        "command_index": 3,
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/3.stderr.raw",
+        "bytes": 2116,
+        "sha256": "c6dceee728573bd15714cc096d8b3a6dfb1c5aa313d530074c34bce7ac0ace4b",
+        "verified": true
+      },
+      {
+        "command_index": 4,
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/4.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "verified": true
+      },
+      {
+        "command_index": 4,
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/4.stderr.raw",
+        "bytes": 52,
+        "sha256": "8405e3b4fd6870c65aac17474e6bdc39721429f6397865447553c99e97f1b8e8",
+        "verified": true
+      }
+    ]
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "old-inflight",
+      "argv": [
+        "cargo",
+        "test",
+        "--lib",
+        "class_source_proof_inflight_tests",
+        "--message-format=json-render-diagnostics",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "test_summary": {
+        "status": "FAILED",
+        "passed": 12,
+        "failed": 3,
+        "ignored": 0
+      },
+      "named_tests": [
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_dt29_accessor_header_report_stop_preserves_first_dimension",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_dt29_accessor_real_charge_cancellation_stops_before_field_proof",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_dt29_accessor_real_deadline_stops_before_field_proof",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_dt29_field_header_report_stop_preserves_first_dimension",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_dt29_field_real_charge_cancellation_keeps_constructor_prefix",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_dt29_field_real_deadline_keeps_constructor_prefix",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_em11_reference_header_report_preserves_original_stop_and_diagnostics",
+          "status": "FAILED"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_em11_reference_real_charge_cancellation_has_no_later_proof_work",
+          "status": "FAILED"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_em11_reference_real_deadline_preserves_first_error",
+          "status": "FAILED"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_external_source_header_report_stop_precedes_owner_and_field_work",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_h1_double_brace_cancel_after_charge_keeps_committed_main_and_siblings",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_h1_double_brace_expired_checkpoint_keeps_committed_main_and_siblings",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_h1_snapshot_proof_cancel_after_charge_retains_only_reliable_prefix",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_h1_snapshot_proof_class_header_charge_refusal_keeps_partial_and_five_siblings",
+          "status": "ok"
+        },
+        {
+          "name": "facade::class_source_proof_inflight_tests::public_h1_snapshot_proof_expired_checkpoint_stops_before_body_recovery",
+          "status": "ok"
+        }
+      ],
+      "stdout_sha256": "693bd4adc020e4f78acfeddaf19690bef0e5fddd0c458eb56dfc084f35a9314c",
+      "stderr_sha256": "1eccd15ea85825fc3ab7de97b8dca97c88fab50b2e7ac612f094620dfbb2f9fb"
+    },
+    {
+      "index": 2,
+      "label": "old-public",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "reference_overload_dependency_proof_stops",
+        "--message-format=json-render-diagnostics",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "test_summary": {
+        "status": "FAILED",
+        "passed": 2,
+        "failed": 2,
+        "ignored": 0
+      },
+      "named_tests": [
+        {
+          "name": "em11_cap_two_keeps_the_existing_snapshot_stop_and_prefix",
+          "status": "ok"
+        },
+        {
+          "name": "em11_first_reference_header_ledger_stop_keeps_original_budget_cause",
+          "status": "FAILED"
+        },
+        {
+          "name": "em11_plain_header_stop_pays_no_later_snapshot_analysis_work",
+          "status": "FAILED"
+        },
+        {
+          "name": "em11_wide_keeps_the_actual_mid_overload_and_physical_call_bci",
+          "status": "ok"
+        }
+      ],
+      "stdout_sha256": "f3ef1c999a7ca9a16ba3e87da68cbba4edb73bf6163011cbd9f72596bea3564a",
+      "stderr_sha256": "8a894a38579a780ba413c65f52da0046d40fe3b2edc12625138624578bc26e64"
+    },
+    {
+      "index": 3,
+      "label": "old-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-cli",
+        "--test",
+        "class_source_cli",
+        "em11_",
+        "--message-format=json-render-diagnostics",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "test_summary": {
+        "status": "FAILED",
+        "passed": 1,
+        "failed": 1,
+        "ignored": 0
+      },
+      "named_tests": [
+        {
+          "name": "em11_cli_cap_one_does_not_pay_the_later_snapshot_proof",
+          "status": "FAILED"
+        },
+        {
+          "name": "em11_cli_wide_keeps_the_physical_mid_overload",
+          "status": "ok"
+        }
+      ],
+      "stdout_sha256": "89b12f7a785e68b39218deda7f3734686740f73c8759ae2dbfeb7866ef233d33",
+      "stderr_sha256": "c6dceee728573bd15714cc096d8b3a6dfb1c5aa313d530074c34bce7ac0ace4b"
+    },
+    {
+      "index": 4,
+      "label": "finally-exact-cargo-clean",
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "cleanup_only": {
+        "exact_argv": [
+          "cargo",
+          "clean"
+        ]
+      },
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8405e3b4fd6870c65aac17474e6bdc39721429f6397865447553c99e97f1b8e8"
+    }
+  ],
+  "behavior_observations": [
+    {
+      "case": "reference header report control",
+      "observed_from_raw": "At CountedClassHeaders, original report is Partial with budget_exceeded_class_headers diagnostic and one HLeaf header read; wrapper handoff is Cancelled, with stages ReferenceOverloadPrebody then DirectParentAccessorPrebody.",
+      "first_failing_assertion": "The in-flight report test panics at src/facade.rs:47322 with Cancelled where the test expects the original report channel.",
+      "not_claimed": "Assertions after that first panic did not execute."
+    },
+    {
+      "case": "real accepted-charge cancellation",
+      "observed_from_raw": "The captured handoff is Cancelled, original error is cooperative cancellation, and stage trail includes DirectParentAccessorPrebody after ReferenceOverloadPrebody.",
+      "first_failing_assertion": "The in-flight cancellation test first rejects a later Checkpoint after cancellation; its failure message contains [Checkpoint].",
+      "not_claimed": "Any assertions after the first panic did not execute; the separate captured observation does not establish later exact work beyond the recorded stage/ledger evidence."
+    },
+    {
+      "case": "real deadline",
+      "observed_from_raw": "The captured original error is budget_exceeded_elapsed_millis / ElapsedMillis, while class execution and wrapper handoff are Cancelled.",
+      "first_failing_assertion": "The in-flight deadline test panics at src/facade.rs:47309 with Cancelled where it expects preservation of the first Error.",
+      "not_claimed": "Assertions after that first panic did not execute."
+    },
+    {
+      "case": "public ledger header refusal",
+      "observed_from_raw": "The test panics with Cancelled and usage analysis_steps=229 at its first expected-cause assertion.",
+      "first_failing_assertion": "em11_first_reference_header_ledger_stop_keeps_original_budget_cause fails before its remaining checks.",
+      "not_claimed": "Later assertions within that test did not execute."
+    },
+    {
+      "case": "plain public header refusal",
+      "observed_from_raw": "At the first analysis-step assertion, actual is 253 and expected is 229.",
+      "first_failing_assertion": "em11_plain_header_stop_pays_no_later_snapshot_analysis_work fails at the 253-versus-229 assertion.",
+      "not_claimed": "Assertions after that first panic did not execute."
+    },
+    {
+      "case": "CLI cap-one header refusal",
+      "observed_from_raw": "At the first analysis-step assertion, actual is Some(253) and expected is Some(229).",
+      "first_failing_assertion": "em11_cli_cap_one_does_not_pay_the_later_snapshot_proof fails at the 253-versus-229 assertion.",
+      "not_claimed": "Assertions after that first panic did not execute."
+    }
+  ],
+  "overall_test_counts": {
+    "inflight_command": {
+      "passed": 12,
+      "failed": 3,
+      "ignored": 0
+    },
+    "public_command": {
+      "passed": 2,
+      "failed": 2,
+      "ignored": 0
+    },
+    "cli_command": {
+      "passed": 1,
+      "failed": 1,
+      "ignored": 0
+    },
+    "total_test_invocations": 21,
+    "total_passed": 15,
+    "total_failed": 6,
+    "total_ignored": 0
+  },
+  "interpretation": "This is a verified old-behavior red baseline for the later local fix. It does not demonstrate that any fix exists or passes.",
+  "cross_check": {
+    "root_acceptance_file": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-root-acceptance-v1.json",
+    "root_acceptance_status": "accepted_root_actual_old_behavior_reds",
+    "root_acceptance_scope_agrees": "3 new inflight,2 public and1 CLI fail at behavior assertions;12 prior inflight+wide/cap2 controls pass; later assertions after first failures not claimed executed"
+  }
+}

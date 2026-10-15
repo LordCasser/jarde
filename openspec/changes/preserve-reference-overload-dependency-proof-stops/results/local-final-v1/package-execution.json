@@ -1,0 +1,26 @@
+{
+  "status": "packaged_and_reopened_verified",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-local-evidence-package-v1/run-v1/reference-overload-final-local-evidence-v1.tar.gz",
+    "bytes": 4850478,
+    "sha256": "1ebca2ca959c5c81663d75e4bad7cfdb5531da8498d35ac04a9ab07114f0b961"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-local-evidence-package-v1/run-v1/manifest.json",
+    "bytes": 1553700,
+    "sha256": "c355646808bb927a2855738a6e07d05843128b8d28599dd6d72d5147472f3cf4"
+  },
+  "allowlist": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-local-evidence-package-v1/run-v1/allowlist.json",
+    "bytes": 1553408,
+    "sha256": "9a496a5452d9bbf87fe5b3d2430c9e912a3a224279be439b311c3b33e0c69b99"
+  },
+  "packager": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-local-evidence-package-v1/collect.py",
+    "bytes": 11538,
+    "sha256": "460f4ca8a19342af9c36d4713a40dd0ff9faa8797b6c47b9027413aa4cd4c9fd"
+  },
+  "payload_files": 178,
+  "tar_members": 179,
+  "raw_files": 94
+}

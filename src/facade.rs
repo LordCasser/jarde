@@ -22121,6 +22121,13 @@ fn resolve_class_source_dependency_read_raw_with_stop(
         },
         budget,
     )?;
+    #[cfg(test)]
+    class_source_proof_inflight_tests::note_original_report(
+        enclosing,
+        &resolution.execution,
+        &resolution.diagnostics,
+        budget,
+    );
     merge_execution(execution, resolution.execution.clone());
     if let Some(stopped) = stopped
         && ends_the_request(&resolution.execution)
@@ -25913,27 +25920,6 @@ fn single_reference_parameter(descriptor: &[u8]) -> Option<&[u8]> {
     (tail.get(end + 1) == Some(&b')') && tail.len() > end + 2).then_some(&tail[..end])
 }
 
-fn selected_reference_header(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
-    owner: &[u8],
-    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
-    execution: &mut ExecutionReport,
-    budget: &mut Budget,
-) -> Result<Option<ReferenceClassHeader>> {
-    selected_reference_header_with(ir, owner, cache, budget, |budget| {
-        resolve_class_source_dependency_read_raw(
-            content,
-            &request.environment,
-            Some(&request.method),
-            owner,
-            execution,
-            budget,
-        )
-    })
-}
-
 fn selected_dependency_proof_header(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -25945,7 +25931,7 @@ fn selected_dependency_proof_header(
 ) -> DependencyProofResult<Option<ReferenceClassHeader>> {
     selected_reference_header_with(ir, owner, cache, budget, |budget| {
         #[cfg(test)]
-        class_source_proof_inflight_tests::note_header_read(owner);
+        class_source_proof_inflight_tests::note_header_read(&request.method, owner);
         resolve_dependency_proof_read(
             content,
             &request.environment,
@@ -25990,7 +25976,7 @@ fn platform_class_unprovided(
     request: &crate::ir::MethodAnalysisRequest,
     owner: &[u8],
     budget: &mut Budget,
-) -> Result<bool> {
+) -> DependencyProofResult<bool> {
     let resolution = jarde_jvm::resolve_symbol(
         content,
         &ResolutionRequest {
@@ -26007,6 +25993,19 @@ fn platform_class_unprovided(
         },
         budget,
     )?;
+    #[cfg(test)]
+    class_source_proof_inflight_tests::note_original_report(
+        Some(&request.method),
+        &resolution.execution,
+        &resolution.diagnostics,
+        budget,
+    );
+    if ends_the_request(&resolution.execution) {
+        return Err(DependencyProofFailure::Report {
+            execution: Box::new(resolution.execution),
+            diagnostics: resolution.diagnostics,
+        });
+    }
     Ok(resolution.state == Some(ResolutionState::Missing)
         && matches!(resolution.execution, ExecutionReport::Complete { .. })
         && resolution.environment_problems.is_empty()
@@ -26023,7 +26022,7 @@ fn proved_reference_widening(
     cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
-) -> Result<bool> {
+) -> DependencyProofResult<bool> {
     if source == target {
         return Ok(false);
     }
@@ -26044,7 +26043,7 @@ fn proved_reference_widening(
             && platform_class_unprovided(content, request, target, budget)?);
     }
 
-    snapshot_header_chain_widens(
+    snapshot_dependency_proof_widens(
         content,
         request,
         ir,
@@ -26121,22 +26120,6 @@ fn snapshot_header_chain_widens_try<E: From<Error>>(
         );
     }
     Ok(false)
-}
-
-fn snapshot_header_chain_widens(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
-    source: &[u8],
-    target: &[u8],
-    max_depth: u64,
-    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
-    execution: &mut ExecutionReport,
-    budget: &mut Budget,
-) -> Result<bool> {
-    snapshot_header_chain_widens_with(source, target, max_depth, budget, |owner, budget| {
-        selected_reference_header(content, request, ir, owner, cache, execution, budget)
-    })
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -26608,7 +26591,7 @@ fn unique_reference_overload_target(
     cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
-) -> Result<bool> {
+) -> DependencyProofResult<bool> {
     let mut current = owner.to_vec();
     let mut visited = std::collections::BTreeSet::new();
     let mut exact = 0_u32;
@@ -26620,8 +26603,9 @@ fn unique_reference_overload_target(
         if !visited.insert(current.clone()) || current == b"java/lang/Object" {
             return Ok(false);
         }
-        let Some(header) =
-            selected_reference_header(content, request, ir, &current, cache, execution, budget)?
+        let Some(header) = selected_dependency_proof_header(
+            content, request, ir, &current, cache, execution, budget,
+        )?
         else {
             return Ok(false);
         };
@@ -26713,8 +26697,14 @@ fn prove_reference_overload_calls(
     request: &crate::ir::MethodAnalysisRequest,
     ir: &jarde_jvm::method_ir::MethodIr,
     budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
+) -> DependencyProofResult<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
     use jarde_reader::classfile::{cp_class_name, cp_entry};
+    #[cfg(test)]
+    class_source_proof_inflight_tests::at(
+        ClassProofStage::ReferenceOverloadPrebody,
+        &request.method,
+        budget,
+    );
     let Some(code) = ir.code() else {
         return Ok(Vec::new());
     };
@@ -26812,19 +26802,6 @@ fn prove_reference_overload_calls(
         }
     }
     Ok(proved)
-}
-
-fn reference_overload_calls_presented(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
-    budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
-    match prove_reference_overload_calls(content, request, ir, budget) {
-        Ok(proved) => Ok(proved),
-        Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
-        Err(error) => Err(error),
-    }
 }
 
 /// The hierarchy walk's bound (design decision): a chain deeper than eight classes is not walked,
@@ -42744,8 +42721,16 @@ fn recovery_from_with_class_candidates(
                 }
             };
         let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
-            let mut calls =
-                reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
+            let calls = prove_reference_overload_calls(content, request, analyzed.ir(), budget);
+            #[cfg(test)]
+            if let Err(DependencyProofFailure::Error(error)) = &calls {
+                class_source_proof_inflight_tests::note_original_error(
+                    &request.method,
+                    error,
+                    budget,
+                );
+            }
+            let mut calls = calls?;
             calls.extend(prove_direct_parent_accessor_calls(
                 content,
                 request,
@@ -42783,6 +42768,13 @@ fn recovery_from_with_class_candidates(
             return Err(error);
         }
         Err(stopped) => {
+            #[cfg(test)]
+            class_source_proof_inflight_tests::at_method_stop(
+                &request.method,
+                &analyzed.report().execution,
+                budget,
+                &stopped,
+            );
             let reason = stopped.recovery_reason();
             let (execution, diagnostics) =
                 stopped.into_execution(budget, Some(definition_provenance(&request.method.owner)));
@@ -42794,6 +42786,8 @@ fn recovery_from_with_class_candidates(
                 execution,
                 diagnostics,
             );
+            #[cfg(test)]
+            class_source_proof_inflight_tests::note_pending_recovery(&request.method, &recovery);
             let analysis = analyzed.report();
             crate::d0_counts::recovery_presented_run();
             crate::d0_counts::owned_records(
@@ -42824,6 +42818,8 @@ fn recovery_from_with_class_candidates(
             ));
         }
     };
+    #[cfg(test)]
+    class_source_proof_inflight_tests::at(ClassProofStage::BodyRecovery, &request.method, budget);
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
     // established and the environment the run was validated under. This is the entry's statement and
@@ -46870,6 +46866,8 @@ mod common_instance_array_initializer_tests {
 #[cfg(test)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ClassProofStage {
+    ReferenceOverloadPrebody,
+    BodyRecovery,
     SnapshotPrebody,
     DoubleBracePostbody,
     DirectParentAccessorPrebody,
@@ -46902,6 +46900,13 @@ mod class_source_proof_inflight_tests {
         pub token: CancellationToken,
         pub budget_token: CancellationToken,
         pub usage_at_entry: UsageSnapshot,
+        pub method: PhysicalMethodId,
+        pub original_usage: Mutex<Option<UsageSnapshot>>,
+        pub original_report: Mutex<Option<(ExecutionReport, Vec<Diagnostic>)>>,
+        pub original_error: Mutex<Option<(String, String)>>,
+        pub handoff_method: Mutex<Option<PhysicalMethodId>>,
+        pub handoff_analysis: Mutex<Option<ExecutionReport>>,
+        pub pending_recovery: Mutex<Option<jarde_java::RecoveryReport>>,
         pub usage_at_stop: Mutex<Option<UsageSnapshot>>,
         pub stop_from_report: Mutex<Option<bool>>,
         pub report_diagnostics: Mutex<Option<Vec<Diagnostic>>>,
@@ -46936,10 +46941,11 @@ mod class_source_proof_inflight_tests {
         }
     }
 
-    #[derive(Clone, Copy)]
+    #[derive(Clone)]
     struct Armed {
         stage: ClassProofStage,
         control: InFlightControl,
+        method: Option<PhysicalMethodId>,
     }
     thread_local! {
         static ARMED: RefCell<Option<Armed>> = const { RefCell::new(None) };
@@ -46964,26 +46970,48 @@ mod class_source_proof_inflight_tests {
                 slot.borrow().is_none(),
                 "class-source proof controls do not nest"
             );
-            slot.replace(Some(Armed { stage, control }));
+            slot.replace(Some(Armed {
+                stage,
+                control,
+                method: None,
+            }));
         });
         Guard
+    }
+
+    fn arm_method(method: &PhysicalMethodId, control: InFlightControl) -> Guard {
+        let guard = arm(ClassProofStage::ReferenceOverloadPrebody, control);
+        ARMED.with(|slot| slot.borrow_mut().as_mut().unwrap().method = Some(method.clone()));
+        guard
     }
 
     /// Called at the real proof boundary. The new operation ledger uses the current limits and
     /// shared or independent token. Deadline/header modes change only their ledger limits; no stop
     /// is injected.
     pub(super) fn at(stage: ClassProofStage, method: &PhysicalMethodId, budget: &mut Budget) {
-        let selected = match stage {
-            ClassProofStage::SnapshotPrebody | ClassProofStage::DoubleBracePostbody => {
-                method.name.0 == b"main" && method.descriptor.0 == b"([Ljava/lang/String;)V"
-            }
-            ClassProofStage::DirectParentAccessorPrebody
-            | ClassProofStage::DirectParentFieldsPrebody => {
-                method.name.0 == b"set"
-                    && (method.descriptor.0 == b"(ZZ)V"
-                        || method.descriptor.0 == b"(Ldt29/FieldCast$B;Z)V")
-            }
-        };
+        // Once active, observe every subsequent stage of exactly this physical method. The
+        // historical main/set selectors must not hide a later stage of the new run() control.
+        let selected = OBSERVED
+            .with(|slot| slot.borrow().as_ref().map(|o| &o.method == method))
+            .or_else(|| {
+                ARMED.with(|slot| {
+                    slot.borrow()
+                        .as_ref()
+                        .and_then(|a| a.method.as_ref().map(|expected| expected == method))
+                })
+            })
+            .unwrap_or_else(|| match stage {
+                ClassProofStage::ReferenceOverloadPrebody | ClassProofStage::BodyRecovery => false,
+                ClassProofStage::SnapshotPrebody | ClassProofStage::DoubleBracePostbody => {
+                    method.name.0 == b"main" && method.descriptor.0 == b"([Ljava/lang/String;)V"
+                }
+                ClassProofStage::DirectParentAccessorPrebody
+                | ClassProofStage::DirectParentFieldsPrebody => {
+                    method.name.0 == b"set"
+                        && (method.descriptor.0 == b"(ZZ)V"
+                            || method.descriptor.0 == b"(Ldt29/FieldCast$B;Z)V")
+                }
+            });
         if !selected {
             return;
         }
@@ -46993,7 +47021,11 @@ mod class_source_proof_inflight_tests {
             }
         });
         let armed = ARMED.with(|slot| {
-            if slot.borrow().is_some_and(|armed| armed.stage == stage) {
+            if slot
+                .borrow()
+                .as_ref()
+                .is_some_and(|armed| armed.stage == stage)
+            {
                 slot.borrow_mut().take()
             } else {
                 None
@@ -47012,7 +47044,8 @@ mod class_source_proof_inflight_tests {
         // that real API boundary for both prebody controls; postbody retains the shared token.
         let token = if matches!(
             stage,
-            ClassProofStage::SnapshotPrebody
+            ClassProofStage::ReferenceOverloadPrebody
+                | ClassProofStage::SnapshotPrebody
                 | ClassProofStage::DirectParentAccessorPrebody
                 | ClassProofStage::DirectParentFieldsPrebody
         ) {
@@ -47032,6 +47065,13 @@ mod class_source_proof_inflight_tests {
             token,
             budget_token,
             usage_at_entry,
+            method: method.clone(),
+            original_usage: Mutex::new(None),
+            original_report: Mutex::new(None),
+            original_error: Mutex::new(None),
+            handoff_method: Mutex::new(None),
+            handoff_analysis: Mutex::new(None),
+            pending_recovery: Mutex::new(None),
             usage_at_stop: Mutex::new(None),
             stop_from_report: Mutex::new(None),
             report_diagnostics: Mutex::new(None),
@@ -47083,10 +47123,73 @@ mod class_source_proof_inflight_tests {
     }
 
     // The resolver closure is reached only after both the IR and memoized-header shortcuts.
-    pub(super) fn note_header_read(owner: &[u8]) {
+    pub(super) fn note_header_read(method: &PhysicalMethodId, owner: &[u8]) {
         OBSERVED.with(|slot| {
-            if let Some(observer) = slot.borrow().as_ref() {
+            if let Some(observer) = slot.borrow().as_ref().filter(|o| &o.method == method) {
                 observer.header_reads.lock().unwrap().push(owner.to_vec());
+            }
+        });
+    }
+
+    pub(super) fn note_original_report(
+        method: Option<&PhysicalMethodId>,
+        execution: &ExecutionReport,
+        diagnostics: &[Diagnostic],
+        budget: &Budget,
+    ) {
+        if !ends_the_request(execution) {
+            return;
+        }
+        OBSERVED.with(|slot| {
+            if let Some(o) = slot.borrow().as_ref().filter(|o| Some(&o.method) == method) {
+                let mut usage = o.original_usage.lock().unwrap();
+                if usage.is_none() {
+                    *usage = Some(budget.usage());
+                    *o.original_report.lock().unwrap() =
+                        Some((execution.clone(), diagnostics.to_vec()));
+                }
+            }
+        });
+    }
+
+    pub(super) fn note_original_error(method: &PhysicalMethodId, error: &Error, budget: &Budget) {
+        if !error_ends_the_request(error, budget) {
+            return;
+        }
+        OBSERVED.with(|slot| {
+            if let Some(o) = slot.borrow().as_ref().filter(|o| &o.method == method) {
+                let mut usage = o.original_usage.lock().unwrap();
+                if usage.is_none() {
+                    *usage = Some(budget.usage());
+                    *o.original_error.lock().unwrap() =
+                        Some((error_code(error), error.to_string()));
+                }
+            }
+        });
+    }
+
+    pub(super) fn at_method_stop(
+        method: &PhysicalMethodId,
+        analysis: &ExecutionReport,
+        budget: &Budget,
+        failure: &DependencyProofFailure,
+    ) {
+        OBSERVED.with(|slot| {
+            if let Some(o) = slot.borrow().as_ref().filter(|o| &o.method == method) {
+                *o.handoff_method.lock().unwrap() = Some(method.clone());
+                *o.handoff_analysis.lock().unwrap() = Some(analysis.clone());
+            }
+        });
+        at_stop(budget, failure);
+    }
+
+    pub(super) fn note_pending_recovery(
+        method: &PhysicalMethodId,
+        report: &jarde_java::RecoveryReport,
+    ) {
+        OBSERVED.with(|slot| {
+            if let Some(o) = slot.borrow().as_ref().filter(|o| &o.method == method) {
+                *o.pending_recovery.lock().unwrap() = Some(report.clone());
             }
         });
     }
@@ -47352,6 +47455,9 @@ mod class_source_proof_inflight_tests {
             );
         }
         match stage {
+            ClassProofStage::ReferenceOverloadPrebody | ClassProofStage::BodyRecovery => {
+                unreachable!("separate EM11 control")
+            }
             ClassProofStage::DirectParentAccessorPrebody
             | ClassProofStage::DirectParentFieldsPrebody => {
                 unreachable!("direct-parent stages use their own original fixture controls");
@@ -47806,6 +47912,234 @@ mod class_source_proof_inflight_tests {
             InFlightControl::CountedClassHeaders,
             true,
         );
+    }
+    const EM11_JAR: &[u8] = include_bytes!("../tests/fixtures/em11-reference-overload.jar");
+
+    fn open_em11_reference() -> (ArtifactSnapshot, ClassSourceRequest) {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.class_headers = u64::MAX;
+        let snapshot = Engine::new()
+            .open(
+                ArtifactInput::bytes(EM11_JAR.to_vec()),
+                &mut Budget::new(limits),
+            )
+            .unwrap();
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("em11/InputHierarchyCalls"),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            },
+        };
+        (snapshot, request)
+    }
+
+    fn exercise_em11_reference_stop(control: InFlightControl) {
+        let (snapshot, request) = open_em11_reference();
+        let wide = run_h1(&snapshot, &request);
+        assert!(matches!(wide.execution, ExecutionReport::Complete { .. }));
+        let run = wide
+            .methods
+            .iter()
+            .find(|member| {
+                member.item.identity.name.0 == b"run"
+                    && member.item.identity.descriptor.0 == b"()Ljava/lang/String;"
+            })
+            .expect("the selected physical overload caller exists");
+        assert!(run.text.contains("take((em11.HMid) new em11.HLeaf())"));
+        let method = run.item.identity.clone();
+        let guard = arm_method(&method, control);
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.class_headers = u64::MAX;
+        let mut budget = Budget::new(limits);
+        let crate::OperationOutcome::Performed(stopped) = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget,
+            )
+            .unwrap()
+        else {
+            panic!("a legal public request retains its report");
+        };
+        let observer = observation();
+        drop(guard);
+        eprintln!(
+            "EM11 proof stop observation {}",
+            serde_json::json!({
+                "control": format!("{control:?}"), "method": method,
+                "original_report": *observer.original_report.lock().unwrap(),
+                "original_error": *observer.original_error.lock().unwrap(),
+                "original_usage": *observer.original_usage.lock().unwrap(),
+                "handoff_usage": *observer.usage_at_stop.lock().unwrap(),
+                "handoff_report_channel": *observer.stop_from_report.lock().unwrap(),
+                "handoff_method": *observer.handoff_method.lock().unwrap(),
+                "header_reads": *observer.header_reads.lock().unwrap(),
+                "stages": observer.stages.lock().unwrap().iter().map(|s|format!("{s:?}")).collect::<Vec<_>>(),
+                "ledger_entries": observer.entries.lock().unwrap().iter().map(|s|format!("{s:?}")).collect::<Vec<_>>(),
+                "class_execution": stopped.execution,
+            })
+        );
+        let from_report = matches!(control, InFlightControl::CountedClassHeaders);
+        assert_eq!(
+            observer.original_report.lock().unwrap().is_some(),
+            from_report,
+            "the real resolver report is observed before any lossy adapter"
+        );
+        assert_eq!(
+            observer.original_error.lock().unwrap().is_some(),
+            !from_report,
+            "the real directly returned error is observed before its old catch arm"
+        );
+        assert_execution_stop(&stopped, control);
+        assert_observer_stopped(&observer, control);
+        assert_eq!(
+            *observer.stages.lock().unwrap(),
+            vec![ClassProofStage::ReferenceOverloadPrebody],
+            "same-method direct-parent, snapshot and postbody stages must stay observable and unentered"
+        );
+        assert_eq!(
+            *observer.handoff_method.lock().unwrap(),
+            Some(method.clone())
+        );
+        assert!(
+            matches!(
+                *observer.handoff_analysis.lock().unwrap(),
+                Some(ExecutionReport::Complete { .. })
+            ),
+            "the unpublished stopped member retains its completed analysis"
+        );
+        assert_eq!(
+            *observer.stop_from_report.lock().unwrap(),
+            Some(from_report)
+        );
+        assert!(
+            !observer.budget_token.is_cancelled(),
+            "the local budget token stays independent"
+        );
+        assert_no_post_stop_body_work(&stopped, &observer);
+        let original_usage = observer.original_usage.lock().unwrap().clone().unwrap();
+        let handoff_usage = observer.usage_at_stop.lock().unwrap().clone().unwrap();
+        for dimension in CountedBudgetDimension::ALL {
+            assert_eq!(
+                original_usage.counted_usage(dimension),
+                handoff_usage.counted_usage(dimension),
+                "the first origin reaches handoff with no extra work for {dimension:?}"
+            );
+        }
+        let pending = observer.pending_recovery.lock().unwrap();
+        let pending = pending
+            .as_ref()
+            .expect("the existing prebody factory returned its actual report");
+        assert!(!pending.produced());
+        assert_eq!(pending.content, jarde_java::RecoveryContent::NotProduced);
+        assert!(pending.text.is_empty() && pending.source_map.is_empty());
+        if from_report {
+            assert_eq!(
+                *observer.header_reads.lock().unwrap(),
+                vec![b"em11/HLeaf".to_vec()]
+            );
+            let original = observer.original_report.lock().unwrap();
+            let (execution, diagnostics) = original.as_ref().unwrap();
+            assert!(!diagnostics.is_empty());
+            assert_eq!(
+                serde_json::to_value(&pending.execution).unwrap(),
+                serde_json::to_value(execution).unwrap()
+            );
+            assert_eq!(
+                serde_json::to_value(pending.diagnostics.as_slice()).unwrap(),
+                serde_json::to_value(diagnostics).unwrap()
+            );
+            for d in diagnostics {
+                assert!(
+                    stopped
+                        .diagnostics
+                        .iter()
+                        .any(|actual| serde_json::to_value(actual).unwrap()
+                            == serde_json::to_value(d).unwrap())
+                );
+            }
+        } else {
+            assert!(observer.header_reads.lock().unwrap().is_empty());
+            let original = observer.original_error.lock().unwrap();
+            assert_eq!(*original, *observer.error_code_message.lock().unwrap());
+            let (code, message) = original.as_ref().unwrap();
+            assert!(
+                pending
+                    .diagnostics
+                    .iter()
+                    .any(|d| &d.code == code && &d.message == message)
+            );
+        }
+        let first = observer.first_ledger_stop.lock().unwrap().clone().unwrap();
+        assert_eq!(budget.ledger().unwrap().stop_reason(), Some(first.clone()));
+        match control {
+            InFlightControl::CancelAfterRealCharge => {
+                assert_eq!(first.kind, BulkStopKind::Cancelled);
+                assert_eq!(observer.charge_count.load(Ordering::SeqCst), 1);
+                assert!(original_usage.analysis_steps > observer.usage_at_entry.analysis_steps);
+            }
+            InFlightControl::ExpiredLedgerCheckpoint => {
+                assert_eq!(first.dimension, Some(BudgetDimension::ElapsedMillis))
+            }
+            InFlightControl::CountedClassHeaders => {
+                assert_eq!(first.dimension, Some(BudgetDimension::ClassHeaders))
+            }
+        }
+        let prefix: Vec<_> = wide
+            .methods
+            .iter()
+            .filter(|m| m.item.index < run.item.index)
+            .collect();
+        assert_eq!(
+            prefix.len(),
+            3,
+            "constructor and two take overloads precede run"
+        );
+        assert_eq!(
+            stopped.methods.len(),
+            prefix.len(),
+            "do not publish an unpaid stopped record"
+        );
+        for (actual, expected) in stopped.methods.iter().zip(prefix) {
+            assert_eq!(actual.item.identity, expected.item.identity);
+            assert_eq!(actual.text, expected.text);
+            let (
+                class_source::ClassSourceOutcome::Recovered { report: a, .. },
+                class_source::ClassSourceOutcome::Recovered { report: b, .. },
+            ) = (&actual.outcome, &expected.outcome)
+            else {
+                panic!("the paid prefix retains recovered method results");
+            };
+            assert_eq!(a.source_map.segments(), b.source_map.segments());
+        }
+    }
+
+    #[test]
+    fn public_em11_reference_real_charge_cancellation_has_no_later_proof_work() {
+        exercise_em11_reference_stop(InFlightControl::CancelAfterRealCharge);
+    }
+
+    #[test]
+    fn public_em11_reference_real_deadline_preserves_first_error() {
+        exercise_em11_reference_stop(InFlightControl::ExpiredLedgerCheckpoint);
+    }
+
+    #[test]
+    fn public_em11_reference_header_report_preserves_original_stop_and_diagnostics() {
+        exercise_em11_reference_stop(InFlightControl::CountedClassHeaders);
     }
 }
 

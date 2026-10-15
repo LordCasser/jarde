@@ -1,0 +1,239 @@
+{
+  "schema": "reference-overload-old-production-evidence-v1",
+  "status": "packaged_and_reopened_verified",
+  "items": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-old-evidence-package-v1/package.py",
+      "bytes": 6619,
+      "sha256": "8eeaa134a4247c854e93c91e63f9eba3818f884a66d2a1ae55c5b026da429d84",
+      "archive_path": "reference-overload-old-v1/CORE/reference-overload-old-evidence-package-v1/package.py"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+      "bytes": 5001,
+      "sha256": "7f424cfedc412c210679cf2d36377bc94b1fb599217b41e8dd4e6fbf0129b9e2",
+      "archive_path": "reference-overload-old-v1/compiled-old-overlays/tests/fixtures/em11-reference-overload.jar"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/facade-before.rs",
+      "bytes": 2065541,
+      "sha256": "3f74329c3d6feea0a51434f33f60f5e84a3b3bf4d5c63f55a94bc66a153e0880",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/facade-before.rs"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/facade-old-observed-v1.rs",
+      "bytes": 2081038,
+      "sha256": "0debb1aa5d1c52cd20eedb7f955b09332ab4630c07f70e407a33d0ebd2831612",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/facade-old-observed-v1.rs"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-cli-tests.rs",
+      "bytes": 58654,
+      "sha256": "a1c268a7acea5a2a6476218e849009cc5c4d3c78d8cdd55afde7007a134c8225",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-cli-tests.rs"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-commands-v1.json",
+      "bytes": 722,
+      "sha256": "885c07f72343a07c45698ebb4425b5d0df2cdaab2cd7adbd56d86d2fee7c85ca",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-native-commands-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.json",
+      "bytes": 1834,
+      "sha256": "0d7956f6dd937c9dd5139887d4ea266f0c49fdb4065515ea99fde86974fcd85c",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-native-dispatch.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.stderr.raw",
+      "bytes": 113,
+      "sha256": "98dcb64a6f4e46ec92282e2ee67f9a3072c741c6cb27696e262a80438955b097",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-native-dispatch.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-native-dispatch.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-independent-audit-v1.json",
+      "bytes": 14023,
+      "sha256": "eaa1a65635514eb68dda2b45705aefc1ccc78068145c4b29442697f27e33908d",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-native-independent-audit-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-root-acceptance-v1.json",
+      "bytes": 611,
+      "sha256": "0473d11ddc1e6c1801094f4cf5861b734b488ab7fd8f1a4d8cc2531a1b4821e6",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-native-root-acceptance-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-observer-static-review-v1.json",
+      "bytes": 4308,
+      "sha256": "5e55e31367f5ecdf62c6790a3beb0fb5892742e72c10671ddb29545df634ade5",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-observer-static-review-v1.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-public-tests.rs",
+      "bytes": 7601,
+      "sha256": "b4ba0f253ba7f8f2509f060376e93771f1d66e162a877d3838b5d57fb849ea35",
+      "archive_path": "reference-overload-old-v1/reference-overload-apply-root-v1/old-public-tests.rs"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/1.stderr.raw",
+      "bytes": 13994,
+      "sha256": "1eccd15ea85825fc3ab7de97b8dca97c88fab50b2e7ac612f094620dfbb2f9fb",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/1.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/1.stdout.raw",
+      "bytes": 75108,
+      "sha256": "693bd4adc020e4f78acfeddaf19690bef0e5fddd0c458eb56dfc084f35a9314c",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/1.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/2.stderr.raw",
+      "bytes": 1327,
+      "sha256": "8a894a38579a780ba413c65f52da0046d40fe3b2edc12625138624578bc26e64",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/2.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/2.stdout.raw",
+      "bytes": 74161,
+      "sha256": "f3ef1c999a7ca9a16ba3e87da68cbba4edb73bf6163011cbd9f72596bea3564a",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/2.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/3.stderr.raw",
+      "bytes": 2116,
+      "sha256": "c6dceee728573bd15714cc096d8b3a6dfb1c5aa313d530074c34bce7ac0ace4b",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/3.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/3.stdout.raw",
+      "bytes": 57721,
+      "sha256": "89b12f7a785e68b39218deda7f3734686740f73c8759ae2dbfeb7866ef233d33",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/3.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "8405e3b4fd6870c65aac17474e6bdc39721429f6397865447553c99e97f1b8e8",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/4.stderr.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/4.stdout.raw"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/command_spec.json",
+      "bytes": 528,
+      "sha256": "cf6da0cdc4f94702bd0e8bbbd348b6d5067d8975fa3398466f8f408f006451d4",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/command_spec.json"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-old-native-v1/execution.json",
+      "bytes": 2157235,
+      "sha256": "8ec9f691fcae4249ce422637d5345d38f85932c01ae65046bf4e13669465411b",
+      "archive_path": "reference-overload-old-v1/reference-overload-old-native-v1/execution.json"
+    }
+  ],
+  "receipt_bound_raw_count": 8,
+  "dispatch_raw_bindings": [
+    {
+      "dispatch_record": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.json",
+        "bytes": 1834,
+        "sha256": "0d7956f6dd937c9dd5139887d4ea266f0c49fdb4065515ea99fde86974fcd85c"
+      },
+      "stream": "stdout",
+      "pin": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "binding_scope": "Explicit saved dispatch stream pair. Historical dispatch JSON has argv/exit/old-facade pin but no stream pins; these bytes are pinned here without rewriting that record."
+    },
+    {
+      "dispatch_record": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.json",
+        "bytes": 1834,
+        "sha256": "0d7956f6dd937c9dd5139887d4ea266f0c49fdb4065515ea99fde86974fcd85c"
+      },
+      "stream": "stderr",
+      "pin": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-dispatch.stderr.raw",
+        "bytes": 113,
+        "sha256": "98dcb64a6f4e46ec92282e2ee67f9a3072c741c6cb27696e262a80438955b097"
+      },
+      "binding_scope": "Explicit saved dispatch stream pair. Historical dispatch JSON has argv/exit/old-facade pin but no stream pins; these bytes are pinned here without rewriting that record."
+    }
+  ],
+  "baseline_git_commit": "7532d618800287aa147a878ef509201ded80b004",
+  "compiled_old_source_count": 4907,
+  "compiled_old_overlay_mapping": [
+    {
+      "compiled_old_path": "src/facade.rs",
+      "saved_original_pin": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/facade-old-observed-v1.rs",
+        "bytes": 2081038,
+        "sha256": "0debb1aa5d1c52cd20eedb7f955b09332ab4630c07f70e407a33d0ebd2831612"
+      },
+      "receipt_source_pin": {
+        "path": "src/facade.rs",
+        "bytes": 2081038,
+        "sha256": "0debb1aa5d1c52cd20eedb7f955b09332ab4630c07f70e407a33d0ebd2831612"
+      }
+    },
+    {
+      "compiled_old_path": "tests/reference_overload_dependency_proof_stops.rs",
+      "saved_original_pin": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-public-tests.rs",
+        "bytes": 7601,
+        "sha256": "b4ba0f253ba7f8f2509f060376e93771f1d66e162a877d3838b5d57fb849ea35"
+      },
+      "receipt_source_pin": {
+        "path": "tests/reference_overload_dependency_proof_stops.rs",
+        "bytes": 7601,
+        "sha256": "b4ba0f253ba7f8f2509f060376e93771f1d66e162a877d3838b5d57fb849ea35"
+      }
+    },
+    {
+      "compiled_old_path": "crates/jarde-cli/tests/class_source_cli.rs",
+      "saved_original_pin": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-cli-tests.rs",
+        "bytes": 58654,
+        "sha256": "a1c268a7acea5a2a6476218e849009cc5c4d3c78d8cdd55afde7007a134c8225"
+      },
+      "receipt_source_pin": {
+        "path": "crates/jarde-cli/tests/class_source_cli.rs",
+        "bytes": 58654,
+        "sha256": "a1c268a7acea5a2a6476218e849009cc5c4d3c78d8cdd55afde7007a134c8225"
+      }
+    },
+    {
+      "compiled_old_path": "tests/fixtures/em11-reference-overload.jar",
+      "saved_original_pin": {
+        "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+        "bytes": 5001,
+        "sha256": "7f424cfedc412c210679cf2d36377bc94b1fb599217b41e8dd4e6fbf0129b9e2"
+      },
+      "receipt_source_pin": {
+        "path": "tests/fixtures/em11-reference-overload.jar",
+        "bytes": 5001,
+        "sha256": "7f424cfedc412c210679cf2d36377bc94b1fb599217b41e8dd4e6fbf0129b9e2"
+      }
+    }
+  ],
+  "independent_audit_included": true,
+  "old_test_outcomes": {
+    "passed": 15,
+    "failed": 6,
+    "ignored": 0
+  },
+  "historical_receipt_status": "expected_command_outcomes_observed_pending_independent_acceptance",
+  "scope": "Actual old-production behavior reds only: 21 tests,15pass6fail;3cargo test101 and exact cargo clean0. Full original4907 before/after manifests remain in receipt. Reconstruct other source files from baseline7532d618800287aa147a878ef509201ded80b004 and overlay these four exact old source paths. Current fixed workspace facade/public/CLI files and new production candidate are not read or included. Assertions after each first failing behavior check were not executed and are not claimed; this is not fix acceptance. Native executables/toolchains and future CI excluded."
+}

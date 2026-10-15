@@ -1,0 +1,23 @@
+{
+  "status": "accepted_actual_em11_whole_source_replay",
+  "independent_audit": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/final-replay-independent-audit-v1.json",
+    "bytes": 112958,
+    "sha256": "3868fbf1645bbfb3d317a5354c206dbc87dce71015ef26f0e51059e52a5a9c8d"
+  },
+  "root_raw_check": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/final-replay-root-check-v1.json",
+    "bytes": 3823,
+    "sha256": "07bb62dcf74d2f7b658bb6011017666a0162094bf1c4391ec4d7e48673683919"
+  },
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/execution.json",
+    "bytes": 2848327,
+    "sha256": "ceba74c24621973ffbce4aa75f1a6eea4b79032a2f27e3be61a32e47f2373f91"
+  },
+  "generated_full_classes": 7,
+  "runtime_oracle_comparisons": 6,
+  "source_count": 4907,
+  "scope": "Java8/23 fixed five-line Runner on EM11 seven classes; no general semantic equivalence or corpus coverage increment",
+  "ci": "pending new product commit own CI"
+}

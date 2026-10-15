@@ -1,0 +1,3183 @@
+{
+  "schema": "final-replay-independent-audit-v1",
+  "status": "accepted",
+  "scope": "Independent cache/raw/source audit only; no native/toolchain/JDK/CLI/Git/OpenSpec execution and no repository writes.",
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/execution.json",
+    "sha256": "ceba74c24621973ffbce4aa75f1a6eea4b79032a2f27e3be61a32e47f2373f91",
+    "status": "captured_21_command_em11_final_cli_source_runtime_budget_replay_pending_independent_review",
+    "command_count": 21
+  },
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "mode": "0555",
+    "focus_source_count": 4907
+  },
+  "checks": {
+    "success_status": {
+      "passed": true,
+      "detail": "captured_21_command_em11_final_cli_source_runtime_budget_replay_pending_independent_review"
+    },
+    "21_commands": {
+      "passed": true,
+      "detail": 21
+    },
+    "all_42_raw_stream_pins": {
+      "passed": true,
+      "detail": {
+        "count": 42,
+        "mismatches": []
+      }
+    },
+    "frozen_cli_sha_bytes_mode": {
+      "passed": true,
+      "detail": {
+        "actual": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+          "bytes": 59657968,
+          "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396"
+        },
+        "mode": "0555",
+        "receipt": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+          "bytes": 59657968,
+          "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+          "mode": "0555",
+          "built_from": "target/debug/jarde-cli"
+        }
+      }
+    },
+    "build_receipt_binding": {
+      "passed": true,
+      "detail": {
+        "receipt_status": "expected_command_outcomes_observed_pending_independent_acceptance",
+        "source_count": 4907
+      }
+    },
+    "4907_current_product_sources_match_focus_receipt": {
+      "passed": true,
+      "detail": {
+        "count": 4907,
+        "mismatches": []
+      }
+    },
+    "harness_full_input_pins_before_after": {
+      "passed": true,
+      "detail": {
+        "count_before": 4930,
+        "count_after": 4930
+      }
+    },
+    "all_4930_input_files_match_manifest": {
+      "passed": true,
+      "detail": {
+        "mismatches": []
+      }
+    },
+    "target_absent": {
+      "passed": true,
+      "detail": {
+        "target_bytes_after": 0,
+        "free_bytes_after": 800294952960
+      }
+    },
+    "fixture_jar_pin": {
+      "passed": true,
+      "detail": {
+        "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+        "bytes": 5001,
+        "sha256": "7f424cfedc412c210679cf2d36377bc94b1fb599217b41e8dd4e6fbf0129b9e2"
+      }
+    },
+    "fixed_219_byte_oracle": {
+      "passed": true,
+      "detail": {
+        "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333"
+      }
+    },
+    "seven_original_java_sources_unchanged": {
+      "passed": true,
+      "detail": [
+        {
+          "name": "OverloadCalls.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/OverloadCalls.java",
+          "bytes": 1161,
+          "sha256": "70e770c0ad6d8d7603424aad2f3ade770ca9a9dc088b20c743bd1d72c111f039",
+          "matches_history": true
+        },
+        {
+          "name": "HBase.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/HBase.java",
+          "bytes": 101,
+          "sha256": "7afd52333324334eab3fd0081c5886ec70e5719c41dea45fa979835ff5313c61",
+          "matches_history": true
+        },
+        {
+          "name": "HMid.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/HMid.java",
+          "bytes": 141,
+          "sha256": "7ccca56a237ba487007d840396175e1965298c6df5d38f0dc0b14b46c19e8242",
+          "matches_history": true
+        },
+        {
+          "name": "HLeaf.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/HLeaf.java",
+          "bytes": 224,
+          "sha256": "7e2d7510ea267a477d846a0462958e0000daf144e9c035c47ba7439eaac0f865",
+          "matches_history": true
+        },
+        {
+          "name": "HierarchyCalls.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/HierarchyCalls.java",
+          "bytes": 575,
+          "sha256": "645cb3ac7f814c00df0843f9062640b3945a10297edd27a852593c4a49b71036",
+          "matches_history": true
+        },
+        {
+          "name": "InputHierarchyCalls.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/InputHierarchyCalls.java",
+          "bytes": 255,
+          "sha256": "7ed377093f91aa83f12140314388fec0d98bff823ea3a61674bf80766036860d",
+          "matches_history": true
+        },
+        {
+          "name": "Runner.java",
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/Runner.java",
+          "bytes": 367,
+          "sha256": "7e4ef28ad861e965b445aca8810e277c186417b45573cd0ccec8738377347d79",
+          "matches_history": true
+        }
+      ]
+    },
+    "all_expected_exit_codes": {
+      "passed": true,
+      "detail": []
+    },
+    "exact_seven_class_jar_inventory": {
+      "passed": true,
+      "detail": [
+        "em11/HBase.class",
+        "em11/HLeaf.class",
+        "em11/HMid.class",
+        "em11/HierarchyCalls.class",
+        "em11/InputHierarchyCalls.class",
+        "em11/OverloadCalls.class",
+        "em11/Runner.class"
+      ]
+    },
+    "all_original_source_compilation_classes_byte_equal_jar": {
+      "passed": true,
+      "detail": [
+        {
+          "entry": "em11/OverloadCalls.class",
+          "jar_bytes": 1394,
+          "jar_sha256": "64baa8dcfdf1bd01ee1d6cb077c7fed7362a0c374d6f195c45fd1c6393c2a92f",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        },
+        {
+          "entry": "em11/HBase.class",
+          "jar_bytes": 219,
+          "jar_sha256": "d8cd1a76c2c8735bd6ab570ec4bf548a41897153cd3889324b02099f7f0dd509",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        },
+        {
+          "entry": "em11/HMid.class",
+          "jar_bytes": 286,
+          "jar_sha256": "0e3fe0ddb9374f632c0be7a1d34091ad53ee5bdd69b5ba957fa23fe6373b9737",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        },
+        {
+          "entry": "em11/HLeaf.class",
+          "jar_bytes": 342,
+          "jar_sha256": "a022590ccfe8189cb732762f193aac7cf67730e98b0f202f3b351fdeee5e67c7",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        },
+        {
+          "entry": "em11/HierarchyCalls.class",
+          "jar_bytes": 742,
+          "jar_sha256": "2f8553ab161dd522ec4e25b4edead504c0e78fb2626476104317c54c6c4b0794",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        },
+        {
+          "entry": "em11/InputHierarchyCalls.class",
+          "jar_bytes": 389,
+          "jar_sha256": "bb50ace457448dfbc1dd2a42a1a8a2413250b097d03e5bf5c235230cccb925b4",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        },
+        {
+          "entry": "em11/Runner.class",
+          "jar_bytes": 789,
+          "jar_sha256": "bd0fed29f45a505a3ac6851371f61b28119e14a94a811d0ac807a29995fa08d2",
+          "compiled_bytes_equal": true,
+          "compiled_pin_matches": true,
+          "recorded_byte_identical": true,
+          "matches_historical_sha256": true
+        }
+      ]
+    },
+    "seven_complete_wide_reports_and_exact_text_saved": {
+      "passed": true,
+      "detail": [
+        {
+          "class": "em11/OverloadCalls",
+          "execution_status": "complete",
+          "report_raw_bytes": 154325,
+          "text_bytes": 3496,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/OverloadCalls.class",
+          "all_checks": true
+        },
+        {
+          "class": "em11/HBase",
+          "execution_status": "complete",
+          "report_raw_bytes": 19988,
+          "text_bytes": 960,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/HBase.class",
+          "all_checks": true
+        },
+        {
+          "class": "em11/HMid",
+          "execution_status": "complete",
+          "report_raw_bytes": 20445,
+          "text_bytes": 1158,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/HMid.class",
+          "all_checks": true
+        },
+        {
+          "class": "em11/HLeaf",
+          "execution_status": "complete",
+          "report_raw_bytes": 25584,
+          "text_bytes": 1268,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/HLeaf.class",
+          "all_checks": true
+        },
+        {
+          "class": "em11/HierarchyCalls",
+          "execution_status": "complete",
+          "report_raw_bytes": 70874,
+          "text_bytes": 1581,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/HierarchyCalls.class",
+          "all_checks": true
+        },
+        {
+          "class": "em11/InputHierarchyCalls",
+          "execution_status": "complete",
+          "report_raw_bytes": 41164,
+          "text_bytes": 1633,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/InputHierarchyCalls.class",
+          "all_checks": true
+        },
+        {
+          "class": "em11/Runner",
+          "execution_status": "complete",
+          "report_raw_bytes": 55839,
+          "text_bytes": 1460,
+          "exact_report_copy": true,
+          "generated_java_equals_report_text": true,
+          "selected_entry": "em11/Runner.class",
+          "all_checks": true
+        }
+      ]
+    },
+    "one_compile_all_seven_report_java_unfiltered": {
+      "passed": true,
+      "detail": {
+        "compile_argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-d",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/OverloadCalls.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HBase.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HMid.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HLeaf.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HierarchyCalls.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/InputHierarchyCalls.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/Runner.java"
+        ],
+        "sources": [
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/OverloadCalls.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HBase.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HMid.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HLeaf.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/HierarchyCalls.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/InputHierarchyCalls.java",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/generated-java/em11/Runner.java"
+        ]
+      }
+    },
+    "rebuilt_class_inventory_exactly_seven": {
+      "passed": true,
+      "detail": [
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/HBase.class",
+          "bytes": 219,
+          "sha256": "d8cd1a76c2c8735bd6ab570ec4bf548a41897153cd3889324b02099f7f0dd509"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/HLeaf.class",
+          "bytes": 258,
+          "sha256": "fca61e5f2100700a1eab16b4ca0b0419a1e947cefab7be3ddf7a8c93d8851af1"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/HMid.class",
+          "bytes": 207,
+          "sha256": "59cab1596914f48a6df33e0a72f11a9fc9d39a2b240a135ad5eb7eb330765a23"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/HierarchyCalls.class",
+          "bytes": 704,
+          "sha256": "2e1b3897939868287788b65124fa87be3a46b21ed2b249297dd9f03252ff8ecb"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/InputHierarchyCalls.class",
+          "bytes": 389,
+          "sha256": "bb50ace457448dfbc1dd2a42a1a8a2413250b097d03e5bf5c235230cccb925b4"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/OverloadCalls.class",
+          "bytes": 1330,
+          "sha256": "1c67ab4df3782f8573607d149aa619b276b9c9eaa6a8e52fed7a747c6bc65eac"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes/em11/Runner.class",
+          "bytes": 789,
+          "sha256": "bd0fed29f45a505a3ac6851371f61b28119e14a94a811d0ac807a29995fa08d2"
+        }
+      ]
+    },
+    "original_runner_source_unchanged": {
+      "passed": true,
+      "detail": {
+        "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/Runner.java",
+        "bytes": 367,
+        "sha256": "7e4ef28ad861e965b445aca8810e277c186417b45573cd0ccec8738377347d79"
+      }
+    },
+    "crosscheck_runner_compiled_against_rebuilt_only": {
+      "passed": true,
+      "detail": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/Runner.java"
+      ]
+    },
+    "crosscheck_runner_first_runtime_classpath_no_original_jar": {
+      "passed": true,
+      "detail": {
+        "metadata": {
+          "source_pin": {
+            "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/input/em11/Runner.java",
+            "bytes": 367,
+            "sha256": "7e4ef28ad861e965b445aca8810e277c186417b45573cd0ccec8738377347d79"
+          },
+          "class_pin": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes/em11/Runner.class",
+            "bytes": 789,
+            "sha256": "bd0fed29f45a505a3ac6851371f61b28119e14a94a811d0ac807a29995fa08d2"
+          },
+          "compile_classpath_only_rebuilt": true,
+          "runtime_classpath_order": "original-runner-crosscheck-classes:rebuilt-classes"
+        },
+        "argv": [
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ],
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ]
+        ]
+      }
+    },
+    "six_runtime_runs_exact_five_line_oracle": {
+      "passed": true,
+      "detail": [
+        {
+          "label": "java8-original-jar",
+          "exit": 0,
+          "stdout_bytes": 219,
+          "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+          "exact_oracle": true,
+          "stderr_bytes": 0,
+          "stderr_empty": true,
+          "argv": [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+            "em11.Runner"
+          ]
+        },
+        {
+          "label": "java23-original-jar",
+          "exit": 0,
+          "stdout_bytes": 219,
+          "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+          "exact_oracle": true,
+          "stderr_bytes": 0,
+          "stderr_empty": true,
+          "argv": [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+            "em11.Runner"
+          ]
+        },
+        {
+          "label": "java8-all-seven-rebuilt",
+          "exit": 0,
+          "stdout_bytes": 219,
+          "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+          "exact_oracle": true,
+          "stderr_bytes": 0,
+          "stderr_empty": true,
+          "argv": [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ]
+        },
+        {
+          "label": "java23-all-seven-rebuilt",
+          "exit": 0,
+          "stdout_bytes": 219,
+          "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+          "exact_oracle": true,
+          "stderr_bytes": 0,
+          "stderr_empty": true,
+          "argv": [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ]
+        },
+        {
+          "label": "java8-original-Runner-first-rebuilt",
+          "exit": 0,
+          "stdout_bytes": 219,
+          "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+          "exact_oracle": true,
+          "stderr_bytes": 0,
+          "stderr_empty": true,
+          "argv": [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ]
+        },
+        {
+          "label": "java23-original-Runner-first-rebuilt",
+          "exit": 0,
+          "stdout_bytes": 219,
+          "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+          "exact_oracle": true,
+          "stderr_bytes": 0,
+          "stderr_empty": true,
+          "argv": [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ]
+        }
+      ]
+    },
+    "original_and_rebuilt_runtime_classpath_separation": {
+      "passed": true,
+      "detail": {
+        "original_jar": [
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+            "em11.Runner"
+          ],
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+            "em11.Runner"
+          ],
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ],
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ],
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ],
+          [
+            "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+            "em11.Runner"
+          ]
+        ]
+      }
+    },
+    "javap_code_five_physical_instructions": {
+      "passed": true,
+      "detail": {
+        "instructions": {
+          "new_0": true,
+          "dup_3": true,
+          "init_4": true,
+          "static_take_7": true,
+          "areturn_10": true
+        },
+        "run_method_block": "\n    descriptor: ()Ljava/lang/String;\n    Code:\n       0: new           #11                 // class em11/HLeaf\n       3: dup\n       4: invokespecial #13                 // Method em11/HLeaf.\"<init>\":()V\n       7: invokestatic  #14                 // Method take:(Lem11/HMid;)Ljava/lang/String;\n      10: areturn\n}\n",
+        "producer_bci": 0,
+        "constructor_bci": 4
+      }
+    },
+    "source_map_exact_cast_span_and_origin": {
+      "passed": true,
+      "detail": [
+        {
+          "i": 1,
+          "start": 203,
+          "end": 231,
+          "hex": "28656d31312e484d696429206e657720656d31312e484c6561662829",
+          "origin": {
+            "derived": [
+              {
+                "bci": 0,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    76,
+                    106,
+                    97,
+                    118,
+                    97,
+                    47,
+                    108,
+                    97,
+                    110,
+                    103,
+                    47,
+                    83,
+                    116,
+                    114,
+                    105,
+                    110,
+                    103,
+                    59
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                      "length": 389
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 4,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          101,
+                          109,
+                          49,
+                          49,
+                          47,
+                          73,
+                          110,
+                          112,
+                          117,
+                          116,
+                          72,
+                          105,
+                          101,
+                          114,
+                          97,
+                          114,
+                          99,
+                          104,
+                          121,
+                          67,
+                          97,
+                          108,
+                          108,
+                          115,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 3,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    76,
+                    106,
+                    97,
+                    118,
+                    97,
+                    47,
+                    108,
+                    97,
+                    110,
+                    103,
+                    47,
+                    83,
+                    116,
+                    114,
+                    105,
+                    110,
+                    103,
+                    59
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                      "length": 389
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 4,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          101,
+                          109,
+                          49,
+                          49,
+                          47,
+                          73,
+                          110,
+                          112,
+                          117,
+                          116,
+                          72,
+                          105,
+                          101,
+                          114,
+                          97,
+                          114,
+                          99,
+                          104,
+                          121,
+                          67,
+                          97,
+                          108,
+                          108,
+                          115,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 7,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    76,
+                    106,
+                    97,
+                    118,
+                    97,
+                    47,
+                    108,
+                    97,
+                    110,
+                    103,
+                    47,
+                    83,
+                    116,
+                    114,
+                    105,
+                    110,
+                    103,
+                    59
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                      "length": 389
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 4,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          101,
+                          109,
+                          49,
+                          49,
+                          47,
+                          73,
+                          110,
+                          112,
+                          117,
+                          116,
+                          72,
+                          105,
+                          101,
+                          114,
+                          97,
+                          114,
+                          99,
+                          104,
+                          121,
+                          67,
+                          97,
+                          108,
+                          108,
+                          115,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              }
+            ],
+            "primary": {
+              "bci": 4,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                    "length": 389
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 4,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        101,
+                        109,
+                        49,
+                        49,
+                        47,
+                        73,
+                        110,
+                        112,
+                        117,
+                        116,
+                        72,
+                        105,
+                        101,
+                        114,
+                        97,
+                        114,
+                        99,
+                        104,
+                        121,
+                        67,
+                        97,
+                        108,
+                        108,
+                        115,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Direct"
+            }
+          },
+          "methods_equal": true
+        }
+      ]
+    },
+    "recorded_anchor_matches_actual_json": {
+      "passed": true,
+      "detail": {
+        "recorded": {
+          "span_utf8": "(em11.HMid) new em11.HLeaf()",
+          "segment": {
+            "segment_index": 1,
+            "start_utf8_byte": 203,
+            "end_utf8_byte": 231,
+            "actual_span_utf8": "(em11.HMid) new em11.HLeaf()",
+            "actual_span_hex": "28656d31312e484d696429206e657720656d31312e484c6561662829",
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      76,
+                      106,
+                      97,
+                      118,
+                      97,
+                      47,
+                      108,
+                      97,
+                      110,
+                      103,
+                      47,
+                      83,
+                      116,
+                      114,
+                      105,
+                      110,
+                      103,
+                      59
+                    ],
+                    "name": [
+                      114,
+                      117,
+                      110
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                        "length": 389
+                      },
+                      "location": {
+                        "entry": {
+                          "ordinal": 4,
+                          "origin": {
+                            "root_container": "root",
+                            "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                            "steps": []
+                          },
+                          "raw_name": [
+                            101,
+                            109,
+                            49,
+                            49,
+                            47,
+                            73,
+                            110,
+                            112,
+                            117,
+                            116,
+                            72,
+                            105,
+                            101,
+                            114,
+                            97,
+                            114,
+                            99,
+                            104,
+                            121,
+                            67,
+                            97,
+                            108,
+                            108,
+                            115,
+                            46,
+                            99,
+                            108,
+                            97,
+                            115,
+                            115
+                          ]
+                        },
+                        "kind": "archive_entry"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 3,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      76,
+                      106,
+                      97,
+                      118,
+                      97,
+                      47,
+                      108,
+                      97,
+                      110,
+                      103,
+                      47,
+                      83,
+                      116,
+                      114,
+                      105,
+                      110,
+                      103,
+                      59
+                    ],
+                    "name": [
+                      114,
+                      117,
+                      110
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                        "length": 389
+                      },
+                      "location": {
+                        "entry": {
+                          "ordinal": 4,
+                          "origin": {
+                            "root_container": "root",
+                            "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                            "steps": []
+                          },
+                          "raw_name": [
+                            101,
+                            109,
+                            49,
+                            49,
+                            47,
+                            73,
+                            110,
+                            112,
+                            117,
+                            116,
+                            72,
+                            105,
+                            101,
+                            114,
+                            97,
+                            114,
+                            99,
+                            104,
+                            121,
+                            67,
+                            97,
+                            108,
+                            108,
+                            115,
+                            46,
+                            99,
+                            108,
+                            97,
+                            115,
+                            115
+                          ]
+                        },
+                        "kind": "archive_entry"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 7,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      76,
+                      106,
+                      97,
+                      118,
+                      97,
+                      47,
+                      108,
+                      97,
+                      110,
+                      103,
+                      47,
+                      83,
+                      116,
+                      114,
+                      105,
+                      110,
+                      103,
+                      59
+                    ],
+                    "name": [
+                      114,
+                      117,
+                      110
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                        "length": 389
+                      },
+                      "location": {
+                        "entry": {
+                          "ordinal": 4,
+                          "origin": {
+                            "root_container": "root",
+                            "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                            "steps": []
+                          },
+                          "raw_name": [
+                            101,
+                            109,
+                            49,
+                            49,
+                            47,
+                            73,
+                            110,
+                            112,
+                            117,
+                            116,
+                            72,
+                            105,
+                            101,
+                            114,
+                            97,
+                            114,
+                            99,
+                            104,
+                            121,
+                            67,
+                            97,
+                            108,
+                            108,
+                            115,
+                            46,
+                            99,
+                            108,
+                            97,
+                            115,
+                            115
+                          ]
+                        },
+                        "kind": "archive_entry"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    76,
+                    106,
+                    97,
+                    118,
+                    97,
+                    47,
+                    108,
+                    97,
+                    110,
+                    103,
+                    47,
+                    83,
+                    116,
+                    114,
+                    105,
+                    110,
+                    103,
+                    59
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                      "length": 389
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 4,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          101,
+                          109,
+                          49,
+                          49,
+                          47,
+                          73,
+                          110,
+                          112,
+                          117,
+                          116,
+                          72,
+                          105,
+                          101,
+                          114,
+                          97,
+                          114,
+                          99,
+                          104,
+                          121,
+                          67,
+                          97,
+                          108,
+                          108,
+                          115,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            }
+          },
+          "primary_bci_role": "constructor anchor, not NEW producer",
+          "derived_bcis": [
+            0,
+            3,
+            7
+          ],
+          "method_identity_equal_for_primary_and_all_derived": true
+        },
+        "actual": [
+          {
+            "i": 1,
+            "start": 203,
+            "end": 231,
+            "hex": "28656d31312e484d696429206e657720656d31312e484c6561662829",
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      76,
+                      106,
+                      97,
+                      118,
+                      97,
+                      47,
+                      108,
+                      97,
+                      110,
+                      103,
+                      47,
+                      83,
+                      116,
+                      114,
+                      105,
+                      110,
+                      103,
+                      59
+                    ],
+                    "name": [
+                      114,
+                      117,
+                      110
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                        "length": 389
+                      },
+                      "location": {
+                        "entry": {
+                          "ordinal": 4,
+                          "origin": {
+                            "root_container": "root",
+                            "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                            "steps": []
+                          },
+                          "raw_name": [
+                            101,
+                            109,
+                            49,
+                            49,
+                            47,
+                            73,
+                            110,
+                            112,
+                            117,
+                            116,
+                            72,
+                            105,
+                            101,
+                            114,
+                            97,
+                            114,
+                            99,
+                            104,
+                            121,
+                            67,
+                            97,
+                            108,
+                            108,
+                            115,
+                            46,
+                            99,
+                            108,
+                            97,
+                            115,
+                            115
+                          ]
+                        },
+                        "kind": "archive_entry"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 3,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      76,
+                      106,
+                      97,
+                      118,
+                      97,
+                      47,
+                      108,
+                      97,
+                      110,
+                      103,
+                      47,
+                      83,
+                      116,
+                      114,
+                      105,
+                      110,
+                      103,
+                      59
+                    ],
+                    "name": [
+                      114,
+                      117,
+                      110
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                        "length": 389
+                      },
+                      "location": {
+                        "entry": {
+                          "ordinal": 4,
+                          "origin": {
+                            "root_container": "root",
+                            "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                            "steps": []
+                          },
+                          "raw_name": [
+                            101,
+                            109,
+                            49,
+                            49,
+                            47,
+                            73,
+                            110,
+                            112,
+                            117,
+                            116,
+                            72,
+                            105,
+                            101,
+                            114,
+                            97,
+                            114,
+                            99,
+                            104,
+                            121,
+                            67,
+                            97,
+                            108,
+                            108,
+                            115,
+                            46,
+                            99,
+                            108,
+                            97,
+                            115,
+                            115
+                          ]
+                        },
+                        "kind": "archive_entry"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 7,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      76,
+                      106,
+                      97,
+                      118,
+                      97,
+                      47,
+                      108,
+                      97,
+                      110,
+                      103,
+                      47,
+                      83,
+                      116,
+                      114,
+                      105,
+                      110,
+                      103,
+                      59
+                    ],
+                    "name": [
+                      114,
+                      117,
+                      110
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                        "length": 389
+                      },
+                      "location": {
+                        "entry": {
+                          "ordinal": 4,
+                          "origin": {
+                            "root_container": "root",
+                            "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                            "steps": []
+                          },
+                          "raw_name": [
+                            101,
+                            109,
+                            49,
+                            49,
+                            47,
+                            73,
+                            110,
+                            112,
+                            117,
+                            116,
+                            72,
+                            105,
+                            101,
+                            114,
+                            97,
+                            114,
+                            99,
+                            104,
+                            121,
+                            67,
+                            97,
+                            108,
+                            108,
+                            115,
+                            46,
+                            99,
+                            108,
+                            97,
+                            115,
+                            115
+                          ]
+                        },
+                        "kind": "archive_entry"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    76,
+                    106,
+                    97,
+                    118,
+                    97,
+                    47,
+                    108,
+                    97,
+                    110,
+                    103,
+                    47,
+                    83,
+                    116,
+                    114,
+                    105,
+                    110,
+                    103,
+                    59
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                      "length": 389
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 4,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          101,
+                          109,
+                          49,
+                          49,
+                          47,
+                          73,
+                          110,
+                          112,
+                          117,
+                          116,
+                          72,
+                          105,
+                          101,
+                          114,
+                          97,
+                          114,
+                          99,
+                          104,
+                          121,
+                          67,
+                          97,
+                          108,
+                          108,
+                          115,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "methods_equal": true
+          }
+        ]
+      }
+    },
+    "cap_exit_matrix_4096_1_2_3_4": {
+      "passed": true,
+      "detail": [
+        0,
+        4,
+        4,
+        0,
+        0
+      ]
+    },
+    "all_limits_paths_and_values_preserved": {
+      "passed": true,
+      "detail": [
+        {
+          "cap": 1,
+          "exit": 4,
+          "paths": [
+            "$.limits"
+          ],
+          "limits": {
+            "analysis_steps": 4194304,
+            "archive_entries": 65536,
+            "attribute_bytes": 67108864,
+            "class_bytes": 67108864,
+            "class_headers": 1,
+            "code_bytes": 16777216,
+            "dependency_depth": 8,
+            "elapsed_millis": 10000,
+            "entry_bytes": 67108864,
+            "input_bytes": 67108864,
+            "ir_edges": 4194304,
+            "ir_items": 4194304,
+            "method_bodies": 4096,
+            "nested_depth": 4,
+            "normalization_clones": 1048576,
+            "output_bytes": 16777216,
+            "read_bytes": 67108864,
+            "result_items": 65536
+          },
+          "class_status": "partial",
+          "usage": {
+            "analysis_steps": 229,
+            "archive_entries": 19,
+            "attribute_bytes": 282,
+            "class_bytes": 778,
+            "class_headers": 1,
+            "code_bytes": 22,
+            "dependency_depth": 0,
+            "elapsed_millis": 7,
+            "entry_bytes": 389,
+            "input_bytes": 5001,
+            "ir_edges": 8,
+            "ir_items": 247,
+            "method_bodies": 4,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 638,
+            "read_bytes": 389,
+            "result_items": 27
+          }
+        },
+        {
+          "cap": 2,
+          "exit": 4,
+          "paths": [
+            "$.limits"
+          ],
+          "limits": {
+            "analysis_steps": 4194304,
+            "archive_entries": 65536,
+            "attribute_bytes": 67108864,
+            "class_bytes": 67108864,
+            "class_headers": 2,
+            "code_bytes": 16777216,
+            "dependency_depth": 8,
+            "elapsed_millis": 10000,
+            "entry_bytes": 67108864,
+            "input_bytes": 67108864,
+            "ir_edges": 4194304,
+            "ir_items": 4194304,
+            "method_bodies": 4096,
+            "nested_depth": 4,
+            "normalization_clones": 1048576,
+            "output_bytes": 16777216,
+            "read_bytes": 67108864,
+            "result_items": 65536
+          },
+          "class_status": "partial",
+          "usage": {
+            "analysis_steps": 254,
+            "archive_entries": 23,
+            "attribute_bytes": 402,
+            "class_bytes": 1462,
+            "class_headers": 2,
+            "code_bytes": 22,
+            "dependency_depth": 1,
+            "elapsed_millis": 3,
+            "entry_bytes": 1073,
+            "input_bytes": 5001,
+            "ir_edges": 8,
+            "ir_items": 247,
+            "method_bodies": 4,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 638,
+            "read_bytes": 1073,
+            "result_items": 33
+          }
+        },
+        {
+          "cap": 3,
+          "exit": 0,
+          "paths": [
+            "$.limits"
+          ],
+          "limits": {
+            "analysis_steps": 4194304,
+            "archive_entries": 65536,
+            "attribute_bytes": 67108864,
+            "class_bytes": 67108864,
+            "class_headers": 3,
+            "code_bytes": 16777216,
+            "dependency_depth": 8,
+            "elapsed_millis": 10000,
+            "entry_bytes": 67108864,
+            "input_bytes": 67108864,
+            "ir_edges": 4194304,
+            "ir_items": 4194304,
+            "method_bodies": 4096,
+            "nested_depth": 4,
+            "normalization_clones": 1048576,
+            "output_bytes": 16777216,
+            "read_bytes": 67108864,
+            "result_items": 65536
+          },
+          "class_status": "complete",
+          "usage": {
+            "analysis_steps": 294,
+            "archive_entries": 27,
+            "attribute_bytes": 522,
+            "class_bytes": 2146,
+            "class_headers": 3,
+            "code_bytes": 22,
+            "dependency_depth": 1,
+            "elapsed_millis": 3,
+            "entry_bytes": 1757,
+            "input_bytes": 5001,
+            "ir_edges": 8,
+            "ir_items": 314,
+            "method_bodies": 4,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 874,
+            "read_bytes": 1757,
+            "result_items": 39
+          }
+        },
+        {
+          "cap": 4,
+          "exit": 0,
+          "paths": [
+            "$.limits"
+          ],
+          "limits": {
+            "analysis_steps": 4194304,
+            "archive_entries": 65536,
+            "attribute_bytes": 67108864,
+            "class_bytes": 67108864,
+            "class_headers": 4,
+            "code_bytes": 16777216,
+            "dependency_depth": 8,
+            "elapsed_millis": 10000,
+            "entry_bytes": 67108864,
+            "input_bytes": 67108864,
+            "ir_edges": 4194304,
+            "ir_items": 4194304,
+            "method_bodies": 4096,
+            "nested_depth": 4,
+            "normalization_clones": 1048576,
+            "output_bytes": 16777216,
+            "read_bytes": 67108864,
+            "result_items": 65536
+          },
+          "class_status": "complete",
+          "usage": {
+            "analysis_steps": 294,
+            "archive_entries": 27,
+            "attribute_bytes": 522,
+            "class_bytes": 2146,
+            "class_headers": 3,
+            "code_bytes": 22,
+            "dependency_depth": 1,
+            "elapsed_millis": 3,
+            "entry_bytes": 1757,
+            "input_bytes": 5001,
+            "ir_edges": 8,
+            "ir_items": 314,
+            "method_bodies": 4,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 874,
+            "read_bytes": 1757,
+            "result_items": 39
+          }
+        }
+      ]
+    },
+    "cap1_cap2_paid_prefix_and_no_body": {
+      "passed": true,
+      "detail": [
+        {
+          "cap": 1,
+          "four_member_count_and_indices": true,
+          "three_full_member_prefix_equal_wide_elapsed_normalized": [
+            true,
+            true,
+            true
+          ],
+          "run_identity_equal": true,
+          "run_analysis_equal": true,
+          "header_refusal_serialized": true,
+          "run_body_unproduced": true
+        },
+        {
+          "cap": 2,
+          "four_member_count_and_indices": true,
+          "three_full_member_prefix_equal_wide_elapsed_normalized": [
+            true,
+            true,
+            true
+          ],
+          "run_identity_equal": true,
+          "run_analysis_equal": true,
+          "header_refusal_serialized": true,
+          "run_body_unproduced": true
+        }
+      ]
+    },
+    "cap3_cap4_full_json_equivalence": {
+      "passed": true,
+      "detail": [
+        {
+          "cap": 3,
+          "full_json_equals_wide_after_only_usage_elapsed_and_top_class_headers": true
+        },
+        {
+          "cap": 4,
+          "full_json_equals_wide_after_only_usage_elapsed_and_top_class_headers": true
+        }
+      ]
+    },
+    "cli_matrix_does_not_claim_independent_first_stop": {
+      "passed": true,
+      "detail": false
+    }
+  },
+  "raw_streams": [
+    {
+      "command_index": 1,
+      "label": "javac23-release8-g-none-original-seven-unchanged-sources",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 1,
+      "label": "javac23-release8-g-none-original-seven-unchanged-sources",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 2,
+      "label": "javap-original-InputHierarchyCalls-physical-Code",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/2.stdout.raw",
+      "bytes": 954,
+      "sha256": "1d7454d0aaccce08e6f468f793553b0e3bbca64e7d3b1c0fc55005f64dfdae79",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 2,
+      "label": "javap-original-InputHierarchyCalls-physical-Code",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 3,
+      "label": "final-cli-wide-em11/OverloadCalls",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/3.stdout.raw",
+      "bytes": 154325,
+      "sha256": "a200259513a5ae087ba9b805a77a944cfda1686377670ef00c51b2305e758f03",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 3,
+      "label": "final-cli-wide-em11/OverloadCalls",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 4,
+      "label": "final-cli-wide-em11/HBase",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/4.stdout.raw",
+      "bytes": 19988,
+      "sha256": "e8d823aeb02bce0254ccbbf9ea7683eb591582ae8d98e7295b715f8c20e48356",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 4,
+      "label": "final-cli-wide-em11/HBase",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 5,
+      "label": "final-cli-wide-em11/HMid",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/5.stdout.raw",
+      "bytes": 20445,
+      "sha256": "a4370c93143ae1a4de43a770ef9381c7c532163ef1aa38db5ff97e553d35362e",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 5,
+      "label": "final-cli-wide-em11/HMid",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 6,
+      "label": "final-cli-wide-em11/HLeaf",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/6.stdout.raw",
+      "bytes": 25584,
+      "sha256": "7a5c861665d3df56d7fa6e282e63978def9cca4da3a9272c2fee4658b8eb4cd5",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 6,
+      "label": "final-cli-wide-em11/HLeaf",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 7,
+      "label": "final-cli-wide-em11/HierarchyCalls",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/7.stdout.raw",
+      "bytes": 70874,
+      "sha256": "da78443d25f08db3600372db2493d935c34009cb0fda41acef470c693616bf9a",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 7,
+      "label": "final-cli-wide-em11/HierarchyCalls",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 8,
+      "label": "final-cli-wide-em11/InputHierarchyCalls",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/8.stdout.raw",
+      "bytes": 41164,
+      "sha256": "823326a8af90a40422b474cabd9ad97541f119ae9cf7966152845c1c338de62f",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 8,
+      "label": "final-cli-wide-em11/InputHierarchyCalls",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 9,
+      "label": "final-cli-wide-em11/Runner",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/9.stdout.raw",
+      "bytes": 55839,
+      "sha256": "40b8d457ceabcf216f57d7b8931a20d4ba213d70bdd3e094d482affc32de7931",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 9,
+      "label": "final-cli-wide-em11/Runner",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 10,
+      "label": "javac23-release8-g-none-all-seven-generated-java-unmodified",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 10,
+      "label": "javac23-release8-g-none-all-seven-generated-java-unmodified",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 11,
+      "label": "java8-original-jar",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/11.stdout.raw",
+      "bytes": 219,
+      "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 11,
+      "label": "java8-original-jar",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 12,
+      "label": "java23-original-jar",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/12.stdout.raw",
+      "bytes": 219,
+      "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 12,
+      "label": "java23-original-jar",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 13,
+      "label": "java8-all-seven-rebuilt",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/13.stdout.raw",
+      "bytes": 219,
+      "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 13,
+      "label": "java8-all-seven-rebuilt",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 14,
+      "label": "java23-all-seven-rebuilt",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/14.stdout.raw",
+      "bytes": 219,
+      "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 14,
+      "label": "java23-all-seven-rebuilt",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 15,
+      "label": "javac23-release8-g-none-original-Runner-only-classpath-rebuilt",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 15,
+      "label": "javac23-release8-g-none-original-Runner-only-classpath-rebuilt",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 16,
+      "label": "java8-original-Runner-first-rebuilt",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/16.stdout.raw",
+      "bytes": 219,
+      "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 16,
+      "label": "java8-original-Runner-first-rebuilt",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 17,
+      "label": "java23-original-Runner-first-rebuilt",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/17.stdout.raw",
+      "bytes": 219,
+      "sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 17,
+      "label": "java23-original-Runner-first-rebuilt",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 18,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-1",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/18.stdout.raw",
+      "bytes": 32864,
+      "sha256": "2d0c036914040ff001264b7320024ffa4620c660e393375b8da1ba83aec7c667",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 18,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-1",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 19,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-2",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/19.stdout.raw",
+      "bytes": 32873,
+      "sha256": "38817d49c7f8d2bbe9c36d643c323f54514f6f2141f1e82a8ddcf96e3c53bd93",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 19,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-2",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 20,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-3",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/20.stdout.raw",
+      "bytes": 41161,
+      "sha256": "6062dbb7c349d37d5193aa434d0c00d7de40bd9e8a62de82159bdd9dfc0d354d",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 20,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-3",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 21,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-4",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/21.stdout.raw",
+      "bytes": 41161,
+      "sha256": "c4b74e71d3c6fa3685a9b3c4a35f0aee516cda0f8facc84fcf5e6a9a634ce052",
+      "matches_receipt": true
+    },
+    {
+      "command_index": 21,
+      "label": "final-cli-InputHierarchyCalls-all-class_headers-4",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    }
+  ],
+  "runtime_outputs": [
+    {
+      "label": "java8-original-jar",
+      "exit": 0,
+      "stdout_bytes": 219,
+      "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "stderr_empty": true,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+        "em11.Runner"
+      ]
+    },
+    {
+      "label": "java23-original-jar",
+      "exit": 0,
+      "stdout_bytes": 219,
+      "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "stderr_empty": true,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/em11-reference-overload.jar",
+        "em11.Runner"
+      ]
+    },
+    {
+      "label": "java8-all-seven-rebuilt",
+      "exit": 0,
+      "stdout_bytes": 219,
+      "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "stderr_empty": true,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+        "em11.Runner"
+      ]
+    },
+    {
+      "label": "java23-all-seven-rebuilt",
+      "exit": 0,
+      "stdout_bytes": 219,
+      "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "stderr_empty": true,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+        "em11.Runner"
+      ]
+    },
+    {
+      "label": "java8-original-Runner-first-rebuilt",
+      "exit": 0,
+      "stdout_bytes": 219,
+      "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "stderr_empty": true,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+        "em11.Runner"
+      ]
+    },
+    {
+      "label": "java23-original-Runner-first-rebuilt",
+      "exit": 0,
+      "stdout_bytes": 219,
+      "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "stderr_empty": true,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/original-runner-crosscheck-classes:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-final-cli-replay-harness-v1/run-v3-out-v1/rebuilt-classes",
+        "em11.Runner"
+      ]
+    }
+  ],
+  "class_parity": [
+    {
+      "entry": "em11/OverloadCalls.class",
+      "jar_bytes": 1394,
+      "jar_sha256": "64baa8dcfdf1bd01ee1d6cb077c7fed7362a0c374d6f195c45fd1c6393c2a92f",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    },
+    {
+      "entry": "em11/HBase.class",
+      "jar_bytes": 219,
+      "jar_sha256": "d8cd1a76c2c8735bd6ab570ec4bf548a41897153cd3889324b02099f7f0dd509",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    },
+    {
+      "entry": "em11/HMid.class",
+      "jar_bytes": 286,
+      "jar_sha256": "0e3fe0ddb9374f632c0be7a1d34091ad53ee5bdd69b5ba957fa23fe6373b9737",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    },
+    {
+      "entry": "em11/HLeaf.class",
+      "jar_bytes": 342,
+      "jar_sha256": "a022590ccfe8189cb732762f193aac7cf67730e98b0f202f3b351fdeee5e67c7",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    },
+    {
+      "entry": "em11/HierarchyCalls.class",
+      "jar_bytes": 742,
+      "jar_sha256": "2f8553ab161dd522ec4e25b4edead504c0e78fb2626476104317c54c6c4b0794",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    },
+    {
+      "entry": "em11/InputHierarchyCalls.class",
+      "jar_bytes": 389,
+      "jar_sha256": "bb50ace457448dfbc1dd2a42a1a8a2413250b097d03e5bf5c235230cccb925b4",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    },
+    {
+      "entry": "em11/Runner.class",
+      "jar_bytes": 789,
+      "jar_sha256": "bd0fed29f45a505a3ac6851371f61b28119e14a94a811d0ac807a29995fa08d2",
+      "compiled_bytes_equal": true,
+      "compiled_pin_matches": true,
+      "recorded_byte_identical": true,
+      "matches_historical_sha256": true
+    }
+  ],
+  "wide_report_checks": [
+    {
+      "class": "em11/OverloadCalls",
+      "execution_status": "complete",
+      "report_raw_bytes": 154325,
+      "text_bytes": 3496,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/OverloadCalls.class",
+      "all_checks": true
+    },
+    {
+      "class": "em11/HBase",
+      "execution_status": "complete",
+      "report_raw_bytes": 19988,
+      "text_bytes": 960,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/HBase.class",
+      "all_checks": true
+    },
+    {
+      "class": "em11/HMid",
+      "execution_status": "complete",
+      "report_raw_bytes": 20445,
+      "text_bytes": 1158,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/HMid.class",
+      "all_checks": true
+    },
+    {
+      "class": "em11/HLeaf",
+      "execution_status": "complete",
+      "report_raw_bytes": 25584,
+      "text_bytes": 1268,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/HLeaf.class",
+      "all_checks": true
+    },
+    {
+      "class": "em11/HierarchyCalls",
+      "execution_status": "complete",
+      "report_raw_bytes": 70874,
+      "text_bytes": 1581,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/HierarchyCalls.class",
+      "all_checks": true
+    },
+    {
+      "class": "em11/InputHierarchyCalls",
+      "execution_status": "complete",
+      "report_raw_bytes": 41164,
+      "text_bytes": 1633,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/InputHierarchyCalls.class",
+      "all_checks": true
+    },
+    {
+      "class": "em11/Runner",
+      "execution_status": "complete",
+      "report_raw_bytes": 55839,
+      "text_bytes": 1460,
+      "exact_report_copy": true,
+      "generated_java_equals_report_text": true,
+      "selected_entry": "em11/Runner.class",
+      "all_checks": true
+    }
+  ],
+  "budget_matrix": {
+    "exit_status_order_4096_1_2_3_4": [
+      0,
+      4,
+      4,
+      0,
+      0
+    ],
+    "limits": [
+      {
+        "cap": 1,
+        "exit": 4,
+        "paths": [
+          "$.limits"
+        ],
+        "limits": {
+          "analysis_steps": 4194304,
+          "archive_entries": 65536,
+          "attribute_bytes": 67108864,
+          "class_bytes": 67108864,
+          "class_headers": 1,
+          "code_bytes": 16777216,
+          "dependency_depth": 8,
+          "elapsed_millis": 10000,
+          "entry_bytes": 67108864,
+          "input_bytes": 67108864,
+          "ir_edges": 4194304,
+          "ir_items": 4194304,
+          "method_bodies": 4096,
+          "nested_depth": 4,
+          "normalization_clones": 1048576,
+          "output_bytes": 16777216,
+          "read_bytes": 67108864,
+          "result_items": 65536
+        },
+        "class_status": "partial",
+        "usage": {
+          "analysis_steps": 229,
+          "archive_entries": 19,
+          "attribute_bytes": 282,
+          "class_bytes": 778,
+          "class_headers": 1,
+          "code_bytes": 22,
+          "dependency_depth": 0,
+          "elapsed_millis": 7,
+          "entry_bytes": 389,
+          "input_bytes": 5001,
+          "ir_edges": 8,
+          "ir_items": 247,
+          "method_bodies": 4,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 638,
+          "read_bytes": 389,
+          "result_items": 27
+        }
+      },
+      {
+        "cap": 2,
+        "exit": 4,
+        "paths": [
+          "$.limits"
+        ],
+        "limits": {
+          "analysis_steps": 4194304,
+          "archive_entries": 65536,
+          "attribute_bytes": 67108864,
+          "class_bytes": 67108864,
+          "class_headers": 2,
+          "code_bytes": 16777216,
+          "dependency_depth": 8,
+          "elapsed_millis": 10000,
+          "entry_bytes": 67108864,
+          "input_bytes": 67108864,
+          "ir_edges": 4194304,
+          "ir_items": 4194304,
+          "method_bodies": 4096,
+          "nested_depth": 4,
+          "normalization_clones": 1048576,
+          "output_bytes": 16777216,
+          "read_bytes": 67108864,
+          "result_items": 65536
+        },
+        "class_status": "partial",
+        "usage": {
+          "analysis_steps": 254,
+          "archive_entries": 23,
+          "attribute_bytes": 402,
+          "class_bytes": 1462,
+          "class_headers": 2,
+          "code_bytes": 22,
+          "dependency_depth": 1,
+          "elapsed_millis": 3,
+          "entry_bytes": 1073,
+          "input_bytes": 5001,
+          "ir_edges": 8,
+          "ir_items": 247,
+          "method_bodies": 4,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 638,
+          "read_bytes": 1073,
+          "result_items": 33
+        }
+      },
+      {
+        "cap": 3,
+        "exit": 0,
+        "paths": [
+          "$.limits"
+        ],
+        "limits": {
+          "analysis_steps": 4194304,
+          "archive_entries": 65536,
+          "attribute_bytes": 67108864,
+          "class_bytes": 67108864,
+          "class_headers": 3,
+          "code_bytes": 16777216,
+          "dependency_depth": 8,
+          "elapsed_millis": 10000,
+          "entry_bytes": 67108864,
+          "input_bytes": 67108864,
+          "ir_edges": 4194304,
+          "ir_items": 4194304,
+          "method_bodies": 4096,
+          "nested_depth": 4,
+          "normalization_clones": 1048576,
+          "output_bytes": 16777216,
+          "read_bytes": 67108864,
+          "result_items": 65536
+        },
+        "class_status": "complete",
+        "usage": {
+          "analysis_steps": 294,
+          "archive_entries": 27,
+          "attribute_bytes": 522,
+          "class_bytes": 2146,
+          "class_headers": 3,
+          "code_bytes": 22,
+          "dependency_depth": 1,
+          "elapsed_millis": 3,
+          "entry_bytes": 1757,
+          "input_bytes": 5001,
+          "ir_edges": 8,
+          "ir_items": 314,
+          "method_bodies": 4,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 874,
+          "read_bytes": 1757,
+          "result_items": 39
+        }
+      },
+      {
+        "cap": 4,
+        "exit": 0,
+        "paths": [
+          "$.limits"
+        ],
+        "limits": {
+          "analysis_steps": 4194304,
+          "archive_entries": 65536,
+          "attribute_bytes": 67108864,
+          "class_bytes": 67108864,
+          "class_headers": 4,
+          "code_bytes": 16777216,
+          "dependency_depth": 8,
+          "elapsed_millis": 10000,
+          "entry_bytes": 67108864,
+          "input_bytes": 67108864,
+          "ir_edges": 4194304,
+          "ir_items": 4194304,
+          "method_bodies": 4096,
+          "nested_depth": 4,
+          "normalization_clones": 1048576,
+          "output_bytes": 16777216,
+          "read_bytes": 67108864,
+          "result_items": 65536
+        },
+        "class_status": "complete",
+        "usage": {
+          "analysis_steps": 294,
+          "archive_entries": 27,
+          "attribute_bytes": 522,
+          "class_bytes": 2146,
+          "class_headers": 3,
+          "code_bytes": 22,
+          "dependency_depth": 1,
+          "elapsed_millis": 3,
+          "entry_bytes": 1757,
+          "input_bytes": 5001,
+          "ir_edges": 8,
+          "ir_items": 314,
+          "method_bodies": 4,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 874,
+          "read_bytes": 1757,
+          "result_items": 39
+        }
+      }
+    ],
+    "low_cap_prefix": [
+      {
+        "cap": 1,
+        "four_member_count_and_indices": true,
+        "three_full_member_prefix_equal_wide_elapsed_normalized": [
+          true,
+          true,
+          true
+        ],
+        "run_identity_equal": true,
+        "run_analysis_equal": true,
+        "header_refusal_serialized": true,
+        "run_body_unproduced": true
+      },
+      {
+        "cap": 2,
+        "four_member_count_and_indices": true,
+        "three_full_member_prefix_equal_wide_elapsed_normalized": [
+          true,
+          true,
+          true
+        ],
+        "run_identity_equal": true,
+        "run_analysis_equal": true,
+        "header_refusal_serialized": true,
+        "run_body_unproduced": true
+      }
+    ],
+    "cap3_cap4_full_json": [
+      {
+        "cap": 3,
+        "full_json_equals_wide_after_only_usage_elapsed_and_top_class_headers": true
+      },
+      {
+        "cap": 4,
+        "full_json_equals_wide_after_only_usage_elapsed_and_top_class_headers": true
+      }
+    ]
+  },
+  "source_map_cast_anchor": {
+    "actual_span": [
+      {
+        "i": 1,
+        "start": 203,
+        "end": 231,
+        "hex": "28656d31312e484d696429206e657720656d31312e484c6561662829",
+        "origin": {
+          "derived": [
+            {
+              "bci": 0,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                    "length": 389
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 4,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        101,
+                        109,
+                        49,
+                        49,
+                        47,
+                        73,
+                        110,
+                        112,
+                        117,
+                        116,
+                        72,
+                        105,
+                        101,
+                        114,
+                        97,
+                        114,
+                        99,
+                        104,
+                        121,
+                        67,
+                        97,
+                        108,
+                        108,
+                        115,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Derived"
+            },
+            {
+              "bci": 3,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                    "length": 389
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 4,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        101,
+                        109,
+                        49,
+                        49,
+                        47,
+                        73,
+                        110,
+                        112,
+                        117,
+                        116,
+                        72,
+                        105,
+                        101,
+                        114,
+                        97,
+                        114,
+                        99,
+                        104,
+                        121,
+                        67,
+                        97,
+                        108,
+                        108,
+                        115,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Derived"
+            },
+            {
+              "bci": 7,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                    "length": 389
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 4,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        101,
+                        109,
+                        49,
+                        49,
+                        47,
+                        73,
+                        110,
+                        112,
+                        117,
+                        116,
+                        72,
+                        105,
+                        101,
+                        114,
+                        97,
+                        114,
+                        99,
+                        104,
+                        121,
+                        67,
+                        97,
+                        108,
+                        108,
+                        115,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Derived"
+            }
+          ],
+          "primary": {
+            "bci": 4,
+            "cp": null,
+            "method": {
+              "descriptor": [
+                40,
+                41,
+                76,
+                106,
+                97,
+                118,
+                97,
+                47,
+                108,
+                97,
+                110,
+                103,
+                47,
+                83,
+                116,
+                114,
+                105,
+                110,
+                103,
+                59
+              ],
+              "name": [
+                114,
+                117,
+                110
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "30e383553e85eab229d845f9ad8b0bb6a722633073e58ba9684e43d6847b3bec",
+                  "length": 389
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 4,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      101,
+                      109,
+                      49,
+                      49,
+                      47,
+                      73,
+                      110,
+                      112,
+                      117,
+                      116,
+                      72,
+                      105,
+                      101,
+                      114,
+                      97,
+                      114,
+                      99,
+                      104,
+                      121,
+                      67,
+                      97,
+                      108,
+                      108,
+                      115,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "provenance": "Direct"
+          }
+        },
+        "methods_equal": true
+      }
+    ],
+    "physical_javap_checks": {
+      "new_0": true,
+      "dup_3": true,
+      "init_4": true,
+      "static_take_7": true,
+      "areturn_10": true
+    },
+    "complete_run_bytecode_offsets": [
+      0,
+      3,
+      4,
+      7,
+      10
+    ],
+    "new_producer_bci": 0,
+    "constructor_consumer_and_primary_bci": 4
+  },
+  "class_parser_scope": "The capture includes and this audit independently reads the actual javap disassembly for InputHierarchyCalls.run(), confirming all five Code offsets. No separate class-file parser was used to inventory members across all seven original classfiles; all seven physical JAR entries, source-compiled byte parity, emitted report methods, and rebuilt class inventory were independently checked.",
+  "blockers": [],
+  "audit_note": "The first independent pass indexed summary keys with a .class suffix, although execution.json stores logical class names without the suffix. Recomputed all seven comparisons from the receipt paths and JAR entry names; every emitted original compile class is byte-identical and matches historical SHA."
+}

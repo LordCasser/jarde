@@ -1,0 +1,514 @@
+{
+  "schema": "reference-overload-final-focused-independent-audit-v1",
+  "status": "accepted",
+  "checks": 88,
+  "errors": [],
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/execution.json",
+    "bytes": 2222043,
+    "sha256": "3f3ead48919e44e36c971a886e2440ffd2ee685aba66a3e5d5e0e25aa136439e"
+  },
+  "source_manifest": {
+    "count": 4907,
+    "before_equals_after": true,
+    "modified_files": {
+      "src/facade.rs": {
+        "path": "src/facade.rs",
+        "bytes": 2079845,
+        "sha256": "bf3d02eb18d875b2271d254054659305c2c12b0ed0f57f38588788688e19eeed"
+      },
+      "tests/reference_overload_dependency_proof_stops.rs": {
+        "path": "tests/reference_overload_dependency_proof_stops.rs",
+        "bytes": 11638,
+        "sha256": "dd45e734a89774bb81d62903aa57826ba51e71e6a9d880d49c29b1bad5e0ad6f"
+      },
+      "tests/direct_parent_dependency_proof_stops.rs": {
+        "path": "tests/direct_parent_dependency_proof_stops.rs",
+        "bytes": 15791,
+        "sha256": "cf313ec78f638abb2237201554ef79d0ca623e18dab81e065dcb23a55bfde6a8"
+      }
+    }
+  },
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "mode": "0o555",
+    "expected_mode": "0555"
+  },
+  "commands": [
+    {
+      "label": "actual-rustc",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "rustc",
+        "--version"
+      ],
+      "test_summaries": []
+    },
+    {
+      "label": "format",
+      "exit_code": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "test_summaries": []
+    },
+    {
+      "label": "final-root-lib",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json"
+      ],
+      "test_summaries": [
+        [
+          "ok",
+          "244",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "final-reference-and-related-controls",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "reference_overload_dependency_proof_stops",
+        "--test",
+        "p3_snapshot_hierarchy_widening",
+        "--test",
+        "p3_platform_collection_widening",
+        "--test",
+        "direct_parent_dependency_proof_stops",
+        "--test",
+        "recover_write_accessor_field_types",
+        "--test",
+        "p3_accessor_edges",
+        "--test",
+        "raw_receiver_field_selection"
+      ],
+      "test_summaries": [
+        [
+          "ok",
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "9",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "6",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "final-presentation-and-conversion-controls",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_field_presentations",
+        "--test",
+        "p3_reference_cast",
+        "--test",
+        "p3_required_conversions"
+      ],
+      "test_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0",
+          "1"
+        ],
+        [
+          "ok",
+          "8",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "final-cli-full",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "cargo",
+        "test",
+        "-p",
+        "jarde-cli",
+        "--test",
+        "class_source_cli",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json"
+      ],
+      "test_summaries": [
+        [
+          "ok",
+          "24",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "label": "ci-exact-clippy",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "test_summaries": []
+    },
+    {
+      "label": "ci-openspec",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "test_summaries": []
+    },
+    {
+      "label": "local-openspec",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "test_summaries": []
+    },
+    {
+      "label": "build-cli",
+      "exit_code": 0,
+      "argv": [
+        "env",
+        "PATH=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin:/home/lordcasser/.cargo/bin:/usr/bin:/bin",
+        "JAVA_HOME=/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1",
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "test_summaries": []
+    },
+    {
+      "label": "finally-exact-cargo-clean",
+      "exit_code": 0,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "test_summaries": []
+    }
+  ],
+  "native_totals": {
+    "summaries": 12,
+    "passed": 325,
+    "failed": 0,
+    "ignored": 1,
+    "named_outcomes": 326
+  },
+  "new_em11_named_tests": {
+    "unit": [
+      "facade::class_source_proof_inflight_tests::public_em11_reference_header_report_preserves_original_stop_and_diagnostics",
+      "facade::class_source_proof_inflight_tests::public_em11_reference_real_charge_cancellation_has_no_later_proof_work",
+      "facade::class_source_proof_inflight_tests::public_em11_reference_real_deadline_preserves_first_error"
+    ],
+    "public": [
+      "em11_ambiguous_leaf_is_an_ordinary_refusal",
+      "em11_cap_two_keeps_the_existing_snapshot_stop_and_prefix",
+      "em11_first_reference_header_ledger_stop_keeps_original_budget_cause",
+      "em11_missing_leaf_is_an_ordinary_refusal",
+      "em11_plain_header_stop_pays_no_later_snapshot_analysis_work",
+      "em11_wide_keeps_the_actual_mid_overload_and_physical_call_bci"
+    ],
+    "cli": [
+      "em11_cli_cap_one_does_not_pay_the_later_snapshot_proof",
+      "em11_cli_wide_keeps_the_physical_mid_overload"
+    ]
+  },
+  "ci_checks": [
+    "ci-exact-clippy",
+    "ci-openspec",
+    "local-openspec",
+    "build-cli",
+    "finally-exact-cargo-clean"
+  ],
+  "raw_stream_pins": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/1.stdout.raw",
+      "bytes": 36,
+      "sha256": "8dc912acd5bfeafc70b01b1d2a2afb0844afa02f5dba2f1ae8d5c212d005afb6"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/3.stdout.raw",
+      "bytes": 99642,
+      "sha256": "c8031fcabc79d816fa74eef0b6e6510a6191314f0eb3f3f1e9f90be39750a717"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/3.stderr.raw",
+      "bytes": 3363,
+      "sha256": "515a8747c9e82ae5809a96409f79bae3ca0ab9844e876b15056cb54fc0384263"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/4.stdout.raw",
+      "bytes": 82809,
+      "sha256": "d4f90d962ade5991af1cff6dfd868e266ab1fe7aad6077d8323dd1f2bbca6071"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/4.stderr.raw",
+      "bytes": 1122,
+      "sha256": "e2f4ae4d633018f5e3a90c9c95290bcb7eb602984cb6f38f2dd98f97ae1655da"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/5.stdout.raw",
+      "bytes": 76568,
+      "sha256": "e370fe11ae74e82f461f99796ef48a0ba5628cb9fe87e9fe0a463deffc51103b"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/5.stderr.raw",
+      "bytes": 516,
+      "sha256": "6c381fdd0716ed7e19910592a9afdb7029f979dab5d326d9d2771a07ed126d7a"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/6.stdout.raw",
+      "bytes": 59092,
+      "sha256": "d324ba1679a2edc733e436d4b67136b3b52019d1a99f09371a56b36c7fb25748"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/6.stderr.raw",
+      "bytes": 1745,
+      "sha256": "d1002126b07b04742b94667a05fc6dc73d58e48c976999729c7c225496ad95bc"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/7.stderr.raw",
+      "bytes": 3442,
+      "sha256": "85a7c6d286461739671d79dcf9265f7dff5a7ff2f4ccb7bfb6d5f3fe413e0814"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/8.stdout.raw",
+      "bytes": 16845,
+      "sha256": "c4b125af0ff3f1c95e2b74f544c23e130f1fda1884faef3b3da07b81ae845d41"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/9.stdout.raw",
+      "bytes": 16845,
+      "sha256": "c4b125af0ff3f1c95e2b74f544c23e130f1fda1884faef3b3da07b81ae845d41"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/9.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/10.stderr.raw",
+      "bytes": 73,
+      "sha256": "28962feae8698326a33a0058ae0dbda052c44051fb80740268e8f1d73ed1e9bd"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-final-focused-v1/11.stderr.raw",
+      "bytes": 53,
+      "sha256": "0bf152d2c91779cc39705a9fee0c3beffe4e925c0efa44af526e2edf35dc8fb9"
+    }
+  ],
+  "final_source_shape": {
+    "selected_reference_header_wrapper_absent": true,
+    "snapshot_header_chain_widens_wrapper_absent": true,
+    "reference_overload_calls_presented_lossy_adapter_absent": true,
+    "cfg_error_observer_call_sites": 1,
+    "candidate_v3_difference": "only rustfmt line wrapping and blank-line formatting around the hook"
+  },
+  "scope": "Independent cache-only receipt/raw/source-pin audit of the final-focused run. This is a focused selected-suite run, not a full workspace cargo test. Separate serial final source replay remains acceptance evidence for its own scope; no validation was rerun here."
+}

@@ -1,0 +1,29 @@
+{
+  "status": "root_reopened_and_copied_exact",
+  "items": [
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-old-evidence-package-v1/reference-overload-old-evidence-v1.tar.gz",
+      "destination": "capture.tar.gz",
+      "bytes": 1241632,
+      "sha256": "d46dbabd3d040c1cd4aaf97d82b43c762e6fde3ad5455f27e3f68452c834013b"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-old-evidence-package-v1/manifest.json",
+      "destination": "manifest.json",
+      "bytes": 13231,
+      "sha256": "c77f14d582e9074b4450e9127cf12bc684f12e1d6455828fa0f41cdfeb652ec0"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-old-evidence-package-v1/execution.json",
+      "destination": "package-execution.json",
+      "bytes": 1125,
+      "sha256": "fe420bdbd0a4d9a6f3883953194e161c12c216fc47b50305fb3dc93012f949b6"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-apply-root-v1/old-native-independent-audit-v1.json",
+      "destination": "independent-native-audit.json",
+      "bytes": 14023,
+      "sha256": "eaa1a65635514eb68dda2b45705aefc1ccc78068145c4b29442697f27e33908d"
+    }
+  ]
+}

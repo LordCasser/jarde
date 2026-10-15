@@ -1,0 +1,46 @@
+{
+  "status": "root_reopened_all_payloads_verified",
+  "files": [
+    {
+      "path": "capture.tar.gz",
+      "bytes": 4850478,
+      "sha256": "1ebca2ca959c5c81663d75e4bad7cfdb5531da8498d35ac04a9ab07114f0b961"
+    },
+    {
+      "path": "independent-focused-audit.json",
+      "bytes": 16598,
+      "sha256": "23115ea09c82d810f85d9656f50de3bea47293857b7b8fccc68939b42744e23e"
+    },
+    {
+      "path": "independent-replay-audit.json",
+      "bytes": 112958,
+      "sha256": "3868fbf1645bbfb3d317a5354c206dbc87dce71015ef26f0e51059e52a5a9c8d"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 1553700,
+      "sha256": "c355646808bb927a2855738a6e07d05843128b8d28599dd6d72d5147472f3cf4"
+    },
+    {
+      "path": "package-execution.json",
+      "bytes": 1263,
+      "sha256": "e210271507c0de42238720ec93879000da2e0dfe56750c251c8e48bb1cac7979"
+    },
+    {
+      "path": "root-replay-acceptance.json",
+      "bytes": 1164,
+      "sha256": "4c36bf46556fae54df5a90b9116265eae9378affba95e268410ef75a9e2fede1"
+    }
+  ],
+  "payload_files": 178,
+  "members": 179,
+  "raw_files": 94,
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-proof-v1",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "scope": "Local final-source acceptance only. Own product CI pending."
+}
