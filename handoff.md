@@ -2,13 +2,13 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-15 class-view 独立修复局部门已接受，产品CI待验
+## 2026-10-15 class-view 歧义修复已交付并归档
 
-当前在附着core-integrity工作副本的 `codex/class-view-body-selection` 分支推进 [reject-ambiguous-class-view-body-selection](openspec/changes/reject-ambiguous-class-view-body-selection/tasks.md)，**3/4**。Method在foreign-owner校验后与Name共用完整候选判定，移除首取helper；不改身份/API/body_result。根旧生产library与CLI-v2各实际0/1目标断言失败，CLI-v1使用错误usage路径的前置失败明确排除。修后完整九组27库请求、三CLI链请求均通过，abstract-code三个请求都在method_bodies=0下保留歧义、零body/code/IR。
+产品e8c749252a71a857838d0cb854f5a6d80a5c2704已进入main，自身[CI38679565191](https://github.com/LordCasser/jarde/actions/runs/38679565191)由根802项/独立1462项核查接受：4jobs52steps，两seed各365suites、3589/0/98，79具名门及既有额外JDK/examples/层级/fuzz门通过。修复保留foreign-owner优先级，重复Name及listed identity都在body准入前按完整候选返回歧义。既有76/0/2本地门、九组27库请求及三CLI请求保持原范围。
 
-[本地归档](openspec/changes/reject-ambiguous-class-view-body-selection/results/root-local-v1/README.md)62payload/2327642B/SHA e41c6614a4e4c508fb91ddbc77ca8856673ce7621dc88a24c03e798cdc850c80已63成员复开；focused-v1 **76/0/2**，8命令/16raw、5suites、4900来源从开始包含全部corpus遍历输入，前后/当前一致。root4952checks及独立review接受；fmt/当前CI Clippy/两版strict366/0、build CLI、finally exact clean通过。CLI59599048B/SHA c0bc6b64e1c763ee400afdb60d328a83151091fecbd72ed8ead1e906bd170f45。2.2自身CI和完整workspace交付仍开放，不以local代替。
+[自身CI与交付证据](openspec/changes/archive/2026-10-15-reject-ambiguous-class-view-body-selection/results/root-own-ci-v1/README.md)逐成员复开；4900测试来源同primary字节。4/4完成，analysis-contracts新增四scenario并归档。产品CI头与后续文档头区分；不增加CF11/CF18/71/612总数。
 
-三个plan仅按原manifest复制子树，adoption时0/27、179payload/6115110B；实现后当前3/27，两项proof-stop仍0/23，私有候选未编译/未验收。main仍为下述7d0已接受四工程产品收尾；本片自身CI接受前不声明新main交付。
+接口停止修复在独立AUX已有cc305fe6a本地检查点，813/0/1及八组完整源对照通过，尚待最终组合产品workspace/自身CI；snapshot/double-brace保持独立规划，当前冻结接口CLI已复现原H1 ClassHeaders8/15仍Complete，未冒称修复通过。
 
 ## 2026-10-15 四工程联合产品已接受
 

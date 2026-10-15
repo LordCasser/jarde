@@ -1,0 +1,11 @@
+{
+  "status": "accepted_exact_product_ci_archive",
+  "payloads": 349,
+  "members_reopened": 350,
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 1960446,
+    "sha256": "4f7bb4fddfd5e2e7ab31b0e41ba15b15161d932634919e7b2b03ac79553bf5b9"
+  },
+  "primary_source_equals_4900_test_inputs": true
+}
