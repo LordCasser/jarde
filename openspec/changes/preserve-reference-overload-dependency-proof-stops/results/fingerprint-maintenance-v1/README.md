@@ -1,0 +1,7 @@
+# 唯一新增fixture的指纹维护
+
+显式执行既有regenerate_corpus_fingerprint：1通过。普通指纹套件：5通过/0失败/1默认忽略。JSON语义差分仅files新增EM11 JAR（5001B、BLAKE3 c839f8988b1ed46a757b89bb6188550761011e77a7f7789f3412d4f0f81fee97）；原2219行及全部非files字段不变。未降低指纹门、删样本或改分类。
+
+维护前后4907输入只差corpus-fingerprint.json；维护后测试与新CLI构建的4907清单前后全等，exact cargo clean后target缺失。4条命令均0、8条raw齐全，独审43/0。新构建59,657,968B CLI与原c44bde2c…fa396逐字节相同，0555。
+
+完整EM11源码重编/六次双JVM运行证据来自旧收据里的同一字节CLI及未改输入，本轮未声称重新执行；新CLI构建收据绑定修正后的清单。原ba3fa76自身CI失败仍保留；新提交完整CI尚未取得。source metadata变化不能冒称旧4907条与新清单逐条相同。
