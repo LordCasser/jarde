@@ -1,0 +1,23 @@
+{
+  "status": "accepted_local_root_contrast_archive_only",
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 1241884,
+    "sha256": "6888c9363c212ca6ce21d6add451575c8494062bd7b9e53087f7976d143a1384"
+  },
+  "payloads": 42,
+  "commands": 11,
+  "raw_streams": 22,
+  "old_production": {
+    "passed": 0,
+    "failed": 3,
+    "test_only_harness": true
+  },
+  "fixed_focused": {
+    "passed": 440,
+    "failed": 0,
+    "ignored": 0
+  },
+  "source_files_per_scope": 4887,
+  "workspace_or_own_ci_accepted": false
+}

@@ -18,7 +18,8 @@
 //! rather than expect to be stopped inside. That is why [`charge`] is the only way these stages
 //! bill: there is no path here that runs work first and discovers the limit afterwards.
 
-use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::budget::{Budget, BudgetDimension, CountedBudgetDimension};
+use jarde_reader::error::Error;
 use serde::Serialize;
 
 /// Why a recovery run stopped.
@@ -124,15 +125,24 @@ pub(crate) fn charge(
         return Err(StopReason::Cancelled { at });
     }
     if let Err(error) = budget.charge(dimension, requested) {
-        if matches!(error, jarde_reader::error::Error::Cancelled { .. }) {
-            return Err(StopReason::Cancelled { at });
-        }
-        let limit = budget.limits().counted_limit(dimension);
-        return Err(StopReason::Budget {
-            dimension,
-            written: budget.usage().output_bytes,
-            limit,
-            at,
+        return Err(match error {
+            Error::Cancelled { .. } => StopReason::Cancelled { at },
+            Error::BudgetExceeded {
+                dimension: BudgetDimension::ElapsedMillis,
+                ..
+            } => StopReason::Interrupted {
+                code: BUDGET_INTERRUPTED_CODE,
+                at,
+            },
+            _ => {
+                let limit = budget.limits().counted_limit(dimension);
+                StopReason::Budget {
+                    dimension,
+                    written: budget.usage().output_bytes,
+                    limit,
+                    at,
+                }
+            }
         });
     }
     Ok(())
@@ -220,6 +230,47 @@ mod tests {
             Err(StopReason::Cancelled { at: Some(19) }),
         );
         assert_eq!(budget.usage().analysis_steps, 0);
+    }
+
+    #[test]
+    fn deadline_inside_budget_charge_keeps_the_interrupted_reason() {
+        let dimensions = [
+            CountedBudgetDimension::OutputBytes,
+            CountedBudgetDimension::IrItems,
+        ];
+        let mut actual = Vec::new();
+        for dimension in dimensions {
+            let mut budget = Budget::new(Limits {
+                elapsed_millis: 0,
+                output_bytes: 100,
+                ir_items: 100,
+                ..Limits::default()
+            });
+            actual.push((dimension, charge(&mut budget, dimension, 1, Some(23))));
+            let usage = budget.usage();
+            let charged = match dimension {
+                CountedBudgetDimension::OutputBytes => usage.output_bytes,
+                CountedBudgetDimension::IrItems => usage.ir_items,
+                _ => unreachable!("the test only requests the two named dimensions"),
+            };
+            assert_eq!(charged, 0);
+        }
+        let expected: Vec<_> = dimensions
+            .into_iter()
+            .map(|dimension| {
+                (
+                    dimension,
+                    Err(StopReason::Interrupted {
+                        code: BUDGET_INTERRUPTED_CODE,
+                        at: Some(23),
+                    }),
+                )
+            })
+            .collect();
+        assert_eq!(
+            actual, expected,
+            "both real deadline refusals must remain Interrupted"
+        );
     }
 
     #[test]

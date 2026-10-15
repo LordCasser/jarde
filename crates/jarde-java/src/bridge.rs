@@ -817,6 +817,7 @@ mod tests {
 
         let mut bounded = Budget::new(Limits {
             ir_items: 0,
+            elapsed_millis: u64::MAX,
             ..Limits::default()
         });
         assert!(matches!(

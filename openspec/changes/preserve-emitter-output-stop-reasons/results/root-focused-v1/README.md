@@ -1,0 +1,5 @@
+# Root contrast evidence
+
+旧生产对照仅接入测试代码，emit/stop的生产前缀与基线d6fba33aa逐字一致；根实际执行三项得到0通过/3失败：两个检查内取消被误报输出预算、零elapsed下OutputBytes和IrItems两维都被误报预算。随后应用四文件修复并运行9条命令/18raw，440通过/0失败/0忽略，两个OpenSpec strict通过，最终严格clean成功。旧失败两命令/4raw原样保留。
+
+每scope的4887项源码闭包稳定，四个final-source加基线能还原最终编译输入；三个quota fixture仅隔离elapsed，原零额度和断言不动。未包含CLI二进制，字节和SHA见回执。这里只接受本地对照/focused，完整workspace与该提交自身CI仍待完成。

@@ -4968,6 +4968,7 @@ mod instance_array_prefix_tests {
         );
         let mut b = Budget::new(Limits {
             analysis_steps: 0,
+            elapsed_millis: u64::MAX,
             ..Limits::default()
         });
         assert!(matches!(
@@ -15704,6 +15705,7 @@ mod generic_call_ast_projection_tests {
         }];
         let limits = Limits {
             ir_items: 0,
+            elapsed_millis: u64::MAX,
             ..Limits::default()
         };
         let mut budget = Budget::new(limits);
