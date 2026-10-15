@@ -24,8 +24,8 @@
 
 ## 5. Final integration evidence
 
-- [ ] 5.1 在最终产品源码上执行本项目当时适用的格式、Clippy、workspace 测试、OpenSpec strict 及 CI 配置规定的其他既有门禁，绑定确切源/argv/raw 并保留所有失败历史（验收：适用门禁实际成功、测试数非零且范围准确，不派生额外无关门槛，不借用旧 644 或私有反例的结果）。
-- [ ] 5.2 完成 fix 产品提交并取得该确切 commit 自身 CI 成功，整理本片最终结果、未覆盖范围、迁移说明及清理收据后再核对 tasks（验收：产品源与 CI head/原始结果一致，工作区范围清晰；需要清理的私有 Cargo 最终严格 clean 成功且 target absent，完成结论不提前）。
+- [x] 5.1 在最终产品源码上执行本项目当时适用的格式、Clippy、workspace 测试、OpenSpec strict 及 CI 配置规定的其他既有门禁，绑定确切源/argv/raw 并保留所有失败历史（验收：适用门禁实际成功、测试数非零且范围准确，不派生额外无关门槛，不借用旧 644 或私有反例的结果）。
+- [x] 5.2 完成 fix 产品提交并取得该确切 commit 自身 CI 成功，整理本片最终结果、未覆盖范围、迁移说明及清理收据后再核对 tasks（验收：产品源与 CI head/原始结果一致，工作区范围清晰；需要清理的私有 Cargo 最终严格 clean 成功且 target absent，完成结论不提前）。
 
 ## Workflow follow-up
 
@@ -39,3 +39,9 @@
 - 原验收脚本aa47…未改，8组完整类/接口源（4种合法情形×两debug模式）编译运行，与原Runner共12行输出一致；16组拒绝控制保留原断言。178命令/356raw、40输入和144保留产物均有pins。
 - CLI采用实际可覆盖的ClassHeaders=2：方法和class-source均exit4、原ClassHeaders诊断保留；depth为库高水维度，不是CLI预算覆盖项，先前无效CLI请求exit2排除产品反例。
 - 原始depth0产品失败、初版测试错误/编译错误、report-only原因断言失败、Clippy大Err、缺JDK PATH和录制器失败均保留；范围与逐次修正见results/root-local-v1。
+
+## 最终产品验收（2026-10-15）
+
+- c8718ae自身CI38692921405已成功：4jobs/52steps；两seed各367suites、3615/0/98，总7230/0/196。105具名回归逐seed通过，MSRV1.88、supply-chain、fuzz、显式JDK/full-class及该head的strict365/0均真实完成；root848项与独立1644项审计无错误。
+- 最终产品源4902项与冻结CLI2669绑定以原receipt为准：准确CLI字节59674128、SHA256 `2669b2064747f16ff883788bdf31811b67c5ed3da2da3c1676eed6e99eec04ac`，所有源仍匹配focused-v5，exact clean后target缺失。后续只改规划、证据和规格，不冒作再次产品运行。
+- 最终补包已独立逐字节审核；本片实现任务全部完成。此前本地段落的pending/开放数是历史时点，未覆盖失败记录；本片完成不等于全项目或下一direct-parent片完成。

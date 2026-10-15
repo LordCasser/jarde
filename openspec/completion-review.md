@@ -1,5 +1,15 @@
 # 实现完成复核（2026-09-21）
 
+## 2026-10-15 接口与 class-source 证明停止产品已验收
+
+产品 `c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1` 的[自身CI38692921405](https://github.com/LordCasser/jarde/actions/runs/38692921405)成功：4jobs/52steps，两固定seed各367suites、3615/0/98，合计7230/0/196。105指定回归逐seed唯一通过，六条显式JDK/full-class命令九项测试、MSRV/supply/fuzz/既有门及该head strict365/0通过。root848与独立1644项复核无错误，完整API与logs按原字节留存。
+
+接口停止传播12/12、snapshot前置与double-brace后置停止11/11均完成；加上此前class-view4/4，历史7d0检查点的三片现为27/27，下面0/27保留为当时记录。两片仅追加java8-recovery四要求十六场景并正常归档；[接口最终证据](changes/archive/2026-10-15-preserve-interface-super-proof-stops/results/final-product-v1/README.md)与[class-source最终证据](changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/results/own-ci-v1/README.md)区分产品、历史与后续文档头。
+
+最终冻结CLI59674128B/SHA2669…与4902源恒同；接口8合法/16拒绝完整源合同使用JDK23，原Runner共12行；H1完整11份Java与原8行oracle在Java8/23各做原/重编四次运行。停止点保留原analysis、原因、诊断、真实用量和可靠前缀，后置已有正文保留而类执行非Complete；不提升CF11/CF18/71/612总数。main最终HEAD、clean及target absent另核，不把产品CI冒称后续文档提交自身CI。
+
+下一片 `preserve-direct-parent-dependency-proof-stops` 已按真实schema完成规划并通过strict，仍 **0/6** 未实施：DT-29 cap1/cap2实际分别定位accessor/field预算拒绝而公共Complete；wide完整root与未改Runner双JVM对照通过，只覆盖固定输入。source外部关系读点须另作公共回归，reference-overload仍不在已修范围。当前c871 CI不能完成该新片，用户持续goal保持active。
+
 ## 2026-10-15 class-view 歧义修复已交付并归档
 
 产品e8c749252a71a857838d0cb854f5a6d80a5c2704已进入main，自身[CI38679565191](https://github.com/LordCasser/jarde/actions/runs/38679565191)由根802项/独立1462项核查接受：4jobs52steps，两seed各365suites、3589/0/98，79具名门及既有额外JDK/examples/层级/fuzz门通过。修复保留foreign-owner优先级，重复Name及listed identity都在body准入前按完整候选返回歧义。既有76/0/2本地门、九组27库请求及三CLI请求保持原范围。
