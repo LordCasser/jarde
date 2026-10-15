@@ -1,0 +1,15 @@
+{
+  "schema": "jarde-final-forward-v3-archive-pins-v1",
+  "status": "archived_pending_independent_acceptance",
+  "archive": {
+    "path": "/home/lordcasser/workspace/projects/jarde/openspec/changes/recover-ordinary-try-list-generic-bodies/results/final-local-delivery-root-v4/capture.tar.gz",
+    "bytes": 23673727,
+    "sha256": "c5ba3c8f273493df9cdcce092fd7de49a83df77b37b47678797552c022c8d95f"
+  },
+  "manifest": {
+    "member": "archive-manifest.json",
+    "bytes": 1151004,
+    "sha256": "cdbbcc322fdf02fdacbe1dfec053110f37a9e6086a46e34f631986df225b473e"
+  },
+  "member_count_excluding_manifest": 3536
+}

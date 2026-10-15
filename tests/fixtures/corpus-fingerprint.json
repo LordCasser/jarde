@@ -1056,6 +1056,51 @@
       "path": "tests/fixtures/bigdecimal-number-widening/oracle/original-number-argument.stdout"
     },
     {
+      "path": "tests/fixtures/carry-dependency/CarryDependencyProbe.java",
+      "bytes": 882,
+      "blake3": "4f3f3a6eb31e8184a8037edfd3068faed153780ac38bb3e6bfdc259a2137c411"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/Runner.java",
+      "bytes": 1013,
+      "blake3": "a86aaf49086337786c17c284eb7578afb5e795ae3f8aa726cbc782746453750f"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/javac23/CarryDependencyProbe.class",
+      "bytes": 1563,
+      "blake3": "b28b7555db4cae063cfc2a9ec85626248d8cad72da49f55ea7f017cd50aa3b34"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/javac8/CarryDependencyProbe.class",
+      "bytes": 1566,
+      "blake3": "c27661a1b55bf6e9e320af7abd17b4ae6bd375b9992f22c32bc09c9da6192be7"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/negative/CarryDependencyRefusalProbe.java",
+      "bytes": 333,
+      "blake3": "d7e46f3f2f35f29de2dec7b533db55d89a02a596f46a5d0fafba580a6ace186f"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/negative/Runner.java",
+      "bytes": 529,
+      "blake3": "ef9d4a7173b38c2cdc64c0bbf763cc273574c18a566f4bd6272eb2c6ddb8b270"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/negative/javac23/CarryDependencyRefusalProbe.class",
+      "bytes": 693,
+      "blake3": "e07569e967f079624af8df5432417ae9b6c6fd5dd36227238c2ba10de00e1457"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/negative/javac8/CarryDependencyRefusalProbe.class",
+      "bytes": 693,
+      "blake3": "5e17e14997f1dd14370e5831db22dc4718e3ea6e9970de2be7b93ffc5ed7903d"
+    },
+    {
+      "path": "tests/fixtures/carry-dependency/pins.json",
+      "bytes": 1795,
+      "blake3": "a184e4164ff4b931bbf98f5ed2dd0909d629d9b90578f126129a9c27e01efa02"
+    },
+    {
       "blake3": "19a3c93c93b45b775ba983810383fca13db5aa3cc1e2f5d698d5322b4a3ca90e",
       "bytes": 448,
       "path": "tests/fixtures/cf04-nested-int/cf04/Negative.class"

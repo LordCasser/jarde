@@ -2,6 +2,8 @@
 
 完整类源码恢复已按原输入、原 Runner 验证，未裁剪方法或手改生成 Java。产品提交、自身 CI 与最终 clean-main 交付仍开放；本归档不宣布整个 CF11 或 71/612 账本完成。
 
+后续状态：本归档对应的f014产品已提交推送。追加工厂receiver整数carry输入在v14发现可编译但运行错码；这里的历史绿结果只覆盖下述冻结输入，不能作为当前最终交付。新修复、focused-v17及完整dependency恢复对照另行记录，最终矩阵/双seed/新产品自身CI仍开放。
+
 - frozen CLI：59537768 bytes，SHA `0a30cf2cef1974006105e141789d5a9a8116497fae12d20479b2644d3a0ad2d7`。focused-v14 为629/0/2；420 Java库、178 reader库、原ICN负例及公开List测试通过，fmt/CI exact Clippy/OpenSpec1.11 strict通过。
 - matrix-v3：16个完整Jarde cells编译运行成功；baseline17方法/45行、admission13方法/33行同原oracle。JADX baseline8编译失败/no-runtime、admission8成功/33行均按实情保留。root主审计accepted/errors0。
 - forward-order-v3：两JDK/default-all四完整16方法cells，64个方法source maps、12行时序oracle一致；覆盖可变字段旧值、producer/test/arm顺序、null arraylength与RHS抛RuntimeException/Error。javac23仅有原source/target8 options警告，runtime stderr空。

@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--no-interactive"
+  ],
+  "PATH_node_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/final-doc-strict-v3/stdout.raw",
+      "bytes": 16985,
+      "sha256": "7308041e2e1ed513b1e701aea0c8ce3a6ee664f9b3335f2fdab2d00141da9132"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/final-doc-strict-v3/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

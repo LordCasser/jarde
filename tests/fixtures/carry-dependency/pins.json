@@ -1,0 +1,62 @@
+{
+  "source_level": "Java 8",
+  "compiler_flags": [
+    "-g",
+    "-source",
+    "8",
+    "-target",
+    "8",
+    "-encoding",
+    "UTF-8",
+    "-classpath",
+    "EMPTY",
+    "-sourcepath",
+    "EMPTY"
+  ],
+  "files": [
+    {
+      "path": "CarryDependencyProbe.java",
+      "bytes": 882,
+      "sha256": "7a2416b40c9383dcb144c0614599292d0aad403bb6511a6cef902fc3f1b08642"
+    },
+    {
+      "path": "Runner.java",
+      "bytes": 1013,
+      "sha256": "da20a921bdd553318ee597bf295c351ff1a74baab6f9dbe0e007015459c35ce5"
+    },
+    {
+      "path": "javac23/CarryDependencyProbe.class",
+      "bytes": 1563,
+      "sha256": "c1ea33fc21f5bc9fdf2b4b26aac5e2c137509dfa7bc6fb0100dfc76b52ad0bc4"
+    },
+    {
+      "path": "javac8/CarryDependencyProbe.class",
+      "bytes": 1566,
+      "sha256": "6e9a7e650f3d61af26e36dc6b53a113c7a5439001b889633ef07af9f01ae0131"
+    },
+    {
+      "path": "negative/CarryDependencyRefusalProbe.java",
+      "bytes": 333,
+      "sha256": "9e1e6adf76f71f20fc57f0c21342e5a85bb269f2b325041a6666bb1a965ca9f2"
+    },
+    {
+      "path": "negative/Runner.java",
+      "bytes": 529,
+      "sha256": "2829cd341284122f921ceb5bd1ddb499b0b906142259657aa44a3f26a4993800"
+    },
+    {
+      "path": "negative/javac23/CarryDependencyRefusalProbe.class",
+      "bytes": 693,
+      "sha256": "f1e31a6b702114e9217f1b19ff3b3aa3438404971864058cb4b4d30d81f71439"
+    },
+    {
+      "path": "negative/javac8/CarryDependencyRefusalProbe.class",
+      "bytes": 693,
+      "sha256": "7aa1e233adce6ba5c72cd72232e7bc74951f0b3a5478b8ab75cb46e0fec684e2"
+    }
+  ],
+  "oracle_rows": 6,
+  "oracle_sha256": "0933c4372b1869e9e6756bf151e33927910711dbeea16b35e579bdb69b00dd67",
+  "negative_oracle_rows": 2,
+  "negative_oracle_sha256": "ea58ffd6bb6733bac6a501c45f20a3f85a48afb719044ee80b53c5806710d857"
+}

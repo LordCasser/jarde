@@ -24043,7 +24043,57 @@ impl Builder<'_> {
     fn prepare_deferred_bindings(&mut self) -> Result<(), StopReason> {
         let mut candidates = Vec::new();
         let mut rejections = Vec::new();
-        for (value, value_facts) in self.ssa.values_with_ids() {
+        let folded = self.regions.first().and_then(|region| {
+            let Region::If { branch_bci, .. } = region else {
+                return None;
+            };
+            match self.conditional_branches.get(branch_bci) {
+                Some(ConditionalBranchPlan::Folded(phi))
+                    if self.conditional_values.contains_key(phi) =>
+                {
+                    Some(*phi)
+                }
+                _ => None,
+            }
+        });
+        // Plan the bounded carries before their input producers. Only an accepted binding plan
+        // below becomes a terminal position for its inputs; a provisional proof never
+        // changes their consumer walk.
+        let mut pending_carries = BTreeMap::new();
+        if folded.is_some() {
+            for (value, facts) in self.ssa.values_with_ids() {
+                poll(self.budget, None)?;
+                charge(self.budget, CountedBudgetDimension::IrItems, 1, None)?;
+                if facts.ty() != &Value::Int
+                    || facts.uses().len() != 3
+                    || self.crosses_a_proved_cut(value)
+                {
+                    continue;
+                }
+                if let Some(carry) = prove_forward_conditional_carry(
+                    value,
+                    self.regions,
+                    folded,
+                    self.canonical,
+                    self.ssa,
+                    self.operations,
+                    self.code,
+                    self.budget,
+                )? {
+                    pending_carries.insert(value, carry);
+                }
+            }
+        }
+        let ssa = self.ssa;
+        let values = pending_carries
+            .keys()
+            .copied()
+            .map(|value| (value, ssa.value(value)))
+            .chain(
+                ssa.values_with_ids()
+                    .filter(|(value, _)| !pending_carries.contains_key(value)),
+            );
+        for (value, value_facts) in values {
             let anchor_for_charge = match value_facts.def() {
                 Definition::Instruction { bci, .. } | Definition::Caught { bci, .. } => Some(*bci),
                 Definition::Entry { block, .. } | Definition::Phi { block, .. } => {
@@ -24097,34 +24147,7 @@ impl Builder<'_> {
                 continue;
             };
             let crosses_cut = self.crosses_a_proved_cut(value);
-            let mut pending_carry = None;
-            if !crosses_cut && value_facts.uses().len() == 3 {
-                let folded = self.regions.first().and_then(|region| {
-                    let Region::If { branch_bci, .. } = region else {
-                        return None;
-                    };
-                    match self.conditional_branches.get(branch_bci) {
-                        Some(ConditionalBranchPlan::Folded(phi))
-                            if self.conditional_values.contains_key(phi) =>
-                        {
-                            Some(*phi)
-                        }
-                        _ => None,
-                    }
-                });
-                if let Some(carry) = prove_forward_conditional_carry(
-                    value,
-                    self.regions,
-                    folded,
-                    self.canonical,
-                    self.ssa,
-                    self.operations,
-                    self.code,
-                    self.budget,
-                )? {
-                    pending_carry = Some(carry);
-                }
-            }
+            let pending_carry = pending_carries.get(&value).cloned();
             let original_consumers = self.binding_consumers(value, crosses_cut);
             let consumers = if pending_carry.is_some() {
                 1
@@ -24690,6 +24713,15 @@ impl Builder<'_> {
         else {
             return Ok(None);
         };
+        if self
+            .forward_conditional_carries
+            .get(&output)
+            .is_some_and(|carry| carry.producer == reader)
+        {
+            // The input is evaluated in this planned saved initializer, before the test.
+            // Following the saved value to the join would falsely move its input across it.
+            return Ok(Some(reader));
+        }
         self.terminal_consumer(output, depth + 1, None)
     }
 
@@ -24827,8 +24859,14 @@ impl Builder<'_> {
         }
     }
 
-    fn refuse_binding(&mut self, plan: &BindingPlan) {
+    fn refuse_binding(&mut self, plan: &BindingPlan) -> Option<String> {
         self.mark_binding_refused(plan.value, plan.producer);
+        self.forward_conditional_carries.remove(&plan.value).map(|_| {
+            format!(
+                "the saved producer at BCI {} has {} consumers, so one local binding cannot prove its execution count",
+                plan.anchor, self.ssa.value(plan.value).uses().len()
+            )
+        })
     }
 
     /// Adds a binding site's owned bytecode to one refusal quote, charging each source identity
@@ -24873,23 +24911,22 @@ impl Builder<'_> {
     fn bind_value(&mut self, plan: BindingPlan) -> Result<(), StopReason> {
         let expression = match self.render_value(plan.value, plan.anchor, 0) {
             Ok(expression) => expression,
-            Err(reason) => {
-                self.refuse_binding(&plan);
+            Err(ValueRenderFailure::Stop(stop)) => return Err(stop),
+            Err(ValueRenderFailure::Refusal(reason)) => {
+                let reason = self.refuse_binding(&plan).unwrap_or(reason);
                 let bcis = self.binding_quote_bcis(plan.anchor)?;
                 return self.fallback(bcis, &reason, plan.anchor);
             }
         };
         let Some(ty) = expression.presented.clone() else {
-            self.refuse_binding(&plan);
-            let bcis = self.binding_quote_bcis(plan.anchor)?;
-            return self.fallback(
-                bcis,
+            let reason = self.refuse_binding(&plan).unwrap_or_else(|| {
                 format!(
                     "the saved value at BCI {} has no declared Java type",
                     plan.anchor
-                ),
-                plan.anchor,
-            );
+                )
+            });
+            let bcis = self.binding_quote_bcis(plan.anchor)?;
+            return self.fallback(bcis, reason, plan.anchor);
         };
         self.push(Stmt::new(
             StmtKind::Declare {
@@ -24907,7 +24944,10 @@ impl Builder<'_> {
             self.stmts.last().map(|statement| &statement.kind),
             Some(StmtKind::Declare { name, .. }) if name == &plan.name
         ) {
-            self.refuse_binding(&plan);
+            if let Some(reason) = self.refuse_binding(&plan) {
+                let bcis = self.binding_quote_bcis(plan.anchor)?;
+                return self.fallback(bcis, reason, plan.anchor);
+            }
             return Ok(());
         }
         self.bindings.insert(
@@ -40869,6 +40909,277 @@ mod tests {
             builder.compound_refused_producers,
             builder.nested_pair.as_ref().map(|pair| pair.engaged_once),
         )
+    }
+
+    #[test]
+    fn failed_forward_carry_declarations_restore_the_original_whole_value_refusal() {
+        use jarde_reader::budget::CancellationToken;
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct CancelFirstCharge {
+            charges: AtomicUsize,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for CancelFirstCharge {
+            fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    self.charges.fetch_add(1, Ordering::SeqCst);
+                    self.token.cancel();
+                }
+            }
+            fn refusal(
+                &self,
+                _site: LedgerSite,
+                _dimension: Option<jarde_reader::budget::BudgetDimension>,
+            ) {
+            }
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/carry-dependency/javac8/CarryDependencyProbe.class"
+        );
+        fixture_value_attempts_with_tree_observing(
+            class,
+            "referenceConsumer",
+            "(Z)V",
+            None,
+            None,
+            |recovered,
+             canonical,
+             ssa,
+             operations,
+             code,
+             pool,
+             bootstrap,
+             direct_super_class,
+             direct_interfaces,
+             class_methods,
+             chains,
+             _| {
+                let method = crate::facts::MethodFacts::new("referenceConsumer", "(Z)V", 1)
+                    .with_access_flags(0x0009);
+                let parameter_types = method.parameter_types();
+                let fields = field::Plan::empty();
+                let field_copies = FieldCopies::default();
+                let mut setup = compound_test_budget(1 << 25);
+                let mut arrays = ArrayInitializers::prove_with_composition(
+                    ssa, operations, &fields, None, &mut setup,
+                )
+                .unwrap();
+                let sites = crate::init::sites_after_array_composition(
+                    ssa,
+                    operations,
+                    chains,
+                    chains.owned(),
+                    &fields,
+                    &mut arrays,
+                    8,
+                    &[],
+                    &method,
+                    code,
+                    &mut setup,
+                )
+                .unwrap();
+                let resources = resource_slots(&recovered.regions);
+                let reuse = crate::reuse::plan(
+                    ssa,
+                    canonical,
+                    operations,
+                    &recovered.regions,
+                    code.max_locals,
+                    1,
+                    &[],
+                    &resources,
+                    &mut setup,
+                )
+                .unwrap();
+                let names = NameTable::build(1, code.max_locals, reuse.evidence());
+                let prologues = crate::init::Prologues::none();
+                let enums = crate::enumswitch::Plan::empty();
+                let ConditionalValueAttempt::Proved(proof) = prove_conditional_value(
+                    &recovered.regions[0],
+                    canonical,
+                    ssa,
+                    operations,
+                    &mut setup,
+                )
+                .unwrap() else {
+                    panic!("the physical diamond is proved");
+                };
+                let value = ssa
+                    .values_with_ids()
+                    .find_map(|(value, facts)| {
+                        matches!(facts.def(), Definition::Instruction { bci: 3, .. })
+                            .then_some(value)
+                    })
+                    .unwrap();
+                let carry = prove_forward_conditional_carry(
+                    value,
+                    &recovered.regions,
+                    Some(proof.phi),
+                    canonical,
+                    ssa,
+                    operations,
+                    code,
+                    &mut setup,
+                )
+                .unwrap()
+                .expect("the real integer producer has a bounded carry");
+                assert_eq!(ssa.value(value).uses().len(), 3);
+                for failure in 0..3 {
+                    let mut budget = compound_test_budget(1 << 25);
+                    let mut builder = compound_test_builder(
+                        canonical,
+                        ssa,
+                        code,
+                        operations,
+                        pool,
+                        bootstrap,
+                        direct_super_class,
+                        direct_interfaces,
+                        class_methods,
+                        chains,
+                        &recovered.regions,
+                        &names,
+                        &reuse,
+                        &parameter_types,
+                        &sites,
+                        &fields,
+                        &field_copies,
+                        &prologues,
+                        &enums,
+                        &mut setup,
+                        &mut budget,
+                    );
+                    let plan = BindingPlan {
+                        value,
+                        producer: 3,
+                        anchor: 3,
+                        name: "savedCarry".to_owned(),
+                    };
+                    builder
+                        .forward_conditional_carries
+                        .insert(value, carry.clone());
+                    match failure {
+                        0 => {
+                            builder.binding_refused.insert(value);
+                        }
+                        1 => {
+                            let mut untyped = Expr::direct(ExprKind::Integer(5), 3);
+                            untyped.presented = None;
+                            builder.conditional_values.insert(value, untyped);
+                        }
+                        2 => {
+                            builder.conditional_values.insert(
+                                value,
+                                Expr::direct(ExprKind::Local("missingCarryInput".to_owned()), 3)
+                                    .presenting(Type::Int),
+                            );
+                            builder.undeclared.insert("missingCarryInput".to_owned());
+                        }
+                        _ => unreachable!(),
+                    }
+                    builder.bind_value(plan).unwrap();
+                    assert!(
+                        !builder.forward_conditional_carries.contains_key(&value),
+                        "failure case {failure}"
+                    );
+                    assert!(!builder.bindings.contains_key(&value));
+                    assert!(builder.binding_refused.contains(&value));
+                    assert!(builder.deferred.contains(&(value, 3)));
+                    assert!(
+                        builder
+                            .stmts
+                            .iter()
+                            .any(|statement| matches!(&statement.kind,
+                        StmtKind::Fallback { reason, .. } if value_level_refusal(reason)
+                            && reason.contains("has 3 consumers"))),
+                        "failure case {failure}"
+                    );
+                    assert!(
+                        !builder
+                            .stmts
+                            .iter()
+                            .any(|statement| matches!(&statement.kind,
+                        StmtKind::Declare { name, .. } if name == "savedCarry"))
+                    );
+                }
+                for cancellation in [false, true] {
+                    let mut budget = compound_test_budget(1 << 25);
+                    let mut builder = compound_test_builder(
+                        canonical,
+                        ssa,
+                        code,
+                        operations,
+                        pool,
+                        bootstrap,
+                        direct_super_class,
+                        direct_interfaces,
+                        class_methods,
+                        chains,
+                        &recovered.regions,
+                        &names,
+                        &reuse,
+                        &parameter_types,
+                        &sites,
+                        &fields,
+                        &field_copies,
+                        &prologues,
+                        &enums,
+                        &mut setup,
+                        &mut budget,
+                    );
+                    builder
+                        .prepare_conditional_regions(&recovered.regions)
+                        .unwrap();
+                    assert!(matches!(
+                        builder.conditional_branches.values().next(),
+                        Some(ConditionalBranchPlan::Folded(_))
+                    ));
+                    let mut limits = builder.budget.limits().clone();
+                    let token = CancellationToken::new();
+                    let observer = Arc::new(CancelFirstCharge {
+                        charges: AtomicUsize::new(0),
+                        token: token.clone(),
+                    });
+                    if cancellation {
+                        *builder.budget = Budget::with_cancellation_token(limits, token);
+                        builder.budget.with_ledger(
+                            OperationLedger::new(builder.budget).with_observer(observer.clone()),
+                            UsageOwner::Methods,
+                        );
+                    } else {
+                        limits.ir_items = 0;
+                        *builder.budget = Budget::new(limits);
+                    }
+                    let before = builder.stmts.clone();
+                    let stop = builder.prepare_deferred_bindings().unwrap_err();
+                    if cancellation {
+                        assert_eq!(stop, StopReason::Cancelled { at: None });
+                        assert_eq!(observer.charges.load(Ordering::SeqCst), 1);
+                    } else {
+                        assert!(matches!(
+                            stop,
+                            StopReason::Budget {
+                                dimension: CountedBudgetDimension::IrItems,
+                                at: None,
+                                ..
+                            }
+                        ));
+                    }
+                    assert_eq!(builder.stmts, before);
+                    assert!(builder.forward_conditional_carries.is_empty());
+                    assert!(builder.binding_plans.is_empty());
+                    assert!(builder.binding_rejections.is_empty());
+                    assert!(builder.bindings.is_empty());
+                }
+            },
+        );
     }
 
     fn seed_compound_trial(builder: &mut Builder<'_>, bci: u32, owned: &BTreeSet<u32>) {

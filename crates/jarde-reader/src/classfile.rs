@@ -12258,7 +12258,11 @@ mod tests {
             // The 2026-10-14 ordinary-Try List baseline/admission and two forward-carry
             // compiler legs add four classes, sixty-two bodies, eighteen handler records and
             // one hundred forty-five non-handler branch targets; no subroutine was added.
-            (1169, 5225, 521, 3429, 10),
+            // The reference-dependency carry counterexample adds two compiler classes,
+            // twenty Code bodies and twelve direct branch targets, with no handler/subroutine.
+            // Its two complete receiver-assignment refusal controls add four bodies and four
+            // direct branch targets, with no handler/subroutine.
+            (1173, 5249, 521, 3445, 10),
             "fixture population changed: re-measure these counts"
         );
     }

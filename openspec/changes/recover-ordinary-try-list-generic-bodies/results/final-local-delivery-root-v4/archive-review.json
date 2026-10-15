@@ -1,0 +1,25 @@
+{
+  "status": "accepted_local_delivery_only",
+  "archive_sha256": "c5ba3c8f273493df9cdcce092fd7de49a83df77b37b47678797552c022c8d95f",
+  "payload_members": 3536,
+  "checks": 3547,
+  "compiled_final_source_files": 10,
+  "complete_source_closure_files": 4886,
+  "focused_workspace_source_closure_equal": true,
+  "source_closure_current": true,
+  "supplemental_original_input_pins_outside_tar": [
+    {
+      "path": "original-inputs/downstream-multiarray/CarryUnprovedConsumerProbe.java",
+      "bytes": 652,
+      "sha256": "1ec3750766129d3249fe46321f7d9bdf771887a2c83a61d1cabea24cc1c3afee",
+      "source_recorded_path": "/home/lordcasser/.cache/jarde-review/20261014/carry-unproved-consumer-input-v2/CarryUnprovedConsumerProbe.java"
+    },
+    {
+      "path": "original-inputs/downstream-multiarray/Runner.java",
+      "bytes": 608,
+      "sha256": "af3ec87945f052466182b0c9bbfa9ba1589c7c1071e8854527b2f864785c50cf",
+      "source_recorded_path": "/home/lordcasser/.cache/jarde-review/20261014/carry-unproved-consumer-input-v2/Runner.java"
+    }
+  ],
+  "scope": "final local source/runtime/workspace evidence only; repaired product own CI and clean-main still pending"
+}
