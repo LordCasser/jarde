@@ -2,7 +2,7 @@
 
 ## Context
 
-动机与行为见 proposal 和 delta。本片基线为 c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1，facade SHA256 `ee8146c1907e1a24e3a631f1106dfad261046acd037fab45c2cde6ce04d16bac`；最终CLI2669…/59674128B绑定完整4902源，不能只凭单文件pin冒认产品。建项时该提交自身CI仍待，现已由CI38692921405和独立审计接受；本片实施与自身CI仍未发生。
+动机与行为见 proposal 和 delta。本片基线为 c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1，facade SHA256 `ee8146c1907e1a24e3a631f1106dfad261046acd037fab45c2cde6ce04d16bac`；最终CLI2669…/59674128B绑定完整4902源，不能只凭单文件pin冒认产品。建项时该提交自身CI仍待，现已由CI38692921405和独立审计接受；该处记录规划基线；本片后续实施状态见文末，修复自身CI独立验收。
 
 DT-29原JAR1253B、SHA256 `31ec2e5d6b4fdac4fc4c910904c3b84dc92f64d54e83a1a81b41e57b41dad5c3`，目标 `dt29/SamePackageParentFamily$B.set(ZZ)V`。旧958a和final2669各执行wide4096、cap1至8，共18命令，全部exit0。wide实际Header用量3，保留三条父字段cast和物理access$002；cap1/2用量1/2，却把父字段写入替成解释，仍Complete。
 
@@ -42,3 +42,12 @@ DT-29原JAR1253B、SHA256 `31ec2e5d6b4fdac4fc4c910904c3b84dc92f64d54e83a1a81b41e
 ## Migration Plan
 
 无数据迁移。先固化可移交反例和正例，再接入永久回归、最小生产交接和真实in-flight控制；最终源码完成适用门禁与自身commit CI后同步归档。失败raw与所有脚本组装错误保留，不改原fixture、Runner、oracle或生成Java。当前计划不等于实施完成；当前c871 CI也不能作为未来修复自身CI。
+
+
+## Implemented local boundary (2026-10-15)
+
+实际生产修改仅六处：两个direct-parent proof返回既有DependencyProofResult；两个owner读取改用selected_dependency_proof_header；仅供二者调用的selected_direct_parent复用同一typed读取及原唯一predicate；原proof closure用?交接并删除吞Budget/Cancelled的两处catch。未改reference-overload、全局Budget/merge或publication gate，未新增依赖。
+
+scoped observer复用既有cfg(test)观测：DT-29 accessor/field各覆盖真实收费取消、已过期ledger实际checkpoint和ClassHeaders原Report；外部C receiver B的关系证明实际尝试source B，原Report停止后不读owner A或进入field。实际成功fixed测试才支持这些后继断言；旧生产7个新增失败不支持未执行断言。取消初始token clear，观察真实hand-off全部15个counted维度、原Error/Report及全部诊断、无后继工作/收费tail；sticky ledger发布控制只保留已付费constructor，不强迫当前setter准入。公共plain Budget控制则明确要求停止setter record已合法准入。
+
+外部C公共Partial原本已绿，只作兼容控制；source B首次读取顺序依据scoped callback观测，未推广为每种外部source/owner组合均有动态覆盖。缺失/歧义仍Complete的普通拒绝并保留物理BCI来源。局部最终457/0/1及真实完整root/原Runner双JVM实验分别记录；自身commit CI、同步归档与最终main绑定仍待，详见tasks。

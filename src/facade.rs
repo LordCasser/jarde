@@ -22038,7 +22038,7 @@ impl DependencyProofFailure {
         provenance: Option<Provenance>,
     ) -> (ExecutionReport, Vec<Diagnostic>) {
         #[cfg(test)]
-        class_source_proof_inflight_tests::at_stop(budget);
+        class_source_proof_inflight_tests::at_stop(budget, &self);
         match self {
             Self::Error(error) => (
                 stop_execution(&error, budget),
@@ -25944,6 +25944,8 @@ fn selected_dependency_proof_header(
     budget: &mut Budget,
 ) -> DependencyProofResult<Option<ReferenceClassHeader>> {
     selected_reference_header_with(ir, owner, cache, budget, |budget| {
+        #[cfg(test)]
+        class_source_proof_inflight_tests::note_header_read(owner);
         resolve_dependency_proof_read(
             content,
             &request.environment,
@@ -26162,11 +26164,18 @@ fn prove_direct_parent_field_writes(
     request: &crate::ir::MethodAnalysisRequest,
     ir: &jarde_jvm::method_ir::MethodIr,
     budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedSuperclassFieldWrite>> {
+) -> DependencyProofResult<Vec<jarde_java::report::ProvedSuperclassFieldWrite>> {
     use jarde_reader::classfile::cp_entry;
     let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
         return Ok(Vec::new());
     };
+    #[cfg(test)]
+    class_source_proof_inflight_tests::at(
+        ClassProofStage::DirectParentFieldsPrebody,
+        &request.method,
+        budget,
+    );
+
     let mut cache = std::collections::BTreeMap::new();
     let mut execution = ExecutionReport::Complete {
         usage: budget.usage(),
@@ -26210,7 +26219,7 @@ fn prove_direct_parent_field_writes(
         {
             continue;
         }
-        let Some(header) = selected_reference_header(
+        let Some(header) = selected_dependency_proof_header(
             content,
             request,
             ir,
@@ -26279,11 +26288,18 @@ fn prove_direct_parent_accessor_calls(
     request: &crate::ir::MethodAnalysisRequest,
     ir: &jarde_jvm::method_ir::MethodIr,
     budget: &mut Budget,
-) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
+) -> DependencyProofResult<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
     use jarde_reader::classfile::cp_entry;
     let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
         return Ok(Vec::new());
     };
+    #[cfg(test)]
+    class_source_proof_inflight_tests::at(
+        ClassProofStage::DirectParentAccessorPrebody,
+        &request.method,
+        budget,
+    );
+
     let mut cache = std::collections::BTreeMap::new();
     let mut execution = ExecutionReport::Complete {
         usage: budget.usage(),
@@ -26341,7 +26357,7 @@ fn prove_direct_parent_accessor_calls(
         if descriptor.0 != expected {
             continue;
         }
-        let Some(header) = selected_reference_header(
+        let Some(header) = selected_dependency_proof_header(
             content,
             request,
             ir,
@@ -26442,9 +26458,9 @@ fn selected_direct_parent(
     cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
-) -> Result<bool> {
+) -> DependencyProofResult<bool> {
     Ok(
-        selected_reference_header(content, request, ir, source, cache, execution, budget)?
+        selected_dependency_proof_header(content, request, ir, source, cache, execution, budget)?
             .is_some_and(|header| {
                 header.flags & ACC_INTERFACE == 0 && header.super_name.as_deref() == Some(owner)
             }),
@@ -42730,17 +42746,13 @@ fn recovery_from_with_class_candidates(
         let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
             let mut calls =
                 reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
-            match prove_direct_parent_accessor_calls(content, request, analyzed.ir(), budget) {
-                Ok(accessors) => calls.extend(accessors),
-                Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => {}
-                Err(error) => return Err(error.into()),
-            }
-            let fields =
-                match prove_direct_parent_field_writes(content, request, analyzed.ir(), budget) {
-                    Ok(fields) => fields,
-                    Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Vec::new(),
-                    Err(error) => return Err(error.into()),
-                };
+            calls.extend(prove_direct_parent_accessor_calls(
+                content,
+                request,
+                analyzed.ir(),
+                budget,
+            )?);
+            let fields = prove_direct_parent_field_writes(content, request, analyzed.ir(), budget)?;
             (calls, fields)
         } else {
             (Vec::new(), Vec::new())
@@ -46860,6 +46872,8 @@ mod common_instance_array_initializer_tests {
 enum ClassProofStage {
     SnapshotPrebody,
     DoubleBracePostbody,
+    DirectParentAccessorPrebody,
+    DirectParentFieldsPrebody,
 }
 
 #[cfg(test)]
@@ -46867,7 +46881,8 @@ mod class_source_proof_inflight_tests {
     use super::*;
     use jarde_reader::budget::{BudgetDimension, CancellationToken};
     use jarde_reader::ledger::{
-        LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        BulkStop, BulkStopKind, LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger,
+        UsageOwner,
     };
     use std::cell::RefCell;
     use std::sync::{
@@ -46888,6 +46903,12 @@ mod class_source_proof_inflight_tests {
         pub budget_token: CancellationToken,
         pub usage_at_entry: UsageSnapshot,
         pub usage_at_stop: Mutex<Option<UsageSnapshot>>,
+        pub stop_from_report: Mutex<Option<bool>>,
+        pub report_diagnostics: Mutex<Option<Vec<Diagnostic>>>,
+        pub error_code_message: Mutex<Option<(String, String)>>,
+        pub first_ledger_stop: Mutex<Option<BulkStop>>,
+        pub stages: Mutex<Vec<ClassProofStage>>,
+        pub header_reads: Mutex<Vec<Vec<u8>>>,
         pub entries: Mutex<Vec<LedgerSite>>,
         pub refusals: Mutex<Vec<Option<BudgetDimension>>>,
         pub first_refusal_index: Mutex<Option<usize>>,
@@ -46952,9 +46973,25 @@ mod class_source_proof_inflight_tests {
     /// shared or independent token. Deadline/header modes change only their ledger limits; no stop
     /// is injected.
     pub(super) fn at(stage: ClassProofStage, method: &PhysicalMethodId, budget: &mut Budget) {
-        if method.name.0 != b"main" || method.descriptor.0 != b"([Ljava/lang/String;)V" {
+        let selected = match stage {
+            ClassProofStage::SnapshotPrebody | ClassProofStage::DoubleBracePostbody => {
+                method.name.0 == b"main" && method.descriptor.0 == b"([Ljava/lang/String;)V"
+            }
+            ClassProofStage::DirectParentAccessorPrebody
+            | ClassProofStage::DirectParentFieldsPrebody => {
+                method.name.0 == b"set"
+                    && (method.descriptor.0 == b"(ZZ)V"
+                        || method.descriptor.0 == b"(Ldt29/FieldCast$B;Z)V")
+            }
+        };
+        if !selected {
             return;
         }
+        OBSERVED.with(|slot| {
+            if let Some(observer) = slot.borrow().as_ref() {
+                observer.stages.lock().unwrap().push(stage);
+            }
+        });
         let armed = ARMED.with(|slot| {
             if slot.borrow().is_some_and(|armed| armed.stage == stage) {
                 slot.borrow_mut().take()
@@ -46973,7 +47010,12 @@ mod class_source_proof_inflight_tests {
         );
         // with_ledger accepts a caller-owned ledger with its own cancellation token. Exercise
         // that real API boundary for both prebody controls; postbody retains the shared token.
-        let token = if stage == ClassProofStage::SnapshotPrebody {
+        let token = if matches!(
+            stage,
+            ClassProofStage::SnapshotPrebody
+                | ClassProofStage::DirectParentAccessorPrebody
+                | ClassProofStage::DirectParentFieldsPrebody
+        ) {
             CancellationToken::new()
         } else {
             budget_token.clone()
@@ -46991,6 +47033,12 @@ mod class_source_proof_inflight_tests {
             budget_token,
             usage_at_entry,
             usage_at_stop: Mutex::new(None),
+            stop_from_report: Mutex::new(None),
+            report_diagnostics: Mutex::new(None),
+            error_code_message: Mutex::new(None),
+            first_ledger_stop: Mutex::new(None),
+            stages: Mutex::new(vec![stage]),
+            header_reads: Mutex::new(Vec::new()),
             entries: Mutex::new(Vec::new()),
             refusals: Mutex::new(Vec::new()),
             first_refusal_index: Mutex::new(None),
@@ -47009,13 +47057,36 @@ mod class_source_proof_inflight_tests {
     }
 
     // Observe the original proof handoff without polling, charging, or changing its result.
-    pub(super) fn at_stop(budget: &Budget) {
+    pub(super) fn at_stop(budget: &Budget, failure: &DependencyProofFailure) {
         OBSERVED.with(|slot| {
             if let Some(observer) = slot.borrow().as_ref() {
                 let mut stopped = observer.usage_at_stop.lock().unwrap();
                 if stopped.is_none() {
                     *stopped = Some(budget.usage());
+                    *observer.first_ledger_stop.lock().unwrap() =
+                        budget.ledger().and_then(OperationLedger::stop_reason);
+                    *observer.stop_from_report.lock().unwrap() =
+                        Some(matches!(failure, DependencyProofFailure::Report { .. }));
+                    match failure {
+                        DependencyProofFailure::Report { diagnostics, .. } => {
+                            *observer.report_diagnostics.lock().unwrap() =
+                                Some(diagnostics.clone());
+                        }
+                        DependencyProofFailure::Error(error) => {
+                            *observer.error_code_message.lock().unwrap() =
+                                Some((error_code(error), error.to_string()));
+                        }
+                    }
                 }
+            }
+        });
+    }
+
+    // The resolver closure is reached only after both the IR and memoized-header shortcuts.
+    pub(super) fn note_header_read(owner: &[u8]) {
+        OBSERVED.with(|slot| {
+            if let Some(observer) = slot.borrow().as_ref() {
+                observer.header_reads.lock().unwrap().push(owner.to_vec());
             }
         });
     }
@@ -47281,6 +47352,10 @@ mod class_source_proof_inflight_tests {
             );
         }
         match stage {
+            ClassProofStage::DirectParentAccessorPrebody
+            | ClassProofStage::DirectParentFieldsPrebody => {
+                unreachable!("direct-parent stages use their own original fixture controls");
+            }
             ClassProofStage::SnapshotPrebody => {
                 // Snapshot proof stops before recovery of H1.main. Physical records before it are
                 // reliable; cancellation may refuse publication of main's own stopped record.
@@ -47438,6 +47513,298 @@ mod class_source_proof_inflight_tests {
         exercise_h1_stage(
             ClassProofStage::DoubleBracePostbody,
             InFlightControl::ExpiredLedgerCheckpoint,
+        );
+    }
+
+    const DIRECT_PARENT_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar"
+    );
+    const EXTERNAL_PARENT_SOURCE_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/combined-input.jar"
+    );
+
+    fn open_direct_parent(external_source: bool) -> (ArtifactSnapshot, ClassSourceRequest) {
+        let (bytes, class) = if external_source {
+            (EXTERNAL_PARENT_SOURCE_JAR, "dt29/FieldCast$C")
+        } else {
+            (DIRECT_PARENT_JAR, "dt29/SamePackageParentFamily$B")
+        };
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.class_headers = u64::MAX;
+        let snapshot = Engine::new()
+            .open(
+                ArtifactInput::bytes(bytes.to_vec()),
+                &mut Budget::new(limits),
+            )
+            .unwrap();
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal(class),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            },
+        };
+        (snapshot, request)
+    }
+
+    fn exercise_direct_parent_stage(
+        stage: ClassProofStage,
+        control: InFlightControl,
+        external_source: bool,
+    ) {
+        let (snapshot, request) = open_direct_parent(external_source);
+        let wide = run_h1(&snapshot, &request);
+        assert!(matches!(wide.execution, ExecutionReport::Complete { .. }));
+        let descriptor: &[u8] = if external_source {
+            b"(Ldt29/FieldCast$B;Z)V"
+        } else {
+            b"(ZZ)V"
+        };
+        let wide_set = wide
+            .methods
+            .iter()
+            .find(|member| {
+                member.item.identity.name.0 == b"set"
+                    && member.item.identity.descriptor.0 == descriptor
+            })
+            .expect("the exact physical setter is selected");
+        let class_source::ClassSourceOutcome::Recovered { analysis, .. } = &wide_set.outcome else {
+            panic!("wide control retains a completed analysis of the selected setter");
+        };
+        assert!(matches!(
+            analysis.execution,
+            ExecutionReport::Complete { .. }
+        ));
+        let guard = arm(stage, control);
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.elapsed_millis = u64::MAX;
+        limits.class_headers = u64::MAX;
+        let mut budget = Budget::new(limits);
+        let crate::OperationOutcome::Performed(stopped) = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget,
+            )
+            .unwrap()
+        else {
+            panic!("the selected class keeps its public report after a real proof stop");
+        };
+        let observer = observation();
+        drop(guard);
+        assert_execution_stop(&stopped, control);
+        assert_observer_stopped(&observer, control);
+        assert_no_post_stop_body_work(&stopped, &observer);
+        assert!(
+            !observer.budget_token.is_cancelled(),
+            "both prebody stages use an independent ledger token"
+        );
+        assert_eq!(
+            *observer.stages.lock().unwrap(),
+            vec![stage],
+            "the first stop must block every later proof stage"
+        );
+        let expected_report_channel = matches!(control, InFlightControl::CountedClassHeaders);
+        assert_eq!(
+            *observer.stop_from_report.lock().unwrap(),
+            Some(expected_report_channel),
+            "observe the actual typed Error or resolver Report channel"
+        );
+        let first_stop = observer
+            .first_ledger_stop
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("a real ledger refusal was already recorded at handoff");
+        assert_eq!(
+            budget.ledger().unwrap().stop_reason(),
+            Some(first_stop.clone()),
+            "later token notification must not replace the first ledger stop"
+        );
+        match control {
+            InFlightControl::CancelAfterRealCharge => {
+                assert_eq!(first_stop.kind, BulkStopKind::Cancelled);
+                assert_eq!(first_stop.dimension, None);
+                assert_eq!(observer.charge_count.load(Ordering::SeqCst), 1);
+                let at_stop = observer.usage_at_stop.lock().unwrap();
+                assert!(
+                    at_stop.as_ref().unwrap().analysis_steps
+                        > observer.usage_at_entry.analysis_steps,
+                    "the triggering accepted proof charge stays paid"
+                );
+            }
+            InFlightControl::ExpiredLedgerCheckpoint => {
+                assert_eq!(first_stop.kind, BulkStopKind::Budget);
+                assert_eq!(first_stop.dimension, Some(BudgetDimension::ElapsedMillis));
+            }
+            InFlightControl::CountedClassHeaders => {
+                assert_eq!(first_stop.kind, BulkStopKind::Budget);
+                assert_eq!(first_stop.dimension, Some(BudgetDimension::ClassHeaders));
+                let expected: &[u8] = if external_source {
+                    b"dt29/FieldCast$B"
+                } else {
+                    b"dt29/SamePackageParentFamily$A"
+                };
+                assert_eq!(
+                    *observer.header_reads.lock().unwrap(),
+                    vec![expected.to_vec()],
+                    "the actual resolver callback proves source B or owner A was attempted"
+                );
+                let original = observer.report_diagnostics.lock().unwrap();
+                let original = original.as_ref().expect("the original Report was observed");
+                assert!(!original.is_empty());
+                for diagnostic in original {
+                    let expected = serde_json::to_value(diagnostic).unwrap();
+                    assert!(
+                        stopped
+                            .diagnostics
+                            .iter()
+                            .any(|actual| { serde_json::to_value(actual).unwrap() == expected }),
+                        "every original resolver diagnostic is retained: {diagnostic:?}"
+                    );
+                }
+                assert!(stopped.diagnostics.iter().any(|diagnostic| {
+                    diagnostic.message
+                        == "budget exceeded for ClassHeaders: limit=0, consumed=0, requested=1"
+                }));
+            }
+        }
+        if !expected_report_channel {
+            assert!(observer.header_reads.lock().unwrap().is_empty());
+            let original = observer.error_code_message.lock().unwrap();
+            let (code, message) = original.as_ref().expect("the original Error was observed");
+            assert!(
+                stopped.diagnostics.iter().any(|diagnostic| {
+                    &diagnostic.code == code && &diagnostic.message == message
+                })
+            );
+        }
+        let expected_prefix: Vec<_> = wide
+            .methods
+            .iter()
+            .filter(|member| member.item.index < wide_set.item.index)
+            .collect();
+        assert_eq!(
+            expected_prefix.len(),
+            1,
+            "the physical constructor is the reliable prefix"
+        );
+        assert_eq!(
+            stopped.methods.len(),
+            expected_prefix.len(),
+            "no unpaid stopped setter record is force-published after ledger refusal"
+        );
+        for (actual, expected) in stopped.methods.iter().zip(expected_prefix) {
+            assert_eq!(actual.item.identity, expected.item.identity);
+            assert_eq!(actual.text, expected.text);
+            assert!(stopped.text.contains("super();"));
+            let class_source::ClassSourceOutcome::Recovered { report: body, .. } = &actual.outcome
+            else {
+                panic!("the admitted prefix retains its actual recovery");
+            };
+            let class_source::ClassSourceOutcome::Recovered {
+                report: wide_body, ..
+            } = &expected.outcome
+            else {
+                panic!("the wide prefix retains its actual recovery");
+            };
+            assert!(!wide_body.source_map.is_empty());
+            assert_eq!(body.source_map.segments(), wide_body.source_map.segments());
+        }
+        assert!(
+            stopped
+                .coverage
+                .artifact_structural
+                .scanned
+                .iter()
+                .any(|range| {
+                    range.label == "class_source_bodies" && range.end > wide_set.item.index
+                })
+        );
+        assert!(
+            !stopped
+                .coverage
+                .artifact_structural
+                .skipped
+                .iter()
+                .any(|range| {
+                    range.label == "class_source_bodies" && range.start > wide_set.item.index
+                }),
+            "the setter is the last physical method; do not invent a skipped suffix"
+        );
+    }
+
+    #[test]
+    fn public_dt29_accessor_real_charge_cancellation_stops_before_field_proof() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentAccessorPrebody,
+            InFlightControl::CancelAfterRealCharge,
+            false,
+        );
+    }
+
+    #[test]
+    fn public_dt29_accessor_real_deadline_stops_before_field_proof() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentAccessorPrebody,
+            InFlightControl::ExpiredLedgerCheckpoint,
+            false,
+        );
+    }
+
+    #[test]
+    fn public_dt29_accessor_header_report_stop_preserves_first_dimension() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentAccessorPrebody,
+            InFlightControl::CountedClassHeaders,
+            false,
+        );
+    }
+
+    #[test]
+    fn public_dt29_field_real_charge_cancellation_keeps_constructor_prefix() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentFieldsPrebody,
+            InFlightControl::CancelAfterRealCharge,
+            false,
+        );
+    }
+
+    #[test]
+    fn public_dt29_field_real_deadline_keeps_constructor_prefix() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentFieldsPrebody,
+            InFlightControl::ExpiredLedgerCheckpoint,
+            false,
+        );
+    }
+
+    #[test]
+    fn public_dt29_field_header_report_stop_preserves_first_dimension() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentFieldsPrebody,
+            InFlightControl::CountedClassHeaders,
+            false,
+        );
+    }
+
+    #[test]
+    fn public_external_source_header_report_stop_precedes_owner_and_field_work() {
+        exercise_direct_parent_stage(
+            ClassProofStage::DirectParentAccessorPrebody,
+            InFlightControl::CountedClassHeaders,
+            true,
         );
     }
 }

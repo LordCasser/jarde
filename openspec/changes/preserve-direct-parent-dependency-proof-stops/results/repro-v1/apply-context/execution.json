@@ -1,0 +1,47 @@
+[
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "status",
+      "--change",
+      "preserve-direct-parent-dependency-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-apply-context-root-v1/status.stdout.raw",
+        "bytes": 3532,
+        "sha256": "7d299c37b79328afb46ac040f930f2f947a73561eefd18ef680944c236d6d5dc"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-apply-context-root-v1/status.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "instructions",
+      "apply",
+      "--change",
+      "preserve-direct-parent-dependency-proof-stops",
+      "--json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-apply-context-root-v1/apply.stdout.raw",
+        "bytes": 7292,
+        "sha256": "0db17d210018db59d64fa86c40532a5d4c08542af9559f4faeec98c88f6c7fc1"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-apply-context-root-v1/apply.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+]

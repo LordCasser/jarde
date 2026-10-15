@@ -1,0 +1,1860 @@
+{
+  "schema": "direct-parent-package-independent-audit-v1",
+  "status": "accepted",
+  "package": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/run-v1/direct-parent-local-fix-evidence-v1.tar.gz",
+    "bytes": 4686292,
+    "sha256": "ac025d0974ff090d038948e25d4e972a2ecd567a3a3cfd7bedc66ab441a055b0"
+  },
+  "checks": 372,
+  "errors": [],
+  "archive_member_count": 139,
+  "payload_member_count": 138,
+  "raw_receipt_bound_count_manifest": 78,
+  "receipt_raw_stream_bindings_found": 78,
+  "receipt_raw_stream_bindings_manifest_matched": 78,
+  "archive_path_safety": {
+    "unsafe_members": [],
+    "duplicate_count": 0
+  },
+  "binary_inventory": {
+    "native_or_jar_members": [],
+    "class_fixture_members": [
+      "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-classes/dt29/SamePackageParentRunner.class",
+      "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$A.class",
+      "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$B.class",
+      "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily.class",
+      "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentRunner.class"
+    ]
+  },
+  "manifest": {
+    "schema": "direct-parent-local-fix-evidence-v1",
+    "status": "packaged_and_reopened_verified",
+    "allowlist_sha256": "79dde58e4572e37326b2b7eaa14e94ce6a444f69268fc43dd799599ce67f44dc",
+    "source_entries_checked": 138,
+    "source_matches": 138,
+    "payload_matches": 138
+  },
+  "historical_receipts": [
+    {
+      "archive_path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 2,
+      "exit_codes": [
+        101,
+        0
+      ],
+      "preserved": true
+    },
+    {
+      "archive_path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 2,
+      "exit_codes": [
+        101,
+        0
+      ],
+      "preserved": true
+    },
+    {
+      "archive_path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 3,
+      "exit_codes": [
+        101,
+        0,
+        0
+      ],
+      "preserved": true
+    },
+    {
+      "archive_path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 4,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "preserved": true
+    },
+    {
+      "archive_path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 14,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "preserved": true
+    },
+    {
+      "archive_path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 2,
+      "exit_codes": [
+        0,
+        0
+      ],
+      "preserved": true
+    },
+    {
+      "archive_path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "status": "captured_nine_command_positive_and_three_budget_reports_pending_independent_review",
+      "commands": 12,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        4
+      ],
+      "preserved": true
+    }
+  ],
+  "compatibility_receipt_included": true,
+  "scope": "Local direct-parent fix historical failures, initial/focused controls and final full-source/CLI replay; preserves original receipt statuses; no own-CI completion or baseline repro replacement.",
+  "external_exclusions": [
+    "native Jarde CLI executables",
+    "JDK and bundled runtime binaries",
+    "unrelated recursive artifacts",
+    "baseline repository results/repro-v1",
+    "future own-CI evidence"
+  ],
+  "source_checks": [
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/README.md",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/README.md",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/class-id-pins.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/class-id-pins.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/independent-review-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/independent-review-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/preparation-pins.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/preparation-pins.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/10.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/10.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/10.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/10.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/11.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/11.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/11.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/11.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/12.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/12.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/12.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/12.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/3.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/3.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/4.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/4.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/4.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/4.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/5.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/5.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/5.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/5.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/6.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/6.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/6.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/6.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/7.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/7.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/7.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/7.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/8.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/8.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/8.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/8.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/9.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/9.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/9.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/9.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily$A.java",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily$A.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily$B.java",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily$B.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily.java",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/independent-runtime-review-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/independent-runtime-review-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-classes/dt29/SamePackageParentRunner.class",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-classes/dt29/SamePackageParentRunner.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-source/SamePackageParentRunner.java",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-source/SamePackageParentRunner.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$A.class",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$A.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$B.class",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$B.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily.class",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentRunner.class",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentRunner.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/run.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/static-preparation-review.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-final-cli-replay-harness-v1/static-preparation-review.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/README.md",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/README.md",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/package.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/package.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/prepare_allowlist.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/prepare_allowlist.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-class-view-runner-v1.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-class-view-runner-v1.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-guard.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-guard.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-interface-full-source-binding.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-interface-full-source-binding.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-jdk-manifest.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-jdk-manifest.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-REVIEW.md",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-REVIEW.md",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-observed-facade.diff",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-observed-facade.diff",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-review-pins.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-review-pins.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-source-closure-runner.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-source-closure-runner.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-target-scan.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-target-scan.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/audit_direct_parent_focused_receipt_v1.py",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/audit_direct_parent_focused_receipt_v1.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-independent-audit-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-independent-audit-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/command_spec.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-compatibility-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-final-cli-replay-root-acceptance-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-final-cli-replay-root-acceptance-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-independent-audit-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-independent-audit-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/10.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/10.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/10.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/10.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/11.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/11.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/11.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/11.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/12.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/12.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/12.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/12.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/13.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/13.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/13.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/13.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/14.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/14.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/14.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/14.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/3.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/3.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/4.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/4.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/4.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/4.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/5.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/5.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/5.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/5.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/6.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/6.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/6.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/6.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/7.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/7.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/7.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/7.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/8.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/8.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/8.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/8.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/9.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/9.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/9.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/9.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/command_spec.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/input-snapshot/src/facade.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/input-snapshot/src/facade.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-focused-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-future-own-ci-gates-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-future-own-ci-gates-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-independent-audit-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-independent-audit-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/3.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/3.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/4.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/4.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/4.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/4.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/command_spec.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/input-snapshot/src/facade.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/input-snapshot/src/facade.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-initial-fix-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/command_spec.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-cli-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/3.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/3.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/command_spec.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/input-snapshot/src/facade.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/input-snapshot/src/facade.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-inflight-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-independent-review-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-independent-review-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/1.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/1.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/2.stderr.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/2.stdout.raw",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/command_spec.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-public-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-reproduction-independent-audit-v1.json",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-old-reproduction-independent-audit-v1.json",
+      "ok": true
+    }
+  ],
+  "payload_checks": [
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/README.md",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/class-id-pins.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/independent-review-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/preparation-pins.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/10.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/10.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/11.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/11.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/12.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/12.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/4.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/4.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/5.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/5.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/6.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/6.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/7.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/7.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/8.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/8.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/9.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/9.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily$A.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily$B.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/generated-java/SamePackageParentFamily.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/independent-runtime-review-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-classes/dt29/SamePackageParentRunner.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/original-runner-source/SamePackageParentRunner.java",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$A.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily$B.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentFamily.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/rebuilt-classes/dt29/SamePackageParentRunner.class",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/static-preparation-review.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/README.md",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/package.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/prepare_allowlist.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-class-view-runner-v1.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-guard.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-interface-full-source-binding.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-jdk-manifest.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-REVIEW.md",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-observed-facade.diff",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-production-static-review-pins.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-source-closure-runner.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/CORE/direct-parent-local-fix-evidence-packager-v1/support/direct-parent-target-scan.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/audit_direct_parent_focused_receipt_v1.py",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-independent-audit-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-final-cli-replay-root-acceptance-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-independent-audit-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/10.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/10.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/11.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/11.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/12.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/12.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/13.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/13.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/14.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/14.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/4.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/4.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/5.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/5.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/6.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/6.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/7.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/7.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/8.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/8.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/9.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/9.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/input-snapshot/src/facade.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-future-own-ci-gates-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-independent-audit-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/4.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/4.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/input-snapshot/src/facade.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/3.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/3.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/input-snapshot/crates/jarde-cli/tests/class_source_cli.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/input-snapshot/src/facade.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-independent-review-v1.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/1.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/1.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/2.stderr.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/2.stdout.raw",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/command_spec.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/input-snapshot/tests/direct_parent_dependency_proof_stops.rs",
+      "ok": true
+    },
+    {
+      "path": "direct-parent-local-fix-v1/direct-parent-old-reproduction-independent-audit-v1.json",
+      "ok": true
+    }
+  ],
+  "receipt_raw_bindings": [
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "class-source-dt29/SamePackageParentFamily",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "class-source-dt29/SamePackageParentFamily",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "class-source-dt29/SamePackageParentFamily$A",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "class-source-dt29/SamePackageParentFamily$A",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "class-source-dt29/SamePackageParentFamily$B",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "class-source-dt29/SamePackageParentFamily$B",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "javac23-release8-original-runner",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "javac23-release8-original-runner",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "javac23-release8-whole-root-with-nested-A-B-and-runner-no-original-classpath",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "javac23-release8-whole-root-with-nested-A-B-and-runner-no-original-classpath",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java23-original",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java23-original",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java23-rebuilt",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java23-rebuilt",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java8-original",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java8-original",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java8-rebuilt",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "java8-rebuilt",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "dt29-B-all-class_headers-4096",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "dt29-B-all-class_headers-4096",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "dt29-B-all-class_headers-1",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "dt29-B-all-class_headers-1",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "dt29-B-all-class_headers-2",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/CORE/direct-parent-final-cli-replay-harness-v1/run-v1/execution.json",
+      "command": "dt29-B-all-class_headers-2",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "command": "field-accessor-identity-flags-and-source-controls",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "command": "field-accessor-identity-flags-and-source-controls",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-compatibility-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "fmt-check",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "fmt-check",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "ci-exact-clippy",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "ci-exact-clippy",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "openspec-ci-strict",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "openspec-ci-strict",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "openspec-local-strict",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "openspec-local-strict",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "controlled-jdk23-java-version",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "controlled-jdk23-java-version",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "controlled-jdk23-javac-version",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "controlled-jdk23-javac-version",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "facade-library-proof-controls",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "facade-library-proof-controls",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "affected-public-recovery-and-projections-a",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "affected-public-recovery-and-projections-a",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "affected-public-recovery-and-projections-b",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "affected-public-recovery-and-projections-b",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "direct-parent-public-regressions",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "direct-parent-public-regressions",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "class-source-cli",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "class-source-cli",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "controlled-jdk23-full-special-dispatch",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "controlled-jdk23-full-special-dispatch",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "build-cli",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "build-cli",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-focused-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "fixed-inflight-controls",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "fixed-inflight-controls",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "fixed-public-regressions-and-ordinary-controls",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "fixed-public-regressions-and-ordinary-controls",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "fixed-cli-regressions",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "fixed-cli-regressions",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-initial-fix-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "command": "old-production-cli-regressions",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "command": "old-production-cli-regressions",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-cli-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "command": "old-production-inflight",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "command": "old-production-inflight",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "command": "old-production-ordinary-controls",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "command": "old-production-ordinary-controls",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-inflight-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "command": "old-production-public-regressions",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "command": "old-production-public-regressions",
+      "stream": "stderr",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "manifest_bound": true
+    },
+    {
+      "receipt": "direct-parent-local-fix-v1/direct-parent-old-public-root-v1/execution.json",
+      "command": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "manifest_bound": true
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "schema": "direct-parent-proof-evidence-package-independent-review-v1",
+  "status": "accepted",
+  "archive_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-proof-evidence-packager-v2/run-v1/capture.tar.gz",
+  "archive_bytes": 4262681,
+  "archive_sha256": "ede538d1b914a086cc4c485af2ac50ec141dbeeabdb2b2ba00e317728e79ffbc",
+  "payload_count": 202,
+  "member_count": 203,
+  "raw_stream_count": 116,
+  "checks_passed": 26,
+  "checks_total": 26,
+  "errors": [],
+  "checks": [
+    {
+      "check": "archive_size",
+      "passed": true,
+      "detail": 4262681
+    },
+    {
+      "check": "archive_sha256",
+      "passed": true,
+      "detail": "ede538d1b914a086cc4c485af2ac50ec141dbeeabdb2b2ba00e317728e79ffbc"
+    },
+    {
+      "check": "packager_exit_zero",
+      "passed": true,
+      "detail": 0
+    },
+    {
+      "check": "execution_stdout_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "execution_stderr_pin",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "payload_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "raw_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "unique_allowlist_paths",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "safe_relative_paths",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "payload_byte_sum",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "v1_allowlist_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "member_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "unique_tar_names",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "regular_safe_members",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "exact_member_set",
+      "passed": true,
+      "detail": {
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "check": "manifest_equals_allowlist",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all_payloads_source_and_manifest_equal",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "no_ELF_target_or_native_CLI",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "raw_receipt_ref_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "116_raw_streams_bound",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "receipt_scopes_historical_statuses",
+      "passed": true,
+      "detail": [
+        [
+          "builds/interface-proof-v4/execution.json",
+          "expected_command_outcomes_observed_pending_independent_acceptance",
+          7
+        ],
+        [
+          "builds/class-source-v5/execution.json",
+          "expected_command_outcomes_observed_pending_independent_acceptance",
+          13
+        ],
+        [
+          "evidence/screen/execution.json",
+          "captured_screen_pending_semantic_review",
+          18
+        ],
+        [
+          "evidence/gdb/cap1/execution.json",
+          "observed_actual_quota_refusal_with_unchanged_public_result",
+          2
+        ],
+        [
+          "evidence/gdb/cap2/execution.json",
+          "observed_actual_quota_refusal_with_unchanged_public_result",
+          2
+        ],
+        [
+          "evidence/history/wide-v2/run-v1/execution.json",
+          "capture_failed",
+          5
+        ],
+        [
+          "evidence/wide-v3/run-v1/execution.json",
+          "captured_wide_positive_all_four_runtimes_match_oracle_pending_independent_review",
+          9
+        ]
+      ]
+    },
+    {
+      "check": "source_parity_binding_436ea_4902",
+      "passed": true,
+      "detail": {
+        "status": "accepted_clean_published_main_with_exact_product_source_parity",
+        "head": "436ea2dd12b91ceeef9f44082547e752caf3df65",
+        "origin_main": "436ea2dd12b91ceeef9f44082547e752caf3df65",
+        "product_ci_head": "c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1",
+        "product_ci_run": 38692921405,
+        "compiled_source_count": 4902
+      }
+    },
+    {
+      "check": "two_refreshed_planning_pins",
+      "passed": true,
+      "detail": [
+        {
+          "archive_path": "openspec/preserve-direct-parent-dependency-proof-stops/design.md",
+          "bytes": 5981,
+          "sha256": "543823c5231880615d8035b8fc9d3a39766f16429ea9605ceb755719e093fac5",
+          "matches": true
+        },
+        {
+          "archive_path": "openspec/preserve-direct-parent-dependency-proof-stops/proposal.md",
+          "bytes": 1755,
+          "sha256": "12eb4728263ee4eec6e43f4a91a49bf08872cfa58bfa244a2ac9a606e163501e",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "check": "tasks_remain_open",
+      "passed": true,
+      "detail": [
+        "openspec/preserve-direct-parent-dependency-proof-stops/tasks.md"
+      ]
+    },
+    {
+      "check": "only_gzip_tar_mode_script_change",
+      "passed": true,
+      "detail": "--- \n+++ \n@@ -83,7 +83,7 @@\n     }\n     manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\\n').encode()\n     # Use deterministic tar metadata and preserve only payload bytes, never modes/executables.\n-    with tarfile.open(out, 'w', format=tarfile.PAX_FORMAT) as tf:\n+    with tarfile.open(out, 'w:gz', format=tarfile.PAX_FORMAT) as tf:\n         for arc, data in sorted(payload.items()):\n             ti = tarfile.TarInfo(arc)\n             ti.size, ti.mode, ti.mtime = len(data), 0o444, 0\n@@ -98,7 +98,7 @@\n         import io\n         tf.addfile(ti, io.BytesIO(manifest_bytes))\n     # Reopen and compare each payload byte-for-byte, plus the embedded manifest.\n-    with tarfile.open(out, 'r') as tf:\n+    with tarfile.open(out, 'r:gz') as tf:\n         members = {m.name: m for m in tf.getmembers() if m.isfile()}\n         expected_names = set(payload) | {'package-manifest.json'}\n         if set(members) != expected_names:\n"
+    },
+    {
+      "check": "preflight_report_preserved",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "scope_note": "Archive checked in memory without extraction. No Git/JDK/Cargo/CLI/OpenSpec/network execution. Exact pending/failure statuses are retained; no pending interface/class/screen/wide review is represented as accepted; current OpenSpec tasks remain open."
+}

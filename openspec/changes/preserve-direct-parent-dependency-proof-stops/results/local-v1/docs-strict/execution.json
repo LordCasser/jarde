@@ -1,0 +1,51 @@
+{
+  "status": "accepted_docs_strict_364_both_versions",
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-precommit-docs-validation-v1/1.stdout.raw",
+          "bytes": 16840,
+          "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-precommit-docs-validation-v1/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-precommit-docs-validation-v1/2.stdout.raw",
+          "bytes": 16840,
+          "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/direct-parent-precommit-docs-validation-v1/2.stderr.raw",
+          "bytes": 2201,
+          "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+        }
+      }
+    }
+  ]
+}

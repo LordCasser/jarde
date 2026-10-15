@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "python3",
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/package.py",
+    "--out",
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/run-v1/direct-parent-local-fix-evidence-v1.tar.gz"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/package.stdout.raw",
+      "bytes": 379,
+      "sha256": "b22a781138de5701c13467d5e4a6fcce93d998b273f805d2ca0e537c9e596119"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/direct-parent-local-fix-evidence-packager-v1/package.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

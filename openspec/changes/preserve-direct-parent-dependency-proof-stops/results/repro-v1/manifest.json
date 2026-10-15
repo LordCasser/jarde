@@ -1,0 +1,14 @@
+{
+  "status": "accepted_baseline_only",
+  "implementation_baseline": "436ea2dd12b91ceeef9f44082547e752caf3df65",
+  "runtime_product_source": "c8718aeff6cc08b686c7b3c3495bfd0bb9efa2b1",
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 4262681,
+    "sha256": "ede538d1b914a086cc4c485af2ac50ec141dbeeabdb2b2ba00e317728e79ffbc",
+    "payloads": 202,
+    "members": 203,
+    "raw_receipt_bound": 116
+  },
+  "scope": "original repro and wide source baseline only, no direct-parent fix execution; raw pending/failure states preserved"
+}
