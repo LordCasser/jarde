@@ -10,7 +10,7 @@
 
 **Goals:** 注记只解释旧MVP与各后续批准范围；固定必要source/intermediate读取和header名称terminal的差别，使负控引用可以复核。
 
-**Non-Goals:** 无Rust/CLI、fixture、预算、选择或恢复变更；无新需求、终点查找、完整assignability服务或产品测试矩阵。method用户interface终点、terminal重复物理定义的独立政策保持未决，不能在文字中默认允许或拒绝。
+**Non-Goals:** 无Rust/CLI、fixture、预算、选择或恢复变更；无新需求、终点查找、完整assignability服务或产品测试矩阵。method站点快照外用户interface终点、terminal重复物理定义的独立政策保持未决，不能在文字中默认允许或拒绝。
 
 ## Decisions
 

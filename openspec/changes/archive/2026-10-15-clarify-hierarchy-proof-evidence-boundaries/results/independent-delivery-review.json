@@ -1,0 +1,397 @@
+{
+  "schema": "hierarchy-proof-final-document-delivery-independent-review-v1",
+  "status": "accepted_final_document_delivery_audit",
+  "scope": {
+    "read_only_cache_review": true,
+    "repo_mutated_by_reviewer": false,
+    "git_cli_toolchain_jdk_run_by_reviewer": false
+  },
+  "archive_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries",
+  "archive_files": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries/.openspec.yaml",
+      "bytes": 57,
+      "sha256": "0f5078f12f03a5bc6b77a7dfde4b2c3f35fa17b0ca528e04d5edbabc0374238e"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries/proposal.md",
+      "bytes": 1905,
+      "sha256": "b8ce4049182a9476a5da01be463fe5d11c44c64320196dfde3df91aae344fb2d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries/design.md",
+      "bytes": 3111,
+      "sha256": "2520f7d5fc7f3bc2db3b598d57decdba6818ac92132d285c9fcdf4ddb09beab6"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries/tasks.md",
+      "bytes": 1490,
+      "sha256": "b2779b1f168fffef698b432a20501bfc70284bd53353b7c9ad6b93f9176c6bee"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries/results/README.md",
+      "bytes": 1302,
+      "sha256": "019e5ff9200419879b142c027db7f78ffc1703a9965103b23065c303df145a48"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries/results/local-v1/evidence.manifest.json",
+      "bytes": 10419,
+      "sha256": "31a8921153e5c91149cdeffe1ae539a4640e7c4b00f8fd4d57ff4cee13ffa6f7"
+    }
+  ],
+  "archived_metadata": {
+    "skip_specs": true,
+    "specs_directory_absent": true,
+    "active_path_absent": true,
+    "tasks_checked": 3,
+    "tasks_unchecked": 0,
+    "archive_specs_updated_false": true,
+    "archive_status": "accepted_normal_skip_specs_archive"
+  },
+  "phase_receipts": {
+    "prearchive_status": {
+      "planning_complete": true,
+      "complete": true
+    },
+    "apply_final_state": "all_done",
+    "apply_final_progress": {
+      "total": 3,
+      "complete": 3,
+      "remaining": 0
+    },
+    "prearchive_strict": "365/0",
+    "postarchive_strict": "364/0",
+    "strict_stdout_sha256_pre": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881",
+    "strict_stdout_sha256_post": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4",
+    "captured_versions": {
+      "local-version.stdout.raw": "1.14.1",
+      "ci-version.stdout.raw": "1.11.0"
+    }
+  },
+  "evidence_copy_count": 33,
+  "evidence_copies": [
+    {
+      "copy": "apply-final.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "apply-final.stdout.raw",
+      "bytes": 5004,
+      "sha256": "52cae825a0d7262d76c80ac22f447f856da73885c9dcad99d5319761a99bef6a",
+      "source_matches": true
+    },
+    {
+      "copy": "apply.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "apply.stdout.raw",
+      "bytes": 5033,
+      "sha256": "68c3f076a949ba84dcabcfd2eec0517e5712cb977e5a68f148e0f3c14a8a72b2",
+      "source_matches": true
+    },
+    {
+      "copy": "archive-execution.json",
+      "bytes": 2014,
+      "sha256": "824afd4ecc7594c8b0667a0332bc668c206acec2ad4f9b01ee3c7a2cc999eee0",
+      "source_matches": true
+    },
+    {
+      "copy": "archive-help.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "archive-help.stdout.raw",
+      "bytes": 566,
+      "sha256": "094e7c3a5e84562ac94eeb23f26a661b890abf8199b4866eff1f095600abf00b",
+      "source_matches": true
+    },
+    {
+      "copy": "archive-instructions.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "archive-instructions.stdout.raw",
+      "bytes": 2470,
+      "sha256": "3d34e3271aebc41f084cbf8c38e0bbcbe283dd328a67fa7a99736baa67e866bf",
+      "source_matches": true
+    },
+    {
+      "copy": "archive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "archive.stdout.raw",
+      "bytes": 447,
+      "sha256": "42c5c084d681fd5e82881bc4c284734125681ce974383ec44d41287842a511a6",
+      "source_matches": true
+    },
+    {
+      "copy": "ci-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "ci-strict.stdout.raw",
+      "bytes": 16895,
+      "sha256": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881",
+      "source_matches": true
+    },
+    {
+      "copy": "ci-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "ci-version.stdout.raw",
+      "bytes": 7,
+      "sha256": "74ee4d121463989183f9a9b848577eb2434f3f5d095de2a4b197bf29ffa2399b",
+      "source_matches": true
+    },
+    {
+      "copy": "citations-before.json",
+      "bytes": 26439,
+      "sha256": "3b3b64229af9d2657fc0b9fd789b839a8ea4e7af9c920f8e62b2830ef0d686ce",
+      "source_matches": true
+    },
+    {
+      "copy": "local-strict.stderr.raw",
+      "bytes": 2326,
+      "sha256": "57e7944d01acc7eefc77e939115e605214da1fa7c901d9ffd19ac97eed64eb79",
+      "source_matches": true
+    },
+    {
+      "copy": "local-strict.stdout.raw",
+      "bytes": 16895,
+      "sha256": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881",
+      "source_matches": true
+    },
+    {
+      "copy": "local-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "local-version.stdout.raw",
+      "bytes": 7,
+      "sha256": "0ccd4990d8e0fa4731ff613065a24fe917f2dcfbb1ed921e8269ade695077115",
+      "source_matches": true
+    },
+    {
+      "copy": "notes-applied.json",
+      "bytes": 4013,
+      "sha256": "1ec3caf6b67ac8a367586a0bae96482d30aab9ba929d87ec10c9972695eb57ef",
+      "source_matches": true
+    },
+    {
+      "copy": "notes-root-check-v1.json",
+      "bytes": 3825,
+      "sha256": "fa5f8fe1f4a2e31e1bc4ea5c42478da7a45369a99eb275d88509b0fe84bd73df",
+      "source_matches": true
+    },
+    {
+      "copy": "peer-review-v1.json",
+      "bytes": 6864,
+      "sha256": "c4df96cc70fb98b87c8b6979a279eb786b536fdb4009473c5e802a9fcdd113df",
+      "source_matches": true
+    },
+    {
+      "copy": "postarchive-ci-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "postarchive-ci-strict.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4",
+      "source_matches": true
+    },
+    {
+      "copy": "postarchive-local-strict.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85",
+      "source_matches": true
+    },
+    {
+      "copy": "postarchive-local-strict.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4",
+      "source_matches": true
+    },
+    {
+      "copy": "postarchive-validation-execution.json",
+      "bytes": 1957,
+      "sha256": "c0b181719b8437dcd2845ddfc7d04be6fea04e45b3faab66b3d6d466733c0c05",
+      "source_matches": true
+    },
+    {
+      "copy": "status-prearchive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "status-prearchive.stdout.raw",
+      "bytes": 3351,
+      "sha256": "8d9d1d6adcd5acf79755e3529f6e36e5eaf59042d39f590b76e8eb03f75d98d7",
+      "source_matches": true
+    },
+    {
+      "copy": "status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_matches": true
+    },
+    {
+      "copy": "status.stdout.raw",
+      "bytes": 3351,
+      "sha256": "8d9d1d6adcd5acf79755e3529f6e36e5eaf59042d39f590b76e8eb03f75d98d7",
+      "source_matches": true
+    },
+    {
+      "copy": "validation-execution.json",
+      "bytes": 6064,
+      "sha256": "ab456e6d306fe0ebf907f23dc18fde7a06bedd19a77237f64ce4223bfda8d8e9",
+      "source_matches": true
+    }
+  ],
+  "prefix_only_docs": [
+    {
+      "path": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "prefix_bytes": 1056,
+      "before_bytes": 965,
+      "after_bytes": 2021,
+      "before_sha256": "abc2916032d31e71c447fb0a146f2215ebd03e79a3a6728e2765b1d5b8b3d779",
+      "after_sha256": "0fe98aab63fa9eb97fcb2e0608e1ae2a60fdcdbd9eed6ce5e68e2ac8710ba350",
+      "old_suffix_exact": true
+    },
+    {
+      "path": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "prefix_bytes": 805,
+      "before_bytes": 1280,
+      "after_bytes": 2085,
+      "before_sha256": "6387f6c35762bfa8d5f34ece2641d9d648b3a52aedf1c328177430c200d873e2",
+      "after_sha256": "14ef4b625497d286cb038717a4d6316f75cf7947175227758fd681e6b4bc1489",
+      "old_suffix_exact": true
+    },
+    {
+      "path": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "prefix_bytes": 949,
+      "before_bytes": 3059,
+      "after_bytes": 4008,
+      "before_sha256": "59b98c2a9f62006110d6363da8be4332e05e2c57fe5b6619a8c70b880514cf1a",
+      "after_sha256": "3a653ae795f53dfc98243c8294fc7c51d700527589ca32583014a0d1bacc6b21",
+      "old_suffix_exact": true
+    }
+  ],
+  "relative_links": [
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-platform-interface-argument-widening/verification.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-platform-interface-argument-widening/verification.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "target": "../../verification.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-platform-interface-argument-widening/verification.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "resolved": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "exists": true
+    }
+  ],
+  "unchanged_pins": [
+    {
+      "path": "openspec/specs/java8-recovery/spec.md",
+      "bytes": 63029,
+      "sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d",
+      "matches_before": true
+    },
+    {
+      "path": "src/facade.rs",
+      "bytes": 2065541,
+      "sha256": "3f74329c3d6feea0a51434f33f60f5e84a3b3bf4d5c63f55a94bc66a153e0880",
+      "matches_before": true
+    },
+    {
+      "path": "openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "bytes": 12496,
+      "sha256": "f53c4243c0d7b4069e17837b92aeef87f3cee01a4bf42aa337d41987237c5cb8",
+      "matches_before": true
+    }
+  ],
+  "no_delta_or_product_scope_change": true,
+  "failures": []
+}

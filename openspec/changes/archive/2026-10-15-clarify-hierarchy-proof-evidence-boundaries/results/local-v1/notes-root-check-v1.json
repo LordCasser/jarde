@@ -1,0 +1,67 @@
+{
+  "status": "accepted_prefix_only_and_existing_links",
+  "files": 3,
+  "links": [
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "link": "../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "link": "../../../recover-platform-interface-argument-widening/verification.md",
+      "resolved": "openspec/changes/recover-platform-interface-argument-widening/verification.md"
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "link": "../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "link": "../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-covariant-child-array-initializers/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "link": "../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "resolved": "openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md"
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "link": "../../verification.md",
+      "resolved": "openspec/changes/recover-platform-interface-argument-widening/verification.md"
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "link": "../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "link": "../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "link": "../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "link": "../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "link": "../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "resolved": "openspec/changes/recover-covariant-child-array-initializers/specs/java8-recovery/spec.md"
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "link": "../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "resolved": "openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md"
+    }
+  ],
+  "original_suffix_unchanged": true
+}

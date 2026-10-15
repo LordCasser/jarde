@@ -1,0 +1,843 @@
+{
+  "status": "accepted_frozen_existing_doc_citations",
+  "head": "1e620077600e747a12d8f7e3d9cda0cbf8381ea1",
+  "items": [
+    {
+      "path": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "bytes": 965,
+      "sha256": "abc2916032d31e71c447fb0a146f2215ebd03e79a3a6728e2765b1d5b8b3d779",
+      "git_blob": "f00c6637b8f73c939f47b7f242fcf1deee280bfc",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "## ADDED Requirements"
+        },
+        {
+          "line": 3,
+          "text": "### Requirement: 同快照用户类层级的实参上转型可呈现"
+        },
+        {
+          "line": 7,
+          "text": "#### Scenario: 用户实现传接口形参恢复"
+        },
+        {
+          "line": 12,
+          "text": "#### Scenario: 既有回答与负例不变"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-snapshot-hierarchy-widening/design.md",
+      "bytes": 2588,
+      "sha256": "db472182e78ede86437190bcb598f3df25f6ea2f5a0e2fd405cf3f7af7ef7c67",
+      "git_blob": "99257abc152112d430b37c2833addebcf4058e2e",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-snapshot-hierarchy-widening/design.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "## Context"
+        },
+        {
+          "line": 5,
+          "text": "## Goals / Non-Goals"
+        },
+        {
+          "line": 9,
+          "text": "## Decisions"
+        },
+        {
+          "line": 16,
+          "text": "## Risks / Trade-offs"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "bytes": 1280,
+      "sha256": "6387f6c35762bfa8d5f34ece2641d9d648b3a52aedf1c328177430c200d873e2",
+      "git_blob": "3f98a88ca424995cfffb502bfcc299bae5b61284",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "## ADDED Requirements"
+        },
+        {
+          "line": 3,
+          "text": "### Requirement: 快照内类到平台接口的实参单边扩宽"
+        },
+        {
+          "line": 7,
+          "text": "#### Scenario: 匿名 Comparator 主锚（comparator-anon 巡查）"
+        },
+        {
+          "line": 11,
+          "text": "#### Scenario: 顶层具名实现类对照"
+        },
+        {
+          "line": 15,
+          "text": "#### Scenario: 无 header 关系仍拒"
+        },
+        {
+          "line": 19,
+          "text": "#### Scenario: 两-sided 快照零回退"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-platform-interface-argument-widening/verification.md",
+      "bytes": 8614,
+      "sha256": "8dfea1bb2ae89cbdd51656eb86232dd24cb7d86670a114f1b85fb401e4c17f7d",
+      "git_blob": "808a34072eb12ae437327c4f072966f9b3c51da3",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-platform-interface-argument-widening/verification.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "# 验证（change `recover-platform-interface-argument-widening`）"
+        },
+        {
+          "line": 3,
+          "text": "## 实现（1 处，判定顺序）"
+        },
+        {
+          "line": 11,
+          "text": "## 锚实测 vs 预期（两条 javac 腿逐字一致；`essential` + source map 入口）"
+        },
+        {
+          "line": 25,
+          "text": "### 改前/改后对拍（同一 fixture 字节、同一入口，逐行 diff）"
+        },
+        {
+          "line": 41,
+          "text": "## 硬不变量证据"
+        },
+        {
+          "line": 50,
+          "text": "### 移动的既有 pin（1 处，如实记录）"
+        },
+        {
+          "line": 67,
+          "text": "## 门禁（本机实测，`RUST_TEST_THREADS=1 CARGO_BUILD_JOBS=1`）"
+        },
+        {
+          "line": 86,
+          "text": "## 观测（非 pin）"
+        },
+        {
+          "line": 95,
+          "text": "## 未做 / 边界"
+        },
+        {
+          "line": 101,
+          "text": "## 证据文件"
+        },
+        {
+          "line": 111,
+          "text": "## Root 独立验收（2026-10-06，HEAD=995de89a）"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "bytes": 3059,
+      "sha256": "59b98c2a9f62006110d6363da8be4332e05e2c57fe5b6619a8c70b880514cf1a",
+      "git_blob": "c5a3c22de4e59524cae8e361989d3684c56c9b95",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "## ADDED Requirements"
+        },
+        {
+          "line": 3,
+          "text": "### Requirement: 数组初始化器元素 SHALL 按本次可证明的赋值兼容关系恢复"
+        },
+        {
+          "line": 11,
+          "text": "#### Scenario: 异构装箱与平台接口初始化器"
+        },
+        {
+          "line": 16,
+          "text": "#### Scenario: 自有类和接口的准确存储位置证明"
+        },
+        {
+          "line": 21,
+          "text": "#### Scenario: 等秩引用数组元素提升"
+        },
+        {
+          "line": 26,
+          "text": "#### Scenario: 缺失事实和错位证据保持拒绝"
+        },
+        {
+          "line": 31,
+          "text": "#### Scenario: 效果次序及非 fresh 数组边界"
+        },
+        {
+          "line": 36,
+          "text": "#### Scenario: 完整语义验收"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-heterogeneous-array-init/design.md",
+      "bytes": 6872,
+      "sha256": "f313d422fe67890495a2df793d20787aafdbc98c891330baa78f489d87c7f477",
+      "git_blob": "34ccd90cd3731ae9d081ddd369eb35ec3f819166",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-heterogeneous-array-init/design.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "## Context"
+        },
+        {
+          "line": 7,
+          "text": "## Goals / Non-Goals"
+        },
+        {
+          "line": 13,
+          "text": "## Decisions"
+        },
+        {
+          "line": 15,
+          "text": "### 1. 沿用既有 initializer 结构证明，只修正元素兼容判据"
+        },
+        {
+          "line": 23,
+          "text": "### 2. 扩展现有快照证据生产者到准确的 store 站点"
+        },
+        {
+          "line": 33,
+          "text": "### 3. 采用 Jarde 的效果证明，不照搬 JADX 的索引排序"
+        },
+        {
+          "line": 37,
+          "text": "## Verification"
+        },
+        {
+          "line": 45,
+          "text": "## Integration Boundary"
+        },
+        {
+          "line": 49,
+          "text": "## Risks / Trade-offs"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "bytes": 2604,
+      "sha256": "cf5932508384f8a4c956a9df7f94493291420b7184319af8115dbb0f6f2a61f4",
+      "git_blob": "f76e9becd0755697894752e765ba003f957e74d1",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "## ADDED Requirements"
+        },
+        {
+          "line": 3,
+          "text": "### Requirement: 子数组初始化器 SHALL 使用已证明的赋值兼容关系"
+        },
+        {
+          "line": 7,
+          "text": "#### Scenario: 平台数值和接口子数组"
+        },
+        {
+          "line": 12,
+          "text": "#### Scenario: 选中家族的间接继承关系"
+        },
+        {
+          "line": 17,
+          "text": "#### Scenario: 缺少继承中间类或错误证明"
+        },
+        {
+          "line": 22,
+          "text": "#### Scenario: primitive数组关系与运行时类型检查"
+        },
+        {
+          "line": 27,
+          "text": "#### Scenario: 额外读取或不闭合效果"
+        },
+        {
+          "line": 32,
+          "text": "#### Scenario: 预算或取消中止组合"
+        }
+      ]
+    },
+    {
+      "path": "openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "bytes": 12496,
+      "sha256": "f53c4243c0d7b4069e17837b92aeef87f3cee01a4bf42aa337d41987237c5cb8",
+      "git_blob": "61f1fb17058e701dd53ed81b20ec684a0617ec32",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/changes/archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "# Design"
+        },
+        {
+          "line": 3,
+          "text": "## Context"
+        },
+        {
+          "line": 21,
+          "text": "## Goals / Non-Goals"
+        },
+        {
+          "line": 35,
+          "text": "## Decisions"
+        },
+        {
+          "line": 51,
+          "text": "## Risks / Trade-offs"
+        },
+        {
+          "line": 60,
+          "text": "## Migration Plan"
+        },
+        {
+          "line": 65,
+          "text": "## Implementation boundary review"
+        }
+      ]
+    },
+    {
+      "path": "openspec/specs/java8-recovery/spec.md",
+      "bytes": 63029,
+      "sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d",
+      "git_blob": "6d8a4ed23a5a9c53afd486ac1de12f72738380d6",
+      "snapshot": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/before/openspec/specs/java8-recovery/spec.md",
+      "headings": [
+        {
+          "line": 1,
+          "text": "# java8-recovery Specification"
+        },
+        {
+          "line": 3,
+          "text": "## Purpose"
+        },
+        {
+          "line": 6,
+          "text": "## Requirements"
+        },
+        {
+          "line": 8,
+          "text": "### Requirement: Evidence-gated Java 8 recovery"
+        },
+        {
+          "line": 13,
+          "text": "#### Scenario: 完整契约 1"
+        },
+        {
+          "line": 21,
+          "text": "#### Scenario: Java 8 lambda and method reference"
+        },
+        {
+          "line": 26,
+          "text": "#### Scenario: String concatenation order"
+        },
+        {
+          "line": 31,
+          "text": "#### Scenario: Generic output without a compiler-specific match"
+        },
+        {
+          "line": 36,
+          "text": "#### Scenario: Loop header has observable effects"
+        },
+        {
+          "line": 41,
+          "text": "#### Scenario: A loaded value survives a later local write"
+        },
+        {
+          "line": 46,
+          "text": "#### Scenario: A consumer falls back after reading a call result"
+        },
+        {
+          "line": 51,
+          "text": "#### Scenario: A nested expression is evaluated after a local write"
+        },
+        {
+          "line": 56,
+          "text": "#### Scenario: A refused cast depends on a static field read"
+        },
+        {
+          "line": 61,
+          "text": "#### Scenario: An arithmetic operand is the result of another arithmetic"
+        },
+        {
+          "line": 66,
+          "text": "#### Scenario: A presented body computes what its bytecode computes"
+        },
+        {
+          "line": 71,
+          "text": "#### Scenario: An unproven arithmetic operand is refused"
+        },
+        {
+          "line": 76,
+          "text": "#### Scenario: The structural planes do not stand in for this"
+        },
+        {
+          "line": 81,
+          "text": "#### Scenario: Grouping survives printing"
+        },
+        {
+          "line": 86,
+          "text": "#### Scenario: A receiver keeps its own grouping"
+        },
+        {
+          "line": 91,
+          "text": "#### Scenario: Grouping is decided per position"
+        },
+        {
+          "line": 96,
+          "text": "#### Scenario: A receiver's text is executed, not inferred"
+        },
+        {
+          "line": 101,
+          "text": "### Requirement: Historical and Java 8 compiler patterns"
+        },
+        {
+          "line": 105,
+          "text": "#### Scenario: Synthetic accessor recovery"
+        },
+        {
+          "line": 110,
+          "text": "#### Scenario: Missing debug metadata"
+        },
+        {
+          "line": 115,
+          "text": "### Requirement: Semantics-preserving fallback"
+        },
+        {
+          "line": 119,
+          "text": "#### Scenario: TWR and exceptional close"
+        },
+        {
+          "line": 124,
+          "text": "#### Scenario: Unstructured control flow"
+        },
+        {
+          "line": 129,
+          "text": "### Requirement: Read-only IR handoff owned by jarde-jvm"
+        },
+        {
+          "line": 133,
+          "text": "#### Scenario: Recovery input is the published table"
+        },
+        {
+          "line": 138,
+          "text": "#### Scenario: Stopped or refused run"
+        },
+        {
+          "line": 143,
+          "text": "#### Scenario: Accessor evidence is demanded through the public entry"
+        },
+        {
+          "line": 148,
+          "text": "### Requirement: Recovery artifact content is observable independently"
+        },
+        {
+          "line": 153,
+          "text": "#### Scenario: 完整契约 1"
+        },
+        {
+          "line": 160,
+          "text": "#### Scenario: 完整契约 2"
+        },
+        {
+          "line": 167,
+          "text": "#### Scenario: 完整契约 3"
+        },
+        {
+          "line": 175,
+          "text": "#### Scenario: Explanation-only produced artifact"
+        },
+        {
+          "line": 180,
+          "text": "#### Scenario: Partial structure has a statement"
+        },
+        {
+          "line": 185,
+          "text": "#### Scenario: Text emission stops"
+        },
+        {
+          "line": 190,
+          "text": "#### Scenario: Formatting and literals do not change classification"
+        },
+        {
+          "line": 195,
+          "text": "#### Scenario: A produced count is not a statement count"
+        },
+        {
+          "line": 200,
+          "text": "#### Scenario: Produced without a statement stays visible as such"
+        },
+        {
+          "line": 205,
+          "text": "### Requirement: Driver class declarations use the already-read physical evidence"
+        },
+        {
+          "line": 209,
+          "text": "#### Scenario: Ordinary and interface method declarations"
+        },
+        {
+          "line": 214,
+          "text": "#### Scenario: Same name with different physical declarations"
+        },
+        {
+          "line": 219,
+          "text": "#### Scenario: No declaration was published"
+        },
+        {
+          "line": 224,
+          "text": "#### Scenario: Declaration evidence is not a body quality claim"
+        },
+        {
+          "line": 229,
+          "text": "### Requirement: Recovery presentation leads with delivered content"
+        },
+        {
+          "line": 233,
+          "text": "#### Scenario: Statement-bearing result leads with content"
+        },
+        {
+          "line": 238,
+          "text": "#### Scenario: Explanation-only and stopped results"
+        },
+        {
+          "line": 243,
+          "text": "#### Scenario: Presentation does not re-analyse text"
+        },
+        {
+          "line": 248,
+          "text": "### Requirement: Recovery recursion is bounded and a stop is published"
+        },
+        {
+          "line": 253,
+          "text": "#### Scenario: 完整契约 1"
+        },
+        {
+          "line": 260,
+          "text": "#### Scenario: 完整契约 2"
+        },
+        {
+          "line": 268,
+          "text": "#### Scenario: A request that used to abort now answers"
+        },
+        {
+          "line": 273,
+          "text": "#### Scenario: The bound is checked before the descent"
+        },
+        {
+          "line": 278,
+          "text": "#### Scenario: Re-entering a state inside the bound"
+        },
+        {
+          "line": 283,
+          "text": "#### Scenario: In-bound recovery is unchanged"
+        },
+        {
+          "line": 288,
+          "text": "#### Scenario: The stop is the existing stop shape"
+        },
+        {
+          "line": 293,
+          "text": "#### Scenario: A chain's length does not become this layer's depth"
+        },
+        {
+          "line": 298,
+          "text": "#### Scenario: A deep chain answers without a signal"
+        },
+        {
+          "line": 303,
+          "text": "#### Scenario: A deep chain may complete normally"
+        },
+        {
+          "line": 308,
+          "text": "#### Scenario: A stop inside the deep path still answers"
+        },
+        {
+          "line": 313,
+          "text": "### Requirement: Boolean contexts are presented as booleans"
+        },
+        {
+          "line": 318,
+          "text": "#### Scenario: 完整契约 1"
+        },
+        {
+          "line": 325,
+          "text": "#### Scenario: 完整契约 2"
+        },
+        {
+          "line": 332,
+          "text": "#### Scenario: 完整契约 3"
+        },
+        {
+          "line": 340,
+          "text": "#### Scenario: A boolean return presents true or false"
+        },
+        {
+          "line": 345,
+          "text": "#### Scenario: A boolean call result as a condition"
+        },
+        {
+          "line": 350,
+          "text": "#### Scenario: An unproven boolean context is refused"
+        },
+        {
+          "line": 355,
+          "text": "#### Scenario: An int context keeps its int shape"
+        },
+        {
+          "line": 360,
+          "text": "#### Scenario: An integer comparison keeps its integer literals"
+        },
+        {
+          "line": 365,
+          "text": "#### Scenario: Either side of the comparison keeps its own spelling"
+        },
+        {
+          "line": 370,
+          "text": "#### Scenario: The same literal is spelled by its context"
+        },
+        {
+          "line": 375,
+          "text": "#### Scenario: A proven boolean operand keeps the truth test"
+        },
+        {
+          "line": 380,
+          "text": "### Requirement: A type position is spelled as a legal Java type"
+        },
+        {
+          "line": 384,
+          "text": "#### Scenario: A primitive array in a type position"
+        },
+        {
+          "line": 389,
+          "text": "#### Scenario: A reference array in a type position"
+        },
+        {
+          "line": 394,
+          "text": "#### Scenario: Multi-dimensional arrays in a type position"
+        },
+        {
+          "line": 399,
+          "text": "#### Scenario: A legal non-array type is unchanged"
+        },
+        {
+          "line": 404,
+          "text": "#### Scenario: An unspellable descriptor is refused"
+        },
+        {
+          "line": 409,
+          "text": "### Requirement: One local variable's type is decided once, before its statements are built"
+        },
+        {
+          "line": 414,
+          "text": "#### Scenario: 完整契约 1"
+        },
+        {
+          "line": 421,
+          "text": "#### Scenario: 完整契约 2"
+        },
+        {
+          "line": 428,
+          "text": "#### Scenario: 完整契约 3"
+        },
+        {
+          "line": 436,
+          "text": "#### Scenario: The two declaration paths decide the same type"
+        },
+        {
+          "line": 441,
+          "text": "#### Scenario: The conclusion does not depend on the traversal order"
+        },
+        {
+          "line": 446,
+          "text": "#### Scenario: A copy chain through a boolean local keeps it boolean"
+        },
+        {
+          "line": 451,
+          "text": "#### Scenario: Every write is checked against the decision"
+        },
+        {
+          "line": 456,
+          "text": "#### Scenario: A conflicting or unknown type terminates the structure"
+        },
+        {
+          "line": 461,
+          "text": "#### Scenario: A failed declaration is not followed by its assignment"
+        },
+        {
+          "line": 466,
+          "text": "#### Scenario: The propagation stays inside the run's budget and cancellation"
+        },
+        {
+          "line": 471,
+          "text": "#### Scenario: The literal does not initiate the decision"
+        },
+        {
+          "line": 476,
+          "text": "#### Scenario: The decided type is consumed at every site"
+        },
+        {
+          "line": 481,
+          "text": "#### Scenario: The existing controls keep their types"
+        },
+        {
+          "line": 486,
+          "text": "### Requirement: A presented concatenation keeps each append's own conversion"
+        },
+        {
+          "line": 491,
+          "text": "#### Scenario: 完整契约 1"
+        },
+        {
+          "line": 498,
+          "text": "#### Scenario: 完整契约 2"
+        },
+        {
+          "line": 505,
+          "text": "#### Scenario: 完整契约 3"
+        },
+        {
+          "line": 513,
+          "text": "#### Scenario: A numeric fragment keeps its conversion where the chain converts it"
+        },
+        {
+          "line": 518,
+          "text": "#### Scenario: A boolean fragment is spelled by its append descriptor"
+        },
+        {
+          "line": 523,
+          "text": "#### Scenario: Null and object fragments keep their conversion"
+        },
+        {
+          "line": 528,
+          "text": "#### Scenario: A part that is itself an addition keeps its own grouping"
+        },
+        {
+          "line": 533,
+          "text": "#### Scenario: The order and count of evaluations are unchanged"
+        },
+        {
+          "line": 538,
+          "text": "#### Scenario: Chains already in a string context are unchanged"
+        },
+        {
+          "line": 543,
+          "text": "#### Scenario: An unstateable conversion is refused"
+        },
+        {
+          "line": 548,
+          "text": "### Requirement: Output admission preserves the actual stop"
+        },
+        {
+          "line": 552,
+          "text": "#### Scenario: Cancellation during output admission"
+        },
+        {
+          "line": 557,
+          "text": "#### Scenario: Interrupted output admission"
+        },
+        {
+          "line": 562,
+          "text": "#### Scenario: Actual output quota refusal"
+        },
+        {
+          "line": 567,
+          "text": "#### Scenario: Exact quota and replay remain consistent"
+        },
+        {
+          "line": 573,
+          "text": "### Requirement: Interface-super proof stops remain visible in recovery results"
+        },
+        {
+          "line": 577,
+          "text": "#### Scenario: Dependency depth refuses a public method proof"
+        },
+        {
+          "line": 582,
+          "text": "#### Scenario: Counted proof budget keeps its actual dimension"
+        },
+        {
+          "line": 587,
+          "text": "#### Scenario: Cancellation occurs during proof work"
+        },
+        {
+          "line": 592,
+          "text": "#### Scenario: Deadline interrupts proof before recovery starts"
+        },
+        {
+          "line": 597,
+          "text": "#### Scenario: The first proof stop is not replaced by later work"
+        },
+        {
+          "line": 602,
+          "text": "#### Scenario: Missing or ambiguous evidence remains an ordinary refusal"
+        },
+        {
+          "line": 607,
+          "text": "#### Scenario: Wide public recovery preserves a legal interface call"
+        },
+        {
+          "line": 612,
+          "text": "#### Scenario: Public consumers share the recovery stop"
+        },
+        {
+          "line": 618,
+          "text": "### Requirement: Class-source snapshot proof stops before body recovery"
+        },
+        {
+          "line": 622,
+          "text": "#### Scenario: Snapshot header budget stops the pending body"
+        },
+        {
+          "line": 627,
+          "text": "#### Scenario: A stopped dependency report is not absence"
+        },
+        {
+          "line": 632,
+          "text": "#### Scenario: No recovery work follows the first proof stop"
+        },
+        {
+          "line": 637,
+          "text": "### Requirement: Class-source postbody dependency stops retain committed content"
+        },
+        {
+          "line": 641,
+          "text": "#### Scenario: Header budget stops only the postbody projection"
+        },
+        {
+          "line": 646,
+          "text": "#### Scenario: Later projections do not resume a stopped request"
+        },
+        {
+          "line": 651,
+          "text": "### Requirement: Dependency proof absence and execution stop remain distinct"
+        },
+        {
+          "line": 655,
+          "text": "#### Scenario: Wide proof and ordinary refusal keep their source behavior"
+        },
+        {
+          "line": 660,
+          "text": "#### Scenario: Cancellation is observed during real proof work"
+        },
+        {
+          "line": 665,
+          "text": "#### Scenario: Deadline and earlier causes are not rewritten"
+        }
+      ]
+    },
+    {
+      "path": "src/facade.rs",
+      "bytes": 2065541,
+      "sha256": "3f74329c3d6feea0a51434f33f60f5e84a3b3bf4d5c63f55a94bc66a153e0880",
+      "git_blob": "9e3902ef1fcdfcda5c2468719ef67aa72764ae22",
+      "snapshot": "external product aadf71 actual Git blob; not recopied or reexecuted"
+    }
+  ],
+  "scope": "existing documentation/implementation evidence only; no new runtime acceptance; platform verification historical root ratification retained"
+}

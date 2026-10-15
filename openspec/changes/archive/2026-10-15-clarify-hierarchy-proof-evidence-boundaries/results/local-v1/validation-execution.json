@@ -1,0 +1,164 @@
+{
+  "status": "accepted_docs_prearchive_3of3",
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "--version"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-version.stdout.raw",
+          "bytes": 7,
+          "sha256": "74ee4d121463989183f9a9b848577eb2434f3f5d095de2a4b197bf29ffa2399b"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "--version"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-version.stdout.raw",
+          "bytes": 7,
+          "sha256": "0ccd4990d8e0fa4731ff613065a24fe917f2dcfbb1ed921e8269ade695077115"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-strict.stdout.raw",
+          "bytes": 16895,
+          "sha256": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-strict.stdout.raw",
+          "bytes": 16895,
+          "sha256": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-strict.stderr.raw",
+          "bytes": 2326,
+          "sha256": "57e7944d01acc7eefc77e939115e605214da1fa7c901d9ffd19ac97eed64eb79"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "clarify-hierarchy-proof-evidence-boundaries",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/apply-final.stdout.raw",
+          "bytes": 5004,
+          "sha256": "52cae825a0d7262d76c80ac22f447f856da73885c9dcad99d5319761a99bef6a"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/apply-final.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "archive",
+        "--change",
+        "clarify-hierarchy-proof-evidence-boundaries",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-instructions.stdout.raw",
+          "bytes": 2470,
+          "sha256": "3d34e3271aebc41f084cbf8c38e0bbcbe283dd328a67fa7a99736baa67e866bf"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-instructions.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "archive",
+        "--help"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-help.stdout.raw",
+          "bytes": 566,
+          "sha256": "094e7c3a5e84562ac94eeb23f26a661b890abf8199b4866eff1f095600abf00b"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-help.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "unchanged_frozen_product_sources": 4905,
+  "notes_fixed": 3,
+  "note_links_verified": 12,
+  "no_main_delta": true
+}

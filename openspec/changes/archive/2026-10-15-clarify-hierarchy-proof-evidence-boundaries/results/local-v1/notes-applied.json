@@ -1,0 +1,29 @@
+{
+  "status": "notes_applied_pending_peer",
+  "items": [
+    {
+      "path": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "prefix": "> **历史范围说明（2026-10-15）：** 以下“双侧物理定义/单边快照外”的表述记录本片最初MVP范围。后续[实参单边扩宽](../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md)及其[standalone用户子类到外部用户父类的pin迁移与Root追认](../../../recover-platform-interface-argument-widening/verification.md)、[异构数组元素条款](../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md)已各自说明适用的header名称终点。旧two-sided正负fixtures继续作为原支持子情形；source及实际必经的中间header仍需既有环境证据。参见[缺少Mid的负控](../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md)与[已归档停止设计的Mid/Greet边界](../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md)。这些引用按各自站点解释；method站点快照外用户interface终点及terminal重复物理定义的独立政策在本次文档澄清中保持未决。\n\n",
+      "prefix_bytes": 1056,
+      "before_sha256": "abc2916032d31e71c447fb0a146f2215ebd03e79a3a6728e2765b1d5b8b3d779",
+      "after_sha256": "0fe98aab63fa9eb97fcb2e0608e1ae2a60fdcdbd9eed6ce5e68e2ac8710ba350",
+      "original_exact_suffix": true
+    },
+    {
+      "path": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "prefix": "> **历史范围说明（2026-10-15）：** 本条款的header命名终点与“两-sided快照零回退”共同保留各自已批准范围。[验证记录](../../verification.md)的“移动的既有pin”和“Root独立验收”明确记载仅含B的standalone快照到外部用户父类A的迁移及追认；目标名称来自已读header，不表示已选择或读取目标物理定义。[早期snapshot规划](../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md)的双侧要求是其MVP范围，[后续数组元素条款](../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md)另有具体store场景。这里的引用不把数组验收扩成全部method快照外用户interface场景，terminal重复物理定义政策也未在本次文档澄清中裁定。\n\n",
+      "prefix_bytes": 805,
+      "before_sha256": "6387f6c35762bfa8d5f34ece2641d9d648b3a52aedf1c328177430c200d873e2",
+      "after_sha256": "14ef4b625497d286cb038717a4d6316f75cf7947175227758fd681e6b4bc1489",
+      "original_exact_suffix": true
+    },
+    {
+      "path": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "prefix": "> **历史范围说明（2026-10-15）：** 本片source/component的准确store证据及名称终点范围见下文既有场景；它沿用[先前实参header链规则](../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md)，并与[早期snapshot双侧MVP](../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md)的历史范围相衔接。[子数组条款](../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md)保留必须读取Mid的负控；[已归档class-source停止设计](../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md)已说明Mid与直接由header命名的Greet终点之别。source或必读中间证据缺失不能靠名称补齐，名称终点也不等于已选物理target；各场景的恢复、停止和验收边界保持原文，method站点快照外用户interface终点和terminal重复定义政策仍独立未决。\n\n",
+      "prefix_bytes": 949,
+      "before_sha256": "59b98c2a9f62006110d6363da8be4332e05e2c57fe5b6619a8c70b880514cf1a",
+      "after_sha256": "3a653ae795f53dfc98243c8294fc7c51d700527589ca32583014a0d1bacc6b21",
+      "original_exact_suffix": true
+    }
+  ]
+}

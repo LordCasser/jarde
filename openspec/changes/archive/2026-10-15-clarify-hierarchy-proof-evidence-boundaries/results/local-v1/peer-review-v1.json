@@ -1,0 +1,153 @@
+{
+  "schema": "hierarchy-proof-boundary-docs-apply-peer-review-v1",
+  "status": "accepted_exact_prefix_and_scope_audit",
+  "scope": {
+    "read_only_cache_review": true,
+    "repository_modified_by_reviewer": false,
+    "toolchain_cli_git_jdk_run_by_reviewer": false
+  },
+  "notes_applied_record": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/notes-applied.json",
+    "sha256": "1ec3caf6b67ac8a367586a0bae96482d30aab9ba929d87ec10c9972695eb57ef"
+  },
+  "before_citations_record": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/citations-before.json",
+    "sha256": "3b3b64229af9d2657fc0b9fd789b839a8ea4e7af9c920f8e62b2830ef0d686ce"
+  },
+  "target_files": [
+    {
+      "path": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "old_bytes": 965,
+      "added_prefix_bytes": 1056,
+      "old_sha256": "abc2916032d31e71c447fb0a146f2215ebd03e79a3a6728e2765b1d5b8b3d779",
+      "current_sha256": "0fe98aab63fa9eb97fcb2e0608e1ae2a60fdcdbd9eed6ce5e68e2ac8710ba350",
+      "original_suffix_exact": true
+    },
+    {
+      "path": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "old_bytes": 1280,
+      "added_prefix_bytes": 805,
+      "old_sha256": "6387f6c35762bfa8d5f34ece2641d9d648b3a52aedf1c328177430c200d873e2",
+      "current_sha256": "14ef4b625497d286cb038717a4d6316f75cf7947175227758fd681e6b4bc1489",
+      "original_suffix_exact": true
+    },
+    {
+      "path": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "old_bytes": 3059,
+      "added_prefix_bytes": 949,
+      "old_sha256": "59b98c2a9f62006110d6363da8be4332e05e2c57fe5b6619a8c70b880514cf1a",
+      "current_sha256": "3a653ae795f53dfc98243c8294fc7c51d700527589ca32583014a0d1bacc6b21",
+      "original_suffix_exact": true
+    }
+  ],
+  "relative_links": [
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-platform-interface-argument-widening/verification.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "target": "../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "target": "../../verification.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "target": "../../../recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../recover-platform-interface-argument-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../recover-snapshot-hierarchy-widening/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../recover-covariant-child-array-initializers/specs/java8-recovery/spec.md",
+      "exists": true
+    },
+    {
+      "from": "openspec/changes/recover-heterogeneous-array-init/specs/java8-recovery/spec.md",
+      "target": "../../../archive/2026-10-15-preserve-class-source-dependency-proof-stops/design.md",
+      "exists": true
+    }
+  ],
+  "unchanged_pins": [
+    {
+      "path": "src/facade.rs",
+      "bytes": 2065541,
+      "sha256": "3f74329c3d6feea0a51434f33f60f5e84a3b3bf4d5c63f55a94bc66a153e0880",
+      "matches_frozen": true
+    },
+    {
+      "path": "openspec/specs/java8-recovery/spec.md",
+      "bytes": 63029,
+      "sha256": "cc01ed4d6a17dc15ff96e2b40c2da5919820dd7595bfc8dad3ceeef4c9f0581d",
+      "matches_frozen": true
+    }
+  ],
+  "plan_files": {
+    "proposal.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/clarify-hierarchy-proof-evidence-boundaries/proposal.md",
+      "bytes": 1905,
+      "sha256": "b8ce4049182a9476a5da01be463fe5d11c44c64320196dfde3df91aae344fb2d"
+    },
+    "design.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/clarify-hierarchy-proof-evidence-boundaries/design.md",
+      "bytes": 3111,
+      "sha256": "2520f7d5fc7f3bc2db3b598d57decdba6818ac92132d285c9fcdf4ddb09beab6"
+    },
+    "tasks.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/clarify-hierarchy-proof-evidence-boundaries/tasks.md",
+      "bytes": 1427,
+      "sha256": "2405e0f521427b80067ba358ca6e38da66d86419c543c10ac791d6308aa72561"
+    },
+    ".openspec.yaml": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/clarify-hierarchy-proof-evidence-boundaries/.openspec.yaml",
+      "bytes": 57,
+      "sha256": "0f5078f12f03a5bc6b77a7dfde4b2c3f35fa17b0ca528e04d5edbabc0374238e"
+    }
+  },
+  "boundary_checks": {
+    "source_and_required_intermediates_resolved_by_existing_environment": true,
+    "terminal_name_hit_precedes_terminal_header_read": true,
+    "root_user_parent_ratification_link_resolves_to_recorded_user_parent_case": true,
+    "two_sided_interface_support_preserved_by_exact_original_suffix": true,
+    "out_of_snapshot_method_user_interface_terminal_unresolved": true,
+    "duplicate_terminal_policy_unresolved": true,
+    "archived_Mid_Greet_design_unchanged": true,
+    "main_spec_and_facade_frozen_pins_unchanged": true,
+    "no_policy_requirement_api_test_gate_change": true
+  },
+  "failures": []
+}

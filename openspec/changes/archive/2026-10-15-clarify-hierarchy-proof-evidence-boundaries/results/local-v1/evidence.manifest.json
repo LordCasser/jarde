@@ -1,0 +1,204 @@
+{
+  "status": "byte_identical_local_document_evidence_copies",
+  "items": [
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/apply-final.stderr.raw",
+      "copy": "apply-final.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/apply-final.stdout.raw",
+      "copy": "apply-final.stdout.raw",
+      "bytes": 5004,
+      "sha256": "52cae825a0d7262d76c80ac22f447f856da73885c9dcad99d5319761a99bef6a"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/apply.stderr.raw",
+      "copy": "apply.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/apply.stdout.raw",
+      "copy": "apply.stdout.raw",
+      "bytes": 5033,
+      "sha256": "68c3f076a949ba84dcabcfd2eec0517e5712cb977e5a68f148e0f3c14a8a72b2"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-execution.json",
+      "copy": "archive-execution.json",
+      "bytes": 2014,
+      "sha256": "824afd4ecc7594c8b0667a0332bc668c206acec2ad4f9b01ee3c7a2cc999eee0"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-help.stderr.raw",
+      "copy": "archive-help.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-help.stdout.raw",
+      "copy": "archive-help.stdout.raw",
+      "bytes": 566,
+      "sha256": "094e7c3a5e84562ac94eeb23f26a661b890abf8199b4866eff1f095600abf00b"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-instructions.stderr.raw",
+      "copy": "archive-instructions.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive-instructions.stdout.raw",
+      "copy": "archive-instructions.stdout.raw",
+      "bytes": 2470,
+      "sha256": "3d34e3271aebc41f084cbf8c38e0bbcbe283dd328a67fa7a99736baa67e866bf"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive.stderr.raw",
+      "copy": "archive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive.stdout.raw",
+      "copy": "archive.stdout.raw",
+      "bytes": 447,
+      "sha256": "42c5c084d681fd5e82881bc4c284734125681ce974383ec44d41287842a511a6"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-strict.stderr.raw",
+      "copy": "ci-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-strict.stdout.raw",
+      "copy": "ci-strict.stdout.raw",
+      "bytes": 16895,
+      "sha256": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-version.stderr.raw",
+      "copy": "ci-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/ci-version.stdout.raw",
+      "copy": "ci-version.stdout.raw",
+      "bytes": 7,
+      "sha256": "74ee4d121463989183f9a9b848577eb2434f3f5d095de2a4b197bf29ffa2399b"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/citations-before.json",
+      "copy": "citations-before.json",
+      "bytes": 26439,
+      "sha256": "3b3b64229af9d2657fc0b9fd789b839a8ea4e7af9c920f8e62b2830ef0d686ce"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-strict.stderr.raw",
+      "copy": "local-strict.stderr.raw",
+      "bytes": 2326,
+      "sha256": "57e7944d01acc7eefc77e939115e605214da1fa7c901d9ffd19ac97eed64eb79"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-strict.stdout.raw",
+      "copy": "local-strict.stdout.raw",
+      "bytes": 16895,
+      "sha256": "0599c2ec22b226d783f8b08fef72ea29ba28358b85b0b42b0820a93192b2e881"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-version.stderr.raw",
+      "copy": "local-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/local-version.stdout.raw",
+      "copy": "local-version.stdout.raw",
+      "bytes": 7,
+      "sha256": "0ccd4990d8e0fa4731ff613065a24fe917f2dcfbb1ed921e8269ade695077115"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/notes-applied.json",
+      "copy": "notes-applied.json",
+      "bytes": 4013,
+      "sha256": "1ec3caf6b67ac8a367586a0bae96482d30aab9ba929d87ec10c9972695eb57ef"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/notes-root-check-v1.json",
+      "copy": "notes-root-check-v1.json",
+      "bytes": 3825,
+      "sha256": "fa5f8fe1f4a2e31e1bc4ea5c42478da7a45369a99eb275d88509b0fe84bd73df"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/peer-review-v1.json",
+      "copy": "peer-review-v1.json",
+      "bytes": 6864,
+      "sha256": "c4df96cc70fb98b87c8b6979a279eb786b536fdb4009473c5e802a9fcdd113df"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/postarchive-ci-strict.stderr.raw",
+      "copy": "postarchive-ci-strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/postarchive-ci-strict.stdout.raw",
+      "copy": "postarchive-ci-strict.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/postarchive-local-strict.stderr.raw",
+      "copy": "postarchive-local-strict.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/postarchive-local-strict.stdout.raw",
+      "copy": "postarchive-local-strict.stdout.raw",
+      "bytes": 16840,
+      "sha256": "4f2594c910608f572f1eb2dfa1ae42e2f441073b0df2d22b0bb9a23cac4e53e4"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/postarchive-validation-execution.json",
+      "copy": "postarchive-validation-execution.json",
+      "bytes": 1957,
+      "sha256": "c0b181719b8437dcd2845ddfc7d04be6fea04e45b3faab66b3d6d466733c0c05"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/status-prearchive.stderr.raw",
+      "copy": "status-prearchive.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/status-prearchive.stdout.raw",
+      "copy": "status-prearchive.stdout.raw",
+      "bytes": 3351,
+      "sha256": "8d9d1d6adcd5acf79755e3529f6e36e5eaf59042d39f590b76e8eb03f75d98d7"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/status.stderr.raw",
+      "copy": "status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/status.stdout.raw",
+      "copy": "status.stdout.raw",
+      "bytes": 3351,
+      "sha256": "8d9d1d6adcd5acf79755e3529f6e36e5eaf59042d39f590b76e8eb03f75d98d7"
+    },
+    {
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/validation-execution.json",
+      "copy": "validation-execution.json",
+      "bytes": 6064,
+      "sha256": "ab456e6d306fe0ebf907f23dc18fde7a06bedd19a77237f64ce4223bfda8d8e9"
+    }
+  ],
+  "scope": "original absolute paths and historic statuses retained; 9 before-doc cache snapshots not included: original 3 spec bodies remain exact suffixes and all other cited docs remain unchanged at recorded Git blobs"
+}

@@ -1,0 +1,53 @@
+{
+  "status": "accepted_normal_skip_specs_archive",
+  "commands": [
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "status",
+        "--change",
+        "clarify-hierarchy-proof-evidence-boundaries",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/status-prearchive.stdout.raw",
+          "bytes": 3351,
+          "sha256": "8d9d1d6adcd5acf79755e3529f6e36e5eaf59042d39f590b76e8eb03f75d98d7"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/status-prearchive.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "archive",
+        "clarify-hierarchy-proof-evidence-boundaries",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive.stdout.raw",
+          "bytes": 447,
+          "sha256": "42c5c084d681fd5e82881bc4c284734125681ce974383ec44d41287842a511a6"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/hierarchy-boundary-apply-root-v1/archive.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "archive_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-15-clarify-hierarchy-proof-evidence-boundaries",
+  "no_delta": true
+}

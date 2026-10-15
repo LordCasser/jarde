@@ -1,0 +1,13 @@
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] file: skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Functional adaptation retains provenance and bounded execution" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: 参数收窄桥的消隐以契约属主的类型实参在类头可见为前置" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Presented invocation arguments retain the symbolic parameter types safely" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved generic class headers" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved method-local generic signatures" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved named member class families" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved method-local generic signatures" - not found
+  ℹ [INFO] java8-recovery/spec.md: Archive would refuse this delta: java8-recovery MODIFIED failed for header "### Requirement: Complete class source preserves proved method-local generic signatures" - not found
