@@ -1628,6 +1628,162 @@ fn the_class_view_charges_one_body_per_requested_body() {
     );
 }
 
+#[test]
+fn duplicate_member_identity_and_name_are_ambiguous_in_class_view_cli() {
+    let temp = TempDir::new();
+    let class = class_file(
+        b"p/Duplicate",
+        b"java/lang/Object",
+        None,
+        &[
+            MethodSpec {
+                name: b"m",
+                descriptor: b"()V",
+                flags: 0x0401, // public abstract, no Code
+                body: Body::NoCode,
+            },
+            MethodSpec {
+                name: b"m",
+                descriptor: b"()V",
+                flags: CLASS_FLAGS,
+                body: Body::Instructions {
+                    bytes: &[0xb1],
+                    max_stack: 0,
+                    max_locals: 0,
+                },
+            },
+        ],
+    );
+    let archive = zip(&[Stored {
+        name: b"p/Duplicate.class",
+        data: &class,
+    }]);
+    let path = temp.write("duplicate.jar", &archive);
+    let input = path_of(&path);
+
+    let declarations = run_complete(&[
+        "list-classes",
+        "--input",
+        input,
+        "--evidence",
+        "declarations",
+        "--format",
+        "json",
+    ]);
+    let definition = argument(&definition_of(&declarations, b"p/Duplicate.class"));
+    let members = run_complete(&[
+        "list-members",
+        "--input",
+        input,
+        "--definition",
+        &definition,
+        "--format",
+        "json",
+    ]);
+    let rows: Vec<_> = members["items"]
+        .as_array()
+        .expect("the member listing publishes its rows")
+        .iter()
+        .filter(|item| item["kind"] == json!("method"))
+        .collect();
+    assert_eq!(
+        rows.len(),
+        2,
+        "both physical method rows remain listed: {members}"
+    );
+    assert_eq!(rows[0]["index"], json!(0));
+    assert_eq!(rows[1]["index"], json!(1));
+    assert_eq!(rows[0]["access_flags"], json!(0x0401));
+    assert_eq!(rows[1]["access_flags"], json!(CLASS_FLAGS));
+    assert_eq!(rows[0]["name"]["raw"], json!(b"m"));
+    assert_eq!(rows[1]["name"]["raw"], json!(b"m"));
+    assert_eq!(rows[0]["descriptor"]["raw"], json!(b"()V"));
+    assert_eq!(rows[1]["descriptor"]["raw"], json!(b"()V"));
+    assert_eq!(rows[0]["identity"], rows[1]["identity"]);
+    assert_eq!(members["execution"]["usage"]["method_bodies"], json!(0));
+
+    let listed_ids = [rows[0]["identity"].clone(), rows[1]["identity"].clone()];
+    for id in &listed_ids {
+        let ambiguous = run(&[
+            "class-view",
+            "--input",
+            input,
+            "--definition",
+            &definition,
+            "--body-method",
+            &argument(id),
+            "--format",
+            "json",
+        ]);
+        assert_eq!(
+            status(&ambiguous),
+            EXIT_AMBIGUOUS,
+            "listed duplicate identity must remain ambiguous: {}",
+            stderr_text(&ambiguous)
+        );
+        let document = stdout_json(&ambiguous);
+        assert_eq!(document["outcome"], json!("ambiguous"));
+        let candidates = document["candidates"]
+            .as_array()
+            .expect("both physical records are reported as candidates");
+        assert_eq!(candidates.len(), 2, "{document}");
+        for (position, candidate) in candidates.iter().enumerate() {
+            assert_eq!(candidate["kind"], json!("method"));
+            assert_eq!(candidate["index"], rows[position]["index"]);
+            assert_eq!(candidate["access_flags"], rows[position]["access_flags"]);
+            assert_eq!(candidate["identity"], rows[position]["identity"]);
+        }
+        assert_eq!(document["execution"]["usage"]["method_bodies"], json!(0));
+        assert_eq!(document["execution"]["usage"]["code_bytes"], json!(0));
+        assert_eq!(document["execution"]["usage"]["ir_items"], json!(0));
+        assert_eq!(document["execution"]["usage"]["ir_edges"], json!(0));
+        assert_eq!(document["execution"]["usage"]["analysis_steps"], json!(0));
+        assert_eq!(
+            document["execution"]["usage"]["normalization_clones"],
+            json!(0)
+        );
+    }
+
+    let ambiguous_name = run(&[
+        "class-view",
+        "--input",
+        input,
+        "--definition",
+        &definition,
+        "--body",
+        "m()V",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&ambiguous_name), EXIT_AMBIGUOUS);
+    let name_document = stdout_json(&ambiguous_name);
+    assert_eq!(name_document["outcome"], json!("ambiguous"));
+    let candidates = name_document["candidates"]
+        .as_array()
+        .expect("name selection reports the same two physical records");
+    assert_eq!(candidates.len(), 2);
+    for (position, candidate) in candidates.iter().enumerate() {
+        assert_eq!(candidate["index"], rows[position]["index"]);
+        assert_eq!(candidate["access_flags"], rows[position]["access_flags"]);
+        assert_eq!(candidate["identity"], rows[position]["identity"]);
+    }
+    assert_eq!(
+        name_document["execution"]["usage"]["method_bodies"],
+        json!(0)
+    );
+    assert_eq!(name_document["execution"]["usage"]["code_bytes"], json!(0));
+    assert_eq!(name_document["execution"]["usage"]["ir_items"], json!(0));
+    assert_eq!(name_document["execution"]["usage"]["ir_edges"], json!(0));
+    assert_eq!(
+        name_document["execution"]["usage"]["analysis_steps"],
+        json!(0)
+    );
+    assert_eq!(
+        name_document["execution"]["usage"]["normalization_clones"],
+        json!(0)
+    );
+}
+
 // ---------------------------------------------------------------------------------------------
 // 3.2 / A16, A17: the chain, driven by the identities the previous command printed
 // ---------------------------------------------------------------------------------------------

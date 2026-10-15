@@ -44290,76 +44290,72 @@ fn resolve_body_ref(read: &ConfirmedRead, body: &BodyRef) -> Result<BodyResoluti
                     ),
                 ));
             }
-            match declared_method(read, &method.name, &method.descriptor) {
-                Some((ordinal, member)) => Ok(BodyResolution::Method(
-                    method.clone(),
-                    ordinal,
-                    member.clone(),
-                )),
-                None => not_reached_or_missing(
-                    read,
-                    &format!(
-                        "`{}` `{}`",
-                        String::from_utf8_lossy(&method.name.0),
-                        String::from_utf8_lossy(&method.descriptor.0)
-                    ),
-                ),
-            }
+            resolve_body_name(read, &method.name, Some(&method.descriptor))
         }
-        BodyRef::Name { name, descriptor } => {
-            let matched: Vec<(usize, &MemberHeader)> = read
-                .facts
-                .methods
-                .iter()
-                .enumerate()
-                .filter(|(_, member)| {
-                    member.name.raw().0 == name.0
-                        && descriptor
-                            .as_ref()
-                            .is_none_or(|descriptor| member.descriptor.raw().0 == descriptor.0)
-                })
-                .collect();
-            match matched.as_slice() {
-                [] => not_reached_or_missing(
-                    read,
-                    &match descriptor {
-                        Some(descriptor) => format!(
-                            "`{}` `{}`",
-                            String::from_utf8_lossy(&name.0),
-                            String::from_utf8_lossy(&descriptor.0)
-                        ),
-                        None => format!(
-                            "`{}` (any declared descriptor)",
-                            String::from_utf8_lossy(&name.0)
-                        ),
-                    },
+        BodyRef::Name { name, descriptor } => resolve_body_name(read, name, descriptor.as_ref()),
+    }
+}
+
+/// Resolves both friendly names and listed identities against the complete physical method table.
+/// A `PhysicalMethodId` has no member ordinal, so duplicate raw signatures stay ambiguous even
+/// when the caller supplies an identity copied from one of the listed duplicate rows.
+fn resolve_body_name(
+    read: &ConfirmedRead,
+    name: &JvmBytes,
+    descriptor: Option<&JvmBytes>,
+) -> Result<BodyResolution> {
+    let ClassContentItem::ClassDeclaration(class) = &read.class else {
+        unreachable!("a class read publishes a class declaration item")
+    };
+    let definition = &class.definition;
+    let matched: Vec<(usize, &MemberHeader)> = read
+        .facts
+        .methods
+        .iter()
+        .enumerate()
+        .filter(|(_, member)| {
+            member.name.raw().0 == name.0
+                && descriptor.is_none_or(|descriptor| member.descriptor.raw().0 == descriptor.0)
+        })
+        .collect();
+    match matched.as_slice() {
+        [] => not_reached_or_missing(
+            read,
+            &match descriptor {
+                Some(descriptor) => format!(
+                    "`{}` `{}`",
+                    String::from_utf8_lossy(&name.0),
+                    String::from_utf8_lossy(&descriptor.0)
                 ),
-                [(index, member)] => Ok(BodyResolution::Method(
-                    member_identity(definition, member),
-                    *index,
-                    (*member).clone(),
-                )),
-                many => {
-                    let mut candidates = Vec::new();
-                    for (index, member) in many {
-                        candidates.push(method_item(definition, *index, member)?);
-                    }
-                    Ok(BodyResolution::Ambiguous {
-                        query: NavigationQuery {
-                            class: ClassNameQuery::internal(
-                                String::from_utf8_lossy(&class.declaration.this_class.raw().0)
-                                    .into_owned(),
-                            ),
-                            member: Some(MemberQuery {
-                                name: name.clone(),
-                                descriptor: descriptor.clone(),
-                                kind: MemberQueryKind::Methods,
-                            }),
-                        },
-                        candidates,
-                    })
-                }
+                None => format!(
+                    "`{}` (any declared descriptor)",
+                    String::from_utf8_lossy(&name.0)
+                ),
+            },
+        ),
+        [(index, member)] => Ok(BodyResolution::Method(
+            member_identity(definition, member),
+            *index,
+            (*member).clone(),
+        )),
+        many => {
+            let mut candidates = Vec::new();
+            for (index, member) in many {
+                candidates.push(method_item(definition, *index, member)?);
             }
+            Ok(BodyResolution::Ambiguous {
+                query: NavigationQuery {
+                    class: ClassNameQuery::internal(
+                        String::from_utf8_lossy(&class.declaration.this_class.raw().0).into_owned(),
+                    ),
+                    member: Some(MemberQuery {
+                        name: name.clone(),
+                        descriptor: descriptor.cloned(),
+                        kind: MemberQueryKind::Methods,
+                    }),
+                },
+                candidates,
+            })
         }
     }
 }
@@ -44377,18 +44373,6 @@ fn not_reached_or_missing(read: &ConfirmedRead, requested: &str) -> Result<BodyR
             ),
         )),
     }
-}
-
-/// The one member record declaring this raw name and descriptor, with the ordinal the class's own
-/// member table states it at — the coordinate the prepared class decodes a body by.
-fn declared_method<'a>(
-    read: &'a ConfirmedRead,
-    name: &JvmBytes,
-    descriptor: &JvmBytes,
-) -> Option<(usize, &'a MemberHeader)> {
-    read.facts.methods.iter().enumerate().find(|(_, member)| {
-        member.name.raw().0 == name.0 && member.descriptor.raw().0 == descriptor.0
-    })
 }
 
 fn member_identity(definition: &PhysicalDefinitionId, member: &MemberHeader) -> PhysicalMethodId {
