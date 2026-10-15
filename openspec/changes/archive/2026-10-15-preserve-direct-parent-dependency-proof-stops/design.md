@@ -50,4 +50,4 @@ DT-29原JAR1253B、SHA256 `31ec2e5d6b4fdac4fc4c910904c3b84dc92f64d54e83a1a81b41e
 
 scoped observer复用既有cfg(test)观测：DT-29 accessor/field各覆盖真实收费取消、已过期ledger实际checkpoint和ClassHeaders原Report；外部C receiver B的关系证明实际尝试source B，原Report停止后不读owner A或进入field。实际成功fixed测试才支持这些后继断言；旧生产7个新增失败不支持未执行断言。取消初始token clear，观察真实hand-off全部15个counted维度、原Error/Report及全部诊断、无后继工作/收费tail；sticky ledger发布控制只保留已付费constructor，不强迫当前setter准入。公共plain Budget控制则明确要求停止setter record已合法准入。
 
-外部C公共Partial原本已绿，只作兼容控制；source B首次读取顺序依据scoped callback观测，未推广为每种外部source/owner组合均有动态覆盖。缺失/歧义仍Complete的普通拒绝并保留物理BCI来源。局部最终457/0/1及真实完整root/原Runner双JVM实验分别记录；自身commit CI、同步归档与最终main绑定仍待，详见tasks。
+外部C公共Partial原本已绿，只作兼容控制；source B首次读取顺序依据scoped callback观测，未推广为每种外部source/owner组合均有动态覆盖。缺失/歧义仍Complete的普通拒绝并保留物理BCI来源。局部最终457/0/1及真实完整root/原Runner双JVM实验分别记录；自身aadf71 CI38703952159已通过并独审，main新增1需求/8场景已同步；正常归档与最终main绑定按Workflow follow-up核实，详见tasks。

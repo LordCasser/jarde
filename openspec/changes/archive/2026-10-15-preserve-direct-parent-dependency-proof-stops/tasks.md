@@ -13,7 +13,7 @@
 ## 3. 兼容性与产品集成
 
 - [x] 3.1 在最终候选复用适用字段/accessor身份、flags、缺失歧义及来源控制，执行真实DT-29宽预算完整root嵌套类族与未改Runner的重编译/Java8、Java23对照，并运行同CLI预算矩阵；验收：正确source assembly、无原JAR混入rebuilt classpath，原oracle逐字一致，低cap恢复与类/CLI共同如实停止，保存全部raw/pins及失败历史，不改Java或削弱有效断言。
-- [ ] 3.2 对最终产品源码运行当前项目适用格式/Clippy/OpenSpec strict、workspace/MSRV及workflow其他既有门，取得该修复commit自身CI并完成独立复核；验收：命令非空、source/CLI/CI head绑定一致，原失败与未覆盖范围明确、exact clean后target缺失，不借旧c871或其他commit CI完成本片。
+- [x] 3.2 对最终产品源码运行当前项目适用格式/Clippy/OpenSpec strict、workspace/MSRV及workflow其他既有门，取得该修复commit自身CI并完成独立复核；验收：命令非空、source/CLI/CI head绑定一致，原失败与未覆盖范围明确、exact clean后target缺失，不借旧c871或其他commit CI完成本片。
 
 ## Workflow follow-up
 
@@ -22,11 +22,15 @@
 
 ## 实施进展（2026-10-15）
 
-- 已完成1.1、1.2、2.1、2.2、3.1，5/6；基线见results/repro-v1，最终局部门禁及完整源码对照均已独立复核。
+- 已完成1.1、1.2、2.1、2.2、3.1、3.2，6/6；基线见results/repro-v1，最终局部门禁及完整源码对照均已独立复核。
 - 旧生产原生public4为2通过/2失败；CLI3为1通过/2失败；observer12为5个原有H1通过/7个新增失败，普通缺失/歧义两控制通过。旧失败仅证明首个失败断言，后续channel/header/prefix断言不冒称执行。
 - 修复初验12 observer +6 public +3 CLI全部通过；最终focused为18个summary、457通过/0失败/1默认忽略，含全部16个新增具名门。格式、当前CI参数Clippy、OpenSpec1.11/1.14各364/0通过。
-- 最终CLI c2db4721a879c47493b537e946b0ff827986e1e58e7b021222df1e66a8c9c3cd，59676240B，0555，绑定4905源；exact clean后target缺失。自身commit CI尚待，不以旧c871 CI完成3.2。
+- 最终CLI c2db4721a879c47493b537e946b0ff827986e1e58e7b021222df1e66a8c9c3cd，59676240B，0555，绑定4905源；exact clean后target缺失。自身aadf71 CI38703952159已通过并独审，3.2完成；不借旧c871 CI。
 
 - 最终CLI实际12命令/24raw：完整root含嵌套A/B的原样源码与原Runner重编译，rebuilt classpath无原JAR，Java8/23原始及重编四次均逐字为原oracle；宽预算whole-root文本与旧正例逐字相同。B的wide/cap1/cap2报告真实exit0/4/4，低cap不编译。独审核全部4921运行输入pin和4905源，全部输入未变。该固定Runner只覆盖set(true,false)，不声称所有输入等价或增加全局覆盖数。
 
 - 完整源码实验已独审通过；既有field/accessor身份、flags与来源专项四套21/0/0已补跑并独审，3.1已验收；不把未运行的旧测试作已通过声明。
+
+- 自身产品aadf71f3b4f5658485196edb63fb553f8c107380实际CI38703952159：4job/52step成功；两seed各368个summary、3631通过/0失败/98忽略，121具名门/seed通过。root826检查/0错、独审1549检查/0错；当前源码与冻结CLI4905源一致。已正常同步1新增需求/8场景，main由17/110至18/118；后续归档与最终main绑定按Workflow follow-up完成。
+
+- Workflow follow-up：已完成规范同步与正常CLI归档；归档后OpenSpec1.11/1.14各363/0，4905产品源与aadf71及冻结CLI逐字一致。实际收据见results/closure-v1。
