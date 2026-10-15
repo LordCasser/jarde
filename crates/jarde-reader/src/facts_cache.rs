@@ -542,6 +542,12 @@ struct Shared {
     counters: Counters,
 }
 
+impl Shared {
+    fn total_entries(&self) -> usize {
+        self.entries.len() + self.containers.len() + self.definition_reads.len()
+    }
+}
+
 /// The state of one store, as the caller that holds a handle can report it.
 ///
 /// The whole point of reporting it *outside* the result is that the cache is transparent: a
@@ -991,7 +997,7 @@ impl FactsCache {
                 shared.counters.container_stored += 1;
             }
             None => {
-                let items = shared.entries.len() + shared.containers.len();
+                let items = shared.total_entries();
                 if items >= shared.capacity.entries {
                     shared.counters.refused_capacity += 1;
                     return;
@@ -1152,8 +1158,7 @@ impl FactsCache {
                 shared.counters.definition_read_stored += 1;
             }
             None => {
-                let items =
-                    shared.entries.len() + shared.containers.len() + shared.definition_reads.len();
+                let items = shared.total_entries();
                 if items >= shared.capacity.entries {
                     shared.counters.refused_capacity += 1;
                     return;
@@ -1191,7 +1196,9 @@ impl FactsCache {
         if let Some(reason) = self.unusable(&key, entry) {
             // The entry is *discarded*, not left for the next lookup: a version it was written
             // under is not a state a later request could find it answerable in.
-            shared.entries.remove(&key);
+            if let Some(removed) = shared.entries.remove(&key) {
+                shared.retained_bytes = shared.retained_bytes.saturating_sub(removed.weight);
+            }
             shared.counters.misses += 1;
             match reason {
                 Unusable::Format => shared.counters.discarded_format += 1,
@@ -1269,7 +1276,7 @@ impl FactsCache {
     /// Whether one more answer of `weight` fits in the store, counting `items` answers already
     /// retained. The two bounds are independent: an answer has to fit in both.
     fn fits(shared: &Shared, weight: u64) -> bool {
-        let items = shared.entries.len() + shared.containers.len();
+        let items = shared.total_entries();
         items < shared.capacity.entries
             && weight <= shared.capacity.retained_bytes
             && shared.retained_bytes.saturating_add(weight) <= shared.capacity.retained_bytes
@@ -1300,7 +1307,7 @@ impl FactsCache {
             }
             None => {
                 if !Self::fits(shared, weight) {
-                    if shared.entries.len() + shared.containers.len() >= shared.capacity.entries {
+                    if shared.total_entries() >= shared.capacity.entries {
                         shared.counters.refused_capacity += 1;
                     } else {
                         shared.counters.refused_capacity_bytes += 1;
@@ -1355,10 +1362,8 @@ mod tests {
             "two parse policies of one content are two answers"
         );
     }
-
-    // What the store does with a key it already holds — a clear, a capacity refusal, a later read
-    // writing the same key — is asserted from `tests/p5_shared_payload.rs`. A store is not built
-    // here on purpose: every entry point that builds one is a construction this crate's sources may
-    // not contain (`tests/p5_benchmark.rs`'s cache guard), which is the same reason the store's
-    // behaviour has always been tested through the root test crate.
 }
+
+#[cfg(test)]
+#[path = "facts_capacity_tests.rs"]
+mod capacity_tests;
