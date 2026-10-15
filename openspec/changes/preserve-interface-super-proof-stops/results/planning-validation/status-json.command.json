@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/home/lordcasser/.local/bin/openspec",
+    "status",
+    "--change",
+    "preserve-interface-super-proof-stops",
+    "--json"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "started_at": "2026-10-15T01:53:21.785596+00:00",
+  "finished_at": "2026-10-15T01:53:23.859753+00:00",
+  "exit_code": 0,
+  "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+  "streams": {
+    "stdout": {
+      "path": "status-json.stdout.raw",
+      "bytes": 3472,
+      "sha256": "8b483bfe7bcd29460c855571f15dc27336b759ccff409d2edcab771981df1c14"
+    },
+    "stderr": {
+      "path": "status-json.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

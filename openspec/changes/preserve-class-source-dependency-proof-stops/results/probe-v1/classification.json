@@ -1,0 +1,186 @@
+{
+  "schema": "snapshot-proof-cli-classification-v1",
+  "at": "2026-10-15T03:02:00.439828+00:00",
+  "product_commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+  "normal_cli_executions": 6,
+  "normal_results": [
+    {
+      "label": "wide",
+      "exit_code": 0,
+      "class_status": "complete",
+      "class_reason": null,
+      "class_headers_limit": 4096,
+      "class_headers_usage": 16,
+      "main_kind": "recovered",
+      "main_status": "complete",
+      "main_content": "contains_statements",
+      "main_outcome": "produced",
+      "main_diagnostics": [
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "main_text_sha256": "1f50896505f732f644177126916a26d1ba64ce62adf435d044919e64e8a23373",
+      "class_text_sha256": "41b3de2d26a051c8304884e6891fc5262a6ebcca069d00673dc03f73235b62cb"
+    },
+    {
+      "label": "class-headers-1",
+      "exit_code": 4,
+      "class_status": "partial",
+      "class_reason": {
+        "dimension": "class_headers",
+        "kind": "budget_exceeded"
+      },
+      "class_headers_limit": 1,
+      "class_headers_usage": 1,
+      "main_kind": "refused",
+      "main_status": null,
+      "main_content": null,
+      "main_outcome": null,
+      "main_diagnostics": [],
+      "main_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_text_sha256": "0a8d03ed255bdef801f26c9436bba43b0fb15bf766c7aec35fd0c218e79cf6d6"
+    },
+    {
+      "label": "class-headers-2",
+      "exit_code": 4,
+      "class_status": "partial",
+      "class_reason": {
+        "dimension": "class_headers",
+        "kind": "budget_exceeded"
+      },
+      "class_headers_limit": 2,
+      "class_headers_usage": 2,
+      "main_kind": "refused",
+      "main_status": null,
+      "main_content": null,
+      "main_outcome": null,
+      "main_diagnostics": [],
+      "main_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_text_sha256": "0a8d03ed255bdef801f26c9436bba43b0fb15bf766c7aec35fd0c218e79cf6d6"
+    },
+    {
+      "label": "class-headers-8",
+      "exit_code": 0,
+      "class_status": "complete",
+      "class_reason": null,
+      "class_headers_limit": 8,
+      "class_headers_usage": 8,
+      "main_kind": "recovered",
+      "main_status": "complete",
+      "main_content": "explanation_only",
+      "main_outcome": "produced",
+      "main_diagnostics": [
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "main_text_sha256": "e5e33fa702e7ddee9bbd15e0c3f438f81485f95f05a9d322f4195e405c0a1989",
+      "class_text_sha256": "06e671f9e636bbc0e36d32e5ad3a7fd5c9d2d60756e5f217b5fe7dc67745b4c5"
+    },
+    {
+      "label": "class-headers-14",
+      "exit_code": 0,
+      "class_status": "complete",
+      "class_reason": null,
+      "class_headers_limit": 14,
+      "class_headers_usage": 14,
+      "main_kind": "recovered",
+      "main_status": "complete",
+      "main_content": "explanation_only",
+      "main_outcome": "produced",
+      "main_diagnostics": [
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "main_text_sha256": "ad9122afa8d5946010bacbd06c02f2b97a71609669feca56e1ffbacc3d1b2f3b",
+      "class_text_sha256": "cdd33455a1767e04bef7fc00c8d43ebfb4544cbeb1eea1145a484687f2f918b4"
+    },
+    {
+      "label": "class-headers-15",
+      "exit_code": 0,
+      "class_status": "complete",
+      "class_reason": null,
+      "class_headers_limit": 15,
+      "class_headers_usage": 15,
+      "main_kind": "recovered",
+      "main_status": "complete",
+      "main_content": "contains_statements",
+      "main_outcome": "produced",
+      "main_diagnostics": [
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "main_text_sha256": "1f50896505f732f644177126916a26d1ba64ce62adf435d044919e64e8a23373",
+      "class_text_sha256": "41b3de2d26a051c8304884e6891fc5262a6ebcca069d00673dc03f73235b62cb"
+    }
+  ],
+  "successful_debugger_runs": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/execution.json",
+      "sha256": "6696c6b71a9c4320765dfde79c3e0738e55e958e08bde0800660274e53fe291d",
+      "real_refusals": 5,
+      "inferior_exited_normally": true,
+      "same_normalized_report_as_non_debugger": true
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/execution.json",
+      "sha256": "69d7d6ff1221995c991ddff421242fbe10fb570ff38922a5408bbace559185e3",
+      "real_refusals": 5,
+      "inferior_exited_normally": true,
+      "same_normalized_report_as_non_debugger": true
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/execution.json",
+      "sha256": "a506601eec7885cc56ff3198a67f133354852baa6e6b4caa3bb6b3b29be161d6",
+      "real_refusals": 1,
+      "inferior_exited_normally": true,
+      "same_normalized_report_as_non_debugger": true
+    }
+  ],
+  "invalid_debugger_control": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/execution.json",
+    "reason": "GDB run with only redirection reset inferior arguments; CLI emitted cli_request_json EOF and exited1, no quota breakpoint. Preserved, excluded from defect evidence."
+  },
+  "attribution": {
+    "prebody": "Four real Budget::exceeded calls through snapshot_header_chain_widens/prove_snapshot_hierarchy_widenings/presentation/recovery, then class+method Complete/exit0 atheaders8.",
+    "postbody": "One real Budget::exceeded call through prove_double_brace_allocation/project_class_source_double_brace, class stillComplete/exit0 atheaders15 while main contains_statements.",
+    "not_dynamically_proven": [
+      "reference overload wrapper",
+      "direct parent accessor wrapper",
+      "direct parent field wrapper"
+    ],
+    "mechanism": "Budget stop represented by resolver.execution merged into local execution; Ok(None) certificate absence outlives stop report. Ordinary Err catch handling alone cannot fix these observed refusals."
+  },
+  "tools": {
+    "gdb_path": "/usr/bin/gdb",
+    "gdb_bytes": 15896472,
+    "gdb_sha256": "b3d60239d69af6196ddb05d5057a620bd73afe4f4b821bc13f80bfcc020c7b24",
+    "gdb_version_sha256": "47df9689e865d5206226465c14442c79081a0dc2dd52556fa7a6ff59e6494574"
+  },
+  "no_cargo_jdk_or_target_java_execution": true,
+  "frozen_source_binary_fixture_unchanged": true,
+  "not_a_product_fix": true
+}

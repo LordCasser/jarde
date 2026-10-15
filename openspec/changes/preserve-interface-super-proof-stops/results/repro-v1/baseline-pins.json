@@ -1,0 +1,84 @@
+{
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "HEAD": "f01402867ffa20085e421a680a6ebbe878e63338",
+  "files": {
+    "crates/jarde-reader/src/facts_cache.rs": {
+      "bytes": 66905,
+      "sha256": "74038dbb60a2f2888e4c8e535a3f1487552edeeb60477d31b8cc14fdd45aa800"
+    },
+    "tests/p5_benchmark.rs": {
+      "bytes": 276581,
+      "sha256": "818472fcc684063e4415a389dae5e90e863f3ae73dd4603090051e79b3bb3d17"
+    },
+    "tests/p5_facts_cache.rs": {
+      "bytes": 86841,
+      "sha256": "5fbb01eaf6d180b4b7dac91ab278c34bc4ee569862189b1b78749cd6f5943801"
+    },
+    "crates/jarde-reader/src/facts_capacity_tests.rs": {
+      "bytes": 12382,
+      "sha256": "19185d8f095286545f1690a9c0e5f4df938e295f6d96a7fca5110024be72e3a6"
+    },
+    "crates/jarde-jvm/src/callee.rs": {
+      "bytes": 25296,
+      "sha256": "1f22ef28276c1a310a1e7c4aae1a5fdbe6414e178836b0c03440f05d246ff51f"
+    },
+    "crates/jarde-jvm/src/engine.rs": {
+      "bytes": 89365,
+      "sha256": "3de4fb79ccab307afad95bcc59331257adc67a1ce4b3987e4ea43279da2e7998"
+    },
+    "tests/p3_prepared_input.rs": {
+      "bytes": 58628,
+      "sha256": "b34a2b990f368b3f2f397bb36a40ee00a075f9c482c9963f6f788945250ec238"
+    },
+    "crates/jarde-jvm/src/canonical.rs": {
+      "bytes": 152162,
+      "sha256": "41dc3c015ef1845ddf04ad548859eccf8676c42813c03b2ad45cd7cf77eccc70"
+    },
+    "tests/p3_method_ir.rs": {
+      "bytes": 38863,
+      "sha256": "f0face82e17b6733920ddc955a308ad35cff8c76a399b388ec3dcf2c9e2d77dd"
+    },
+    "crates/jarde-java/src/bridge.rs": {
+      "bytes": 37448,
+      "sha256": "65cd1f4e2e6cda9e763036f3d5bafd92b2d8e263bedd684e7edf0189fac60bcc"
+    },
+    "crates/jarde-java/src/emit.rs": {
+      "bytes": 183349,
+      "sha256": "07ad789e67a0861a5e5400842b7c0c910bf04d2fb83da65cb387d18ea0780c31"
+    },
+    "crates/jarde-java/src/report.rs": {
+      "bytes": 696719,
+      "sha256": "6871a5ae95b2e725bf70834864f096ace19e1b321c253bb48d258b75ecfe93ca"
+    },
+    "crates/jarde-java/src/stop.rs": {
+      "bytes": 13221,
+      "sha256": "d3833ac7e623ab2347f535bd0d0b8860b16853a69241d4d57113c307c8041792"
+    },
+    "crates/jarde-java/src/build.rs": {
+      "bytes": 1902313,
+      "sha256": "b973da39da521dad9a71c53114c22901eaf056f63fa55823949004b2cc234bb8"
+    },
+    "src/facade.rs": {
+      "bytes": 1961810,
+      "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307"
+    },
+    "tests/p3_special_dispatch.rs": {
+      "bytes": 12893,
+      "sha256": "f60f566087365073a3a3b5993f3d8caa0e6e61068ea4b53d78a532c87f77f5ea"
+    },
+    "tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class": {
+      "bytes": 784,
+      "sha256": "a1cd50a4ae4b30779041521f50db5062cddd66ff067eff44328202f886479162"
+    },
+    "tests/fixtures/p3-special-dispatch/v8/BaseProbe.class": {
+      "bytes": 833,
+      "sha256": "b631eb77987041dd3d71a4e1098b08f2cddd613493a6a308add73ef1cdfe8266"
+    },
+    "tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class": {
+      "bytes": 114,
+      "sha256": "de73401a2d112c9b10fdc19792388782117b47c4cc02716e34c820f6bb5b5711"
+    }
+  },
+  "target_absent": true,
+  "instructions": "/home/lordcasser/.codex/AGENTS.md; no more-specific AGENTS.md found"
+}

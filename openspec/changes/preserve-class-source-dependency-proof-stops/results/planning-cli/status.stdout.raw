@@ -1,0 +1,12 @@
+Change: preserve-class-source-dependency-proof-stops
+Schema: spec-driven
+Change root: /home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/preserve-class-source-dependency-proof-stops
+Progress: 4/4 artifacts complete
+
+[x] proposal
+[x] specs
+[x] design
+[x] tasks
+
+All planning artifacts complete!
+Next: openspec instructions apply --change "preserve-class-source-dependency-proof-stops" --json

@@ -1,0 +1,752 @@
+{
+  "schema": "class-view-focused-independent-review-v1",
+  "status": "accepted_local_focused_scope_only_product_ci_pending",
+  "reviewed_at": "2026-10-15",
+  "scope": "Read-only independent verification of root-owned focused class-view test/strict/clippy/build/cleanup receipts. No repository edits or tool invocation by reviewer.",
+  "source_binding": {
+    "workspace": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "manifest_before_equals_after": true,
+    "source_file_pins": {
+      "crates/jarde-cli/tests/task_cli.rs": {
+        "bytes": 116356,
+        "sha256": "60fecb5e6b8576252af0cf55183aec5274da98425b478cd185a9113278c9b567"
+      },
+      "src/facade.rs": {
+        "bytes": 1960949,
+        "sha256": "6fdfa775fb9823ee6dde0251b4474cd287cd9a501c92d24cd9af16f68366e61d"
+      },
+      "tests/task_operations.rs": {
+        "bytes": 160768,
+        "sha256": "8c55c85aec691f0fd346e3d50c7b57379fc24b302c6981e4b02248c1e1af5990"
+      }
+    },
+    "current_workspace_hashes_match_manifest": true,
+    "code_scope": "One production file src/facade.rs plus two test files; candidate tests retain identity matrix and CLI/controls. No production API surface was added per candidate review; root receipt/source pins bind the tested 3-file state."
+  },
+  "focused_acceptance": {
+    "acceptance_record": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/root-acceptance.json",
+    "acceptance_record_sha256": "b67adbe6300f69aaf08a7083b45760db11d354956e56d88c2137712095dab1bd",
+    "status": "accepted_local_class_view_focus_only",
+    "checks": 4952,
+    "source_count": 4900,
+    "test_totals": {
+      "passed": 76,
+      "failed": 0,
+      "ignored": 2
+    },
+    "suites": 5,
+    "commands": 8,
+    "raw_streams": 16,
+    "target_absent": true,
+    "immutable_cli": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-class-view-v1",
+      "bytes": 59599048,
+      "sha256": "c0bc6b64e1c763ee400afdb60d328a83151091fecbd72ed8ead1e906bd170f45"
+    },
+    "own_ci_accepted": false,
+    "limitation": "This is local focused acceptance for the candidate branch. Product-commit CI has not started and is not accepted."
+  },
+  "regression_specifics": {
+    "library_matrix": "The named duplicate_method_identity_uses_name_ambiguity_before_body_admission test passed in the exact task_operations suite. It runs nine ordered Abstract/Native/Code pairs; per pair exact Name and each of two listed PhysicalMethodIds are separate operations (27 total). Both physical indexes/flags and duplicate equal IDs are asserted, and all 27 selections require Ambiguous with ordered candidates and zero class preparation/body decode/recovery/method-body/code-byte/IR work.",
+    "zero_body_budget": "All three abstract-code requests (Name and both listed identities) now use method_bodies=0. The focused acceptance record explicitly records duplicate_public_requests=27 and matrix inference that all three requests use zero budget.",
+    "library_controls": "Unique abstract/native noCode and unique Code controls; differing descriptors with exact Name and each listed identity; complete missing identity; partial member-table suffix refusal; same-signature foreign-owner precedence; existing tight MethodBodies and stopped-body controls remain. Existing assertions were preserved.",
+    "cli_matrix": "Named duplicate_member_identity_and_name_are_ambiguous_in_class_view_cli test passed. It exercises list-classes → list-members → class-view --body-method for both equal listed IDs, plus class-view --body m()V, for three ambiguous queries. It checks list order, both flags, equal identity values, same ordered candidate rows and zero body/Code/IR work.",
+    "cli_suite": "The focused task_cli suite passed 15 tests with 0 failures and 2 ignored; the ignored tests are unrelated deep-chain optimized-build cases and remain explicitly ignored."
+  },
+  "gates": {
+    "command_receipts": [
+      {
+        "index": 1,
+        "label": "fmt-check",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit_code": 0,
+        "test_summaries": null,
+        "named_tests": null,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "index": 2,
+        "label": "ci-exact-clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--all-features",
+          "--locked",
+          "--",
+          "-A",
+          "clippy::too_many_arguments",
+          "-A",
+          "clippy::cloned_ref_to_slice_refs",
+          "-A",
+          "clippy::collapsible_if",
+          "-A",
+          "clippy::type_complexity",
+          "-A",
+          "clippy::len_zero",
+          "-A",
+          "clippy::needless_option_as_deref",
+          "-A",
+          "clippy::needless_borrow",
+          "-A",
+          "clippy::useless_conversion",
+          "-A",
+          "clippy::large_enum_variant",
+          "-A",
+          "clippy::question_mark",
+          "-A",
+          "clippy::comparison_to_empty",
+          "-A",
+          "clippy::op_ref",
+          "-A",
+          "clippy::manual_range_patterns",
+          "-A",
+          "clippy::if_same_then_else",
+          "-A",
+          "clippy::filter_map_bool_then",
+          "-A",
+          "clippy::filter_next",
+          "-A",
+          "clippy::unneeded_struct_pattern",
+          "-A",
+          "clippy::redundant_guards",
+          "-A",
+          "clippy::map_identity",
+          "-A",
+          "clippy::redundant_slicing",
+          "-A",
+          "clippy::unnecessary_get_then_check",
+          "-A",
+          "clippy::unnecessary_unwrap",
+          "-A",
+          "clippy::redundant_locals",
+          "-A",
+          "clippy::replace_box",
+          "-A",
+          "clippy::map_clone",
+          "-A",
+          "clippy::unnecessary_mut_passed",
+          "-A",
+          "clippy::single_element_loop",
+          "-A",
+          "clippy::unnecessary_to_owned",
+          "-A",
+          "clippy::needless_lifetimes",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "test_summaries": null,
+        "named_tests": null,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3b5d9d92fc0d6c55f049cac96e0673441642d1e66ad705ef44a887a18d6261c4"
+      },
+      {
+        "index": 3,
+        "label": "openspec-ci-strict",
+        "argv": [
+          "openspec",
+          "validate",
+          "--all",
+          "--strict",
+          "--no-interactive"
+        ],
+        "exit_code": 0,
+        "test_summaries": null,
+        "named_tests": null,
+        "stdout_sha256": "2730d5e47a442ed4e3a76a4166f9c9ed4a54e40a84835582d10538c6cf1b5eed",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "index": 4,
+        "label": "openspec-local-strict",
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "validate",
+          "--all",
+          "--strict",
+          "--no-interactive"
+        ],
+        "exit_code": 0,
+        "test_summaries": null,
+        "named_tests": null,
+        "stdout_sha256": "2730d5e47a442ed4e3a76a4166f9c9ed4a54e40a84835582d10538c6cf1b5eed",
+        "stderr_sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+      },
+      {
+        "index": 5,
+        "label": "public-selection-demand-and-binding",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "jarde",
+          "--test",
+          "task_operations",
+          "--test",
+          "d2_prepared_handoff",
+          "--test",
+          "d3_artifact_binding",
+          "--test",
+          "d0_demand_counts",
+          "--all-features",
+          "--locked",
+          "--message-format",
+          "json"
+        ],
+        "exit_code": 0,
+        "test_summaries": [
+          [
+            "ok",
+            "5",
+            "0",
+            "0"
+          ],
+          [
+            "ok",
+            "9",
+            "0",
+            "0"
+          ],
+          [
+            "ok",
+            "13",
+            "0",
+            "0"
+          ],
+          [
+            "ok",
+            "34",
+            "0",
+            "0"
+          ]
+        ],
+        "named_tests": [
+          {
+            "name": "a_class_source_request_materializes_its_class_once_and_prepares_it_once",
+            "status": "ok"
+          },
+          {
+            "name": "a_consumer_release_drops_the_prepared_facts_handle_back_to_its_baseline",
+            "status": "ok"
+          },
+          {
+            "name": "a_member_only_read_decodes_no_body_and_builds_no_record",
+            "status": "ok"
+          },
+          {
+            "name": "a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit",
+            "status": "ok"
+          },
+          {
+            "name": "one_requested_body_decodes_one_body_and_runs_no_recovery",
+            "status": "ok"
+          },
+          {
+            "name": "a_cancelled_request_leaves_nothing_retained",
+            "status": "ok"
+          },
+          {
+            "name": "a_recovery_run_without_same_class_callees_reads_once_and_prepares_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "a_request_with_a_missing_dependency_reads_no_class",
+            "status": "ok"
+          },
+          {
+            "name": "a_store_never_makes_the_next_storeless_request_cheaper",
+            "status": "ok"
+          },
+          {
+            "name": "a_view_decodes_every_requested_body_against_one_preparation",
+            "status": "ok"
+          },
+          {
+            "name": "a_view_that_decodes_no_body_prepares_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "an_ambiguous_name_prepares_nothing_and_keeps_every_candidate",
+            "status": "ok"
+          },
+          {
+            "name": "both_binding_paths_prepare_the_read_they_selected_once",
+            "status": "ok"
+          },
+          {
+            "name": "the_four_store_states_do_the_same_work_and_no_request_is_free",
+            "status": "ok"
+          },
+          {
+            "name": "a_binding_of_another_schema_is_a_mismatch",
+            "status": "ok"
+          },
+          {
+            "name": "a_binding_states_the_member_record_the_read_established",
+            "status": "ok"
+          },
+          {
+            "name": "a_changed_rule_set_is_a_mismatch",
+            "status": "ok"
+          },
+          {
+            "name": "a_duplicated_member_record_binds_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "a_run_without_an_artifact_compares_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "a_text_that_is_not_this_artifact_is_a_mismatch_and_never_a_missing_answer",
+            "status": "ok"
+          },
+          {
+            "name": "a_tight_budget_stops_the_rebuild_where_it_really_stops",
+            "status": "ok"
+          },
+          {
+            "name": "an_expectation_without_a_selection_is_refused",
+            "status": "ok"
+          },
+          {
+            "name": "one_class_stored_twice_is_two_artifacts",
+            "status": "ok"
+          },
+          {
+            "name": "the_binding_holds_no_payload_of_the_run",
+            "status": "ok"
+          },
+          {
+            "name": "the_evidence_is_rebuilt_after_every_temporary_of_the_first_request_is_dropped",
+            "status": "ok"
+          },
+          {
+            "name": "the_sequence_keeps_the_artifact_and_bounds_every_residency",
+            "status": "ok"
+          },
+          {
+            "name": "two_definitions_of_one_name_are_two_artifacts",
+            "status": "ok"
+          },
+          {
+            "name": "a_body_reference_outside_this_class_is_an_input_error",
+            "status": "ok"
+          },
+          {
+            "name": "a_constant_pool_candidate_stays_a_candidate",
+            "status": "ok"
+          },
+          {
+            "name": "a_damaged_member_record_isolates_to_its_own_member",
+            "status": "ok"
+          },
+          {
+            "name": "a_friendly_name_binds_the_identity_the_direct_request_uses",
+            "status": "ok"
+          },
+          {
+            "name": "a_layout_manifest_or_nested_library_is_not_a_load_policy",
+            "status": "ok"
+          },
+          {
+            "name": "a_name_that_matches_nothing_is_an_input_error",
+            "status": "ok"
+          },
+          {
+            "name": "a_policy_the_validator_rejects_keeps_the_unavailable_state",
+            "status": "ok"
+          },
+          {
+            "name": "a_statement_bearing_result_leads_with_content",
+            "status": "ok"
+          },
+          {
+            "name": "a_stopped_selection_publishes_zero_or_more_candidates_and_runs_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "a_sub_call_becomes_a_resolved_declaration_only_under_an_environment",
+            "status": "ok"
+          },
+          {
+            "name": "a_tight_override_stops_with_the_terminating_dimension",
+            "status": "ok"
+          },
+          {
+            "name": "a_view_with_one_stopped_body_is_not_complete_and_keeps_the_other_body",
+            "status": "ok"
+          },
+          {
+            "name": "an_ambiguous_body_name_returns_candidates_and_reads_no_body",
+            "status": "ok"
+          },
+          {
+            "name": "an_ambiguous_class_name_returns_candidates_and_runs_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "an_ambiguous_member_name_returns_candidates_and_runs_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "an_explanation_only_result_and_a_stop_are_presented_in_order",
+            "status": "ok"
+          },
+          {
+            "name": "an_explicit_short_stage_list_keeps_its_own_schedule",
+            "status": "ok"
+          },
+          {
+            "name": "an_identity_of_another_snapshot_is_an_input_error",
+            "status": "ok"
+          },
+          {
+            "name": "an_identity_that_does_not_match_its_bytes_is_refused",
+            "status": "ok"
+          },
+          {
+            "name": "an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target",
+            "status": "ok"
+          },
+          {
+            "name": "an_unknown_or_zero_override_is_an_input_error",
+            "status": "ok"
+          },
+          {
+            "name": "duplicate_method_identity_uses_name_ambiguity_before_body_admission",
+            "status": "ok"
+          },
+          {
+            "name": "every_counted_dimension_and_the_clock_can_be_overridden_by_name",
+            "status": "ok"
+          },
+          {
+            "name": "grouping_does_not_complete_an_unresolved_candidate",
+            "status": "ok"
+          },
+          {
+            "name": "one_report_groups_body_class_level_and_resource_hits_by_owner",
+            "status": "ok"
+          },
+          {
+            "name": "opening_a_snapshot_reads_no_class_and_builds_nothing",
+            "status": "ok"
+          },
+          {
+            "name": "repeated_operations_over_one_snapshot_are_identical",
+            "status": "ok"
+          },
+          {
+            "name": "the_class_view_reads_one_header_one_listing_and_only_the_requested_bodies",
+            "status": "ok"
+          },
+          {
+            "name": "the_default_budget_is_bounded_and_overrides_replace_one_dimension",
+            "status": "ok"
+          },
+          {
+            "name": "the_explicit_classpath_order_decides",
+            "status": "ok"
+          },
+          {
+            "name": "the_operation_publishes_its_stages_and_explicit_stages_reproduce_the_schedule",
+            "status": "ok"
+          },
+          {
+            "name": "the_plain_jar_policy_activates_no_nested_library",
+            "status": "ok"
+          },
+          {
+            "name": "the_presentation_does_not_re_read_the_text",
+            "status": "ok"
+          },
+          {
+            "name": "the_single_class_policy_declares_its_own_root",
+            "status": "ok"
+          }
+        ],
+        "stdout_sha256": "b59af1805df05f2ef76254a6a7b84deca1754dcb22cff87a4d6111974316fa7b",
+        "stderr_sha256": "b1464be16dd327b115b6d9c91d5d76db64d942d300fc432cff7b2c1a8d705d5e"
+      },
+      {
+        "index": 6,
+        "label": "task-cli-public-controls",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "jarde-cli",
+          "--test",
+          "task_cli",
+          "--locked",
+          "--message-format",
+          "json"
+        ],
+        "exit_code": 0,
+        "test_summaries": [
+          [
+            "ok",
+            "15",
+            "0",
+            "2"
+          ]
+        ],
+        "named_tests": [
+          {
+            "name": "a_deep_concatenation_chain_answers_in_a_subprocess",
+            "status": "ok"
+          },
+          {
+            "name": "a_deep_concatenation_chain_is_presented_by_a_bulk_worker",
+            "status": "ok"
+          },
+          {
+            "name": "a_recovery_that_used_to_abort_the_process_exits_with_a_report",
+            "status": "ok"
+          },
+          {
+            "name": "a_stopped_body_is_an_incomplete_view_from_the_librarys_own_plane",
+            "status": "ok"
+          },
+          {
+            "name": "an_unfinished_name_selection_exits_four_and_is_the_librarys_own_document",
+            "status": "ok"
+          },
+          {
+            "name": "diagnostics_stay_out_of_the_recovered_body",
+            "status": "ok"
+          },
+          {
+            "name": "duplicate_member_identity_and_name_are_ambiguous_in_class_view_cli",
+            "status": "ok"
+          },
+          {
+            "name": "every_task_document_is_the_librarys_own",
+            "status": "ok"
+          },
+          {
+            "name": "exit_statuses_are_explicit_and_a_stopped_run_is_never_success",
+            "status": "ok"
+          },
+          {
+            "name": "navigation_uses_the_library_listings_and_the_caller_declared_scope",
+            "status": "ok"
+          },
+          {
+            "name": "text_and_json_are_one_report",
+            "status": "ok"
+          },
+          {
+            "name": "the_class_view_charges_one_body_per_requested_body",
+            "status": "ok"
+          },
+          {
+            "name": "the_deep_chain_answers_in_the_optimized_build",
+            "status": "ignored"
+          },
+          {
+            "name": "the_deep_chain_reaches_a_bulk_worker_in_the_optimized_build",
+            "status": "ignored"
+          },
+          {
+            "name": "the_legacy_operations_remain_their_own_surface",
+            "status": "ok"
+          },
+          {
+            "name": "the_output_file_carries_exactly_what_standard_output_would",
+            "status": "ok"
+          },
+          {
+            "name": "the_task_chain_runs_over_the_identities_the_listings_printed",
+            "status": "ok"
+          }
+        ],
+        "stdout_sha256": "45302c0bce32054c33c1e213b8f33f448110547e46f8483e8b3d296c99bf5ed3",
+        "stderr_sha256": "0d4f6d3db86dcfeee37eaecad0fa69ca487103df885e4e5bdb4c92c33521aa47"
+      },
+      {
+        "index": 7,
+        "label": "build-cli",
+        "argv": [
+          "cargo",
+          "build",
+          "-p",
+          "jarde-cli",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_summaries": null,
+        "named_tests": null,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "33607b8f1e656adcf40b015e6c9e035611f1be371e9bc2bbeba1018f23ab95b5"
+      },
+      {
+        "index": 8,
+        "label": "finally-exact-cargo-clean",
+        "argv": [
+          "cargo",
+          "clean"
+        ],
+        "exit_code": 0,
+        "test_summaries": null,
+        "named_tests": null,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "b3cbb9a84829472e9ba9eb557498e05b267d9f75dbf1f9c9018c864590dc2503"
+      }
+    ],
+    "raw_streams": [
+      {
+        "command_index": 1,
+        "command_label": "fmt-check",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/1.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command_index": 1,
+        "command_label": "fmt-check",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command_index": 2,
+        "command_label": "ci-exact-clippy",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/2.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command_index": 2,
+        "command_label": "ci-exact-clippy",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/2.stderr.raw",
+        "bytes": 3960,
+        "sha256": "3b5d9d92fc0d6c55f049cac96e0673441642d1e66ad705ef44a887a18d6261c4"
+      },
+      {
+        "command_index": 3,
+        "command_label": "openspec-ci-strict",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/3.stdout.raw",
+        "bytes": 16941,
+        "sha256": "2730d5e47a442ed4e3a76a4166f9c9ed4a54e40a84835582d10538c6cf1b5eed"
+      },
+      {
+        "command_index": 3,
+        "command_label": "openspec-ci-strict",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/3.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command_index": 4,
+        "command_label": "openspec-local-strict",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/4.stdout.raw",
+        "bytes": 16941,
+        "sha256": "2730d5e47a442ed4e3a76a4166f9c9ed4a54e40a84835582d10538c6cf1b5eed"
+      },
+      {
+        "command_index": 4,
+        "command_label": "openspec-local-strict",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/4.stderr.raw",
+        "bytes": 2201,
+        "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+      },
+      {
+        "command_index": 5,
+        "command_label": "public-selection-demand-and-binding",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/5.stdout.raw",
+        "bytes": 80650,
+        "sha256": "b59af1805df05f2ef76254a6a7b84deca1754dcb22cff87a4d6111974316fa7b"
+      },
+      {
+        "command_index": 5,
+        "command_label": "public-selection-demand-and-binding",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/5.stderr.raw",
+        "bytes": 3406,
+        "sha256": "b1464be16dd327b115b6d9c91d5d76db64d942d300fc432cff7b2c1a8d705d5e"
+      },
+      {
+        "command_index": 6,
+        "command_label": "task-cli-public-controls",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/6.stdout.raw",
+        "bytes": 58807,
+        "sha256": "45302c0bce32054c33c1e213b8f33f448110547e46f8483e8b3d296c99bf5ed3"
+      },
+      {
+        "command_index": 6,
+        "command_label": "task-cli-public-controls",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/6.stderr.raw",
+        "bytes": 1512,
+        "sha256": "0d4f6d3db86dcfeee37eaecad0fa69ca487103df885e4e5bdb4c92c33521aa47"
+      },
+      {
+        "command_index": 7,
+        "command_label": "build-cli",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/7.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command_index": 7,
+        "command_label": "build-cli",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/7.stderr.raw",
+        "bytes": 73,
+        "sha256": "33607b8f1e656adcf40b015e6c9e035611f1be371e9bc2bbeba1018f23ab95b5"
+      },
+      {
+        "command_index": 8,
+        "command_label": "finally-exact-cargo-clean",
+        "stream": "stdout",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/8.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command_index": 8,
+        "command_label": "finally-exact-cargo-clean",
+        "stream": "stderr",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/class-view-focused-root-v1/8.stderr.raw",
+        "bytes": 53,
+        "sha256": "b3cbb9a84829472e9ba9eb557498e05b267d9f75dbf1f9c9018c864590dc2503"
+      }
+    ],
+    "strict_validation": "Both `openspec validate --all --strict --no-interactive` implementations exited 0 and each raw stdout reports 366 passed / 0 failed. Their stdout hashes are equal; one local implementation emits expected informational stderr.",
+    "format_clippy_build_clean": "fmt-check, CI-exact clippy, CLI build, and final exact `cargo clean` each exited 0. Receipt says target_absent=true afterward."
+  },
+  "old_source_reproduction": {
+    "library_v1": "Valid negative reproduction: unchanged D3 facade; named test failed at the intended duplicate identity operation with “expected candidates; the operation executed against a silently chosen target.” This is the product behavior the fix addresses.",
+    "cli_v1": "Exclude as product evidence: it failed earlier because the test read members[\"usage\"] while JSON had no such top-level field; it never attempted the target selection.",
+    "cli_v2": "Valid negative reproduction: test field paths now read execution.usage; unchanged D3 CLI old-source run reached `listed duplicate identity must remain ambiguous`, where product exited 0 but expected ambiguous exit 3. Receipt is expected_command_outcomes_observed_pending_independent_acceptance, one named test FAILED, then exact cargo clean succeeded. This is direct CLI-level old-production evidence."
+  },
+  "product_ci_and_scope": {
+    "focused_local_validation": "accepted as scoped above",
+    "product_commit_ci": "not started / pending; do not close implementation task 2.2 or claim release acceptance",
+    "planning": "OpenSpec strict passed in two implementations; lifecycle/archive remains independent if required",
+    "no_overclaim": "Root local receipt is not GitHub CI, product commit CI, or broader workspace acceptance beyond listed commands."
+  },
+  "reviewer_note": "Current test sources and all command receipts were inspected read-only. The old CLI v1 field-path failure is explicitly disqualified; CLI v2 supplies the valid old-source negative. Local focused 76/0/2 plus 4952 checks is accepted for this scope, with product own CI still outstanding."
+}

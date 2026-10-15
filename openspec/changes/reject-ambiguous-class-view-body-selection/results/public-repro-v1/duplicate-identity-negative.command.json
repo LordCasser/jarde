@@ -1,0 +1,73 @@
+{
+  "index": "duplicate-identity-negative",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "class_view_ambiguous_identity",
+    "--locked",
+    "duplicate_listed_identity_is_rejected_before_no_code_admission",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "started_at": "2026-10-15T01:49:39.863999+00:00",
+  "free_bytes_before": 838837440512,
+  "target_bytes_before": 362464385,
+  "guard_stop": null,
+  "guard_version_sha256": "0aa754fe9953d493c735138df99dd7c65f98d11f2f854e5955fc2d1899cca9d1",
+  "guard_policy": {
+    "cadence_seconds": 1,
+    "min_free_bytes": 5368709120,
+    "max_target_bytes": 1073741824
+  },
+  "effective_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "RUSTUP_TOOLCHAIN": "stable",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never"
+  },
+  "unset_environment": [
+    "CARGO_TARGET_DIR",
+    "RUST_MIN_STACK",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+    "CLASSPATH"
+  ],
+  "exit_code": 101,
+  "duration_seconds": 1.0055408499993064,
+  "finished_at": "2026-10-15T01:49:40.869539+00:00",
+  "peak_target_bytes": 362464385,
+  "free_bytes_after": 838837440512,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/duplicate-identity-negative.stdout.raw",
+      "bytes": 284,
+      "sha256": "fb9a22ed0bdbaad2ef21ee4c46c4824ccde94fb7dd52cce685a7bc8c13e289f1"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/duplicate-identity-negative.stderr.raw",
+      "bytes": 5080,
+      "sha256": "299b12c77bacf4c5391ed4a70eefa6f43a65f9eecec1745e6133a7b33b56ff34"
+    }
+  },
+  "label": "duplicate-identity-negative",
+  "source_snapshots": {
+    "source_hashes_before": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/duplicate-identity-negative.source_hashes_before.json.gz",
+      "bytes": 178011,
+      "sha256": "0da8015d2eb1e2645039397de0ad8251ceb24e925a98dfbe3e6ddf8a21604efc"
+    },
+    "source_hashes_after": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/duplicate-identity-negative.source_hashes_after.json.gz",
+      "bytes": 178010,
+      "sha256": "fbd84ff20be0da7cd9fbc6c148a2a8e53813cbfad12e4e00ece4cbe0cc245722"
+    }
+  }
+}

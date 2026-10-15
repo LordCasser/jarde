@@ -1,0 +1,159 @@
+{
+  "schema": "method-selection-boundary-review-v1",
+  "reviewed_at_utc": "2026-10-15T01:40:08.010717+00:00",
+  "base_commit": "644882d6db69f7d5b0bc1165c035a12b4f7cd8aa",
+  "mode": "bounded static read only; no Cargo/JDK/CLI execution; no code/spec edits",
+  "formal_patch": {
+    "sha256": "6023dde15262d16dcccc13070e18bab3342ce13227d838157a750dcc3d63fa20",
+    "paths": [
+      "crates/jarde-jvm/src/callee.rs",
+      "crates/jarde-jvm/src/engine.rs",
+      "tests/p3_prepared_input.rs"
+    ]
+  },
+  "reviewed_source_pins": [
+    {
+      "path": "src/facade.rs",
+      "reviewed_commit_sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307",
+      "live_same_as_reviewed_commit": true
+    },
+    {
+      "path": "src/class_source.rs",
+      "reviewed_commit_sha256": "ad8e176f5ebfef4a68d563f7d22699449982d4fa0c0ad9c09a5ecacd75a4780f",
+      "live_same_as_reviewed_commit": true
+    },
+    {
+      "path": "crates/jarde-reader/src/model.rs",
+      "reviewed_commit_sha256": "af42d1e8fe142f996ac2eb845831f1324455710b81db49885b67cc11d9559d02",
+      "live_same_as_reviewed_commit": true
+    },
+    {
+      "path": "crates/jarde-reader/src/prepared.rs",
+      "reviewed_commit_sha256": "371612f197f8f749f2d1bd8beb5e35e15e7ff79009825e675c3f1775f6eea346",
+      "live_same_as_reviewed_commit": true
+    },
+    {
+      "path": "crates/jarde-jvm/src/engine.rs",
+      "reviewed_commit_sha256": "a1f7f9a8e0fd8d9faf9a8474da576bf5a95c8a32636f07e4d69f86ee37f9f6b2",
+      "live_same_as_reviewed_commit": true
+    },
+    {
+      "path": "crates/jarde-jvm/src/callee.rs",
+      "reviewed_commit_sha256": "32d8d8f3c76d790663c8098ae9773993da1cd3fbc05a4bf017d5b279f3d070d5",
+      "live_same_as_reviewed_commit": true
+    }
+  ],
+  "findings": [
+    {
+      "priority": "P2",
+      "confidence": "proven static user-reachable call path; not dynamically executed in this review",
+      "title": "class_view identity body request still elects first duplicate before no-Code admission",
+      "primary_location": {
+        "path": "src/facade.rs",
+        "line": 44389
+      },
+      "public_entry": "Engine::class_view(snapshot, scope, ClassViewRequest { class: ClassRef::Definition { definition }, bodies: vec![BodyRef::Method { method }] }, budget)",
+      "physical_input": "One complete class member table with two exact raw m/()V declarations: first abstract or native with no Code, second ordinary Code member. Reuse the existing method-v1 selection_class duplicate matrix; no new fixture or toolchain execution is needed to state the case.",
+      "identity_qualification": "PhysicalMethodId contains owner/name/descriptor only (model.rs:337-341). MethodItem has a separate index (facade.rs:40410-40416), but BodyRef::Method carries no index. Both duplicate MethodItems therefore hand back equal identities; passing the Code member identity cannot identify the second ordinal.",
+      "actual_call_chain": [
+        {
+          "path": "src/facade.rs",
+          "line": 878,
+          "role": "Public class_view binds one physical class, lists every method record, then resolves requested body refs."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 969,
+          "role": "Calls resolve_body_ref for every requested body before preparation."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 44282,
+          "role": "BodyRef::Method correctly verifies owner identity, then only name/descriptor is used below; owner validation does not establish a unique member ordinal."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 44293,
+          "role": "Calls declared_method and accepts its first match as BodyResolution::Method."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 44389,
+          "role": "enumerate().find(raw name + raw descriptor) elects ordinal 0 without checking for another exact match."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 1005,
+          "role": "requested_bodies is false for that first no-Code header, so no PreparedClass need be constructed for this one-body request."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 1051,
+          "role": "The chosen member is passed directly to local body_result."
+        },
+        {
+          "path": "src/facade.rs",
+          "line": 44448,
+          "role": "body_result returns ClassViewBody::NotDeclared from the first header before any shared decoder, charge or uniqueness guard."
+        }
+      ],
+      "observable_result": "With sufficient budget and a complete member table, the request is Performed with a NotDeclared/Abstract (or Native) body for an identity that matches two physical member records. The same raw name+descriptor BodyRef::Name takes the ambiguity candidate path instead. Reordering to Code first enters preparation/decoder and cannot use this early no-Code success.",
+      "expected_boundary": "A body request with duplicate exact matches must not claim a unique no-Code declaration merely because the first header has no Code. Keep raw record listing separate from selection; preserve foreign-owner validation first.",
+      "covered_by_formal_patch_6023": false,
+      "why_uncovered": "This call chain uses facade-local resolve_body_ref/declared_method/body_result and, in the failing no-Code case, calls neither jarde-jvm engine/callee nor PreparedClass::method_code. The formal three-file patch changes only engine.rs/callee.rs/tests/p3_prepared_input.rs.",
+      "regression_suggestion": "Add a class_view public-API duplicate test with BodyRef::Method constructed from either duplicate listing identity, covering [no-Code,Code], [Code,no-Code] and both-no-Code. Assert duplicate identity requests do not return a unique NotDeclared result, while the existing foreign-owner error remains first. Compare BodyRef::Name duplicate behavior. No broad every-find rewrite is justified."
+    }
+  ],
+  "checked_boundaries_without_additional_proven_findings": [
+    {
+      "boundary": "Normal method analysis/recovery plus direct/prepared same-class callee",
+      "conclusion": "The known early no-Code driver/callee defects are precisely the existing formal patch scope; not reported again as a new issue."
+    },
+    {
+      "boundary": "class_view BodyRef::Name",
+      "locations": [
+        "src/facade.rs:44309",
+        "src/facade.rs:44337",
+        "src/facade.rs:976"
+      ],
+      "conclusion": "Collects all matching records and returns OperationOutcome::Ambiguous before body preparation/decoding for duplicate exact names/descriptors."
+    },
+    {
+      "boundary": "class_source no-Code declaration enumeration",
+      "locations": [
+        "src/facade.rs:7347",
+        "src/facade.rs:7512",
+        "src/class_source.rs:11955"
+      ],
+      "conclusion": "Enumerates each concrete MethodItem with its own index and passes that record to ClassSourceMethod::no_body; this is per-record presentation, not first-match election of one requested body. No independent selection error proved here."
+    },
+    {
+      "boundary": "class_source Code-body run",
+      "locations": [
+        "src/facade.rs:20648",
+        "src/facade.rs:20659"
+      ],
+      "conclusion": "Calls analyze_prepared_method_ir; the existing engine prepared uniqueness patch covers the original duplicate-before-body admission for this path."
+    },
+    {
+      "boundary": "PreparedClass::method_code ordinal entry",
+      "locations": [
+        "crates/jarde-reader/src/prepared.rs:582",
+        "crates/jarde-reader/src/prepared.rs:613"
+      ],
+      "conclusion": "Already rejects duplicate raw signatures before Code classification, even when an ordinal is supplied; the discovered facade no-Code branch bypasses that existing guard."
+    },
+    {
+      "boundary": "recovery artifact member ordinal sidecar",
+      "locations": [
+        "src/facade.rs:41967"
+      ],
+      "conclusion": "member_ordinal accepts exactly one locator result and otherwise returns None, so this sidecar does not elect a duplicate ordinal."
+    }
+  ],
+  "limits": [
+    "Bounded review of the listed facade/Java entry and shared decoder boundaries, not an exhaustive project audit.",
+    "No additional independent Java class-source no-Code selection defect proved in the reviewed path.",
+    "No tests executed, no new spec/change created, no release gate added, no messages sent to other chats."
+  ]
+}

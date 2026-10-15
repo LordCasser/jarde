@@ -1,0 +1,19 @@
+--- wide/main
++++ class-headers-14/main
+@@ -2,13 +2,7 @@
+ // @declaration a static method of `H1`, member flags 0x0009
+ // recovered from bytecode; presentation is not claimed to compile
+ {
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$TwoLevel(), "two"));
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$Multi(), "multi"));
+-    java.lang.System.out.println((java.lang.String) viaOther((H1$Other) new H1$Multi()));
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$1(), "anon"));
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$ViaSub(), "sub"));
+-    java.lang.System.out.println((java.lang.String) lead("lead", (H1$Greet) new H1$Multi()));
+-    java.lang.System.out.println((java.lang.String) new H1$Caller().call((H1$Greet) new H1$TwoLevel()));
+-    java.lang.System.out.println((java.lang.String) viaObject((java.lang.Object) new H1$Fin()));
+-    return;
++    // @bytecode 85 70 82 0 3 6 7 10 12 15 18 21 24 25 28 30 33 36 39 42 43 46 49 52 55 58 59 62 64 67 73 76 77 80 88 91 93 96 97 100 103 106 109 112 113 116 119 120 123 126 129 132 135 136 139 142 145
++    // the parameter 0 of the invocation at BCI 82 is declared `H1$Greet` presents `H1$ViaSub` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
++    jarde_refused_body();
+ }

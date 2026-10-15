@@ -1,0 +1,117 @@
+{
+  "schema": "snapshot-proof-cli-extra-v1",
+  "at": "2026-10-15T02:53:35.805653+00:00",
+  "base_execution": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/execution.json",
+  "base_execution_sha256": "2dc883e7eac1eb8ed6ac0f0566f7fdbe60098acadadf56d5b70e76a03919d608",
+  "commands": [
+    {
+      "label": "class-headers-2",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=2"
+      ],
+      "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1",
+      "exit_code": 4,
+      "duration_seconds": 0.020677165999586578,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-2.stdout.raw",
+          "bytes": 38055,
+          "sha256": "2d360ecec44244589b397c90cf85ec459653c0d543df51c16d574e845799cfe9"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "class-headers-8",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=8"
+      ],
+      "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1",
+      "exit_code": 0,
+      "duration_seconds": 0.018141488999390276,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-8.stdout.raw",
+          "bytes": 48765,
+          "sha256": "38e16a1aba7016a55bb84dfbd567f18a936340ad78913bc358ce6bcfcd8aa4f7"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "class-headers-14",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=14"
+      ],
+      "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1",
+      "exit_code": 0,
+      "duration_seconds": 0.017489066998678027,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-14.stdout.raw",
+          "bytes": 44726,
+          "sha256": "24d97a1cdfa75f98669872ae8506ba151320aa8eb28f9412b3fc7b155ba94309"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "inputs_unchanged_after": true
+}

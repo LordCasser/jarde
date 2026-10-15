@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+    "class-source",
+    "--input",
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+    "--class",
+    "H1",
+    "--evidence",
+    "essential",
+    "--format",
+    "json",
+    "--budget",
+    "elapsed_millis=10000",
+    "--budget",
+    "output_bytes=1048576",
+    "--budget",
+    "class_headers=15"
+  ],
+  "inferior_argv": null,
+  "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15",
+  "exit_code": 0,
+  "seconds": 0.02456752400030382,
+  "streams": {
+    "stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/stdout.raw",
+      "bytes": 43726,
+      "sha256": "2bb541e8ac8df33e97aed7a743fea02675cb1b9db48bd8384bc1a24b38982ed3"
+    },
+    "stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "debugger_enabled": false
+}

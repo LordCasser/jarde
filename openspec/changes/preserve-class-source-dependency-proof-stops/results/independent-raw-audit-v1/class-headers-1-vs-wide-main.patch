@@ -1,0 +1,20 @@
+--- wide/main
++++ class-headers-1/main
+@@ -1,14 +1,3 @@
+-// @method main([Ljava/lang/String;)V
+-// @declaration a static method of `H1`, member flags 0x0009
+-// recovered from bytecode; presentation is not claimed to compile
+-{
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$TwoLevel(), "two"));
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$Multi(), "multi"));
+-    java.lang.System.out.println((java.lang.String) viaOther((H1$Other) new H1$Multi()));
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$1(), "anon"));
+-    java.lang.System.out.println((java.lang.String) via((H1$Greet) new H1$ViaSub(), "sub"));
+-    java.lang.System.out.println((java.lang.String) lead("lead", (H1$Greet) new H1$Multi()));
+-    java.lang.System.out.println((java.lang.String) new H1$Caller().call((H1$Greet) new H1$TwoLevel()));
+-    java.lang.System.out.println((java.lang.String) viaObject((java.lang.Object) new H1$Fin()));
+-    return;
+-}
++    public static void main(java.lang.String[] arg0) {
++        // jarde: not recovered: the run for `main([Ljava/lang/String;)V` was refused (budget_exceeded_class_headers)
++    }

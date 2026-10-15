@@ -1,0 +1,73 @@
+{
+  "index": "unique-and-foreign-controls",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "class_view_ambiguous_identity",
+    "--locked",
+    "--",
+    "--skip",
+    "duplicate_listed_identity_is_rejected_before_no_code_admission",
+    "--nocapture"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "started_at": "2026-10-15T01:48:43.993250+00:00",
+  "free_bytes_before": 839068233728,
+  "target_bytes_before": 0,
+  "guard_stop": null,
+  "guard_version_sha256": "0aa754fe9953d493c735138df99dd7c65f98d11f2f854e5955fc2d1899cca9d1",
+  "guard_policy": {
+    "cadence_seconds": 1,
+    "min_free_bytes": 5368709120,
+    "max_target_bytes": 1073741824
+  },
+  "effective_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "RUSTUP_TOOLCHAIN": "stable",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never"
+  },
+  "unset_environment": [
+    "CARGO_TARGET_DIR",
+    "RUST_MIN_STACK",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+    "CLASSPATH"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 55.33679507099987,
+  "finished_at": "2026-10-15T01:49:39.330044+00:00",
+  "peak_target_bytes": 362464385,
+  "free_bytes_after": 838837440512,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/unique-and-foreign-controls.stdout.raw",
+      "bytes": 257,
+      "sha256": "d20769e93f8b2800efdd196ffcb5e1f39f1490277cff620b1e1c8a98e66f07b0"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/unique-and-foreign-controls.stderr.raw",
+      "bytes": 2536,
+      "sha256": "25d2edf43d62230a01973dd8382782de283420ad845bb8bcf327c747d3227ca5"
+    }
+  },
+  "label": "unique-and-foreign-controls",
+  "source_snapshots": {
+    "source_hashes_before": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/unique-and-foreign-controls.source_hashes_before.json.gz",
+      "bytes": 178011,
+      "sha256": "732c611bec81a9d783ab866f44ad6908b4d90d9cb651d6de578a7b624086ffb0"
+    },
+    "source_hashes_after": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/unique-and-foreign-controls.source_hashes_after.json.gz",
+      "bytes": 178010,
+      "sha256": "2e586af58f712f7c66e09fbc2919b82a3c858926153f35a23a76ac19b2751d12"
+    }
+  }
+}

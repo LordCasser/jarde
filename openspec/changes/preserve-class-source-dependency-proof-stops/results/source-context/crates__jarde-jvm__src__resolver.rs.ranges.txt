@@ -1,0 +1,231 @@
+=== crates/jarde-jvm/src/resolver.rs:330-365 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+330:     pub target: SymbolRef,
+331:     pub use_kind: ReferenceUse,
+332:     pub caller: CallerContext,
+333:     pub analysis: ResolutionAnalysis,
+334:     /// The semantic decision, or `None` when the run reached none: a capability that never ran
+335:     /// (`analysis = NotPerformed`) and a run that stopped before deciding (`analysis =
+336:     /// Performed` with `execution` `Cancelled`/`Failed`) both leave this `None` (invariant 3).
+337:     pub state: Option<ResolutionState>,
+338:     pub resolved: Option<ResolvedMemberRef>,
+339:     /// Only definitions that are indistinguishable at one selection position.
+340:     pub candidates: Vec<ResolvedMemberRef>,
+341:     pub dispatch: Option<DispatchReport>,
+342:     /// Every class a closure this request ran needed and the order did not resolve, in the order
+343:     /// the searches found them, each stated once: the declaration search's own hierarchy and,
+344:     /// when the request asked for a range, the range's classes and their hierarchies.
+345:     ///
+346:     /// The plane is what makes the two facts a caller must not confuse separable. A name read
+347:     /// through this list may well exist outside the snapshot the request was given, so the report
+348:     /// never publishes [`ResolutionState::Missing`] for a member whose hierarchy this list leaves
+349:     /// incomplete — and a `Resolved` declaration found in a branch the order did read stays a
+350:     /// resolved declaration, with the unread branches that sit above it published beside it. Like
+351:     /// `reads`, this is evidence of the search and not a result entry: it is published uncharged.
+352:     pub unresolved_dependencies: Vec<UnresolvedDependency>,
+353:     /// Every class header this request read, in read order, at most once per
+354:     /// `(definition, loader)`; empty when the request performed nothing.
+355:     pub reads: Vec<HeaderRead>,
+356:     pub coverage: Coverage,
+357:     pub execution: ExecutionReport,
+358:     /// Includes one diagnostic per environment problem, under the same code.
+359:     pub diagnostics: Vec<Diagnostic>,
+360: }
+361: 
+362: /// Declaration-reference scan request; implemented by the declaration-query slice.
+363: #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+364: #[serde(deny_unknown_fields)]
+365: pub struct DeclarationRefQuery {
+
+=== crates/jarde-jvm/src/resolver.rs:518-570 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+518: pub(crate) fn resolution_report(
+519:     content: &[ArtifactSnapshot],
+520:     request: &ResolutionRequest,
+521:     budget: &mut Budget,
+522: ) -> ResolutionReport {
+523:     let (problems, environment_identity) =
+524:         validate_environment_with_caller(content, &request.environment, &request.caller);
+525:     let mut diagnostics = environment_diagnostics(&problems);
+526:     let Some(performable) = performable_target(&request.target, request.use_kind, &problems) else {
+527:         diagnostics.push(unavailable_diagnostic(
+528:             RESOLUTION_NOT_IMPLEMENTED,
+529:             "demand-bound symbol resolution",
+530:         ));
+531:         // A dispatch report would claim a performed candidate enumeration, and this request
+532:         // performed nothing at all, so the requested range is named and no dispatch is claimed.
+533:         if request.dispatch.is_some() {
+534:             diagnostics.push(dispatch_no_declaration_diagnostic());
+535:         }
+536:         return ResolutionReport {
+537:             environment_identity,
+538:             environment_problems: problems,
+539:             target: request.target.clone(),
+540:             use_kind: request.use_kind,
+541:             caller: request.caller.clone(),
+542:             analysis: ResolutionAnalysis::NotPerformed,
+543:             state: None,
+544:             resolved: None,
+545:             candidates: Vec::new(),
+546:             dispatch: None,
+547:             // Nothing was demanded, so nothing was read and no dependency was searched for.
+548:             unresolved_dependencies: Vec::new(),
+549:             reads: Vec::new(),
+550:             coverage: Coverage::not_requested(),
+551:             execution: ExecutionReport::Failed {
+552:                 reason: TerminationReason::Unsupported {
+553:                     code: RESOLUTION_NOT_IMPLEMENTED.to_string(),
+554:                 },
+555:                 usage: budget.usage(),
+556:             },
+557:             diagnostics,
+558:         };
+559:     };
+560: 
+561:     let mut closure = HeaderClosure::new(content, &request.environment);
+562:     // A refused charge during the publication of a resolution result: the entries already
+563:     // published stay, and the stop is the execution the report has to name. It is recorded at
+564:     // the phase that refused (2.3's rule diagnostics or the closure's own diagnostics), so the
+565:     // earliest stop keeps governing `execution`.
+566:     let mut rule_stop: Option<ExecutionReport> = None;
+567:     // The classes this request's closures needed and could not read, as the report publishes
+568:     // them: the declaration search's own hierarchy first, then the dispatch range's classes.
+569:     let mut unresolved: Vec<UnresolvedDependency> = Vec::new();
+570:     let (analysis, state, resolved, candidates, concluded, covered, execution) = match performable {
+
+=== crates/jarde-jvm/src/resolver.rs:760-815 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+760:             Some(stop) => {
+761:                 push_stop_diagnostic(&mut diagnostics, stop.diagnostic);
+762:                 closure_stop = Some(stop.execution);
+763:                 break;
+764:             }
+765:         }
+766:     }
+767:     // Coverage is published after every search this request ran, so a dispatch range's lookups
+768:     // are part of the same plane's sum. An undecided or stopped range is a prefix of the range
+769:     // the request asked for, which is partial however the declaration itself was decided — and
+770:     // so is a range whose publication stopped: the answer is a prefix of what the plane found.
+771:     //
+772:     // `concluded` is the search's own statement, and only a stop that ended a *search* revokes
+773:     // it (see [`DispatchStop::ended_a_search`]): the searches that ran before a refused
+774:     // `ResultItems` charge reached their own conclusions, so their remaining declared positions
+775:     // are not unsearched range, and a skipped range would claim a search this request never
+776:     // left unfinished.
+777:     let extent = closure.searched_extent();
+778:     let coverage = search_coverage(
+779:         extent.examined,
+780:         extent.positions,
+781:         concluded && !dispatch_search_stopped,
+782:         covered && !dispatch_incomplete && rule_stop.is_none() && closure_stop.is_none(),
+783:     );
+784:     ResolutionReport {
+785:         environment_identity,
+786:         environment_problems: problems,
+787:         target: request.target.clone(),
+788:         use_kind: request.use_kind,
+789:         caller: request.caller.clone(),
+790:         analysis,
+791:         state,
+792:         resolved,
+793:         candidates,
+794:         dispatch,
+795:         unresolved_dependencies: unresolved,
+796:         reads: published_reads(&closure),
+797:         coverage,
+798:         // The usage snapshot of the whole request: the dispatch range's own reads and published
+799:         // candidates happened after the resolution built its execution, so the report publishes
+800:         // the final usage under whatever execution the request ended with. The earliest stop
+801:         // governs: a refused rule diagnostic, then a plane that stopped searching, then the
+802:         // closure diagnostics a refused charge kept out of the report.
+803:         execution: with_usage(
+804:             rule_stop
+805:                 .or(dispatch_execution)
+806:                 .or(closure_stop)
+807:                 .unwrap_or(execution),
+808:             budget.usage(),
+809:         ),
+810:         diagnostics,
+811:     }
+812: }
+813: 
+814: /// Publishes one dispatch outcome into the report's own planes.
+815: ///
+
+=== crates/jarde-jvm/src/resolver.rs:1610-1687 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+1610: /// One stop diagnostic, located at the candidate it stopped on.
+1611: fn at_candidate(mut diagnostic: Diagnostic, item: &XrefItem) -> Diagnostic {
+1612:     diagnostic.provenance = Some(item.source.clone());
+1613:     diagnostic
+1614: }
+1615: 
+1616: /// The stop a refused publication leaves behind.
+1617: struct PublicationStop {
+1618:     /// The terminal execution of the refused charge, reported as `Partial`/`Cancelled`/`Failed`.
+1619:     execution: ExecutionReport,
+1620:     /// The diagnostic that explains it; control metadata, published uncharged.
+1621:     diagnostic: Diagnostic,
+1622: }
+1623: 
+1624: /// Charges one entry of this report.
+1625: ///
+1626: /// One item, one resolution diagnostic and one closure diagnostic each cost one `ResultItems`,
+1627: /// and the charge happens before the entry is published — the same discipline the P1 scan
+1628: /// applies to the items and domain diagnostics it returns. `None` means the charge was
+1629: /// accepted; `Some(stop)` means the budget refused it, which ends the assembly.
+1630: fn charge_entry(budget: &mut Budget) -> Option<PublicationStop> {
+1631:     match budget.charge(CountedBudgetDimension::ResultItems, 1) {
+1632:         Ok(()) => None,
+1633:         Err(error) => {
+1634:             let (execution, diagnostic) = terminal(&error, budget.usage());
+1635:             Some(PublicationStop {
+1636:                 execution,
+1637:                 diagnostic,
+1638:             })
+1639:         }
+1640:     }
+1641: }
+1642: 
+1643: /// Charges one resolution diagnostic and publishes it.
+1644: ///
+1645: /// Every diagnostic this query produces — the rule diagnostics 2.3 returned for a declaration,
+1646: /// the undecided-candidate diagnostics, and the closure's own branch warnings — enters the
+1647: /// report the way a P1 item or domain diagnostic does: it costs one `ResultItems`, charged
+1648: /// before it is published. The environment plane and the diagnostics that explain a stop are
+1649: /// not charged here: they describe the request or the interruption rather than a result, and a
+1650: /// stop that could not pay for its own explanation would hide why the run ended.
+1651: ///
+1652: /// `None` means the diagnostic was published. `Some(stop)` means the charge was refused: the
+1653: /// refused diagnostic is not published, and the caller publishes the stop uncharged where it
+1654: /// decides (at the candidate, or after the last one).
+1655: fn charge_and_publish(
+1656:     diagnostic: Diagnostic,
+1657:     diagnostics: &mut Vec<Diagnostic>,
+1658:     budget: &mut Budget,
+1659: ) -> Option<PublicationStop> {
+1660:     match charge_entry(budget) {
+1661:         None => {
+1662:             diagnostics.push(diagnostic);
+1663:             None
+1664:         }
+1665:         Some(stop) => Some(stop),
+1666:     }
+1667: }
+1668: 
+1669: /// Queues one stop diagnostic, keeping the report free of an exact repeat.
+1670: ///
+1671: /// A resolution stop and the publication of the same candidate can hit the same dimension with
+1672: /// the same counts at the same use site; the second copy adds no fact, and the report already
+1673: /// says that the run stopped, why, and where. Two *different* stops — another dimension, or
+1674: /// another candidate — are both kept.
+1675: fn push_stop_diagnostic(diagnostics: &mut Vec<Diagnostic>, diagnostic: Diagnostic) {
+1676:     if diagnostics.last() != Some(&diagnostic) {
+1677:         diagnostics.push(diagnostic);
+1678:     }
+1679: }
+1680: 
+1681: /// Diagnostic code of one candidate a declaration-reference query could not decide.
+1682: ///
+1683: /// The candidate is not a reference to the declaration and it is not an excluded candidate
+1684: /// either. The report counts unresolved candidates but publishes no item for them, so this
+1685: /// diagnostic is where their physical use site stays locatable: its provenance is the
+1686: /// candidate's own `source`.
+1687: const CANDIDATE_UNRESOLVED: &str = "resolution_candidate_unresolved";
+

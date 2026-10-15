@@ -1,0 +1,7 @@
+    Finished `test` profile [unoptimized] target(s) in 0.03s
+     Running tests/interface_proof_stop_repro.rs (target/debug/deps/interface_proof_stop_repro-e45671e3bfb2a5d2)
+
+thread 'depth_zero_public_interface_proof_preserves_original_stop' (564581) panicked at tests/interface_proof_stop_repro.rs:115:5:
+a refused interface-proof dependency-depth permit must remain visible in the public presentation: RecoveryPresentation { content: ExplanationOnly, quality: Fallback, stop: None, execution: Complete { usage: UsageSnapshot { input_bytes: 0, archive_entries: 13, entry_bytes: 1012, read_bytes: 1012, class_bytes: 1796, attribute_bytes: 579, code_bytes: 5, result_items: 31, output_bytes: 359, class_headers: 2, method_bodies: 1, ir_items: 69, ir_edges: 3, analysis_steps: 40, normalization_clones: 0, nested_depth: 0, dependency_depth: 0, elapsed_millis: 2 } } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde --test interface_proof_stop_repro`

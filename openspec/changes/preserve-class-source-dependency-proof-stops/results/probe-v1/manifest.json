@@ -1,0 +1,216 @@
+{
+  "schema": "snapshot-proof-public-probe-export-v1",
+  "root": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1",
+  "at": "2026-10-15T03:05:27.224658+00:00",
+  "payload_count": 41,
+  "payload_bytes": 451427,
+  "files": [
+    {
+      "path": "class-headers-1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "class-headers-1.stdout.raw",
+      "bytes": 38046,
+      "sha256": "b23effe3e1987348f706aabb21ea43f5f902cd8f246c00043cf9c688d2536e6b"
+    },
+    {
+      "path": "class-headers-14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "class-headers-14.stdout.raw",
+      "bytes": 44726,
+      "sha256": "24d97a1cdfa75f98669872ae8506ba151320aa8eb28f9412b3fc7b155ba94309"
+    },
+    {
+      "path": "class-headers-15/execution.json",
+      "bytes": 1249,
+      "sha256": "33e7904773f5ff9c3c3fff09e5717710a66855589d3a70ad56dadd3fc39028b2"
+    },
+    {
+      "path": "class-headers-15/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "class-headers-15/stdout.raw",
+      "bytes": 43726,
+      "sha256": "2bb541e8ac8df33e97aed7a743fea02675cb1b9db48bd8384bc1a24b38982ed3"
+    },
+    {
+      "path": "class-headers-2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "class-headers-2.stdout.raw",
+      "bytes": 38055,
+      "sha256": "2d360ecec44244589b397c90cf85ec459653c0d543df51c16d574e845799cfe9"
+    },
+    {
+      "path": "class-headers-8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "class-headers-8.stdout.raw",
+      "bytes": 48765,
+      "sha256": "38e16a1aba7016a55bb84dfbd567f18a936340ad78913bc358ce6bcfcd8aa4f7"
+    },
+    {
+      "path": "classification.json",
+      "bytes": 7225,
+      "sha256": "24b3f6ea676a0d97dc851fe880839df1c7f7ce51625b2b9b6ff279c900b22042"
+    },
+    {
+      "path": "execution-extra.json",
+      "bytes": 4411,
+      "sha256": "e4c8b2e046ec87503eaf625aa879d9091fda7e7343cc2c3d9418509a1cca2dfe"
+    },
+    {
+      "path": "execution.json",
+      "bytes": 4116,
+      "sha256": "2dc883e7eac1eb8ed6ac0f0566f7fdbe60098acadadf56d5b70e76a03919d608"
+    },
+    {
+      "path": "gdb-class-headers-15/execution.json",
+      "bytes": 2783,
+      "sha256": "a506601eec7885cc56ff3198a67f133354852baa6e6b4caa3bb6b3b29be161d6"
+    },
+    {
+      "path": "gdb-class-headers-15/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-15/gdb.stdout.raw",
+      "bytes": 2485,
+      "sha256": "704667b0d25fcdc9b24a9c52be785d2acaf55c9641fe2b8895b870748c798cff"
+    },
+    {
+      "path": "gdb-class-headers-15/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-15/inferior.stdout.raw",
+      "bytes": 43722,
+      "sha256": "380bc8e656ed147d830223c151671184ae0b47f109dd17e160bfa110d14304c7"
+    },
+    {
+      "path": "gdb-class-headers-15/trace.gdb",
+      "bytes": 807,
+      "sha256": "a81d5adb67def0ea7e4baf7711701ebc4a31f05b51b7ab2285b5160f6f33a2f3"
+    },
+    {
+      "path": "gdb-class-headers-8/execution.json",
+      "bytes": 2785,
+      "sha256": "4f311666d23b9f81d6b0ba147e503d74869cc133737a0670a8f48eefc74770a8"
+    },
+    {
+      "path": "gdb-class-headers-8/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-8/gdb.stdout.raw",
+      "bytes": 521,
+      "sha256": "675bd726c475183cb09307a6589b6c9074ee37d972777206baee08860b1acdf8"
+    },
+    {
+      "path": "gdb-class-headers-8/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-8/inferior.stdout.raw",
+      "bytes": 460,
+      "sha256": "daf8be123e1a1d1fdd590d85bd006643a88b0f08b56fa7c429960095f1889f86"
+    },
+    {
+      "path": "gdb-class-headers-8/trace.gdb",
+      "bytes": 472,
+      "sha256": "753b52fd0c8f9f7d9d5a0d12582698d195aa54a723505d52faa6e6df45b1308d"
+    },
+    {
+      "path": "gdb-class-headers-8-v2/execution.json",
+      "bytes": 2809,
+      "sha256": "6696c6b71a9c4320765dfde79c3e0738e55e958e08bde0800660274e53fe291d"
+    },
+    {
+      "path": "gdb-class-headers-8-v2/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-8-v2/gdb.stdout.raw",
+      "bytes": 6341,
+      "sha256": "4ab78452841f36a81e31b72743fc9e202509bc20e0b0ec39e179f3b134ca2c1c"
+    },
+    {
+      "path": "gdb-class-headers-8-v2/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-8-v2/inferior.stdout.raw",
+      "bytes": 48765,
+      "sha256": "6e79f6ad24ddf33a279e9cc33bb9eb3486a1443840e73194df35ecf9129ac20e"
+    },
+    {
+      "path": "gdb-class-headers-8-v2/trace.gdb",
+      "bytes": 810,
+      "sha256": "95b6a314378cef8461977eab3d3baf73b934820d0d2725a5e525081b1e389c71"
+    },
+    {
+      "path": "gdb-class-headers-8-v3/execution.json",
+      "bytes": 2754,
+      "sha256": "69d7d6ff1221995c991ddff421242fbe10fb570ff38922a5408bbace559185e3"
+    },
+    {
+      "path": "gdb-class-headers-8-v3/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-8-v3/gdb.stdout.raw",
+      "bytes": 12009,
+      "sha256": "a7a04d7a293682132af2068a045a1f3420760ba085d11ae7fada8c35e6dcf2bc"
+    },
+    {
+      "path": "gdb-class-headers-8-v3/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "gdb-class-headers-8-v3/inferior.stdout.raw",
+      "bytes": 48765,
+      "sha256": "7599414e237533045ac06461407ff36d4564478cec1fc1461d56bd28eefbe8b5"
+    },
+    {
+      "path": "gdb-class-headers-8-v3/trace.gdb",
+      "bytes": 810,
+      "sha256": "bcf086a92486bacf3dffb5cd087784f20839ab0705635729d2d027c9b10cf0ae"
+    },
+    {
+      "path": "gdb-version.stdout.raw",
+      "bytes": 284,
+      "sha256": "47df9689e865d5206226465c14442c79081a0dc2dd52556fa7a6ff59e6494574"
+    },
+    {
+      "path": "wide.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "wide.stdout.raw",
+      "bytes": 43726,
+      "sha256": "21659e767d640965fb23cac3c7c4b278475a151076b5c6376fc351304041a150"
+    }
+  ],
+  "manifest_self_excluded": true,
+  "scope": "Six normal CLI calls;three valid debugger executions equivalent except actual elapsed;one invalid debugger EOF attempt excluded. No fix, Cargo/JDK/target-Java execution or source mutation. Frozen c814 binary is pinned by external path/SHA, not copied."
+}

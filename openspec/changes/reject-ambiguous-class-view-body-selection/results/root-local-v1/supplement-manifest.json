@@ -1,0 +1,20 @@
+{
+  "payloads": [
+    {
+      "path": "README.md",
+      "bytes": 1830,
+      "sha256": "575d27cc9413c6577c2ade0a7301580b16e777b4f803a512b9679229f58655f0"
+    },
+    {
+      "path": "archive-review.json",
+      "bytes": 289,
+      "sha256": "543258fe36f3714b7faf20a633d2e0512f8a773829f7aa470a2f7acb444ee84e"
+    },
+    {
+      "path": "focused-independent-review.json",
+      "bytes": 28302,
+      "sha256": "d5eec32610768addc8641e8b668a687b681072802d223c723580f7aef882409f"
+    }
+  ],
+  "scope": "outside immutable capture; local focused only"
+}

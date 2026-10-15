@@ -2,6 +2,14 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-15 class-view 独立修复局部门已接受，产品CI待验
+
+当前在附着core-integrity工作副本的 `codex/class-view-body-selection` 分支推进 [reject-ambiguous-class-view-body-selection](openspec/changes/reject-ambiguous-class-view-body-selection/tasks.md)，**3/4**。Method在foreign-owner校验后与Name共用完整候选判定，移除首取helper；不改身份/API/body_result。根旧生产library与CLI-v2各实际0/1目标断言失败，CLI-v1使用错误usage路径的前置失败明确排除。修后完整九组27库请求、三CLI链请求均通过，abstract-code三个请求都在method_bodies=0下保留歧义、零body/code/IR。
+
+[本地归档](openspec/changes/reject-ambiguous-class-view-body-selection/results/root-local-v1/README.md)62payload/2327642B/SHA e41c6614a4e4c508fb91ddbc77ca8856673ce7621dc88a24c03e798cdc850c80已63成员复开；focused-v1 **76/0/2**，8命令/16raw、5suites、4900来源从开始包含全部corpus遍历输入，前后/当前一致。root4952checks及独立review接受；fmt/当前CI Clippy/两版strict366/0、build CLI、finally exact clean通过。CLI59599048B/SHA c0bc6b64e1c763ee400afdb60d328a83151091fecbd72ed8ead1e906bd170f45。2.2自身CI和完整workspace交付仍开放，不以local代替。
+
+三个plan仅按原manifest复制子树，adoption时0/27、179payload/6115110B；实现后当前3/27，两项proof-stop仍0/23，私有候选未编译/未验收。main仍为下述7d0已接受四工程产品收尾；本片自身CI接受前不声明新main交付。
+
 ## 2026-10-15 四工程联合产品已接受
 
 产品 **d3e2b2457338b61660b842f5705b225bba08a73a** 包含共享facts容量、no-Code重复方法选择、canonical真实保护范围及emitter停止分类四项修复，四项均4/4；已同步四份主规格并归档。自身[CI38673548915](https://github.com/LordCasser/jarde/actions/runs/38673548915)4jobs/52steps成功，两seed各3587通过/0失败/98忽略，77具名门一次通过；native Rust1.99/Temurin25.0.4+7，strict367/0。另实际九额外编译执行测试、两examples及12依赖层配置通过。 同步归档后的两版本strict均363/0；旧reuse-selected-class-read已补齐新增容量场景，首次362/1失败raw保留。
@@ -10,7 +18,7 @@
 
 历史运行来源闭包为4887项；额外13个fuzz遍历输入只按audit-time sidecar记录，未倒填历史运行开始来源。实际P5测试和标准再生成均核全2219corpus项。最终文档/main HEAD须与产品来源恒同、clean和target absent另核，不将产品CI说成文档提交自身CI。持续goal active，不增加CF11/CF18/71/612整体完成数。
 
-下一批三个已独立核验的计划仍 **0/27**：`reject-ambiguous-class-view-body-selection` 0/4、`preserve-interface-super-proof-stops` 0/12、`preserve-class-source-dependency-proof-stops` 0/11。先仅复制各manifest覆盖的change子树，再逐项取status/apply上下文，旧生产实际复现后才修复；私有静态候选未编译、未运行，不能计作实现完成。根串行独占Git/Cargo/rustfmt/JDK/JADX/CLI，子agent只在隔离cache准备与审阅，不操作其他聊天checkout。
+7d0检查点的下一批三个计划当时仍 **0/27**：`reject-ambiguous-class-view-body-selection` 0/4、`preserve-interface-super-proof-stops` 0/12、`preserve-class-source-dependency-proof-stops` 0/11。先仅复制各manifest覆盖的change子树，再逐项取status/apply上下文，旧生产实际复现后才修复；私有静态候选未编译、未运行，不能计作实现完成。根串行独占Git/Cargo/rustfmt/JDK/JADX/CLI，子agent只在隔离cache准备与审阅，不操作其他聊天checkout。
 
 ## 2026-10-15 普通 try 交付与四工程早期状态（历史）
 

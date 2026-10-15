@@ -1,0 +1,196 @@
+{
+  "change": "preserve-interface-super-proof-stops",
+  "source_change_root": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/preserve-interface-super-proof-stops",
+  "copy_destination_relative_to_repository": "openspec/changes/preserve-interface-super-proof-stops",
+  "planning_only": true,
+  "artifacts_complete": 4,
+  "tasks_complete": 0,
+  "tasks_total": 12,
+  "strict_validation": {
+    "argv": [
+      "/home/lordcasser/.local/bin/openspec",
+      "validate",
+      "preserve-interface-super-proof-stops",
+      "--strict",
+      "--no-interactive"
+    ],
+    "exit_code": 0,
+    "receipt": "results/planning-validation/strict.command.json"
+  },
+  "capability_inventory_and_java8_overview_read_via_cli": true,
+  "full_spec_reads": [
+    {
+      "path": "openspec/specs/java8-recovery/spec.md",
+      "bytes": 52302,
+      "sha256": "697d17aca0e2452a6e4ce271fb2c3b041d6d66ddb1eb8549acc3509163c749c7",
+      "read_in_full": true
+    },
+    {
+      "path": "openspec/changes/prove-interface-super-source-legality/specs/java8-recovery/spec.md",
+      "bytes": 5970,
+      "sha256": "d6c10bcc27494edfc9e38cf6a31345765792e9917516d540bbaed9f2578e0500",
+      "read_in_full": true
+    },
+    {
+      "path": "openspec/changes/recover-covariant-child-array-initializers/results/snapshot-proof-stop-debt-v1.md",
+      "bytes": 1261,
+      "sha256": "d8c14df3eca04b1244e65d1868280c41559d15a2ebf66b16a664cd8089bed6dc",
+      "read_in_full": true
+    }
+  ],
+  "files": [
+    {
+      "path": ".openspec.yaml",
+      "bytes": 40,
+      "sha256": "c5936a7e8ac90455175dd905c9e8fb9d33cf82476be795f24133b51ef95c3d96"
+    },
+    {
+      "path": "design.md",
+      "bytes": 8396,
+      "sha256": "23a98aea1383ff70e5483a3a9ecc08d87232c8ee6543f2b932e1424977e3a94b"
+    },
+    {
+      "path": "proposal.md",
+      "bytes": 2600,
+      "sha256": "6d475d1d9ddecd2d21440bd7b0128213ffd33918cbb39bdc22d55f6bfca675f4"
+    },
+    {
+      "path": "results/planning-validation/status-json.command.json",
+      "bytes": 797,
+      "sha256": "e6c369d798a3732656dadce230a7a141dbdd0ade78e140fef68c6ef6fdee549e"
+    },
+    {
+      "path": "results/planning-validation/status-json.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/planning-validation/status-json.stdout.raw",
+      "bytes": 3472,
+      "sha256": "8b483bfe7bcd29460c855571f15dc27336b759ccff409d2edcab771981df1c14"
+    },
+    {
+      "path": "results/planning-validation/status.command.json",
+      "bytes": 773,
+      "sha256": "515c6b505ce5d0f98447632288459e4a11321813757ce658293373ee7e4711a2"
+    },
+    {
+      "path": "results/planning-validation/status.stderr.raw",
+      "bytes": 27,
+      "sha256": "f5532db4d58c0113f96c1eeb6b68000dc0d68199da671c1095a78b21dae7aa71"
+    },
+    {
+      "path": "results/planning-validation/status.stdout.raw",
+      "bytes": 391,
+      "sha256": "331b5b8cc5b19cdabc386ee0aa4050504a8de7bdf1a5f48b8c92514150ac0bc6"
+    },
+    {
+      "path": "results/planning-validation/strict.command.json",
+      "bytes": 797,
+      "sha256": "f9f968b440338cf1ed80033676966f76be3a55dcb85581d48d55b2eb1f257af7"
+    },
+    {
+      "path": "results/planning-validation/strict.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/planning-validation/strict.stdout.raw",
+      "bytes": 55,
+      "sha256": "d0e17130601ab8cc9e4e1ffd2d76bce78aa9db491832522961d9dec93df4b4d6"
+    },
+    {
+      "path": "results/repro-v1/README.md",
+      "bytes": 2385,
+      "sha256": "9fa28ec01ccefaabcc76b634a6910bbdfd5ccdebc4745170fac76bbebe5863fe"
+    },
+    {
+      "path": "results/repro-v1/audit.json",
+      "bytes": 15592,
+      "sha256": "5574d11089fad211911620f3af9c46ae69e7f7140ad614a0647230fa2a5d695f"
+    },
+    {
+      "path": "results/repro-v1/baseline-pins.json",
+      "bytes": 3203,
+      "sha256": "5313b0866657326edfcdc42b39c2919b583ef810b63b6f883d641953b514effb"
+    },
+    {
+      "path": "results/repro-v1/depth-zero-negative.command.json",
+      "bytes": 2425,
+      "sha256": "1b595e819582a90083c7596cad112110da0e3753a8e9ebae630db91d3726d14f"
+    },
+    {
+      "path": "results/repro-v1/final-clean.command.json",
+      "bytes": 2168,
+      "sha256": "ad61490a7239ece4603f6f7c711c9b0bc59fa57b62caec796ef145a3a5cad22a"
+    },
+    {
+      "path": "results/repro-v1/interface_proof_stop_repro.rs",
+      "bytes": 4518,
+      "sha256": "f285e92259533d5a55c2c351436c5107b68433d92774181d7285b6ac8b83420f"
+    },
+    {
+      "path": "results/repro-v1/manifest.json",
+      "bytes": 7670,
+      "sha256": "69347ce59cefb6d9f1c14438790c07dacc574176ab25963c3a3b806b180e1e20"
+    },
+    {
+      "path": "results/repro-v1/raw/depth-zero-negative.stderr.raw",
+      "bytes": 1023,
+      "sha256": "3c2ee6e1dbcf22689636f8a7d9f52b20ed569ac3c227961512c73af8ba41e906"
+    },
+    {
+      "path": "results/repro-v1/raw/depth-zero-negative.stdout.raw",
+      "bytes": 9086,
+      "sha256": "27add06cd08fb98a6ca897119dbe333d48d0e3905bf3e459954b2f2e7be0aa75"
+    },
+    {
+      "path": "results/repro-v1/raw/final-clean.stderr.raw",
+      "bytes": 21,
+      "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28"
+    },
+    {
+      "path": "results/repro-v1/raw/final-clean.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/repro-v1/raw/wide-positive.stderr.raw",
+      "bytes": 2530,
+      "sha256": "7c0e8fdddf63e04237cf368b6bd19261bd375fefdf735b35af1bda23d3bbb200"
+    },
+    {
+      "path": "results/repro-v1/raw/wide-positive.stdout.raw",
+      "bytes": 8843,
+      "sha256": "8f0f7a543be28590ea28d9833133d937e30e12fbf9e8f1be0f87e43c910afb8b"
+    },
+    {
+      "path": "results/repro-v1/test-only.patch",
+      "bytes": 4720,
+      "sha256": "e6e12b4ab8b40dc158eb6f8451b322fb0041a510c57e1944ecd4c4c14112c207"
+    },
+    {
+      "path": "results/repro-v1/wide-positive.command.json",
+      "bytes": 2374,
+      "sha256": "cc02147036401f67ef02a51eb3473d9662625a07d363f17cf1564157a1ddb588"
+    },
+    {
+      "path": "specs/java8-recovery/spec.md",
+      "bytes": 4220,
+      "sha256": "9cefee0d80cc57f433d1e8b0a744133995cd2dff3e83e6c70c2fbecdb7bca6cf"
+    },
+    {
+      "path": "tasks.md",
+      "bytes": 4797,
+      "sha256": "5b9140ffb9fa785574e65e8571ad4f5f94f2cf658229d28073c5a986eb8eea7d"
+    }
+  ],
+  "self_excluded_from_payload_hashes": true,
+  "source_and_tests_unchanged_since_repro_final_snapshot": true,
+  "target_absent": true,
+  "limitations": [
+    "Only planning artifacts and selected historical repro evidence are exported",
+    "Full historical source snapshots remain external as pinned in results/repro-v1/manifest.json",
+    "No implementation, Cargo/JDK/product CLI, root/index/commit mutations or primary644 runtime/CI claim in this planning turn"
+  ]
+}

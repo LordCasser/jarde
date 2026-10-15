@@ -1,0 +1,72 @@
+{
+  "index": "depth-zero-negative",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde",
+    "--test",
+    "interface_proof_stop_repro",
+    "--locked",
+    "depth_zero_public_interface_proof_preserves_original_stop",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "started_at": "2026-10-15T01:45:14.945643+00:00",
+  "free_bytes_before": 839699075072,
+  "target_bytes_before": 393159292,
+  "guard_stop": null,
+  "guard_version_sha256": "5d64d1bc2bf01e19e978666a3461a2f980119d1f9c7796021cdaeacfcd803198",
+  "guard_policy": {
+    "cadence_seconds": 1,
+    "min_free_bytes": 5368709120,
+    "max_target_bytes": 1073741824
+  },
+  "effective_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "RUSTUP_TOOLCHAIN": "stable",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never"
+  },
+  "unset_environment": [
+    "CARGO_TARGET_DIR",
+    "RUST_MIN_STACK",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+    "CLASSPATH"
+  ],
+  "exit_code": 101,
+  "duration_seconds": 1.006994006998866,
+  "finished_at": "2026-10-15T01:45:15.952628+00:00",
+  "peak_target_bytes": 393159292,
+  "free_bytes_after": 839699075072,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.stdout.raw",
+      "bytes": 9086,
+      "sha256": "27add06cd08fb98a6ca897119dbe333d48d0e3905bf3e459954b2f2e7be0aa75"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.stderr.raw",
+      "bytes": 1023,
+      "sha256": "3c2ee6e1dbcf22689636f8a7d9f52b20ed569ac3c227961512c73af8ba41e906"
+    }
+  },
+  "source_snapshots": {
+    "source_hashes_before": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.source_hashes_before.json.gz",
+      "sha256": "6585bad5aadc29f1df15c5bcaf9c9e49ca5d436c94093129238e56ecfa85015b"
+    },
+    "source_hashes_after": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.source_hashes_after.json.gz",
+      "sha256": "03d0a6368f759d14d7cff46d2d32cc87419e038387ac3b741b34bb53cca7a6b1"
+    }
+  }
+}

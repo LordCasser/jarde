@@ -1,0 +1,66 @@
+{
+  "index": "final-clean",
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "started_at": "2026-10-15T01:49:41.392295+00:00",
+  "free_bytes_before": 838837440512,
+  "target_bytes_before": 362464385,
+  "guard_stop": null,
+  "guard_version_sha256": "0aa754fe9953d493c735138df99dd7c65f98d11f2f854e5955fc2d1899cca9d1",
+  "guard_policy": {
+    "cadence_seconds": 1,
+    "min_free_bytes": 0,
+    "max_target_bytes": 9223372036854775807
+  },
+  "effective_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "RUSTUP_TOOLCHAIN": "stable",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never"
+  },
+  "unset_environment": [
+    "CARGO_TARGET_DIR",
+    "RUST_MIN_STACK",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+    "CLASSPATH"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 1.0010377649996371,
+  "finished_at": "2026-10-15T01:49:42.393332+00:00",
+  "peak_target_bytes": 362464385,
+  "free_bytes_after": 838837440512,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/final-clean.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/final-clean.stderr.raw",
+      "bytes": 39,
+      "sha256": "c0df5610175294290709b52859c07bad22f61e15bad4cb05a82b4b3d4f7e09d0"
+    }
+  },
+  "label": "final-clean",
+  "source_snapshots": {
+    "source_hashes_before": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/final-clean.source_hashes_before.json.gz",
+      "bytes": 177995,
+      "sha256": "864e93e4a48c012e90edc92d4bde2496579dd8e03cd1eae1a6742bbe07ad5bfc"
+    },
+    "source_hashes_after": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/final-clean.source_hashes_after.json.gz",
+      "bytes": 177994,
+      "sha256": "5586d23468b5231a15bf5f50f38464b238594958f4e99bb466adb2470bd4e68a"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "status": "accepted_bounded_planning_consistency",
+  "recorded_at": "2026-10-15T01:58:35.494322+00:00",
+  "main_requirement_description_and_six_scenarios": "byte-preserved prefix, ignoring only terminal whitespace",
+  "old_scenarios": [
+    "Friendly name selects one definition",
+    "Ambiguous name is not resolved silently",
+    "Existing identity is used as given",
+    "One candidate precedes a damaged candidate",
+    "No candidate is confirmed before a stop",
+    "Member selection has an unread suffix"
+  ],
+  "new_scenarios": [
+    "Listed body identity does not select one duplicate record",
+    "Body name and identity share duplicate ambiguity",
+    "Foreign owner remains an input error before body ambiguity",
+    "Unique declarations retain their own body kind"
+  ],
+  "new_scope_review": {
+    "owner_first": "foreign-owner retained before local matching",
+    "candidates": "existing ambiguity type, full physical index/flags and declaration order; no identity dedup",
+    "body_admission": "ambiguity before prepare/decode/body/code/IR; legal header/result work kept",
+    "unique": "abstract/native/Code original body kinds and Code admission preserved"
+  },
+  "non_expansion": "Planning explicitly preserves partial member-table and shared-budget behavior, reader/JVM API, per-record class-source and CLI identity schema. Existing CLI controls are regression validation, not a new identity carrier.",
+  "tasks_unchecked": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "2.2"
+  ],
+  "artifact_strict": "not executed by this review; parent handles",
+  "contradictions": [],
+  "pins": {
+    "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/proposal.md": {
+      "path": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/proposal.md",
+      "bytes": 2061,
+      "sha256": "e153a065035c1e4cd3c0914c48c5aad7bbcdd60dc620e7c6425ea86f51664dd2"
+    },
+    "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/design.md": {
+      "path": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/design.md",
+      "bytes": 4827,
+      "sha256": "a345f2f02b1fcd8094eea668ce364701065de7fde18e76291b4e3b37c04d3962"
+    },
+    "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/tasks.md": {
+      "path": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/tasks.md",
+      "bytes": 1686,
+      "sha256": "d799191dde63ecfe3591395bdfc5b69c8640828e720f890a62481c62fa7fb495"
+    },
+    "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/specs/analysis-contracts/spec.md": {
+      "path": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/reject-ambiguous-class-view-body-selection/specs/analysis-contracts/spec.md",
+      "bytes": 4587,
+      "sha256": "05b76f358312b095763a65965206100a087e9f13671ffeeefe7a72303e8f23df"
+    },
+    "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/specs/analysis-contracts/spec.md": {
+      "path": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/specs/analysis-contracts/spec.md",
+      "bytes": 18455,
+      "sha256": "47d668770d8a00672d1075276c76e20c9f18d0a4a41bbdff5234963cab068a6e"
+    }
+  }
+}

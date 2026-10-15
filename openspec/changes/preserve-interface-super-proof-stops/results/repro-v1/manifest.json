@@ -1,0 +1,177 @@
+{
+  "kind": "minimal historical private public-repro evidence; not a product fix",
+  "original_evidence_directory": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1",
+  "private_HEAD": "f01402867ffa20085e421a680a6ebbe878e63338",
+  "test_source_sha256": "f285e92259533d5a55c2c351436c5107b68433d92774181d7285b6ac8b83420f",
+  "historical_baseline_file": "baseline-pins.json",
+  "copied_files": [
+    {
+      "path": "interface_proof_stop_repro.rs",
+      "bytes": 4518,
+      "sha256": "f285e92259533d5a55c2c351436c5107b68433d92774181d7285b6ac8b83420f",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/interface_proof_stop_repro.rs"
+    },
+    {
+      "path": "test-only.patch",
+      "bytes": 4720,
+      "sha256": "e6e12b4ab8b40dc158eb6f8451b322fb0041a510c57e1944ecd4c4c14112c207",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/test-only.patch"
+    },
+    {
+      "path": "baseline-pins.json",
+      "bytes": 3203,
+      "sha256": "5313b0866657326edfcdc42b39c2919b583ef810b63b6f883d641953b514effb",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/baseline-pins.json"
+    },
+    {
+      "path": "audit.json",
+      "bytes": 15592,
+      "sha256": "5574d11089fad211911620f3af9c46ae69e7f7140ad614a0647230fa2a5d695f",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/audit.json"
+    },
+    {
+      "path": "wide-positive.command.json",
+      "bytes": 2374,
+      "sha256": "cc02147036401f67ef02a51eb3473d9662625a07d363f17cf1564157a1ddb588",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/wide-positive.command.json"
+    },
+    {
+      "path": "depth-zero-negative.command.json",
+      "bytes": 2425,
+      "sha256": "1b595e819582a90083c7596cad112110da0e3753a8e9ebae630db91d3726d14f",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.command.json"
+    },
+    {
+      "path": "final-clean.command.json",
+      "bytes": 2168,
+      "sha256": "ad61490a7239ece4603f6f7c711c9b0bc59fa57b62caec796ef145a3a5cad22a",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/final-clean.command.json"
+    },
+    {
+      "path": "raw/wide-positive.stdout.raw",
+      "bytes": 8843,
+      "sha256": "8f0f7a543be28590ea28d9833133d937e30e12fbf9e8f1be0f87e43c910afb8b",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/wide-positive.stdout.raw"
+    },
+    {
+      "path": "raw/wide-positive.stderr.raw",
+      "bytes": 2530,
+      "sha256": "7c0e8fdddf63e04237cf368b6bd19261bd375fefdf735b35af1bda23d3bbb200",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/wide-positive.stderr.raw"
+    },
+    {
+      "path": "raw/depth-zero-negative.stdout.raw",
+      "bytes": 9086,
+      "sha256": "27add06cd08fb98a6ca897119dbe333d48d0e3905bf3e459954b2f2e7be0aa75",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.stdout.raw"
+    },
+    {
+      "path": "raw/depth-zero-negative.stderr.raw",
+      "bytes": 1023,
+      "sha256": "3c2ee6e1dbcf22689636f8a7d9f52b20ed569ac3c227961512c73af8ba41e906",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.stderr.raw"
+    },
+    {
+      "path": "raw/final-clean.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/final-clean.stdout.raw"
+    },
+    {
+      "path": "raw/final-clean.stderr.raw",
+      "bytes": 21,
+      "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28",
+      "copied_from": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/final-clean.stderr.raw"
+    }
+  ],
+  "external_full_source_snapshots": [
+    {
+      "command": "wide-positive",
+      "snapshot": "source_hashes_before",
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/wide-positive.source_hashes_before.json.gz",
+      "bytes": 177932,
+      "sha256": "79fc934c243a00647cbe32415d73344efc31aeaea24e3ac326bab43ed3d9be82",
+      "included_in_planning_export": false
+    },
+    {
+      "command": "wide-positive",
+      "snapshot": "source_hashes_after",
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/wide-positive.source_hashes_after.json.gz",
+      "bytes": 177931,
+      "sha256": "ce1481935c39c34a18dfa6063348626e2af87c56f073979bd2e9df64f1b0597a",
+      "included_in_planning_export": false
+    },
+    {
+      "command": "depth-zero-negative",
+      "snapshot": "source_hashes_before",
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.source_hashes_before.json.gz",
+      "bytes": 177938,
+      "sha256": "6585bad5aadc29f1df15c5bcaf9c9e49ca5d436c94093129238e56ecfa85015b",
+      "included_in_planning_export": false
+    },
+    {
+      "command": "depth-zero-negative",
+      "snapshot": "source_hashes_after",
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.source_hashes_after.json.gz",
+      "bytes": 177937,
+      "sha256": "03d0a6368f759d14d7cff46d2d32cc87419e038387ac3b741b34bb53cca7a6b1",
+      "included_in_planning_export": false
+    },
+    {
+      "command": "final-clean",
+      "snapshot": "source_hashes_before",
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/final-clean.source_hashes_before.json.gz",
+      "bytes": 177930,
+      "sha256": "0fc48d4c444e30b3964b1bdfd3e76077824305fd0967ada4ca1fdb8be7172893",
+      "included_in_planning_export": false
+    },
+    {
+      "command": "final-clean",
+      "snapshot": "source_hashes_after",
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/final-clean.source_hashes_after.json.gz",
+      "bytes": 177929,
+      "sha256": "5c83b8f2717a99815051c996973aeb8bc35ed6d82d7febbcb53616add7663b19",
+      "included_in_planning_export": false
+    }
+  ],
+  "fixture_inputs": [
+    {
+      "path": "tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class",
+      "bytes": 784,
+      "sha256": "a1cd50a4ae4b30779041521f50db5062cddd66ff067eff44328202f886479162",
+      "location": "repository existing fixture; no copy or mutation"
+    },
+    {
+      "path": "tests/fixtures/p3-special-dispatch/v8/BaseProbe.class",
+      "bytes": 833,
+      "sha256": "b631eb77987041dd3d71a4e1098b08f2cddd613493a6a308add73ef1cdfe8266",
+      "location": "repository existing fixture; no copy or mutation"
+    },
+    {
+      "path": "tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class",
+      "bytes": 114,
+      "sha256": "de73401a2d112c9b10fdc19792388782117b47c4cc02716e34c820f6bb5b5711",
+      "location": "repository existing fixture; no copy or mutation"
+    }
+  ],
+  "result": {
+    "wide": {
+      "passed": 1,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "depth_zero": {
+      "passed": 0,
+      "failed": 1,
+      "exit_code": 101
+    },
+    "not_run_here": [
+      "cancellation",
+      "deadline",
+      "class-source public path",
+      "product CI"
+    ]
+  },
+  "planning_stage_source_unchanged_from_repro_final_snapshot": true,
+  "primary_644_runtime_claim": false
+}

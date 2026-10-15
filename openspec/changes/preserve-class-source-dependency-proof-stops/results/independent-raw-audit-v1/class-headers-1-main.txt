@@ -1,0 +1,3 @@
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the run for `main([Ljava/lang/String;)V` was refused (budget_exceeded_class_headers)
+    }

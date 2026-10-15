@@ -1,0 +1,50 @@
+{
+  "status": "accepted_new_source_and_documents_whitespace",
+  "unscoped_check_exit": 2,
+  "immutable_imported_payload_exceptions": [
+    {
+      "path": "openspec/changes/preserve-class-source-dependency-proof-stops/results/source-context/crates__jarde-jvm__src__resolver.rs.ranges.txt",
+      "bytes": 12345,
+      "sha256": "40d6de7ba9c642525eb934778e514c6715fcb513552c46f5adb720372a59fb51",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    },
+    {
+      "path": "openspec/changes/preserve-class-source-dependency-proof-stops/results/source-context/src__facade.rs.ranges.txt",
+      "bytes": 58766,
+      "sha256": "c2b9aa4def36ae2993534e471e29cf00da2bd8f0b5b1580dff925acc474d390d",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    },
+    {
+      "path": "openspec/changes/preserve-interface-super-proof-stops/results/repro-v1/raw/depth-zero-negative.stdout.raw",
+      "bytes": 9086,
+      "sha256": "27add06cd08fb98a6ca897119dbe333d48d0e3905bf3e459954b2f2e7be0aa75",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    },
+    {
+      "path": "openspec/changes/preserve-interface-super-proof-stops/results/repro-v1/raw/wide-positive.stdout.raw",
+      "bytes": 8843,
+      "sha256": "8f0f7a543be28590ea28d9833133d937e30e12fbf9e8f1be0f87e43c910afb8b",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    },
+    {
+      "path": "openspec/changes/reject-ambiguous-class-view-body-selection/results/public-repro-v1/raw/duplicate-identity-negative.stdout.raw",
+      "bytes": 284,
+      "sha256": "fb9a22ed0bdbaad2ef21ee4c46c4824ccde94fb7dd52cce685a7bc8c13e289f1",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    },
+    {
+      "path": "openspec/changes/reject-ambiguous-class-view-body-selection/results/public-repro-v1/raw/unique-and-foreign-controls.stdout.raw",
+      "bytes": 257,
+      "sha256": "d20769e93f8b2800efdd196ffcb5e1f39f1490277cff620b1e1c8a98e66f07b0",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    },
+    {
+      "path": "openspec/changes/reject-ambiguous-class-view-body-selection/specs/analysis-contracts/spec.md",
+      "bytes": 4587,
+      "sha256": "05b76f358312b095763a65965206100a087e9f13671ffeeefe7a72303e8f23df",
+      "reason": "exact original planning/export payload; preserve raw evidence bytes"
+    }
+  ],
+  "scoped_check_exit": 0,
+  "source_or_assertions_trimmed": false
+}

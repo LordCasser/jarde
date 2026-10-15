@@ -1,0 +1,307 @@
+{
+  "schema": "class-view-ambiguity-repro-v1-receipt-check",
+  "status": "verified_behavior_reproduction",
+  "checks": [
+    {
+      "name": "observed behavior failure terminal status",
+      "passed": true
+    },
+    {
+      "name": "four sequential actual command labels",
+      "passed": true
+    },
+    {
+      "name": "raw exit codes retained",
+      "passed": true
+    },
+    {
+      "name": "only new test changes all-source closure",
+      "passed": true
+    },
+    {
+      "name": "new test snapshot equals saved formatted file",
+      "passed": true
+    },
+    {
+      "name": "13 engineering pins preserved",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-reader/src/facts_cache.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file tests/p5_benchmark.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file tests/p5_facts_cache.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-reader/src/facts_capacity_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-jvm/src/callee.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-jvm/src/engine.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file tests/p3_prepared_input.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-jvm/src/canonical.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file tests/p3_method_ir.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-java/src/bridge.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-java/src/emit.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-java/src/report.rs",
+      "passed": true
+    },
+    {
+      "name": "preserved original engineering file crates/jarde-java/src/stop.rs",
+      "passed": true
+    },
+    {
+      "name": "b973 build and existing six-scenario prepass test preserved",
+      "passed": true
+    },
+    {
+      "name": "existing interface Stop test preserved",
+      "passed": true
+    },
+    {
+      "name": "format-testfile private cwd",
+      "passed": true
+    },
+    {
+      "name": "format-testfile no guard stop",
+      "passed": true
+    },
+    {
+      "name": "format-testfile stdout raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "format-testfile stderr raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "format-testfile source stability (format exception only)",
+      "passed": true
+    },
+    {
+      "name": "format-testfile controlled environment",
+      "passed": true
+    },
+    {
+      "name": "format-testfile guarded resource endpoints",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls private cwd",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls no guard stop",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls stdout raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls stderr raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls source stability (format exception only)",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls controlled environment",
+      "passed": true
+    },
+    {
+      "name": "unique-and-foreign-controls guarded resource endpoints",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative private cwd",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative no guard stop",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative stdout raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative stderr raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative source stability (format exception only)",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative controlled environment",
+      "passed": true
+    },
+    {
+      "name": "duplicate-identity-negative guarded resource endpoints",
+      "passed": true
+    },
+    {
+      "name": "final-clean private cwd",
+      "passed": true
+    },
+    {
+      "name": "final-clean no guard stop",
+      "passed": true
+    },
+    {
+      "name": "final-clean stdout raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "final-clean stderr raw SHA/bytes",
+      "passed": true
+    },
+    {
+      "name": "final-clean source stability (format exception only)",
+      "passed": true
+    },
+    {
+      "name": "final-clean controlled environment",
+      "passed": true
+    },
+    {
+      "name": "two real positive controls actually passed",
+      "passed": true
+    },
+    {
+      "name": "negative compiled and actually ran",
+      "passed": true
+    },
+    {
+      "name": "one actual behavior assertion failed",
+      "passed": true
+    },
+    {
+      "name": "physical duplicate indices recorded in actual panic",
+      "passed": true
+    },
+    {
+      "name": "actual runtime reached scope accurately bounded",
+      "passed": true
+    },
+    {
+      "name": "final clean strict argv/private cwd",
+      "passed": true
+    },
+    {
+      "name": "final clean complete and ownership explicitly released",
+      "passed": true
+    }
+  ],
+  "actual_exit_codes": [
+    0,
+    0,
+    101,
+    0
+  ],
+  "verified_raw_streams": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/format-testfile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/format-testfile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/unique-and-foreign-controls.stdout.raw",
+      "bytes": 257,
+      "sha256": "d20769e93f8b2800efdd196ffcb5e1f39f1490277cff620b1e1c8a98e66f07b0"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/unique-and-foreign-controls.stderr.raw",
+      "bytes": 2536,
+      "sha256": "25d2edf43d62230a01973dd8382782de283420ad845bb8bcf327c747d3227ca5"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/duplicate-identity-negative.stdout.raw",
+      "bytes": 284,
+      "sha256": "fb9a22ed0bdbaad2ef21ee4c46c4824ccde94fb7dd52cce685a7bc8c13e289f1"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/duplicate-identity-negative.stderr.raw",
+      "bytes": 5080,
+      "sha256": "299b12c77bacf4c5391ed4a70eefa6f43a65f9eecec1745e6133a7b33b56ff34"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/final-clean.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/raw/final-clean.stderr.raw",
+      "bytes": 39,
+      "sha256": "c0df5610175294290709b52859c07bad22f61e15bad4cb05a82b4b3d4f7e09d0"
+    }
+  ],
+  "source_paths_before": 3563,
+  "source_paths_after": 3564,
+  "only_new_source": "tests/class_view_ambiguous_identity.rs",
+  "private_baseline_build_sha256": "b973da39da521dad9a71c53114c22901eaf056f63fa55823949004b2cc234bb8",
+  "actual_reached_scope": {
+    "positive_tests_passed": 2,
+    "negative_tests_failed": 1,
+    "duplicate_matrix_rows_configured": 9,
+    "duplicate_matrix_rows_reached": 1,
+    "first_row": "abstract-code",
+    "listed_identity_requests_reached": 1,
+    "first_row_Name_positive_control_passed": "Its successful assertions precede the reached Method panic.",
+    "remaining_duplicate_rows": "not reached because the first row fails; not counted as coverage."
+  },
+  "formatted_test": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/formatted-class_view_ambiguous_identity.rs",
+    "bytes": 10719,
+    "sha256": "9a19cf07915c56db62533c51daec7649378a7d78bd9b40a1ae5aabdeba8fc257"
+  },
+  "test_only_patch": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261015/class-view-ambiguity-repro-v1/test-only.patch",
+    "bytes": 11092,
+    "sha256": "d1f8ec3acea425749005c4e28e7d55abd4b3be366a7dea77c7b6871a8701054c"
+  },
+  "positive_summary": [
+    "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s"
+  ],
+  "negative_summary": [
+    "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s"
+  ],
+  "owner_released": true,
+  "historical_final_target_absent": true,
+  "note": "Same agent receipt self-check, not a substitute for parent independent review. No toolchain or live target reads during this self-check."
+}

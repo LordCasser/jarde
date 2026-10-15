@@ -1,0 +1,131 @@
+--- /dev/null
++++ b/tests/interface_proof_stop_repro.rs
+@@ -0,0 +1,128 @@
++//! Private public-entry regression for a dependency-depth stop in interface-super proof.
++use jarde::*;
++use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
++use std::io::{Cursor, Write};
++
++const SPECIAL: &[u8] = include_bytes!("fixtures/p3-special-dispatch/v8/SpecialProbe.class");
++const BASE: &[u8] = include_bytes!("fixtures/p3-special-dispatch/v8/BaseProbe.class");
++const DEFAULT: &[u8] = include_bytes!("fixtures/p3-special-dispatch/v8/DefaultProbe.class");
++
++fn wide_budget() -> Budget {
++    let mut limits = task_budget(&[]).unwrap().limits().clone();
++    limits.elapsed_millis = u64::MAX;
++    Budget::new(limits)
++}
++
++fn recover(dependency_depth: u64) -> MethodRecoveryReport {
++    let mut archive = Cursor::new(Vec::new());
++    {
++        let mut writer = ZipArchiveWriter::new(&mut archive);
++        for (name, bytes) in [
++            (&b"SpecialProbe.class"[..], SPECIAL),
++            (&b"BaseProbe.class"[..], BASE),
++            (&b"DefaultProbe.class"[..], DEFAULT),
++        ] {
++            let (mut entry, config) = writer
++                .new_file(EntryPath::verbatim(name.to_vec()))
++                .compression_method(CompressionMethod::new(0))
++                .start()
++                .unwrap();
++            let mut output = config.wrap(&mut entry);
++            output.write_all(bytes).unwrap();
++            let (_, descriptor) = output.finish().unwrap();
++            entry.finish(descriptor).unwrap();
++        }
++        writer.finish().unwrap();
++    }
++    let engine = Engine::new();
++    let snapshot = engine
++        .open(
++            ArtifactInput::bytes(archive.into_inner()),
++            &mut wide_budget(),
++        )
++        .unwrap();
++    let request = MethodOperationRequest {
++        method: MethodRef::Name {
++            class: ClassNameQuery::internal("SpecialProbe"),
++            name: JvmBytes(b"defaultCall".to_vec()),
++            descriptor: Some(JvmBytes(b"()I".to_vec())),
++        },
++        environment: EnvironmentRequest {
++            snapshot: snapshot.id().clone(),
++            scope: PhysicalScope::SnapshotAll,
++            policy: EnvironmentPolicy::PlainJar,
++            profile: RuntimeProfile {
++                java_release: 8,
++                multi_release: MultiReleasePolicy::Disabled,
++                layout: LayoutMode::Generic,
++            },
++            loader: LoaderId("app".to_owned()),
++        },
++    };
++    let mut limits = wide_budget().limits().clone();
++    limits.dependency_depth = dependency_depth;
++    let mut budget = Budget::new(limits);
++    let outcome = engine
++        .recover_target(std::slice::from_ref(&snapshot), &request, &mut budget)
++        .expect("the real public operation returns its report");
++    let OperationOutcome::Performed(report) = outcome else {
++        panic!("the fixture must select one physical defaultCall method: {outcome:?}");
++    };
++    println!(
++        "PUBLIC_RESULT dependency_depth={dependency_depth} {}",
++        serde_json::to_string(&report).unwrap()
++    );
++    assert!(matches!(
++        report.recovered.analysis().execution,
++        ExecutionReport::Complete { .. }
++    ));
++    assert_eq!(report.method.name.0, b"defaultCall");
++    assert_eq!(report.method.descriptor.0, b"()I");
++    report
++}
++
++#[test]
++fn wide_public_interface_super_has_complete_proof() {
++    let report = recover(8);
++    assert!(matches!(
++        report.presentation.execution,
++        ExecutionReport::Complete { .. }
++    ));
++    assert!(report.recovered.recovery().produced());
++    assert!(report.presentation.stop.is_none());
++    assert!(
++        report
++            .recovered
++            .recovery()
++            .text
++            .contains("DefaultProbe.super.value()")
++    );
++    assert!(report.usage.class_headers >= 3);
++    assert!(report.usage.dependency_depth > 0);
++}
++
++#[test]
++fn depth_zero_public_interface_proof_preserves_original_stop() {
++    let report = recover(0);
++    assert_eq!(report.usage.dependency_depth, 0);
++    assert!(
++        !report
++            .recovered
++            .recovery()
++            .text
++            .contains("DefaultProbe.super.value()")
++    );
++    assert!(
++        matches!(
++            report.presentation.execution,
++            ExecutionReport::Partial {
++                reason: TerminationReason::BudgetExceeded {
++                    dimension: BudgetDimension::DependencyDepth
++                },
++                ..
++            }
++        ),
++        "a refused interface-proof dependency-depth permit must remain visible in the public presentation: {:?}",
++        report.presentation
++    );
++}

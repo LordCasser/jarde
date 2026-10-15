@@ -1,0 +1,20 @@
+// @method main([Ljava/lang/String;)V
+// @declaration a static method of `H1`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 15 0 12 3 6 7 10 18 21 24 25 28 30 33 36 39 42 43 46 49 52 55 58 59 62 64 67 70 73 76 77 80 82 85 88 91 93 96 97 100 103 106 109 112 113 116 119 120 123 126 129 132 135 136 139 142 145
+    // the parameter 0 of the invocation at BCI 12 is declared `H1$Greet` presents `H1$TwoLevel` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
+    // @bytecode 33 18 30
+    // the parameter 0 of the invocation at BCI 30 is declared `H1$Greet` presents `H1$Multi` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
+    // @bytecode 49 36 46
+    // the parameter 0 of the invocation at BCI 46 is declared `H1$Other` presents `H1$Multi` but the invocation requires `H1$Other` and this layer has no safe reference conversion evidence
+    // @bytecode 67 52 64
+    // the parameter 0 of the invocation at BCI 64 is declared `H1$Greet` presents `H1$1` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
+    // @bytecode 85 70 82
+    // the parameter 0 of the invocation at BCI 82 is declared `H1$Greet` presents `H1$ViaSub` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
+    // @bytecode 103 88 100
+    // the parameter 1 of the invocation at BCI 100 is declared `H1$Greet` presents `H1$Multi` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
+    // @bytecode 126 106 123
+    // the parameter 0 of the invocation at BCI 123 is declared `H1$Greet` presents `H1$TwoLevel` but the invocation requires `H1$Greet` and this layer has no safe reference conversion evidence
+    jarde_refused_body();
+}

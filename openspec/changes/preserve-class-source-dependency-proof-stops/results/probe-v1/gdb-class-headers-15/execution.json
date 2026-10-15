@@ -1,0 +1,75 @@
+{
+  "schema": "snapshot-proof-postbody-trace-v1",
+  "argv": [
+    "/usr/bin/gdb",
+    "--batch",
+    "--nx",
+    "-x",
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/trace.gdb",
+    "--args",
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+    "class-source",
+    "--input",
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+    "--class",
+    "H1",
+    "--evidence",
+    "essential",
+    "--format",
+    "json",
+    "--budget",
+    "elapsed_millis=10000",
+    "--budget",
+    "output_bytes=1048576",
+    "--budget",
+    "class_headers=15"
+  ],
+  "inferior_argv": [
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+    "class-source",
+    "--input",
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+    "--class",
+    "H1",
+    "--evidence",
+    "essential",
+    "--format",
+    "json",
+    "--budget",
+    "elapsed_millis=10000",
+    "--budget",
+    "output_bytes=1048576",
+    "--budget",
+    "class_headers=15"
+  ],
+  "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15",
+  "exit_code": 0,
+  "seconds": 0.2795071620003,
+  "script": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/trace.gdb",
+    "sha256": "a81d5adb67def0ea7e4baf7711701ebc4a31f05b51b7ab2285b5160f6f33a2f3"
+  },
+  "streams": {
+    "gdb.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/gdb.stdout.raw",
+      "bytes": 2485,
+      "sha256": "704667b0d25fcdc9b24a9c52be785d2acaf55c9641fe2b8895b870748c798cff"
+    },
+    "gdb.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "inferior.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/inferior.stdout.raw",
+      "bytes": 43722,
+      "sha256": "380bc8e656ed147d830223c151671184ae0b47f109dd17e160bfa110d14304c7"
+    },
+    "inferior.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_binary_fixture_unchanged": true
+}

@@ -1,0 +1,12 @@
+Change: preserve-interface-super-proof-stops
+Schema: spec-driven
+Change root: /home/lordcasser/.codex/worktrees/review-core-fixes/jarde/openspec/changes/preserve-interface-super-proof-stops
+Progress: 4/4 artifacts complete
+
+[x] proposal
+[x] specs
+[x] design
+[x] tasks
+
+All planning artifacts complete!
+Next: openspec instructions apply --change "preserve-interface-super-proof-stops" --json

@@ -1,0 +1,75 @@
+{
+  "schema": "snapshot-proof-debugger-trace-v2",
+  "argv": [
+    "/usr/bin/gdb",
+    "--batch",
+    "--nx",
+    "-x",
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/trace.gdb",
+    "--args",
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+    "class-source",
+    "--input",
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+    "--class",
+    "H1",
+    "--evidence",
+    "essential",
+    "--format",
+    "json",
+    "--budget",
+    "elapsed_millis=10000",
+    "--budget",
+    "output_bytes=1048576",
+    "--budget",
+    "class_headers=8"
+  ],
+  "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2",
+  "exit_code": 0,
+  "seconds": 0.27814832699914405,
+  "inferior_argv": [
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+    "class-source",
+    "--input",
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+    "--class",
+    "H1",
+    "--evidence",
+    "essential",
+    "--format",
+    "json",
+    "--budget",
+    "elapsed_millis=10000",
+    "--budget",
+    "output_bytes=1048576",
+    "--budget",
+    "class_headers=8"
+  ],
+  "script": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/trace.gdb",
+    "sha256": "95b6a314378cef8461977eab3d3baf73b934820d0d2725a5e525081b1e389c71"
+  },
+  "streams": {
+    "gdb.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/gdb.stdout.raw",
+      "bytes": 6341,
+      "sha256": "4ab78452841f36a81e31b72743fc9e202509bc20e0b0ec39e179f3b134ca2c1c"
+    },
+    "gdb.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "inferior.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/inferior.stdout.raw",
+      "bytes": 48765,
+      "sha256": "6e79f6ad24ddf33a279e9cc33bb9eb3486a1443840e73194df35ecf9129ac20e"
+    },
+    "inferior.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "original_binary_fixture_sources_unchanged": true
+}

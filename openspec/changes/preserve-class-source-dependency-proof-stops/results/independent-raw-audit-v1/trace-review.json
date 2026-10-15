@@ -1,0 +1,1029 @@
+{
+  "status": "confirmed_dynamic_snapshot_hierarchy_classheaders_stop_hidden_and_additional_double_brace_stop",
+  "recorded_at": "2026-10-15T03:04:28.129738+00:00",
+  "original_five_probe_audit": {
+    "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-independent-audit-v1/audit.json",
+    "bytes": 88711,
+    "sha256": "141a4267372c1fd2721ac96e40352ed4a128dc10158de1a467c987ee432487e2"
+  },
+  "inputs": {
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-independent-audit-v1/audit.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-independent-audit-v1/audit.json",
+      "bytes": 88711,
+      "sha256": "141a4267372c1fd2721ac96e40352ed4a128dc10158de1a467c987ee432487e2"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/execution.json",
+      "bytes": 2785,
+      "sha256": "4f311666d23b9f81d6b0ba147e503d74869cc133737a0670a8f48eefc74770a8"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/gdb.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/gdb.stdout.raw",
+      "bytes": 521,
+      "sha256": "675bd726c475183cb09307a6589b6c9074ee37d972777206baee08860b1acdf8"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/gdb.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/inferior.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/inferior.stdout.raw",
+      "bytes": 460,
+      "sha256": "daf8be123e1a1d1fdd590d85bd006643a88b0f08b56fa7c429960095f1889f86"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/inferior.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/trace.gdb": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8/trace.gdb",
+      "bytes": 472,
+      "sha256": "753b52fd0c8f9f7d9d5a0d12582698d195aa54a723505d52faa6e6df45b1308d"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/execution.json",
+      "bytes": 2809,
+      "sha256": "6696c6b71a9c4320765dfde79c3e0738e55e958e08bde0800660274e53fe291d"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/gdb.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/gdb.stdout.raw",
+      "bytes": 6341,
+      "sha256": "4ab78452841f36a81e31b72743fc9e202509bc20e0b0ec39e179f3b134ca2c1c"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/gdb.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/inferior.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/inferior.stdout.raw",
+      "bytes": 48765,
+      "sha256": "6e79f6ad24ddf33a279e9cc33bb9eb3486a1443840e73194df35ecf9129ac20e"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/inferior.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/trace.gdb": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v2/trace.gdb",
+      "bytes": 810,
+      "sha256": "95b6a314378cef8461977eab3d3baf73b934820d0d2725a5e525081b1e389c71"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/execution.json",
+      "bytes": 2754,
+      "sha256": "69d7d6ff1221995c991ddff421242fbe10fb570ff38922a5408bbace559185e3"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/gdb.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/gdb.stdout.raw",
+      "bytes": 12009,
+      "sha256": "a7a04d7a293682132af2068a045a1f3420760ba085d11ae7fada8c35e6dcf2bc"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/gdb.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/inferior.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/inferior.stdout.raw",
+      "bytes": 48765,
+      "sha256": "7599414e237533045ac06461407ff36d4564478cec1fc1461d56bd28eefbe8b5"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/inferior.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/trace.gdb": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-8-v3/trace.gdb",
+      "bytes": 810,
+      "sha256": "bcf086a92486bacf3dffb5cd087784f20839ab0705635729d2d027c9b10cf0ae"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/execution.json",
+      "bytes": 2783,
+      "sha256": "a506601eec7885cc56ff3198a67f133354852baa6e6b4caa3bb6b3b29be161d6"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/gdb.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/gdb.stdout.raw",
+      "bytes": 2485,
+      "sha256": "704667b0d25fcdc9b24a9c52be785d2acaf55c9641fe2b8895b870748c798cff"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/gdb.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/gdb.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/inferior.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/inferior.stdout.raw",
+      "bytes": 43722,
+      "sha256": "380bc8e656ed147d830223c151671184ae0b47f109dd17e160bfa110d14304c7"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/inferior.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/inferior.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/trace.gdb": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-class-headers-15/trace.gdb",
+      "bytes": 807,
+      "sha256": "a81d5adb67def0ea7e4baf7711701ebc4a31f05b51b7ab2285b5160f6f33a2f3"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/execution.json",
+      "bytes": 1249,
+      "sha256": "33e7904773f5ff9c3c3fff09e5717710a66855589d3a70ad56dadd3fc39028b2"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/stdout.raw",
+      "bytes": 43726,
+      "sha256": "2bb541e8ac8df33e97aed7a743fea02675cb1b9db48bd8384bc1a24b38982ed3"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-15/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/classification.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/classification.json",
+      "bytes": 7225,
+      "sha256": "24b3f6ea676a0d97dc851fe880839df1c7f7ce51625b2b9b6ff279c900b22042"
+    },
+    "/usr/bin/gdb": {
+      "path": "/usr/bin/gdb",
+      "bytes": 15896472,
+      "sha256": "b3d60239d69af6196ddb05d5057a620bd73afe4f4b821bc13f80bfcc020c7b24"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-version.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/gdb-version.stdout.raw",
+      "bytes": 284,
+      "sha256": "47df9689e865d5206226465c14442c79081a0dc2dd52556fa7a6ff59e6494574"
+    }
+  },
+  "debugger_scope": {
+    "invalid_v1": "Excluded: run redirection reset inferior args; cli_request_json EOF; inferior exit01; GDB exit0 is not product success. Original five normal probes unaffected.",
+    "partial_v2": "Five quota breakpoint hits, bt16 first four only reach selected_reference_header; lower attribution strength retained, not substituted for full v3.",
+    "valid_v3": "Five Budget::exceeded hits in real charge_header_attempt path; first4 stack through snapshot proof wrapper, fifth double-brace projection; bt30 only, no argument/error-local value capture. Inferior JSON equals normalcap8 after elapsed normalization and exits normally.",
+    "mutation_scope": "Read-only breakpoint/printf/bt/continue script; no return/value/function-call/jump mutation commands. Same absolute frozen binary/JAR; source/CLI hashes already bound by base audit, no invented extra historical inputpin receipt.",
+    "not_a_seven_path_matrix": "Two dynamic call families shown; no dynamic coverage claimed for other static wrappers.",
+    "valid_cap15": "Exactly1 ClassHeaders refusal: full30frame double-brace projection chain, no snapshot frame; full inferior JSON equals normalcap15 after elapsed-only normalization, limits exactly equal, exited normally."
+  },
+  "actual_refusal_stacks": [
+    {
+      "ordinal": 1,
+      "family": "snapshot_hierarchy_widening_in_member_recovery",
+      "frames": [
+        {
+          "frame": 0,
+          "symbol": "<jarde_reader::budget::Budget>::exceeded"
+        },
+        {
+          "frame": 1,
+          "symbol": "<jarde_reader::budget::Budget>::ensure_within"
+        },
+        {
+          "frame": 2,
+          "symbol": "<jarde_reader::budget::Budget>::charge"
+        },
+        {
+          "frame": 3,
+          "symbol": "jarde_jvm::providers::charge_header_attempt"
+        },
+        {
+          "frame": 4,
+          "symbol": "jarde_jvm::providers::read_candidate"
+        },
+        {
+          "frame": 5,
+          "symbol": "jarde_jvm::providers::decide"
+        },
+        {
+          "frame": 6,
+          "symbol": "jarde_jvm::providers::probe_root"
+        },
+        {
+          "frame": 7,
+          "symbol": "jarde_jvm::providers::search_class_header"
+        },
+        {
+          "frame": 8,
+          "symbol": "jarde_jvm::providers::lookup_class_header"
+        },
+        {
+          "frame": 9,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_with"
+        },
+        {
+          "frame": 10,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand"
+        },
+        {
+          "frame": 11,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_from_caller"
+        },
+        {
+          "frame": 12,
+          "symbol": "jarde_jvm::resolver::resolution_report"
+        },
+        {
+          "frame": 13,
+          "symbol": "jarde_jvm::engine::resolve_symbol"
+        },
+        {
+          "frame": 14,
+          "symbol": "jarde::facade::resolve_class_source_dependency_read_raw"
+        },
+        {
+          "frame": 15,
+          "symbol": "jarde::facade::selected_reference_header"
+        },
+        {
+          "frame": 16,
+          "symbol": "jarde::facade::snapshot_header_chain_widens::{closure#0}"
+        },
+        {
+          "frame": 17,
+          "symbol": "jarde::facade::snapshot_header_chain_widens_with::<jarde::facade::snapshot_header_chain_widens::{closure#0}>"
+        },
+        {
+          "frame": 18,
+          "symbol": "jarde::facade::snapshot_header_chain_widens"
+        },
+        {
+          "frame": 19,
+          "symbol": "jarde::facade::prove_snapshot_hierarchy_widenings"
+        },
+        {
+          "frame": 20,
+          "symbol": "jarde::facade::snapshot_hierarchy_widenings_presented"
+        },
+        {
+          "frame": 21,
+          "symbol": "jarde::facade::recovery_from_with_class_candidates"
+        },
+        {
+          "frame": 22,
+          "symbol": "jarde::facade::recovery_presented_for_class_source"
+        },
+        {
+          "frame": 23,
+          "symbol": "jarde::facade::recover_prepared_member"
+        },
+        {
+          "frame": 24,
+          "symbol": "<jarde::facade::Engine>::prepare_physical_class_source"
+        },
+        {
+          "frame": 25,
+          "symbol": "<jarde::facade::Engine>::class_source_with_evidence"
+        },
+        {
+          "frame": 26,
+          "symbol": "jarde_cli::task::class_source::{closure#0}"
+        },
+        {
+          "frame": 27,
+          "symbol": "<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}>"
+        },
+        {
+          "frame": 28,
+          "symbol": "jarde_cli::task::class_source"
+        },
+        {
+          "frame": 29,
+          "symbol": "jarde_cli::task::dispatch"
+        }
+      ]
+    },
+    {
+      "ordinal": 2,
+      "family": "snapshot_hierarchy_widening_in_member_recovery",
+      "frames": [
+        {
+          "frame": 0,
+          "symbol": "<jarde_reader::budget::Budget>::exceeded"
+        },
+        {
+          "frame": 1,
+          "symbol": "<jarde_reader::budget::Budget>::ensure_within"
+        },
+        {
+          "frame": 2,
+          "symbol": "<jarde_reader::budget::Budget>::charge"
+        },
+        {
+          "frame": 3,
+          "symbol": "jarde_jvm::providers::charge_header_attempt"
+        },
+        {
+          "frame": 4,
+          "symbol": "jarde_jvm::providers::read_candidate"
+        },
+        {
+          "frame": 5,
+          "symbol": "jarde_jvm::providers::decide"
+        },
+        {
+          "frame": 6,
+          "symbol": "jarde_jvm::providers::probe_root"
+        },
+        {
+          "frame": 7,
+          "symbol": "jarde_jvm::providers::search_class_header"
+        },
+        {
+          "frame": 8,
+          "symbol": "jarde_jvm::providers::lookup_class_header"
+        },
+        {
+          "frame": 9,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_with"
+        },
+        {
+          "frame": 10,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand"
+        },
+        {
+          "frame": 11,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_from_caller"
+        },
+        {
+          "frame": 12,
+          "symbol": "jarde_jvm::resolver::resolution_report"
+        },
+        {
+          "frame": 13,
+          "symbol": "jarde_jvm::engine::resolve_symbol"
+        },
+        {
+          "frame": 14,
+          "symbol": "jarde::facade::resolve_class_source_dependency_read_raw"
+        },
+        {
+          "frame": 15,
+          "symbol": "jarde::facade::selected_reference_header"
+        },
+        {
+          "frame": 16,
+          "symbol": "jarde::facade::snapshot_header_chain_widens::{closure#0}"
+        },
+        {
+          "frame": 17,
+          "symbol": "jarde::facade::snapshot_header_chain_widens_with::<jarde::facade::snapshot_header_chain_widens::{closure#0}>"
+        },
+        {
+          "frame": 18,
+          "symbol": "jarde::facade::snapshot_header_chain_widens"
+        },
+        {
+          "frame": 19,
+          "symbol": "jarde::facade::prove_snapshot_hierarchy_widenings"
+        },
+        {
+          "frame": 20,
+          "symbol": "jarde::facade::snapshot_hierarchy_widenings_presented"
+        },
+        {
+          "frame": 21,
+          "symbol": "jarde::facade::recovery_from_with_class_candidates"
+        },
+        {
+          "frame": 22,
+          "symbol": "jarde::facade::recovery_presented_for_class_source"
+        },
+        {
+          "frame": 23,
+          "symbol": "jarde::facade::recover_prepared_member"
+        },
+        {
+          "frame": 24,
+          "symbol": "<jarde::facade::Engine>::prepare_physical_class_source"
+        },
+        {
+          "frame": 25,
+          "symbol": "<jarde::facade::Engine>::class_source_with_evidence"
+        },
+        {
+          "frame": 26,
+          "symbol": "jarde_cli::task::class_source::{closure#0}"
+        },
+        {
+          "frame": 27,
+          "symbol": "<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}>"
+        },
+        {
+          "frame": 28,
+          "symbol": "jarde_cli::task::class_source"
+        },
+        {
+          "frame": 29,
+          "symbol": "jarde_cli::task::dispatch"
+        }
+      ]
+    },
+    {
+      "ordinal": 3,
+      "family": "snapshot_hierarchy_widening_in_member_recovery",
+      "frames": [
+        {
+          "frame": 0,
+          "symbol": "<jarde_reader::budget::Budget>::exceeded"
+        },
+        {
+          "frame": 1,
+          "symbol": "<jarde_reader::budget::Budget>::ensure_within"
+        },
+        {
+          "frame": 2,
+          "symbol": "<jarde_reader::budget::Budget>::charge"
+        },
+        {
+          "frame": 3,
+          "symbol": "jarde_jvm::providers::charge_header_attempt"
+        },
+        {
+          "frame": 4,
+          "symbol": "jarde_jvm::providers::read_candidate"
+        },
+        {
+          "frame": 5,
+          "symbol": "jarde_jvm::providers::decide"
+        },
+        {
+          "frame": 6,
+          "symbol": "jarde_jvm::providers::probe_root"
+        },
+        {
+          "frame": 7,
+          "symbol": "jarde_jvm::providers::search_class_header"
+        },
+        {
+          "frame": 8,
+          "symbol": "jarde_jvm::providers::lookup_class_header"
+        },
+        {
+          "frame": 9,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_with"
+        },
+        {
+          "frame": 10,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand"
+        },
+        {
+          "frame": 11,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_from_caller"
+        },
+        {
+          "frame": 12,
+          "symbol": "jarde_jvm::resolver::resolution_report"
+        },
+        {
+          "frame": 13,
+          "symbol": "jarde_jvm::engine::resolve_symbol"
+        },
+        {
+          "frame": 14,
+          "symbol": "jarde::facade::resolve_class_source_dependency_read_raw"
+        },
+        {
+          "frame": 15,
+          "symbol": "jarde::facade::selected_reference_header"
+        },
+        {
+          "frame": 16,
+          "symbol": "jarde::facade::snapshot_header_chain_widens::{closure#0}"
+        },
+        {
+          "frame": 17,
+          "symbol": "jarde::facade::snapshot_header_chain_widens_with::<jarde::facade::snapshot_header_chain_widens::{closure#0}>"
+        },
+        {
+          "frame": 18,
+          "symbol": "jarde::facade::snapshot_header_chain_widens"
+        },
+        {
+          "frame": 19,
+          "symbol": "jarde::facade::prove_snapshot_hierarchy_widenings"
+        },
+        {
+          "frame": 20,
+          "symbol": "jarde::facade::snapshot_hierarchy_widenings_presented"
+        },
+        {
+          "frame": 21,
+          "symbol": "jarde::facade::recovery_from_with_class_candidates"
+        },
+        {
+          "frame": 22,
+          "symbol": "jarde::facade::recovery_presented_for_class_source"
+        },
+        {
+          "frame": 23,
+          "symbol": "jarde::facade::recover_prepared_member"
+        },
+        {
+          "frame": 24,
+          "symbol": "<jarde::facade::Engine>::prepare_physical_class_source"
+        },
+        {
+          "frame": 25,
+          "symbol": "<jarde::facade::Engine>::class_source_with_evidence"
+        },
+        {
+          "frame": 26,
+          "symbol": "jarde_cli::task::class_source::{closure#0}"
+        },
+        {
+          "frame": 27,
+          "symbol": "<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}>"
+        },
+        {
+          "frame": 28,
+          "symbol": "jarde_cli::task::class_source"
+        },
+        {
+          "frame": 29,
+          "symbol": "jarde_cli::task::dispatch"
+        }
+      ]
+    },
+    {
+      "ordinal": 4,
+      "family": "snapshot_hierarchy_widening_in_member_recovery",
+      "frames": [
+        {
+          "frame": 0,
+          "symbol": "<jarde_reader::budget::Budget>::exceeded"
+        },
+        {
+          "frame": 1,
+          "symbol": "<jarde_reader::budget::Budget>::ensure_within"
+        },
+        {
+          "frame": 2,
+          "symbol": "<jarde_reader::budget::Budget>::charge"
+        },
+        {
+          "frame": 3,
+          "symbol": "jarde_jvm::providers::charge_header_attempt"
+        },
+        {
+          "frame": 4,
+          "symbol": "jarde_jvm::providers::read_candidate"
+        },
+        {
+          "frame": 5,
+          "symbol": "jarde_jvm::providers::decide"
+        },
+        {
+          "frame": 6,
+          "symbol": "jarde_jvm::providers::probe_root"
+        },
+        {
+          "frame": 7,
+          "symbol": "jarde_jvm::providers::search_class_header"
+        },
+        {
+          "frame": 8,
+          "symbol": "jarde_jvm::providers::lookup_class_header"
+        },
+        {
+          "frame": 9,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_with"
+        },
+        {
+          "frame": 10,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand"
+        },
+        {
+          "frame": 11,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_from_caller"
+        },
+        {
+          "frame": 12,
+          "symbol": "jarde_jvm::resolver::resolution_report"
+        },
+        {
+          "frame": 13,
+          "symbol": "jarde_jvm::engine::resolve_symbol"
+        },
+        {
+          "frame": 14,
+          "symbol": "jarde::facade::resolve_class_source_dependency_read_raw"
+        },
+        {
+          "frame": 15,
+          "symbol": "jarde::facade::selected_reference_header"
+        },
+        {
+          "frame": 16,
+          "symbol": "jarde::facade::snapshot_header_chain_widens::{closure#0}"
+        },
+        {
+          "frame": 17,
+          "symbol": "jarde::facade::snapshot_header_chain_widens_with::<jarde::facade::snapshot_header_chain_widens::{closure#0}>"
+        },
+        {
+          "frame": 18,
+          "symbol": "jarde::facade::snapshot_header_chain_widens"
+        },
+        {
+          "frame": 19,
+          "symbol": "jarde::facade::prove_snapshot_hierarchy_widenings"
+        },
+        {
+          "frame": 20,
+          "symbol": "jarde::facade::snapshot_hierarchy_widenings_presented"
+        },
+        {
+          "frame": 21,
+          "symbol": "jarde::facade::recovery_from_with_class_candidates"
+        },
+        {
+          "frame": 22,
+          "symbol": "jarde::facade::recovery_presented_for_class_source"
+        },
+        {
+          "frame": 23,
+          "symbol": "jarde::facade::recover_prepared_member"
+        },
+        {
+          "frame": 24,
+          "symbol": "<jarde::facade::Engine>::prepare_physical_class_source"
+        },
+        {
+          "frame": 25,
+          "symbol": "<jarde::facade::Engine>::class_source_with_evidence"
+        },
+        {
+          "frame": 26,
+          "symbol": "jarde_cli::task::class_source::{closure#0}"
+        },
+        {
+          "frame": 27,
+          "symbol": "<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}>"
+        },
+        {
+          "frame": 28,
+          "symbol": "jarde_cli::task::class_source"
+        },
+        {
+          "frame": 29,
+          "symbol": "jarde_cli::task::dispatch"
+        }
+      ]
+    },
+    {
+      "ordinal": 5,
+      "family": "double_brace_class_projection",
+      "frames": [
+        {
+          "frame": 0,
+          "symbol": "<jarde_reader::budget::Budget>::exceeded"
+        },
+        {
+          "frame": 1,
+          "symbol": "<jarde_reader::budget::Budget>::ensure_within"
+        },
+        {
+          "frame": 2,
+          "symbol": "<jarde_reader::budget::Budget>::charge"
+        },
+        {
+          "frame": 3,
+          "symbol": "jarde_jvm::providers::charge_header_attempt"
+        },
+        {
+          "frame": 4,
+          "symbol": "jarde_jvm::providers::read_candidate"
+        },
+        {
+          "frame": 5,
+          "symbol": "jarde_jvm::providers::decide"
+        },
+        {
+          "frame": 6,
+          "symbol": "jarde_jvm::providers::probe_root"
+        },
+        {
+          "frame": 7,
+          "symbol": "jarde_jvm::providers::search_class_header"
+        },
+        {
+          "frame": 8,
+          "symbol": "jarde_jvm::providers::lookup_class_header"
+        },
+        {
+          "frame": 9,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_with"
+        },
+        {
+          "frame": 10,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand"
+        },
+        {
+          "frame": 11,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_from_caller"
+        },
+        {
+          "frame": 12,
+          "symbol": "jarde_jvm::resolver::resolution_report"
+        },
+        {
+          "frame": 13,
+          "symbol": "jarde_jvm::engine::resolve_symbol"
+        },
+        {
+          "frame": 14,
+          "symbol": "jarde::facade::resolve_class_source_dependency_read_raw"
+        },
+        {
+          "frame": 15,
+          "symbol": "<jarde::facade::Engine>::prove_double_brace_allocation"
+        },
+        {
+          "frame": 16,
+          "symbol": "<jarde::facade::Engine>::project_class_source_double_brace"
+        },
+        {
+          "frame": 17,
+          "symbol": "<jarde::facade::Engine>::class_source_with_evidence"
+        },
+        {
+          "frame": 18,
+          "symbol": "jarde_cli::task::class_source::{closure#0}"
+        },
+        {
+          "frame": 19,
+          "symbol": "<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}>"
+        },
+        {
+          "frame": 20,
+          "symbol": "jarde_cli::task::class_source"
+        },
+        {
+          "frame": 21,
+          "symbol": "jarde_cli::task::dispatch"
+        },
+        {
+          "frame": 22,
+          "symbol": "jarde_cli::task::run"
+        },
+        {
+          "frame": 23,
+          "symbol": "jarde_cli::main"
+        },
+        {
+          "frame": 24,
+          "symbol": "<fn() -> std::process::ExitCode as core::ops::function::FnOnce<()>>::call_once"
+        },
+        {
+          "frame": 25,
+          "symbol": "std::sys::backtrace::__rust_begin_short_backtrace::<fn() -> std::process::ExitCode, std::process::ExitCode>"
+        },
+        {
+          "frame": 26,
+          "symbol": "std::rt::lang_start::<std::process::ExitCode>::{closure#0}"
+        },
+        {
+          "frame": 27,
+          "symbol": "std::rt::lang_start_internal"
+        },
+        {
+          "frame": 28,
+          "symbol": "std::rt::lang_start::<std::process::ExitCode>"
+        },
+        {
+          "frame": 29,
+          "symbol": "main"
+        }
+      ]
+    },
+    {
+      "probe": "cap15",
+      "ordinal": 1,
+      "family": "double_brace_class_projection",
+      "frames": [
+        {
+          "frame": 0,
+          "symbol": "<jarde_reader::budget::Budget>::exceeded"
+        },
+        {
+          "frame": 1,
+          "symbol": "<jarde_reader::budget::Budget>::ensure_within"
+        },
+        {
+          "frame": 2,
+          "symbol": "<jarde_reader::budget::Budget>::charge"
+        },
+        {
+          "frame": 3,
+          "symbol": "jarde_jvm::providers::charge_header_attempt"
+        },
+        {
+          "frame": 4,
+          "symbol": "jarde_jvm::providers::read_candidate"
+        },
+        {
+          "frame": 5,
+          "symbol": "jarde_jvm::providers::decide"
+        },
+        {
+          "frame": 6,
+          "symbol": "jarde_jvm::providers::probe_root"
+        },
+        {
+          "frame": 7,
+          "symbol": "jarde_jvm::providers::search_class_header"
+        },
+        {
+          "frame": 8,
+          "symbol": "jarde_jvm::providers::lookup_class_header"
+        },
+        {
+          "frame": 9,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_with"
+        },
+        {
+          "frame": 10,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand"
+        },
+        {
+          "frame": 11,
+          "symbol": "<jarde_jvm::providers::HeaderClosure>::demand_from_caller"
+        },
+        {
+          "frame": 12,
+          "symbol": "jarde_jvm::resolver::resolution_report"
+        },
+        {
+          "frame": 13,
+          "symbol": "jarde_jvm::engine::resolve_symbol"
+        },
+        {
+          "frame": 14,
+          "symbol": "jarde::facade::resolve_class_source_dependency_read_raw"
+        },
+        {
+          "frame": 15,
+          "symbol": "<jarde::facade::Engine>::prove_double_brace_allocation"
+        },
+        {
+          "frame": 16,
+          "symbol": "<jarde::facade::Engine>::project_class_source_double_brace"
+        },
+        {
+          "frame": 17,
+          "symbol": "<jarde::facade::Engine>::class_source_with_evidence"
+        },
+        {
+          "frame": 18,
+          "symbol": "jarde_cli::task::class_source::{closure#0}"
+        },
+        {
+          "frame": 19,
+          "symbol": "<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}>"
+        },
+        {
+          "frame": 20,
+          "symbol": "jarde_cli::task::class_source"
+        },
+        {
+          "frame": 21,
+          "symbol": "jarde_cli::task::dispatch"
+        },
+        {
+          "frame": 22,
+          "symbol": "jarde_cli::task::run"
+        },
+        {
+          "frame": 23,
+          "symbol": "jarde_cli::main"
+        },
+        {
+          "frame": 24,
+          "symbol": "<fn() -> std::process::ExitCode as core::ops::function::FnOnce<()>>::call_once"
+        },
+        {
+          "frame": 25,
+          "symbol": "std::sys::backtrace::__rust_begin_short_backtrace::<fn() -> std::process::ExitCode, std::process::ExitCode>"
+        },
+        {
+          "frame": 26,
+          "symbol": "std::rt::lang_start::<std::process::ExitCode>::{closure#0}"
+        },
+        {
+          "frame": 27,
+          "symbol": "std::rt::lang_start_internal"
+        },
+        {
+          "frame": 28,
+          "symbol": "std::rt::lang_start::<std::process::ExitCode>"
+        },
+        {
+          "frame": 29,
+          "symbol": "main"
+        }
+      ]
+    }
+  ],
+  "classheaders_source_binding": {
+    "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+    "providers": {
+      "path": "crates/jarde-jvm/src/providers.rs",
+      "bytes": 164712,
+      "sha256": "cd7afafd3966123af944968465903c96f68db5d2409fb5e84ec9f4c6522ddde6"
+    },
+    "charge_dimension": "ClassHeaders",
+    "requested": 1
+  },
+  "cap15_normal": {
+    "argv": [
+      "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+      "class-source",
+      "--input",
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+      "--class",
+      "H1",
+      "--evidence",
+      "essential",
+      "--format",
+      "json",
+      "--budget",
+      "elapsed_millis=10000",
+      "--budget",
+      "output_bytes=1048576",
+      "--budget",
+      "class_headers=15"
+    ],
+    "exit_code": 0,
+    "seconds": 0.02456752400030382,
+    "class_execution": {
+      "status": "complete",
+      "usage": {
+        "analysis_steps": 3684,
+        "archive_entries": 284,
+        "attribute_bytes": 3626,
+        "class_bytes": 11024,
+        "class_headers": 15,
+        "code_bytes": 218,
+        "dependency_depth": 2,
+        "elapsed_millis": 19,
+        "entry_bytes": 9465,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 2481,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 1999,
+        "read_bytes": 6676,
+        "result_items": 134
+      }
+    },
+    "main_report_execution": {
+      "status": "complete",
+      "usage": {
+        "analysis_steps": 3644,
+        "archive_entries": 271,
+        "attribute_bytes": 3626,
+        "class_bytes": 11024,
+        "class_headers": 15,
+        "code_bytes": 218,
+        "dependency_depth": 2,
+        "elapsed_millis": 18,
+        "entry_bytes": 9465,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 2481,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 1999,
+        "read_bytes": 6676,
+        "result_items": 120
+      }
+    },
+    "main_content": "contains_statements",
+    "main_normalized_equal_wide": true,
+    "class_text_equal_wide": true,
+    "trace_status": "Dynamically confirmed by separate cap15 trace:1 double-brace postbody refusal,0 snapshot refusal, class stillComplete/exit0 with successful unchanged body."
+  },
+  "updated_proof_strength": {
+    "observed": "cap8 dynamically shows4 snapshot-proof refusals plus1 later double-brace refusal while main/class remainComplete/explanation_only/exit0. cap15 independently shows1 double-brace refusal without snapshot frames while main remainsComplete/contains_statements and classComplete/exit0.",
+    "mechanism": "Static resolver stores non-Complete in helper-local execution and returnsNone, while proof returnsVec/Option; bt shows Budget::exceeded but not the subsequent Result variant at wrapper catch. Cannot claim four Err arms specifically executed.",
+    "spec": "A real requested proof budget stop is being hidden by Complete, contrary to existing truthful execution/termination and CLI noncomplete-exit contract. ExplanationOnly is a valid content classification but cannot substitute for the lost termination plane.",
+    "remaining_isolation": "Exact BCI/class arguments and subsequent Err-vs-Ok(None,localPartial) values were not printed. The snapshot and double-brace call families are dynamically identified; reference-overload/direct-parent-accessor/direct-parent-field wrappers remain static only; cap14 has no debugger trace."
+  },
+  "scope": "Six normal CLI observations,3 valid debugger runs(cap8 bt16,cap8 bt30,cap15 bt30),1 invalid debugger attempt. These are diagnostics, not seven-path regression/workspace/CI acceptance. No new product/debugger/toolchain runs, source/capture edits or target access by auditor.",
+  "normalization": "Only elapsed_millis fields removed for report comparison; raw limits checked exactly equal first, including elapsed_millis=10000. No other field masked.",
+  "gdb_tool_pin": {
+    "gdb_path": "/usr/bin/gdb",
+    "gdb_bytes": 15896472,
+    "gdb_sha256": "b3d60239d69af6196ddb05d5057a620bd73afe4f4b821bc13f80bfcc020c7b24",
+    "gdb_version_sha256": "47df9689e865d5206226465c14442c79081a0dc2dd52556fa7a6ff59e6494574"
+  }
+}

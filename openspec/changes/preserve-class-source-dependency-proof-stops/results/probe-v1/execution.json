@@ -1,0 +1,107 @@
+{
+  "schema": "snapshot-proof-cli-probe-v1",
+  "status": "completed_observations_not_yet_classified",
+  "at": "2026-10-15T02:52:14.572265+00:00",
+  "product_commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+  "inputs": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+      "bytes": 59602720,
+      "sha256": "cdf06694fafcb4e8cef5a4b9452676489e8cf02495c0254ce38a21e44ee4c7d5"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+      "bytes": 4469,
+      "sha256": "1ee63f3836a5e514cea57b7349dd515ca3f98550154beff187fdca4d019105b0"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/src/facade.rs",
+      "bytes": 1961810,
+      "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-reader/src/budget.rs",
+      "bytes": 56599,
+      "sha256": "3605b5da30231613ef55f91312fbfbe2f2ecba09b0dd5cb7850e4e6b88a26687"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-cli/src/task.rs",
+      "bytes": 64208,
+      "sha256": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e"
+    }
+  ],
+  "no_cargo_jdk_source_or_target_mutation": true,
+  "commands": [
+    {
+      "label": "wide",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576"
+      ],
+      "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1",
+      "exit_code": 0,
+      "duration_seconds": 0.020073884001249098,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/wide.stdout.raw",
+          "bytes": 43726,
+          "sha256": "21659e767d640965fb23cac3c7c4b278475a151076b5c6376fc351304041a150"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/wide.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "class-headers-1",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=1"
+      ],
+      "cwd": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1",
+      "exit_code": 4,
+      "duration_seconds": 0.01326894399971934,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-1.stdout.raw",
+          "bytes": 38046,
+          "sha256": "b23effe3e1987348f706aabb21ea43f5f902cd8f246c00043cf9c688d2536e6b"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "inputs_unchanged_after": true
+}

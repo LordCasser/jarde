@@ -1,0 +1,102 @@
+{
+  "product_commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+  "source": "read-only git show from fixed commit; complete files copied, ranges are explanatory views, not compilable replacements",
+  "historical_binding": "Frozen CLI build binding is recorded by copied independent raw audit/trace-review; copying fixed blobs is not a new build. No current live whole-closure comparison claimed.",
+  "files": [
+    {
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "repository_path": "src/facade.rs",
+      "git_blob": "0124a126095abe9a336f960c3a481d566292de7b",
+      "bytes": 1961810,
+      "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307",
+      "snapshot": "results/source-context/c814/src/facade.rs",
+      "ranges_1based_inclusive": [
+        [
+          2076,
+          2200
+        ],
+        [
+          4690,
+          5010
+        ],
+        [
+          21597,
+          21675
+        ],
+        [
+          25424,
+          25460
+        ],
+        [
+          26248,
+          26260
+        ],
+        [
+          26460,
+          26654
+        ],
+        [
+          41230,
+          41385
+        ],
+        [
+          42020,
+          42290
+        ]
+      ]
+    },
+    {
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "repository_path": "crates/jarde-reader/src/budget.rs",
+      "git_blob": "ae47ac1aca9c553f7d812bcddf2a6a81aa9a6e00",
+      "bytes": 56599,
+      "sha256": "3605b5da30231613ef55f91312fbfbe2f2ecba09b0dd5cb7850e4e6b88a26687",
+      "snapshot": "results/source-context/c814/crates/jarde-reader/src/budget.rs",
+      "ranges_1based_inclusive": []
+    },
+    {
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "repository_path": "crates/jarde-cli/src/task.rs",
+      "git_blob": "b3a59b7d38d964baebfe14d4afa25589c8ad1335",
+      "bytes": 64208,
+      "sha256": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+      "snapshot": "results/source-context/c814/crates/jarde-cli/src/task.rs",
+      "ranges_1based_inclusive": []
+    },
+    {
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "repository_path": "crates/jarde-jvm/src/resolver.rs",
+      "git_blob": "d2bc2f9e45a9bb740ad532b7b368b3de4e8b4b7a",
+      "bytes": 94562,
+      "sha256": "47a64cbf9415e232a297297c3dec19cba00d0629f6762db960f86bef6bec4835",
+      "snapshot": "results/source-context/c814/crates/jarde-jvm/src/resolver.rs",
+      "ranges_1based_inclusive": [
+        [
+          330,
+          365
+        ],
+        [
+          518,
+          570
+        ],
+        [
+          760,
+          815
+        ],
+        [
+          1610,
+          1687
+        ]
+      ]
+    },
+    {
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "repository_path": "crates/jarde-java/src/report.rs",
+      "git_blob": "71bb5d54ec8f0d51cefdc24360f4aa4ca2a54f86",
+      "bytes": 696719,
+      "sha256": "6871a5ae95b2e725bf70834864f096ace19e1b321c253bb48d258b75ecfe93ca",
+      "snapshot": "results/source-context/c814/crates/jarde-java/src/report.rs",
+      "ranges_1based_inclusive": []
+    }
+  ]
+}

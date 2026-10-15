@@ -1,0 +1,415 @@
+{
+  "status": "confirmed_public_stop_loss_on_private_candidate",
+  "baseline": {
+    "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+    "HEAD": "f01402867ffa20085e421a680a6ebbe878e63338",
+    "files": {
+      "crates/jarde-reader/src/facts_cache.rs": {
+        "bytes": 66905,
+        "sha256": "74038dbb60a2f2888e4c8e535a3f1487552edeeb60477d31b8cc14fdd45aa800"
+      },
+      "tests/p5_benchmark.rs": {
+        "bytes": 276581,
+        "sha256": "818472fcc684063e4415a389dae5e90e863f3ae73dd4603090051e79b3bb3d17"
+      },
+      "tests/p5_facts_cache.rs": {
+        "bytes": 86841,
+        "sha256": "5fbb01eaf6d180b4b7dac91ab278c34bc4ee569862189b1b78749cd6f5943801"
+      },
+      "crates/jarde-reader/src/facts_capacity_tests.rs": {
+        "bytes": 12382,
+        "sha256": "19185d8f095286545f1690a9c0e5f4df938e295f6d96a7fca5110024be72e3a6"
+      },
+      "crates/jarde-jvm/src/callee.rs": {
+        "bytes": 25296,
+        "sha256": "1f22ef28276c1a310a1e7c4aae1a5fdbe6414e178836b0c03440f05d246ff51f"
+      },
+      "crates/jarde-jvm/src/engine.rs": {
+        "bytes": 89365,
+        "sha256": "3de4fb79ccab307afad95bcc59331257adc67a1ce4b3987e4ea43279da2e7998"
+      },
+      "tests/p3_prepared_input.rs": {
+        "bytes": 58628,
+        "sha256": "b34a2b990f368b3f2f397bb36a40ee00a075f9c482c9963f6f788945250ec238"
+      },
+      "crates/jarde-jvm/src/canonical.rs": {
+        "bytes": 152162,
+        "sha256": "41dc3c015ef1845ddf04ad548859eccf8676c42813c03b2ad45cd7cf77eccc70"
+      },
+      "tests/p3_method_ir.rs": {
+        "bytes": 38863,
+        "sha256": "f0face82e17b6733920ddc955a308ad35cff8c76a399b388ec3dcf2c9e2d77dd"
+      },
+      "crates/jarde-java/src/bridge.rs": {
+        "bytes": 37448,
+        "sha256": "65cd1f4e2e6cda9e763036f3d5bafd92b2d8e263bedd684e7edf0189fac60bcc"
+      },
+      "crates/jarde-java/src/emit.rs": {
+        "bytes": 183349,
+        "sha256": "07ad789e67a0861a5e5400842b7c0c910bf04d2fb83da65cb387d18ea0780c31"
+      },
+      "crates/jarde-java/src/report.rs": {
+        "bytes": 696719,
+        "sha256": "6871a5ae95b2e725bf70834864f096ace19e1b321c253bb48d258b75ecfe93ca"
+      },
+      "crates/jarde-java/src/stop.rs": {
+        "bytes": 13221,
+        "sha256": "d3833ac7e623ab2347f535bd0d0b8860b16853a69241d4d57113c307c8041792"
+      },
+      "crates/jarde-java/src/build.rs": {
+        "bytes": 1902313,
+        "sha256": "b973da39da521dad9a71c53114c22901eaf056f63fa55823949004b2cc234bb8"
+      },
+      "src/facade.rs": {
+        "bytes": 1961810,
+        "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307"
+      },
+      "tests/p3_special_dispatch.rs": {
+        "bytes": 12893,
+        "sha256": "f60f566087365073a3a3b5993f3d8caa0e6e61068ea4b53d78a532c87f77f5ea"
+      },
+      "tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class": {
+        "bytes": 784,
+        "sha256": "a1cd50a4ae4b30779041521f50db5062cddd66ff067eff44328202f886479162"
+      },
+      "tests/fixtures/p3-special-dispatch/v8/BaseProbe.class": {
+        "bytes": 833,
+        "sha256": "b631eb77987041dd3d71a4e1098b08f2cddd613493a6a308add73ef1cdfe8266"
+      },
+      "tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class": {
+        "bytes": 114,
+        "sha256": "de73401a2d112c9b10fdc19792388782117b47c4cc02716e34c820f6bb5b5711"
+      }
+    },
+    "target_absent": true,
+    "instructions": "/home/lordcasser/.codex/AGENTS.md; no more-specific AGENTS.md found"
+  },
+  "test_file": {
+    "path": "tests/interface_proof_stop_repro.rs",
+    "bytes": 4518,
+    "sha256": "f285e92259533d5a55c2c351436c5107b68433d92774181d7285b6ac8b83420f"
+  },
+  "patch_sha256": "e6e12b4ab8b40dc158eb6f8451b322fb0041a510c57e1944ecd4c4c14112c207",
+  "commands": [
+    {
+      "label": "format-testfile",
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde/tests/interface_proof_stop_repro.rs"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/format-testfile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/format-testfile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "duration_seconds": 1.0012381180004013,
+      "peak_target_bytes": 0,
+      "source_snapshots": {
+        "source_hashes_before": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/format-testfile.source_hashes_before.json.gz",
+          "sha256": "74bb3dd0a747fa7f4b91221fad4271f4e130bcf6d7453e0d934d6b44f94a4520"
+        },
+        "source_hashes_after": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/format-testfile.source_hashes_after.json.gz",
+          "sha256": "68fd034cfd4fda38d1d8bcfd7f6dba22fadfc3c2bb1e9a466873e27095e2e3f0"
+        }
+      }
+    },
+    {
+      "label": "wide-positive",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "interface_proof_stop_repro",
+        "--locked",
+        "wide_public_interface_super_has_complete_proof",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/wide-positive.stdout.raw",
+          "bytes": 8843,
+          "sha256": "8f0f7a543be28590ea28d9833133d937e30e12fbf9e8f1be0f87e43c910afb8b"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/wide-positive.stderr.raw",
+          "bytes": 2530,
+          "sha256": "7c0e8fdddf63e04237cf368b6bd19261bd375fefdf735b35af1bda23d3bbb200"
+        }
+      },
+      "duration_seconds": 53.28888368099979,
+      "peak_target_bytes": 393159292,
+      "source_snapshots": {
+        "source_hashes_before": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/wide-positive.source_hashes_before.json.gz",
+          "sha256": "79fc934c243a00647cbe32415d73344efc31aeaea24e3ac326bab43ed3d9be82"
+        },
+        "source_hashes_after": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/wide-positive.source_hashes_after.json.gz",
+          "sha256": "ce1481935c39c34a18dfa6063348626e2af87c56f073979bd2e9df64f1b0597a"
+        }
+      }
+    },
+    {
+      "label": "depth-zero-negative",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "interface_proof_stop_repro",
+        "--locked",
+        "depth_zero_public_interface_proof_preserves_original_stop",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "raw": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.stdout.raw",
+          "bytes": 9086,
+          "sha256": "27add06cd08fb98a6ca897119dbe333d48d0e3905bf3e459954b2f2e7be0aa75"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.stderr.raw",
+          "bytes": 1023,
+          "sha256": "3c2ee6e1dbcf22689636f8a7d9f52b20ed569ac3c227961512c73af8ba41e906"
+        }
+      },
+      "duration_seconds": 1.006994006998866,
+      "peak_target_bytes": 393159292,
+      "source_snapshots": {
+        "source_hashes_before": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.source_hashes_before.json.gz",
+          "sha256": "6585bad5aadc29f1df15c5bcaf9c9e49ca5d436c94093129238e56ecfa85015b"
+        },
+        "source_hashes_after": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/depth-zero-negative.source_hashes_after.json.gz",
+          "sha256": "03d0a6368f759d14d7cff46d2d32cc87419e038387ac3b741b34bb53cca7a6b1"
+        }
+      }
+    },
+    {
+      "label": "final-clean",
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/final-clean.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/final-clean.stderr.raw",
+          "bytes": 21,
+          "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28"
+        }
+      },
+      "duration_seconds": 1.0014205940005922,
+      "peak_target_bytes": 0,
+      "source_snapshots": {
+        "source_hashes_before": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/final-clean.source_hashes_before.json.gz",
+          "sha256": "0fc48d4c444e30b3964b1bdfd3e76077824305fd0967ada4ca1fdb8be7172893"
+        },
+        "source_hashes_after": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/final-clean.source_hashes_after.json.gz",
+          "sha256": "5c83b8f2717a99815051c996973aeb8bc35ed6d82d7febbcb53616add7663b19"
+        }
+      }
+    }
+  ],
+  "results": {
+    "wide-positive": {
+      "requested_dependency_depth": 8,
+      "analysis_execution": "complete",
+      "presentation": {
+        "content": "contains_statements",
+        "quality": "structured",
+        "stop": null,
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "input_bytes": 0,
+            "archive_entries": 17,
+            "entry_bytes": 2678,
+            "read_bytes": 2678,
+            "class_bytes": 3462,
+            "attribute_bytes": 981,
+            "code_bytes": 5,
+            "result_items": 47,
+            "output_bytes": 210,
+            "class_headers": 3,
+            "method_bodies": 1,
+            "ir_items": 71,
+            "ir_edges": 3,
+            "analysis_steps": 45,
+            "normalization_clones": 0,
+            "nested_depth": 0,
+            "dependency_depth": 1,
+            "elapsed_millis": 3
+          }
+        }
+      },
+      "recovery_outcome": "produced",
+      "has_interface_super": true,
+      "text": "// @method defaultCall()I\n// @declaration an instance method of `SpecialProbe`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    return DefaultProbe.super.value();\n}\n",
+      "usage": {
+        "input_bytes": 0,
+        "archive_entries": 17,
+        "entry_bytes": 2678,
+        "read_bytes": 2678,
+        "class_bytes": 3462,
+        "attribute_bytes": 981,
+        "code_bytes": 5,
+        "result_items": 47,
+        "output_bytes": 210,
+        "class_headers": 3,
+        "method_bodies": 1,
+        "ir_items": 71,
+        "ir_edges": 3,
+        "analysis_steps": 45,
+        "normalization_clones": 0,
+        "nested_depth": 0,
+        "dependency_depth": 1,
+        "elapsed_millis": 3
+      }
+    },
+    "depth-zero-negative": {
+      "requested_dependency_depth": 0,
+      "analysis_execution": "complete",
+      "presentation": {
+        "content": "explanation_only",
+        "quality": "fallback",
+        "stop": null,
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "input_bytes": 0,
+            "archive_entries": 13,
+            "entry_bytes": 1012,
+            "read_bytes": 1012,
+            "class_bytes": 1796,
+            "attribute_bytes": 579,
+            "code_bytes": 5,
+            "result_items": 31,
+            "output_bytes": 359,
+            "class_headers": 2,
+            "method_bodies": 1,
+            "ir_items": 69,
+            "ir_edges": 3,
+            "analysis_steps": 40,
+            "normalization_clones": 0,
+            "nested_depth": 0,
+            "dependency_depth": 0,
+            "elapsed_millis": 2
+          }
+        }
+      },
+      "recovery_outcome": "produced",
+      "has_interface_super": false,
+      "text": "// @method defaultCall()I\n// @declaration an instance method of `SpecialProbe`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 4 1 0\n    // the interface-special target `DefaultProbe.value` with descriptor `()I` at BCI 1 has no selected proof of a legal source qualifier and unique default binding\n}\n",
+      "usage": {
+        "input_bytes": 0,
+        "archive_entries": 13,
+        "entry_bytes": 1012,
+        "read_bytes": 1012,
+        "class_bytes": 1796,
+        "attribute_bytes": 579,
+        "code_bytes": 5,
+        "result_items": 31,
+        "output_bytes": 359,
+        "class_headers": 2,
+        "method_bodies": 1,
+        "ir_items": 69,
+        "ir_edges": 3,
+        "analysis_steps": 40,
+        "normalization_clones": 0,
+        "nested_depth": 0,
+        "dependency_depth": 0,
+        "elapsed_millis": 2
+      }
+    }
+  },
+  "exact_test_counts": {
+    "wide": {
+      "passed": 1,
+      "failed": 0,
+      "filtered": 1
+    },
+    "depth_zero": {
+      "passed": 0,
+      "failed": 1,
+      "filtered": 1
+    }
+  },
+  "source_delta": [
+    "tests/interface_proof_stop_repro.rs"
+  ],
+  "thirteen_candidates_and_b973_build_unchanged": true,
+  "all_test_and_finalclean_source_snapshots_stable": true,
+  "cleanup": {
+    "automatic": {
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "target_absent": true,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.cleanup.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/depth-zero-negative.cleanup.stderr.raw",
+          "bytes": 39,
+          "sha256": "8b186e4411008437d36fcc43a2d1f5107e61228176c21870b197ff311a4db52d"
+        }
+      }
+    },
+    "final": {
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "target_absent": true,
+      "streams": {
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/final-clean.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-review/20261015/interface-proof-stop-repro-v1/raw/final-clean.stderr.raw",
+          "bytes": 21,
+          "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28"
+        }
+      }
+    }
+  },
+  "scope": "Two exact public Engine::recover_target tests only, one positive and one expected-contract failure; no production fix, root edits, shared target, workspace or CI claim. Original DependencyDepth refusal is inferred from real proof gate plus sole limit change; the public report hides that reason and cannot expose the swallowed error itself. No auxiliary prove-only substitute ran."
+}

@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/home/lordcasser/.local/bin/openspec",
+    "validate",
+    "reject-ambiguous-class-view-body-selection",
+    "--strict",
+    "--no-interactive"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+  "started_at": "2026-10-15T01:57:01.955514+00:00",
+  "finished_at": "2026-10-15T01:57:02.938567+00:00",
+  "exit_code": 0,
+  "node_path_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/new-review-changes-planning-v1/class-view-validate-v1/stdout.raw",
+      "bytes": 61,
+      "sha256": "81d67fe18694c4d04915c6f540fb694c6bae7a004b271447d2016f94c2d81a3f"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/new-review-changes-planning-v1/class-view-validate-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

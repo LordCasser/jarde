@@ -29,6 +29,8 @@
 //! * **recovery presents content first, then quality, then any stop**, read from the report's own
 //!   fields and never from its text (3.4, A13/A14).
 
+#[cfg(feature = "test-support")]
+use jarde::d0_counts;
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
 use std::io::{Cursor, Write};
@@ -1910,6 +1912,514 @@ fn an_ambiguous_body_name_returns_candidates_and_reads_no_body() {
     assert_eq!(budget.usage().method_bodies, 0);
     assert_eq!(candidates.limits, limits());
     assert_no_analysis("an ambiguous body selection", &budget.usage());
+}
+
+/// Physical method IDs have no ordinal: every duplicate raw signature must use the same
+/// ambiguity path as a name query, before any preparation or body admission.
+#[cfg(feature = "test-support")]
+#[test]
+fn duplicate_method_identity_uses_name_ambiguity_before_body_admission() {
+    fn spec(flags: u16, has_code: bool) -> MemberSpec<'static> {
+        MemberSpec {
+            name: b"m",
+            descriptor: b"()V",
+            access_flags: flags,
+            code: has_code.then_some(&b"\xb1"[..]),
+            declared_code_length: None,
+        }
+    }
+
+    fn assert_ambiguous_pair(
+        outcome: OperationOutcome<ClassViewReport>,
+        expected_flags: [u16; 2],
+        expected_ids: [&PhysicalMethodId; 2],
+        label: &str,
+    ) {
+        let candidates = ambiguous(outcome);
+        let methods: Vec<_> = candidates
+            .candidates
+            .iter()
+            .map(|item| match item {
+                ClassContentItem::Method(method) => method,
+                other => panic!("{label}: non-method candidate {other:?}"),
+            })
+            .collect();
+        assert_eq!(methods.len(), 2, "{label}");
+        assert_eq!(methods[0].index, 0, "{label}");
+        assert_eq!(methods[1].index, 1, "{label}");
+        assert_eq!(methods[0].access_flags, expected_flags[0], "{label}");
+        assert_eq!(methods[1].access_flags, expected_flags[1], "{label}");
+        assert_eq!(&methods[0].identity, expected_ids[0], "{label}");
+        assert_eq!(&methods[1].identity, expected_ids[1], "{label}");
+    }
+
+    fn check_quiet_selection(usage: &UsageSnapshot, counts: d0_counts::Counts, label: &str) {
+        assert_eq!(counts.class_materializations, 1, "{label}");
+        assert_eq!(counts.class_preparations, 0, "{label}");
+        assert_eq!(counts.body_decodes, 0, "{label}");
+        assert_eq!(counts.recovery_runs, 0, "{label}");
+        assert_eq!(usage.method_bodies, 0, "{label}");
+        assert_eq!(usage.code_bytes, 0, "{label}");
+        assert_no_ir(label, usage);
+    }
+
+    fn candidate_budget() -> Budget {
+        let mut configured = limits();
+        configured.elapsed_millis = u64::MAX;
+        Budget::new(configured)
+    }
+
+    fn zero_method_body_budget() -> Budget {
+        let mut configured = limits();
+        configured.elapsed_millis = u64::MAX;
+        configured.method_bodies = 0;
+        Budget::new(configured)
+    }
+
+    let engine = Engine::new();
+    let cases = [
+        ("abstract-code", 0x0401, false, 0x0009, true),
+        ("code-abstract", 0x0009, true, 0x0401, false),
+        ("native-code", 0x0109, false, 0x0009, true),
+        ("code-native", 0x0009, true, 0x0109, false),
+        ("abstract-abstract", 0x0401, false, 0x0401, false),
+        ("native-native", 0x0109, false, 0x0109, false),
+        ("abstract-native", 0x0401, false, 0x0109, false),
+        ("native-abstract", 0x0109, false, 0x0401, false),
+        ("code-code", 0x0009, true, 0x0009, true),
+    ];
+    for (label, first_flags, first_code, second_flags, second_code) in cases {
+        let snapshot = open(class_file(
+            b"p/S",
+            52,
+            &[],
+            &[
+                spec(first_flags, first_code),
+                spec(second_flags, second_code),
+            ],
+        ));
+        let definition = definition_of_snapshot(&snapshot);
+        let listing = performed(
+            engine
+                .class_view(
+                    &snapshot,
+                    &PhysicalScope::SnapshotAll,
+                    &ClassViewRequest {
+                        class: ClassRef::Definition {
+                            definition: definition.clone(),
+                        },
+                        bodies: Vec::new(),
+                    },
+                    &mut candidate_budget(),
+                )
+                .expect("the complete class view lists both duplicate members"),
+        );
+        let listed: Vec<_> = listing.methods().cloned().collect();
+        assert_eq!(listed.len(), 2, "{label}");
+        assert_eq!((listed[0].index, listed[1].index), (0, 1), "{label}");
+        assert_eq!(listed[0].access_flags, first_flags, "{label}");
+        assert_eq!(listed[1].access_flags, second_flags, "{label}");
+        // Both rows remain visible, even though this public carrier cannot distinguish them.
+        assert_eq!(listed[0].identity, listed[1].identity, "{label}");
+        let expected_flags = [first_flags, second_flags];
+        let expected_ids = [&listed[0].identity, &listed[1].identity];
+
+        let run = |body: BodyRef, no_body_budget: bool| {
+            let before = d0_counts::snapshot();
+            let mut request_budget = if no_body_budget {
+                zero_method_body_budget()
+            } else {
+                candidate_budget()
+            };
+            let outcome = engine.class_view(
+                &snapshot,
+                &PhysicalScope::SnapshotAll,
+                &ClassViewRequest {
+                    class: ClassRef::Definition {
+                        definition: definition.clone(),
+                    },
+                    bodies: vec![body],
+                },
+                &mut request_budget,
+            );
+            let counts = before.since(d0_counts::snapshot());
+            (outcome, request_budget.usage(), counts)
+        };
+
+        // Name is the already-correct public control and returns both original ordinals.
+        let (named, usage, counts) = run(
+            BodyRef::Name {
+                name: bytes(b"m"),
+                descriptor: Some(bytes(b"()V")),
+            },
+            label == "abstract-code",
+        );
+        assert_ambiguous_pair(
+            named.expect("name selection completes"),
+            expected_flags,
+            expected_ids,
+            label,
+        );
+        check_quiet_selection(&usage, counts, label);
+
+        // Each listed identity, including two equal IDs from different indexes/flags, must follow
+        // exactly the same ambiguity rule and preserve all candidate rows without preparation.
+        for method in &listed {
+            let (selected, usage, counts) = run(
+                BodyRef::Method {
+                    method: method.identity.clone(),
+                },
+                label == "abstract-code",
+            );
+            assert_ambiguous_pair(
+                selected.expect("identity selection completes"),
+                expected_flags,
+                expected_ids,
+                label,
+            );
+            check_quiet_selection(&usage, counts, label);
+        }
+    }
+
+    // Unique no-Code identities remain declarations and do not prepare/decode a body; a unique
+    // Code identity still performs exactly the ordinary one preparation and one decode.
+    for (flags, has_code) in [(0x0401, false), (0x0109, false), (0x0009, true)] {
+        let snapshot = open(class_file(b"p/S", 52, &[], &[spec(flags, has_code)]));
+        let definition = definition_of_snapshot(&snapshot);
+        let listed = performed(
+            engine
+                .class_view(
+                    &snapshot,
+                    &PhysicalScope::SnapshotAll,
+                    &ClassViewRequest {
+                        class: ClassRef::Definition {
+                            definition: definition.clone(),
+                        },
+                        bodies: Vec::new(),
+                    },
+                    &mut candidate_budget(),
+                )
+                .expect("unique declaration lists"),
+        );
+        let method = listed
+            .methods()
+            .next()
+            .expect("one method")
+            .identity
+            .clone();
+        let before = d0_counts::snapshot();
+        let mut request_budget = candidate_budget();
+        let result = engine
+            .class_view(
+                &snapshot,
+                &PhysicalScope::SnapshotAll,
+                &ClassViewRequest {
+                    class: ClassRef::Definition { definition },
+                    bodies: vec![BodyRef::Method {
+                        method: method.clone(),
+                    }],
+                },
+                &mut request_budget,
+            )
+            .expect("a unique identity remains a performed view");
+        let counts = before.since(d0_counts::snapshot());
+        let OperationOutcome::Performed(report) = result else {
+            panic!("unique identity: {result:?}")
+        };
+        assert_eq!(report.bodies.len(), 1);
+        if has_code {
+            assert!(matches!(report.bodies[0], ClassViewBody::Read { .. }));
+            assert_eq!(counts.class_preparations, 1);
+            assert_eq!(counts.body_decodes, 1);
+            assert_eq!(request_budget.usage().method_bodies, 1);
+            assert!(request_budget.usage().code_bytes > 0);
+        } else {
+            let kind = if flags == 0x0401 {
+                NoBodyKind::Abstract
+            } else {
+                NoBodyKind::Native
+            };
+            assert!(matches!(
+                &report.bodies[0],
+                ClassViewBody::NotDeclared { method: found, no_body_kind: Some(found_kind) }
+                    if found == &method && *found_kind == kind
+            ));
+            assert_eq!(counts.class_preparations, 0);
+            assert_eq!(counts.body_decodes, 0);
+            assert_eq!(request_budget.usage().method_bodies, 0);
+            assert_eq!(request_budget.usage().code_bytes, 0);
+        }
+        assert_eq!(counts.class_materializations, 1);
+        assert_no_ir("unique identity", &request_budget.usage());
+    }
+
+    // Descriptor equality is part of the lookup: the same name at another descriptor is not a
+    // duplicate signature, and an exact unique abstract identity remains a no-body declaration.
+    let overloads = open(class_file(
+        b"p/S",
+        52,
+        &[],
+        &[
+            MemberSpec::abstract_method(b"m", b"()V"),
+            MemberSpec::method(b"m", b"(I)V"),
+        ],
+    ));
+    let definition = definition_of_snapshot(&overloads);
+    let listed = performed(
+        engine
+            .class_view(
+                &overloads,
+                &PhysicalScope::SnapshotAll,
+                &ClassViewRequest {
+                    class: ClassRef::Definition {
+                        definition: definition.clone(),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut candidate_budget(),
+            )
+            .expect("overloads list"),
+    );
+    let methods: Vec<_> = listed.methods().cloned().collect();
+    assert_ne!(methods[0].identity, methods[1].identity);
+    let mut name_budget = candidate_budget();
+    let exact_name = engine
+        .class_view(
+            &overloads,
+            &PhysicalScope::SnapshotAll,
+            &ClassViewRequest {
+                class: ClassRef::Definition {
+                    definition: definition.clone(),
+                },
+                bodies: vec![BodyRef::Name {
+                    name: bytes(b"m"),
+                    descriptor: Some(bytes(b"()V")),
+                }],
+            },
+            &mut name_budget,
+        )
+        .expect("exact descriptor identifies one overload");
+    assert!(matches!(exact_name, OperationOutcome::Performed(_)));
+    assert_eq!(name_budget.usage().method_bodies, 0);
+    assert_eq!(name_budget.usage().code_bytes, 0);
+    assert_no_ir("exact descriptor", &name_budget.usage());
+
+    // The existing foreign-owner control uses a different signature. Also pin priority when
+    // the local table itself has the exact duplicated signature: owner refusal must precede
+    // local ambiguity and must not admit a prepared class or either body.
+    let local_duplicate = class_file(
+        b"p/S",
+        52,
+        &[],
+        &[
+            MemberSpec::abstract_method(b"m", b"()V"),
+            MemberSpec::method(b"m", b"()V"),
+        ],
+    );
+    let foreign_same_signature = class_file(b"p/T", 52, &[], &[MemberSpec::method(b"m", b"()V")]);
+    let same_signature_tree = open(zip_of(&[
+        (b"p/S.class", &local_duplicate),
+        (b"p/T.class", &foreign_same_signature),
+    ]));
+    let same_signature_scope = tree_scope(&same_signature_tree);
+    let local = performed(
+        engine
+            .class_view(
+                &same_signature_tree,
+                &same_signature_scope,
+                &ClassViewRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("p/S"),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut candidate_budget(),
+            )
+            .expect("the local duplicate rows are listable"),
+    );
+    let foreign = performed(
+        engine
+            .class_view(
+                &same_signature_tree,
+                &same_signature_scope,
+                &ClassViewRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("p/T"),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut candidate_budget(),
+            )
+            .expect("the foreign same-signature method is listable"),
+    );
+    let foreign_method = foreign
+        .methods()
+        .next()
+        .expect("foreign method row")
+        .identity
+        .clone();
+    let before = d0_counts::snapshot();
+    let mut owner_budget = candidate_budget();
+    let owner_error = engine
+        .class_view(
+            &same_signature_tree,
+            &same_signature_scope,
+            &ClassViewRequest {
+                class: ClassRef::Definition {
+                    definition: local.class.clone(),
+                },
+                bodies: vec![BodyRef::Method {
+                    method: foreign_method.clone(),
+                }],
+            },
+            &mut owner_budget,
+        )
+        .expect_err("foreign owner is rejected before local duplicate matching");
+    let owner_counts = before.since(d0_counts::snapshot());
+    assert_eq!(foreign_method.name, bytes(b"m"));
+    assert_eq!(foreign_method.descriptor, bytes(b"()V"));
+    assert_eq!(code_of(&owner_error), "class_view_body_foreign_owner");
+    assert_eq!(owner_counts.class_preparations, 0);
+    assert_eq!(owner_counts.body_decodes, 0);
+    assert_eq!(owner_counts.recovery_runs, 0);
+    assert_eq!(owner_budget.usage().method_bodies, 0);
+    assert_eq!(owner_budget.usage().code_bytes, 0);
+    assert_no_ir(
+        "foreign same-signature owner priority",
+        &owner_budget.usage(),
+    );
+
+    for (position, method) in methods.iter().enumerate() {
+        let before = d0_counts::snapshot();
+        let mut identity_budget = candidate_budget();
+        let selected = engine
+            .class_view(
+                &overloads,
+                &PhysicalScope::SnapshotAll,
+                &ClassViewRequest {
+                    class: ClassRef::Definition {
+                        definition: definition.clone(),
+                    },
+                    bodies: vec![BodyRef::Method {
+                        method: method.identity.clone(),
+                    }],
+                },
+                &mut identity_budget,
+            )
+            .expect("the listed descriptor resolves independently");
+        let counts = before.since(d0_counts::snapshot());
+        let OperationOutcome::Performed(report) = selected else {
+            panic!("different descriptors are not duplicates: {selected:?}");
+        };
+        if position == 0 {
+            assert!(matches!(
+                &report.bodies[0],
+                ClassViewBody::NotDeclared {
+                    no_body_kind: Some(NoBodyKind::Abstract),
+                    ..
+                }
+            ));
+            assert_eq!(counts.class_preparations, 0);
+            assert_eq!(counts.body_decodes, 0);
+            assert_eq!(identity_budget.usage().method_bodies, 0);
+            assert_eq!(identity_budget.usage().code_bytes, 0);
+        } else {
+            assert!(matches!(report.bodies[0], ClassViewBody::Read { .. }));
+            assert_eq!(counts.class_preparations, 1);
+            assert_eq!(counts.body_decodes, 1);
+            assert_eq!(identity_budget.usage().method_bodies, 1);
+            assert!(identity_budget.usage().code_bytes > 0);
+        }
+        assert_no_ir("different-descriptor identity", &identity_budget.usage());
+    }
+
+    // A complete member-table miss stays a not-found input error.
+    let present = open(class_file(
+        b"p/S",
+        52,
+        &[],
+        &[MemberSpec::abstract_method(b"present", b"()V")],
+    ));
+    let definition = definition_of_snapshot(&present);
+    let absent = PhysicalMethodId {
+        owner: definition.clone(),
+        name: bytes(b"missing"),
+        descriptor: bytes(b"()V"),
+    };
+    let before = d0_counts::snapshot();
+    let mut missing_budget = candidate_budget();
+    let missing = engine
+        .class_view(
+            &present,
+            &PhysicalScope::SnapshotAll,
+            &ClassViewRequest {
+                class: ClassRef::Definition { definition },
+                bodies: vec![BodyRef::Method { method: absent }],
+            },
+            &mut missing_budget,
+        )
+        .expect_err("complete miss remains not found");
+    let missing_counts = before.since(d0_counts::snapshot());
+    assert_eq!(code_of(&missing), "class_view_body_not_found");
+    assert_eq!(missing_counts.class_preparations, 0);
+    assert_eq!(missing_counts.body_decodes, 0);
+    assert_eq!(missing_budget.usage().method_bodies, 0);
+    assert_eq!(missing_budget.usage().code_bytes, 0);
+
+    // A member-table stop leaves an absent identity unresolved/refused, not invented as missing;
+    // no prepared class or body is admitted for the suffix the reader never reached.
+    let damaged = open(class_file(
+        b"p/S",
+        52,
+        &[],
+        &[
+            MemberSpec::method(b"before", b"()V"),
+            MemberSpec::method(b"broken", b"()V").damaged(4096),
+            MemberSpec::method(b"after", b"()V"),
+        ],
+    ));
+    let definition = definition_of_snapshot(&damaged);
+    let absent_after_stop = PhysicalMethodId {
+        owner: definition.clone(),
+        name: bytes(b"after"),
+        descriptor: bytes(b"()V"),
+    };
+    let before = d0_counts::snapshot();
+    let mut partial_budget = candidate_budget();
+    let partial = engine
+        .class_view(
+            &damaged,
+            &PhysicalScope::SnapshotAll,
+            &ClassViewRequest {
+                class: ClassRef::Definition { definition },
+                bodies: vec![BodyRef::Method {
+                    method: absent_after_stop,
+                }],
+            },
+            &mut partial_budget,
+        )
+        .expect("partial member-table facts remain a class-view report");
+    let partial_counts = before.since(d0_counts::snapshot());
+    let OperationOutcome::Performed(partial) = partial else {
+        panic!("confirmed class is performed")
+    };
+    assert!(partial.declaration().unwrap().member_table.is_some());
+    assert!(matches!(partial.execution, ExecutionReport::Partial { .. }));
+    assert!(matches!(
+        &partial.bodies[0],
+        ClassViewBody::Refused {
+            method: None,
+            execution: ExecutionReport::Partial { .. },
+            ..
+        }
+    ));
+    assert_eq!(partial_counts.class_preparations, 0);
+    assert_eq!(partial_counts.body_decodes, 0);
+    assert_eq!(partial_budget.usage().method_bodies, 0);
+    assert_eq!(partial_budget.usage().code_bytes, 0);
+
+    // The existing tight MethodBodies test in `a_tight_override_stops_with_the_terminating_dimension`
+    // already drives two listed BodyRef::Method values and checks its normal body/stopped-prefix behavior.
 }
 
 /// A damaged member record stops the member walk there; the class, the members before it and the

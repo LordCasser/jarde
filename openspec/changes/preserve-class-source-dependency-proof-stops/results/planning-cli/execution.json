@@ -1,0 +1,266 @@
+{
+  "scope": "planning OpenSpec CLI only; no product CLI/toolchain execution",
+  "commands": [
+    {
+      "label": "context",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "context",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:32.269135+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/context.stdout.raw",
+          "bytes": 179,
+          "sha256": "4c7f8861df32b2564194145badd8cb0abe22e7c4ba818a4d8b2365448a03a2ba"
+        },
+        "stderr": {
+          "path": "results/planning-cli/context.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "instructions-proposal",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "proposal",
+        "--change",
+        "preserve-class-source-dependency-proof-stops",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:33.267462+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/instructions-proposal.stdout.raw",
+          "bytes": 8134,
+          "sha256": "e8be094aad4df0e0cd60b05a96eb989ac949386121d9c181d5d49dc513d3f863"
+        },
+        "stderr": {
+          "path": "results/planning-cli/instructions-proposal.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "instructions-specs",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "specs",
+        "--change",
+        "preserve-class-source-dependency-proof-stops",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:34.229112+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/instructions-specs.stdout.raw",
+          "bytes": 10760,
+          "sha256": "6415f9c960939d4340ef017b2248bc19128504b3df9b2c1a2a4d95b0daa2dc36"
+        },
+        "stderr": {
+          "path": "results/planning-cli/instructions-specs.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "instructions-design",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "design",
+        "--change",
+        "preserve-class-source-dependency-proof-stops",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:35.734040+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/instructions-design.stdout.raw",
+          "bytes": 5990,
+          "sha256": "25abea8972d0f5fbd710b15e6d5022b1793138d91310b0ff17bbb54c4578a2da"
+        },
+        "stderr": {
+          "path": "results/planning-cli/instructions-design.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "instructions-tasks",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "tasks",
+        "--change",
+        "preserve-class-source-dependency-proof-stops",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:36.694724+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/instructions-tasks.stdout.raw",
+          "bytes": 7018,
+          "sha256": "c1e8a5ae32489d1fa0f183a4df0c6e7bbc948e0432bf61e4ba9678b3bbfa2ae7"
+        },
+        "stderr": {
+          "path": "results/planning-cli/instructions-tasks.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "status-json",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "status",
+        "--change",
+        "preserve-class-source-dependency-proof-stops",
+        "--json"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:37.871687+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/status-json.stdout.raw",
+          "bytes": 3560,
+          "sha256": "59c26925dc4e6f1b80ab5a94d1f5643144ccd9031da2605be71ee8ea40a81db7"
+        },
+        "stderr": {
+          "path": "results/planning-cli/status-json.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "status",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "status",
+        "--change",
+        "preserve-class-source-dependency-proof-stops"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:39.938887+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/status.stdout.raw",
+          "bytes": 415,
+          "sha256": "2ddb4a5bfaadaabebd4a6fd646a0971f6b29f7d404366b9e2d0f4ae7798a2d39"
+        },
+        "stderr": {
+          "path": "results/planning-cli/status.stderr.raw",
+          "bytes": 27,
+          "sha256": "f5532db4d58c0113f96c1eeb6b68000dc0d68199da671c1095a78b21dae7aa71"
+        }
+      }
+    },
+    {
+      "label": "validate-strict",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "preserve-class-source-dependency-proof-stops",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:10:41.105673+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/validate-strict.stdout.raw",
+          "bytes": 63,
+          "sha256": "70452616d9e45628842cf1e6fba0e6ded01b15ba5f7abc51fc75f6dfc6c0b584"
+        },
+        "stderr": {
+          "path": "results/planning-cli/validate-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "final-validate-strict",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "preserve-class-source-dependency-proof-stops",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:12:48.726071+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/final-validate-strict.stdout.raw",
+          "bytes": 63,
+          "sha256": "70452616d9e45628842cf1e6fba0e6ded01b15ba5f7abc51fc75f6dfc6c0b584"
+        },
+        "stderr": {
+          "path": "results/planning-cli/final-validate-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "boundary-final-validate-strict",
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "preserve-class-source-dependency-proof-stops",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/home/lordcasser/.codex/worktrees/review-core-fixes/jarde",
+      "PATH_prefix": "/home/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin",
+      "started_utc": "2026-10-15T03:13:56.751074+00:00",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "results/planning-cli/boundary-final-validate-strict.stdout.raw",
+          "bytes": 63,
+          "sha256": "70452616d9e45628842cf1e6fba0e6ded01b15ba5f7abc51fc75f6dfc6c0b584"
+        },
+        "stderr": {
+          "path": "results/planning-cli/boundary-final-validate-strict.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

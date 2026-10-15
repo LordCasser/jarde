@@ -1,0 +1,2630 @@
+{
+  "status": "independently_confirmed_public_budget_conditioned_proof_loss_with_limited_internal_attribution",
+  "recorded_at": "2026-10-15T02:59:23.576496+00:00",
+  "product_commit_as_recorded": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+  "source_binding": [
+    {
+      "path": "src/facade.rs",
+      "bytes": 1961810,
+      "sha256": "623901d60a7e60697de2da657e4a18bb0e38a30113d7c1777f3dd53c0ee26307",
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "focused_manifest_match": true
+    },
+    {
+      "path": "crates/jarde-reader/src/budget.rs",
+      "bytes": 56599,
+      "sha256": "3605b5da30231613ef55f91312fbfbe2f2ecba09b0dd5cb7850e4e6b88a26687",
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "focused_manifest_match": true
+    },
+    {
+      "path": "crates/jarde-cli/src/task.rs",
+      "bytes": 64208,
+      "sha256": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+      "commit": "c814267719ebc6d8fe14535ebee1b85e41d444db",
+      "focused_manifest_match": true
+    }
+  ],
+  "jar_entries": [
+    {
+      "name": "META-INF/",
+      "bytes": 0,
+      "crc32": 0
+    },
+    {
+      "name": "META-INF/MANIFEST.MF",
+      "bytes": 66,
+      "crc32": 14076351
+    },
+    {
+      "name": "H1.class",
+      "bytes": 1559,
+      "crc32": 765392690
+    },
+    {
+      "name": "H1$1.class",
+      "bytes": 324,
+      "crc32": 588720510
+    },
+    {
+      "name": "H1$Caller.class",
+      "bytes": 466,
+      "crc32": 2911575636
+    },
+    {
+      "name": "H1$Fin.class",
+      "bytes": 234,
+      "crc32": 3814782308
+    },
+    {
+      "name": "H1$Greet.class",
+      "bytes": 398,
+      "crc32": 512553600
+    },
+    {
+      "name": "H1$Mid.class",
+      "bytes": 266,
+      "crc32": 667863627
+    },
+    {
+      "name": "H1$Multi.class",
+      "bytes": 349,
+      "crc32": 1493829519
+    },
+    {
+      "name": "H1$Other.class",
+      "bytes": 144,
+      "crc32": 1355152520
+    },
+    {
+      "name": "H1$Sub.class",
+      "bytes": 135,
+      "crc32": 2201811808
+    },
+    {
+      "name": "H1$TwoLevel.class",
+      "bytes": 180,
+      "crc32": 2564831298
+    },
+    {
+      "name": "H1$ViaSub.class",
+      "bytes": 268,
+      "crc32": 1575503493
+    }
+  ],
+  "five_actual_commands": [
+    {
+      "label": "wide",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.020073884001249098,
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 4096,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 1048576,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 3684,
+        "archive_entries": 305,
+        "attribute_bytes": 3782,
+        "class_bytes": 11672,
+        "class_headers": 16,
+        "code_bytes": 218,
+        "dependency_depth": 2,
+        "elapsed_millis": 15,
+        "entry_bytes": 10113,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 2481,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 1999,
+        "read_bytes": 7160,
+        "result_items": 154
+      },
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3684,
+          "archive_entries": 305,
+          "attribute_bytes": 3782,
+          "class_bytes": 11672,
+          "class_headers": 16,
+          "code_bytes": 218,
+          "dependency_depth": 2,
+          "elapsed_millis": 15,
+          "entry_bytes": 10113,
+          "input_bytes": 4469,
+          "ir_edges": 80,
+          "ir_items": 2481,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 1999,
+          "read_bytes": 7160,
+          "result_items": 154
+        }
+      },
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_constructor_prologue",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "members": [
+        {
+          "index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 47,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 1,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 0,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 97,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 66,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_constructor_prologue",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "02fec6feefd7621c6b19ad234480d0810885cd56fcee9ec9ae5b960cb7505bac"
+        },
+        {
+          "index": 1,
+          "name": "via",
+          "descriptor": "(LH1$Greet;Ljava/lang/String;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 122,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 142,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 167,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 173,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "700927ccfcd21a99fb2d246cfaa167204f18738fb27d5ee06b8864eb882e6c93"
+        },
+        {
+          "index": 2,
+          "name": "viaOther",
+          "descriptor": "(LH1$Other;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 222,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 325,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 332,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 383,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "b59c9a44ed58e43bac9eb9f3fb5ed7611cd3bee5c8d32ebe1386918303669763"
+        },
+        {
+          "index": 3,
+          "name": "lead",
+          "descriptor": "(Ljava/lang/String;LH1$Greet;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 401,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 588,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 565,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 664,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "fed13f09fbfc9d7498e70ba4a2e4656b0b9a9c2230d79b4fd3cd8394639c1f0d"
+        },
+        {
+          "index": 4,
+          "name": "viaObject",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 582,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 700,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 604,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 7,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 713,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "ac1e4b520237de20d720345f8b38ed367ebe700a5c71b0fc1bfa8df39408326a"
+        },
+        {
+          "index": 5,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 887,
+              "archive_entries": 29,
+              "attribute_bytes": 1770,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 218,
+              "dependency_depth": 0,
+              "elapsed_millis": 8,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 1482,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 45
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 3644,
+              "archive_entries": 271,
+              "attribute_bytes": 3626,
+              "class_bytes": 11024,
+              "class_headers": 15,
+              "code_bytes": 218,
+              "dependency_depth": 2,
+              "elapsed_millis": 14,
+              "entry_bytes": 9465,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 2481,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1999,
+              "read_bytes": 6676,
+              "result_items": 120
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_new_sites",
+            "jre_field_accesses",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "3bddeb1d8a5bee324cea0869be920be6668cdffff306ddc7321bc66446848cd6"
+        }
+      ]
+    },
+    {
+      "label": "class-headers-1",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=1"
+      ],
+      "exit_code": 4,
+      "duration_seconds": 0.01326894399971934,
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 1,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 1048576,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 907,
+        "archive_entries": 29,
+        "attribute_bytes": 1770,
+        "class_bytes": 3118,
+        "class_headers": 1,
+        "code_bytes": 218,
+        "dependency_depth": 0,
+        "elapsed_millis": 8,
+        "entry_bytes": 1559,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 1482,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 1060,
+        "read_bytes": 794,
+        "result_items": 46
+      },
+      "execution": {
+        "reason": {
+          "dimension": "class_headers",
+          "kind": "budget_exceeded"
+        },
+        "status": "partial",
+        "usage": {
+          "analysis_steps": 907,
+          "archive_entries": 29,
+          "attribute_bytes": 1770,
+          "class_bytes": 3118,
+          "class_headers": 1,
+          "code_bytes": 218,
+          "dependency_depth": 0,
+          "elapsed_millis": 8,
+          "entry_bytes": 1559,
+          "input_bytes": 4469,
+          "ir_edges": 80,
+          "ir_items": 1482,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 1060,
+          "read_bytes": 794,
+          "result_items": 46
+        }
+      },
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_constructor_prologue",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "budget_exceeded_class_headers"
+      ],
+      "members": [
+        {
+          "index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 47,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 0,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 97,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 66,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_constructor_prologue",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "02fec6feefd7621c6b19ad234480d0810885cd56fcee9ec9ae5b960cb7505bac"
+        },
+        {
+          "index": 1,
+          "name": "via",
+          "descriptor": "(LH1$Greet;Ljava/lang/String;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 122,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 142,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 167,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 173,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "700927ccfcd21a99fb2d246cfaa167204f18738fb27d5ee06b8864eb882e6c93"
+        },
+        {
+          "index": 2,
+          "name": "viaOther",
+          "descriptor": "(LH1$Other;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 222,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 325,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 332,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 383,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "b59c9a44ed58e43bac9eb9f3fb5ed7611cd3bee5c8d32ebe1386918303669763"
+        },
+        {
+          "index": 3,
+          "name": "lead",
+          "descriptor": "(Ljava/lang/String;LH1$Greet;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 401,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 588,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 565,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 664,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "fed13f09fbfc9d7498e70ba4a2e4656b0b9a9c2230d79b4fd3cd8394639c1f0d"
+        },
+        {
+          "index": 4,
+          "name": "viaObject",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 582,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 700,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 604,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 713,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "ac1e4b520237de20d720345f8b38ed367ebe700a5c71b0fc1bfa8df39408326a"
+        },
+        {
+          "index": 5,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome_kind": "refused",
+          "analysis_execution": null,
+          "recovery_execution": null,
+          "refusal_execution": {
+            "reason": {
+              "dimension": "class_headers",
+              "kind": "budget_exceeded"
+            },
+            "status": "partial",
+            "usage": {
+              "analysis_steps": 887,
+              "archive_entries": 29,
+              "attribute_bytes": 1770,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 218,
+              "dependency_depth": 0,
+              "elapsed_millis": 8,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 1482,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 45
+            }
+          },
+          "content": null,
+          "quality": null,
+          "diagnostic_codes": [
+            "budget_exceeded_class_headers"
+          ],
+          "markers": [
+            "// jarde: not recovered: the run for `main([Ljava/lang/String;)V` was refused (budget_exceeded_class_headers)"
+          ],
+          "text_sha256": "a23d814e83dacb888d1d5306d9cf9fe802ea190619163d7a97cabd2bfa750378"
+        }
+      ]
+    },
+    {
+      "label": "class-headers-2",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=2"
+      ],
+      "exit_code": 4,
+      "duration_seconds": 0.020677165999586578,
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 2,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 1048576,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 907,
+        "archive_entries": 37,
+        "attribute_bytes": 1926,
+        "class_bytes": 3766,
+        "class_headers": 2,
+        "code_bytes": 218,
+        "dependency_depth": 0,
+        "elapsed_millis": 15,
+        "entry_bytes": 2207,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 1482,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 1060,
+        "read_bytes": 1278,
+        "result_items": 53
+      },
+      "execution": {
+        "reason": {
+          "dimension": "class_headers",
+          "kind": "budget_exceeded"
+        },
+        "status": "partial",
+        "usage": {
+          "analysis_steps": 907,
+          "archive_entries": 37,
+          "attribute_bytes": 1926,
+          "class_bytes": 3766,
+          "class_headers": 2,
+          "code_bytes": 218,
+          "dependency_depth": 0,
+          "elapsed_millis": 15,
+          "entry_bytes": 2207,
+          "input_bytes": 4469,
+          "ir_edges": 80,
+          "ir_items": 1482,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 1060,
+          "read_bytes": 1278,
+          "result_items": 53
+        }
+      },
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_constructor_prologue",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "budget_exceeded_class_headers"
+      ],
+      "members": [
+        {
+          "index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 47,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 0,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 97,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 66,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_constructor_prologue",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "02fec6feefd7621c6b19ad234480d0810885cd56fcee9ec9ae5b960cb7505bac"
+        },
+        {
+          "index": 1,
+          "name": "via",
+          "descriptor": "(LH1$Greet;Ljava/lang/String;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 122,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 142,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 167,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 173,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "700927ccfcd21a99fb2d246cfaa167204f18738fb27d5ee06b8864eb882e6c93"
+        },
+        {
+          "index": 2,
+          "name": "viaOther",
+          "descriptor": "(LH1$Other;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 222,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 325,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 332,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 7,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 383,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "b59c9a44ed58e43bac9eb9f3fb5ed7611cd3bee5c8d32ebe1386918303669763"
+        },
+        {
+          "index": 3,
+          "name": "lead",
+          "descriptor": "(Ljava/lang/String;LH1$Greet;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 401,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 9,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 588,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 565,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 10,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 664,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "fed13f09fbfc9d7498e70ba4a2e4656b0b9a9c2230d79b4fd3cd8394639c1f0d"
+        },
+        {
+          "index": 4,
+          "name": "viaObject",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 582,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 10,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 700,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 604,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 11,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 713,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "ac1e4b520237de20d720345f8b38ed367ebe700a5c71b0fc1bfa8df39408326a"
+        },
+        {
+          "index": 5,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome_kind": "refused",
+          "analysis_execution": null,
+          "recovery_execution": null,
+          "refusal_execution": {
+            "reason": {
+              "dimension": "class_headers",
+              "kind": "budget_exceeded"
+            },
+            "status": "partial",
+            "usage": {
+              "analysis_steps": 887,
+              "archive_entries": 37,
+              "attribute_bytes": 1926,
+              "class_bytes": 3766,
+              "class_headers": 2,
+              "code_bytes": 218,
+              "dependency_depth": 0,
+              "elapsed_millis": 14,
+              "entry_bytes": 2207,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 1482,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 1278,
+              "result_items": 52
+            }
+          },
+          "content": null,
+          "quality": null,
+          "diagnostic_codes": [
+            "budget_exceeded_class_headers"
+          ],
+          "markers": [
+            "// jarde: not recovered: the run for `main([Ljava/lang/String;)V` was refused (budget_exceeded_class_headers)"
+          ],
+          "text_sha256": "a23d814e83dacb888d1d5306d9cf9fe802ea190619163d7a97cabd2bfa750378"
+        }
+      ]
+    },
+    {
+      "label": "class-headers-8",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=8"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.018141488999390276,
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 8,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 1048576,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 3595,
+        "archive_entries": 150,
+        "attribute_bytes": 2830,
+        "class_bytes": 7692,
+        "class_headers": 8,
+        "code_bytes": 218,
+        "dependency_depth": 0,
+        "elapsed_millis": 13,
+        "entry_bytes": 6133,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 2417,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 2954,
+        "read_bytes": 4078,
+        "result_items": 99
+      },
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3595,
+          "archive_entries": 150,
+          "attribute_bytes": 2830,
+          "class_bytes": 7692,
+          "class_headers": 8,
+          "code_bytes": 218,
+          "dependency_depth": 0,
+          "elapsed_millis": 13,
+          "entry_bytes": 6133,
+          "input_bytes": 4469,
+          "ir_edges": 80,
+          "ir_items": 2417,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2954,
+          "read_bytes": 4078,
+          "result_items": 99
+        }
+      },
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_constructor_prologue",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "members": [
+        {
+          "index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 47,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 1,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 0,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 97,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 1,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 66,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_constructor_prologue",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "02fec6feefd7621c6b19ad234480d0810885cd56fcee9ec9ae5b960cb7505bac"
+        },
+        {
+          "index": 1,
+          "name": "via",
+          "descriptor": "(LH1$Greet;Ljava/lang/String;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 122,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 142,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 167,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 173,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "700927ccfcd21a99fb2d246cfaa167204f18738fb27d5ee06b8864eb882e6c93"
+        },
+        {
+          "index": 2,
+          "name": "viaOther",
+          "descriptor": "(LH1$Other;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 222,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 325,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 332,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 383,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "b59c9a44ed58e43bac9eb9f3fb5ed7611cd3bee5c8d32ebe1386918303669763"
+        },
+        {
+          "index": 3,
+          "name": "lead",
+          "descriptor": "(Ljava/lang/String;LH1$Greet;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 401,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 588,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 565,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 664,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "fed13f09fbfc9d7498e70ba4a2e4656b0b9a9c2230d79b4fd3cd8394639c1f0d"
+        },
+        {
+          "index": 4,
+          "name": "viaObject",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 582,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 700,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 604,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 713,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "ac1e4b520237de20d720345f8b38ed367ebe700a5c71b0fc1bfa8df39408326a"
+        },
+        {
+          "index": 5,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 887,
+              "archive_entries": 29,
+              "attribute_bytes": 1770,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 218,
+              "dependency_depth": 0,
+              "elapsed_millis": 7,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 1482,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 45
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 3555,
+              "archive_entries": 137,
+              "attribute_bytes": 2830,
+              "class_bytes": 7692,
+              "class_headers": 8,
+              "code_bytes": 218,
+              "dependency_depth": 0,
+              "elapsed_millis": 11,
+              "entry_bytes": 6133,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 2417,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 2954,
+              "read_bytes": 4078,
+              "result_items": 85
+            }
+          },
+          "refusal_execution": null,
+          "content": "explanation_only",
+          "quality": "fallback",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_new_sites",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_accesses",
+            "jre_declaration"
+          ],
+          "markers": [
+            "// jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below"
+          ],
+          "text_sha256": "9676755c02cab582b9f8e7fe8a53b09e3247781d6f22524ff933b4d088799268"
+        }
+      ]
+    },
+    {
+      "label": "class-headers-14",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+        "--class",
+        "H1",
+        "--evidence",
+        "essential",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        "output_bytes=1048576",
+        "--budget",
+        "class_headers=14"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.017489066998678027,
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 14,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 1048576,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 3605,
+        "archive_entries": 262,
+        "attribute_bytes": 3578,
+        "class_bytes": 10754,
+        "class_headers": 14,
+        "code_bytes": 218,
+        "dependency_depth": 2,
+        "elapsed_millis": 12,
+        "entry_bytes": 9195,
+        "input_bytes": 4469,
+        "ir_edges": 80,
+        "ir_items": 2411,
+        "method_bodies": 6,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 1649,
+        "read_bytes": 6432,
+        "result_items": 132
+      },
+      "execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3605,
+          "archive_entries": 262,
+          "attribute_bytes": 3578,
+          "class_bytes": 10754,
+          "class_headers": 14,
+          "code_bytes": 218,
+          "dependency_depth": 2,
+          "elapsed_millis": 12,
+          "entry_bytes": 9195,
+          "input_bytes": 4469,
+          "ir_edges": 80,
+          "ir_items": 2411,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 1649,
+          "read_bytes": 6432,
+          "result_items": 132
+        }
+      },
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_constructor_prologue",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_declaration",
+        "jre_recovery_produced",
+        "jre_new_sites",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_declaration"
+      ],
+      "members": [
+        {
+          "index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 47,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 0,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 97,
+              "archive_entries": 29,
+              "attribute_bytes": 1027,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 2,
+              "ir_items": 66,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 40
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_constructor_prologue",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "02fec6feefd7621c6b19ad234480d0810885cd56fcee9ec9ae5b960cb7505bac"
+        },
+        {
+          "index": 1,
+          "name": "via",
+          "descriptor": "(LH1$Greet;Ljava/lang/String;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 122,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 142,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 176,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 167,
+              "archive_entries": 29,
+              "attribute_bytes": 1141,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 13,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 7,
+              "ir_items": 173,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 41
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "700927ccfcd21a99fb2d246cfaa167204f18738fb27d5ee06b8864eb882e6c93"
+        },
+        {
+          "index": 2,
+          "name": "viaOther",
+          "descriptor": "(LH1$Other;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 222,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 325,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 400,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 332,
+              "archive_entries": 29,
+              "attribute_bytes": 1272,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 38,
+              "dependency_depth": 0,
+              "elapsed_millis": 4,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 17,
+              "ir_items": 383,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 42
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "b59c9a44ed58e43bac9eb9f3fb5ed7611cd3bee5c8d32ebe1386918303669763"
+        },
+        {
+          "index": 3,
+          "name": "lead",
+          "descriptor": "(Ljava/lang/String;LH1$Greet;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 401,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 588,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 614,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 565,
+              "archive_entries": 29,
+              "attribute_bytes": 1409,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 69,
+              "dependency_depth": 0,
+              "elapsed_millis": 5,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 31,
+              "ir_items": 664,
+              "method_bodies": 4,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 43
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_concat_chains",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "fed13f09fbfc9d7498e70ba4a2e4656b0b9a9c2230d79b4fd3cd8394639c1f0d"
+        },
+        {
+          "index": 4,
+          "name": "viaObject",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 582,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 700,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 851,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 604,
+              "archive_entries": 29,
+              "attribute_bytes": 1518,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 72,
+              "dependency_depth": 0,
+              "elapsed_millis": 6,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 32,
+              "ir_items": 713,
+              "method_bodies": 5,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 44
+            }
+          },
+          "refusal_execution": null,
+          "content": "contains_statements",
+          "quality": "structured",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_declaration"
+          ],
+          "markers": [],
+          "text_sha256": "ac1e4b520237de20d720345f8b38ed367ebe700a5c71b0fc1bfa8df39408326a"
+        },
+        {
+          "index": 5,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome_kind": "recovered",
+          "analysis_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 887,
+              "archive_entries": 29,
+              "attribute_bytes": 1770,
+              "class_bytes": 3118,
+              "class_headers": 1,
+              "code_bytes": 218,
+              "dependency_depth": 0,
+              "elapsed_millis": 7,
+              "entry_bytes": 1559,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 1482,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1060,
+              "read_bytes": 794,
+              "result_items": 45
+            }
+          },
+          "recovery_execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 3565,
+              "archive_entries": 249,
+              "attribute_bytes": 3578,
+              "class_bytes": 10754,
+              "class_headers": 14,
+              "code_bytes": 218,
+              "dependency_depth": 2,
+              "elapsed_millis": 11,
+              "entry_bytes": 9195,
+              "input_bytes": 4469,
+              "ir_edges": 80,
+              "ir_items": 2411,
+              "method_bodies": 6,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1649,
+              "read_bytes": 6432,
+              "result_items": 118
+            }
+          },
+          "refusal_execution": null,
+          "content": "explanation_only",
+          "quality": "fallback",
+          "diagnostic_codes": [
+            "jre_recovery_produced",
+            "jre_new_sites",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_not_emitted",
+            "jre_field_accesses",
+            "jre_declaration"
+          ],
+          "markers": [
+            "// jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below"
+          ],
+          "text_sha256": "c550e9cea7f538f8c55e22c387ddca356ca6626f99faeeb3c16e037c5d872b9e"
+        }
+      ]
+    }
+  ],
+  "facts": {
+    "only_parameter_difference": "class_headers cap, with JSON limits confirming application",
+    "same_input_class_members_scope_profile": "verified identities,raw member items,view,coverage; same frozen JAR; all remaining limits equal",
+    "earlier_five_members": "identical after removing only elapsed_millis",
+    "main_analysis_wide_8_14": "identical after removing only elapsed_millis",
+    "caps_1_2": "explicit ClassHeaders stop with main Refused, class Partial, exit4",
+    "caps_8_14": "class and main recovery Complete, exit0, no budget diagnostic; proof-dependent conversion fallback changes main to explanation_only",
+    "wide": "class Complete,header usage16; main report snapshot headers15,structured statement text with reference casts"
+  },
+  "static_source_points": [
+    {
+      "line": 26248,
+      "needle": "fn reference_overload_calls_presented(",
+      "meaning": "BudgetExceeded/Cancelled converted to empty certificate vector"
+    },
+    {
+      "line": 42109,
+      "needle": "match prove_direct_parent_accessor_calls(content, request, analyzed.ir(), budget)",
+      "meaning": "BudgetExceeded/Cancelled discarded before recovery"
+    },
+    {
+      "line": 42114,
+      "needle": "let fields = match prove_direct_parent_field_writes(content, request, analyzed.ir(), budget)",
+      "meaning": "BudgetExceeded/Cancelled converted to empty field proof vector"
+    },
+    {
+      "line": 26643,
+      "needle": "fn snapshot_hierarchy_widenings_presented(",
+      "meaning": "BudgetExceeded/Cancelled converted to empty widening vector"
+    },
+    {
+      "line": 21597,
+      "needle": "fn resolve_class_source_dependency_read_raw(",
+      "meaning": "resolver non-Complete execution merged into caller-local execution, then Ok(None)"
+    },
+    {
+      "line": 25424,
+      "needle": "fn selected_reference_header(",
+      "meaning": "passes proof-local execution into dependency reader"
+    },
+    {
+      "line": 26498,
+      "needle": "fn prove_snapshot_hierarchy_widenings(",
+      "meaning": "local execution exists but return type exposes only Vec"
+    }
+  ],
+  "interpretation": {
+    "strength": "Actual end-to-end budget-conditioned loss of conversion evidence is proved. With reviewed charge/error and wrapper/local-execution loss paths, operation-level Stop hiding is strongly supported; exact private helper/denied charge not directly traced.",
+    "not_proved": "No raw captures an original Error inside snapshot_hierarchy_widenings_presented. The four earlier proof routes and report-bearing resolver stop local to a helper must not be collapsed into a snapshot-helper-only dynamic claim.",
+    "spec": "Explanation-only/Produced can validly complete when evidence is semantically absent; that content alone is no violation. A budget-refused proof in the requested run must retain truthful non-Complete execution/diagnostics under existing budget/execution and CLI contracts, rather than be replaced by ordinary absence. Structural coverage may remain complete.",
+    "next_isolation": "Use the existing real H1 fixture and actual public class-source path to isolate which prebody proof first receives BudgetExceeded or a non-Complete resolver execution; retain that original evidence and link it to the member/top-level execution. No new broad sweep, arbitrary higher cap, or helper-only success substitute needed."
+  },
+  "input_pins": {
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/execution.json",
+      "bytes": 4116,
+      "sha256": "2dc883e7eac1eb8ed6ac0f0566f7fdbe60098acadadf56d5b70e76a03919d608"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/execution-extra.json": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/execution-extra.json",
+      "bytes": 4411,
+      "sha256": "e4c8b2e046ec87503eaf625aa879d9091fda7e7343cc2c3d9418509a1cca2dfe"
+    },
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-emitter-v2",
+      "bytes": 59602720,
+      "sha256": "cdf06694fafcb4e8cef5a4b9452676489e8cf02495c0254ce38a21e44ee4c7d5"
+    },
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/hier/hier-fam.jar",
+      "bytes": 4469,
+      "sha256": "1ee63f3836a5e514cea57b7349dd515ca3f98550154beff187fdca4d019105b0"
+    },
+    "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/emitter-focused-v2/execution.json": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/emitter-focused-v2/execution.json",
+      "bytes": 2225719,
+      "sha256": "cb8cb2e945d56af22633cf8d366112edaf1dd05d22231322522e95dde7460863"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/wide.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/wide.stdout.raw",
+      "bytes": 43726,
+      "sha256": "21659e767d640965fb23cac3c7c4b278475a151076b5c6376fc351304041a150"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/wide.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/wide.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-1.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-1.stdout.raw",
+      "bytes": 38046,
+      "sha256": "b23effe3e1987348f706aabb21ea43f5f902cd8f246c00043cf9c688d2536e6b"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-1.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-2.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-2.stdout.raw",
+      "bytes": 38055,
+      "sha256": "2d360ecec44244589b397c90cf85ec459653c0d543df51c16d574e845799cfe9"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-2.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-8.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-8.stdout.raw",
+      "bytes": 48765,
+      "sha256": "38e16a1aba7016a55bb84dfbd567f18a936340ad78913bc358ce6bcfcd8aa4f7"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-8.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-14.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-14.stdout.raw",
+      "bytes": 44726,
+      "sha256": "24d97a1cdfa75f98669872ae8506ba151320aa8eb28f9412b3fc7b155ba94309"
+    },
+    "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-14.stderr.raw": {
+      "path": "/home/lordcasser/.cache/jarde-review/20261015/snapshot-proof-cli-probe-v1/class-headers-14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/analysis-contracts/spec.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/analysis-contracts/spec.md",
+      "bytes": 18455,
+      "sha256": "47d668770d8a00672d1075276c76e20c9f18d0a4a41bbdff5234963cab068a6e"
+    },
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/java8-recovery/spec.md": {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/specs/java8-recovery/spec.md",
+      "bytes": 52302,
+      "sha256": "697d17aca0e2452a6e4ce271fb2c3b041d6d66ddb1eb8549acc3509163c749c7"
+    }
+  },
+  "limitations": [
+    "Five existing CLI observations only, each under0.03s as recorded; no new executions.",
+    "No body/source correctness, verification or new semantic recovery claim; wide text is presentation, not compile/execution validation.",
+    "Three relevant source files bind to c814 and focused manifest; this is not an exhaustive proof of every native executable/source linkage.",
+    "Input unchanged/no target mutations are original bounded observation assertions, not a retroactive full filesystem mutation audit. No current target examined, source/capture edited or product tools run."
+  ]
+}

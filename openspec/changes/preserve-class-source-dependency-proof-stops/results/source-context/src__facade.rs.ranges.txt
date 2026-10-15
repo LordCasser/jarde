@@ -1,0 +1,1213 @@
+=== src/facade.rs:2076-2200 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+2076:                 )?;
+2077:             }
+2078:         }
+2079:         // The double-brace allocation point runs before the companion-body dispatch: a shape its
+2080:         // four criteria prove is presented at the allocation point (change
+2081:         // `recover-double-brace-allocation-site`), and claiming the text is what keeps every later
+2082:         // projection — the interface/superclass dispatch below and the folds after it — from
+2083:         // re-presenting a text that already carries the source form.
+2084:         if matches!(
+2085:             report.member_family,
+2086:             class_source::ClassSourceMemberFamily::Absent
+2087:         ) && matches!(
+2088:             report.nested_enum_family,
+2089:             class_source::ClassSourceNestedEnumFamily::Absent
+2090:         ) && matches!(
+2091:             report.nested_annotation_family,
+2092:             class_source::ClassSourceNestedAnnotationFamily::Absent
+2093:         ) && matches!(
+2094:             report.anonymous_interface_projection,
+2095:             class_source::ClassSourceAnonymousInterfaceProjection::Absent
+2096:         ) {
+2097:             match self.project_class_source_double_brace(
+2098:                 content,
+2099:                 request,
+2100:                 evidence,
+2101:                 &environment,
+2102:                 snapshot,
+2103:                 &mut report,
+2104:                 &_root_method_asts,
+2105:                 &root_nesting,
+2106:                 budget,
+2107:             ) {
+2108:                 Ok(()) => {}
+2109:                 Err(error) => {
+2110:                     merge_execution(&mut report.execution, stop_execution(&error, budget));
+2111:                     report.diagnostics.push(stop_diagnostic(
+2112:                         &error,
+2113:                         Some(definition_provenance(&report.class)),
+2114:                     ));
+2115:                 }
+2116:             }
+2117:         }
+2118:         if matches!(
+2119:             report.member_family,
+2120:             class_source::ClassSourceMemberFamily::Absent
+2121:         ) && matches!(
+2122:             report.nested_enum_family,
+2123:             class_source::ClassSourceNestedEnumFamily::Absent
+2124:         ) && matches!(
+2125:             report.nested_annotation_family,
+2126:             class_source::ClassSourceNestedAnnotationFamily::Absent
+2127:         ) && matches!(
+2128:             report.anonymous_interface_projection,
+2129:             class_source::ClassSourceAnonymousInterfaceProjection::Absent
+2130:         ) && _anonymous_return_sites.len() == 1
+2131:         {
+2132:             match self.project_class_source_anonymous_interface(
+2133:                 content,
+2134:                 request,
+2135:                 evidence,
+2136:                 &environment,
+2137:                 snapshot,
+2138:                 &mut report,
+2139:                 &_root_method_asts,
+2140:                 &_anonymous_return_sites,
+2141:                 &root_nesting,
+2142:                 budget,
+2143:             ) {
+2144:                 Ok(()) => {}
+2145:                 Err(error) => {
+2146:                     merge_execution(&mut report.execution, stop_execution(&error, budget));
+2147:                     report.anonymous_interface_projection =
+2148:                         class_source::ClassSourceAnonymousInterfaceProjection::Refused {
+2149:                             reason: error.to_string(),
+2150:                         };
+2151:                     report.diagnostics.push(stop_diagnostic(
+2152:                         &error,
+2153:                         Some(definition_provenance(&report.class)),
+2154:                     ));
+2155:                 }
+2156:             }
+2157:         }
+2158:         if matches!(report.execution, ExecutionReport::Complete { .. }) {
+2159:             match project_direct_override_annotations(content, &environment, &mut report, budget) {
+2160:                 Ok(()) => {}
+2161:                 Err(error) => {
+2162:                     merge_execution(&mut report.execution, stop_execution(&error, budget));
+2163:                     report.diagnostics.push(stop_diagnostic(
+2164:                         &error,
+2165:                         Some(definition_provenance(&report.class)),
+2166:                     ));
+2167:                 }
+2168:             }
+2169:         }
+2170:         if matches!(report.execution, ExecutionReport::Complete { .. }) {
+2171:             if matches!(
+2172:                 report.member_family,
+2173:                 class_source::ClassSourceMemberFamily::Absent
+2174:                     | class_source::ClassSourceMemberFamily::Refused { child: None, .. }
+2175:             ) && matches!(
+2176:                 report.nested_enum_family,
+2177:                 class_source::ClassSourceNestedEnumFamily::Absent
+2178:             ) && matches!(
+2179:                 report.nested_annotation_family,
+2180:                 class_source::ClassSourceNestedAnnotationFamily::Absent
+2181:             ) && matches!(
+2182:                 report.anonymous_interface_projection,
+2183:                 class_source::ClassSourceAnonymousInterfaceProjection::Absent
+2184:             ) {
+2185:                 if let Err(error) = project_class_source_integer_constant_names(
+2186:                     &mut report,
+2187:                     &_root_method_asts,
+2188:                     budget,
+2189:                 ) {
+2190:                     merge_execution(&mut report.execution, stop_execution(&error, budget));
+2191:                     report.diagnostics.push(stop_diagnostic(
+2192:                         &error,
+2193:                         Some(definition_provenance(&report.class)),
+2194:                     ));
+2195:                 }
+2196:             }
+2197:         }
+2198:         report.usage = budget.usage();
+2199:         report.execution = with_usage(report.execution, budget.usage());
+2200:         Ok(OperationOutcome::Performed(report))
+
+=== src/facade.rs:4690-5010 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+4690:     ///   somewhere else would drop that use;
+4691:     /// * **spellable superclass**: the direct superclass's name is writable source text
+4692:     ///   ([`spellable_source_name`]) — no `$`, every segment a Java identifier. What the form's
+4693:     ///   legality rests on beside the name is stated by the companion's own bytes: the class file
+4694:     ///   declares this exact superclass (JVMS 4.1 requires a `super_class` to be a class, and
+4695:     ///   loading requires it accessible and non-final), and its constructor's own `invokespecial`
+4696:     ///   names the superclass constructor the form re-states, from the companion's own package —
+4697:     ///   which is the root's. The superclass is deliberately **not read**: `java.util.ArrayList` is
+4698:     ///   not a member of the input, so no physical read of it exists, and the platform classes are
+4699:     ///   exactly what the form is for.
+4700:     ///
+4701:     /// # What is presented, and what is not
+4702:     ///
+4703:     /// The allocation's own expression is re-emitted as `new Super(args…) { { body } }`: the
+4704:     /// site's arguments with the trailing capture argument hidden, the superclass's source name,
+4705:     /// and the companion constructor's statements after its call — minus the certified capture
+4706:     /// store and the closing `return` — as the block. Every proved read of the capture field is
+4707:     /// re-spelled as the allocation argument's own local, the value javac's own recapture hands the
+4708:     /// recompiled anonymous class.
+4709:     ///
+4710:     /// Every shape the criteria do not prove keeps the presentation it had: the companion class and
+4711:     /// its call site are untouched, and this pass writes nothing — no diagnostic, no execution
+4712:     /// stop. The reading is a presentation the shape either owns or does not; a stop that ends the
+4713:     /// shared request (a cancellation, an exhausted dimension) is the request's own and travels to
+4714:     /// the caller.
+4715:     #[allow(clippy::too_many_arguments)]
+4716:     fn project_class_source_double_brace(
+4717:         &self,
+4718:         content: &[ArtifactSnapshot],
+4719:         request: &ClassSourceRequest,
+4720:         evidence: &RecoveryEvidenceRequest,
+4721:         environment: &ResolutionEnvironment,
+4722:         snapshot: &ArtifactSnapshot,
+4723:         root: &mut ClassSourceReport,
+4724:         root_asts: &[(
+4725:             PhysicalMethodId,
+4726:             jarde_java::report::ClassSourceMethodAst,
+4727:             Option<jarde_java::report::GenericConstructorCandidate>,
+4728:             Option<jarde_java::report::AnonymousAllocationScan>,
+4729:         )],
+4730:         root_nesting: &class_source::ClassSourceAssemblyContext,
+4731:         budget: &mut Budget,
+4732:     ) -> Result<()> {
+4733:         let Some(root_name) = root
+4734:             .declaration
+4735:             .as_ref()
+4736:             .map(|declaration| declaration.item.declaration.this_class.raw().0.clone())
+4737:         else {
+4738:             return Ok(());
+4739:         };
+4740:         if root_nesting
+4741:             .major_version
+4742:             .is_none_or(|version| version > 52)
+4743:         {
+4744:             return Ok(());
+4745:         }
+4746:         let mut derived = Vec::new();
+4747:         for (member, ast, _, scan) in root_asts {
+4748:             let Some(scan) = scan.as_ref() else {
+4749:                 continue;
+4750:             };
+4751:             let candidates: Vec<_> = scan
+4752:                 .allocations
+4753:                 .iter()
+4754:                 .filter(|site| site.verified && anonymous_child_name(&root_name, &site.class))
+4755:                 .collect();
+4756:             // One qualifying allocation per method: the anonymous emission rewrites exactly one
+4757:             // allocation node per pass, which is the one-site discipline every companion projection
+4758:             // in this file keeps. A method that holds two keeps the presentation it had.
+4759:             let [site] = candidates.as_slice() else {
+4760:                 continue;
+4761:             };
+4762:             let projection = match self.prove_double_brace_allocation(
+4763:                 content,
+4764:                 request,
+4765:                 evidence,
+4766:                 environment,
+4767:                 snapshot,
+4768:                 root,
+4769:                 member,
+4770:                 ast,
+4771:                 site,
+4772:                 root_nesting,
+4773:                 budget,
+4774:             ) {
+4775:                 Ok(projection) => projection,
+4776:                 Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+4777:                 Err(_) => continue,
+4778:             };
+4779:             let Some((index, projected)) = projection else {
+4780:                 continue;
+4781:             };
+4782:             let class_source::MemberFamilyMethodText {
+4783:                 index: _,
+4784:                 text,
+4785:                 derived: ranges,
+4786:             } = projected;
+4787:             let Some(record) = root.methods.get(index) else {
+4788:                 continue;
+4789:             };
+4790:             let original = record.text.clone();
+4791:             if root.text.match_indices(&original).count() != 1 {
+4792:                 continue;
+4793:             }
+4794:             root.text = root.text.replacen(&original, &text, 1);
+4795:             root.methods[index].text = text;
+4796:             derived.extend(ranges);
+4797:         }
+4798:         if derived.is_empty() {
+4799:             return Ok(());
+4800:         }
+4801:         // The text is claimed exactly as a companion-body projection claims it: every later fold
+4802:         // reads this state, so a class whose allocation point this pass presented is not offered
+4803:         // to them, nor to the interface/superclass dispatch, again.
+4804:         root.anonymous_interface_projection =
+4805:             class_source::ClassSourceAnonymousInterfaceProjection::Projected { derived };
+4806:         root.usage = budget.usage();
+4807:         Ok(())
+4808:     }
+4809: 
+4810:     /// Proves the double-brace admission of one allocation point and stages its projection.
+4811:     ///
+4812:     /// `None` is every shape the four criteria do not prove; `Err` only a stop that ends the
+4813:     /// shared request.
+4814:     #[allow(clippy::too_many_arguments)]
+4815:     fn prove_double_brace_allocation(
+4816:         &self,
+4817:         content: &[ArtifactSnapshot],
+4818:         request: &ClassSourceRequest,
+4819:         evidence: &RecoveryEvidenceRequest,
+4820:         environment: &ResolutionEnvironment,
+4821:         snapshot: &ArtifactSnapshot,
+4822:         root: &ClassSourceReport,
+4823:         root_method: &PhysicalMethodId,
+4824:         root_ast: &jarde_java::report::ClassSourceMethodAst,
+4825:         site: &jarde_java::report::AnonymousAllocationCandidate,
+4826:         root_nesting: &class_source::ClassSourceAssemblyContext,
+4827:         budget: &mut Budget,
+4828:     ) -> Result<Option<(usize, class_source::MemberFamilyMethodText)>> {
+4829:         let Some(root_name) = root
+4830:             .declaration
+4831:             .as_ref()
+4832:             .map(|declaration| declaration.item.declaration.this_class.raw().0.clone())
+4833:         else {
+4834:             return Ok(None);
+4835:         };
+4836:         let Some(constructor_bci) = site.constructor_bci else {
+4837:             return Ok(None);
+4838:         };
+4839:         let child_name = site.class.replace('.', "/");
+4840:         let root_rows: Vec<_> = root_nesting
+4841:             .resolved_inner_classes
+4842:             .iter()
+4843:             .filter(|row| row.class == child_name.as_bytes())
+4844:             .collect();
+4845:         if root_rows.len() != 1
+4846:             || root_rows[0].outer_class.is_some()
+4847:             || root_rows[0].inner_name.is_some()
+4848:         {
+4849:             return Ok(None);
+4850:         }
+4851:         let mut execution = ExecutionReport::Complete {
+4852:             usage: budget.usage(),
+4853:         };
+4854:         let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+4855:             content,
+4856:             environment,
+4857:             Some(root_method),
+4858:             child_name.as_bytes(),
+4859:             &mut execution,
+4860:             budget,
+4861:         )?
+4862:         else {
+4863:             return Ok(None);
+4864:         };
+4865:         let child_facts = child_read.facts.clone();
+4866:         let constructors: Vec<_> = child_facts
+4867:             .methods
+4868:             .iter()
+4869:             .filter(|method| method.name.raw().0 == b"<init>")
+4870:             .collect();
+4871:         if child_facts.stopped_at.is_some()
+4872:             || child_read
+4873:                 .bytes
+4874:                 .get(6..8)
+4875:                 .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
+4876:             || child_facts.methods.len() as u64 != child_facts.method_count
+4877:             || child_facts.methods.len() != 1
+4878:             || constructors.len() != 1
+4879:             || !child_facts.interfaces.is_empty()
+4880:             || child_facts.access_flags & (0x0200 | 0x0400) != 0
+4881:             || child_facts.fields.len() as u64 != child_facts.field_count
+4882:         {
+4883:             return Ok(None);
+4884:         }
+4885:         let Some(parent_name) = child_facts
+4886:             .super_class
+4887:             .as_ref()
+4888:             .map(|name| name.raw().0.to_vec())
+4889:         else {
+4890:             return Ok(None);
+4891:         };
+4892:         if parent_name.as_slice() == b"java/lang/Object" || !spellable_source_name(&parent_name) {
+4893:             return Ok(None);
+4894:         }
+4895:         let capture = match anonymous_val_capture_field(&child_facts) {
+4896:             Some(field) => Some(field),
+4897:             None if child_facts.fields.is_empty() => None,
+4898:             None => return Ok(None),
+4899:         };
+4900:         let constructor_descriptor = constructors[0].descriptor.raw().0.clone();
+4901:         // The superclass is **not read**: the allocation point only needs its name to be writable
+4902:         // where it stands, and everything else the form's legality rests on is stated by the
+4903:         // companion's own bytes — the class file declares this exact superclass (JVMS 4.1: a
+4904:         // `super_class` is a class, and loading requires it accessible and non-final) and its
+4905:         // constructor's one `invokespecial` names the superclass constructor with the very
+4906:         // arguments the form re-states, from the companion's own package, which is the root's.
+4907:         // Reading the class would also *refuse* the platform superclasses the form exists for:
+4908:         // `java.util.ArrayList` is not a member of the input, so no physical read of it exists.
+4909:         // The proved capture, when the companion declares one: the `val$` proof closes the field's
+4910:         // identity, its single constructor write and every read, and the role partition splits the
+4911:         // constructor's physical parameters into the superclass arguments and the trailing capture
+4912:         // stores. The companion-body projection reads the same two proofs for its mixed form.
+4913:         let mixed = match &capture {
+4914:             Some((field_name, field_descriptor)) => {
+4915:                 match self.prove_anonymous_super_val_capture(
+4916:                     content,
+4917:                     environment,
+4918:                     &child_definition,
+4919:                     &child_facts,
+4920:                     &root_name,
+4921:                     field_name,
+4922:                     field_descriptor,
+4923:                     &constructor_descriptor,
+4924:                     crate::member_inner::CaptureReadReceiver::ConstructorThis,
+4925:                     &mut execution,
+4926:                     budget,
+4927:                 ) {
+4928:                     Ok(mixed) => Some(mixed),
+4929:                     Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+4930:                     Err(_) => return Ok(None),
+4931:                 }
+4932:             }
+4933:             None => None,
+4934:         };
+4935:         // The single use: the owner census closes the whole selected input over this companion.
+4936:         let census_capture_descriptor = mixed.as_ref().map_or(
+4937:             [b"L".as_slice(), root_name.as_slice(), b";"].concat(),
+4938:             |mixed| mixed.field_descriptor.clone(),
+4939:         );
+4940:         if let Err(error) = self.prove_anonymous_owner_xrefs(
+4941:             content,
+4942:             environment,
+4943:             &root.class,
+4944:             &child_definition,
+4945:             root_method,
+4946:             site.head_bci,
+4947:             constructor_bci,
+4948:             child_name.as_bytes(),
+4949:             &census_capture_descriptor,
+4950:             &constructor_descriptor,
+4951:             mixed.as_ref().map(|mixed| &mixed.proof),
+4952:             None,
+4953:             AnonymousOwnerCensusPath::DirectSuperclassDoubleBrace,
+4954:             &mut execution,
+4955:             budget,
+4956:         ) {
+4957:             if error_ends_the_request(&error, budget) {
+4958:                 return Err(error);
+4959:             }
+4960:             return Ok(None);
+4961:         }
+4962:         let child_class_item = charge_item(budget).map(|()| child_read.class.clone())?;
+4963:         let child_request = ClassSourceRequest {
+4964:             class: ClassRef::Definition {
+4965:                 definition: child_definition.clone(),
+4966:             },
+4967:             environment: request.environment.clone(),
+4968:         };
+4969:         let prepared = self.prepare_physical_class_source(
+4970:             content,
+4971:             &child_request,
+4972:             evidence,
+4973:             environment,
+4974:             snapshot,
+4975:             root.view.clone(),
+4976:             root.stages.clone(),
+4977:             BoundClass {
+4978:                 read: child_read,
+4979:                 search_coverage: None,
+4980:                 class_item: Some(child_class_item),
+4981:             },
+4982:             execution,
+4983:             Vec::new(),
+4984:             true,
+4985:             budget,
+4986:         );
+4987:         let (child, _, child_asts, _, _, _) = match prepared {
+4988:             Ok(prepared) => prepared,
+4989:             Err(error) if error_ends_the_request(&error, budget) => return Err(error),
+4990:             Err(_) => return Ok(None),
+4991:         };
+4992:         if !matches!(child.execution, ExecutionReport::Complete { .. })
+4993:             || child.methods.len() != child_facts.methods.len()
+4994:             || child_asts.len() != child_facts.methods.len()
+4995:             || child_asts
+4996:                 .iter()
+4997:                 .any(|(_, _, _, scan)| scan.as_ref().is_none_or(|scan| !scan.complete))
+4998:             || child.methods.iter().any(|method| {
+4999:                 !matches!(
+5000:                     method.outcome,
+5001:                     class_source::ClassSourceOutcome::Recovered { .. }
+5002:                 ) || !complete_anonymous_method(method)
+5003:                     || method.declaration.is_none()
+5004:             })
+5005:         {
+5006:             return Ok(None);
+5007:         }
+5008:         let constructor_identity = PhysicalMethodId {
+5009:             owner: child_definition.clone(),
+5010:             name: JvmBytes(b"<init>".to_vec()),
+
+=== src/facade.rs:21597-21675 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+21597: fn resolve_class_source_dependency_read_raw(
+21598:     content: &[ArtifactSnapshot],
+21599:     environment: &ResolutionEnvironment,
+21600:     enclosing: Option<&PhysicalMethodId>,
+21601:     owner: &[u8],
+21602:     execution: &mut ExecutionReport,
+21603:     budget: &mut Budget,
+21604: ) -> Result<Option<(PhysicalDefinitionId, ConfirmedRead)>> {
+21605:     let resolution = jarde_jvm::resolve_symbol(
+21606:         content,
+21607:         &ResolutionRequest {
+21608:             environment: environment.clone(),
+21609:             target: jarde_reader::model::SymbolRef::Class {
+21610:                 owner: JvmBytes(owner.to_vec()),
+21611:             },
+21612:             use_kind: ReferenceUse::ClassReference,
+21613:             caller: jarde_jvm::environment::CallerContext {
+21614:                 loader: environment.runtime.load_domain.loader.clone(),
+21615:                 enclosing: enclosing.cloned(),
+21616:             },
+21617:             dispatch: None,
+21618:         },
+21619:         budget,
+21620:     )?;
+21621:     merge_execution(execution, resolution.execution.clone());
+21622:     if resolution.state != Some(ResolutionState::Resolved)
+21623:         || !matches!(resolution.execution, ExecutionReport::Complete { .. })
+21624:         || !resolution.environment_problems.is_empty()
+21625:         || !resolution.unresolved_dependencies.is_empty()
+21626:         || !resolution.candidates.is_empty()
+21627:     {
+21628:         return Ok(None);
+21629:     }
+21630:     let Some(resolved) = resolution.resolved else {
+21631:         return Ok(None);
+21632:     };
+21633:     if !matches!(&resolved.member, jarde_reader::model::SymbolRef::Class { owner: name } if name.0 == owner)
+21634:     {
+21635:         return Ok(None);
+21636:     }
+21637:     let mut target_reads = 0_u8;
+21638:     let mut enclosing_reads = 0_u8;
+21639:     for read in &resolution.reads {
+21640:         if read.definition == resolved.definition
+21641:             && read.reason == jarde_jvm::resolver::ReadReason::RequestedDefinition
+21642:         {
+21643:             target_reads = target_reads.saturating_add(1);
+21644:         } else if enclosing.is_some_and(|method| read.definition == method.owner)
+21645:             && read.reason == jarde_jvm::resolver::ReadReason::RequestedDefinition
+21646:         {
+21647:             enclosing_reads = enclosing_reads.saturating_add(1);
+21648:         } else {
+21649:             return Ok(None);
+21650:         }
+21651:     }
+21652:     if target_reads != 1 || enclosing_reads > 1 {
+21653:         return Ok(None);
+21654:     }
+21655:     let Some(snapshot) = content
+21656:         .iter()
+21657:         .find(|snapshot| snapshot.id() == resolved.definition.snapshot())
+21658:     else {
+21659:         return Ok(None);
+21660:     };
+21661:     let (read, _) = read_definition(snapshot, &resolved.definition, budget)?;
+21662:     if read.facts.stopped_at.is_some() || read.facts.this_class.raw().0.as_slice() != owner {
+21663:         return Ok(None);
+21664:     }
+21665:     Ok(Some((resolved.definition, read)))
+21666: }
+21667: 
+21668: /// Add a source-only hint after the physical class and all other source projections have settled.
+21669: /// The selected parent and both complete method tables, rather than a name collision, authorize it.
+21670: fn project_direct_override_annotations(
+21671:     content: &[ArtifactSnapshot],
+21672:     environment: &ResolutionEnvironment,
+21673:     report: &mut ClassSourceReport,
+21674:     budget: &mut Budget,
+21675: ) -> Result<()> {
+
+=== src/facade.rs:25424-25460 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+25424: fn selected_reference_header(
+25425:     content: &[ArtifactSnapshot],
+25426:     request: &crate::ir::MethodAnalysisRequest,
+25427:     ir: &jarde_jvm::method_ir::MethodIr,
+25428:     owner: &[u8],
+25429:     cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+25430:     execution: &mut ExecutionReport,
+25431:     budget: &mut Budget,
+25432: ) -> Result<Option<ReferenceClassHeader>> {
+25433:     budget.poll()?;
+25434:     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+25435:     if let Some(cached) = cache.get(owner) {
+25436:         return Ok(cached.clone());
+25437:     }
+25438:     let current = ir
+25439:         .declaration()
+25440:         .map(|declaration| declaration.class_name().0.as_slice());
+25441:     let selected = if current == Some(owner) {
+25442:         ReferenceClassHeader::from_ir(ir)
+25443:     } else {
+25444:         resolve_class_source_dependency_read_raw(
+25445:             content,
+25446:             &request.environment,
+25447:             Some(&request.method),
+25448:             owner,
+25449:             execution,
+25450:             budget,
+25451:         )?
+25452:         .and_then(|(_, read)| ReferenceClassHeader::from_facts(&read.facts))
+25453:     };
+25454:     cache.insert(owner.to_vec(), selected.clone());
+25455:     Ok(selected)
+25456: }
+25457: 
+25458: /// The Java runtime fact is usable only when the selected order proves that it supplies no
+25459: /// competing definition. A failed or ambiguous read is not evidence of absence.
+25460: fn platform_class_unprovided(
+
+=== src/facade.rs:26248-26260 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+26248: fn reference_overload_calls_presented(
+26249:     content: &[ArtifactSnapshot],
+26250:     request: &crate::ir::MethodAnalysisRequest,
+26251:     ir: &jarde_jvm::method_ir::MethodIr,
+26252:     budget: &mut Budget,
+26253: ) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
+26254:     match prove_reference_overload_calls(content, request, ir, budget) {
+26255:         Ok(proved) => Ok(proved),
+26256:         Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
+26257:         Err(error) => Err(error),
+26258:     }
+26259: }
+26260: 
+
+=== src/facade.rs:26460-26654 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+26460:             let mut stack_reads: Vec<(u32, jarde_jvm::method_ir::ValueId)> = site
+26461:                 .reads()
+26462:                 .iter()
+26463:                 .filter_map(|(slot, value)| match slot {
+26464:                     Slot::Stack(depth) => Some((*depth, *value)),
+26465:                     Slot::Local(_) => None,
+26466:                 })
+26467:                 .collect();
+26468:             stack_reads.sort_by_key(|(depth, _)| *depth);
+26469:             let [array_operand, index_operand, value_operand] = stack_reads.as_slice() else {
+26470:                 continue;
+26471:             };
+26472:             if array_operand.0.checked_add(1) != Some(index_operand.0)
+26473:                 || index_operand.0.checked_add(1) != Some(value_operand.0)
+26474:             {
+26475:                 continue;
+26476:             }
+26477:             let pair = snapshot_aastore_reference_pair(
+26478:                 ssa.value(array_operand.1).ty(),
+26479:                 ssa.value(index_operand.1).ty(),
+26480:                 ssa.value(value_operand.1).ty(),
+26481:                 expected_loader,
+26482:             );
+26483:             if let Some(pair) = pair {
+26484:                 pairs.push(pair);
+26485:             }
+26486:         }
+26487:     }
+26488:     Ok(pairs)
+26489: }
+26490: 
+26491: /// The per-BCI widening proofs this body states at reference invocation arguments and `aastore`
+26492: /// initializer stores. Invocation targets come from the selected method descriptor; store targets
+26493: /// come from the exact arrayref SSA operand. Both use the analyzed method's selected snapshot
+26494: /// header chain. Store records retain the full scalar/array source and component spellings, while
+26495: /// the bounded walk proves their deepest named class relation. Same-name, Object, closed array and
+26496: /// platform answers remain the earlier consumers' responsibility; a pair the walk cannot reach
+26497: /// stays refused.
+26498: fn prove_snapshot_hierarchy_widenings(
+26499:     content: &[ArtifactSnapshot],
+26500:     request: &crate::ir::MethodAnalysisRequest,
+26501:     ir: &jarde_jvm::method_ir::MethodIr,
+26502:     budget: &mut Budget,
+26503: ) -> Result<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
+26504:     use jarde_reader::classfile::{CpEntryKind, cp_entry};
+26505:     let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+26506:         return Ok(Vec::new());
+26507:     };
+26508:     let mut cache = std::collections::BTreeMap::new();
+26509:     let mut execution = ExecutionReport::Complete {
+26510:         usage: budget.usage(),
+26511:     };
+26512:     let mut proved = Vec::new();
+26513:     for instruction in &code.instructions {
+26514:         budget.poll()?;
+26515:         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+26516:         if instruction.opcode == 0x53 {
+26517:             for (source, target) in snapshot_aastore_reference_pairs(
+26518:                 ssa,
+26519:                 instruction.bci,
+26520:                 &request.environment.runtime.load_domain.loader,
+26521:                 budget,
+26522:             )? {
+26523:                 if source.rank != target.rank || source.leaf_class == target.leaf_class {
+26524:                     continue;
+26525:                 }
+26526:                 if snapshot_header_chain_widens(
+26527:                     content,
+26528:                     request,
+26529:                     ir,
+26530:                     &source.leaf_class,
+26531:                     &target.leaf_class,
+26532:                     SNAPSHOT_HIERARCHY_WALK_DEPTH,
+26533:                     &mut cache,
+26534:                     &mut execution,
+26535:                     budget,
+26536:                 )? {
+26537:                     proved.push(jarde_java::report::ProvedSnapshotHierarchyWidening {
+26538:                         bci: instruction.bci,
+26539:                         source: source.source_type,
+26540:                         target: target.source_type,
+26541:                     });
+26542:                 }
+26543:             }
+26544:             continue;
+26545:         }
+26546:         // An `invokedynamic` site names no method reference at all; every other call carries its
+26547:         // receiver as the bottom operand it consumes, and a static call's first parameter stands
+26548:         // first instead.
+26549:         let receiver_slots = match instruction.opcode {
+26550:             0xb6 | 0xb7 | 0xb9 => 1,
+26551:             0xb8 => 0,
+26552:             _ => continue,
+26553:         };
+26554:         let Some(index) = instruction.constant_pool_index else {
+26555:             continue;
+26556:         };
+26557:         let Ok(entry) = cp_entry(ir.constant_pool(), index) else {
+26558:             continue;
+26559:         };
+26560:         let descriptor: &[u8] = match &entry.kind {
+26561:             CpEntryKind::MethodRef { descriptor, .. }
+26562:             | CpEntryKind::InterfaceMethodRef { descriptor, .. } => descriptor.0.as_slice(),
+26563:             _ => continue,
+26564:         };
+26565:         let Some(sites) = reference_parameter_sites(descriptor, receiver_slots, budget) else {
+26566:             continue;
+26567:         };
+26568:         if sites.is_empty() {
+26569:             continue;
+26570:         }
+26571:         // The operands this call consumes, bottom first: the one site this BCI holds records one
+26572:         // read per consumed value at its stack depth — whatever residual prefix the stack carries
+26573:         // below the call's own operands — so the ascending depths are the operand order itself.
+26574:         let mut operands: Vec<&jarde_jvm::method_ir::Value> = Vec::new();
+26575:         for site in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+26576:             budget.poll()?;
+26577:             budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+26578:             if site.bci() != instruction.bci {
+26579:                 continue;
+26580:             }
+26581:             budget.charge(
+26582:                 CountedBudgetDimension::AnalysisSteps,
+26583:                 u64::try_from(site.reads().len()).unwrap_or(u64::MAX),
+26584:             )?;
+26585:             let mut reads: Vec<(u32, &jarde_jvm::method_ir::Value)> = site
+26586:                 .reads()
+26587:                 .iter()
+26588:                 .filter_map(|(slot, value)| match slot {
+26589:                     jarde_jvm::method_ir::Slot::Stack(depth) => {
+26590:                         Some((*depth, ssa.value(*value).ty()))
+26591:                     }
+26592:                     jarde_jvm::method_ir::Slot::Local(_) => None,
+26593:                 })
+26594:                 .collect();
+26595:             reads.sort_by_key(|(depth, _)| *depth);
+26596:             operands = reads.into_iter().map(|(_, ty)| ty).collect();
+26597:             break;
+26598:         }
+26599:         for (ordinal, target) in sites {
+26600:             budget.poll()?;
+26601:             budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+26602:             // The dispatch's unconditional Object answer runs before this proof is ever consulted,
+26603:             // and an array parameter is the array closed set's shape; neither is proved here.
+26604:             if target == b"java/lang/Object" {
+26605:                 continue;
+26606:             }
+26607:             let Some(presented) = operands
+26608:                 .get(ordinal)
+26609:                 .and_then(|ty| named_reference_class(ty))
+26610:             else {
+26611:                 continue;
+26612:             };
+26613:             if presented == target {
+26614:                 continue;
+26615:             }
+26616:             if snapshot_header_chain_widens(
+26617:                 content,
+26618:                 request,
+26619:                 ir,
+26620:                 presented,
+26621:                 target,
+26622:                 SNAPSHOT_HIERARCHY_WALK_DEPTH,
+26623:                 &mut cache,
+26624:                 &mut execution,
+26625:                 budget,
+26626:             )? {
+26627:                 let (Ok(presented), Ok(target)) =
+26628:                     (std::str::from_utf8(presented), std::str::from_utf8(target))
+26629:                 else {
+26630:                     continue;
+26631:                 };
+26632:                 proved.push(jarde_java::report::ProvedSnapshotHierarchyWidening {
+26633:                     bci: instruction.bci,
+26634:                     source: presented.replace('/', "."),
+26635:                     target: target.replace('/', "."),
+26636:                 });
+26637:             }
+26638:         }
+26639:     }
+26640:     Ok(proved)
+26641: }
+26642: 
+26643: fn snapshot_hierarchy_widenings_presented(
+26644:     content: &[ArtifactSnapshot],
+26645:     request: &crate::ir::MethodAnalysisRequest,
+26646:     ir: &jarde_jvm::method_ir::MethodIr,
+26647:     budget: &mut Budget,
+26648: ) -> Result<Vec<jarde_java::report::ProvedSnapshotHierarchyWidening>> {
+26649:     match prove_snapshot_hierarchy_widenings(content, request, ir, budget) {
+26650:         Ok(proved) => Ok(proved),
+26651:         Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
+26652:         Err(error) => Err(error),
+26653:     }
+26654: }
+
+=== src/facade.rs:41230-41385 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+41230:     read: u64,
+41231:     declared: u64,
+41232:     scanned: &mut Vec<CoverageRange>,
+41233:     skipped: &mut Vec<CoverageRange>,
+41234: ) {
+41235:     if read > 0 {
+41236:         scanned.push(CoverageRange {
+41237:             label: label.to_owned(),
+41238:             start: 0,
+41239:             end: read,
+41240:         });
+41241:     }
+41242:     if read < declared {
+41243:         skipped.push(CoverageRange {
+41244:             label: label.to_owned(),
+41245:             start: read,
+41246:             end: declared,
+41247:         });
+41248:     }
+41249: }
+41250: 
+41251: /// The terminal state one failed step leaves, in the vocabulary the whole engine reports stops in.
+41252: ///
+41253: /// The mapping is the one the artifact tree, the query scan and the resolver already apply: a
+41254: /// cancellation is `Cancelled`, an exhausted dimension `Partial` with that dimension named, an
+41255: /// unsupported refusal `Partial` with its code, and a structure this read could not read `Failed` with
+41256: /// the reader's own code.
+41257: pub(crate) fn stop_execution(error: &Error, budget: &Budget) -> ExecutionReport {
+41258:     let usage = budget.usage();
+41259:     match error {
+41260:         Error::Cancelled { .. } => ExecutionReport::Cancelled { usage },
+41261:         Error::BudgetExceeded { dimension, .. } => ExecutionReport::Partial {
+41262:             reason: TerminationReason::BudgetExceeded {
+41263:                 dimension: *dimension,
+41264:             },
+41265:             usage,
+41266:         },
+41267:         Error::Unsupported { code, .. } => ExecutionReport::Partial {
+41268:             reason: TerminationReason::Unsupported { code: code.clone() },
+41269:             usage,
+41270:         },
+41271:         Error::InvalidInput { code, .. }
+41272:         | Error::Io {
+41273:             operation: code, ..
+41274:         } => ExecutionReport::Failed {
+41275:             reason: TerminationReason::Error { code: code.clone() },
+41276:             usage,
+41277:         },
+41278:     }
+41279: }
+41280: 
+41281: /// The state one member-table stop leaves: the class is read and the table stopped, so the read is
+41282: /// `Partial` with the reader's own code for the failure — the same shape the classfile layer uses for
+41283: /// a body decode that stopped.
+41284: fn member_stop_execution(stop: &MemberTableStop, budget: &Budget) -> ExecutionReport {
+41285:     ExecutionReport::Partial {
+41286:         reason: TerminationReason::Error {
+41287:             code: stop.code.clone(),
+41288:         },
+41289:         usage: budget.usage(),
+41290:     }
+41291: }
+41292: 
+41293: /// Merges one stop into a report's state, keeping the strongest one.
+41294: ///
+41295: /// The order is the engine's: a cancellation outranks an exhausted dimension, which outranks a
+41296: /// failure, which outranks any other non-`Complete` state, which outranks `Complete`. A `Complete`
+41297: /// state never overwrites a stop, so the earliest evidence of work that did not finish survives the
+41298: /// steps that follow it.
+41299: pub(crate) fn merge_execution(execution: &mut ExecutionReport, incoming: ExecutionReport) {
+41300:     if stop_priority(&incoming) > stop_priority(execution) {
+41301:         *execution = incoming;
+41302:     }
+41303: }
+41304: 
+41305: fn merge_execution_option(execution: &mut Option<ExecutionReport>, incoming: ExecutionReport) {
+41306:     match execution {
+41307:         Some(current) => merge_execution(current, incoming),
+41308:         None => *execution = Some(incoming),
+41309:     }
+41310: }
+41311: 
+41312: fn stop_priority(execution: &ExecutionReport) -> u8 {
+41313:     match execution {
+41314:         ExecutionReport::Complete { .. } => 0,
+41315:         ExecutionReport::Partial {
+41316:             reason: TerminationReason::BudgetExceeded { .. },
+41317:             ..
+41318:         }
+41319:         | ExecutionReport::Failed {
+41320:             reason: TerminationReason::BudgetExceeded { .. },
+41321:             ..
+41322:         } => 3,
+41323:         ExecutionReport::Cancelled { .. } => 4,
+41324:         ExecutionReport::Failed { .. } => 2,
+41325:         ExecutionReport::Partial { .. } => 1,
+41326:     }
+41327: }
+41328: 
+41329: /// Whether one stop ends the shared request rather than the value it was reading.
+41330: ///
+41331: /// A cancellation and an exhausted shared dimension are the *request* ending: everything after it
+41332: /// is work the same budget cannot fund, so a composed operation that has hit one starts nothing
+41333: /// further. A value-level stop — a decode that stopped at the bytes it was reading, an unsupported
+41334: /// construct — is isolated to the result it happened in, and the work the caller asked for beside
+41335: /// it still runs.
+41336: fn ends_the_request(execution: &ExecutionReport) -> bool {
+41337:     match execution {
+41338:         ExecutionReport::Complete { .. } => false,
+41339:         ExecutionReport::Cancelled { .. } => true,
+41340:         ExecutionReport::Partial { reason, .. } | ExecutionReport::Failed { reason, .. } => {
+41341:             matches!(reason, TerminationReason::BudgetExceeded { .. })
+41342:         }
+41343:     }
+41344: }
+41345: 
+41346: /// One diagnostic for a step that stopped the work it was part of.
+41347: ///
+41348: /// The code is the failure's own, so one failure has one code wherever this engine reports it, and the
+41349: /// provenance names the physical position the step was working on when it stopped — the entry it was
+41350: /// reading, or the definition it was reading from. A stop diagnostic is control metadata: it explains
+41351: /// why the report is not complete, so it is published whether or not the item budget that stopped it
+41352: /// could pay for it.
+41353: pub(crate) fn stop_diagnostic(error: &Error, provenance: Option<Provenance>) -> Diagnostic {
+41354:     Diagnostic {
+41355:         code: error_code(error),
+41356:         severity: if matches!(
+41357:             error,
+41358:             Error::InvalidInput { .. } | Error::Unsupported { .. }
+41359:         ) {
+41360:             DiagnosticSeverity::Error
+41361:         } else {
+41362:             DiagnosticSeverity::Warning
+41363:         },
+41364:         message: error.to_string(),
+41365:         provenance,
+41366:     }
+41367: }
+41368: 
+41369: fn nested_enum_refusal_diagnostic(reason: &str, provenance: Provenance) -> Diagnostic {
+41370:     Diagnostic {
+41371:         code: "nested_enum_source_refused".to_owned(),
+41372:         severity: DiagnosticSeverity::Warning,
+41373:         message: reason.to_owned(),
+41374:         provenance: Some(provenance),
+41375:     }
+41376: }
+41377: 
+41378: fn nested_annotation_refusal_diagnostic(reason: &str, provenance: Provenance) -> Diagnostic {
+41379:     Diagnostic {
+41380:         code: "nested_annotation_source_refused".to_owned(),
+41381:         severity: DiagnosticSeverity::Warning,
+41382:         message: reason.to_owned(),
+41383:         provenance: Some(provenance),
+41384:     }
+41385: }
+
+=== src/facade.rs:42020-42290 @ c814267719ebc6d8fe14535ebee1b85e41d444db ===
+42020:     capture_enum_constructor_ast: bool,
+42021:     retain_all_method_asts: bool,
+42022:     retain_generic_call_asts: bool,
+42023:     pool_spelled_members: bool,
+42024: ) -> Result<(
+42025:     RecoveredMethod,
+42026:     Option<jarde_java::report::ClassInitializerCandidates>,
+42027:     Option<jarde_java::report::ClassEnumConstructorCandidates>,
+42028:     Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
+42029:     Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+42030:     Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
+42031:     Option<Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>>,
+42032:     Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
+42033:     Option<jarde_java::report::GenericReturnCandidate>,
+42034:     Option<jarde_java::report::GenericConstructorCandidate>,
+42035:     Option<jarde_java::report::AnonymousAllocationScan>,
+42036:     Option<jarde_java::report::ClassSourceMethodAst>,
+42037:     Vec<jarde_java::report::ClassSourceFieldReceiverSite>,
+42038:     Vec<jarde_java::report::ClassSourceFieldWriteAccessor>,
+42039: )> {
+42040:     let mut facts = crate::facade::recovery_facts(
+42041:         analyzed.ir().declaration(),
+42042:         analyzed.ir().code(),
+42043:         &request.method,
+42044:     );
+42045:     if let Some(parameters) = method_parameters
+42046:         && analyzed.ir().code().is_some_and(|code| {
+42047:             matches!(
+42048:                 code.debug(),
+42049:                 jarde_reader::classfile::LocalDebugTable::Absent
+42050:             )
+42051:         })
+42052:     {
+42053:         facts = facts.with_debug_locals(
+42054:             parameters
+42055:                 .iter()
+42056:                 .map(|parameter| jarde_java::DebugLocal::named(parameter.slot, &parameter.name))
+42057:                 .collect(),
+42058:         );
+42059:     }
+42060:     let profile = request.environment.runtime.profile.clone();
+42061:     // The callee evidence one recovery run's own call sites justify, read on demand from the very
+42062:     // definition the run read the presented body from (P3 3.2). It happens **between** the run and
+42063:     // the presentation — not inside the recovery layer, which holds no artifact, no loader and no
+42064:     // budget — and it is the only read this entry performs beyond the one run: a recovery request
+42065:     // whose body names no such call site reads no member at all, and (D2 3.3) no preparation either.
+42066:     let candidates = named_callee_candidates(analyzed.ir());
+42067:     // The member record this presentation's own selection established (change
+42068:     // `add-demand-driven-core-results`, D3'). The ordered member table of a prepared class is the
+42069:     // one thing that says *which* of two records declaring one name and descriptor an artifact was
+42070:     // written for, so it is read from the preparation this entry already holds — the class task's
+42071:     // own, or the one the callee read below makes — and from nothing else. An entry that holds no
+42072:     // preparation walks no member table: it states `None` rather than a position it never located.
+42073:     let mut ordinal = match &callee_class {
+42074:         CalleeClass::Prepared(prepared) => member_ordinal(prepared, &request.method),
+42075:         _ => None,
+42076:     };
+42077:     let callees = match (&callee_class, &candidates) {
+42078:         (_, None) => None,
+42079:         (CalleeClass::Prepared(prepared), Some(candidates)) => Some(read_prepared_named_callees(
+42080:             content, request, candidates, prepared, budget,
+42081:         )?),
+42082:         (CalleeClass::Read(read), Some(candidates)) => {
+42083:             // One prepared class over one materialization (`crate::d0_counts`), made exactly when a
+42084:             // same-class callee read consumes it: the class read once serves the run above and this
+42085:             // callee read, and a body that named no such member never gets here.
+42086:             crate::d0_counts::class_prepared();
+42087:             let prepared = jarde_reader::prepared::PreparedClass::prepare(read, budget)?;
+42088:             ordinal = member_ordinal(&prepared, &request.method);
+42089:             Some(read_prepared_named_callees(
+42090:                 content, request, candidates, &prepared, budget,
+42091:             )?)
+42092:         }
+42093:         (CalleeClass::None, Some(candidates)) => {
+42094:             Some(read_named_callees(content, request, candidates, budget)?)
+42095:         }
+42096:     };
+42097:     let members = callees.as_ref().map(member_table);
+42098:     let member_inner_targets = match assembly_context {
+42099:         Some(caller) => {
+42100:             read_class_source_member_inner_targets(content, request, analyzed.ir(), caller, budget)?
+42101:         }
+42102:         None => Vec::new(),
+42103:     };
+42104:     let interface_super_calls =
+42105:         interface_super_calls_presented(content, request, analyzed.ir(), budget)?;
+42106:     let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
+42107:         let mut calls =
+42108:             reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
+42109:         match prove_direct_parent_accessor_calls(content, request, analyzed.ir(), budget) {
+42110:             Ok(accessors) => calls.extend(accessors),
+42111:             Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => {}
+42112:             Err(error) => return Err(error),
+42113:         }
+42114:         let fields = match prove_direct_parent_field_writes(content, request, analyzed.ir(), budget)
+42115:         {
+42116:             Ok(fields) => fields,
+42117:             Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Vec::new(),
+42118:             Err(error) => return Err(error),
+42119:         };
+42120:         (calls, fields)
+42121:     } else {
+42122:         (Vec::new(), Vec::new())
+42123:     };
+42124:     // The widening proofs this body's invocation arguments and reference-array stores state,
+42125:     // read from the same selected snapshot hierarchy. A method-only request states none, like the
+42126:     // other class-source proofs above.
+42127:     let snapshot_hierarchy_widenings = if assembly_context.is_some() {
+42128:         snapshot_hierarchy_widenings_presented(content, request, analyzed.ir(), budget)?
+42129:     } else {
+42130:         Vec::new()
+42131:     };
+42132:     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
+42133:     // it (D3'): the physical identity the run was bound to, the member record the selection above
+42134:     // established and the environment the run was validated under. This is the entry's statement and
+42135:     // never the caller's: a caller's `expected_artifact` is only ever a candidate for verification.
+42136:     let analysis = analyzed.report();
+42137:     let subject = jarde_java::ArtifactSubject::new(
+42138:         analysis.method.clone(),
+42139:         ordinal,
+42140:         analysis.environment_identity.clone(),
+42141:     );
+42142:     let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
+42143:         .with_evidence(evidence.clone())
+42144:         .with_subject(subject)
+42145:         .with_member_inner_targets(&member_inner_targets)
+42146:         .with_interface_super_calls(&interface_super_calls)
+42147:         .with_reference_overload_calls(&reference_overload_calls)
+42148:         .with_snapshot_hierarchy_widenings(&snapshot_hierarchy_widenings)
+42149:         // A presentation that will not re-spell member names — a standalone-CLASS root resolves
+42150:         // no child to fold, and the fold-refusal rerun states it for a family whose fold did not
+42151:         // finish — makes the build refuse the structural-reflection reads over pool-spelled class
+42152:         // literals instead of publishing a compilable text that answers from metadata the text
+42153:         // does not state.
+42154:         .with_pool_spelled_members(
+42155:             pool_spelled_members
+42156:                 || matches!(
+42157:                     request.environment.runtime.load_domain.roots.as_slice(),
+42158:                     [jarde_reader::view::LoadRoot::StandaloneClass { .. }]
+42159:                 ),
+42160:         );
+42161:     let request = request.with_superclass_field_writes(&superclass_field_writes);
+42162:     let request = if let Some(target) = static_member_target {
+42163:         request.with_static_member_target(target)
+42164:     } else {
+42165:         request
+42166:     };
+42167:     let request = if let Some(target) = typed_functional_target {
+42168:         request.with_typed_functional_target(target)
+42169:     } else {
+42170:         request
+42171:     };
+42172:     let prove_anonymous_constructor =
+42173:         retain_all_method_asts && request.facts.method().name() == "<init>";
+42174:     let (
+42175:         mut recovery,
+42176:         initializer_candidates,
+42177:         enum_constructor_candidates,
+42178:         bridge_candidate,
+42179:         enum_switch_candidates,
+42180:         array_constructor_candidates,
+42181:         lambda_helper_candidates,
+42182:         enum_switch_field_uses,
+42183:         generic_return,
+42184:         generic_constructor,
+42185:         anonymous_allocations,
+42186:         ast,
+42187:         field_receivers,
+42188:         field_write_accessor_sites,
+42189:     ) = match &members {
+42190:         Some(members) if include_class_source_candidates => {
+42191:             let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
+42192:                 &request.with_members(members),
+42193:                 budget,
+42194:                 prove_generic_return
+42195:                     || !member_inner_targets.is_empty()
+42196:                     || static_member_target.is_some(),
+42197:                 capture_enum_constructor_ast,
+42198:                 retain_all_method_asts,
+42199:                 retain_generic_call_asts,
+42200:                 prove_anonymous_constructor,
+42201:             );
+42202:             (
+42203:                 result.report,
+42204:                 result.initializer,
+42205:                 result.enum_constructor,
+42206:                 result.bridge,
+42207:                 Some(result.enum_switches),
+42208:                 Some(result.array_constructors),
+42209:                 Some(result.lambda_helpers),
+42210:                 Some(result.enum_switch_field_uses),
+42211:                 result.generic_return,
+42212:                 result.generic_constructor,
+42213:                 result.anonymous_allocations,
+42214:                 result.ast,
+42215:                 result.field_receivers,
+42216:                 result.field_write_accessors,
+42217:             )
+42218:         }
+42219:         None if include_class_source_candidates => {
+42220:             let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
+42221:                 &request,
+42222:                 budget,
+42223:                 prove_generic_return
+42224:                     || !member_inner_targets.is_empty()
+42225:                     || static_member_target.is_some(),
+42226:                 capture_enum_constructor_ast,
+42227:                 retain_all_method_asts,
+42228:                 retain_generic_call_asts,
+42229:                 prove_anonymous_constructor,
+42230:             );
+42231:             (
+42232:                 result.report,
+42233:                 result.initializer,
+42234:                 result.enum_constructor,
+42235:                 result.bridge,
+42236:                 Some(result.enum_switches),
+42237:                 Some(result.array_constructors),
+42238:                 Some(result.lambda_helpers),
+42239:                 Some(result.enum_switch_field_uses),
+42240:                 result.generic_return,
+42241:                 result.generic_constructor,
+42242:                 result.anonymous_allocations,
+42243:                 result.ast,
+42244:                 result.field_receivers,
+42245:                 result.field_write_accessors,
+42246:             )
+42247:         }
+42248:         Some(members) => (
+42249:             jarde_java::recover(&request.with_members(members), budget),
+42250:             None,
+42251:             None,
+42252:             None,
+42253:             None,
+42254:             None,
+42255:             None,
+42256:             None,
+42257:             None,
+42258:             None,
+42259:             None,
+42260:             None,
+42261:             Vec::new(),
+42262:             Vec::new(),
+42263:         ),
+42264:         None => (
+42265:             jarde_java::recover(&request, budget),
+42266:             None,
+42267:             None,
+42268:             None,
+42269:             None,
+42270:             None,
+42271:             None,
+42272:             None,
+42273:             None,
+42274:             None,
+42275:             None,
+42276:             None,
+42277:             Vec::new(),
+42278:             Vec::new(),
+42279:         ),
+42280:     };
+42281:     // What the read evidence publishes (change `add-demand-driven-core-results`, D3). The read above
+42282:     // is the accessor rule's own input whatever the caller selected — the member table it decides
+42283:     // from — so what the selection decides is the **record**: the callee facts and the header-read
+42284:     // proofs are the `ReadDetails` expansion, published only when the request selected it and the
+42285:     // presentation really produced an artifact. Every other case publishes the binding results alone:
+42286:     // which member each candidate resolved to, which candidates this class does not answer, and what
+42287:     // the read charged. Nothing is read a second time on either branch.
+42288:     //
+42289:     // The run's own verdict about the artifact the request named gates this too (D3', tasks 5.2/5.3):
+42290:     // this is the one category the entry materializes, and a mismatch attaches *no* evidence —
+
