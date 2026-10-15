@@ -1415,3 +1415,112 @@ fn h1_cap_fifteen_cli_exits_incomplete_and_keeps_main_body() {
             .contains("public static void main(")
     );
 }
+
+// The original DT-29 bytes exercise both direct-parent proof consumers through JSON/exit status.
+const DT29_PARENT_PROOF: &str = "../../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/outputs/input.jar";
+
+fn dt29_parent_cap_output(cap: u64) -> Output {
+    let fixture = repository_fixture(DT29_PARENT_PROOF);
+    run(&[
+        "class-source",
+        "--input",
+        path_of(&fixture),
+        "--class",
+        "dt29/SamePackageParentFamily$B",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        &format!("class_headers={cap}"),
+    ])
+}
+
+#[test]
+fn dt29_wide_cli_keeps_parent_field_casts_and_physical_accessor() {
+    let output = dt29_parent_cap_output(4096);
+    assert_eq!(status(&output), EXIT_COMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    assert_eq!(document["execution"]["status"], "complete");
+    let setter = json_method(&document, "set");
+    assert_eq!(setter["item"]["descriptor"]["escaped"], "(ZZ)V");
+    assert_eq!(
+        setter["outcome"]["analysis"]["execution"]["status"],
+        "complete"
+    );
+    assert_eq!(
+        setter["outcome"]["report"]["content"],
+        "contains_statements"
+    );
+    let text = setter["text"].as_str().unwrap();
+    for field in ["publicField", "protectedField", "packagePrivateField"] {
+        assert!(text.contains(&format!(
+            "((dt29.SamePackageParentFamily$A) this).{field} = arg1;"
+        )));
+    }
+    assert!(text.contains(
+        "dt29.SamePackageParentFamily$A.access$002((dt29.SamePackageParentFamily$A) this, arg2);"
+    ));
+}
+
+fn assert_dt29_parent_cli_header_stop(cap: u64) {
+    let output = dt29_parent_cap_output(cap);
+    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    assert_eq!(document["execution"]["status"], "partial");
+    assert_eq!(
+        document["execution"]["reason"]["dimension"],
+        "class_headers"
+    );
+    let constructor = json_method(&document, "<init>");
+    assert_eq!(constructor["item"]["descriptor"]["escaped"], "()V");
+    assert_eq!(
+        constructor["outcome"]["analysis"]["execution"]["status"],
+        "complete"
+    );
+    assert_eq!(
+        constructor["outcome"]["report"]["execution"]["status"],
+        "complete"
+    );
+    assert!(constructor["text"].as_str().unwrap().contains("super();"));
+    let mut diagnostics: Vec<&Value> = document["diagnostics"].as_array().unwrap().iter().collect();
+    let setter = json_method(&document, "set");
+    assert_eq!(setter["item"]["descriptor"]["escaped"], "(ZZ)V");
+    assert_eq!(setter["outcome"]["kind"], "recovered");
+    assert_eq!(
+        setter["outcome"]["analysis"]["execution"]["status"],
+        "complete"
+    );
+    let body = &setter["outcome"]["report"];
+    assert_eq!(body["execution"]["status"], "partial");
+    assert_eq!(body["execution"]["reason"]["dimension"], "class_headers");
+    assert_eq!(body["content"], "not_produced");
+    assert_eq!(body["text"], "");
+    assert!(body["outcome"].get("stopped").is_some());
+    diagnostics.extend(body["diagnostics"].as_array().unwrap());
+    assert!(
+        diagnostics.iter().any(|diagnostic| {
+            diagnostic["message"]
+                .as_str()
+                .unwrap_or_default()
+                .contains("ClassHeaders")
+        }),
+        "the original header stop survives aggregate or admitted-member serialization"
+    );
+}
+
+#[test]
+fn dt29_header_cap_one_cli_exits_incomplete_at_accessor_proof() {
+    assert_dt29_parent_cli_header_stop(1);
+}
+
+#[test]
+fn dt29_header_cap_two_cli_exits_incomplete_at_field_proof() {
+    assert_dt29_parent_cli_header_stop(2);
+}
