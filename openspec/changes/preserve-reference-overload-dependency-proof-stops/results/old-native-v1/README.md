@@ -1,0 +1,9 @@
+# 旧生产真实首停反例
+
+实际三次Cargo测试均行为失败exit101，finally exact cargo clean退出0且target缺失；15个inflight用例12通过/3新增失败，公共库4例2通过/2失败，CLI2例1通过/1失败，总计15通过/6失败/0忽略。无guard stop，4907源码/fixture输入before-after完全相等。这里是旧红基线，不是fix验收。
+
+Header控制在真实HLeaf resolver尝试取得原ClassHeaders Report，却在后继DirectParentAccessor阶段交接为Error/Cancelled；期限原Error ElapsedMillis同样变Cancelled；真实accepted-charge取消虽最终仍Cancel，却继续进入下一阶段并有checkpoint tail。前两例首先在公共execution断言失败，取消例在tail断言失败；后继诊断/前缀等断言不冒称执行，raw内原origin与handoff为实际观察。header_reads字段指实际尝试，不保证Header成功读取。
+
+公共独立ledger实际首停是ClassHeaders，旧类报告变Cancelled，因行为断言失败。plain与CLI最终虽本已Partial/exit4，却各付253个analysis_steps，对照真实ledger首拒付费用229，额外24；此处非写死数值oracle，永久测试从同fixture真实ledger动态取得首停费用。wide转换和cap2既有snapshot控制通过。
+
+capture.tar.gz：1241632B，SHA256 d46dbabd3d040c1cd4aaf97d82b43c762e6fde3ad5455f27e3f68452c834013b。23 payload加manifest共24安全唯一普通成员，8份native收据绑定raw、2份显式pin的dispatch raw；含独审。manifest为内嵌副本，root再次逐字节回读全部payload/原件。基线Git7532d618800287aa147a878ef509201ded80b004加包内4个compiled-old路径（facade/CLI/public test/JAR）可重建4907输入；原manifest与旧facade完整字节保留，不把后来fix facade收入旧包。fixture为已核七Java/七class的5001B STORE容器，与repro-v1相同7f424c…；原源/Runner/oracle未改。

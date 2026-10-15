@@ -22,6 +22,6 @@ EM11 的真实 class-source 请求在 reference-overload 证明首次拒付 Head
 
 ## Impact
 
-前置阶段为已验收产品 aadf71、归档/main f30df5d9；4905产品输入与冻结 CLI c2db4721…相同。实际基线与边界见 results/repro-v1，当前仅规划，所有实现任务未完成。
+前置阶段为已验收产品 aadf71、归档/main f30df5d9；4905产品输入与冻结 CLI c2db4721…相同。立项基线与边界见 results/repro-v1；旧生产反例与后续实际实施状态以 results/old-native-v1 和 tasks.md 为准。
 
-预计修改 src/facade.rs 的局部消费者与永久库/CLI回归，沿用既有报告和工厂，无新依赖/API/框架。非目标：不改全局 Budget、合并/发布准入、其它证明消费者、层级终端策略、平台契约或通用重载解析；不以当前观察、旧 CI 或结构 quality 宣称已修复、可编译或语义等价。
+修改 src/facade.rs 的局部消费者与永久库/CLI回归，沿用既有报告和工厂，无新依赖/API/框架。非目标：不改全局 Budget、合并/发布准入、其它证明消费者、层级终端策略、平台契约或通用重载解析；不以当前观察、旧 CI 或结构 quality 宣称已修复、可编译或语义等价。

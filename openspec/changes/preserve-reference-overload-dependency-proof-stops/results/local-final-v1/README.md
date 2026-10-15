@@ -1,0 +1,11 @@
+# Reference-overload 最终本地证据
+
+完整收据与原样源码/class/raw 在 capture.tar.gz；manifest.json逐项绑定178份payload与94条raw，另一个manifest成员共179成员。根代理已回读全部安全regular成员并核对字节及SHA256。CLI/JDK/Python运行时只记录外部pin。
+
+旧生产实际15通过/6行为失败、旧普通控制4通过、首次fixed的155通过/86 javac环境失败、中间JDK23 v2的272通过和最终候选325通过/0失败/1默认忽略分别保留，不能互相替代；所有native阶段4907输入前后相同并exact clean。历史失败/pending状态不被改写。最终focused不是完整workspace验收，默认忽略的reference-cast运行时用例未由它运行。
+
+最终CLI SHA256 c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396，59,657,968B，0555。七类完整report.text原样落盘且全部重编；Java8/23的原JAR、rebuilt与未改原Runner单独重编后优先调用rebuilt，共六次均匹配五行219B固定oracle。rebuilt classpath不含原JAR。物理NEW0/dup3/constructor4/call7/areturn10及转换span primary4、derived0/3/7分开核实。SourceMap的primary4是构造器锚点。
+
+同CLI cap1/2保留Partial ClassHeaders、退出4、三个完整前缀及第四个Stopped记录空正文/map；cap3/4与wide除usage.elapsed和已校验请求limit外全JSON相同。低cap旧生产本就Partial，首停修复依据是native原Error/Report、原诊断、空后继tail和253→实际首拒账目229的红绿对照，而非仅退出4。
+
+平台专属报告停止组合未动态覆盖；正常平台条件由既有focused与完整七类实验覆盖。固定Runner对照不证明任意输入语义等价，也不增加全局CF11/CF18/71/612覆盖数字。当前产品提交自身CI尚待完成，见tasks.md。

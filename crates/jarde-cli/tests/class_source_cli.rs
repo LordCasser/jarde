@@ -1524,3 +1524,135 @@ fn dt29_header_cap_one_cli_exits_incomplete_at_accessor_proof() {
 fn dt29_header_cap_two_cli_exits_incomplete_at_field_proof() {
     assert_dt29_parent_cli_header_stop(2);
 }
+
+const EM11_PROOF: &str = "../../tests/fixtures/em11-reference-overload.jar";
+
+fn em11_cap_output(cap: u64) -> Output {
+    let fixture = repository_fixture(EM11_PROOF);
+    run(&[
+        "class-source",
+        "--input",
+        path_of(&fixture),
+        "--class",
+        "em11/InputHierarchyCalls",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json",
+        "--budget",
+        "elapsed_millis=10000",
+        "--budget",
+        &format!("class_headers={cap}"),
+    ])
+}
+
+#[test]
+fn em11_cli_cap_one_does_not_pay_the_later_snapshot_proof() {
+    let first_refusal_analysis_steps = em11_first_refusal_analysis_steps();
+    let output = em11_cap_output(1);
+    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    assert_eq!(document["execution"]["status"], "partial");
+    assert_eq!(
+        document["execution"]["reason"]["dimension"],
+        "class_headers"
+    );
+    let member = json_method(&document, "run");
+    assert_eq!(member["item"]["index"], 3);
+    assert_eq!(
+        member["item"]["descriptor"]["escaped"],
+        "()Ljava/lang/String;"
+    );
+    assert_eq!(
+        member["outcome"]["analysis"]["execution"]["status"],
+        "complete"
+    );
+    assert_eq!(member["outcome"]["report"]["content"], "not_produced");
+    assert_eq!(member["outcome"]["report"]["text"], "");
+    assert!(
+        member["outcome"]["report"]["source_map"]["segments"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    // The actual discriminator; merely exit4/Partial would already pass the old executable.
+    assert_eq!(
+        document["usage"]["analysis_steps"].as_u64(),
+        Some(first_refusal_analysis_steps)
+    );
+}
+
+#[test]
+fn em11_cli_wide_keeps_the_physical_mid_overload() {
+    let output = em11_cap_output(4096);
+    assert_eq!(status(&output), EXIT_COMPLETE);
+    let document = stdout_json(&output);
+    assert_eq!(document["execution"]["status"], "complete");
+    assert!(
+        json_method(&document, "run")["text"]
+            .as_str()
+            .unwrap()
+            .contains("take((em11.HMid) new em11.HLeaf())")
+    );
+}
+
+// Public caller-owned ledger freezes the actually admitted work at the first real header refusal.
+// Calibrate through the same input path and public lifecycle as the CLI, without hard-coded fees.
+fn em11_first_refusal_analysis_steps() -> u64 {
+    use jarde::{Budget, CancellationToken, OperationLedger, UsageOwner};
+    let mut limits = task_budget(&[]).unwrap().limits().clone();
+    limits.elapsed_millis = u64::MAX;
+    limits.class_headers = 1;
+    let entry = Budget::with_cancellation_token(limits.clone(), CancellationToken::new());
+    let ledger = OperationLedger::new(&entry);
+    limits.class_headers = u64::MAX;
+    let mut budget = Budget::new(limits);
+    assert!(!entry.cancellation_token().is_cancelled());
+    assert!(!budget.cancellation_token().is_cancelled());
+    budget.with_ledger(ledger.clone(), UsageOwner::Methods);
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(
+            ArtifactInput::Path(repository_fixture(EM11_PROOF)),
+            &mut budget,
+        )
+        .unwrap();
+    let request = ClassSourceRequest {
+        class: ClassRef::Name {
+            class: jarde::ClassNameQuery::internal("em11/InputHierarchyCalls"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    };
+    let jarde::OperationOutcome::Performed(_) = engine
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &jarde::RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
+        .unwrap()
+    else {
+        panic!("the selected class returns its public report");
+    };
+    let stop = ledger
+        .stop_reason()
+        .expect("the requested header charge really refused");
+    assert_eq!(stop.kind, jarde::BulkStopKind::Budget);
+    assert_eq!(stop.dimension, Some(jarde::BudgetDimension::ClassHeaders));
+    assert!(!budget.cancellation_token().is_cancelled());
+    ledger.usage().analysis_steps
+}
