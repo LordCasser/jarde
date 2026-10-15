@@ -1125,12 +1125,16 @@ fn read_driver_method(
     // loader refuses keeps the record of the read it was decided on.
     run.reads = crate::resolver::published_reads(&closure);
     let read = read?;
-    let Some(member) = read.header.facts.methods.iter().find(|member| {
+    let mut matching = read.header.facts.methods.iter().filter(|member| {
         member.name.raw().0 == request.method.name.0
             && member.descriptor.raw().0 == request.method.descriptor.0
-    }) else {
+    });
+    let Some(member) = matching.next() else {
         return Err(driver_member_not_found(request));
     };
+    if matching.next().is_some() {
+        return Err(ambiguous_method());
+    }
     if matches!(
         driver_member_body(member, run)?,
         DriverMember::DeclaredWithoutBody
@@ -1174,6 +1178,14 @@ fn read_driver_method(
         request.method.clone(),
         Some(read.read.clone()),
         budget,
+    )
+}
+
+/// The existing input error for more than one exact raw member match.
+pub(crate) fn ambiguous_method() -> Error {
+    Error::invalid_input(
+        "classfile_method_ambiguous",
+        "multiple methods exactly matched the raw name and descriptor",
     )
 }
 
@@ -1462,6 +1474,9 @@ fn read_prepared_driver_method(
     bound?;
     crate::providers::require_prepared_member_table(prepared)?;
     let located = prepared.locate_method(&request.method.name.0, &request.method.descriptor.0);
+    if located.len() > 1 {
+        return Err(ambiguous_method());
+    }
     let Some(ordinal) = located.first().copied() else {
         return Err(driver_member_not_found(request));
     };

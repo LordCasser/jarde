@@ -439,30 +439,42 @@ impl CalleeClass<'_> {
         String::from_utf8_lossy(&declared.0).into_owned()
     }
 
-    /// The first member record declaring this raw name and descriptor, in declaration order.
-    ///
-    /// The first record is the one a caller that names a member gets: two records under one
-    /// signature stay two declarations in the class, and which of them this read answers with is
-    /// decided by the body read's own ambiguity rule (the shared decoder refuses both when it is
-    /// asked for a body) rather than by an election here.
-    fn locate(&self, name: &[u8], descriptor: &[u8]) -> Option<CalleeRecord<'_>> {
+    /// The unique member declaring this raw name and descriptor, before body admission.
+    fn locate(&self, name: &[u8], descriptor: &[u8]) -> Result<Option<CalleeRecord<'_>>> {
         match self {
             Self::Read(read) => {
-                let position = read.header.facts.methods.iter().position(|member| {
-                    member.name.raw().0 == name && member.descriptor.raw().0 == descriptor
-                })?;
-                Some(CalleeRecord {
-                    record: &read.header.facts.methods[position],
+                let mut matching =
+                    read.header
+                        .facts
+                        .methods
+                        .iter()
+                        .enumerate()
+                        .filter(|(_, member)| {
+                            member.name.raw().0 == name && member.descriptor.raw().0 == descriptor
+                        });
+                let Some((position, record)) = matching.next() else {
+                    return Ok(None);
+                };
+                if matching.next().is_some() {
+                    return Err(crate::engine::ambiguous_method());
+                }
+                Ok(Some(CalleeRecord {
+                    record,
                     ordinal: MethodOrdinal(u32::try_from(position).unwrap_or(u32::MAX)),
-                })
+                }))
             }
             Self::Prepared(prepared) => {
-                let ordinal = *prepared.locate_method(name, descriptor).first()?;
-                let slot = prepared.slot(ordinal)?;
-                Some(CalleeRecord {
+                let matching = prepared.locate_method(name, descriptor);
+                if matching.len() > 1 {
+                    return Err(crate::engine::ambiguous_method());
+                }
+                let Some(ordinal) = matching.first().copied() else {
+                    return Ok(None);
+                };
+                Ok(prepared.slot(ordinal).map(|slot| CalleeRecord {
                     record: &slot.header,
                     ordinal,
-                })
+                }))
             }
         }
     }
@@ -522,7 +534,7 @@ fn callee_members(
             continue;
         }
         seen.push(key);
-        let Some(located) = class.locate(&candidate.name.0, &candidate.descriptor.0) else {
+        let Some(located) = class.locate(&candidate.name.0, &candidate.descriptor.0)? else {
             refusals.push(CalleeRefusal {
                 candidate: candidate.clone(),
                 code: "callee_not_declared",

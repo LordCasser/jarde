@@ -1090,3 +1090,343 @@ fn the_prepared_path_refuses_a_class_whose_member_table_stopped() {
         direct.report().execution
     );
 }
+
+// Physical duplicates cannot be emitted by javac. These bytes use a fixed, real constant pool
+// and member table; only the declarations and their order vary.
+fn selection_class(members: &[(u16, u16, u16, bool)]) -> Vec<u8> {
+    fn u2(bytes: &mut Vec<u8>, value: u16) {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    let mut bytes = vec![0xca, 0xfe, 0xba, 0xbe, 0, 0, 0, 52];
+    u2(&mut bytes, 10);
+    for (index, entry) in [
+        &b"Selection"[..],
+        &b""[..],
+        &b"java/lang/Object"[..],
+        &b""[..],
+        &b"m"[..],
+        &b"()V"[..],
+        &b"Code"[..],
+        &b"other"[..],
+        &b"(I)V"[..],
+    ]
+    .iter()
+    .enumerate()
+    {
+        if index == 1 || index == 3 {
+            bytes.push(7);
+            u2(&mut bytes, index as u16);
+        } else {
+            bytes.push(1);
+            u2(&mut bytes, entry.len() as u16);
+            bytes.extend_from_slice(entry);
+        }
+    }
+    for value in [0x0421, 2, 4, 0, 0, members.len() as u16] {
+        u2(&mut bytes, value);
+    }
+    for &(flags, name, descriptor, code) in members {
+        for value in [flags, name, descriptor, u16::from(code)] {
+            u2(&mut bytes, value);
+        }
+        if code {
+            u2(&mut bytes, 7);
+            bytes.extend_from_slice(&13_u32.to_be_bytes());
+            // max_stack=0, max_locals=1, code_length=1, return, no exceptions/attributes.
+            bytes.extend_from_slice(&[0, 0, 0, 1, 0, 0, 0, 1, 0xb1, 0, 0, 0, 0]);
+        }
+    }
+    u2(&mut bytes, 0);
+    bytes
+}
+
+fn duplicate_selection_cases() -> Vec<Vec<(u16, u16, u16, bool)>> {
+    let abstract_member = (0x0401, 5, 6, false);
+    let native_member = (0x0109, 5, 6, false);
+    let code_member = (0x0009, 5, 6, true);
+    vec![
+        vec![abstract_member, code_member],
+        vec![code_member, abstract_member],
+        vec![native_member, code_member],
+        vec![code_member, native_member],
+        vec![abstract_member, abstract_member],
+        vec![native_member, native_member],
+        vec![abstract_member, native_member],
+        vec![native_member, abstract_member],
+        vec![code_member, code_member],
+    ]
+}
+
+fn assert_no_selection_body_work(before: &UsageSnapshot, after: &UsageSnapshot) {
+    assert_eq!(after.method_bodies, before.method_bodies);
+    assert_eq!(after.code_bytes, before.code_bytes);
+    assert_eq!(after.ir_items, before.ir_items);
+}
+
+fn assert_selection_failure(analysis: &MethodIrAnalysis, code: &str, keeps_read: bool) {
+    use jarde_jvm::ir::{MethodBodyState, StageState};
+    let report = analysis.report();
+    assert!(
+        matches!(
+            &report.execution,
+            ExecutionReport::Failed { reason: TerminationReason::Error { code: actual }, .. }
+                if actual == code
+        ),
+        "{:?}",
+        report.execution
+    );
+    assert_eq!(report.body, MethodBodyState::NotInspected);
+    assert_eq!(report.stages[0].stage, AnalysisStage::RawFacts);
+    assert_eq!(
+        report.stages[0].state,
+        StageState::Failed {
+            code: code.to_string()
+        }
+    );
+    assert!(
+        report.stages[1..]
+            .iter()
+            .all(|stage| stage.state == StageState::NotPerformed)
+    );
+    assert_eq!(!report.reads.is_empty(), keeps_read);
+    if keeps_read {
+        assert_eq!(report.reads[0].definition, report.method.owner);
+        assert_eq!(
+            report.reads[0].reason,
+            jarde_jvm::resolver::ReadReason::DriverMethodBody
+        );
+    }
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == code)
+    );
+    assert!(analysis.ir().code().is_none());
+    assert!(analysis.ir().canonical().is_none());
+}
+
+fn assert_selection_error(error: jarde_reader::error::Error, code: &str) {
+    assert!(
+        matches!(error, jarde_reader::error::Error::InvalidInput { code: actual, .. }
+        if actual == code)
+    );
+}
+
+#[test]
+fn duplicate_driver_selection_is_order_independent_and_precedes_body_admission() {
+    for members in duplicate_selection_cases() {
+        let sample = Sample::standalone(&selection_class(&members));
+        let request = sample.request(b"m", b"()V");
+        let mut budget = Budget::new(limits());
+        let before = budget.usage();
+        let direct = analyze_method_ir(sample.content(), &request, &mut budget).unwrap();
+        assert_selection_failure(&direct, "classfile_method_ambiguous", true);
+        assert_no_selection_body_work(&before, &budget.usage());
+        sample.with_prepared(&mut Budget::new(limits()), |prepared, budget| {
+            let before = budget.usage();
+            let analysis =
+                analyze_prepared_method_ir(sample.content(), prepared, &request, budget).unwrap();
+            assert_selection_failure(&analysis, "classfile_method_ambiguous", true);
+            assert_no_selection_body_work(&before, &budget.usage());
+        });
+    }
+}
+
+#[test]
+fn duplicate_callee_selection_is_order_independent_and_precedes_body_admission() {
+    for members in duplicate_selection_cases() {
+        let sample = Sample::standalone(&selection_class(&members));
+        let environment = sample.environment();
+        let candidates = [CalleeCandidate::new(0, b"Selection", b"m", b"()V")];
+        let request = CalleeReadRequest::new(&environment, &sample.definition, &candidates);
+        let mut budget = Budget::new(limits());
+        let before = budget.usage();
+        assert_selection_error(
+            read_callees(sample.content(), &request, &mut budget).unwrap_err(),
+            "classfile_method_ambiguous",
+        );
+        assert_no_selection_body_work(&before, &budget.usage());
+        sample.with_prepared(&mut Budget::new(limits()), |prepared, budget| {
+            let before = budget.usage();
+            assert_selection_error(
+                read_prepared_callees(sample.content(), prepared, &request, budget).unwrap_err(),
+                "classfile_method_ambiguous",
+            );
+            assert_no_selection_body_work(&before, &budget.usage());
+        });
+    }
+}
+
+#[test]
+fn unique_and_missing_selection_ignore_other_names_and_descriptors() {
+    use jarde_jvm::ir::{MethodBodyState, NoBodyKind};
+    for selected in [
+        Some((0x0009, true)),
+        Some((0x0401, false)),
+        Some((0x0109, false)),
+        None,
+    ] {
+        let mut members = vec![
+            (0x0401, 8, 6, false),
+            (0x0109, 8, 6, false),
+            (0x0401, 5, 9, false),
+            (0x0109, 5, 9, false),
+        ];
+        if let Some((flags, code)) = selected {
+            members.push((flags, 5, 6, code));
+        }
+        let sample = Sample::standalone(&selection_class(&members));
+        let request = sample.request(b"m", b"()V");
+        let environment = sample.environment();
+        let candidates = [CalleeCandidate::new(0, b"Selection", b"m", b"()V")];
+        let callee_request = CalleeReadRequest::new(&environment, &sample.definition, &candidates);
+        let check = |analysis: MethodIrAnalysis, callees: jarde_jvm::callee::CalleeReadReport| {
+            match selected {
+                Some((flags, code)) => {
+                    assert!(matches!(
+                        analysis.report().execution,
+                        ExecutionReport::Complete { .. }
+                    ));
+                    let expected = if code {
+                        MethodBodyState::Present
+                    } else {
+                        MethodBodyState::DeclaredWithoutBody {
+                            no_body_kind: if flags == 0x0401 {
+                                NoBodyKind::Abstract
+                            } else {
+                                NoBodyKind::Native
+                            },
+                        }
+                    };
+                    assert_eq!(analysis.report().body, expected);
+                    assert_eq!(analysis.ir().code().is_some(), code);
+                    assert_eq!(callees.members().len(), 1);
+                    assert_eq!(callees.members()[0].body().is_some(), code);
+                    assert!(callees.refusals().is_empty());
+                }
+                None => {
+                    assert_selection_failure(&analysis, "classfile_method_not_found", true);
+                    assert!(callees.members().is_empty());
+                    assert_eq!(callees.refusals()[0].code(), "callee_not_declared");
+                }
+            }
+        };
+        check(
+            analyze_method_ir(sample.content(), &request, &mut Budget::new(limits())).unwrap(),
+            read_callees(
+                sample.content(),
+                &callee_request,
+                &mut Budget::new(limits()),
+            )
+            .unwrap(),
+        );
+        sample.with_prepared(&mut Budget::new(limits()), |prepared, budget| {
+            let analysis =
+                analyze_prepared_method_ir(sample.content(), prepared, &request, budget).unwrap();
+            let callees =
+                read_prepared_callees(sample.content(), prepared, &callee_request, budget).unwrap();
+            check(analysis, callees);
+        });
+    }
+}
+
+#[test]
+fn prepared_definition_mismatch_precedes_duplicate_selection() {
+    let sample = Sample::standalone(&selection_class(&duplicate_selection_cases()[0]));
+    let mut request = sample.request(b"m", b"()V");
+    request.method.owner.class_bytes.length += 1;
+    sample.with_prepared(&mut Budget::new(limits()), |prepared, budget| {
+        let before = budget.usage();
+        let analysis =
+            analyze_prepared_method_ir(sample.content(), prepared, &request, budget).unwrap();
+        assert_selection_failure(&analysis, "class_definition_mismatch", false);
+        let candidates = [CalleeCandidate::new(0, b"Selection", b"m", b"()V")];
+        let callee_request =
+            CalleeReadRequest::new(&request.environment, &request.method.owner, &candidates);
+        assert_selection_error(
+            read_prepared_callees(sample.content(), prepared, &callee_request, budget).unwrap_err(),
+            "class_definition_mismatch",
+        );
+        assert_no_selection_body_work(&before, &budget.usage());
+    });
+}
+
+#[test]
+fn incomplete_member_table_precedes_duplicate_prefix_selection() {
+    let bytes = selection_class(&[
+        (0x0401, 5, 6, false),
+        (0x0109, 5, 6, false),
+        (0x0401, 8, 6, false),
+    ]);
+    let mut budget = Budget::new(limits());
+    let snapshot = ArtifactSnapshot::open(
+        ArtifactInput::bytes(bytes[..bytes.len() - 3].to_vec()),
+        &mut budget,
+    )
+    .unwrap();
+    let read = snapshot.prepared_root_class(&mut budget).unwrap();
+    let prepared = PreparedClass::prepare(&read, &mut budget).unwrap();
+    assert_eq!(prepared.locate_method(b"m", b"()V").len(), 2);
+    let stop = prepared.member_table_stop().unwrap().clone();
+    let sample = Sample {
+        definition: PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: prepared.class_bytes().digest.clone(),
+                length: prepared.class_bytes().length,
+            },
+            variant: PhysicalVariant::Base,
+        },
+        snapshot,
+        members: Vec::new(),
+        root_prefix: Vec::new(),
+    };
+    let request = sample.request(b"m", b"()V");
+    let before = budget.usage();
+    let analysis =
+        analyze_prepared_method_ir(sample.content(), &prepared, &request, &mut budget).unwrap();
+    assert_selection_failure(&analysis, &stop.code, true);
+    let candidates = [CalleeCandidate::new(0, b"Selection", b"m", b"()V")];
+    let callee_request =
+        CalleeReadRequest::new(&request.environment, &sample.definition, &candidates);
+    assert_selection_error(
+        read_prepared_callees(sample.content(), &prepared, &callee_request, &mut budget)
+            .unwrap_err(),
+        &stop.code,
+    );
+    assert_no_selection_body_work(&before, &budget.usage());
+}
+
+#[test]
+fn loader_binding_refusal_precedes_duplicate_selection_and_keeps_driver_read() {
+    let sample = Sample::standalone(&selection_class(&duplicate_selection_cases()[0]));
+    let mut request = sample.request(b"m", b"()V");
+    request.environment.runtime.load_domain.roots.clear();
+    request.environment.domains[0].roots.clear();
+    let candidates = [CalleeCandidate::new(0, b"Selection", b"m", b"()V")];
+    let callee_request =
+        CalleeReadRequest::new(&request.environment, &sample.definition, &candidates);
+    let mut budget = Budget::new(limits());
+    let before = budget.usage();
+    let direct = analyze_method_ir(sample.content(), &request, &mut budget).unwrap();
+    assert_selection_failure(&direct, "resolution_definition_unbound", true);
+    assert_selection_error(
+        read_callees(sample.content(), &callee_request, &mut budget).unwrap_err(),
+        "resolution_definition_unbound",
+    );
+    assert_no_selection_body_work(&before, &budget.usage());
+    sample.with_prepared(&mut Budget::new(limits()), |prepared, budget| {
+        let before = budget.usage();
+        let analysis =
+            analyze_prepared_method_ir(sample.content(), prepared, &request, budget).unwrap();
+        assert_selection_failure(&analysis, "resolution_definition_unbound", true);
+        assert_selection_error(
+            read_prepared_callees(sample.content(), prepared, &callee_request, budget).unwrap_err(),
+            "resolution_definition_unbound",
+        );
+        assert_no_selection_body_work(&before, &budget.usage());
+    });
+}
