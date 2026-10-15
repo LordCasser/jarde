@@ -1936,3 +1936,128 @@ fn one_store_serves_two_snapshots_without_answering_either_with_the_other() {
         store.report().hits
     );
 }
+
+/// Discarding a stale CP/Header answer releases its exact store weight even when a request
+/// still holds the old Arc. The ordinary parser can immediately retain the replacement.
+#[test]
+fn incompatible_public_products_retain_again_at_the_exact_byte_boundary() {
+    for mode in [
+        None,
+        Some(InspectionMode::Strict),
+        Some(InspectionMode::Forensic),
+    ] {
+        for format in [true, false] {
+            let bytes = class_bytes(b"p/Capacity", 52);
+            let store = FactsCache::current(FactsCapacity::new(1, bytes.len() as u64));
+            let identity = store.identity();
+            let newer = store.over(if format {
+                FactsIdentity::new(identity.registry, identity.format + 1)
+            } else {
+                FactsIdentity::new(identity.registry + 1, identity.format)
+            });
+            match mode {
+                None => {
+                    let expected = direct(&bytes);
+                    assert_eq!(through(&bytes, &store).0, expected);
+                    let live = store
+                        .structure_shared(&bytes, &mut Budget::new(limits()))
+                        .expect("lookup")
+                        .expect("retained structure");
+                    // The public parser discards the stale entry, falls back under this request's
+                    // budget, and publishes the same complete facts as the direct parser.
+                    let replacement = through(&bytes, &newer);
+                    assert_eq!(replacement.0, expected);
+                    assert_eq!(*live, expected);
+                    assert_eq!(replacement.2.class_bytes, bytes.len() as u64);
+                    let fresh = newer
+                        .structure_shared(&bytes, &mut Budget::new(limits()))
+                        .expect("lookup")
+                        .expect("replacement retained without clear");
+                    assert_eq!(*fresh, expected);
+                    assert!(!std::sync::Arc::ptr_eq(&live, &fresh));
+                    let warm = through(&bytes, &newer);
+                    assert_eq!(warm.0, expected);
+                    assert_eq!(warm.2.class_bytes, 0);
+                }
+                Some(mode) => {
+                    let expected = direct_header(&bytes, mode);
+                    assert_eq!(header_through(&bytes, mode, &store).0, expected);
+                    let live = store
+                        .header_shared(&bytes, mode, &mut Budget::new(limits()))
+                        .expect("lookup")
+                        .expect("retained header");
+                    assert_eq!(header_through(&bytes, mode, &newer).0, expected);
+                    assert_eq!(*live, expected);
+                    let fresh = newer
+                        .header_shared(&bytes, mode, &mut Budget::new(limits()))
+                        .expect("lookup")
+                        .expect("replacement retained without clear");
+                    assert_eq!(*fresh, expected);
+                    assert!(!std::sync::Arc::ptr_eq(&live, &fresh));
+                    let mut warm = Budget::new(limits()).with_facts_cache(newer.clone());
+                    assert_eq!(
+                        inspect_header(&bytes, &mut warm, mode).expect("warm header"),
+                        expected
+                    );
+                    assert_eq!(warm.usage().class_bytes, 0);
+                }
+            }
+            let report = newer.report();
+            assert_eq!(report.entries, 1);
+            assert_eq!(report.retained_bytes, bytes.len() as u64);
+            assert_eq!(report.stored, 2);
+            assert_eq!(report.discarded_format, u64::from(format));
+            assert_eq!(report.discarded_registry, u64::from(!format));
+            assert_eq!(report.refused_capacity, 0);
+            assert_eq!(report.refused_capacity_bytes, 0);
+        }
+    }
+}
+
+#[test]
+fn public_capacity_refusals_preserve_complete_answers_and_report_the_bound() {
+    let bytes = class_bytes(b"p/RefusedCapacity", 52);
+    for mode in [
+        None,
+        Some(InspectionMode::Strict),
+        Some(InspectionMode::Forensic),
+    ] {
+        for (entries, retained_bytes) in [
+            (0, 0),
+            (0, bytes.len() as u64),
+            (1, 0),
+            (1, bytes.len() as u64),
+        ] {
+            let store = FactsCache::current(FactsCapacity::new(entries, retained_bytes));
+            for _ in 0..2 {
+                match mode {
+                    None => {
+                        upheld(&direct(&bytes), through(&bytes, &store));
+                    }
+                    Some(mode) => assert_eq!(
+                        header_through(&bytes, mode, &store).0,
+                        direct_header(&bytes, mode)
+                    ),
+                }
+            }
+            let report = store.report();
+            let fits = entries > 0 && retained_bytes > 0;
+            assert_eq!(report.entries, usize::from(fits));
+            assert_eq!(
+                report.retained_bytes,
+                if fits { bytes.len() as u64 } else { 0 }
+            );
+            assert_eq!(report.refused_capacity, if entries == 0 { 2 } else { 0 });
+            assert_eq!(
+                report.refused_capacity_bytes,
+                if entries > 0 && retained_bytes == 0 {
+                    2
+                } else {
+                    0
+                }
+            );
+            assert_eq!(report.stored, u64::from(fits));
+            assert_eq!(report.hits, u64::from(fits));
+        }
+    }
+}

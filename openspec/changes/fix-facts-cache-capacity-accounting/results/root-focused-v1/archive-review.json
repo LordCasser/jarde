@@ -1,0 +1,19 @@
+{
+  "status": "accepted_local_focused_archive_only",
+  "archive": {
+    "path": "capture.tar.gz",
+    "bytes": 647902,
+    "sha256": "574c4d5b21d449d6bb038ced473f83eab0068ab99e728700e8d017c3cd1a1a28"
+  },
+  "payloads": 28,
+  "checks": 29,
+  "source_files": 4887,
+  "commands": 8,
+  "raw_streams": 16,
+  "totals": {
+    "passed": 243,
+    "failed": 0,
+    "ignored": 1
+  },
+  "own_ci_accepted": false
+}

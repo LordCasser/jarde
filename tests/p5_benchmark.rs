@@ -2314,6 +2314,13 @@ fn may_retain(path: &str) -> bool {
     path == BULK_ADAPTER
 }
 
+// This exact child module is compiled only for reader unit tests.
+const CAPACITY_TESTS: &str = "crates/jarde-reader/src/facts_capacity_tests.rs";
+
+fn may_construct_capacity_test(path: &str) -> bool {
+    path == CAPACITY_TESTS
+}
+
 /// Whether a line is documentation rather than code.
 ///
 /// Documentation is prose: a facade whose own module docs link to the bulk module says nothing about
@@ -3432,10 +3439,55 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
          declaration is checked above.)"
     );
 
-    // (3) Nothing in the engine switches it on, except the one explicit bulk adapter's own operation.
+    let parent = sources
+        .iter()
+        .find(|source| source.path == "crates/jarde-reader/src/facts_cache.rs")
+        .expect("the reader store source is present");
+    let declaration = "#[cfg(test)]\n#[path = \"facts_capacity_tests.rs\"]\nmod capacity_tests;";
+    assert_eq!(parent.text.matches(declaration).count(), 1);
+    assert_eq!(parent.text.matches("facts_capacity_tests.rs").count(), 1);
+    assert_eq!(parent.text.matches("mod capacity_tests").count(), 1);
+    assert!(sources.iter().any(|source| source.path == CAPACITY_TESTS));
+    for source in &sources {
+        if source.path != parent.path {
+            assert!(
+                !source.text.contains("facts_capacity_tests.rs"),
+                "unexpected test module reference in {}",
+                source.path
+            );
+        }
+    }
+    assert!(may_construct_capacity_test(CAPACITY_TESTS));
+    for path in [
+        "facts_capacity_tests.rs",
+        "src/facts_capacity_tests.rs",
+        "crates/jarde-reader/src/facts_capacity_tests.rs.bak",
+        "crates/jarde-reader/src/facts_capacity_tests/mod.rs",
+        "crates/jarde-reader/src/facts_cache.rs",
+        "crates/jarde-cli/src/facts_capacity_tests.rs",
+    ] {
+        assert!(!may_construct_capacity_test(path), "{path}");
+        let hits = machinery_hits(
+            "let store = FactsCache::current(capacity);",
+            &CACHE_CONSTRUCTIONS,
+        );
+        assert!(
+            !hits.is_empty(),
+            "construction scanner missed code in {path}"
+        );
+        assert!(
+            !may_retain(path),
+            "production near miss became exempt: {path}"
+        );
+    }
+
+    // (3) Production construction remains confined to the explicit bulk adapter.
     let mut constructions = Vec::new();
     let mut adapter_constructions = Vec::new();
     for source in &sources {
+        if may_construct_capacity_test(&source.path) {
+            continue;
+        }
         let hits = machinery_hits(&source.text, &CACHE_CONSTRUCTIONS);
         if hits.is_empty() {
             continue;
