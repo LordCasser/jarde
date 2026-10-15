@@ -647,6 +647,10 @@ impl Billing {
 // 2026-10-12 local-reference-write-compatibility bills the physical Object-write scan.
 // AnalysisSteps: +8/+8/+210 on flat/nested/many; +226 on each arm.
 // All other rows and Billing dimensions are unchanged.
+// 2026-10-14 forward carry dependency planning scans and bills six SSA values in the
+// many-method-class folded condition before planning its input producers. The actual recorder
+// measures +6 IrItems only in this row and in both old per-method arms; the same source,
+// outcome/text comparisons and all other exact dimensions remain unchanged.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -796,7 +800,7 @@ impl Billing {
         // `Guarded` holds the two shapes that are asked (the two-copy `fin`/`catchFinally`
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
-        ir_items: 21384,
+        ir_items: 21390,
         // +44 with `recover-loop-body-try-catch`: the new retry candidate proof is also
         // examined before declining three ordinary named catches in `Guarded`.
         // The pinned old/current CLI comparison measures +13 for `syncThrowsCatching`,
@@ -887,7 +891,7 @@ impl Billing {
         // field-copy proof's own scan of every body, charged to `IrItems`, and no other dimension.
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
-        ir_items: 35580,
+        ir_items: 35586,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
         analysis_steps: 19955,
@@ -928,7 +932,7 @@ impl Billing {
         // and retention still touches only the read dimensions.
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
-        ir_items: 35580,
+        ir_items: 35586,
         // +44 with `recover-loop-body-try-catch`, the same three candidate proofs
         // [`Billing::MANY_METHOD_CLASS`] records; retention still changes only reads.
         analysis_steps: 19955,

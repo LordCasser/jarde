@@ -56,3 +56,18 @@
 - **WHEN** 新的前向整数 carry 证明尝试认证
 - **THEN** 系统 SHALL 拒绝本候选并保持既有 construction/concat 的完整链证明和 whole-refusal
 - **AND** `ICN.armCall` 的原双编译器负例 SHALL 保持既有正文与拒绝契约
+
+#### Scenario: 整数carry的前置对象依赖在保存位置求值
+
+- **GIVEN** 已认证整数carry的producer具有工厂调用、this或参数receiver依赖
+- **WHEN** 该producer的保存绑定规划被接受
+- **THEN** 上游依赖的terminal位置 SHALL 为该保存initializer的物理producer，不得沿保存值继续移动到条件join
+- **AND** 完整恢复类 SHALL 在双编译器下保持原结果与receiver、取值、条件和选中分支的调用顺序及次数
+
+#### Scenario: 保存声明失败恢复原整方法拒绝
+
+- **GIVEN** 整数carry规划已认证，但其实际保存声明因render拒绝、无Java类型或声明未被接受而失败
+- **WHEN** 恢复结束
+- **THEN** 系统 SHALL 撤销该carry并恢复原多消费者primary拒绝及既有整方法物理闭合
+- **AND** SHALL NOT 仅输出cascade注释和return形成可编译但丢失行为的正文
+- **AND** Budget/Cancelled SHALL 继续遵循既有NotProduced合同，不被改成语义拒绝

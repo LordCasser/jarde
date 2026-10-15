@@ -1,5 +1,11 @@
 # 实现完成复核（2026-09-21）
 
+## 2026-10-14 当前 carry 交付重新验收
+
+普通try List/整数carry的f014产品已提交推送，但后续双编译器完整工厂receiver样本发现可编译错码：原8/7结果及MVT/MVTA轨迹被恢复成空效果。当前交付未接受，历史focused-v14/workspace-v8/matrix-v3只证明其原输入；forward change 2.2/3.1/3.2重新开放，最终交付仍待完成，不增加CF11/CF18/71/612计数。
+
+root修复先规划已证整数carry，再在保存initializer处结束上游依赖walk；实际保存失败撤销carry并恢复原多消费者primary，Stop原样传播。focused-v18独立接受637/0/3与4886来源；双JDK/default-all完整10方法正例四cells/40maps、6行oracle同原，另2方法receiver赋值负例四cells/全部物理BCI保留ExplanationOnly、四次编译按预期exit1无runtime。原16方法时序probe四cells/64maps/12行及baseline/admission完整16cells的45/33行矩阵已用新CLI验收；v17/v18 CLI逐字同。fresh workspace-forward-v10已独立接受7130/0/196、730 suites，focused-v19为642/0/4，额外本地CI门通过。[最终本地归档](changes/recover-ordinary-try-list-generic-bodies/results/final-local-delivery-root-v4/README.md)3536 payload/十个编译来源已逐一复开。修复产品自身CI/clean-main仍开放，不以f014绿CI代替。
+
 ## 2026-10-12 独立债务：List 近邻控制的完整类失败
 
 真实来源见 [CF11 结构化 List 控制基线](changes/recover-structured-list-generic-bodies/results/controls-combined-baseline-root-v1/README.md)。冻结旧产品 CLI SHA `4df9ff1c96addfcae2814b72687e35f2883b5aba1d19b0b42cdfa9959d091f95`，原始完整类 Java 8/23 编译运行均成功，17 条 oracle 相同。下面两项旧 Jarde 缺陷独立拆分，不扩大当前结构化泛型投影的实现范围，也不以拒绝泛型宣布它们正确。

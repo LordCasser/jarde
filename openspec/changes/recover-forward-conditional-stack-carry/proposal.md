@@ -16,6 +16,7 @@ admission 的完整 13 方法类曾在包含 `effects += value == null ? 0 : 1` 
 
 - 对象/StringBuilder receiver 继续由既有 construction/concat 完整链证明与原拒绝路径处理；不准入本整数 carry。
 - 候选在完整 final-consumer/join/dependency 检查成功前保持 provisional，不改变全局 consumer census。
+- 先规划已证明的整数carry，再在其保存initializer位置处理前置receiver/operand依赖；实际保存失败必须撤销carry并恢复原多消费者整方法拒绝，不能让后续return掩盖丢失的调用。
 
 - 不改 admission 或 baseline 的 Java fixture、Runner、manifest 和基线源字节；不删减完整类的 13 个物理方法。
 - 不硬编码方法名、BCI、slot 数字或编译器偶然命名；候选通过 classfile、控制流、SSA Value/Slot 与真实指令 reader 身份绑定。

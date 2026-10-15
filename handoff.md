@@ -4,13 +4,19 @@
 
 ## 2026-10-14 当前进行中的交付
 
-普通 try List 泛型及其整数前向条件栈 carry 已实现。修复版冻结 CLI SHA `0a30cf2cef1974006105e141789d5a9a8116497fae12d20479b2644d3a0ad2d7`，59537768 bytes；focused-v14 为629/0/2，fmt、CI exact Clippy、CI OpenSpec1.11 strict、420 Java库/178 reader库及原ICN控制均通过。v13/v14 CLI逐字相同，仅cfg(test) fixture population tuple/三行注释变化，生产reader前缀逐字相同。
+普通 try List 泛型及整数carry的f014产品已推送且自身CI38528929839实际4jobs/52steps全成功；后续完整工厂receiver反例仍发现可编译错码，因此当前交付尚未接受。root修复先规划整数保存点，再处理上游receiver/operand；实际保存失败恢复原三consumer primary与整方法闭合，Stop原样传播。新源码尚未提交，下一步提交/push确切修复产品、实际验收其自身CI与最终clean-main；持续goal active。
 
-持久证据根 `/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014`：matrix-v3 root主审计accepted/errors0，16完整Jarde cells及45/33行oracle；JADX baseline8编译失败、admission8成功保留。forward-order-v3/root-audit-v2接受四完整16方法cells/64maps/12行时序；BI三输入/default-all旧v6与v13正文/quality/map/身份不变；ICN两编译器/default-all旧v6与v13整类正文不变。完整fixture/Runner未手改；不增加CF11/CF18/71/612总体完成计数。
+最新本地证据已root接受并逐成员复开：[final-local-delivery-root-v4](openspec/changes/recover-ordinary-try-list-generic-bodies/results/final-local-delivery-root-v4/README.md)，3536 payload/23673727B/SHA c5ba3c8f273493df9cdcce092fd7de49a83df77b37b47678797552c022c8d95f。十个final-source逐字绑定focused/workspace编译来源及当前文件，4886完整来源相等；补充多维数组原Java/Runner另由supplemental pins覆盖。最终CLI 59590432B/SHA cd5e52dd45234b45e026af0117dae5f77bf3ef2a1316181bbbaf8c672c95679d，v17/v18/v19逐字同。
 
-fresh workspace-v5/v6的真实ICN回归与旧fixture计数失败已保留。workspace-v7进程在17批后消失，未完成收据不接受；独立中断审计及actual cargo clean/target absent已记录。当前fresh双seed为workspace-forward-v8，由用户级服务 `jarde-forward-validation-v8.service` 管理；必须核服务真实PID、terminal收据、两个seed各365targets/96batches及独立root acceptance。其通过后脚本才串行执行六个CI ignored runtime命令、两个examples及tree/feature/closure检查。
+focused-v19 642/0/4，421Java库/178reader/原List及ICN控制、三个保存失败出口及真实prepare_deferred_bindings入口预算/ledger取消均通过。工厂/this/parameter完整十方法正例四cells/40maps/六行oracle同原；两方法receiver赋值负例四cells保留原primary/ExplanationOnly与全部13物理BCI，正确原Runner和helper classpath下四次javac仅因jarde_refused_body失败/no-runtime。早期collector未使用Runner副本错误单独保留，实际compile-v1未传该文件，v2显式使用正确Runner。
 
-两change的最后交付门仍开放：提交/push确切产品、接受自身实际CI工具链、逐成员复开最终归档及源码身份、更新完成审查和核真实最终HEAD clean-main。不得以局部矩阵或service运行状态代替完成。四项cache/no-Code/emitter/canonical债务独立0/4；私有worktree试验不冒充主线接受。
+原baseline十七方法45行、admission十三方法33行的matrix-v4完整16Jarde cells全通过；JADX真实八baseline失败/八admission成功保留。forward-order-v4完整16方法四cells/64maps/12行及BI/ICN二十render旧产品全文/质量/map/身份不变。下游多维数组猜测经完整七方法四cells/28maps/两行运行证伪，已有NewArray支持，未改solver。
+
+fresh workspace-v10已完成并独立root acceptance：195命令/390raw，两个seed各365targets/96batches，共7130/0/196、730 suites；required named gates逐一关联。ci-extra-forward-v3九测试及两examples、ci-tree-forward-v2依赖边界通过，全部exact finally clean/target absent。原workspace-v9第65批P5 IR固定费+6失败保留；原recorder六case与187请求direct/shared实际重测后只更新三exactpins+注释，旧所有shape/text/outcome/其它维度断言保留。focused19相对18仅该测试源变，CLI逐字同。早期v15/v16、audit环境/content错误及v9缺脚本launcher失败均分开保留。
+
+forward change现9/10，ordinary5/6：本地任务已验收，最终自身CI/clean-main开放，不增加CF11/CF18/71/612计数。必须最后核实际HEAD/源闭包/clean状态；不得用f014绿CI代替修复产品CI。root独占共享Git/Cargo/rustfmt/JDK/CLI；workspace-v10及后续服务已完成，不清其它聊天managed worktree。
+
+四项cache/no-Code/canonical/emitter工程债务各0/4。另一review聊天的已验证私有候选总索引 /home/lordcasser/.cache/jarde-review/20261014/engineering-candidates-handoff-v6.json，root只读subagent已审四项逻辑与plan对齐，尚未在主线应用；先完成当前语义修复交付。该聊天可能准备额外cfg(test) prepass-stop候选，不应因此更改已经冻结的本地证据或虚称现有五子场景未运行。
 
 ## 上一批主线（历史）
 

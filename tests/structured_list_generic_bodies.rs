@@ -252,6 +252,110 @@ fn forward_conditional_carry_frozen_order_probes_keep_saved_producers_before_the
     }
 }
 
+#[test]
+fn forward_carry_saves_reference_dependencies_before_the_condition() {
+    for class in [
+        include_bytes!("fixtures/carry-dependency/javac8/CarryDependencyProbe.class").as_slice(),
+        include_bytes!("fixtures/carry-dependency/javac23/CarryDependencyProbe.class").as_slice(),
+    ] {
+        let default = performed(class, "CarryDependencyProbe");
+        let all = match report_with(
+            class,
+            "CarryDependencyProbe",
+            Some(&RecoveryEvidenceRequest::all()),
+            &mut task_budget(&[]).unwrap(),
+        ) {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("complete dependency probe class: {other:?}"),
+        };
+        assert_eq!(default.methods.len(), 10);
+        assert_eq!(default.text, all.text);
+        for member in &default.methods {
+            let raw = raw_body(member);
+            assert_eq!(raw.representation, Representation::Java, "{}", member.text);
+            assert_eq!(raw.quality, Quality::Structured, "{}", member.text);
+            assert_utf8_source_map(raw);
+            assert_raw_map_method_identity(raw, member);
+        }
+        for name in [
+            b"referenceConsumer".as_slice(),
+            b"thisConsumer",
+            b"parameterConsumer",
+        ] {
+            let member = method(&default, name);
+            let text = &member.text;
+            assert_eq!(text.matches("value()").count(), 1, "{text}");
+            assert_eq!(text.matches("test(flag)").count(), 1, "{text}");
+            assert_eq!(text.matches("consume(").count(), 1, "{text}");
+            assert!(
+                text.find("value();").unwrap() < text.find("test(flag)").unwrap(),
+                "{text}"
+            );
+            assert!(!text.contains("could not commit"), "{text}");
+            assert!(!text.contains("jarde_refused_body"), "{text}");
+        }
+        assert_eq!(
+            method(&default, b"referenceConsumer")
+                .text
+                .matches("make()")
+                .count(),
+            1
+        );
+    }
+}
+
+#[test]
+fn failed_carry_receiver_assignment_keeps_the_primary_and_quotes_the_whole_method() {
+    for class in [
+        include_bytes!(
+            "fixtures/carry-dependency/negative/javac8/CarryDependencyRefusalProbe.class"
+        )
+        .as_slice(),
+        include_bytes!(
+            "fixtures/carry-dependency/negative/javac23/CarryDependencyRefusalProbe.class"
+        )
+        .as_slice(),
+    ] {
+        let default = performed(class, "CarryDependencyRefusalProbe");
+        let all = match report_with(
+            class,
+            "CarryDependencyRefusalProbe",
+            Some(&RecoveryEvidenceRequest::all()),
+            &mut task_budget(&[]).unwrap(),
+        ) {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("complete refusal control: {other:?}"),
+        };
+        assert_eq!(default.methods.len(), 2);
+        assert_eq!(default.text, all.text);
+        let member = method(&default, b"rejectedDependency");
+        let raw = raw_body(member);
+        assert_eq!(
+            raw.content,
+            RecoveryContent::ExplanationOnly,
+            "{}",
+            member.text
+        );
+        assert!(
+            raw.text.contains("saved producer at BCI 7 has 3 consumers"),
+            "{}",
+            raw.text
+        );
+        assert!(member.text.contains("jarde_refused_body();"));
+        assert!(!member.text.contains("return;"));
+        let facts = class_facts(class, &mut task_budget(&[]).unwrap()).unwrap();
+        let code = method_code(&facts, class, member);
+        let bcis = code
+            .instructions
+            .iter()
+            .map(|instruction| instruction.bci)
+            .collect::<Vec<_>>();
+        assert_bcis_are_mapped(raw, &bcis);
+        assert_utf8_source_map(raw);
+        assert_raw_map_method_identity(raw, member);
+    }
+}
+
 fn assert_raw_map_method_identity(raw: &RecoveryReport, member: &ClassSourceMethod) {
     let bound_method = raw
         .artifact

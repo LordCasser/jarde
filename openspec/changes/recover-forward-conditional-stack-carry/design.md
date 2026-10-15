@@ -16,6 +16,8 @@ root 已在 frozen admission class 上读取真实 classfile 指令、控制流�
 
 候选在完整 final-consumer/join/dependency 检查成功前保持 provisional，不影响全局 consumer census。
 
+整数carry的receiver/operand是独立的上游值：先预算化证明候选并优先完成其绑定规划，上游terminal walk才可停在这个保存initializer的物理producer处。此处只接受保存计划，并非已提交声明；现有候选保留规则必须确保该carry不会被吸收到join之后的另一initializer。真正的bind_value若因render拒绝、缺类型或push未接受声明失败，撤销证书并恢复原SSA三consumer拒绝，复用现有整方法闭合；Budget/Cancelled原样传播，不被此恢复替换。
+
 最终落地时，现有普通 consumer gate 仍对非候选值执行原始规则。新规则只可将候选两条经认证的同值 phi 边从 census 视图排除；不得全局更改 `SsaTable::uses`、Value 读取 API 或其他消费者。
 
 ## 呈现与顺序
@@ -54,3 +56,5 @@ Stop合同裁定：该proof在第一次emit前。report::stopped的既有正文�
 ## workspace 回归与修复后的局部验收
 
 v5 第70批和 focused-v12 保留原 ICN whole-refusal 断言失败；v6/v11 同物理输入对照证明 BCI16 的 receiver 从三consumer整体拒绝变为 fragment。v13 的双编译器物理SSA测试核实该值为 Ref、uses3、四块，并实际证明旧同值carry前提匹配；新整数边界拒绝对象receiver。focused-v13 实际451/0/2，包含全部420库测试和原ICN负例；旧v6与v13在两编译器/default-all八次真实render完整正文逐字一致。新矩阵/BI/双seed/自身CI仍须重新绑定v13，不能沿用旧冻结验收。
+
+2026-10-14追加实际反例：f014/v14在完整工厂receiver整数carry类中输出三个未提交注释后return，双编译器compile/runtime虽exit0，但与原MVT/MVTA轨迹及8/7结果不同。旧绿证据保持其冻结输入范围，交付重开。永久完整CarryDependencyProbe保留原表达式并加this/parameter来源；bind_value三失败出口用真实carry证书故障注入验证原primary恢复，新的预规划扫描还需预算/ledger取消控制。所有新验收必须绑定新CLI，不沿用v14行为结论。

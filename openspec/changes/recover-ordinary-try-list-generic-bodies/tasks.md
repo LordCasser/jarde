@@ -10,7 +10,7 @@
 - [x] 2.1 在实际最终候选重新跑双JDK/debug-none/default-all未手修完整17方法类和至少45场景Runner（原44行完整保留，加可变output的handled正常完成行）；五个目标方法的泛型投影成功，unknowncall及旧反例继续拒绝，原17行oracle不变，String/Integer的iterator/hasNext/next/output.add RuntimeException/Error消息/escape/events/effects逐字同原；JADX每JDK使用自身input，真实失败保留no-runtime。root独立核raw/source/report/class身份/来源并复开归档后关闭。
 - [ ] 2.2 fmt/当前CI Clippy/global strict、必要focused及fresh双seed workspace、5GiB/target1GiB/1秒进程组守卫/default stack/finally exact cargo clean实际通过；root提交推送确切产品并接受自身CI，更新handoff/完成审查与账本，核最终真实HEAD clean-main后关闭。本项通过不自动增加整CF11/71单元/612测试计数。
 
-前置：两前置change的产品自身CI与clean-main交付完成后应用代码。目前仅规划与基线观察，全部实现任务保持未关闭。持续目标继续，Luna在私有目录准备候选，root负责应用、工具链和验收。
+前置change的产品自身CI与clean-main交付已完成。当前实现1.1–1.4及冻结矩阵2.1已有实际验收记录；2.2交付保持开放，整数carry追加反例修复需要新的CLI重跑最终矩阵/双seed/自身CI。root负责应用、工具链和验收。
 
 2026-10-13：1.1按[实际基线归档](results/baseline-product-597010-root-v1/README.md)关闭；root重放auditor-v2及独立复开276成员/108基线raw/134总raw绑定。第一次复开因排除全部jar的root断言误拦受控输入；第二次逐jar核仅含一个完整原class、与同模式同JDK输入逐字一致，安装二进制仍全部排除，原失败保留。44行整类运行同原，五个目标仍raw签名，unknowncall保留拒绝。当前1/6；对抗审查补handled正常完成行（候选至少45行）、multi-catch与合格try改名门，其余任务未实施，计数不变。
 
@@ -27,3 +27,7 @@
 2026-10-14 workspace-v6：原ICN批次已通过；第93批reader遍历所有fixture成功后，仅旧population tuple失败。实测新值(1169,5225,521,3429,10)，增量4class/62 Code/18handler/145branch/0jsr。保留该失败raw与exactclean；按新增冻结fixture精确更新测试内tuple/注释，未修改parser生产代码或跳过样本。focused-v14新增完整reader lib gate，最终双seed重新绑定该测试版本。
 
 2026-10-14 root：最终本地归档final-local-delivery-root-v3已经接受，1642 payload/9编译来源逐成员复开，focused-v14 629/0/2、fresh双seed7124/0/196、全部额外本地CI门通过。2.2仍待确切产品提交/push/自身实际CI与最终clean-main，不以本地hybrid工具链代证。
+
+2026-10-14：f014已提交推送，但新完整工厂receiver carry对照揭示可编译错码，当前交付未接受。forward change 2.2/3.1/3.2已重开；新focused-v17独立协议接受636/0/3，4882source closure不变，双JDK/default-all完整10方法dependency类四cells/six行oracle及40maps接受。原45/33行和16方法时序probe未改，新冻结CLI矩阵与双seed尚待验收；2.2及总体计数不关闭。
+
+2026-10-15：root接受并复开[最终本地修复归档](results/final-local-delivery-root-v4/README.md)3536 payload/十编译来源，focused642/0/4、fresh双seed7130/0/196、额外CI门均通过；三旧P5精确费用按真实新增扫描重测更新，原比较保留。2.2仅剩确切修复产品提交/push/自身CI与最终clean-main，不扩大总体计数。
