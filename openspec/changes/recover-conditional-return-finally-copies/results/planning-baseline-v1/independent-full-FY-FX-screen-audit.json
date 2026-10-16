@@ -1,0 +1,551 @@
+{
+  "schema": "effectful-finally-after-dispatch-screen-independent-audit-v1",
+  "status": "independent_audit_passed_expected_current_source_refusals",
+  "execution": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/execution.json",
+    "bytes": 2267510,
+    "sha256": "72a0c56228ba7ce930d032d0fbaaf633c4e785455ef64fde7ffb944b9c19e1d4"
+  },
+  "binding": {
+    "product_head": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+    "frozen_cli": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+      "bytes": 59699632,
+      "sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+      "mode": "0555",
+      "built_from": "target/debug/jarde-cli"
+    },
+    "native_receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-candidate-dispatch-fix-v1/execution.json",
+      "bytes": 2162474,
+      "sha256": "d28e3c3d76c63e1199085d03d9f3cb33d32f0b76d3abf3d1ac4afaa9e5f78358"
+    },
+    "source_closure_entries": 4915,
+    "all_current_source_hashes_match": true,
+    "source_manifest_before_after_equal": true,
+    "input_pins_before_after_equal": true,
+    "target_absent": true
+  },
+  "commands": {
+    "count": 8,
+    "exit_sequence": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1
+    ],
+    "expected_exit_codes_match": true,
+    "guard_stops": 0,
+    "every_generated_java_compile_uses_jdk23_release8": true,
+    "records": [
+      {
+        "index": 1,
+        "label": "javac23-current-whole-source-FY",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+          "class-source",
+          "--input",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+          "--class",
+          "FY",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all",
+          "--budget",
+          "elapsed_millis=10000"
+        ],
+        "exit_code": 0,
+        "expected_exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/1.stdout.raw",
+            "bytes": 115888,
+            "sha256": "b0797cbf73ecd23a68cfe0afc091bcd58b770c4c1b3d7bd92372b250f3d6adc8"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/1.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "index": 2,
+        "label": "javac23-compile-exact-current-generated-FY",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FY/classes",
+          "-sourcepath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FY/empty-sourcepath",
+          "-d",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FY/classes",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FY/FY.java"
+        ],
+        "exit_code": 1,
+        "expected_exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/2.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/2.stderr.raw",
+            "bytes": 383,
+            "sha256": "fe6f3ff403440c61472c0631187dd0458927e7f0bf97d39fcf8f6abc5a4ef28e"
+          }
+        }
+      },
+      {
+        "index": 3,
+        "label": "javac23-current-whole-source-FX",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+          "class-source",
+          "--input",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+          "--class",
+          "FX",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all",
+          "--budget",
+          "elapsed_millis=10000"
+        ],
+        "exit_code": 0,
+        "expected_exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/3.stdout.raw",
+            "bytes": 156566,
+            "sha256": "9bf5ad540a8195dfc6bc77257387a03b0600e4d96d659242cd568c235bf8d571"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/3.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "index": 4,
+        "label": "javac23-compile-exact-current-generated-FX",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FX/classes",
+          "-sourcepath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FX/empty-sourcepath",
+          "-d",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FX/classes",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FX/FX.java"
+        ],
+        "exit_code": 1,
+        "expected_exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/4.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/4.stderr.raw",
+            "bytes": 195,
+            "sha256": "f0ac4549f55b38d7f54580bd1bdcbc0741d309e59116e8813c3ec51c3161b29d"
+          }
+        }
+      },
+      {
+        "index": 5,
+        "label": "javac8-current-whole-source-FY",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+          "class-source",
+          "--input",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+          "--class",
+          "FY",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all",
+          "--budget",
+          "elapsed_millis=10000"
+        ],
+        "exit_code": 0,
+        "expected_exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/5.stdout.raw",
+            "bytes": 115891,
+            "sha256": "2a071e3c1fdbb1930a47835f2dfa68ac233d9d94960557e5a3466c30a14795ae"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/5.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "index": 6,
+        "label": "javac8-compile-exact-current-generated-FY",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FY/classes",
+          "-sourcepath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FY/empty-sourcepath",
+          "-d",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FY/classes",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FY/FY.java"
+        ],
+        "exit_code": 1,
+        "expected_exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/6.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/6.stderr.raw",
+            "bytes": 381,
+            "sha256": "f83fc7cf92134622940d12d4c5b49268fbeed885146724a4d7a254b59bf69455"
+          }
+        }
+      },
+      {
+        "index": 7,
+        "label": "javac8-current-whole-source-FX",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+          "class-source",
+          "--input",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+          "--class",
+          "FX",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all",
+          "--budget",
+          "elapsed_millis=10000"
+        ],
+        "exit_code": 0,
+        "expected_exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/7.stdout.raw",
+            "bytes": 156566,
+            "sha256": "b1ea9d5e8ccf9d08b166b3036966f1777f03040b0b18f292b94462f3e4128da7"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/7.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "index": 8,
+        "label": "javac8-compile-exact-current-generated-FX",
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+          "--release",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FX/classes",
+          "-sourcepath",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FX/empty-sourcepath",
+          "-d",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FX/classes",
+          "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FX/FX.java"
+        ],
+        "exit_code": 1,
+        "expected_exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/8.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/8.stderr.raw",
+            "bytes": 194,
+            "sha256": "a8d091ea3edd9e954604a548369cd0938260b92f221362fc8fd7b1b78ed6f5e7"
+          }
+        }
+      }
+    ]
+  },
+  "raw_streams": {
+    "count": 16,
+    "all_lengths_and_sha256_match": true,
+    "unique_paths": true,
+    "pins": [
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/1.stdout.raw",
+        "bytes": 115888,
+        "sha256": "b0797cbf73ecd23a68cfe0afc091bcd58b770c4c1b3d7bd92372b250f3d6adc8"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/2.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/2.stderr.raw",
+        "bytes": 383,
+        "sha256": "fe6f3ff403440c61472c0631187dd0458927e7f0bf97d39fcf8f6abc5a4ef28e"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/3.stdout.raw",
+        "bytes": 156566,
+        "sha256": "9bf5ad540a8195dfc6bc77257387a03b0600e4d96d659242cd568c235bf8d571"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/3.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/4.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/4.stderr.raw",
+        "bytes": 195,
+        "sha256": "f0ac4549f55b38d7f54580bd1bdcbc0741d309e59116e8813c3ec51c3161b29d"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/5.stdout.raw",
+        "bytes": 115891,
+        "sha256": "2a071e3c1fdbb1930a47835f2dfa68ac233d9d94960557e5a3466c30a14795ae"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/5.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/6.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/6.stderr.raw",
+        "bytes": 381,
+        "sha256": "f83fc7cf92134622940d12d4c5b49268fbeed885146724a4d7a254b59bf69455"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/7.stdout.raw",
+        "bytes": 156566,
+        "sha256": "b1ea9d5e8ccf9d08b166b3036966f1777f03040b0b18f292b94462f3e4128da7"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/7.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/8.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/8.stderr.raw",
+        "bytes": 194,
+        "sha256": "a8d091ea3edd9e954604a548369cd0938260b92f221362fc8fd7b1b78ed6f5e7"
+      }
+    ]
+  },
+  "original_inputs": {
+    "all_four_input_jars_same_path_bytes_sha_as_after_prefix_screen": true,
+    "pins": {
+      "javac23/FY": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+        "bytes": 1147,
+        "sha256": "2b83776763367fceeba5b0b53dee22b8070779d0cb0c2ea7bae4e4b281255f64"
+      },
+      "javac23/FX": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+        "bytes": 1391,
+        "sha256": "30628e70303e42082e72f0364385e1905c03d2fc61493b2fe48aacc6236729d0"
+      },
+      "javac8/FY": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+        "bytes": 1147,
+        "sha256": "c53036f4ecc1fa2438fb0460c82593972e0b8abb71ee9f9f30b5225b3d47717c"
+      },
+      "javac8/FX": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+        "bytes": 1391,
+        "sha256": "878babf755b019f35105c30191dfc81559481353cc623a0b72f6da5ebc4c3bd2"
+      }
+    }
+  },
+  "generated_text": {
+    "all_four_source_sha_match_c075_rescreen_exactly": true,
+    "all_four_files_equal_cli_JSON_text": true,
+    "four_cli_exits": 0,
+    "four_full_source_compile_exits": 1,
+    "errors": "FY missing return at lines 33 and 44; FX missing return at line 44, for both source-compiler input legs.",
+    "cases": {
+      "javac23/FY": {
+        "input_jar": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+          "bytes": 1147,
+          "sha256": "2b83776763367fceeba5b0b53dee22b8070779d0cb0c2ea7bae4e4b281255f64"
+        },
+        "method_count": 5,
+        "generated_source": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FY/FY.java",
+          "bytes": 3140,
+          "sha256": "6ea2be0a3883b756cda142fe02ac29f8c2ffc2dcc1e614002e1a8f1eeb0b875b"
+        },
+        "prior_c075_text_sha_exact": true,
+        "cli_json_text_byte_exact": true,
+        "generated_compile_exit": 1,
+        "missing_return": true,
+        "error_lines": [
+          "33",
+          "44"
+        ],
+        "compiler": "JDK 23 javac --release 8",
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/2.stderr.raw",
+          "bytes": 383,
+          "sha256": "fe6f3ff403440c61472c0631187dd0458927e7f0bf97d39fcf8f6abc5a4ef28e"
+        }
+      },
+      "javac23/FX": {
+        "input_jar": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+          "bytes": 1391,
+          "sha256": "30628e70303e42082e72f0364385e1905c03d2fc61493b2fe48aacc6236729d0"
+        },
+        "method_count": 6,
+        "generated_source": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac23-FX/FX.java",
+          "bytes": 3820,
+          "sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f"
+        },
+        "prior_c075_text_sha_exact": true,
+        "cli_json_text_byte_exact": true,
+        "generated_compile_exit": 1,
+        "missing_return": true,
+        "error_lines": [
+          "44"
+        ],
+        "compiler": "JDK 23 javac --release 8",
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/4.stderr.raw",
+          "bytes": 195,
+          "sha256": "f0ac4549f55b38d7f54580bd1bdcbc0741d309e59116e8813c3ec51c3161b29d"
+        }
+      },
+      "javac8/FY": {
+        "input_jar": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+          "bytes": 1147,
+          "sha256": "c53036f4ecc1fa2438fb0460c82593972e0b8abb71ee9f9f30b5225b3d47717c"
+        },
+        "method_count": 5,
+        "generated_source": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FY/FY.java",
+          "bytes": 3140,
+          "sha256": "6ea2be0a3883b756cda142fe02ac29f8c2ffc2dcc1e614002e1a8f1eeb0b875b"
+        },
+        "prior_c075_text_sha_exact": true,
+        "cli_json_text_byte_exact": true,
+        "generated_compile_exit": 1,
+        "missing_return": true,
+        "error_lines": [
+          "33",
+          "44"
+        ],
+        "compiler": "JDK 23 javac --release 8",
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/6.stderr.raw",
+          "bytes": 381,
+          "sha256": "f83fc7cf92134622940d12d4c5b49268fbeed885146724a4d7a254b59bf69455"
+        }
+      },
+      "javac8/FX": {
+        "input_jar": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+          "bytes": 1391,
+          "sha256": "878babf755b019f35105c30191dfc81559481353cc623a0b72f6da5ebc4c3bd2"
+        },
+        "method_count": 6,
+        "generated_source": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/javac8-FX/FX.java",
+          "bytes": 3820,
+          "sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f"
+        },
+        "prior_c075_text_sha_exact": true,
+        "cli_json_text_byte_exact": true,
+        "generated_compile_exit": 1,
+        "missing_return": true,
+        "error_lines": [
+          "44"
+        ],
+        "compiler": "JDK 23 javac --release 8",
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-dispatch-screen-v1/run-v1/8.stderr.raw",
+          "bytes": 194,
+          "sha256": "a8d091ea3edd9e954604a548369cd0938260b92f221362fc8fd7b1b78ed6f5e7"
+        }
+      }
+    }
+  },
+  "scope_note": "Original class JAR inputs were prepared under javac23 and real javac8 legs. This rescreen did not rebuild generated text with both compilers: every generated-source compile among the 8 commands is JDK 23 javac --release 8. No rebuilt runtime was run.",
+  "limits": [
+    "Expected current frozen-CLI red is confirmed, not implementation success.",
+    "No repository writes or Git/native/JDK/Cargo/CLI/OpenSpec execution occurred during this audit."
+  ]
+}

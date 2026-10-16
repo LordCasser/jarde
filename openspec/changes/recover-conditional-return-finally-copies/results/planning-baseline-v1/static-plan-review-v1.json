@@ -1,0 +1,110 @@
+{
+  "schema": "conditional-return-finally-minimum-plan-review-v1",
+  "status": "plan_coherent_with_precise_seam_clarifications",
+  "scope": "Read-only review of proposal/design/spec/tasks and existing guard/region/build. No repo edits/native/Git/OpenSpec/network, no instrumentation or runtime validation. All6tasks remain unchecked; prefix ownCI/archive remains a separate prerequisite.",
+  "overall": "范围有界且行为验收清晰：一个saved int return+正常落穿+唯一catchall三cleanup，未借原FY删方法通过，原异常/cleanup异常与3000→99观察区分充分。未发现需要通用completion/CFG框架或新依赖的理由。两处接缝说明宜在实现前写实，避免按过强的“必须新completion”假设扩大范围，或仅Plan.join掩盖body.next/融合尾部。",
+  "clarifications": [
+    {
+      "priority": "P2",
+      "kind": "avoid_unnecessary_representation_expansion",
+      "plan_ref": "design Context/Goals/Decision2; tasks2.1",
+      "finding": "“FinallyCompletion只承载单一正常完成/增加完成形态”若理解成必须新增completion enum会过度。现SavedReturn{save,returns}只表达唯一值链，Plan另有join:Option<CanonicalBlockId>；本片仍只有一个saved-return。当前拒绝点是真实guard proof只认一个normalcopy，以及finally_body对无namedcatch的next.is_some直接拒绝，并非表示上天然不能有fallthrough。",
+      "minimum_action": "优先复用SavedReturn配对、Shape::Finally structured分支和Builder.finally_return；新三copy证书补落穿cleanup/transfer/continuation的必要事实。只有实际canonical续接无法用现结构安全承载时才新增窄completion分支；不要预先迁移Joined/Void或造一般completion框架。"
+    },
+    {
+      "priority": "P1",
+      "kind": "explicit_boundary_obligation",
+      "plan_ref": "design Decision4/任务2.2",
+      "finding": "需明确两个不同next：bounded受保护body离开时是return-copy入口16或fallthrough-copy入口26，整个Guard完成后才经34的transfer交到48。当前finally_body只返回Region且无namedcatch时要求next=None，外层region_at在成功后统一mark plan.owned并返回plan.join。仅把join设48不足以核受保护walk；也不能把protected body.next直接要求等于48。",
+      "minimum_action": "证书记录两正常出口各自入口和transfer，受限walker以唯一save块为源return终端，在另一条路径停止于已证fallthrough入口；验证body块/visited差集exact，再由外层消费一次cleanup和真实continuation。返回copy不能作为body普通后继被walk，fallthroughcopy不能混进body或漏claim。"
+    },
+    {
+      "priority": "P2",
+      "kind": "canonical_tail_case_to_pin_not_assume",
+      "plan_ref": "design Decision2/4, Risk漏出口",
+      "finding": "现Continuation有Block和Tail，Plan.join仅Block；canonical可把goto目标的指令尾融入copy块。BCI48是raw continuation，不自动意味着有独立CanonicalBlockId(48)。若claimed整块包含48/49，而之后又按join整块walk，会漏/重复cleanup或return-1。",
+      "minimum_action": "首拒/Region基线任务1.2同时冻结本fixture真实canonical块成员和指令跨度；若continuation是独立块，明确join48不属于owned；若被融合，复用现Continuation::Tail/已有trail发射接缝或显式窄拒绝并改范围，不可用宽BCI区间/同块起点代替。不要为了未出现布局实现通用tail拆分。"
+    }
+  ],
+  "existing_seams": [
+    {
+      "ref": "guard.rs:585-635,642-672",
+      "facts": "FinallyCompletion::SavedReturn{save,returns}; Joined含named_row/catch_pop，不能伪造；Plan具有body/owned/join/facts。Continuation::Tail已存在供其它guard形态使用。"
+    },
+    {
+      "ref": "guard.rs:2947-3189",
+      "facts": "prove_finally_copy真实从handler前最后return/load推normalcopy；保护区正常边只准留区内或row.end；当前proof join=None。设计对此首拒的描述明确是静态推导，没有冒称动态first-refusal。新增三copy候选应固定分流到独立proof，不放宽该旧proof。"
+    },
+    {
+      "ref": "guard.rs:2742-2812",
+      "facts": "cleanup_sequence已有operation+本copy producer ordinal等价，copy<=32、最多1call，拒分支/复杂效果；本println清理吻合其窄范围。借它核3份，仍逐指令核handler范围/外来入口/唯一消费者，不能仅比等价文本。"
+    },
+    {
+      "ref": "region.rs:9302-9446,4633-4693/4822-4880",
+      "facts": "finally_body从plan.body交集取expected，clone frame scope，own_finally绑定row，walk后核actual块、save_count及visited差集；当前nested_row=None&&next.is_some拒绝。成功后outer才mark全部plan.owned并返回plan.join，因此体退出和guard继续不可混同。"
+    },
+    {
+      "ref": "build.rs:20963-21120,24304-24380",
+      "facts": "结构化Shape::Finally已经通过body_span+finally_return=(save,returns)发射try体；仅在包含save的块后追加guarded_return。它可位于条件arm，无需给另一fallthrough造伪return。finally/body任一fallback、未声明local或stop复用现finally_checkpoint回滚，不应交半个Try。"
+    },
+    {
+      "ref": "build.rs:22616-22652",
+      "facts": "guarded_return读取原return加载值；shared_saved_return按save输入render且保留save派生来源。前者可复用已保存local，后者若适用于本新受保护条件体要同时证明producer原求值位置/顺序。没有理由为本片强制新临时值框架。"
+    }
+  ],
+  "value_and_ownership_contract": [
+    "明确原getstatic→save15→load24→ireturn25唯一SSA值链，不以相同slot/name代替身份；handler保存/加载/throw37/46/47另证同一异常值。即使真实class复用同slot作int保存与异常对象，也依各SSA身份/边界而非全局slot同名推理。",
+    "在try内原save位置保存/求值并注入return；不得把getstatic推迟到cleanup后或把return-1放入条件arm。复用现局部绑定可产生int local=field;return local;，Java finally随后执行，3000→99仍返回3000。",
+    "ownership要分protected body、两个normalcleanup及其终端、exception存/cleanup/load/throw、continuation。Returncopy16..24和fallthrough26..34各只作一个source finally的物理来源；35等operand bytes不是BCI。continuation48/49必须输出一次，不能因block归属被沉默吞掉。",
+    "所有正常进入copy的边必须来自已证受保护出口，全部row覆盖半开范围精确，不允许cleanup落进自身catchall。异常cleanup抛新异常时只能传播新异常一次；去handler的正常边、copy中间入口与跨row效果均拒绝。",
+    "源图同时保留受保护条件/原valueproducer、save/return、三份cleanup及exceptionrethrow事实；能共用一节点派生多物理来源，不必伪造每副本独立source语句。所有origin绑定实际方法身份。"
+  ],
+  "stop_and_acceptance_notes": [
+    "候选分流固定有限形状，避免c075式新proof对无关P5收费；可变row/块/use/effect扫描仍真实poll/charge，完成后finalpoll再原子发布。旧P5allfeatures账本/断言不改、不refund。",
+    "delta包含deadline保证，而任务2.1显式列latebudget/chargecancel；实现验收至少指出实际复用deadline poll/StopReason路径与适用控制，未新增动态deadline测试就如实保留边界，不从precancel或统计pass推断已测。",
+    "当前任务12命令旧红与最终10命令均只是各自矩阵计划，不能当已完成新恢复。tasks3.1的两CLI+两完整source编译+两driver编译+四runtime=10在计数上自洽；driver各134B六case需实际raw逐字验证。",
+    "原FY.loopless方法门与完整FY/FX其它红独立保存，FO控制借前片实际交付后重绑定；当前规划未篡改父计划或声称全局覆盖。前片仍待ownCI/archive，最终CLI/head在前片交付后重新绑定。"
+  ],
+  "checked_task_state": {
+    "task_count": 6,
+    "checked": 0,
+    "tasks_file_present": true
+  },
+  "pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/proposal.md",
+      "bytes": 2750,
+      "sha256": "7784ea41c36d64692a01afa29e858ea166c29d95c74e7a8eeeaa5ae15f43d0c2"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/design.md",
+      "bytes": 6490,
+      "sha256": "5a7914dafe32135729defb8496da287dd42189681c903bed952ae815112e39e9"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/specs/java8-recovery/spec.md",
+      "bytes": 3754,
+      "sha256": "c336f673e679d74b68b440a4fa48492bf976771c94d37e5eac8a33fbb693be36"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "bytes": 3356,
+      "sha256": "b0447b6d18481320920282c49fcdd769b80123d62339c46ab0406170854667e5"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 699034,
+      "sha256": "4b3d614bb003f0316088226b4f90e5c2483bacf31d300c4851718ec63bbf3e56"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1069159,
+      "sha256": "cc9f619859bcfc851c5a14c4ebb6806a2149e208157d22535df79a9173157c63"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1923908,
+      "sha256": "cee1068f7ced935c4c3165a41b208be1ad50a96f9ab35df58d9aff981fa7684d"
+    }
+  ]
+}
