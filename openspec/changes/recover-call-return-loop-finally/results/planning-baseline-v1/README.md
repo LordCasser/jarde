@@ -1,0 +1,7 @@
+# 原始红基线与实际Facts观察
+
+产品02de294f7af2d0798e33d52ce5474e60efe17b03，最终CLI fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25。独立control12命令/24raw：原Java编译两腿、driver编译两腿、原类Java8/23共四运行匹配217B oracle；两次class-source生成完整1508B Java，真实javac均line19 missing return，无rebuilt runtime。derivation为准备记录，actual execution另存。外围FX改名CallReturnFinally，finReturn/c0源码切片逐字不变；自调用owner绑定新的真实类，不把物理身份混同。两个原class各781B但常量池索引不同，不能声称整个Code attribute相同。
+
+actualFacts/Region探针另2命令/4raw、1test通过：完整60指令/7块/8边、两rows、loop scope、SSA/phis/effects在compiled-probe-source中封存；观察代码不表示产品恢复。原proof无证与局部cleanup_sequence=false分开记录，未打印其首拒位置。probe闭包4931含2个当时未跟踪class，产品闭包4929；永久fixture门另见相邻fixture-native-v1的实际4935，三者不可混用。
+
+capture.tar.gz 2868412B，SHA256 cb756ab18173ff3ab70ec398b8f331d4e442119d62553fd4e82c453012033516；78载荷+内嵌manifest共79个安全唯一普通成员，逐来源/manifest/archive复验。旁置manifest从内嵌原字节导出。含全部control/probe原始流、原始与生成源码、compiled probe snapshots、相关runner/helpers/tool manifest、独审、固定proof清单、实际产品Git/source/CLI绑定；不含CLI/JDK二进制、历史native raw、target或pycache。成功仅指红基线和观察材料完整，不指恢复已完成。
