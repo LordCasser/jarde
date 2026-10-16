@@ -1,0 +1,69 @@
+{
+  "schema": "effectful-finally-jadx-comparison-independent-audit-v1",
+  "status": "verified_observational_comparison_with_fx_compile_refusal",
+  "archive": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-jadx-comparison-evidence-v1/capture.tar.gz",
+  "archive_bytes": 4137847,
+  "archive_sha256": "486108895130e0b10f6eee40f104c8b9db11c28ebb8fd1ee27ae5af7ec40b3bf",
+  "payload_count": 105,
+  "embedded_manifest_count": 1,
+  "total_members": 106,
+  "all_payload_hashes_verified": true,
+  "all_receipt_raws_reopened_and_matched": true,
+  "lineages": {
+    "v1": {
+      "commands": 2,
+      "raw_streams": 4,
+      "status": "failed_raw_preserved",
+      "exit_counts": {
+        "0": 2
+      }
+    },
+    "v2": {
+      "commands": 4,
+      "raw_streams": 8,
+      "status": "failed_raw_preserved",
+      "exit_counts": {
+        "0": 3,
+        "1": 1
+      }
+    },
+    "v3": {
+      "commands": 21,
+      "raw_streams": 42,
+      "status": "captured_pinned_jadx_parent_comparison_observations_not_blanket_acceptance",
+      "exit_counts": {
+        "0": 19,
+        "1": 2
+      }
+    }
+  },
+  "v3_checks": {
+    "source_manifest_4936_before_after_equal": true,
+    "inputs_before_after_equal": true,
+    "target_absent": true,
+    "guards": {
+      "free_bytes": 5368709120,
+      "target_bytes": 1073741824
+    },
+    "default_stack": true,
+    "decompile_successes": 6,
+    "generated_compile_exits": {
+      "javac23/FY": 0,
+      "javac23/FX": 1,
+      "javac23/FO": 0,
+      "javac8/FY": 0,
+      "javac8/FX": 1,
+      "javac8/FO": 0
+    },
+    "runtime_commands": 8,
+    "fx_failure_diagnostic_contains_undefined_th": true,
+    "fqcn_recorded": true,
+    "original_jars": 6,
+    "original_fixture_sources": 3,
+    "v3_generated_sources": 6,
+    "v3_rebuilt_classes": 4,
+    "jarde_parent_json_command_streams": 12,
+    "contains_tool_binaries": false
+  },
+  "scope_limit": "FX whole generated source compile fails in both compiler legs; no generated FX runtime exists. JADX version 1.5.6 was recorded, not re-executed in this audit. This comparison does not close the catch-all handler or parent acceptance."
+}

@@ -12,4 +12,8 @@ Plan复用Finally/SavedReturn：lead12..17在try外，body17..30，normal cleanu
 
 中间第三轮CLI b4a6b2ce…c9c851下完整独立类另10命令全0：两份1706B完整text原样重编，未改driver rebuilt-only编译后四次Java8/23均等217B oracle；runtime实际用timeout30s/kill-after5s包裹。父screen另24命令全0、6完整类重编成功、12个main匹配原oracle。FX保留6方法，finReturn structured，finContinue/finBreak仍有handler45的fallback（注释45/47/50/52）；固定main匹配不证明这两方法的异常出口完整。纯c0的次数/时点与try异常路径未由driver直接观察，仍需上述IR证明。
 
-本组独审与全部原始流保留在持久cache CORE/call-return-finally-{first,second,third}-proof-native-v1、call-return-finally-intermediate-full-source-v{1,2,3}和effectful-finally-after-call-return-screen-v1，最终便携包在最终CLI/产品自身CI接受时封存。这些是中间源码恢复验证，不冒称最终exact-head自身CI；集成门仍执行中，任务3.1/3.2保持未勾。
+最终补强断言后的native为9命令全0，连同前27命令完成fmt、CI同参数Clippy、reader/指纹、46项private finally、13个兼容target、原P5门、CLI三项、API examples、MSRV1.88及两版strict364/0，实际exact clean且target不存在。前27计110 passed/0 failed/8 ignored；补强的public2/CLI3与同名旧结果重叠，不累加成115。两收据4936行源码仅两test文件增加Java/Structured/empty fallback断言，全部production不变，冻结CLI均为60261992B/0555、SHA-256 b4a6b2ce2911165da5bb38f7a56a7d8c14d286936c97b4181e647cff7fc9c851。合并独审25a3a3ed186110af0cc60a42031dbdc4972aa34a8bcdcfc31ab7f61301a70546核对72份raw。
+
+最终冻结CLI再次独立运行完整类10命令与父screen24命令，分别20/48份raw全0，源码及工具输入前后完全一致；两份1706B完整源码原样javac8/javac23重编、未改driver rebuilt-only编译、四次Java8/23运行217B逐字匹配。父6完整类重编0、12 main逐字匹配，FX finContinue/finBreak的handler45 fallback仍未关闭。最终合并独审48e1e2276c03c390990742dc73f7dd7841f9db0d504eb7bc6519e2289cf59e34通过12项检查，任务3.1已完成。
+
+产品提交464543594b6fad00c67be016ffa5e21d18bc1591通过实际Git ls-tree与每行blob SHA1/mode将4936行最终native源码和冻结CLI绑定。该提交自身push CI38913819742运行中，任务3.2保留待办；本地成功不替代双seed完整自身CI。最终便携包将保留首次proof失败、公共v1前置失败与v2 entry缺口，不能将这些历史失败写成重编或重建运行成功。

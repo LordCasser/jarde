@@ -1,0 +1,76 @@
+{
+  "schema": "call-return-finally-implementation-evidence-pack-summary-v1",
+  "status": "packaged_and_reopened_all_members_verified",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-implementation-evidence-v1/capture.tar.gz",
+    "bytes": 10324443,
+    "sha256": "e52c677bdb41266e645ab3ae05bcedd65147cebd64c6261005099baa66c237df"
+  },
+  "payload_count": 369,
+  "embedded_manifest_count": 1,
+  "tar_member_count": 370,
+  "source_rows": 4936,
+  "source_rows_match": true,
+  "external_pin_count": 13,
+  "lineage_status": {
+    "first-proof": "failed initial positive due wrong caught-site BCI; preserved",
+    "second-proof": "3-command receipt, all commands exit zero; retained distinct from subsequent runs",
+    "third-proof": "5-command targeted receipt and independent audit; all commands exit zero",
+    "complete-local": "27 commands all exit zero; 110 passed/0 failed/8 ignored",
+    "final-test-assertions": "9 focused commands all exit zero; 5 overlapping public/CLI executions passed",
+    "intermediate-full-source-v1": "preflight failed before target commands",
+    "intermediate-full-source-v2": "failed raw-preserved intermediate replay",
+    "intermediate-full-source-v3": "10-command successful intermediate generated-source/rebuilt-oracle replay",
+    "final-full-source-v1": "10-command successful final generated-source/rebuilt-oracle replay",
+    "effectful-after-screen": "24-command evidence remains screen observation, not blanket acceptance",
+    "effectful-final-screen": "24-command evidence remains screen observation, not blanket acceptance",
+    "final-source-binding": "source/tree/CLI binding; executable excluded"
+  },
+  "excluded_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-call-return-finally-final-test-assertions-native-v1",
+    "bytes": 60261992,
+    "sha256": "b4a6b2ce2911165da5bb38f7a56a7d8c14d286936c97b4181e647cff7fc9c851",
+    "mode": "0555"
+  },
+  "roundtrip_safe_unique_regular": true,
+  "notes": [
+    "Historical failed attempts stay labeled failed or preflight-only.",
+    "The final full-source replay and intermediate replay remain separate.",
+    "The package does not assert CI or OpenSpec archive completion."
+  ],
+  "unresolved_absolute_reference_count": 6,
+  "unresolved_absolute_references": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/call-return-finally/jarde",
+      "kind": "workspace checkout",
+      "resolution": "Receipts reference this absolute checkout. The package includes the exact current four compiled production/test source files and six fixture files, not the full 4,936-row checkout."
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015",
+      "kind": "evidence cache",
+      "resolution": "Original paths in receipts are provenance references; members are relocated under lineage/, support/, and current-worktree/."
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-call-return-finally-final-test-assertions-native-v1",
+      "kind": "frozen native CLI",
+      "resolution": "Excluded from archive; exact size/SHA/mode are externally pinned."
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23 and /tools/jdk8",
+      "kind": "JDK 23 and JDK 8 executables",
+      "resolution": "JDK binaries are excluded; manifest and java/javac executable size/SHA pins are listed in external_pins."
+    },
+    {
+      "path": "stable Rust toolchain and Cargo registry/cache roots recorded in native receipts",
+      "kind": "Rust build environment",
+      "resolution": "No toolchain binaries or Cargo registry sources are included. Receipts record stable toolchain expectation 1.99.0 and command/environment data."
+    },
+    {
+      "path": "temporary paths under the recorded workspace/cache roots",
+      "kind": "ephemeral output paths",
+      "resolution": "Raw outputs and replay artifacts needed for this evidence are archived; no live target directory is included."
+    }
+  ],
+  "jdk_binary_count": 4,
+  "cli_binary_count": 1
+}
