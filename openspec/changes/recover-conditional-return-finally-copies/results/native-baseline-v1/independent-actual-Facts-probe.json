@@ -1,0 +1,115 @@
+{
+  "execution": {
+    "all_guard_stop_null": true,
+    "all_raw_pins_verified": true,
+    "command_count": 3,
+    "exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "labels": [
+      "actual-facts-straight-proof-first-refusal",
+      "build-cli",
+      "finally-exact-cargo-clean"
+    ],
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-old-proof-probe-v1/execution.json",
+    "raw_stream_count": 6,
+    "receipt_status": "expected_command_outcomes_observed_pending_independent_acceptance"
+  },
+  "limitations": [
+    "This diagnostic validates a private cfg(test) probe and its frozen facts, not a production proof implementation or new CLI recovery behavior."
+  ],
+  "phase_comparison": {
+    "cli_binaries_byte_identical": false,
+    "cli_phase1_sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "cli_phase2_bytes": 59699632,
+    "cli_phase2_mode": "0555",
+    "cli_phase2_sha256": "abab495171f4f1a56ca9d4ccaddf77678a15349dfd52416e6485a037651816e4",
+    "guard_source_location": "#[cfg(test)] mod finally_copy_tests;",
+    "note": "Phase-2 actual CLI pin is abab...16e4; phase 1 is 6e075...db96. Despite source delta being confined to a cfg(test) helper, do not claim CLI binary byte parity or relabel either receipt.",
+    "phase1_receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-old-native-v1/execution.json",
+    "source_manifest_changed_paths": [
+      "crates/jarde-java/src/guard.rs"
+    ]
+  },
+  "probe": {
+    "canonical_block_26": {
+      "bcis": [
+        26,
+        29,
+        31,
+        34,
+        48,
+        49
+      ],
+      "end": 50,
+      "interpretation": "Prior cleanup code is already inside canonical block 26; 48/49 share that block, so a separate Plan.join at 48 is not evidenced."
+    },
+    "result": "1 passed / 0 failed / 0 ignored",
+    "row": {
+      "catch_type": "none",
+      "end_bci": 16,
+      "handler_bci": 37,
+      "start_bci": 0
+    },
+    "scope": "#[cfg(test)] private probe invokes the existing proof on frozen javac23 and javac8 fixtures; it does not add a production proof or report recovery success.",
+    "ssa": {
+      "12": "stack ValueId20",
+      "15": "ValueId20 -> local1 ValueId21 (saved return)",
+      "24": "local1 ValueId21 -> stack ValueId24",
+      "25": "return consumes ValueId24",
+      "37": "stack ValueId3 -> local2 ValueId12",
+      "46": "local2 ValueId12 -> stack ValueId15",
+      "47": "throw consumes ValueId15"
+    },
+    "straight_copy_first_mismatch": {
+      "actual_normal_cleanup": [
+        25,
+        26,
+        29
+      ],
+      "exceptional": [
+        37,
+        38,
+        41,
+        43,
+        46,
+        47
+      ],
+      "expected_candidate_end": 16,
+      "normal_return": 34,
+      "return_load": 31
+    }
+  },
+  "runner": {
+    "before_after_same": true,
+    "sha256": "bce1d49e29881b635b390f30d3c573bf5bd169433e220a8def5728d1cf145535"
+  },
+  "runtime_context": {
+    "default_stack": true,
+    "exact_clean_exit": 0,
+    "frozen_cli": {
+      "bytes": 59699632,
+      "mode": "0555",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-old-v2",
+      "sha256": "abab495171f4f1a56ca9d4ccaddf77678a15349dfd52416e6485a037651816e4"
+    },
+    "guard": {
+      "interval_seconds": 1,
+      "maximum_target_bytes": 1073741824,
+      "minimum_free_bytes": 5368709120
+    },
+    "toolchain": "1.99.0"
+  },
+  "schema": "conditional-return-finally-old-proof-probe-independent-audit-v1",
+  "source_binding": {
+    "before_after_equal": true,
+    "count": 4922,
+    "current_workspace_all_4922_hashes_match": true,
+    "mismatches": 0,
+    "missing": 0,
+    "target_absent": true
+  },
+  "status": "independent_audit_passed_test_only_probe_and_bindings"
+}

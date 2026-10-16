@@ -1,0 +1,108 @@
+{
+  "document_consistency": {
+    "claims_match_actual_probe_and_replay": true,
+    "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/instrumentation.md",
+    "task_1_2_status_semantics": "Records old private refusal facts and public/CLI red behavior; does not claim new production proof green."
+  },
+  "execution": {
+    "all_raw_pins_verified": true,
+    "commands": 4,
+    "exit_codes": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "labels": [
+      "javac23-full-json-current-probe-cli",
+      "javac23-compile-exact-complete-generated",
+      "javac8-full-json-current-probe-cli",
+      "javac8-compile-exact-complete-generated"
+    ],
+    "no_guard_stops": true,
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-old-probe-cli-red-v1/run-v1/execution.json",
+    "raw_streams": 8,
+    "status": "captured_four_command_actual_new_cli_complete_source_red"
+  },
+  "generated_source": {
+    "both_bytes": 1560,
+    "both_complete_texts_exact_cli_text": true,
+    "compiler_legs": [
+      {
+        "bytes": 1560,
+        "cli_text_byte_equal": true,
+        "compile_exit": 1,
+        "diagnostic": "missing return statement",
+        "leg": "javac23",
+        "sha256": "57926d1ddc3ad60342c853a185ff5fa3d8e8ae5c79288da0cffe65f5ad76a8c1"
+      },
+      {
+        "bytes": 1560,
+        "cli_text_byte_equal": true,
+        "compile_exit": 1,
+        "diagnostic": "missing return statement",
+        "leg": "javac8",
+        "sha256": "57926d1ddc3ad60342c853a185ff5fa3d8e8ae5c79288da0cffe65f5ad76a8c1"
+      }
+    ],
+    "methods_per_report": 2,
+    "rebuilt_runtime_count": 0,
+    "sha256": "57926d1ddc3ad60342c853a185ff5fa3d8e8ae5c79288da0cffe65f5ad76a8c1"
+  },
+  "limitations": [
+    "This is an old-CLI complete-source red replay. Both full generated Java files fail compilation with missing return; no rebuilt runtime was produced."
+  ],
+  "product_binding": {
+    "all_current_source_hashes_match": true,
+    "cli": {
+      "bytes": 59699632,
+      "mode": "0555",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-old-v2",
+      "sha256": "abab495171f4f1a56ca9d4ccaddf77678a15349dfd52416e6485a037651816e4"
+    },
+    "default_stack": true,
+    "guards": {
+      "free_bytes": 5368709120,
+      "target_bytes": 1073741824
+    },
+    "input_pins_verified": 11,
+    "inputs_before_after_equal": true,
+    "original_fixture_pins_verified": [
+      {
+        "bytes": 256,
+        "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/LooplessFinally.java",
+        "sha256": "3de302b20b5bdde72560c9a5949f4a9bb1572de06698eaf7278af840e697c2d4"
+      },
+      {
+        "bytes": 1926,
+        "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/LooplessFinallyProbe.java",
+        "sha256": "fbbf31f0325d83ca4e7067081f98bf0c5740438d29a2bf4e6479b63b0caaa239"
+      },
+      {
+        "bytes": 1092,
+        "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/README.md",
+        "sha256": "10e0e4378e3205feb7a9c6c517842e30596c3546b90c414fd230c08cb42d649f"
+      },
+      {
+        "bytes": 134,
+        "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/probe.stdout",
+        "sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b"
+      },
+      {
+        "bytes": 456,
+        "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class",
+        "sha256": "d061317f86a0bdc1272589b2182e353bf31661a37be7abc9d014ba086048600c"
+      },
+      {
+        "bytes": 456,
+        "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/v8-javac8/LooplessFinally.class",
+        "sha256": "b2c34b111b69943a3b41914dbfb122dfbfb28056fe7e92c2806623117a9f7cbc"
+      }
+    ],
+    "source_count": 4922,
+    "source_manifest_before_after_equal": true,
+    "target_absent": true
+  },
+  "schema": "conditional-return-finally-old-probe-cli-red-independent-audit-v1",
+  "status": "independent_audit_passed_full_source_red_replay"
+}

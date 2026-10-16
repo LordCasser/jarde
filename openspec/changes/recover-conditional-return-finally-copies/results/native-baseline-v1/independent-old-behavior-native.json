@@ -1,0 +1,99 @@
+{
+  "execution": {
+    "all_raw_length_sha256_pins_match": true,
+    "commands": [
+      {
+        "duration_seconds": 41.1282118099989,
+        "exit_code": 0,
+        "index": 1,
+        "label": "explicit-intended-regenerator"
+      },
+      {
+        "duration_seconds": 1.0069063479968463,
+        "exit_code": 0,
+        "index": 2,
+        "label": "normal-corpus-fingerprint"
+      },
+      {
+        "duration_seconds": 1.00700304700149,
+        "exit_code": 101,
+        "index": 3,
+        "label": "old-public-behavior-red"
+      },
+      {
+        "duration_seconds": 31.13193676199444,
+        "exit_code": 101,
+        "index": 4,
+        "label": "old-cli-behavior-red"
+      },
+      {
+        "duration_seconds": 1.0081796939994092,
+        "exit_code": 0,
+        "index": 5,
+        "label": "build-cli"
+      },
+      {
+        "duration_seconds": 1.0046067129951552,
+        "exit_code": 0,
+        "index": 6,
+        "label": "finally-exact-cargo-clean"
+      }
+    ],
+    "guard_stop_count": 0,
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-old-native-v1/execution.json",
+    "raw_streams": 12,
+    "receipt_status": "expected_command_outcomes_observed_pending_independent_acceptance"
+  },
+  "fingerprint": {
+    "added": [
+      "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinally.java",
+      "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinallyProbe.java",
+      "tests/fixtures/recover-conditional-return-finally-copies/probe.stdout",
+      "tests/fixtures/recover-conditional-return-finally-copies/v8-javac8/LooplessFinally.class",
+      "tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class"
+    ],
+    "after_count": 2231,
+    "all_nonfiles_fields_unchanged": true,
+    "before_count": 2226,
+    "changed_existing": 0,
+    "maintenance_source_manifest_diff_only": [
+      "tests/fixtures/corpus-fingerprint.json"
+    ],
+    "normal_test": "5 passed / 0 failed / 1 ignored",
+    "removed": []
+  },
+  "limitations": [
+    "This old-build red baseline captures refusal for this fixture and does not demonstrate a fix.",
+    "The exact-clean command completed successfully after the red tests."
+  ],
+  "product_and_run_binding": {
+    "default_stack": true,
+    "frozen_cli_bytes": 59699632,
+    "frozen_cli_mode": "0555",
+    "frozen_cli_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-old-v1",
+    "frozen_cli_sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "guard": {
+      "interval_seconds": 1,
+      "maximum_target_bytes": 1073741824,
+      "minimum_free_bytes": 5368709120
+    },
+    "only_source_change_during_fingerprint_maintenance": [
+      "tests/fixtures/corpus-fingerprint.json"
+    ],
+    "runner_before_after_exact": true,
+    "source_count": 4922,
+    "source_manifest_before_after_equal": true,
+    "stable_toolchain": "1.99.0",
+    "target_absent": true
+  },
+  "red_behavior": {
+    "cli_command_exit": 101,
+    "cli_failure_reason": "The CLI integration test receives the same refusal presentation for v8 and its expected structured-recovery assertion fails. The CLI and test executable run; this is not a tool/build invocation error.",
+    "cli_tests": "0 passed / 1 failed / 0 ignored",
+    "public_command_exit": 101,
+    "public_failure_reason": "Both assertions receive source that explicitly refuses to merge the exceptional finally copy without complete straight-body/copy/range/ownership proof. The Rust test executable runs and reports failed assertions.",
+    "public_tests": "0 passed / 2 failed / 0 ignored"
+  },
+  "schema": "conditional-return-finally-old-native-independent-audit-v1",
+  "status": "independent_audit_passed_expected_red_and_cleanup"
+}
