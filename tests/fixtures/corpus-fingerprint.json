@@ -10066,6 +10066,31 @@
       "path": "tests/fixtures/recover-comparable-argument-widening/v8/COX.class"
     },
     {
+      "blake3": "266b77ad8edd7c213f520161447095d0c6f4649ab6c6a017a7591af60565f979",
+      "bytes": 256,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinally.java"
+    },
+    {
+      "blake3": "29019282c834dcdeaae7b446813cd7a9af53bdf8d60aef44bf276afe44905803",
+      "bytes": 1926,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/LooplessFinallyProbe.java"
+    },
+    {
+      "blake3": "c66df9a10e124d0de70033581c2df498ba99044a0daeba3877e613d6afabd45b",
+      "bytes": 134,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/probe.stdout"
+    },
+    {
+      "blake3": "3f2d94e19073b924c52fef6efc76f5c5e6522604233ab442ccf4f23d5c882097",
+      "bytes": 456,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/v8-javac8/LooplessFinally.class"
+    },
+    {
+      "blake3": "831972f4759d4a9e4744f8dd8f7529ea69660dd60ab3b729d071997f23e5c1da",
+      "bytes": 456,
+      "path": "tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class"
+    },
+    {
       "blake3": "666233ad7718d52ff9b84fa2b889a50c51765a1bc08b1c5a33be06295e7b8fb8",
       "bytes": 838,
       "path": "tests/fixtures/recover-conditional-rhs-field-compound/BI.java"

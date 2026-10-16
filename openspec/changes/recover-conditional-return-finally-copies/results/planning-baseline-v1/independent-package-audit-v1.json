@@ -1,0 +1,132 @@
+{
+  "archive": {
+    "all_payload_hashes_reopened_and_verified": true,
+    "bytes": 2092877,
+    "duplicate_or_unsafe_members": false,
+    "member_count": 94,
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loopless-planning-baseline-evidence-v1/capture.tar.gz",
+    "payload_count": 93,
+    "sha256": "f0d1034d287fb1d69f1545f182464483b2f21fd7fbfe1c854b645d435fc21b4a"
+  },
+  "commands_total": 20,
+  "control": {
+    "both_expected_exit": 1,
+    "class_major_version": 52,
+    "commands": 12,
+    "driver_source_bytes": 1926,
+    "each_stdout_exact_oracle": true,
+    "exception_table": [
+      0,
+      16,
+      37,
+      0
+    ],
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "finally_cleanup_copies": 3,
+    "fixture_source_sha256": "3de302b20b5bdde72560c9a5949f4a9bb1572de06698eaf7278af840e697c2d4",
+    "generated_source_compile_commands": 2,
+    "loopless_method_descriptor": "([I)I",
+    "oracle_bytes": 134,
+    "original_class_bytes_per_compiler_leg": 456,
+    "original_driver_runtime_runs": 4,
+    "physical_code_shape_sha256_by_leg": {
+      "javac23": "38fd79a1ee7d394967473da28d4334aea312d02e17b90dd3b9d58fa44aff8855",
+      "javac8": "3a560b5d090aebacfb2ab5130197fbf4277872fd472f35d418564bbac6b09f94"
+    },
+    "rebuilt_runtime_count": 0,
+    "return_value_saved_to_local_before_cleanup": true
+  },
+  "execution_groups": [
+    {
+      "commands": 12,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "group": "independent-control",
+      "inputs_identical": true,
+      "source_count": 4915,
+      "sources_identical": true,
+      "target_absent": true
+    },
+    {
+      "commands": 8,
+      "exit_codes": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "group": "full-FY-FX-current-screen",
+      "inputs_identical": true,
+      "source_count": 4915,
+      "sources_identical": true,
+      "target_absent": true
+    }
+  ],
+  "full_FY_FX": {
+    "cli_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "commands": 8,
+    "complete_generated_source_javac_exit_codes": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "expected_text_sha256": {
+      "FX": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f",
+      "FY": "6ea2be0a3883b756cda142fe02ac29f8c2ffc2dcc1e614002e1a8f1eeb0b875b"
+    },
+    "generated_compiler": "JDK23 javac --release 8 -g:none for all four; this was not dual-javac generated-source recompilation",
+    "rebuilt_runtime_count": 0,
+    "text_sources_match_c075_byte_for_byte": true
+  },
+  "historical_parent_lineage_counted_as_current_commands": false,
+  "limitations": [
+    "No rebuilt-runtime claim: both generated control source compiles and all four complete FY/FX source compiles failed as captured.",
+    "The control fixture is distinct from the original FY class; it isolates the loopless three-cleanup shape and does not prove full FY recovery."
+  ],
+  "raw_streams_total": 40,
+  "schema": "loopless-planning-baseline-independent-audit-v1",
+  "source_binding": {
+    "a89_head": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+    "all_current_source_hashes_match_pins": true,
+    "before_after_4915_equal_in_both_executions": true,
+    "frozen_cli_sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "inputs_identical_target_absent": true,
+    "source_count": 4915
+  },
+  "status": "independent_audit_passed_all_pins_and_scope"
+}
