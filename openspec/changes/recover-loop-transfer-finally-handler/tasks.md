@@ -7,12 +7,12 @@
 
 ## 2. 私有证明与接线
 
-- [ ] 2.1 实现本组有界paid proof及正例/真实class近邻/停止测试和文档。验收：全部操作、三份清理、局部值、真实handler保存/重抛、保护范围、循环continue/break闭合；新增throw/不同copy/值alias/正常handler入口不得被本规则认领；真实证明期晚预算/取消/期限不发布证书且保留原因usage。
-- [ ] 2.2 最小接入既有region/Builder/source map并增加公库/CLI测试说明。验收：两方法完整Java/Structured/无fallback，全部35BCI和物理方法来源，continue与break目标不混、数组读取保持try外；失败/停止ownership和正文原子性不变，旧named-catch对catch-all拒绝保持。
+- [x] 2.1 实现本组有界paid proof及正例/真实class近邻/停止测试和文档。验收：全部操作、三份清理、局部值、真实handler保存/重抛、保护范围、循环continue/break闭合；新增throw/不同copy/值alias/正常handler入口不得被本规则认领；真实证明期晚预算/取消/期限不发布证书且保留原因usage。
+- [x] 2.2 最小接入既有region/Builder/source map并增加公库/CLI测试说明。验收：两方法完整Java/Structured/无fallback，全部35BCI和物理方法来源，continue与break目标不混、数组读取保持try外；失败/停止ownership和正文原子性不变，旧named-catch对catch-all拒绝保持。
 
 ## 3. 最终产品验收
 
-- [ ] 3.1 最终冻结CLI对两独立完整类原样恢复/重编、未改driver rebuilt-only双JVM对照及原FX/FY/FO/JADX重筛，WAR真实加载根复核。验收：原始流/工具/source/CLI绑定独审，多输入oracle逐字等，不修Java/删方法/混原classpath，不把不可观察handler事实或JADX失败当成功。
+- [x] 3.1 最终冻结CLI对两独立完整类原样恢复/重编、未改driver rebuilt-only双JVM对照及原FX/FY/FO/JADX重筛，WAR真实加载根复核。验收：原始流/工具/source/CLI绑定独审，多输入oracle逐字等，不修Java/删方法/混原classpath，不把不可观察handler事实或JADX失败当成功。
 - [ ] 3.2 CallReturn先完成正常main交付后rebase，执行fmt/CI同参数Clippy、指纹/reader/原P5及相关finally/loop/typedcatch兼容、MSRV、两版strict、最终head自身双seed CI与独审。验收：实际非空门/源码Git blob和mode/冻结CLI一致，默认stack/5GiB free/1GiB target/exact clean，不借父CI、不调整旧P5基线。
 
 ## Workflow follow-up
