@@ -1,0 +1,10 @@
+{
+  "status": "synced_exact_added_block_old_entire_bytes_preserved",
+  "before_sha256": "772d0ec5706fd2efd9ed51cd690b09c6881a56f597bb635e65e805edc252053e",
+  "after_sha256": "00300b7fb22623b58b3a194420995ad28cd1d0d01c7f111e44be99fe90b1f57e",
+  "requirements": 22,
+  "scenarios": 148,
+  "old_bytes_prefix": true,
+  "added_block_exact": true,
+  "analysis_contracts_unchanged": true
+}

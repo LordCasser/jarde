@@ -2,7 +2,7 @@
 
 原patrol矩阵记录2026-10-05历史基线：当时把continue/break/空finally与finally返回值形报告为已恢复，把noCall/finReturn/loopless报告为整方法拒绝。这些旧结论不作为当前能力声明；相同“local crosses”文本也不证明同一缺口。
 
-当前主线f4a81440d已交付FO静态前置更新与无循环条件finally。后续noCall子片产品 `02de294f7` 已完成本地验证，最终CLI fd7b33ce…ff25 的实际20命令重筛保留两编译器来源的完整FY5方法、FX6方法、FO5方法：FY/FO均原样重编通过，各在Java8/23运行main，总计8次逐字匹配原oracle；它们的逐方法报告均structured/java且无fallback。FX.finContinue/finReturn/finBreak仍为mixed/fallback，其中finReturn使两份整类重编缺return，无重建运行。noCall产品自身CI38872425446待终态验收，不提前作为主线交付。
+当前主线f4a81440d已交付FO静态前置更新与无循环条件finally。后续noCall子片产品 `02de294f7` 已完成本地验证，最终CLI fd7b33ce…ff25 的实际20命令重筛保留两编译器来源的完整FY5方法、FX6方法、FO5方法：FY/FO均原样重编通过，各在Java8/23运行main，总计8次逐字匹配原oracle；它们的逐方法报告均structured/java且无fallback。FX.finContinue/finReturn/finBreak仍为mixed/fallback，其中finReturn使两份整类重编缺return，无重建运行。noCall产品自身CI38872425446已终态独审通过（双seed各3663/0/98），该子片正常同步规格并归档交付；父剩余任务仍保留。
 
 父范围仍包含FX.finReturn、其它未证明形与完整JADX/零回退验收。固定FY/FO的完整成功不代表所有finally或父计划已经完成。
 

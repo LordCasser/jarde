@@ -1,0 +1,12 @@
+{
+  "status": "prepared_sync_only",
+  "source": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/specs/java8-recovery/spec.md",
+  "target": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/specs/java8-recovery/spec.md",
+  "before_sha256": "772d0ec5706fd2efd9ed51cd690b09c6881a56f597bb635e65e805edc252053e",
+  "before_requirements": 21,
+  "before_scenarios": 140,
+  "added_requirements": 1,
+  "added_scenarios": 8,
+  "old_entire_bytes_must_be_prefix": true,
+  "analysis_contracts_unchanged": true
+}

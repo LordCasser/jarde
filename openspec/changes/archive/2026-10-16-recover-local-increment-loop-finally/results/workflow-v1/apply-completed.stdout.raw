@@ -1,0 +1,69 @@
+{
+  "changeName": "recover-local-increment-loop-finally",
+  "changeDir": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/proposal.md"
+    ],
+    "specs": [
+      "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/design.md"
+    ],
+    "tasks": [
+      "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 5,
+    "complete": 5,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 保存真实12命令原类控制/生成源码失败、Facts v2与Region v3及失败探针收据；原样复制NoCall Java/driver/84B oracle/两种class到永久fixture，建立来源与全闭包指纹说明。验收：源method相同，62B指令Code/max_stack/max_locals/两异常row与FY一致（非整个Code attribute）、原驱动与输出SHA固定，已有实际命令与独审齐全，不声称重建成功。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/tasks.md",
+      "line": 5
+    },
+    {
+      "id": "2",
+      "description": "2.1 实现固定循环局部更新finally证书及其正/负测试和说明。验收：两真实class的完整CFG/rows/effects/SSA/phis、所有写入与消费者闭合；副本差异、错误返回/phi/保护边界等真实分析反例拒绝；真实晚预算/取消无证书或owner且用量不退款。非候选旧计费保持。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/tasks.md",
+      "line": 9
+    },
+    {
+      "id": "3",
+      "description": "2.2 局部接入既有Finally/SavedReturn、region范围与Tail发射，增加公共库/CLI与source map测试及说明。验收：lead16..22在try外、唯一授权return28、handler只按已证owned认领；完整正文无bytecode fallback，所有36物理BCI可追溯，loop更新一次，失败/停止原子回滚。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/tasks.md",
+      "line": 10
+    },
+    {
+      "id": "4",
+      "description": "3.1 最终冻结CLI原样恢复两编译器独立完整类，真实javac8和JDK23 --release8分别重编、未改driver仅针对rebuilt编译后双JVM隔离运行，保存完整原始流与独审；另screen原完整FY/FX/FO。验收：10组观察逐字等于84B原oracle，不改源/生成文本/方法/oracle，不把不可观察局部更新次数说成运行已证明，父剩余失败明确保留。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/tasks.md",
+      "line": 14
+    },
+    {
+      "id": "5",
+      "description": "3.2 完成fmt、CI同参数Clippy、指纹、相关finally/loop/typedcatch兼容测试、MSRV与两版OpenSpec strict，以及最终产品exact-head自身CI独审。验收：真实非空测试与日志、source/CLI/head一致，默认stack、5GiB free/1GiB target磁盘门、exact clean、完整双seed全部实际通过；不通胀旧P5基线，不借前片CI。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/changes/recover-local-increment-loop-finally/tasks.md",
+      "line": 15
+    }
+  ],
+  "taskTrackingConfigured": true,
+  "state": "all_done",
+  "instruction": "All tracked tasks are complete.\nReview or verify the change as appropriate before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde",
+    "source": "nearest"
+  }
+}

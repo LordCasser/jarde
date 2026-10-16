@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/home/lordcasser/.local/bin/openspec",
+    "archive",
+    "recover-local-increment-loop-finally",
+    "--yes"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/local-increment-loop-finally-openspec-root-v1/archive-normal.stdout.raw",
+      "bytes": 248,
+      "sha256": "3104433bfc539d960731aacc18d37e7247874a4ed9102922b6a72a53651cff63"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/local-increment-loop-finally-openspec-root-v1/archive-normal.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
