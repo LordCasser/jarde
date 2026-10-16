@@ -2,7 +2,7 @@
 
 ## 1. 基线与永久样例
 
-- [ ] 1.1 保存真实12命令原类控制/生成源码失败、Facts v2与Region v3及失败探针收据；原样复制NoCall Java/driver/84B oracle/两种class到永久fixture，建立来源与全闭包指纹说明。验收：源method与FY Code相同、原驱动与输出SHA固定，已有实际命令与独审齐全，不声称重建成功。
+- [x] 1.1 保存真实12命令原类控制/生成源码失败、Facts v2与Region v3及失败探针收据；原样复制NoCall Java/driver/84B oracle/两种class到永久fixture，建立来源与全闭包指纹说明。验收：源method相同，62B指令Code/max_stack/max_locals/两异常row与FY一致（非整个Code attribute）、原驱动与输出SHA固定，已有实际命令与独审齐全，不声称重建成功。
 
 ## 2. 有界证明与接线
 

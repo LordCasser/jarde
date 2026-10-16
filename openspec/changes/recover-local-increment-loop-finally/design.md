@@ -19,7 +19,7 @@ NoCall两编译器Code均为62字节/36条指令，7个非克隆canonical块，�
 3. 对每块指令与正常/异常边作完整匹配，核无foreign入口、额外row/clone/unreachable。protected22..34与self-binding46的实际effects均不抛且无handlers；arraylength5、arrayload19确实可抛且保护外。保留raw表与edge，不把保守handler当不存在。
 4. 证明c/header phi只由init1与fallcleanup40进入；index/header phi只由init8与update54进入且步长1；arrayalias/length与element→x链闭合。返回28→29/31→32→37→39保持Int定义/唯一消费者，先保存再清理。normal34/40读cphi；handler48实际读另一phi，输入包含cphi、normal34新值与handler48自反馈，不能强行同值。结合全保护区nonthrowing证明其异常边不可执行，并核handler同slot/Int/+100及store46→load51→throw53完整链，列出全部写入和消费者。
 5. region::finally_body仅在私有loop_header与outer.own_loop、Plan.join、当前真实loop匹配，且current16/cleanup40已在outer.scope时，局部授权唯一已证terminal28；child scope仍exact16/28，handler46只在成功后按既有owned认领。保存/恢复visited，要求精确覆盖、save一次、next40且cleanup未走。无需改通用loop_terminal_returns。
-6. 复用现有builder Finally checkpoint及saved-return、Tail发射。普通while body在try后发射54一次。现有for_header对latch其它effects的拒绝保持；若实测整合产生新continue boundary问题，仅对该私有证书修正，禁止全局清空loop targets。fallback、未声明局部与Err均原子回滚正文/来源，不退款或改写停止。
+6. 复用现有builder Finally checkpoint及saved-return、Tail发射。普通while body在try后发射54一次。现有for_header对latch其它effects的拒绝保持；若实测整合产生新continue boundary问题，仅对该私有证书修正，禁止全局清空loop targets。fallback或未声明局部按既有checkpoint处理；停止不得发布未提交正文/来源，不退款或改写原因。不声称每个内部helper Err都在本地立即restore，未发布产物的原子性按既有公共契约验收。
 7. 继续使用项目已有维护中的reader/jvm/Java结构与Rust标准集合；无第三方库提供本项目SSA身份/预算/ownership证书，故仅增加小型私有证明，不引入库或许可负担。parse成功、Java8 dialect、选择Java8/23运行时、验证与源码恢复分别报告。
 
 ## Risks / Trade-offs

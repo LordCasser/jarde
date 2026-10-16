@@ -10781,6 +10781,31 @@
       "path": "tests/fixtures/recover-lambda-primitive-array-capture/v8/P02_multianewarray.class"
     },
     {
+      "blake3": "c4604b353ddc8e424c230c8b3e11dc74e5f8b194d1025e8126a9dfc973b47c90",
+      "bytes": 283,
+      "path": "tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java"
+    },
+    {
+      "blake3": "058c9e0343c815806bd3473a02669756c7620220da8ca16788deaedd0477a6ce",
+      "bytes": 580,
+      "path": "tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java"
+    },
+    {
+      "blake3": "523c50252354523b3406a59dd68dd828aad25c7ff77878b60c98b464c6f4e466",
+      "bytes": 84,
+      "path": "tests/fixtures/recover-local-increment-loop-finally/probe.stdout"
+    },
+    {
+      "blake3": "deeb2a79c56175b7637714a89225e71eca53dafd4c78ce0367a8a54a15e6b4a2",
+      "bytes": 336,
+      "path": "tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class"
+    },
+    {
+      "blake3": "7e2c940de5f547eab33ce0d65e4bf3e29bcd2975e7ba9a847eac32bbc4e45b27",
+      "bytes": 336,
+      "path": "tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class"
+    },
+    {
       "blake3": "445ae666022d43f5b33f40a98fb739862fc3acb5c971d266bbb2d13b64ed470f",
       "bytes": 1237,
       "path": "tests/fixtures/recover-lock-guard-loop-finally/LK.java"
