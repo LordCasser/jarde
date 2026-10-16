@@ -92,8 +92,37 @@ fn static_prefix_keeps_read_write_and_return_origins() {
             bump.text,
         );
         let read = bump.source_map.direct_of_bci(0);
-        assert_eq!(read.len(), 1, "{leg}: {:?}", bump.source_map.segments());
-        assert_eq!(read[0].text(&bump.text), "FO.i");
+        assert_eq!(read.len(), 2, "{leg}: {:?}", bump.source_map.segments());
+        assert_eq!(
+            read.iter()
+                .map(|segment| segment.text(&bump.text))
+                .collect::<Vec<_>>(),
+            ["FO", "FO.i"]
+        );
+        assert_eq!(
+            read[0].origin().primary().provenance(),
+            jarde_java::Provenance::Derived
+        );
+        assert_eq!(
+            read[1].origin().primary().provenance(),
+            jarde_java::Provenance::Direct
+        );
+        let physical = source
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"bump")
+            .unwrap()
+            .item
+            .identity
+            .clone();
+        assert!(
+            bump.source_map
+                .segments()
+                .iter()
+                .flat_map(|segment| std::iter::once(segment.origin().primary())
+                    .chain(segment.origin().derived()))
+                .all(|origin| origin.method() == Some(&physical))
+        );
         let write = bump.source_map.direct_of_bci(6);
         assert_eq!(write.len(), 1, "{leg}: {:?}", bump.source_map.segments());
         assert_eq!(write[0].text(&bump.text), "++FO.i");

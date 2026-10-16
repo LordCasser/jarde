@@ -12516,7 +12516,7 @@ fn validate_initializer_expression(
                 pending.push(index);
                 pending.push(array);
             }
-            ExprKind::PostfixUpdate { .. } => {
+            ExprKind::PostfixUpdate { .. } | ExprKind::PrefixUpdate { .. } => {
                 return Ok(Some(
                     "a postfix update has no static-initializer evaluation proof".to_owned(),
                 ));

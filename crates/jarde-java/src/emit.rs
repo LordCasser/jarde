@@ -1357,6 +1357,16 @@ impl<'a> Emitter<'a> {
                 emitter.expr(index)?;
                 emitter.put("]", at)
             }
+            ExprKind::PrefixUpdate { target, direction } => {
+                emitter.put(
+                    match direction {
+                        PostfixDirection::Increment => "++",
+                        PostfixDirection::Decrement => "--",
+                    },
+                    at,
+                )?;
+                emitter.operand(target, UNARY)
+            }
             ExprKind::PostfixUpdate { target, direction } => {
                 // The writable target is already proved by recovery. Its value is written in the
                 // same suffix position as a field receiver or array indexee, then the postfix
@@ -1768,6 +1778,7 @@ fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
         ExprKind::Lambda { .. } | ExprKind::LocalAssign { .. } | ExprKind::ArrayAssign { .. } => 0,
         ExprKind::PostfixUpdate { .. } => POSTFIX,
+        ExprKind::PrefixUpdate { .. } => UNARY,
         ExprKind::Conditional { .. } => CONDITIONAL,
         ExprKind::Binary { op, .. } => binary_binding(*op),
         ExprKind::InstanceOf { .. } => binary_binding(BinaryOp::Less),

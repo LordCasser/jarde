@@ -379,6 +379,7 @@ pub(crate) struct Inputs<'a> {
     pub(crate) class_methods: Option<&'a [jarde_reader::classfile::MemberHeader]>,
     /// The current class's field headers from that same class header, when available.
     pub(crate) class_fields: Option<&'a [jarde_reader::classfile::MemberHeader]>,
+    pub(crate) class_attributes: Option<&'a [jarde_reader::classfile::AttributeShell]>,
     /// The verdict of the `bridge@1` rule for this very body, when the member is declared a bridge
     /// or its body is the forward a bridge is written as.
     pub(crate) bridge: Option<&'a bridge::Plan>,
@@ -8746,6 +8747,23 @@ pub(crate) fn build(
         inputs.has_receiver,
         budget,
     )?;
+    let static_prefix_return = StaticPrefixReturn::prove(
+        canonical,
+        ssa,
+        operations,
+        inputs.code,
+        inputs.fields,
+        inputs.class_fields,
+        inputs.declaring_class,
+        inputs.direct_super_class,
+        inputs.direct_interfaces,
+        inputs.nested_class_members,
+        inputs.class_attributes,
+        inputs.class_methods,
+        inputs.physical_method,
+        inputs.return_type.as_ref(),
+        budget,
+    )?;
     let long_assignment_result = LongAssignmentResult::prove(
         canonical,
         ssa,
@@ -8866,6 +8884,7 @@ pub(crate) fn build(
         allow_array_constructor_method_references: inputs.allow_array_constructor_method_references,
         compounds,
         unit_field_updates,
+        static_prefix_return,
         long_assignment_result,
         write_accessor_assignment,
         assignment_result_refused: false,
@@ -8967,7 +8986,10 @@ pub(crate) fn build(
         } else {
             PostfixUpdates::default()
         };
-        let proved_returns = returns.owned.clone();
+        let mut proved_returns = returns.owned.clone();
+        if let Some(prefix) = &builder.static_prefix_return {
+            proved_returns.extend(prefix.chain[..5].iter().copied());
+        }
         builder.postfix = builder.prove_snapshots(&proved_returns)?;
         builder.postfix.absorb(returns);
         builder.prepare_conditional_regions(regions)?;
@@ -9602,6 +9624,7 @@ fn published_local_assignments(
                 }
                 | ExprKind::Field { receiver: body, .. }
                 | ExprKind::PostfixUpdate { target: body, .. }
+                | ExprKind::PrefixUpdate { target: body, .. }
                 | ExprKind::ArrayLength { array: body }
                 | ExprKind::InstanceOf { value: body, .. }
                 | ExprKind::Cast { value: body, .. }
@@ -10033,6 +10056,7 @@ struct Builder<'a> {
     compounds: CompoundAssignments,
     /// Exact statement-only current-class `int` field `++`/`--` updates.
     unit_field_updates: UnitFieldUpdates,
+    static_prefix_return: Option<StaticPrefixReturn>,
     /// The one closed category-2 assignment-result shape, if this body proves it completely.
     long_assignment_result: Option<LongAssignmentResult>,
     /// The one value-returning write accessor this body proves completely, with the field
@@ -11885,6 +11909,305 @@ struct PostfixUpdate {
     returns: u32,
     /// Every instruction absorbed by the expression, excluding its store and return.
     anchors: Vec<u32>,
+}
+
+/// One complete static-int prefix return. No ownership escapes until all six instructions,
+/// both copied values and the source-level field target have been proved.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct StaticPrefixReturn {
+    owner_path: String,
+    name: String,
+    chain: [u32; 6],
+}
+
+impl StaticPrefixReturn {
+    fn owns(&self, at: u32) -> bool {
+        self.chain[..5].contains(&at)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prove(
+        canonical: &CanonicalCfg,
+        ssa: &SsaTable,
+        operations: &Operations,
+        code: &MethodCodeFacts,
+        fields: &field::Plan,
+        class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+        declaring_class: Option<&str>,
+        direct_super_class: Option<&jarde_reader::model::JvmBytes>,
+        direct_interfaces: &[jarde_reader::model::JvmString],
+        nested_class_members: &[String],
+        class_attributes: Option<&[jarde_reader::classfile::AttributeShell]>,
+        class_methods: Option<&[jarde_reader::classfile::MemberHeader]>,
+        physical_method: Option<&jarde_reader::model::PhysicalMethodId>,
+        return_type: Option<&Type>,
+        budget: &mut Budget,
+    ) -> Result<Option<Self>, StopReason> {
+        if code.instructions.len() != 6
+            || return_type != Some(&Type::Int)
+            || code.stopped_at.is_some()
+            || code.exception_handler_count != 0
+            || !code.exception_handlers.is_empty()
+            || !canonical.completeness().is_complete()
+            || !canonical.unreachable().is_empty()
+            || canonical.blocks().len() != 1
+            || !canonical.edges().is_empty()
+            || canonical.blocks()[0].id().is_clone()
+            || ssa.blocks().len() != 1
+        {
+            return Ok(None);
+        }
+        let block = &ssa.blocks()[0];
+        let instructions = block.instructions();
+        if instructions.len() != 6 || block.block() != canonical.blocks()[0].id() {
+            return Ok(None);
+        }
+        for ((raw, instruction), opcode) in code
+            .instructions
+            .iter()
+            .zip(instructions)
+            .zip([0xb2, 0x04, 0x60, 0x59, 0xb3, 0xac])
+        {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            if raw.bci != instruction.bci()
+                || raw.opcode != opcode
+                || instruction.opcode() != opcode
+                || instruction
+                    .reads()
+                    .iter()
+                    .any(|(slot, _)| matches!(slot, Slot::Local(_)))
+                || instruction
+                    .writes()
+                    .iter()
+                    .any(|(slot, _)| matches!(slot, Slot::Local(_)))
+            {
+                return Ok(None);
+            }
+        }
+        let [read, one, add, copy, store, returns] = instructions else {
+            return Ok(None);
+        };
+        if !matches!(
+            operations.get(one.bci()),
+            Some(Operation::Push(ConstantValue::Int(1)))
+        ) || !matches!(
+            operations.get(add.bci()),
+            Some(Operation::Arithmetic {
+                op: ArithmeticOp::Add
+            })
+        ) || !matches!(operations.get(copy.bci()), Some(Operation::Duplicate))
+            || !matches!(operations.get(returns.bci()), Some(Operation::Return))
+        {
+            return Ok(None);
+        }
+        let (Some(owner), Some(class_fields)) = (declaring_class, class_fields) else {
+            return Ok(None);
+        };
+        // Unknown inherited names cannot establish that a qualified expression denotes this
+        // type. This leaf uses only the already-carried, closed Object/no-interface header.
+        if direct_super_class.map(|name| name.0.as_slice()) != Some(b"java/lang/Object")
+            || !direct_interfaces.is_empty()
+        {
+            return Ok(None);
+        }
+        let (Some((read_field, read_shape)), Some((write_field, write_shape))) =
+            (fields.claim(read.bci()), fields.claim(store.bci()))
+        else {
+            return Ok(None);
+        };
+        if read_field.access != FieldAccess::Read
+            || write_field.access != FieldAccess::Write
+            || !read_field.is_static
+            || !write_field.is_static
+            || read_field.owner != owner
+            || write_field.owner != owner
+            || read_field.name != write_field.name
+            || read_field.descriptor != "I"
+            || write_field.descriptor != "I"
+            || read_shape.writes()
+            || !write_shape.writes()
+            || read_shape.receiver.is_some()
+            || write_shape.receiver.is_some()
+        {
+            return Ok(None);
+        }
+        // This projection has no source binder/member-type table. An actual header with no
+        // Signature/InnerClasses/EnclosingMethod establishes their absence without decoding a
+        // second set of facts. Headers that need those facts keep the ordinary refusal.
+        let (Some(class_attributes), Some(class_methods), Some(method)) =
+            (class_attributes, class_methods, physical_method)
+        else {
+            return Ok(None);
+        };
+        for attribute in class_attributes {
+            poll(budget, Some(read.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(read.bci()),
+            )?;
+            if matches!(
+                attribute.name.raw().0.as_slice(),
+                b"Signature" | b"InnerClasses" | b"EnclosingMethod"
+            ) {
+                return Ok(None);
+            }
+        }
+        let mut method_header = None;
+        for candidate in class_methods {
+            poll(budget, Some(read.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(read.bci()),
+            )?;
+            if candidate.name.raw() == &method.name
+                && candidate.descriptor.raw() == &method.descriptor
+            {
+                if method_header.is_some() {
+                    return Ok(None);
+                }
+                method_header = Some(candidate);
+            }
+        }
+        let Some(method_header) = method_header else {
+            return Ok(None);
+        };
+        for attribute in &method_header.attributes {
+            poll(budget, Some(read.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(read.bci()),
+            )?;
+            if attribute.name.raw().0 == b"Signature" {
+                return Ok(None);
+            }
+        }
+        let Some(owner_path) = spell_reference(owner) else {
+            return Ok(None);
+        };
+        if !owner_path.split('.').all(is_java_identifier)
+            || !is_java_identifier(&read_field.name)
+            || current_class_simple_name(owner).is_none()
+            || class_literal_path_is_shadowed(&owner_path, Some(owner))
+        {
+            return Ok(None);
+        }
+        let root = owner_path.split('.').next().unwrap_or("");
+        let mut declaration = None;
+        for candidate in class_fields {
+            poll(budget, Some(read.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(read.bci()),
+            )?;
+            if candidate.name.raw().0 == root.as_bytes() {
+                return Ok(None);
+            }
+            if candidate.name.raw().0 == read_field.name.as_bytes() {
+                if declaration.is_some() {
+                    return Ok(None);
+                }
+                declaration = Some(candidate);
+            }
+        }
+        let Some(declaration) = declaration else {
+            return Ok(None);
+        };
+        if declaration.descriptor.raw().0 != b"I"
+            || declaration.access_flags & crate::facts::ACC_STATIC == 0
+            || declaration.access_flags & (ACC_VOLATILE_FIELD | ACC_FINAL_FIELD) != 0
+        {
+            return Ok(None);
+        }
+        let member_prefix = format!("{}$", owner.replace('/', "."));
+        for member in nested_class_members {
+            poll(budget, Some(read.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(read.bci()),
+            )?;
+            if member
+                .strip_prefix(&member_prefix)
+                .is_some_and(|tail| tail == root)
+            {
+                return Ok(None);
+            }
+        }
+        let (Some((_, old)), Some((_, increment)), Some((_, sum))) = (
+            one_stack_output(read),
+            one_stack_output(one),
+            one_stack_output(add),
+        ) else {
+            return Ok(None);
+        };
+        let copies = stack_outputs(copy);
+        if copies.len() != 2
+            || copies[0].1 == copies[1].1
+            || read.writes().len() != 1
+            || one.writes().len() != 1
+            || add.writes().len() != 1
+            || copy.writes().len() != 2
+            || !store.writes().is_empty()
+            || !returns.writes().is_empty()
+            || two_stack_values(add) != Some((old, increment))
+            || single_stack_read(copy).map(|(_, value)| value) != Some(sum)
+            || write_shape.value != Some(copies[1].1)
+            || single_stack_read(store).map(|(_, value)| value) != Some(copies[1].1)
+            || single_stack_read(returns).map(|(_, value)| value) != Some(copies[0].1)
+        {
+            return Ok(None);
+        }
+        for (value, producer, consumer) in [
+            (old, read.bci(), add.bci()),
+            (increment, one.bci(), add.bci()),
+            (sum, add.bci(), copy.bci()),
+            (copies[1].1, copy.bci(), store.bci()),
+            (copies[0].1, copy.bci(), returns.bci()),
+        ] {
+            poll(budget, Some(consumer))?;
+            if ssa.value(value).ty() != &Value::Int
+                || !matches!(ssa.value(value).def(), Definition::Instruction { block: source, bci }
+                    if source == block.block() && *bci == producer)
+                || !single_use_at_with_budget(ssa, value, block.block(), consumer, budget)?
+            {
+                return Ok(None);
+            }
+        }
+        let effects = index_postfix_effects(ssa, budget)?;
+        if !unit_handlers_are_empty(&effects, block.block(), instructions) {
+            return Ok(None);
+        }
+        // Poll once more before committing: cancellation after the final accepted charge must
+        // not publish an ownership certificate.
+        poll(budget, Some(returns.bci()))?;
+        Ok(Some(Self {
+            owner_path,
+            name: read_field.name.clone(),
+            chain: [
+                read.bci(),
+                one.bci(),
+                add.bci(),
+                copy.bci(),
+                store.bci(),
+                returns.bci(),
+            ],
+        }))
+    }
 }
 
 /// A statement-only, same-class `int` field update ending immediately before a void return.
@@ -25103,7 +25426,14 @@ impl Builder<'_> {
         // constant and the `iadd` are the `1` it adds, and the `dup_x1` left the value the method
         // returns. None of them writes a statement of its own — the `putfield` would otherwise write
         // the field assignment this shape exists to spell as one update.
-        if self.increments().owns(at) || self.postfix.owns(at) || self.unit_field_updates.owns(at) {
+        if self.increments().owns(at)
+            || self.postfix.owns(at)
+            || self.unit_field_updates.owns(at)
+            || self
+                .static_prefix_return
+                .as_ref()
+                .is_some_and(|prefix| prefix.owns(at))
+        {
             return Ok(());
         }
         let write = instruction
@@ -25282,6 +25612,27 @@ impl Builder<'_> {
                     .map(|_| ())
             }
             Some(Operation::Return) => {
+                if let Some(prefix) = self.static_prefix_return.as_ref()
+                    .filter(|prefix| prefix.chain[5] == at).cloned()
+                {
+                    let [read, one, add, copy, store, _] = prefix.chain;
+                    let target = Expr::direct(ExprKind::Field {
+                        receiver: Box::new(Expr::new(ExprKind::Path(prefix.owner_path),
+                            OriginSet::new(Origin::derived(read)))),
+                        name: prefix.name,
+                    }, read).presenting(Type::Int);
+                    let update = Expr::new(ExprKind::PrefixUpdate {
+                        target: Box::new(target), direction: PostfixDirection::Increment,
+                    }, [one, add, copy].iter().fold(OriginSet::new(Origin::direct(store)),
+                        |origin, bci| origin.plus_derived(Origin::derived(*bci))))
+                        .presenting(Type::Int);
+                    let value = match self.adapt_return(update, at) {
+                        Ok(value) => value,
+                        Err(reason) => return self.fallback(prefix.chain.to_vec(), &reason, at),
+                    };
+                    return self.push(Stmt::new(StmtKind::Return { value: Some(value) },
+                        OriginSet::new(Origin::direct(at))));
+                }
                 // The `return` one `field++`/`++field` shape ends in states the whole update: the
                 // value it returns is the update's own, which no rendering of the shape's `dup_x1`
                 // could spell (P3 2c.10/2c.18).
@@ -34216,6 +34567,9 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
         | ExprKind::ArrayLength { array: receiver }
         | ExprKind::PostfixUpdate {
             target: receiver, ..
+        }
+        | ExprKind::PrefixUpdate {
+            target: receiver, ..
         } => {
             stated_by_expression(receiver, names, bcis);
         }
@@ -35105,6 +35459,293 @@ mod tests {
                 .expect("the real fixture method completes SSA analysis"),
             method,
         )
+    }
+
+    fn static_prefix_test_fields(
+        ir: &jarde_jvm::method_ir::MethodIr,
+        operations: &Operations,
+    ) -> field::Plan {
+        let declaration = crate::facts::DeclaringClass::new("FO", 0);
+        field::plan(
+            ir.ssa().unwrap(),
+            operations,
+            &|_| None,
+            Some(&declaration),
+            "bump",
+            "()I",
+            ir.class_fields(),
+            &[],
+            &mut child_array_test_budget(),
+        )
+        .unwrap()
+    }
+
+    fn static_prefix_test_proof(
+        ir: &jarde_jvm::method_ir::MethodIr,
+        method: &jarde_reader::model::PhysicalMethodId,
+        operations: &Operations,
+        fields: &field::Plan,
+        class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+        budget: &mut Budget,
+    ) -> Result<Option<StaticPrefixReturn>, StopReason> {
+        StaticPrefixReturn::prove(
+            ir.canonical().unwrap(),
+            ir.ssa().unwrap(),
+            operations,
+            ir.code().unwrap(),
+            fields,
+            class_fields,
+            Some("FO"),
+            ir.direct_super_class(),
+            ir.direct_interfaces(),
+            &[],
+            ir.class_attributes(),
+            ir.class_methods(),
+            Some(method),
+            Some(&Type::Int),
+            budget,
+        )
+    }
+
+    #[test]
+    fn static_prefix_proves_two_real_copied_new_values_and_rejects_unwritable_declarations() {
+        for class in [
+            include_bytes!(
+                "../../../tests/fixtures/recover-static-field-prefix-return/v8/FO.class"
+            )
+            .as_slice(),
+            include_bytes!(
+                "../../../tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class"
+            )
+            .as_slice(),
+        ] {
+            let (analysis, method) = analyze_test_method(class, "bump", "()I", 8);
+            let ir = analysis.ir();
+            let operations = Operations::of(ir.code().unwrap(), ir.constant_pool());
+            let fields = static_prefix_test_fields(ir, &operations);
+            let proof = static_prefix_test_proof(
+                ir,
+                &method,
+                &operations,
+                &fields,
+                ir.class_fields(),
+                &mut child_array_test_budget(),
+            )
+            .unwrap()
+            .unwrap();
+            assert_eq!(proof.chain, [0, 3, 4, 5, 6, 9]);
+            assert_eq!((&*proof.owner_path, &*proof.name), ("FO", "i"));
+            for flag in [
+                ACC_FINAL_FIELD,
+                ACC_VOLATILE_FIELD,
+                crate::facts::ACC_STATIC,
+            ] {
+                let mut headers = ir.class_fields().unwrap().to_vec();
+                headers[0].access_flags ^= flag;
+                assert!(
+                    static_prefix_test_proof(
+                        ir,
+                        &method,
+                        &operations,
+                        &fields,
+                        Some(&headers),
+                        &mut child_array_test_budget()
+                    )
+                    .unwrap()
+                    .is_none()
+                );
+            }
+            let mut headers = ir.class_fields().unwrap().to_vec();
+            headers.push(headers[0].clone());
+            assert!(
+                static_prefix_test_proof(
+                    ir,
+                    &method,
+                    &operations,
+                    &fields,
+                    Some(&headers),
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+                .is_none()
+            );
+            assert!(
+                static_prefix_test_proof(
+                    ir,
+                    &method,
+                    &operations,
+                    &fields,
+                    None,
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+                .is_none()
+            );
+            let mut wrong_method = method.clone();
+            wrong_method.name.0 = b"missing".to_vec();
+            assert!(
+                static_prefix_test_proof(
+                    ir,
+                    &wrong_method,
+                    &operations,
+                    &fields,
+                    ir.class_fields(),
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+                .is_none()
+            );
+        }
+    }
+
+    #[test]
+    fn static_prefix_rejects_real_non_one_subtract_and_old_value_consumers() {
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-static-field-prefix-return/v8/FO.class"
+        );
+        let (original, _) = analyze_test_method(class, "bump", "()I", 8);
+        let start = original.ir().code().unwrap().code_span.start as usize;
+        for edits in [
+            vec![(3, 0x05)],
+            vec![(4, 0x64)],
+            vec![(3, 0x59), (4, 0x04), (5, 0x60)],
+        ] {
+            let mut control = class.to_vec();
+            for (bci, opcode) in edits {
+                control[start + bci] = opcode;
+            }
+            let (analysis, method) = analyze_test_method(&control, "bump", "()I", 8);
+            let ir = analysis.ir();
+            assert!(ir.ssa().is_some(), "the control has actual verified SSA");
+            let operations = Operations::of(ir.code().unwrap(), ir.constant_pool());
+            let fields = static_prefix_test_fields(ir, &operations);
+            assert!(
+                static_prefix_test_proof(
+                    ir,
+                    &method,
+                    &operations,
+                    &fields,
+                    ir.class_fields(),
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+                .is_none()
+            );
+        }
+    }
+
+    #[test]
+    fn static_prefix_late_budget_and_ledger_cancellation_publish_no_certificate() {
+        use jarde_reader::budget::CancellationToken;
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _timing: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                    if self.cancel_at == Some(count) {
+                        self.token.cancel();
+                    }
+                }
+            }
+            fn refusal(
+                &self,
+                _site: LedgerSite,
+                _dimension: Option<jarde_reader::budget::BudgetDimension>,
+            ) {
+            }
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-static-field-prefix-return/v8/FO.class"
+        );
+        let (analysis, method) = analyze_test_method(class, "bump", "()I", 8);
+        let ir = analysis.ir();
+        let operations = Operations::of(ir.code().unwrap(), ir.constant_pool());
+        let fields = static_prefix_test_fields(ir, &operations);
+        let observer = Arc::new(Observer {
+            charges: AtomicUsize::new(0),
+            cancel_at: None,
+            token: CancellationToken::new(),
+        });
+        let mut measured = child_array_test_budget();
+        measured.with_ledger(
+            OperationLedger::new(&measured).with_observer(observer.clone()),
+            UsageOwner::Methods,
+        );
+        assert!(
+            static_prefix_test_proof(
+                ir,
+                &method,
+                &operations,
+                &fields,
+                ir.class_fields(),
+                &mut measured
+            )
+            .unwrap()
+            .is_some()
+        );
+        let mut limits = measured.limits().clone();
+        limits.ir_items = measured.usage().ir_items - 1;
+        let mut stopped = Budget::new(limits);
+        assert!(matches!(
+            static_prefix_test_proof(
+                ir,
+                &method,
+                &operations,
+                &fields,
+                ir.class_fields(),
+                &mut stopped
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                at: Some(9),
+                written: 0,
+                ..
+            })
+        ));
+        assert!(stopped.usage().analysis_steps > 6);
+        assert_eq!(stopped.usage().ir_items, measured.usage().ir_items - 1);
+        let charges = observer.charges.load(Ordering::SeqCst);
+        assert!(charges > 6);
+        let token = CancellationToken::new();
+        let observer = Arc::new(Observer {
+            charges: AtomicUsize::new(0),
+            cancel_at: Some(charges),
+            token: token.clone(),
+        });
+        let mut cancelled = Budget::with_cancellation_token(measured.limits().clone(), token);
+        cancelled.with_ledger(
+            OperationLedger::new(&cancelled).with_observer(observer.clone()),
+            UsageOwner::Methods,
+        );
+        assert_eq!(
+            static_prefix_test_proof(
+                ir,
+                &method,
+                &operations,
+                &fields,
+                ir.class_fields(),
+                &mut cancelled
+            ),
+            Err(StopReason::Cancelled { at: Some(9) })
+        );
+        assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+        assert_eq!(
+            cancelled.usage().analysis_steps,
+            measured.usage().analysis_steps
+        );
+        assert_eq!(cancelled.usage().ir_items, measured.usage().ir_items);
     }
 
     fn analyze_own_grid(
@@ -37875,6 +38516,7 @@ mod tests {
                 direct_interfaces: ir.direct_interfaces(),
                 class_methods: ir.class_methods(),
                 class_fields: ir.class_fields(),
+                class_attributes: ir.class_attributes(),
                 bridge: None,
                 sites: &sites,
                 prologues: &prologues,
@@ -40823,6 +41465,7 @@ mod tests {
             allow_array_constructor_method_references: false,
             compounds: CompoundAssignments::default(),
             unit_field_updates: UnitFieldUpdates::default(),
+            static_prefix_return: None,
             long_assignment_result: None,
             write_accessor_assignment: None,
             assignment_result_refused: false,
@@ -43873,6 +44516,7 @@ mod tests {
                 direct_interfaces: ir.direct_interfaces(),
                 class_methods: ir.class_methods(),
                 class_fields: ir.class_fields(),
+                class_attributes: ir.class_attributes(),
                 bridge: None,
                 sites: &sites,
                 prologues: &prologues,

@@ -2,7 +2,7 @@
 
 ## Context
 
-动机与用户行为见proposal及delta。当前实际产品ba3fa76af的冻结CLI c44bde2c…fa396来自4907项源码输入；本片尚无产品修改。两原FO的10B Code分别为 `b20007046059b30007ac` 与 `b20002046059b30002ac`，CP编号不同而目标同为FO.i:I；实际BCI为getstatic0、常量3、iadd4、dup5、putstatic6、ireturn9，无handler。完整FO输出在两腿均因bump说明体缺return而javac退出1；evalThenFin的临时值与finally已恢复，整个类尚未重建运行。
+动机与用户行为见proposal及delta。当前实际产品ba3fa76af的冻结CLI c44bde2c…fa396来自4907项源码输入；这是本片冻结实施前的历史基线。两原FO的10B Code分别为 `b20007046059b30007ac` 与 `b20002046059b30002ac`，CP编号不同而目标同为FO.i:I；实际BCI为getstatic0、常量3、iadd4、dup5、putstatic6、ireturn9，无handler。完整FO输出在两腿均因bump说明体缺return而javac退出1；evalThenFin的临时值与finally已恢复，整个类尚未重建运行。
 
 现有FieldIncrements只从DUP_X1证明实例八指令receiver形；void-only单位字段更新不承载新值返回，postfix snapshot承载旧值。新增独立driver原类控制共6命令、四次双JVM运行匹配60B六行oracle，不能把原类控制当修后验收。可移交证据见results/repro-v1。
 
@@ -25,6 +25,8 @@
 两条独立手写javac控制已确认：同名int字段会让 `++PrefixOwnerShadow.i` 中的首标识符解析成字段，产生 `int cannot be dereferenced`。该控制不涉及FO或Jarde生成文本。`spell_reference` 可拼写并不等于表达式中的owner已正确绑定；现有命名阶段已保留静态owner首标识符以避免生成局部/参数遮蔽，但不能改真实字段。
 
 本片继续使用有真实字段子节点的限定owner表达式。在认领前预算核对实际class_fields中的首标识符冲突；现有输入只能在已知Object直接父、无接口时排除未读继承字段的遮蔽。未知继承关系或冲突属于本新投影缺少合法owner证明，保留原拒绝；不改field@1或其它更新规则，不新建依赖展开/名称解析框架，也不偷偷以裸字段名或Local文本替代Field。FO满足这项证明前提。更一般的owner绑定须补齐证据后另扩准入，不能凭当前字段表没有冲突猜测继承表也没有冲突。
+
+实施代码还借用同次读取的class attribute shells和当前方法唯一header，预算核实absence。当前投影没有泛型binder或源码成员类型名表，class的Signature/InnerClasses/EnclosingMethod、当前method的Signature，或未知/歧义header均按缺证保留拒绝；不把二进制`$`尾段当完整source成员名证明。其它方法的Signature不影响当前方法。该保守边界不声称已支持无冲突的泛型/成员类型，日后须以现有typed属性证据补齐绑定后扩展，不为本片新建通用resolver。
 
 ## Risks / Trade-offs
 

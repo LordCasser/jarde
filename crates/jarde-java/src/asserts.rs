@@ -642,7 +642,9 @@ impl<'a> Iterator for ExprNodes<'a> {
                 push(array);
                 push(index);
             }
-            ExprKind::PostfixUpdate { target, .. } => push(target),
+            ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+                push(target)
+            }
             ExprKind::ArrayLength { array } => push(array),
             ExprKind::NewArray {
                 lengths,

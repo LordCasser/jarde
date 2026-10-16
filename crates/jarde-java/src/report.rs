@@ -607,7 +607,9 @@ fn same_class_field_receiver_sites(
                 pending.push(Node::Expr(index));
                 pending.push(Node::Expr(array));
             }
-            ExprKind::PostfixUpdate { target, .. } => pending.push(Node::Expr(target)),
+            ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+                pending.push(Node::Expr(target))
+            }
             ExprKind::NewArray {
                 lengths,
                 initializers,
@@ -1865,7 +1867,9 @@ fn allocation_expression<'a>(
             E::MethodReference { qualifier, .. } => expressions.push(qualifier),
             E::Field { receiver, .. } => expressions.push(receiver),
             E::Index { array, index } => expressions.extend([&**array, &**index]),
-            E::PostfixUpdate { target, .. } => expressions.push(target),
+            E::PostfixUpdate { target, .. } | E::PrefixUpdate { target, .. } => {
+                expressions.push(target)
+            }
             E::ArrayLength { array } => expressions.push(array),
             E::NewArray {
                 lengths,
@@ -2430,6 +2434,7 @@ pub fn class_source_invoke_result_uses(
             }
             | ExprKind::ArrayLength { array: value }
             | ExprKind::PostfixUpdate { target: value, .. }
+            | ExprKind::PrefixUpdate { target: value, .. }
             | ExprKind::Not { value }
             | ExprKind::Neg { value } => visit_expression(
                 source,
@@ -5960,7 +5965,9 @@ fn instance_block_findings(
             E::MethodReference { qualifier, .. } => expressions.push(qualifier),
             E::Field { receiver, .. } => expressions.push(receiver),
             E::Index { array, index } => expressions.extend([&**array, &**index]),
-            E::PostfixUpdate { target, .. } => expressions.push(target),
+            E::PostfixUpdate { target, .. } | E::PrefixUpdate { target, .. } => {
+                expressions.push(target)
+            }
             E::ArrayLength { array } => expressions.push(array),
             E::NewArray {
                 lengths,
@@ -6325,6 +6332,7 @@ fn project_captured_expr(
         ExprKind::LocalAssign { value, .. }
         | ExprKind::InstanceOf { value, .. }
         | ExprKind::PostfixUpdate { target: value, .. }
+        | ExprKind::PrefixUpdate { target: value, .. }
         | ExprKind::ArrayLength { array: value }
         | ExprKind::Cast { value, .. }
         | ExprKind::Not { value }
@@ -7590,6 +7598,7 @@ fn substitute_lambda_donor(
         ExprKind::LocalAssign { .. }
         | ExprKind::ArrayAssign { .. }
         | ExprKind::PostfixUpdate { .. }
+        | ExprKind::PrefixUpdate { .. }
         | ExprKind::Conditional { .. }
         | ExprKind::Lambda { .. }
         | ExprKind::Super { .. } => None,
@@ -7952,7 +7961,9 @@ fn collect_free_locals(
             collect_free_locals(array, names);
             collect_free_locals(index, names);
         }
-        ExprKind::PostfixUpdate { target, .. } => collect_free_locals(target, names),
+        ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+            collect_free_locals(target, names)
+        }
         ExprKind::NewArray {
             lengths,
             initializers,
@@ -8069,7 +8080,9 @@ fn count_parameter_reads(
             count_parameter_reads(array, bindings, counts);
             count_parameter_reads(index, bindings, counts);
         }
-        ExprKind::PostfixUpdate { target, .. } => count_parameter_reads(target, bindings, counts),
+        ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+            count_parameter_reads(target, bindings, counts)
+        }
         ExprKind::NewArray {
             lengths,
             initializers,
@@ -8478,7 +8491,9 @@ fn for_each_expression<'a>(
             for_each_expression(array, visit);
             for_each_expression(index, visit);
         }
-        ExprKind::PostfixUpdate { target, .. } => for_each_expression(target, visit),
+        ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+            for_each_expression(target, visit)
+        }
         ExprKind::NewArray {
             lengths,
             initializers,
@@ -8679,7 +8694,9 @@ fn for_each_expression_mut(
             for_each_expression_mut(array, visit);
             for_each_expression_mut(index, visit);
         }
-        ExprKind::PostfixUpdate { target, .. } => for_each_expression_mut(target, visit),
+        ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+            for_each_expression_mut(target, visit)
+        }
         ExprKind::NewArray {
             lengths,
             initializers,
@@ -10378,6 +10395,7 @@ fn collect_array_return_anchors(
                 receiver: value, ..
             }
             | PostfixUpdate { target: value, .. }
+            | PrefixUpdate { target: value, .. }
             | ArrayLength { array: value }
             | Cast { value, .. }
             | Not { value }
@@ -10549,6 +10567,7 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
             receiver: value, ..
         }
         | ExprKind::PostfixUpdate { target: value, .. }
+        | ExprKind::PrefixUpdate { target: value, .. }
         | ExprKind::ArrayLength { array: value }
         | ExprKind::Cast { value, .. }
         | ExprKind::Not { value }
@@ -11989,6 +12008,7 @@ fn recover_inner(
             direct_interfaces: request.ir.direct_interfaces(),
             class_methods: request.ir.class_methods(),
             class_fields: request.ir.class_fields(),
+            class_attributes: request.ir.class_attributes(),
             bridge: bridge.as_ref(),
             sites: &sites,
             prologues: &prologues,
@@ -13165,6 +13185,7 @@ fn program_node_count(program: &build::Program) -> u64 {
             K::LocalAssign { value, .. }
             | K::InstanceOf { value, .. }
             | K::PostfixUpdate { target: value, .. }
+            | K::PrefixUpdate { target: value, .. }
             | K::ArrayLength { array: value }
             | K::Cast { value, .. }
             | K::Not { value }
@@ -13644,6 +13665,10 @@ fn visit_class_initializer_field_reads(
         } => {
             visit_class_initializer_field_reads(qualifier, fields, budget, reads, complete)?;
         }
+        ExprKind::PrefixUpdate { target, .. } => {
+            *complete = false;
+            visit_class_initializer_field_reads(target, fields, budget, reads, complete)?;
+        }
         ExprKind::ArrayAssign { target, value, .. } => {
             *complete = false;
             visit_class_initializer_field_reads(target, fields, budget, reads, complete)?;
@@ -13773,6 +13798,9 @@ fn charge_expression_tree_at_depth(
         | ExprKind::Not { value: qualifier }
         | ExprKind::Neg { value: qualifier }
         | ExprKind::PostfixUpdate {
+            target: qualifier, ..
+        }
+        | ExprKind::PrefixUpdate {
             target: qualifier, ..
         } => {
             charge_expression_tree_at_depth(qualifier, budget, depth + 1)?;

@@ -464,7 +464,7 @@ pub(crate) fn committed_presentations(
                     }
                     pending.push(Node::Expr(receiver));
                 }
-                ExprKind::PostfixUpdate { target, .. } => {
+                ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
                     if let ExprKind::Field { name, .. } = &target.kind
                         && expr.origin.primary().method().is_none()
                     {
