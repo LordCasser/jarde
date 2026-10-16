@@ -28,6 +28,10 @@
 
 实施代码还借用同次读取的class attribute shells和当前方法唯一header，预算核实absence。当前投影没有泛型binder或源码成员类型名表，class的Signature/InnerClasses/EnclosingMethod、当前method的Signature，或未知/歧义header均按缺证保留拒绝；不把二进制`$`尾段当完整source成员名证明。其它方法的Signature不影响当前方法。该保守边界不声称已支持无冲突的泛型/成员类型，日后须以现有typed属性证据补齐绑定后扩展，不为本片新建通用resolver。
 
+### 停止阶段边界
+
+本片的“无部分更新”遵循既有提交边界：候选证明或正文发射停止，经Result传播而不提交半个更新正文及来源；不退款已准许费用。完整正文成功提交之后，可选evidence/source-map重放的较晚停止仍按现有契约保留已完整正文与明确的证据进度，不能宣称整个operation事务回滚。固定c075的静态组合核验见results/fixed-recovery-v1/stop-composition-static-review.json；新增动态实验是proof预算/取消，deadline和输出停止复用共同poll/checked writer机制，不冒称本片新增专例已经执行。
+
 ## Risks / Trade-offs
 
 - [把copy的producer BCI相同误当两份值相同] → 核实际SSA输入/输出及唯一consumer，而非只凭opcode或comes_from(copy)放行。
@@ -39,3 +43,7 @@
 ## Migration Plan
 
 先等reference片自身CI验收/归档/主线源码绑定，再应用本片；实施开始重取实际基线，冻结永久红例及控制，局部实现后运行定向兼容门、完整双腿源码对照和自身产品CI。只有真实验收后才勾tasks、同步delta并归档；失败保留，不把本规划或旧CI当实现成功。
+
+## 固定宽度候选分流（实施修正）
+
+c075自身CI的P5 bulk暴露了非候选六指令int方法也进入逐项计费扫描的问题。后继a89在任何新SSA证明收费前先核完整六opcode `getstatic/iconst_1/iadd/dup/putstatic/ireturn`，与既有单位更新候选分流的固定宽度做法一致。仅核首opcode不足以排除NestedEval.tick；不会把非候选的正常工作记到账上。真正候选仍逐项poll/charge，并保留原值身份、字段声明、来源及最后poll后才交证书的全部证明；没有改旧计费快照或退款。失败原始CI和新head完整重放分别见results/own-ci-failed-c075-v1与dispatch-local-v1。

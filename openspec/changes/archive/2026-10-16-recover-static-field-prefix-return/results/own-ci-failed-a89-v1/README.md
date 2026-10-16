@@ -1,0 +1,9 @@
+# a89 自身CI：fixture人口断言遗漏
+
+Run38841427486、产品a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b的实际终态为failure。原API共91 observations/182 raw，ZIP587110B、SHA256 6febe161cbac155c89f8bb23567f2e0b1cf7183a39dd733b558ea1ae03c4fc7f，实际45安全唯一成员。捕获服务在保存完整终态和ZIP后因成功断言退出1；这是产品CI失败，不是网络采集失败，不重启旧run。
+
+MSRV/supply-chain/fuzz三job成功，stable首seed走到jarde-reader lib时，repository_class_fixtures_validate_without_false_target_rejections人口断言失败：实际1175类/5259 Code/523 handler/3445非handler branch targets/10 subroutines，旧pin1173/5249/521/3445/10。差值+2/+10/+2/0/0对应本片两FO类；其余解码、member-walk与目标验证断言全部保留。该reader suite实际180通过/1失败。
+
+首seed共366条summary、3627通过/1失败/98忽略；新增七个prefix具名门都已明确ok，原P5 bulk计费快照也通过。第二seed和后继JDK比较/examples/tree/strict等均skipped，不能借局部通过称整体产品门通过。独立失败审计核所有API raw、终态jobs与原ZIP。后继仅按实际class贡献维护人口pin及注释，不改decoder/验证约束或旧P5计费表；新head仍须自身CI。
+
+capture.tar.gz：2,214,492B，SHA256 c317dd019cb7616b9a4326a7aefcb94dd4263e76dc510c9977bf623b251dcc6a；196 payload加manifest共197安全唯一普通成员，root已重开全部hash。原a89新本地/完整源码成功证据继续绑定a89，不把此failure改写为成功。
