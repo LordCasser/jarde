@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/home/lordcasser/.local/bin/openspec",
+    "instructions",
+    "archive",
+    "--change",
+    "recover-call-return-loop-finally",
+    "--json"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/call-return-finally/jarde",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/call-return-loop-finally-openspec-root-v1/archive-guidance.stdout.raw",
+      "bytes": 2464,
+      "sha256": "599b4098aae203ee83746a0817b83084e0b250e554eaee0ce7ec765a184153ac"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/call-return-loop-finally-openspec-root-v1/archive-guidance.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
