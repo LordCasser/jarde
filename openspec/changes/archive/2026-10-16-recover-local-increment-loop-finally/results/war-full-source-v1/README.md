@@ -1,6 +1,6 @@
 # 固定WAR全源码对照
 
-最终产品02de294f7af2d0798e33d52ce5474e60efe17b03及冻结CLI fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25，真实4929项源码闭包前后一致。自身CI38872425446另待终态，不由本实验替代。
+最终产品02de294f7af2d0798e33d52ce5474e60efe17b03及冻结CLI fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25，真实4929项源码闭包前后一致。自身CI38872425446已终态独审接受，收据见相邻own-ci-v1；本实验仍是独立的固定WAR对照。
 
 真实javac8与javac23 --release8的原NoCallFinally.class分别原样放入783B WAR：WEB-INF/classes/NoCallFinally.class、META-INF/MANIFEST.MF、WEB-INF/web.xml，共3 entries。12命令/24raw全部exit0：每腿先实际enumerate_artifact_tree，读取返回的根ContainerOrigin，再显式声明WEB-INF/classes/前缀根（explicit-classpath、layout war），完整恢复两方法。location的snapshot/origin/entry ordinal/raw name绑定实际WAR条目。两份1430B完整Java与对应JAR对照逐字一致，原样javac重编，未改driver仅对rebuilt类编译；Java8/23共四次-Xverify:all运行逐字匹配84B原oracle，无原class/JAR混入运行classpath。
 

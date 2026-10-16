@@ -1,7 +1,7 @@
 ## 当前状态
 
 - 主线f4a81440d已交付FO/loopless；旧patrol矩阵保留为历史。
-- noCall产品02de294f7的本地最终CLI重筛：FY/FO各5方法均structured/java、无fallback，完整源码两种javac原样重编与main双JVM共8次观察一致；自身CI尚待终态验收/主线交付。
+- noCall产品02de294f7的本地最终CLI重筛：FY/FO各5方法均structured/java、无fallback，完整源码两种javac原样重编与main双JVM共8次观察一致；自身CI38872425446已终态独审通过，正在正常归档交付；父剩余任务不由子片替代。
 - FX保留6方法，finContinue/finReturn/finBreak仍mixed/fallback，finReturn缺return造成两份完整源码编译失败。父级完整FX/JADX/逐字节对照仍未完成。
 - 各checkbox按原验收范围判断：已交付子片不代替整条父任务；设计与父级instrumentation文件缺失不伪称已补齐。
 

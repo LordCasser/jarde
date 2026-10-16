@@ -1,0 +1,11 @@
+# 产品自身CI验收
+
+产品02de294f7af2d0798e33d52ce5474e60efe17b03，分支codex/local-increment-loop-finally，GitHub CI [38872425446](https://github.com/LordCasser/jarde/actions/runs/38872425446)已终态成功。4个job/52steps全success，131次实际API观察、262原始流、0transport failure；原ZIP为871548B，SHA256 fa4bda11d010a966f38aa57897848c4cbcba02ef66e6bd12996ecc1fcaa4bd00，60个安全唯一成员全部read/hash/CRC核验。
+
+两个固定seed各372 test summaries、3663 passed/0 failed/98 ignored。153个primary FQN和7个support FQN逐target唯一核验，两seed新增7项均ok；真实六条JDK命令/九项JDK选测、两API examples、特性树和依赖边界、MSRV1.88、供给链、三项fuzz smoke、fmt/CI参数Clippy/OpenSpec1.11 strict364/0与tracked clean全部在原日志中。这里的372是全部summary，不能与非空suite混用。source/CLI为4929项Git blob+mode与59902896B/0555 fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25的实际绑定。
+
+root v6原样审计885checks/0errors。预封独审v1实际exit1仅有三个step的命令boundary选择器遗漏原参数/重定向；失败收据、旧脚本及pins保留。v2只补完整原命令的后缀和lineage，未放宽gate，先freeze再执行，2609checks/0errors，SHA256 1854b287779b700921a8e884a518f071da3df8f03d875f75d4efe577c5c08b74。原始ZIP合并日志保持原样，未伪造逐step stdout/stderr。
+
+capture.tar.gz 2937763B，SHA256 c73b578571cffb392b9fdb2184135f3e263c6283af371e12879fbb5f2f534b08；297载荷+内嵌manifest共298安全唯一普通成员，manifest SHA256 49cbf5f268c1ad5f83a568ffbae7257d7d7e4e64d458bf7f5112bd4059901f19。覆盖collector全部实际观察、ZIP、dispatch、gate/inventory、两版独审及失败/修复lineage、root审计与实际产品source/CLI绑定。不含CLI/JDK二进制及历史native raw。
+
+本验收只绑定产品02de及其自身CI；后续文档/归档提交不宣称有另一轮产品CI。此前本地link磁盘中止历史仍保留为失败；后续逐目标续跑、JAR/WAR运行及父FX未完成范围分别记录。
