@@ -2,8 +2,8 @@
 
 ## 1. 实际红基线与永久回归
 
-- [ ] 1.1 将实际a89新CLI/4915源码、两独立原class、未改source/driver/oracle及完整FY/FX重筛绑定并保存可移交raw；冻结永久fixture和指纹。验收：两原class的唯一row[0,16)→37、50B Code和三cleanup事实分别核实；12命令原类控制及完整生成源码缺return红可复核，四次driver134B exact；FP只新增本片预期输入、不删旧项。原类成功不计为恢复。
-- [ ] 1.2 在真实Facts/SSA固定现有首拒链及region边界，加入最窄证明、公共库与JSON CLI具名回归并在旧生产先证行为红。验收：具体失败指向两正常出口/第三copy的缺证，非工具或路径故障；记录guard首拒/若后续路径未到不得冒称到达，原FY loopless与完整FY/FX其它失败分别保留。
+- [x] 1.1 将实际a89新CLI/4915源码、两独立原class、未改source/driver/oracle及完整FY/FX重筛绑定并保存可移交raw；冻结永久fixture和指纹。验收：两原class的唯一row[0,16)→37、50B Code和三cleanup事实分别核实；12命令原类控制及完整生成源码缺return红可复核，四次driver134B exact；FP只新增本片预期输入、不删旧项。原类成功不计为恢复。
+- [x] 1.2 在真实Facts/SSA固定现有首拒链及region边界，加入最窄证明、公共库与JSON CLI具名回归并在旧生产先证行为红。验收：具体失败指向两正常出口/第三copy的缺证，非工具或路径故障；记录guard首拒/若后续路径未到不得冒称到达，原FY loopless与完整FY/FX其它失败分别保留。
 
 ## 2. 完整证明与结构化交付
 
@@ -17,6 +17,11 @@
 
 ## Workflow follow-up
 
-- 当前0/6，仅计划与已有红基线取证；所有实现与重建运行任务尚未完成。外部缓存的12命令对照是原类控制及当前生成源码红，不是新能力通过。
+- 当前2/6，红基线、永久fixture/指纹及真实Facts首拒取证已验；新证明、呈现与重建运行尚未完成。外部缓存的12命令对照是原类控制及当前生成源码红，不是新能力通过。
 - `recover-static-field-prefix-return` 片当前独立等待自身CI终态/归档/main交付；本工作树基于a89，不修改它的工作树/证据。最终集成前继承该片实际交付与重新绑定，不以规划完成替代产品门。
 - 六项完成后同步delta、正常archive并核主线源码与证据绑定；父 `recover-return-through-effectful-finally` 的noCall/finReturn及完整FY/FX剩余验收继续，不能把本片归档当父目标完成，不增全局覆盖数字。
+
+- 首轮旧生产native实际6命令预期通过：显式regenerator1/0/0、正常fingerprint5/0/1，public0/2/0和CLI0/1/0均行为红101，build旧CLI与exactclean成功。4922源码维护阶段仅FP变，2226→2231恰新增五个指定非md输入，旧条目及非files字段不变；冻结CLI仍59,699,632B/0555/6e075…96，与a89旧CLI逐字同。独审通过；这不是新实现或rebuilt运行。
+
+- 真实双腿私有probe1/0/0已固定旧proof None与首拒row.end16!=推导copy起点25，实际canonical block26包含48/49尾部；见instrumentation.md。此测试是原拒绝/图边界控制，不算新证书成功。phase2旧CLI v2实际abab495…（与phase1 6e075不同）；另实际4命令双完整生成源码红重放，两CLI0、真javac8/23完整原样编译各1/missing return，没有rebuilt runtime。新生产proof/region尚未修改。
+- 新增fixture后还须维护reader人口原断言：前片052修正两FO类；本片两Loopless类的增量须按实际Code/handler/target独立核后维护，不能只更新FP而漏现有人口门。该项与最终自身CI一并验收，不放宽decoder约束。

@@ -11247,6 +11247,17 @@ mod finally_copy_tests {
         competing: bool,
         stop: Option<&str>,
     ) -> Result<Option<FinallyCopyProof>, StopReason> {
+        probe_descriptor(class, name, b"()I", competing, stop, |_| {})
+    }
+
+    fn probe_descriptor(
+        class: &[u8],
+        name: &str,
+        descriptor: &[u8],
+        competing: bool,
+        stop: Option<&str>,
+        inspect: impl FnOnce(&mut Facts<'_>),
+    ) -> Result<Option<FinallyCopyProof>, StopReason> {
         let mut budget = Budget::new(limits());
         let snapshot =
             ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget).unwrap();
@@ -11263,7 +11274,7 @@ mod finally_copy_tests {
         let method = PhysicalMethodId {
             owner: definition,
             name: JvmBytes(name.as_bytes().to_vec()),
-            descriptor: JvmBytes(b"()I".to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
         };
         let domain = LoadDomain {
             loader: LoaderId("app".to_string()),
@@ -11330,7 +11341,58 @@ mod finally_copy_tests {
             &sites,
             &mut proof_budget,
         );
+        inspect(&mut facts);
         prove_finally_copy(&mut facts, row, false)
+    }
+
+    #[test]
+    fn conditional_return_baseline_keeps_the_old_first_refusal_and_real_block_graph() {
+        for (leg, class) in [
+            (
+                "javac23",
+                &include_bytes!(
+                    "../../../tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class"
+                )[..],
+            ),
+            (
+                "javac8",
+                &include_bytes!(
+                    "../../../tests/fixtures/recover-conditional-return-finally-copies/v8-javac8/LooplessFinally.class"
+                )[..],
+            ),
+        ] {
+            let proof = probe_descriptor(class, "loopless", b"([I)I", false, None, |facts| {
+                let row = facts.handlers.first().unwrap();
+                assert_eq!((row.start_bci, row.end_bci, row.handler_bci), (0, 16, 37));
+                assert!(row.catch_type_index.is_none());
+                let handler = facts.row_handler(row).unwrap();
+                let before = facts.bcis((row.start_bci, handler.bci()));
+                let exceptional: Vec<u32> = facts.in_block(&handler).iter().map(SsaInstruction::bci).collect();
+                let (&normal_return, normal_middle) = before.split_last().unwrap();
+                let (&return_load, before_load) = normal_middle.split_last().unwrap();
+                let (_, handler_tail) = exceptional.split_first().unwrap();
+                let (_, handler_middle) = handler_tail.split_last().unwrap();
+                let (_, handler_cleanup) = handler_middle.split_last().unwrap();
+                let cleanup = &before_load[before_load.len() - handler_cleanup.len()..];
+                assert_eq!((normal_return, return_load), (34, 31));
+                assert_eq!(cleanup, [25, 26, 29]);
+                assert!(cleanup.iter().chain(handler_cleanup).all(|bci| !(row.start_bci..row.end_bci).contains(bci)));
+                assert_ne!(row.end_bci, cleanup[0]);
+                println!("{leg}: actual straight-copy first mismatch row.end={} normal_cleanup={cleanup:?}; normal_return={normal_return},return_load={return_load},exceptional={exceptional:?}", row.end_bci);
+                for block in facts.canonical.blocks() {
+                    let bcis: Vec<_> = facts.in_block(block.id()).iter().map(SsaInstruction::bci).collect();
+                    println!("{leg}: canonical {:?} end={} bcis={bcis:?} successors={:?}", block.id(), block.end_bci(), facts.view.successor_ids(block.id()));
+                }
+                for bci in [12, 15, 24, 25, 37, 46, 47] {
+                    let step = facts.step(bci).unwrap();
+                    println!("{leg}: actual SSA {bci} reads={:?} writes={:?}", step.instruction.reads(), step.instruction.writes());
+                }
+            }).unwrap();
+            assert!(
+                proof.is_none(),
+                "the original straight-copy proof must keep refusing this different completion"
+            );
+        }
     }
 
     fn shared_probe(
