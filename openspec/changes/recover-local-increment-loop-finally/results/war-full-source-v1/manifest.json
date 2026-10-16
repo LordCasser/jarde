@@ -1,0 +1,272 @@
+{
+  "package": "no-call-finally-war-evidence-v1",
+  "payload": [
+    {
+      "bytes": 46792,
+      "path": "audits/independent-audit-v1.json",
+      "sha256": "596bca545c063dd7ade1de875fb6c7ab07ae50a0a1aaf9fda9196789a0927826"
+    },
+    {
+      "bytes": 1501395,
+      "path": "bindings/final-source-cli-head-binding.json",
+      "sha256": "b7ec2826e05eeb5da8f978ad5b9d82fab1e819168c98cd726b00ffb18d167e96"
+    },
+    {
+      "bytes": 2199389,
+      "path": "bindings/native-execution.json",
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1"
+    },
+    {
+      "bytes": 453979,
+      "path": "bindings/source-head-tree.argv.json",
+      "sha256": "bc2e1b0e05cf02e9163dea49b65d78598bf48c6449876251e69dce817d9d6f09"
+    },
+    {
+      "bytes": 680487,
+      "path": "bindings/source-head-tree.raw",
+      "sha256": "ae99e12e6b52b6abcf62e49751c0d0359b688ab8d6acf11f876eaf428db745bd"
+    },
+    {
+      "bytes": 283,
+      "path": "fixtures/NoCallFinally.java",
+      "sha256": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0"
+    },
+    {
+      "bytes": 580,
+      "path": "fixtures/NoCallFinallyProbe.java",
+      "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2"
+    },
+    {
+      "bytes": 812,
+      "path": "fixtures/README.md",
+      "sha256": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9"
+    },
+    {
+      "bytes": 84,
+      "path": "fixtures/probe.stdout",
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "bytes": 336,
+      "path": "fixtures/v8-javac8/NoCallFinally.class",
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3"
+    },
+    {
+      "bytes": 336,
+      "path": "fixtures/v8/NoCallFinally.class",
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d"
+    },
+    {
+      "bytes": 0,
+      "path": "run/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4344,
+      "path": "run/1.stdout.raw",
+      "sha256": "da6a1ff639ef4f2ef932b13bd7b0da7d870f4985335a98e416767336fda396de"
+    },
+    {
+      "bytes": 0,
+      "path": "run/10.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/10.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/11.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 84,
+      "path": "run/11.stdout.raw",
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "bytes": 0,
+      "path": "run/12.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 84,
+      "path": "run/12.stdout.raw",
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "bytes": 0,
+      "path": "run/2.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 61610,
+      "path": "run/2.stdout.raw",
+      "sha256": "9c5a8a6fd88822678315d95ab87e137c2e8faaec1b4d84feb62694c99370aff9"
+    },
+    {
+      "bytes": 0,
+      "path": "run/3.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/4.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/4.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/5.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 84,
+      "path": "run/5.stdout.raw",
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "bytes": 0,
+      "path": "run/6.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 84,
+      "path": "run/6.stdout.raw",
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "bytes": 0,
+      "path": "run/7.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4344,
+      "path": "run/7.stdout.raw",
+      "sha256": "b25c146c9ec9ff085d74e44bada46f6583128f56ad5ef76e936aa6f79c254e4f"
+    },
+    {
+      "bytes": 0,
+      "path": "run/8.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 61610,
+      "path": "run/8.stdout.raw",
+      "sha256": "03c554fd1a4c32428d45b8946e10dbe2b92b535754ab457a4e7a196da4d3a4e7"
+    },
+    {
+      "bytes": 0,
+      "path": "run/9.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "run/9.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2713891,
+      "path": "run/execution.json",
+      "sha256": "38433ea389ba0f60f640fdea1b97d5917e22ef29b1024af0ddf6f5a8297febc6"
+    },
+    {
+      "bytes": 783,
+      "path": "run/javac23-frozen.war",
+      "sha256": "da8bd0ec1e0001c3a98cbbff0c49d2b539ca1d0164380d712e5e374417af63b8"
+    },
+    {
+      "bytes": 1430,
+      "path": "run/javac23-generated/NoCallFinally.java",
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478"
+    },
+    {
+      "bytes": 347,
+      "path": "run/javac23-generated/classes/NoCallFinally.class",
+      "sha256": "888d715f8c15afbcd072aed8461a182530a9015f1d9689c10c2c30fdd3f366aa"
+    },
+    {
+      "bytes": 1098,
+      "path": "run/javac23-generated/driver/NoCallFinallyProbe.class",
+      "sha256": "5912d8511859ed6a92495097bbb889d94efc8cce646429f66bceb05c7a4b0d5a"
+    },
+    {
+      "bytes": 326,
+      "path": "run/javac23-root.json",
+      "sha256": "9844ad388e43d0c76f888319cfb48d6b5a6d3219913f4e2821b7d0e32acea376"
+    },
+    {
+      "bytes": 745,
+      "path": "run/javac23-tree-request.json",
+      "sha256": "c92887ca86e6836f7f024ef15d042fc5316333adf2b4d004ff2fa6ef1f63b1dc"
+    },
+    {
+      "bytes": 783,
+      "path": "run/javac8-frozen.war",
+      "sha256": "82e3cd9cd41ce7e8d8ecec1c2f01a2ce34a857b66864fa9a2650b7305d3a0fec"
+    },
+    {
+      "bytes": 1430,
+      "path": "run/javac8-generated/NoCallFinally.java",
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478"
+    },
+    {
+      "bytes": 347,
+      "path": "run/javac8-generated/classes/NoCallFinally.class",
+      "sha256": "552edb95d842aa87869c4906950b27d9b3a3a4d793d99401194ba1a17752b8a0"
+    },
+    {
+      "bytes": 1101,
+      "path": "run/javac8-generated/driver/NoCallFinallyProbe.class",
+      "sha256": "b0d20563cf4fab3cc53439e2b26fb77eb6c95f7eea09bc3ca5c4858a957d9f8a"
+    },
+    {
+      "bytes": 326,
+      "path": "run/javac8-root.json",
+      "sha256": "2679ffeb69a1e01bb9b90bf566613c1ec1c5041698b3d90f3d93e08629ae0c18"
+    },
+    {
+      "bytes": 744,
+      "path": "run/javac8-tree-request.json",
+      "sha256": "ec573efff8cec14ed0931a2f2b5a30d8eb53344a36ea6bc0941a0df4516e699f"
+    },
+    {
+      "bytes": 7984,
+      "path": "runner/replay_no_call_war_full_source_v1.py",
+      "sha256": "4107d6c2aa6f2f6a134b49d383045a0559bbe2f63ba9f31c91dda64fdd18de29"
+    },
+    {
+      "bytes": 23521,
+      "path": "tools/guard.py",
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39"
+    },
+    {
+      "bytes": 1806,
+      "path": "tools/jdk-manifest.json",
+      "sha256": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6"
+    },
+    {
+      "bytes": 471,
+      "path": "tools/target_scan.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "bytes": 59053,
+      "path": "tools/workspace_runner.py",
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467"
+    }
+  ],
+  "payload_count": 53,
+  "schema": "jarde.portable-evidence-manifest.v1"
+}

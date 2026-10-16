@@ -1,0 +1,1262 @@
+{
+  "schema": "no-call-finally-war-full-source-independent-audit-v1",
+  "status": "pass",
+  "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/execution.json",
+  "checks": {
+    "status": true,
+    "12_commands": true,
+    "all_commands_exit_zero": true,
+    "default_stack": true,
+    "target_absent": true,
+    "source_manifest_rows_before_after_4929": true,
+    "inputs_before_after_identical": true,
+    "24_raw_streams_match": true,
+    "all_external_input_pins_match": true,
+    "final_cli_matches_product_binding": true,
+    "native_receipt_path_and_hash_matches": true,
+    "javac23_explicit_root_matches_tree_origin": true,
+    "javac23_tree_has_three_exact_war_entries": true,
+    "javac8_explicit_root_matches_tree_origin": true,
+    "javac8_tree_has_three_exact_war_entries": true,
+    "both_whole_class_json_are_performed_and_class_source_exact": true,
+    "four_rebuilt_only_runtimes_exact_84_byte_oracle": true,
+    "generated_classfiles_are_not_original_classfiles": true,
+    "no_generic_war_or_cleanup_count_claim": true
+  },
+  "issues": [],
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac23-actual-artifact-tree",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+        "--request",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-tree-request.json"
+      ]
+    },
+    {
+      "index": 2,
+      "label": "javac23-whole-class-json",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-frozen.war",
+        "--class",
+        "NoCallFinally",
+        "--policy",
+        "explicit-classpath",
+        "--root",
+        "@/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-root.json",
+        "--layout",
+        "war",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--budget",
+        "elapsed_millis=10000"
+      ]
+    },
+    {
+      "index": 3,
+      "label": "javac23-compile-exact-complete-generated",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/NoCallFinally.java"
+      ]
+    },
+    {
+      "index": 4,
+      "label": "javac23-compile-frozen-driver-rebuilt-only",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver",
+        "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java"
+      ]
+    },
+    {
+      "index": 5,
+      "label": "javac23-javac8-java-rebuilt-probe",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "NoCallFinallyProbe"
+      ]
+    },
+    {
+      "index": 6,
+      "label": "javac23-javac23-java-rebuilt-probe",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "NoCallFinallyProbe"
+      ]
+    },
+    {
+      "index": 7,
+      "label": "javac8-actual-artifact-tree",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+        "--request",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-tree-request.json"
+      ]
+    },
+    {
+      "index": 8,
+      "label": "javac8-whole-class-json",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-frozen.war",
+        "--class",
+        "NoCallFinally",
+        "--policy",
+        "explicit-classpath",
+        "--root",
+        "@/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-root.json",
+        "--layout",
+        "war",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--budget",
+        "elapsed_millis=10000"
+      ]
+    },
+    {
+      "index": 9,
+      "label": "javac8-compile-exact-complete-generated",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/NoCallFinally.java"
+      ]
+    },
+    {
+      "index": 10,
+      "label": "javac8-compile-frozen-driver-rebuilt-only",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver",
+        "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java"
+      ]
+    },
+    {
+      "index": 11,
+      "label": "javac8-javac8-java-rebuilt-probe",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "NoCallFinallyProbe"
+      ]
+    },
+    {
+      "index": 12,
+      "label": "javac8-javac23-java-rebuilt-probe",
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "NoCallFinallyProbe"
+      ]
+    }
+  ],
+  "raw_streams": [
+    {
+      "command": 1,
+      "stream": "stdout",
+      "bytes": 4344,
+      "sha256": "da6a1ff639ef4f2ef932b13bd7b0da7d870f4985335a98e416767336fda396de",
+      "pin_match": true
+    },
+    {
+      "command": 1,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 2,
+      "stream": "stdout",
+      "bytes": 61610,
+      "sha256": "9c5a8a6fd88822678315d95ab87e137c2e8faaec1b4d84feb62694c99370aff9",
+      "pin_match": true
+    },
+    {
+      "command": 2,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 3,
+      "stream": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 3,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 4,
+      "stream": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 4,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 5,
+      "stream": "stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "pin_match": true
+    },
+    {
+      "command": 5,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 6,
+      "stream": "stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "pin_match": true
+    },
+    {
+      "command": 6,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 7,
+      "stream": "stdout",
+      "bytes": 4344,
+      "sha256": "b25c146c9ec9ff085d74e44bada46f6583128f56ad5ef76e936aa6f79c254e4f",
+      "pin_match": true
+    },
+    {
+      "command": 7,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 8,
+      "stream": "stdout",
+      "bytes": 61610,
+      "sha256": "03c554fd1a4c32428d45b8946e10dbe2b92b535754ab457a4e7a196da4d3a4e7",
+      "pin_match": true
+    },
+    {
+      "command": 8,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 9,
+      "stream": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 9,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 10,
+      "stream": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 10,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 11,
+      "stream": "stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "pin_match": true
+    },
+    {
+      "command": 11,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    },
+    {
+      "command": 12,
+      "stream": "stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "pin_match": true
+    },
+    {
+      "command": 12,
+      "stream": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin_match": true
+    }
+  ],
+  "source_closure": {
+    "rows": 4929,
+    "before_equals_after": true,
+    "target_absent": true,
+    "all_inputs_before_after_bytes_and_sha_match": true,
+    "input_rows": [
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+        "bytes_pin": 2199389,
+        "sha256_pin": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+        "bytes_pin": 59902896,
+        "sha256_pin": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_war_full_source_v1.py",
+        "bytes_pin": 7984,
+        "sha256_pin": "4107d6c2aa6f2f6a134b49d383045a0559bbe2f63ba9f31c91dda64fdd18de29",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json",
+        "bytes_pin": 1806,
+        "sha256_pin": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "bytes_pin": 12328,
+        "sha256_pin": "88f4c29648dcccbcac68115673eb4e3fc9b49d911cbd1279fe11b6de1bd7e7e5",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "bytes_pin": 12416,
+        "sha256_pin": "1cfe54c125f77428cc9b489ba95469e71b2d37775f4e1f2ab01915067d6d656a",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "bytes_pin": 8848,
+        "sha256_pin": "003fd2ca4b142cbdbda21c171f11a1d88d68be4018e610448c47f9cf289638e8",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/javac",
+        "bytes_pin": 8976,
+        "sha256_pin": "dbc316ddbb78a1163fc221b75629445c2f0349756f777b05487633591374cfda",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+        "bytes_pin": 23521,
+        "sha256_pin": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+        "bytes_pin": 471,
+        "sha256_pin": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+        "bytes_pin": 59053,
+        "sha256_pin": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java",
+        "bytes_pin": 283,
+        "sha256_pin": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+        "bytes_pin": 580,
+        "sha256_pin": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/README.md",
+        "bytes_pin": 812,
+        "sha256_pin": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/probe.stdout",
+        "bytes_pin": 84,
+        "sha256_pin": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+        "bytes_pin": 336,
+        "sha256_pin": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_before",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+        "bytes_pin": 336,
+        "sha256_pin": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+        "bytes_pin": 2199389,
+        "sha256_pin": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+        "bytes_pin": 59902896,
+        "sha256_pin": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_war_full_source_v1.py",
+        "bytes_pin": 7984,
+        "sha256_pin": "4107d6c2aa6f2f6a134b49d383045a0559bbe2f63ba9f31c91dda64fdd18de29",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json",
+        "bytes_pin": 1806,
+        "sha256_pin": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "bytes_pin": 12328,
+        "sha256_pin": "88f4c29648dcccbcac68115673eb4e3fc9b49d911cbd1279fe11b6de1bd7e7e5",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "bytes_pin": 12416,
+        "sha256_pin": "1cfe54c125f77428cc9b489ba95469e71b2d37775f4e1f2ab01915067d6d656a",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "bytes_pin": 8848,
+        "sha256_pin": "003fd2ca4b142cbdbda21c171f11a1d88d68be4018e610448c47f9cf289638e8",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/javac",
+        "bytes_pin": 8976,
+        "sha256_pin": "dbc316ddbb78a1163fc221b75629445c2f0349756f777b05487633591374cfda",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+        "bytes_pin": 23521,
+        "sha256_pin": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+        "bytes_pin": 471,
+        "sha256_pin": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+        "bytes_pin": 59053,
+        "sha256_pin": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java",
+        "bytes_pin": 283,
+        "sha256_pin": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+        "bytes_pin": 580,
+        "sha256_pin": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/README.md",
+        "bytes_pin": 812,
+        "sha256_pin": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/probe.stdout",
+        "bytes_pin": 84,
+        "sha256_pin": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+        "bytes_pin": 336,
+        "sha256_pin": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+        "exists_and_matches": true
+      },
+      {
+        "phase": "inputs_after",
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+        "bytes_pin": 336,
+        "sha256_pin": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+        "exists_and_matches": true
+      }
+    ]
+  },
+  "cli_binding": {
+    "receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+      "bytes": 59902896,
+      "sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+      "mode": "0555",
+      "built_from": "target/debug/jarde-cli"
+    },
+    "source_binding_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+    "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+    "source_count": 4929,
+    "all_source_git_blobs_match": true,
+    "native_receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1"
+    }
+  },
+  "war_artifact_trees": {
+    "javac23": {
+      "tree_receipt_status": "ok",
+      "snapshot": "bb1da5dea3d6daeec4f9d05f7b0ddc66ce3c5a6cdd085cddb2f186c9d97238a4",
+      "origin": {
+        "snapshot": "bb1da5dea3d6daeec4f9d05f7b0ddc66ce3c5a6cdd085cddb2f186c9d97238a4",
+        "root_container": "root",
+        "steps": []
+      },
+      "entries": [
+        {
+          "name": "WEB-INF/classes/NoCallFinally.class",
+          "bytes": 336,
+          "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d"
+        },
+        {
+          "name": "META-INF/MANIFEST.MF",
+          "bytes": 25,
+          "sha256": "566ad1a80220026d05099562645ce968ff0e7c36cde22634332605bb34cc3eff"
+        },
+        {
+          "name": "WEB-INF/web.xml",
+          "bytes": 32,
+          "sha256": "d6fd470ec2a10deee7a18e0b5f6d7c9791f073e8e0721b79120ba8aed8e41e3e"
+        }
+      ],
+      "war_size": 783,
+      "war_sha256": "da8bd0ec1e0001c3a98cbbff0c49d2b539ca1d0164380d712e5e374417af63b8",
+      "classes_entry_matches_original_class_pin": true,
+      "original_class_bytes": 336,
+      "original_class_sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d"
+    },
+    "javac8": {
+      "tree_receipt_status": "ok",
+      "snapshot": "ea5292c3d13b19af38d9395ac82202fc785e3cb358b01606b591ab91565bab85",
+      "origin": {
+        "snapshot": "ea5292c3d13b19af38d9395ac82202fc785e3cb358b01606b591ab91565bab85",
+        "root_container": "root",
+        "steps": []
+      },
+      "entries": [
+        {
+          "name": "WEB-INF/classes/NoCallFinally.class",
+          "bytes": 336,
+          "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3"
+        },
+        {
+          "name": "META-INF/MANIFEST.MF",
+          "bytes": 25,
+          "sha256": "566ad1a80220026d05099562645ce968ff0e7c36cde22634332605bb34cc3eff"
+        },
+        {
+          "name": "WEB-INF/web.xml",
+          "bytes": 32,
+          "sha256": "d6fd470ec2a10deee7a18e0b5f6d7c9791f073e8e0721b79120ba8aed8e41e3e"
+        }
+      ],
+      "war_size": 783,
+      "war_sha256": "82e3cd9cd41ce7e8d8ecec1c2f01a2ce34a857b66864fa9a2650b7305d3a0fec",
+      "classes_entry_matches_original_class_pin": true,
+      "original_class_bytes": 336,
+      "original_class_sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3"
+    }
+  },
+  "explicit_root_json": {
+    "javac23": {
+      "kind": "container",
+      "origin": {
+        "snapshot": "bb1da5dea3d6daeec4f9d05f7b0ddc66ce3c5a6cdd085cddb2f186c9d97238a4",
+        "root_container": "root",
+        "steps": []
+      },
+      "prefix": [
+        87,
+        69,
+        66,
+        45,
+        73,
+        78,
+        70,
+        47,
+        99,
+        108,
+        97,
+        115,
+        115,
+        101,
+        115,
+        47
+      ]
+    },
+    "javac8": {
+      "kind": "container",
+      "origin": {
+        "snapshot": "ea5292c3d13b19af38d9395ac82202fc785e3cb358b01606b591ab91565bab85",
+        "root_container": "root",
+        "steps": []
+      },
+      "prefix": [
+        87,
+        69,
+        66,
+        45,
+        73,
+        78,
+        70,
+        47,
+        99,
+        108,
+        97,
+        115,
+        115,
+        101,
+        115,
+        47
+      ]
+    }
+  },
+  "tree_requests": {
+    "javac23": {
+      "input_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-frozen.war",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 4096,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 16777216,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "operation": {
+        "kind": "enumerate_artifact_tree"
+      }
+    },
+    "javac8": {
+      "input_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-frozen.war",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 4096,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 16777216,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "operation": {
+        "kind": "enumerate_artifact_tree"
+      }
+    }
+  },
+  "class_source_reports": {
+    "javac23": {
+      "outcome": "performed",
+      "view": {
+        "scope": {
+          "kind": "snapshot_all"
+        },
+        "snapshot": "bb1da5dea3d6daeec4f9d05f7b0ddc66ce3c5a6cdd085cddb2f186c9d97238a4"
+      },
+      "class": {
+        "class_bytes": {
+          "digest": "7e2c940de5f547eab33ce0d65e4bf3e29bcd2975e7ba9a847eac32bbc4e45b27",
+          "length": 336
+        },
+        "location": {
+          "entry": {
+            "ordinal": 0,
+            "origin": {
+              "root_container": "root",
+              "snapshot": "bb1da5dea3d6daeec4f9d05f7b0ddc66ce3c5a6cdd085cddb2f186c9d97238a4",
+              "steps": []
+            },
+            "raw_name": [
+              87,
+              69,
+              66,
+              45,
+              73,
+              78,
+              70,
+              47,
+              99,
+              108,
+              97,
+              115,
+              115,
+              101,
+              115,
+              47,
+              78,
+              111,
+              67,
+              97,
+              108,
+              108,
+              70,
+              105,
+              110,
+              97,
+              108,
+              108,
+              121,
+              46,
+              99,
+              108,
+              97,
+              115,
+              115
+            ]
+          },
+          "kind": "archive_entry"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "declaration": "public class NoCallFinally extends java.lang.Object",
+      "declaration_binding": {
+        "kind": "path_name_agrees"
+      },
+      "text_bytes": 1430,
+      "text_sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 4096,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 16777216,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 1429,
+        "archive_entries": 7,
+        "attribute_bytes": 471,
+        "class_bytes": 672,
+        "class_headers": 1,
+        "code_bytes": 67,
+        "dependency_depth": 0,
+        "elapsed_millis": 7,
+        "entry_bytes": 336,
+        "input_bytes": 783,
+        "ir_edges": 103,
+        "ir_items": 1449,
+        "method_bodies": 2,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 815,
+        "read_bytes": 336,
+        "result_items": 13
+      },
+      "coverage": {
+        "artifact_structural": {
+          "scanned": [
+            {
+              "end": 3,
+              "label": "central_directory_entries",
+              "start": 0
+            },
+            {
+              "end": 1,
+              "label": "navigation_candidates",
+              "start": 0
+            },
+            {
+              "end": 2,
+              "label": "class_methods",
+              "start": 0
+            },
+            {
+              "end": 2,
+              "label": "class_source_bodies",
+              "start": 0
+            }
+          ],
+          "skipped": [],
+          "state": "complete_within_schema",
+          "uninterpreted_extensions": []
+        },
+        "dynamic_analysis": {
+          "scanned": [],
+          "skipped": [],
+          "state": "not_requested",
+          "uninterpreted_extensions": []
+        },
+        "runtime_resolution": {
+          "scanned": [],
+          "skipped": [],
+          "state": "not_requested",
+          "uninterpreted_extensions": []
+        }
+      }
+    },
+    "javac8": {
+      "outcome": "performed",
+      "view": {
+        "scope": {
+          "kind": "snapshot_all"
+        },
+        "snapshot": "ea5292c3d13b19af38d9395ac82202fc785e3cb358b01606b591ab91565bab85"
+      },
+      "class": {
+        "class_bytes": {
+          "digest": "deeb2a79c56175b7637714a89225e71eca53dafd4c78ce0367a8a54a15e6b4a2",
+          "length": 336
+        },
+        "location": {
+          "entry": {
+            "ordinal": 0,
+            "origin": {
+              "root_container": "root",
+              "snapshot": "ea5292c3d13b19af38d9395ac82202fc785e3cb358b01606b591ab91565bab85",
+              "steps": []
+            },
+            "raw_name": [
+              87,
+              69,
+              66,
+              45,
+              73,
+              78,
+              70,
+              47,
+              99,
+              108,
+              97,
+              115,
+              115,
+              101,
+              115,
+              47,
+              78,
+              111,
+              67,
+              97,
+              108,
+              108,
+              70,
+              105,
+              110,
+              97,
+              108,
+              108,
+              121,
+              46,
+              99,
+              108,
+              97,
+              115,
+              115
+            ]
+          },
+          "kind": "archive_entry"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "declaration": "public class NoCallFinally extends java.lang.Object",
+      "declaration_binding": {
+        "kind": "path_name_agrees"
+      },
+      "text_bytes": 1430,
+      "text_sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 65536,
+        "attribute_bytes": 67108864,
+        "class_bytes": 67108864,
+        "class_headers": 4096,
+        "code_bytes": 16777216,
+        "dependency_depth": 8,
+        "elapsed_millis": 10000,
+        "entry_bytes": 67108864,
+        "input_bytes": 67108864,
+        "ir_edges": 4194304,
+        "ir_items": 4194304,
+        "method_bodies": 4096,
+        "nested_depth": 4,
+        "normalization_clones": 1048576,
+        "output_bytes": 16777216,
+        "read_bytes": 67108864,
+        "result_items": 65536
+      },
+      "usage": {
+        "analysis_steps": 1429,
+        "archive_entries": 7,
+        "attribute_bytes": 471,
+        "class_bytes": 672,
+        "class_headers": 1,
+        "code_bytes": 67,
+        "dependency_depth": 0,
+        "elapsed_millis": 5,
+        "entry_bytes": 336,
+        "input_bytes": 783,
+        "ir_edges": 103,
+        "ir_items": 1449,
+        "method_bodies": 2,
+        "nested_depth": 0,
+        "normalization_clones": 0,
+        "output_bytes": 815,
+        "read_bytes": 336,
+        "result_items": 13
+      },
+      "coverage": {
+        "artifact_structural": {
+          "scanned": [
+            {
+              "end": 3,
+              "label": "central_directory_entries",
+              "start": 0
+            },
+            {
+              "end": 1,
+              "label": "navigation_candidates",
+              "start": 0
+            },
+            {
+              "end": 2,
+              "label": "class_methods",
+              "start": 0
+            },
+            {
+              "end": 2,
+              "label": "class_source_bodies",
+              "start": 0
+            }
+          ],
+          "skipped": [],
+          "state": "complete_within_schema",
+          "uninterpreted_extensions": []
+        },
+        "dynamic_analysis": {
+          "scanned": [],
+          "skipped": [],
+          "state": "not_requested",
+          "uninterpreted_extensions": []
+        },
+        "runtime_resolution": {
+          "scanned": [],
+          "skipped": [],
+          "state": "not_requested",
+          "uninterpreted_extensions": []
+        }
+      }
+    }
+  },
+  "generated_sources": {
+    "javac23": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "bytes": 1430,
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "exact_equals_report_text": true
+    },
+    "javac8": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "bytes": 1430,
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "exact_equals_report_text": true
+    }
+  },
+  "rebuilt_classes": {
+    "javac23": {
+      "bytes": 347,
+      "sha256": "888d715f8c15afbcd072aed8461a182530a9015f1d9689c10c2c30fdd3f366aa"
+    },
+    "javac8": {
+      "bytes": 347,
+      "sha256": "552edb95d842aa87869c4906950b27d9b3a3a4d793d99401194ba1a17752b8a0"
+    }
+  },
+  "rebuilt_only_runtime": [
+    {
+      "command": 5,
+      "label": "javac23-javac8-java-rebuilt-probe",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "NoCallFinallyProbe"
+      ],
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes"
+      ],
+      "classpath_only_driver_and_rebuilt_class": true,
+      "Xverify_all": true,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "rebuilt_class_sha256": "888d715f8c15afbcd072aed8461a182530a9015f1d9689c10c2c30fdd3f366aa"
+    },
+    {
+      "command": 6,
+      "label": "javac23-javac23-java-rebuilt-probe",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes",
+        "NoCallFinallyProbe"
+      ],
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac23-generated/classes"
+      ],
+      "classpath_only_driver_and_rebuilt_class": true,
+      "Xverify_all": true,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "rebuilt_class_sha256": "888d715f8c15afbcd072aed8461a182530a9015f1d9689c10c2c30fdd3f366aa"
+    },
+    {
+      "command": 11,
+      "label": "javac8-javac8-java-rebuilt-probe",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk8/amazon-corretto-8.504.04.1-linux-x64/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "NoCallFinallyProbe"
+      ],
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes"
+      ],
+      "classpath_only_driver_and_rebuilt_class": true,
+      "Xverify_all": true,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "rebuilt_class_sha256": "552edb95d842aa87869c4906950b27d9b3a3a4d793d99401194ba1a17752b8a0"
+    },
+    {
+      "command": 12,
+      "label": "javac8-javac23-java-rebuilt-probe",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes",
+        "NoCallFinallyProbe"
+      ],
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-war-full-source-v1/run-v1/javac8-generated/classes"
+      ],
+      "classpath_only_driver_and_rebuilt_class": true,
+      "Xverify_all": true,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "exact_oracle": true,
+      "stderr_bytes": 0,
+      "rebuilt_class_sha256": "552edb95d842aa87869c4906950b27d9b3a3a4d793d99401194ba1a17752b8a0"
+    }
+  ],
+  "limitations": [
+    "This verifies only the two pinned WARs and their explicit WEB-INF/classes roots; it does not claim general WAR support.",
+    "The frozen driver reports return values only; it does not observe cleanup invocation counts.",
+    "This is successful whole-source recompilation and runtime comparison for the recorded fixture; it does not establish broad semantics beyond the oracle cases."
+  ]
+}
