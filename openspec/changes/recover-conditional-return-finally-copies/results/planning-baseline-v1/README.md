@@ -1,0 +1,13 @@
+# 当前a89红基线：独立完整类与完整FY/FX
+
+本包只记录规划前的实际对照，不是恢复完成。源码a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b、CLI 59,699,632B/0555/SHA256 6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96；完整4915输入前后相同并与该CLI源清单绑定。parent-product-lineage是既有构建与Git绑定引用，不算本次新增执行；其构建raw由前片dispatch-local证据另存。
+
+独立LooplessFinally实际12命令：真实javac8与javac23各编完整原类和同一driver，在两JVM共4次执行，134B六case oracle逐字匹配。两个456B class的loopless Code50B、唯一any row[0,16)→37、三println副本21/31/43；返回字段12读取/15保存，24加载/25返回，37异常保存/46加载/47重抛，落穿34→48/49。该新source/字节不是原FY同一输入。受控PrintStream只在driver计数/修改字段/抛异常，未扩写目标cleanup。原类控制证明待返回3000在清理把字段改99之前取得、每路径清理1次、cleanup异常覆盖返回/原NPE。
+
+同次两CLI exit0，但两份完整1560B report.text（SHA256 57926d1ddc3ad60342c853a185ff5fa3d8e8ae5c79288da0cffe65f5ad76a8c1）原样完整重编均exit1/missing return；rebuilt runtime为0。没有编辑生成文本或删除方法。
+
+另8命令为当前a89完整FY/FX重筛：4个完整CLI0和4次完整生成Java编译1/missing return，全部编译工具是JDK23 javac --release8，不称两种javac重编。FY文本SHA 6ea2be0a3883b756cda142fe02ac29f8c2ffc2dcc1e614002e1a8f1eeb0b875b；FX文本SHA ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f，均与c075旧筛逐字相同。原类JAR/source pins保持；本次不重跑旧原FY/FX runtime，没有rebuilt runtime。原完整类所有方法保留，不能借新独立类绕过noCall/finReturn。
+
+两组实际合20命令/40份command raw，前后source/input保持、target缺失，默认stack与5GiB free/1GiB target门完整。原类控制/当前完整源码红已各独审；静态接缝与fixture方案不冒称真实Guard/SSA插桩，首拒链仍待应用阶段固定。
+
+capture.tar.gz：2,092,877B，SHA256 f0d1034d287fb1d69f1545f182464483b2f21fd7fbfe1c854b645d435fc21b4a；93 payload加manifest共94安全唯一普通成员，root已重开全部hash。CLI/JDK为外pin。静态计划审查建议优先复用SavedReturn，分开body出口26与外continuation48，并核融合tail；design已明确这些边界，实际图仍待取证。
