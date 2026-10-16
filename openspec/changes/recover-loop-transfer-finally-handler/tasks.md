@@ -2,8 +2,8 @@
 
 ## 1. 原始控制与实际证据
 
-- [ ] 1.1 固化两真实编译器独立完整fixture、未改driver、多输入/溢出/null oracle与当前最终CLI红基线，并更新实际指纹/reader census及说明。验收：仅外类名变化，保留原FX完整6方法；原class四次运行逐字等，生成源码/handler45 fallback按实记录，不伪称受保护异常动态已覆盖。
-- [ ] 1.2 保存实际canonical/frames/SSA/effects/Region probe和独立矩阵。验收：两方法各61B Code/35物理指令、三rows/转移31目标、所有真实边/值/phi/uses与nonthrowing假设逐项核对；明确证书采取保留Finally或已证明不可达handler的现有表示路径，缺证保留拒绝，修订设计不得跳过本门。
+- [x] 1.1 固化两真实编译器独立完整fixture、未改driver、多输入/溢出/null oracle与当前最终CLI红基线，并更新实际指纹/reader census及说明。验收：仅外类名变化，保留原FX完整6方法；原class四次运行逐字等，生成源码/handler45 fallback按实记录，不伪称受保护异常动态已覆盖。
+- [x] 1.2 保存实际canonical/frames/SSA/effects/Region probe和独立矩阵。验收：两方法各61B Code/35物理指令、三rows/转移31目标、所有真实边/值/phi/uses与nonthrowing假设逐项核对；明确证书采取保留Finally或已证明不可达handler的现有表示路径，缺证保留拒绝，修订设计不得跳过本门。
 
 ## 2. 私有证明与接线
 

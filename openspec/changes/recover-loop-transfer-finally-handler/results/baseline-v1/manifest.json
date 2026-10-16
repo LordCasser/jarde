@@ -1,0 +1,620 @@
+{
+  "correction_from_v1": {
+    "preserve_v1": true,
+    "reason": "v1 metadata miscounted original oracle outputs as four per leg and described zero generated compile commands; receipts show two outputs per leg and two generated-source compile commands, both exit 0.",
+    "receipt_payload_changed": false
+  },
+  "created_utc": "2026-10-16T15:19:03Z",
+  "current_scope_note": "Matrix is actual-Facts independent investigation only. Product proof and source-map/CLI restoration remain unimplemented; original control/native overlaps are separate counts.",
+  "evidence_interpretation": {
+    "fixture_format": {
+      "execution_status": "formatter_executed"
+    },
+    "fixture_native": {
+      "commands": 5,
+      "compiled_source_files": 9,
+      "source_manifest_entries": 4942,
+      "tests_failed": 0,
+      "tests_ignored": 1,
+      "tests_passed": 7
+    },
+    "independent_control": {
+      "audit_status": "accepted",
+      "commands": 12,
+      "correction_note": "Corrected after metadata review: each original compiler leg has two 168-byte oracle outputs (four total); the complete generated Java source has two whole-source compile commands and both exited 0. No rebuilt runtime command was run.",
+      "generated_compile_command_count": 2,
+      "generated_compile_exit_codes": [
+        0,
+        0
+      ],
+      "generated_handler_contains_fallback": true,
+      "generated_java_compiles": 2,
+      "original_runtime_count_per_leg": 2,
+      "original_runtime_count_total": 4,
+      "original_two_leg_compile": "Each of two compiler legs compiled source and driver and ran two JVMs: four original 168-byte oracle outputs TOTAL. Two complete generated sources separately compiled with exit0, zero rebuilt runtime commands.",
+      "raw_outputs": 24,
+      "rebuilt_runtime": false,
+      "rebuilt_runtime_commands": 0
+    },
+    "prepared_runner_v1": {
+      "executed": false,
+      "note": "v1 was prepared with metadata/JSON issues; v2 is the executed runner.",
+      "state": "prepared_only"
+    },
+    "semantic_scope": {
+      "actual_ir_semantic_proof_accepted": false,
+      "note": "The included native actual-facts probe and its execution receipts are evidence; they do not establish accepted actual-IR semantic proof.",
+      "task_1_2_completed": false
+    },
+    "throw_sites_native": {
+      "cleanup_passed": true,
+      "commands": 2,
+      "only_one_extra_println": true,
+      "overlapping_probe_passed": true,
+      "source_manifest_entries": 4942
+    },
+    "toolchain": {
+      "cli_binaries_included": false,
+      "java_class_outputs_included": true,
+      "jdk_binaries_included": false,
+      "jdk_manifest_included": true
+    }
+  },
+  "historical_metadata_corrections": [
+    {
+      "sha256": "375d3d69eca7e28baf4d7e99dad0e2e26c198c288e52ebb3324d81f4d6e95f6a",
+      "status": "preserved_metadata_review_failed",
+      "version": "v1"
+    },
+    {
+      "sha256": "782ef982a2008290c73e7d0c44b6a3cfaf19d7a6c294ffcb78ed0a2f3735562d",
+      "status": "preserved_metadata_review_found_one_stale_freeform_per_leg_sentence",
+      "version": "v2"
+    }
+  ],
+  "members": [
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/derivation-prepared-only.json",
+      "sha256": "3a70c4bd039057302abc034a22d50e68d51ac5422008fabceb4f4011848fc047",
+      "size_bytes": 1964,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/derivation-prepared-only.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/fixture/LoopTransferFinally.java",
+      "sha256": "c5745c0b5d6c28e6241c73bfd499d9c83c2417457d53a924bcc89b2594cdae00",
+      "size_bytes": 470,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/fixture/LoopTransferFinally.java"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/fixture/LoopTransferFinallyProbe.java",
+      "sha256": "871876309a738e16777273ea64dea4d5f897249b1fc8f0610f9cca1caec98018",
+      "size_bytes": 942,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/fixture/LoopTransferFinallyProbe.java"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/fixture/probe.stdout",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/fixture/probe.stdout"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/independent-audit-v1.json",
+      "sha256": "7c3b1a2e0f3cafd163d1a0be0fb6d5bd24629abfae9791d1d3503ac2d4df6c47",
+      "size_bytes": 14267,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/independent-audit-v1.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/1.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/1.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/10.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/10.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/10.stdout.raw",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/10.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/11.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/11.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/11.stdout.raw",
+      "sha256": "206801adca5faf679b59ab5e0ce821e4f7acfc5bbfa788b4e57dfd23754aa878",
+      "size_bytes": 92943,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/11.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/12.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/12.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/12.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/12.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/2.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/2.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/2.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/3.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/3.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/3.stdout.raw",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/3.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/4.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/4.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/4.stdout.raw",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/4.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/5.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/5.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/5.stdout.raw",
+      "sha256": "778328871afba1ebc20857c477856981cd4121c4b9279b36c01bb01840c611d6",
+      "size_bytes": 92938,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/5.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/6.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/6.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/6.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/6.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/7.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/7.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/7.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/7.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/8.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/8.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/8.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/8.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/9.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/9.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/9.stdout.raw",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/9.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/execution.json",
+      "sha256": "3aad8c33d4ee1f5eea16475e7c49580011a24df3758f3d4904012f6dd70e5156",
+      "size_bytes": 2908376,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/execution.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac23-driver/LoopTransferFinallyProbe.class",
+      "sha256": "13997f33af80db588c8891d9319a160b873c4be306b2697641cc22341738f581",
+      "size_bytes": 1177,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac23-driver/LoopTransferFinallyProbe.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac23-generated/LoopTransferFinally.java",
+      "sha256": "eb69b5a52e295b1d59d92c409f67dd336527177ca3b29a1d0c76e4103531e9c3",
+      "size_bytes": 2412,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac23-generated/LoopTransferFinally.java"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac23-generated/classes/LoopTransferFinally.class",
+      "sha256": "16366b4760b0b40d40f5e366315b905c5c26d9d7c345104f128fd2b40a6de727",
+      "size_bytes": 420,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac23-generated/classes/LoopTransferFinally.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac23-original/LoopTransferFinally.class",
+      "sha256": "e40d2bb2176eec174ebaf357adb72f1929649d2b34b7de0f4cdc2a0a9c5033cc",
+      "size_bytes": 514,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac23-original/LoopTransferFinally.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac23-original.jar",
+      "sha256": "2ee81af1cc23b8eb9f77d63ff6032972d2d3290b0d2bf7b942dc4fb646dbbb55",
+      "size_bytes": 662,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac23-original.jar"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac8-driver/LoopTransferFinallyProbe.class",
+      "sha256": "57c15cbfd1d1919078a146a2f6c28ca0ddb5bd8872e463c91fb5af6f68b710fc",
+      "size_bytes": 1180,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac8-driver/LoopTransferFinallyProbe.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac8-generated/LoopTransferFinally.java",
+      "sha256": "eb69b5a52e295b1d59d92c409f67dd336527177ca3b29a1d0c76e4103531e9c3",
+      "size_bytes": 2412,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac8-generated/LoopTransferFinally.java"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac8-generated/classes/LoopTransferFinally.class",
+      "sha256": "fbc21adaae183a7f2f0c2641c248ab843ab71721335cb4f4eed5fbd466048df9",
+      "size_bytes": 420,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac8-generated/classes/LoopTransferFinally.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac8-original/LoopTransferFinally.class",
+      "sha256": "786bdc5af42c153a879b5c6d6c788b0e9e2695d7d35fce122937b394ef775aa6",
+      "size_bytes": 514,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac8-original/LoopTransferFinally.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-independent-control-v1/run-v1/javac8-original.jar",
+      "sha256": "40aee214a7fd986fec09ee860fc697ffe9f20a9071fcae45147df7505cad3a64",
+      "size_bytes": 662,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-independent-control-v1/run-v1/javac8-original.jar"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-format-v1/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-format-v1/1.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-format-v1/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-format-v1/1.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-format-v1/execution.json",
+      "sha256": "9de1bc11399ea69bd8e661dd5ed9ed774659145687e58a2d9c7c6fec48887612",
+      "size_bytes": 2701813,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-format-v1/execution.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/commands.json",
+      "sha256": "37ee010c1c1c65f88220e9793212573f1a280dd7d2884bca27143dcb1773e9dc",
+      "size_bytes": 1023,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/commands.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "sha256": "6a024375a36846d1daafee355d7905503bbb0f665b81a4c7b00ef1a091f63a46",
+      "size_bytes": 793401,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/crates/jarde-java/src/guard.rs"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/crates/jarde-reader/src/classfile.rs",
+      "sha256": "a0cf02d1300cb58ea8780ed911eda9a539e0f1c72cd9e6124f31d7fcc7bf8722",
+      "size_bytes": 534254,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/crates/jarde-reader/src/classfile.rs"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "sha256": "f51b4cc2cdca12bbdd177ff319bb644967621682fc0dfe92262e89efd044126b",
+      "size_bytes": 493238,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinally.java",
+      "sha256": "c5745c0b5d6c28e6241c73bfd499d9c83c2417457d53a924bcc89b2594cdae00",
+      "size_bytes": 470,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinally.java"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinallyProbe.java",
+      "sha256": "871876309a738e16777273ea64dea4d5f897249b1fc8f0610f9cca1caec98018",
+      "size_bytes": 942,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinallyProbe.java"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/README.md",
+      "sha256": "acdd71e5b6dafc994ab7099470e4478900079a5917dd0954e013c2d95bf6b47d",
+      "size_bytes": 928,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/README.md"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/probe.stdout",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/probe.stdout"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class",
+      "sha256": "e40d2bb2176eec174ebaf357adb72f1929649d2b34b7de0f4cdc2a0a9c5033cc",
+      "size_bytes": 514,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/v8-javac8/LoopTransferFinally.class",
+      "sha256": "786bdc5af42c153a879b5c6d6c788b0e9e2695d7d35fce122937b394ef775aa6",
+      "size_bytes": 514,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/compiled-source/tests/fixtures/recover-loop-transfer-finally-handler/v8-javac8/LoopTransferFinally.class"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/execution.json",
+      "sha256": "fc8d237070a8ca9b9388500495c76a4d1124f2c7573fd5995342bf320250a393",
+      "size_bytes": 2170565,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/execution.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/1.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/1.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/2.stderr.raw",
+      "sha256": "f66aeedb44017838012bf68ed8cdba46440f369258b8a4ed2a6c06bceec3a47d",
+      "size_bytes": 2744,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/2.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/2.stdout.raw",
+      "sha256": "c86cd1adb5ef349d287e98994a1c8e51d0a1a57935e7d0f3efc5c3fb0e5c25f2",
+      "size_bytes": 66219,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/2.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/3.stderr.raw",
+      "sha256": "081fe0ecd3182a30aab2bef86967709e6b2b07028d70c41788b8a768c3762a3f",
+      "size_bytes": 904,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/3.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/3.stdout.raw",
+      "sha256": "a96542d631b63bfb852c95cc3a3d89eb13c30a26854b5ea7d9b8053c611e7ef4",
+      "size_bytes": 153429,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/3.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/4.stderr.raw",
+      "sha256": "9579cc2c2bd91752525a496592c551d9a3056c3559068bae98ac4830a13e5dc6",
+      "size_bytes": 767,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/4.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/4.stdout.raw",
+      "sha256": "89ffe3fc3e1f2c7731804995e5bbe1c5262159dd9c17d186a58de5f4e4ce3b11",
+      "size_bytes": 74072,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/4.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/5.stderr.raw",
+      "sha256": "95defdc4b3664b2bc60e63d6ec5be407b47af0ebca98a0dec01bac6e918dc03d",
+      "size_bytes": 52,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/5.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/5.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/5.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/command_spec.json",
+      "sha256": "074dc6b4c58e0aff5bd85115135a960b616703f2ff655ad68925ee64471022c5",
+      "size_bytes": 723,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/command_spec.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run-v1/execution.json",
+      "sha256": "fc8d237070a8ca9b9388500495c76a4d1124f2c7573fd5995342bf320250a393",
+      "size_bytes": 2170565,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run-v1/execution.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-fixture-native-v1/run.py",
+      "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322",
+      "size_bytes": 13431,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-fixture-native-v1/run.py"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/commands.json",
+      "sha256": "f1fcb26721f6e5bb0bcdaecf7493a5140394580b498c44eeac1c95a354e800af",
+      "size_bytes": 392,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/commands.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/compiled-guard.rs",
+      "sha256": "3ea6e0ad69b0adf95db8f6fea059a2a7c5d40d821a17ab383d1b080a80ac054c",
+      "size_bytes": 793503,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/compiled-guard.rs"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/execution.json",
+      "sha256": "5f50f717d420e6a59a66ea75fe2c9d6668a248df1f0ecf4f90d373687451b59d",
+      "size_bytes": 2164473,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/execution.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run-v1/1.stderr.raw",
+      "sha256": "c1106f5c28c260462d604a77000eb04a85c3c956900b04557a41dbdfabca2174",
+      "size_bytes": 2033,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run-v1/1.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run-v1/1.stdout.raw",
+      "sha256": "2c79728cc280c5da677ab27a52867f43eff9c9153cefddcb3f6a946bcaa39cda",
+      "size_bytes": 160730,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run-v1/1.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run-v1/2.stderr.raw",
+      "sha256": "9a6978f7126dea6f41e9c2caae320dbf7badaff8a39acde58f77e0cff7c4ee96",
+      "size_bytes": 52,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run-v1/2.stderr.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run-v1/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run-v1/2.stdout.raw"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run-v1/command_spec.json",
+      "sha256": "e8c8458507296266c8a18427b5b95ec1e4fe8988b992eb14f72bd8a90f5a3bfb",
+      "size_bytes": 294,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run-v1/command_spec.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run-v1/execution.json",
+      "sha256": "5f50f717d420e6a59a66ea75fe2c9d6668a248df1f0ecf4f90d373687451b59d",
+      "size_bytes": 2164473,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run-v1/execution.json"
+    },
+    {
+      "path": "evidence/loop-transfer-finally-throw-sites-native-v1/run.py",
+      "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322",
+      "size_bytes": 13431,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-throw-sites-native-v1/run.py"
+    },
+    {
+      "path": "runners/run_loop_transfer_finally_independent_control_v1.py",
+      "sha256": "fc3f46bd0f59611141cbc136d1f14cf2294106eea997854f350af9115e7a22fa",
+      "size_bytes": 8261,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/run_loop_transfer_finally_independent_control_v1.py"
+    },
+    {
+      "path": "runners/run_loop_transfer_finally_independent_control_v2.py",
+      "sha256": "e8d36c43d90d6748ad10438c98fd0b9cbf6a7f383fede10f90c0ea77ca99519a",
+      "size_bytes": 8443,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/run_loop_transfer_finally_independent_control_v2.py"
+    },
+    {
+      "path": "fixture-current/LoopTransferFinally.java",
+      "sha256": "c5745c0b5d6c28e6241c73bfd499d9c83c2417457d53a924bcc89b2594cdae00",
+      "size_bytes": 470,
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinally.java"
+    },
+    {
+      "path": "fixture-current/LoopTransferFinallyProbe.java",
+      "sha256": "871876309a738e16777273ea64dea4d5f897249b1fc8f0610f9cca1caec98018",
+      "size_bytes": 942,
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinallyProbe.java"
+    },
+    {
+      "path": "fixture-current/README.md",
+      "sha256": "acdd71e5b6dafc994ab7099470e4478900079a5917dd0954e013c2d95bf6b47d",
+      "size_bytes": 928,
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-loop-transfer-finally-handler/README.md"
+    },
+    {
+      "path": "fixture-current/probe.stdout",
+      "sha256": "03486db13c5218eac7585b47426c4d08d688d563a01d03699db42263205cc219",
+      "size_bytes": 168,
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-loop-transfer-finally-handler/probe.stdout"
+    },
+    {
+      "path": "fixture-current/v8/LoopTransferFinally.class",
+      "sha256": "e40d2bb2176eec174ebaf357adb72f1929649d2b34b7de0f4cdc2a0a9c5033cc",
+      "size_bytes": 514,
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+    },
+    {
+      "path": "fixture-current/v8-javac8/LoopTransferFinally.class",
+      "sha256": "786bdc5af42c153a879b5c6d6c788b0e9e2695d7d35fce122937b394ef775aa6",
+      "size_bytes": 514,
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-loop-transfer-finally-handler/v8-javac8/LoopTransferFinally.class"
+    },
+    {
+      "path": "helpers/guard.py",
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "size_bytes": 23521,
+      "source": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py"
+    },
+    {
+      "path": "helpers/target_scan.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "size_bytes": 471,
+      "source": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py"
+    },
+    {
+      "path": "helpers/workspace_runner.py",
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "size_bytes": 59053,
+      "source": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py"
+    },
+    {
+      "path": "toolchain/jdk-manifest.json",
+      "sha256": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+      "size_bytes": 1806,
+      "source": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json"
+    },
+    {
+      "path": "support/actual-matrix-independent-review-v1.json",
+      "sha256": "8efaab527f0e4082af2f9f73995567c5759d87a8cb65a67cf3a47355b3a313e2",
+      "size_bytes": 150623,
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-actual-matrix-independent-review-v1.json"
+    }
+  ],
+  "payload_bytes": 17858944,
+  "payload_member_count": 90,
+  "schema": "loop-transfer-finally-portable-baseline-v3"
+}

@@ -4,7 +4,7 @@
 
 参见proposal的Why。原FX两腿finContinue/finBreak各61B Code，max_stack2/max_locals7、35个物理指令；只有BCI31的goto目标不同（continue到53，break到59）。三条catch-all rows为[22,28)->45、[34,39)->45、[45,47)->45。正常清理是28与39的iinc(local1,+100)；异常出口45 astore6、47 iinc1,+100、50 aload6、52 athrow。10为loop header、53为更新、59为最终返回；这些是实际class解码事实，不等同尚未取得的SSA证据。canonical原始Exception边与按throw_sites判定实际可触发边必须分别记录；现exception_edge_takeable的结果不构成本片认领证书。handler的保守phi/caught来源、save/reload/throw全部消费者仍须核对，三份同slot清理也不能机械要求共享同一SSA ID。
 
-当前正常Region覆盖0/loop{10,16,28,34,53}/59；45因只在normal-flow之外可达而fallback。现named-catch/fragmented/loop-catch拒绝catch-all是正常边界，不能把它们泛化来接管本片。输入class/Code相同不证明phi、alias或handler可达性；第一项任务必须实际分析两腿并保存原表。CallReturn产品464543594已本地完整验收，其CI38913819742在运行，主线归档交付是本片最终rebase前置。
+当前正常Region覆盖0/loop{10,16,28,34,53}/59；45因只在normal-flow之外可达而fallback。现named-catch/fragmented/loop-catch拒绝catch-all是正常边界，不能把它们泛化来接管本片。输入class/Code相同不证明phi、alias或handler可达性；第一项任务已经实际分析两腿并保存原表，完整矩阵见baseline包support/actual-matrix-independent-review-v1.json。CallReturn产品464543594自身CI38913819742已终态独审通过，正常归档后main b12b0d9e已交付；本片已实际rebase到它，4942行源与probe收据逐项不变。
 
 ## Goals / Non-Goals
 
@@ -37,3 +37,9 @@
 ## Migration Plan
 
 完成实际基线和IR后先实现private proof，再最小接入公共恢复并做最终整类/双JVM对照；等待CallReturn主线交付后rebase并确认实际源码闭合。新产品提交冻结CLI/source/Git blob/mode并运行自己的CI。通过后追加本delta、正常归档、两版strict及main绑定；父计划未完成部分保留。
+
+## Actual evidence decision
+
+任务1取得的canonical.throw_sites仅5/19/52、handlers均空；全部三个物理保护区逐指令nonthrowing，保守canonical异常边仍三条。选择本组固定形态的不可触发handler证书，不把它呈现为活的catch/finally运行路径。正常28/39清理与continue/break不改，原始handler图/phi/来源不删。
+
+后续实现以最小私有投影为界：先在原region walk/ownership/P3字节完整性检查完成后，对完整35操作、全部row/effect/throw-site及handler SSA和正常树作有界paid proof，保持原Fallback45待最终产物确认。Builder仍按既有树构建；只有正常AST完整、唯一For@10与唯一handler fallback45/47/50/52完全对应时，准备全部来源和ownership核对并在末次poll后原子移除该已证fallback、把四BCI派生到真实Loop语句；公共报告明确补充已证handler45 RegionDetails及原finally规则。若AST/来源检查不满足，保留原fallback/质量与树，不发布证书；真实Stop仍不交付部分产物。不增加公开Recovered字段或Region/AST变体，不伪造节点/空语句/网关来源，也不把该证书带入通用named-catch。

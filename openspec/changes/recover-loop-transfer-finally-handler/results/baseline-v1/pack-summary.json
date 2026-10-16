@@ -1,0 +1,22 @@
+{
+  "status": "all_90_payload_plus_exact_embedded_manifest_roundtrip_verified",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-baseline-evidence-v3/capture.tar.gz",
+    "bytes": 3544794,
+    "sha256": "d58609954cbda5a440a1f72873e96dd9f5cdd67647e0e654dc879d7654a4daa5"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-baseline-evidence-v3/manifest.json",
+    "bytes": 36843,
+    "sha256": "63d606d9ce5870751afc3631a2518c17e36d1f8ff788c200e127bc88f1cb2b93"
+  },
+  "payload_count": 90,
+  "total_safe_unique_regular_members": 91,
+  "original_oracle_runs_total": 4,
+  "generated_compile_commands": 2,
+  "generated_compile_exit_codes": [
+    0,
+    0
+  ],
+  "rebuilt_runtime_commands": 0
+}
