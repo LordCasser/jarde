@@ -1,0 +1,12 @@
+{
+  "archive": {
+    "change": "recover-static-field-prefix-return",
+    "archivedAs": "2026-10-16-recover-static-field-prefix-return",
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-16-recover-static-field-prefix-return",
+    "specsUpdated": false
+  },
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "source": "nearest"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "changeName": "recover-static-field-prefix-return",
+  "changeDir": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/proposal.md"
+    ],
+    "specs": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/design.md"
+    ],
+    "tasks": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 6,
+    "complete": 6,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 在reference片自身CI/归档后重绑定实际实施head、两FO原编译腿与未改原Java/driver/oracle；冻结永久fixture并同步语料指纹。验收：Code/声明/输入SHA、原四次1/100与四次60B控制、完整旧FO重编exit1及具体bump拒绝、所有raw可移交；只新增预期fixture指纹条目，不删样本或借历史CI。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "line": 5
+    },
+    {
+      "id": "2",
+      "description": "1.2 补入具名库/CLI与最窄证明期回归，在旧生产先证实行为红。验收：旧红因静态prefix新值缺口而非路径/工具缺失；校物理字段读写、dup新值消费者与来源，预算/取消必须在实际证明工作中观察，不以入口预取消代替；逐项保留未执行/失败边界。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "line": 6
+    },
+    {
+      "id": "3",
+      "description": "2.1 实现有预算的静态int新值返回证明、原子认领和最小前置更新AST/发射，复用字段/Return/来源接缝。验收：同物理字段与可更新声明、sum→dup→写/返及唯一consumer全部闭合；错owner/name/type/staticness、旧值、非one/add、alias/效果/handler/跨块等控制不被本规则误认；真实预算/取消不提交部分证书或产物，原原因与usage保持；同步边界文档。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "line": 10
+    },
+    {
+      "id": "4",
+      "description": "2.2 核既有实例字段pre/post、static postfix旧值、void字段单位更新、compound/数组/条件位置与FO已正确finally。验收：选择受影响定向用例实际通过，正常文本/来源按各自契约保持；其它规则可正确恢复的负控制不强迫全局拒绝，不扩全局dup求解或改finally规则。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "line": 11
+    },
+    {
+      "id": "5",
+      "description": "3.1 对最终冻结CLI两FO腿的全部report.text原样重编并用隔离rebuilt-only classpath在Java8/23跑固定main及未改独立driver。验收：四次rebuilt main均1/100、四次driver均60B六行exact且非零/溢出/return-before-finally吻合；原FO/driver/oracle与生成文本不改、不删方法，物理读0/常量3/add4/dup5/write6/return9来源与实际方法绑定，raw/argv/exit/输入与源码before-after齐全；失败保留，原类成功不替代Jarde重建。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "line": 15
+    },
+    {
+      "id": "6",
+      "description": "3.2 完成适用格式、CI参数Clippy、语料指纹、两版OpenSpec strict及完整workspace/MSRV/workflow与该产品commit自身CI独审。验收：所有命令实际非空、source/CLI/CI head绑定、默认stack与5GiB free/1GiB target磁盘门、exact clean后无target；旧失败/skipped与未覆盖范围保留，不借前片或旧head的CI通过本任务。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-static-field-prefix-return/tasks.md",
+      "line": 16
+    }
+  ],
+  "taskTrackingConfigured": true,
+  "state": "all_done",
+  "instruction": "All tracked tasks are complete.\nReview or verify the change as appropriate before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "source": "nearest"
+  }
+}

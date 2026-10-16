@@ -1,0 +1,566 @@
+{
+  "schema": "static-prefix-reader-population-delta-independent-audit-v1",
+  "status": "confirmed_exact_two_fixture_population_delta",
+  "scope": "Pure Python exactCP/Code/exception-table/opcode decoding of two permanentclasses plus filesystem name walk matching reader fixture traversal; no native/Git/repo edits. This verifies population maintenance arithmetic, not full reader decoder or ownCI acceptance.",
+  "official_failed_CI": {
+    "capture": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-dispatch-root-v1/execution.json",
+      "bytes": 83004,
+      "sha256": "bf586aa6ed5b888da3ca00efbd6d7a3dff317722d1fb9658548cdb653601a6bb"
+    },
+    "logs": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-dispatch-root-v1/logs.zip",
+      "bytes": 587110,
+      "sha256": "6febe161cbac155c89f8bb23567f2e0b1cf7183a39dd733b558ea1ae03c4fc7f"
+    },
+    "head": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+    "run_id": 38841427486,
+    "conclusion": "failure",
+    "actual_failure_tuples": {
+      "member": "0_stable _ test and specification.txt",
+      "tuples": [
+        [
+          "left",
+          "1175",
+          "5259",
+          "523",
+          "3445",
+          "10"
+        ],
+        [
+          "right",
+          "1173",
+          "5249",
+          "521",
+          "3445",
+          "10"
+        ]
+      ]
+    }
+  },
+  "counter_order": [
+    "class_files",
+    "Code_bodies",
+    "handler_records",
+    "nonhandler_branch_switch_targets",
+    "jsr_jsr_w_instructions"
+  ],
+  "old_expected": [
+    1173,
+    5249,
+    521,
+    3445,
+    10
+  ],
+  "actual": [
+    1175,
+    5259,
+    523,
+    3445,
+    10
+  ],
+  "new_fixture_delta": [
+    2,
+    10,
+    2,
+    0,
+    0
+  ],
+  "delta_explains_full_observed_difference": true,
+  "decoded_legs": [
+    {
+      "input": {
+        "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/v8/FO.class",
+        "bytes": 790,
+        "sha256": "de08332a3eff86160fc606c04664d31f8f80bce207be8315899f2e4f91168134"
+      },
+      "owner": "FO",
+      "fields": [
+        {
+          "flags": 8,
+          "name": "i",
+          "descriptor": "I"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "flags": 1,
+          "Code_bytes": 5,
+          "Code_hex": "2ab70001b1",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 42
+            },
+            {
+              "bci": 1,
+              "opcode": 183
+            },
+            {
+              "bci": 4,
+              "opcode": 177
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "bump",
+          "descriptor": "()I",
+          "flags": 8,
+          "Code_bytes": 10,
+          "Code_hex": "b20007046059b30007ac",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 178
+            },
+            {
+              "bci": 3,
+              "opcode": 4
+            },
+            {
+              "bci": 4,
+              "opcode": 96
+            },
+            {
+              "bci": 5,
+              "opcode": 89
+            },
+            {
+              "bci": 6,
+              "opcode": 179
+            },
+            {
+              "bci": 9,
+              "opcode": 172
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "evalThenFin",
+          "descriptor": "()I",
+          "flags": 8,
+          "Code_bytes": 19,
+          "Code_hex": "b8000d3b1064b300071aac4c1064b300072bbf",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 184
+            },
+            {
+              "bci": 3,
+              "opcode": 59
+            },
+            {
+              "bci": 4,
+              "opcode": 16
+            },
+            {
+              "bci": 6,
+              "opcode": 179
+            },
+            {
+              "bci": 9,
+              "opcode": 26
+            },
+            {
+              "bci": 10,
+              "opcode": 172
+            },
+            {
+              "bci": 11,
+              "opcode": 76
+            },
+            {
+              "bci": 12,
+              "opcode": 16
+            },
+            {
+              "bci": 14,
+              "opcode": 179
+            },
+            {
+              "bci": 17,
+              "opcode": 43
+            },
+            {
+              "bci": 18,
+              "opcode": 191
+            }
+          ],
+          "handler_rows": [
+            {
+              "start_bci": 0,
+              "end_bci": 4,
+              "handler_bci": 11,
+              "catch_type": 0
+            }
+          ],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "flags": 9,
+          "Code_bytes": 34,
+          "Code_hex": "b20011bb001759b70019b8001ab6001d1221b60023b20007b6001db60026b6002ab1",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 178
+            },
+            {
+              "bci": 3,
+              "opcode": 187
+            },
+            {
+              "bci": 6,
+              "opcode": 89
+            },
+            {
+              "bci": 7,
+              "opcode": 183
+            },
+            {
+              "bci": 10,
+              "opcode": 184
+            },
+            {
+              "bci": 13,
+              "opcode": 182
+            },
+            {
+              "bci": 16,
+              "opcode": 18
+            },
+            {
+              "bci": 18,
+              "opcode": 182
+            },
+            {
+              "bci": 21,
+              "opcode": 178
+            },
+            {
+              "bci": 24,
+              "opcode": 182
+            },
+            {
+              "bci": 27,
+              "opcode": 182
+            },
+            {
+              "bci": 30,
+              "opcode": 182
+            },
+            {
+              "bci": 33,
+              "opcode": 177
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "flags": 8,
+          "Code_bytes": 5,
+          "Code_hex": "03b30007b1",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 3
+            },
+            {
+              "bci": 1,
+              "opcode": 179
+            },
+            {
+              "bci": 4,
+              "opcode": 177
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        }
+      ],
+      "counts": [
+        1,
+        5,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "input": {
+        "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class",
+        "bytes": 790,
+        "sha256": "c5f1287d9dac890b29c270473d6e8122d9bfb5af24199f78ba441a8e087627e7"
+      },
+      "owner": "FO",
+      "fields": [
+        {
+          "flags": 8,
+          "name": "i",
+          "descriptor": "I"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "flags": 1,
+          "Code_bytes": 5,
+          "Code_hex": "2ab70001b1",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 42
+            },
+            {
+              "bci": 1,
+              "opcode": 183
+            },
+            {
+              "bci": 4,
+              "opcode": 177
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "bump",
+          "descriptor": "()I",
+          "flags": 8,
+          "Code_bytes": 10,
+          "Code_hex": "b20002046059b30002ac",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 178
+            },
+            {
+              "bci": 3,
+              "opcode": 4
+            },
+            {
+              "bci": 4,
+              "opcode": 96
+            },
+            {
+              "bci": 5,
+              "opcode": 89
+            },
+            {
+              "bci": 6,
+              "opcode": 179
+            },
+            {
+              "bci": 9,
+              "opcode": 172
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "evalThenFin",
+          "descriptor": "()I",
+          "flags": 8,
+          "Code_bytes": 19,
+          "Code_hex": "b800033b1064b300021aac4c1064b300022bbf",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 184
+            },
+            {
+              "bci": 3,
+              "opcode": 59
+            },
+            {
+              "bci": 4,
+              "opcode": 16
+            },
+            {
+              "bci": 6,
+              "opcode": 179
+            },
+            {
+              "bci": 9,
+              "opcode": 26
+            },
+            {
+              "bci": 10,
+              "opcode": 172
+            },
+            {
+              "bci": 11,
+              "opcode": 76
+            },
+            {
+              "bci": 12,
+              "opcode": 16
+            },
+            {
+              "bci": 14,
+              "opcode": 179
+            },
+            {
+              "bci": 17,
+              "opcode": 43
+            },
+            {
+              "bci": 18,
+              "opcode": 191
+            }
+          ],
+          "handler_rows": [
+            {
+              "start_bci": 0,
+              "end_bci": 4,
+              "handler_bci": 11,
+              "catch_type": 0
+            }
+          ],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "flags": 9,
+          "Code_bytes": 34,
+          "Code_hex": "b20004bb000559b70006b80007b600081209b6000ab20002b60008b6000bb6000cb1",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 178
+            },
+            {
+              "bci": 3,
+              "opcode": 187
+            },
+            {
+              "bci": 6,
+              "opcode": 89
+            },
+            {
+              "bci": 7,
+              "opcode": 183
+            },
+            {
+              "bci": 10,
+              "opcode": 184
+            },
+            {
+              "bci": 13,
+              "opcode": 182
+            },
+            {
+              "bci": 16,
+              "opcode": 18
+            },
+            {
+              "bci": 18,
+              "opcode": 182
+            },
+            {
+              "bci": 21,
+              "opcode": 178
+            },
+            {
+              "bci": 24,
+              "opcode": 182
+            },
+            {
+              "bci": 27,
+              "opcode": 182
+            },
+            {
+              "bci": 30,
+              "opcode": 182
+            },
+            {
+              "bci": 33,
+              "opcode": 177
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "flags": 8,
+          "Code_bytes": 5,
+          "Code_hex": "03b30002b1",
+          "instructions": [
+            {
+              "bci": 0,
+              "opcode": 3
+            },
+            {
+              "bci": 1,
+              "opcode": 179
+            },
+            {
+              "bci": 4,
+              "opcode": 177
+            }
+          ],
+          "handler_rows": [],
+          "nonhandler_branch_switch_targets": [],
+          "jsr_count": 0
+        }
+      ],
+      "counts": [
+        1,
+        5,
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "fixture_traversal": {
+    "source": "crates/jarde-reader/src/classfile.rs::class_fixture_paths recursively sorts directory entries and includes every .class extension beneath crate::test_fixtures::fixtures_root(); no fingerprint or version-directory filter.",
+    "fixture_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures",
+    "actual_discovered_class_files": 1175,
+    "both_added_paths_included": true,
+    "added_paths": [
+      "recover-static-field-prefix-return/v8/FO.class",
+      "recover-static-field-prefix-return/v8-javac8/FO.class"
+    ],
+    "why_both_count": "v8 andv8-javac8 are separatephysicalpaths, not deduplicated by classowner FO or equivalentcode."
+  },
+  "maintenance_recommendation": "Update only explicitpopulation tuple and concise source comment by actualdelta2/10/2/0/0; retain every decoder/target-validation assertion and complete classwalk. Do not change branch/switch3445 or jsr10, skip eitherleg, excludeaddedfixtures or mark failureignored. Root alone applies/retests and new productCI remains required.",
+  "source_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-reader/src/classfile.rs",
+      "bytes": 533100,
+      "sha256": "bb9d987ec1e7ed7e9ef6010903f290ee21376473fac4c6df6d7ea10c187d9188"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-reader/src/test_fixtures.rs",
+      "bytes": 3336,
+      "sha256": "8ea410a7ed04def8d2031896f5cd86b4aa3f323ea045ae17c84d7179b19c038a"
+    }
+  ]
+}

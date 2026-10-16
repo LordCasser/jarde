@@ -1,0 +1,221 @@
+{
+  "schema": "static-prefix-a89-dispatch-native-replay-independent-review-v1",
+  "status": "accepted_new_native_and_full_source_replay_only",
+  "checks": 179,
+  "errors": [],
+  "native_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-candidate-dispatch-fix-v1/execution.json",
+    "bytes": 2162474,
+    "sha256": "d28e3c3d76c63e1199085d03d9f3cb33d32f0b76d3abf3d1ac4afaa9e5f78358"
+  },
+  "replay_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/execution.json",
+    "bytes": 4891766,
+    "sha256": "67541cee3475af386b2bee42b2716081de42698236b98ee1a61eedfc184207e3"
+  },
+  "source_binding": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/source-head-binding.json",
+    "bytes": 1496325,
+    "sha256": "9673556848977ab1ef6fca4ad15386e38540f409f2468ffbf55f4914a05a992d"
+  },
+  "source_tree": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/source-head-tree.raw",
+    "bytes": 678748,
+    "sha256": "b7f99304abe79d2f4d53142cf1e30744af77a3672c3142228aab651acaf50020"
+  },
+  "head": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+  "source_count": 4915,
+  "actual_source_byte_gitblob_comparisons": 4915,
+  "source_comparison_errors": [],
+  "source_delta_vs_c075": [
+    "crates/jarde-java/src/build.rs"
+  ],
+  "exact_old_build_reconstructs_by_reversing_only_dispatch_gate": true,
+  "P5_source_pin_unchanged": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/p5_bulk_corpus.rs",
+    "bytes": 89940,
+    "sha256": "7527b8c616075d61d4c741de779d0dbbebb5b8583ec1912a9bedef45514d6fbe"
+  },
+  "new_CLI": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+    "bytes": 59699632,
+    "sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "native_results": {
+    "commands": 6,
+    "raw_files": 12,
+    "passed": 12,
+    "failed": 0,
+    "ignored": 1,
+    "suites": [
+      {
+        "label": "p5-bulk-billing-regression",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 1,
+        "named_outcomes": [
+          [
+            "a_slow_consumer_changes_the_readings_and_not_the_shape",
+            "ok"
+          ],
+          [
+            "every_case_holds_the_shape_it_is_named_for",
+            "ok"
+          ],
+          [
+            "record_the_billing_table",
+            "ignored"
+          ],
+          [
+            "the_corpus_is_rebuilt_from_the_committed_bytes_every_time",
+            "ok"
+          ],
+          [
+            "the_fixed_shape_bills_the_counts_the_corpus_pins",
+            "ok"
+          ],
+          [
+            "the_old_per_method_arms_keep_their_ledger_and_the_same_text",
+            "ok"
+          ]
+        ]
+      },
+      {
+        "label": "prefix-proof-unit",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "named_outcomes": [
+          [
+            "build::tests::static_prefix_late_budget_and_ledger_cancellation_publish_no_certificate",
+            "ok"
+          ],
+          [
+            "build::tests::static_prefix_proves_two_real_copied_new_values_and_rejects_unwritable_declarations",
+            "ok"
+          ],
+          [
+            "build::tests::static_prefix_rejects_real_non_one_subtract_and_old_value_consumers",
+            "ok"
+          ]
+        ]
+      },
+      {
+        "label": "prefix-public",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "named_outcomes": [
+          [
+            "saved_return_still_precedes_the_finally_write",
+            "ok"
+          ],
+          [
+            "static_prefix_keeps_read_write_and_return_origins",
+            "ok"
+          ],
+          [
+            "static_prefix_returns_the_new_value_on_both_compiler_legs",
+            "ok"
+          ]
+        ]
+      },
+      {
+        "label": "prefix-cli",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "named_outcomes": [
+          [
+            "static_prefix_json_keeps_the_new_sum_and_the_complete_class",
+            "ok"
+          ]
+        ]
+      }
+    ]
+  },
+  "new_replay_results": {
+    "commands": 14,
+    "raw_files": 28,
+    "full_generated_reports": 2,
+    "complete_generated_compiles": 2,
+    "unchanged_driver_compiles": 2,
+    "rebuilt_only_runtime": [
+      {
+        "label": "javac23-java8-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/7.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac23-java8-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/8.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      },
+      {
+        "label": "javac23-java23-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/9.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac23-java23-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/10.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      },
+      {
+        "label": "javac8-java8-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/11.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac8-java8-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/12.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      },
+      {
+        "label": "javac8-java23-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/13.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac8-java23-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/run-v1/14.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      }
+    ]
+  },
+  "scope": "Pure Python/read-only repo/cache; no native/Git/API/OpenSpec or old successauditor execution. Saved sparse tree covers exact4915 inputs, unlike older fullrepo tree; each source Gitblob independently recomputed. Only build.rs differs from c075 and reverse-only6opcode insertion reconstructs old bytes exactly; all p5 pins/assertions untouched. New CLI and actual new14commands replay reverified, no borrowing c0753596 outputs. Target absence verified as historical receipt state; later authorized product-checks may currently create target. Pending new local product checks/remote ownCI38841427486 are independent gates, not accepted here."
+}

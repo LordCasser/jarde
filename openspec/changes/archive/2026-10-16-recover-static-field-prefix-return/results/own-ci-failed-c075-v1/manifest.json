@@ -1,0 +1,1488 @@
+{
+  "schema": "static-prefix-failed-own-ci-c075-v2",
+  "status": "actual_product_ci_failure_preserved_not_accepted",
+  "product_head": "c075d1a15ab9e29482ee2eb006bc152e5c57980c",
+  "run_id": 38838653033,
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "name": "fuzz smoke",
+      "conclusion": "success"
+    },
+    {
+      "name": "stable / test and specification",
+      "conclusion": "failure"
+    },
+    {
+      "name": "MSRV 1.88.0",
+      "conclusion": "success"
+    },
+    {
+      "name": "supply chain",
+      "conclusion": "success"
+    }
+  ],
+  "steps": [
+    {
+      "job": "fuzz smoke",
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-16T02:05:53Z",
+      "completed_at": "2026-10-16T02:05:53Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-16T02:05:53Z",
+      "completed_at": "2026-10-16T02:06:27Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Install nightly-2026-07-20",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-16T02:06:27Z",
+      "completed_at": "2026-10-16T02:06:38Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Install cargo-fuzz 0.13.2",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-16T02:06:38Z",
+      "completed_at": "2026-10-16T02:07:29Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Prepare the C++ and sanitizer toolchain",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-10-16T02:07:29Z",
+      "completed_at": "2026-10-16T02:07:29Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Check the committed corpus against the targets",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-10-16T02:07:29Z",
+      "completed_at": "2026-10-16T02:09:00Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Run the bounded query smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-10-16T02:09:00Z",
+      "completed_at": "2026-10-16T02:16:09Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Run the bounded artifact-tree smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-10-16T02:16:09Z",
+      "completed_at": "2026-10-16T02:16:31Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Run the bounded method-analysis smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-10-16T02:16:31Z",
+      "completed_at": "2026-10-16T02:16:52Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Ensure the smoke runs left the tracked tree unchanged",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-10-16T02:16:52Z",
+      "completed_at": "2026-10-16T02:16:54Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Post Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 20,
+      "started_at": "2026-10-16T02:16:54Z",
+      "completed_at": "2026-10-16T02:16:54Z"
+    },
+    {
+      "job": "fuzz smoke",
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-10-16T02:16:54Z",
+      "completed_at": "2026-10-16T02:16:54Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-16T02:05:53Z",
+      "completed_at": "2026-10-16T02:05:54Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-16T02:05:54Z",
+      "completed_at": "2026-10-16T02:06:27Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Install stable Rust with lint components",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-16T02:06:27Z",
+      "completed_at": "2026-10-16T02:06:36Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Install Temurin 25.0.4+7",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-16T02:06:36Z",
+      "completed_at": "2026-10-16T02:06:39Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Install Node.js 22",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-10-16T02:06:39Z",
+      "completed_at": "2026-10-16T02:06:40Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Check formatting",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-10-16T02:06:40Z",
+      "completed_at": "2026-10-16T02:06:46Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run Clippy",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-10-16T02:06:46Z",
+      "completed_at": "2026-10-16T02:08:19Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run workspace tests with two fixed independent seeds (pass 1)",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 8,
+      "started_at": "2026-10-16T02:08:19Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run workspace tests with two fixed independent seeds (pass 2)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 9,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run ignored JDK 25 instruction-boundary oracle",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 10,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run the ignored P3 Java 8 compile-and-execute comparison",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 11,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run the functional-constructor full-class comparison",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 12,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run the BigDecimal Number full-class comparisons",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 13,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run the nested int array full-class comparisons",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 14,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run the returned int array full-class comparison",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 15,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Run public API example",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 16,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Check resolved feature tree",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 17,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Check normal dependency tree boundary",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 18,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Check layered crate dependency closure",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 19,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Install OpenSpec 1.11.0",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 20,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Validate OpenSpec strictly",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 21,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Ensure tracked files remain unchanged",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 22,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Post Install Node.js 22",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 42,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Post Install Temurin 25.0.4+7",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 43,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:28Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Post Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 44,
+      "started_at": "2026-10-16T02:25:28Z",
+      "completed_at": "2026-10-16T02:25:29Z"
+    },
+    {
+      "job": "stable / test and specification",
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 45,
+      "started_at": "2026-10-16T02:25:29Z",
+      "completed_at": "2026-10-16T02:25:29Z"
+    },
+    {
+      "job": "MSRV 1.88.0",
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-16T02:05:53Z",
+      "completed_at": "2026-10-16T02:05:54Z"
+    },
+    {
+      "job": "MSRV 1.88.0",
+      "name": "Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-16T02:05:54Z",
+      "completed_at": "2026-10-16T02:06:27Z"
+    },
+    {
+      "job": "MSRV 1.88.0",
+      "name": "Install Rust 1.88.0",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-16T02:06:27Z",
+      "completed_at": "2026-10-16T02:06:36Z"
+    },
+    {
+      "job": "MSRV 1.88.0",
+      "name": "Check workspace on MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-16T02:06:36Z",
+      "completed_at": "2026-10-16T02:08:22Z"
+    },
+    {
+      "job": "MSRV 1.88.0",
+      "name": "Post Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-10-16T02:08:22Z",
+      "completed_at": "2026-10-16T02:08:22Z"
+    },
+    {
+      "job": "MSRV 1.88.0",
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-10-16T02:08:22Z",
+      "completed_at": "2026-10-16T02:08:22Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-16T02:05:53Z",
+      "completed_at": "2026-10-16T02:05:54Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-16T02:05:54Z",
+      "completed_at": "2026-10-16T02:06:32Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Install stable Rust for cargo-deny",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-16T02:06:32Z",
+      "completed_at": "2026-10-16T02:06:41Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Install cargo-deny 0.20.2",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-16T02:06:41Z",
+      "completed_at": "2026-10-16T02:09:54Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Check root workspace advisories, licenses, bans, and sources",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-10-16T02:09:54Z",
+      "completed_at": "2026-10-16T02:09:57Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Check fuzz workspace advisories, licenses, bans, and sources",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-10-16T02:09:57Z",
+      "completed_at": "2026-10-16T02:09:57Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Post Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-10-16T02:09:57Z",
+      "completed_at": "2026-10-16T02:09:58Z"
+    },
+    {
+      "job": "supply chain",
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-10-16T02:09:58Z",
+      "completed_at": "2026-10-16T02:09:58Z"
+    }
+  ],
+  "actual_log_member_count": 45,
+  "actual_log_layout": "aggregate_job_logs_and_individual_step_logs",
+  "first_seed_actual_metrics": {
+    "workspace_summaries": 253,
+    "nonempty_workspace_summaries": 252,
+    "passed": 1941,
+    "failed": 2,
+    "ignored": 55
+  },
+  "failed_names": [
+    "the_fixed_shape_bills_the_counts_the_corpus_pins",
+    "the_old_per_method_arms_keep_their_ledger_and_the_same_text"
+  ],
+  "known_failures": {
+    "flat_mixed": {
+      "dimension": "AnalysisSteps",
+      "pinned": 1548,
+      "measured": 1549
+    },
+    "old_direct_and_shared": {
+      "dimension": "AnalysisSteps",
+      "pinned": 20290,
+      "measured": 20304
+    }
+  },
+  "not_claimed": [
+    "No complete pass1 inventory; failed p5 target stopped the workspace command.",
+    "No pass2/JDK comparison/examples/spec strict/other skipped stable successor gate acceptance.",
+    "Other job success does not make product CI success.",
+    "Prepared success auditor/forecast139 gates were not executed or accepted."
+  ],
+  "payload_count": 159,
+  "members": [
+    {
+      "path": "capture/0-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/0-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/0-jobs.stdout.raw",
+      "bytes": 10568,
+      "sha256": "077a20049ac20192014e014855cc296064fc399451b4853a08f3da1c5160a1e7",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/0-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/0-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/0-run.stderr.raw"
+    },
+    {
+      "path": "capture/0-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/0-run.stdout.raw"
+    },
+    {
+      "path": "capture/1-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/1-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/1-jobs.stdout.raw",
+      "bytes": 10568,
+      "sha256": "077a20049ac20192014e014855cc296064fc399451b4853a08f3da1c5160a1e7",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/1-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/1-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/1-run.stderr.raw"
+    },
+    {
+      "path": "capture/1-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/1-run.stdout.raw"
+    },
+    {
+      "path": "capture/10-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/10-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/10-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/10-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/10-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/10-run.stderr.raw"
+    },
+    {
+      "path": "capture/10-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/10-run.stdout.raw"
+    },
+    {
+      "path": "capture/11-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/11-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/11-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/11-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/11-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/11-run.stderr.raw"
+    },
+    {
+      "path": "capture/11-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/11-run.stdout.raw"
+    },
+    {
+      "path": "capture/12-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/12-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/12-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/12-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/12-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/12-run.stderr.raw"
+    },
+    {
+      "path": "capture/12-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/12-run.stdout.raw"
+    },
+    {
+      "path": "capture/13-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/13-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/13-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/13-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/13-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/13-run.stderr.raw"
+    },
+    {
+      "path": "capture/13-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/13-run.stdout.raw"
+    },
+    {
+      "path": "capture/14-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/14-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/14-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/14-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/14-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/14-run.stderr.raw"
+    },
+    {
+      "path": "capture/14-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/14-run.stdout.raw"
+    },
+    {
+      "path": "capture/15-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/15-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/15-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/15-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/15-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/15-run.stderr.raw"
+    },
+    {
+      "path": "capture/15-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/15-run.stdout.raw"
+    },
+    {
+      "path": "capture/16-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/16-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/16-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/16-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/16-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/16-run.stderr.raw"
+    },
+    {
+      "path": "capture/16-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/16-run.stdout.raw"
+    },
+    {
+      "path": "capture/17-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/17-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/17-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/17-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/17-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/17-run.stderr.raw"
+    },
+    {
+      "path": "capture/17-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/17-run.stdout.raw"
+    },
+    {
+      "path": "capture/18-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/18-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/18-jobs.stdout.raw",
+      "bytes": 11346,
+      "sha256": "1c3cfc7cb593e6adb3d8cb8a487830414f52d29837e7a522db70b2eb898beee6",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/18-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/18-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/18-run.stderr.raw"
+    },
+    {
+      "path": "capture/18-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/18-run.stdout.raw"
+    },
+    {
+      "path": "capture/19-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/19-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/19-jobs.stdout.raw",
+      "bytes": 11650,
+      "sha256": "eb19cab3dbeb760503f24f83e58eb1e7b0e4dbbebe63f644ff463f3e621e12d4",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/19-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/19-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/19-run.stderr.raw"
+    },
+    {
+      "path": "capture/19-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/19-run.stdout.raw"
+    },
+    {
+      "path": "capture/2-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/2-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/2-jobs.stdout.raw",
+      "bytes": 10654,
+      "sha256": "e071cff6c8b163086fa7df0ee841e1d8663ce635d53bb9a9db7318bd25335013",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/2-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/2-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/2-run.stderr.raw"
+    },
+    {
+      "path": "capture/2-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/2-run.stdout.raw"
+    },
+    {
+      "path": "capture/20-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/20-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/20-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/20-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/20-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/20-run.stderr.raw"
+    },
+    {
+      "path": "capture/20-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/20-run.stdout.raw"
+    },
+    {
+      "path": "capture/21-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/21-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/21-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/21-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/21-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/21-run.stderr.raw"
+    },
+    {
+      "path": "capture/21-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/21-run.stdout.raw"
+    },
+    {
+      "path": "capture/22-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/22-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/22-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/22-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/22-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/22-run.stderr.raw"
+    },
+    {
+      "path": "capture/22-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/22-run.stdout.raw"
+    },
+    {
+      "path": "capture/23-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/23-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/23-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/23-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/23-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/23-run.stderr.raw"
+    },
+    {
+      "path": "capture/23-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/23-run.stdout.raw"
+    },
+    {
+      "path": "capture/24-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/24-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/24-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/24-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/24-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/24-run.stderr.raw"
+    },
+    {
+      "path": "capture/24-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/24-run.stdout.raw"
+    },
+    {
+      "path": "capture/25-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/25-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/25-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/25-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/25-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/25-run.stderr.raw"
+    },
+    {
+      "path": "capture/25-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/25-run.stdout.raw"
+    },
+    {
+      "path": "capture/26-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/26-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/26-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/26-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/26-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/26-run.stderr.raw"
+    },
+    {
+      "path": "capture/26-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/26-run.stdout.raw"
+    },
+    {
+      "path": "capture/27-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/27-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/27-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/27-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/27-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/27-run.stderr.raw"
+    },
+    {
+      "path": "capture/27-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/27-run.stdout.raw"
+    },
+    {
+      "path": "capture/28-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/28-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/28-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/28-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/28-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/28-run.stderr.raw"
+    },
+    {
+      "path": "capture/28-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/28-run.stdout.raw"
+    },
+    {
+      "path": "capture/29-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/29-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/29-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/29-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/29-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/29-run.stderr.raw"
+    },
+    {
+      "path": "capture/29-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/29-run.stdout.raw"
+    },
+    {
+      "path": "capture/3-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/3-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/3-jobs.stdout.raw",
+      "bytes": 10935,
+      "sha256": "bea2428f46453ea27a25f7189e3a38457ddb8f4f55e1f0df8ca09e4fd077fd71",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/3-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/3-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/3-run.stderr.raw"
+    },
+    {
+      "path": "capture/3-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/3-run.stdout.raw"
+    },
+    {
+      "path": "capture/30-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/30-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/30-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/30-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/30-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/30-run.stderr.raw"
+    },
+    {
+      "path": "capture/30-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/30-run.stdout.raw"
+    },
+    {
+      "path": "capture/31-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/31-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/31-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/31-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/31-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/31-run.stderr.raw"
+    },
+    {
+      "path": "capture/31-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/31-run.stdout.raw"
+    },
+    {
+      "path": "capture/32-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/32-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/32-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/32-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/32-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/32-run.stderr.raw"
+    },
+    {
+      "path": "capture/32-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/32-run.stdout.raw"
+    },
+    {
+      "path": "capture/33-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/33-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/33-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/33-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/33-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/33-run.stderr.raw"
+    },
+    {
+      "path": "capture/33-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/33-run.stdout.raw"
+    },
+    {
+      "path": "capture/34-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/34-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/34-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/34-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/34-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/34-run.stderr.raw"
+    },
+    {
+      "path": "capture/34-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/34-run.stdout.raw"
+    },
+    {
+      "path": "capture/35-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/35-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/35-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "72027d559b040468802f60be829f0d50e7f3d017bc229567c639dc61b0cd967c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/35-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/35-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/35-run.stderr.raw"
+    },
+    {
+      "path": "capture/35-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/35-run.stdout.raw"
+    },
+    {
+      "path": "capture/36-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/36-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/36-jobs.stdout.raw",
+      "bytes": 12598,
+      "sha256": "99cbae2e5325975fc8812ea647ec23d1f20b2b9e560f6d1b07652f51e36b3074",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/36-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/36-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/36-run.stderr.raw"
+    },
+    {
+      "path": "capture/36-run.stdout.raw",
+      "bytes": 11850,
+      "sha256": "2ca31d8600d79b5d4694d649d50ba4c6f24595766a13fb30363cbdd06be97a32",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/36-run.stdout.raw"
+    },
+    {
+      "path": "capture/4-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/4-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/4-jobs.stdout.raw",
+      "bytes": 10978,
+      "sha256": "e883c1ffc896866682f311e6c60986e1098e0328ba455d8ce07e1d0143742ce3",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/4-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/4-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/4-run.stderr.raw"
+    },
+    {
+      "path": "capture/4-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/4-run.stdout.raw"
+    },
+    {
+      "path": "capture/5-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/5-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/5-jobs.stdout.raw",
+      "bytes": 10978,
+      "sha256": "e883c1ffc896866682f311e6c60986e1098e0328ba455d8ce07e1d0143742ce3",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/5-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/5-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/5-run.stderr.raw"
+    },
+    {
+      "path": "capture/5-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/5-run.stdout.raw"
+    },
+    {
+      "path": "capture/6-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/6-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/6-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/6-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/6-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/6-run.stderr.raw"
+    },
+    {
+      "path": "capture/6-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/6-run.stdout.raw"
+    },
+    {
+      "path": "capture/7-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/7-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/7-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/7-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/7-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/7-run.stderr.raw"
+    },
+    {
+      "path": "capture/7-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/7-run.stdout.raw"
+    },
+    {
+      "path": "capture/8-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/8-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/8-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/8-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/8-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/8-run.stderr.raw"
+    },
+    {
+      "path": "capture/8-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/8-run.stdout.raw"
+    },
+    {
+      "path": "capture/9-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/9-jobs.stderr.raw"
+    },
+    {
+      "path": "capture/9-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "06e7b7d1bd3b7edb311edbc4aa3e038e7400c32f326d72a5064f6ad04df6c9b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/9-jobs.stdout.raw"
+    },
+    {
+      "path": "capture/9-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/9-run.stderr.raw"
+    },
+    {
+      "path": "capture/9-run.stdout.raw",
+      "bytes": 11847,
+      "sha256": "a0fa17d5f11cec7ef2c52ef8aa6b580d2c6af4cb89f84df0fb4e433cec6f443d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/9-run.stdout.raw"
+    },
+    {
+      "path": "capture/completed-log-zip.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/completed-log-zip.stderr.raw"
+    },
+    {
+      "path": "capture/completed-log-zip.stdout.raw",
+      "bytes": 466118,
+      "sha256": "f093ebf12de0e7ebdf459f803abff381460bb42597961a8b05914db2884b6370",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/completed-log-zip.stdout.raw"
+    },
+    {
+      "path": "capture/execution.json",
+      "bytes": 71073,
+      "sha256": "bda5903427d01ab00d5779e2e097fc7fa532b69aa8e97a74c0565aee92341dd8",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/execution.json"
+    },
+    {
+      "path": "capture/logs.zip",
+      "bytes": 466118,
+      "sha256": "f093ebf12de0e7ebdf459f803abff381460bb42597961a8b05914db2884b6370",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/logs.zip"
+    },
+    {
+      "path": "launcher/dispatch.json",
+      "bytes": 863,
+      "sha256": "86c25bec83ddb99c30fd7378eccdc87ce03399612f524779b0300817b14fa0a2",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-launch-v1/dispatch.json"
+    },
+    {
+      "path": "launcher/dispatch.stderr.raw",
+      "bytes": 104,
+      "sha256": "2a2ce699a19caba38fba2768d6c92e99dfb2ee95591f90cc0bb732c7a8a65767",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-launch-v1/dispatch.stderr.raw"
+    },
+    {
+      "path": "launcher/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-launch-v1/dispatch.stdout.raw"
+    },
+    {
+      "path": "launcher/launcher.stderr.raw",
+      "bytes": 279,
+      "sha256": "833c9e75fff9bf6332bc647d13c0528929c036ae0931e2e29598158daaad0c89",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-launch-v1/launcher.stderr.raw"
+    },
+    {
+      "path": "launcher/launcher.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-launch-v1/launcher.stdout.raw"
+    },
+    {
+      "path": "capture-runner.py",
+      "bytes": 1909,
+      "sha256": "7070184fed2450094b0b4d0cb062934e8f66c632e302c3c7c6c74ab100dad0e8",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/capture_product_ci_v3.py"
+    },
+    {
+      "path": "independent-failure-review.json",
+      "bytes": 16612,
+      "sha256": "d82656c5cf5da57c9165a4fbe6d02ed41df5a0f4ae080656fb21e4839e8ea3e3",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-c075-own-ci-billing-failure-review-v1.json"
+    }
+  ],
+  "metadata_lineage": {
+    "v1_archive_sha256": "4e61fc78ec06ac856296aef52c8a48c111baef54b116a1dac6e015a2eddec68e",
+    "v1_preserved": true,
+    "correction": "v1 labelled all253 test summaries as nonempty; actual252 nonempty and one zero-count summary. No raw/payload removed or changed."
+  }
+}

@@ -1,0 +1,585 @@
+{
+  "schema": "static-prefix-fixed-six-opcode-discriminator-static-review-v1",
+  "status": "confirmed_old_corpus_non_candidates_static_only",
+  "scope": "Pure Python CP/Code decoding of exact committed class bytes; no native/JVM/Git/repo writes. No claim new fix runner passed; root is executing it separately.",
+  "counts": {
+    "committed_class_files": 8,
+    "six_instruction_int_return_methods": 12,
+    "first_getstatic_methods": 2,
+    "full_prefix_opcode_candidates": 0
+  },
+  "six_instruction_methods": [
+    {
+      "input": "tests/fixtures/p3-scope/v8/Scope.class",
+      "owner": "Scope",
+      "name": "reassign",
+      "descriptor": "(JI)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 28
+        },
+        {
+          "bci": 1,
+          "opcode": 4
+        },
+        {
+          "bci": 2,
+          "opcode": 96
+        },
+        {
+          "bci": 3,
+          "opcode": 61
+        },
+        {
+          "bci": 4,
+          "opcode": 28
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1c04603d1cac"
+    },
+    {
+      "input": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class",
+      "owner": "BooleanContexts",
+      "name": "parity",
+      "descriptor": "(I)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 184
+        },
+        {
+          "bci": 3,
+          "opcode": 153
+        },
+        {
+          "bci": 6,
+          "opcode": 4
+        },
+        {
+          "bci": 7,
+          "opcode": 172
+        },
+        {
+          "bci": 8,
+          "opcode": 3
+        },
+        {
+          "bci": 9,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "b8000799000504ac03ac"
+    },
+    {
+      "input": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class",
+      "owner": "BooleanContexts",
+      "name": "staticFlagCount",
+      "descriptor": "()I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 178
+        },
+        {
+          "bci": 3,
+          "opcode": 153
+        },
+        {
+          "bci": 6,
+          "opcode": 4
+        },
+        {
+          "bci": 7,
+          "opcode": 172
+        },
+        {
+          "bci": 8,
+          "opcode": 3
+        },
+        {
+          "bci": 9,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "b2000d99000504ac03ac"
+    },
+    {
+      "input": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class",
+      "owner": "BooleanContexts",
+      "name": "count",
+      "descriptor": "(Z)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 153
+        },
+        {
+          "bci": 4,
+          "opcode": 4
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        },
+        {
+          "bci": 6,
+          "opcode": 3
+        },
+        {
+          "bci": 7,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a99000504ac03ac"
+    },
+    {
+      "input": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class",
+      "owner": "BooleanContexts",
+      "name": "nonzero",
+      "descriptor": "(I)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 153
+        },
+        {
+          "bci": 4,
+          "opcode": 4
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        },
+        {
+          "bci": 6,
+          "opcode": 3
+        },
+        {
+          "bci": 7,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a99000504ac03ac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "owner": "ModLike",
+      "name": "nestedDifference",
+      "descriptor": "(III)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 27
+        },
+        {
+          "bci": 2,
+          "opcode": 28
+        },
+        {
+          "bci": 3,
+          "opcode": 100
+        },
+        {
+          "bci": 4,
+          "opcode": 100
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a1b1c6464ac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "owner": "ModLike",
+      "name": "nestedQuotient",
+      "descriptor": "(III)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 27
+        },
+        {
+          "bci": 2,
+          "opcode": 28
+        },
+        {
+          "bci": 3,
+          "opcode": 104
+        },
+        {
+          "bci": 4,
+          "opcode": 108
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a1b1c686cac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "owner": "ModLike",
+      "name": "productOfSum",
+      "descriptor": "(III)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 27
+        },
+        {
+          "bci": 2,
+          "opcode": 96
+        },
+        {
+          "bci": 3,
+          "opcode": 28
+        },
+        {
+          "bci": 4,
+          "opcode": 104
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a1b601c68ac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "owner": "ModLike",
+      "name": "sumOfProducts",
+      "descriptor": "(III)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 27
+        },
+        {
+          "bci": 2,
+          "opcode": 28
+        },
+        {
+          "bci": 3,
+          "opcode": 104
+        },
+        {
+          "bci": 4,
+          "opcode": 96
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a1b1c6860ac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "owner": "ModLike",
+      "name": "leftNestedSum",
+      "descriptor": "(III)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 27
+        },
+        {
+          "bci": 2,
+          "opcode": 96
+        },
+        {
+          "bci": 3,
+          "opcode": 28
+        },
+        {
+          "bci": 4,
+          "opcode": 96
+        },
+        {
+          "bci": 5,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1a1b601c60ac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-eval/v8/NestedEval.class",
+      "owner": "NestedEval",
+      "name": "tick",
+      "descriptor": "(I)I",
+      "flags": 8,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 178
+        },
+        {
+          "bci": 3,
+          "opcode": 4
+        },
+        {
+          "bci": 4,
+          "opcode": 96
+        },
+        {
+          "bci": 5,
+          "opcode": 179
+        },
+        {
+          "bci": 8,
+          "opcode": 26
+        },
+        {
+          "bci": 9,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "b200070460b300071aac"
+    },
+    {
+      "input": "tests/fixtures/p3-nested-eval/v8/NestedEval.class",
+      "owner": "NestedEval",
+      "name": "nestedCall",
+      "descriptor": "(I)I",
+      "flags": 9,
+      "instructions": [
+        {
+          "bci": 0,
+          "opcode": 26
+        },
+        {
+          "bci": 1,
+          "opcode": 184
+        },
+        {
+          "bci": 4,
+          "opcode": 132
+        },
+        {
+          "bci": 7,
+          "opcode": 26
+        },
+        {
+          "bci": 8,
+          "opcode": 96
+        },
+        {
+          "bci": 9,
+          "opcode": 172
+        }
+      ],
+      "handlers": 0,
+      "Code_hex": "1ab8000d8400011a60ac"
+    }
+  ],
+  "first_opcode_counterexample": "NestedEval.tick(I)I has exact b2,04,60,b3,1a,ac. A getstatic-only gate admits it; the old charged loop pays four AnalysisSteps before expecting dup but finding putstatic. This method does an independent static increment then returns arg0, not new field sum. It is in actual p5 deep-expression case. Scope.reassign(JI)I has1c,04,60,3d,1c,ac and explains one initial fee on flat-mixed. BooleanContexts.staticFlagCount beginsgetstatic but branches; the existing oneblock precondition separately excludes it.",
+  "recommended_gate": {
+    "sequence_hex": [
+      "b2",
+      "04",
+      "60",
+      "59",
+      "b3",
+      "ac"
+    ],
+    "position": "After existing rawlen==6 admission, before first charged SSA validation loop. A fixed6element pattern/matches predicate is O(1), analogous to existing unit_instance_candidate.",
+    "effect": "Reject noncandidate opcode shape with no NEW prefix-proof fees. True FO candidates still execute every existing raw/SSA BCI/opcode/type/local/field/signature/owner/use/effect poll+charge and final beforecommit checkpoint unchanged. No refund, billing pin edit or skipped truecandidate proof.",
+    "static_positive_both_FO_legs": [
+      {
+        "input": {
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/v8/FO.class",
+          "bytes": 790,
+          "sha256": "de08332a3eff86160fc606c04664d31f8f80bce207be8315899f2e4f91168134"
+        },
+        "owner": "FO",
+        "name": "bump",
+        "descriptor": "()I",
+        "flags": 8,
+        "instructions": [
+          {
+            "bci": 0,
+            "opcode": 178
+          },
+          {
+            "bci": 3,
+            "opcode": 4
+          },
+          {
+            "bci": 4,
+            "opcode": 96
+          },
+          {
+            "bci": 5,
+            "opcode": 89
+          },
+          {
+            "bci": 6,
+            "opcode": 179
+          },
+          {
+            "bci": 9,
+            "opcode": 172
+          }
+        ],
+        "handlers": 0,
+        "Code_hex": "b20007046059b30007ac"
+      },
+      {
+        "input": {
+          "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class",
+          "bytes": 790,
+          "sha256": "c5f1287d9dac890b29c270473d6e8122d9bfb5af24199f78ba441a8e087627e7"
+        },
+        "owner": "FO",
+        "name": "bump",
+        "descriptor": "()I",
+        "flags": 8,
+        "instructions": [
+          {
+            "bci": 0,
+            "opcode": 178
+          },
+          {
+            "bci": 3,
+            "opcode": 4
+          },
+          {
+            "bci": 4,
+            "opcode": 96
+          },
+          {
+            "bci": 5,
+            "opcode": 89
+          },
+          {
+            "bci": 6,
+            "opcode": 179
+          },
+          {
+            "bci": 9,
+            "opcode": 172
+          }
+        ],
+        "handlers": 0,
+        "Code_hex": "b20002046059b30002ac"
+      }
+    ]
+  },
+  "generated_p5_inputs": "Rustwide_class builds4instructions iload/bipush/iadd/ireturn. deep_expression builds2+2*levels instructions (levels16/64 ->34/130), fields_count0. Neither is static prefix candidate. Damaged rows use truncated committed bytes, not new sixop candidate.",
+  "failure_audit": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-c075-own-ci-billing-failure-review-v1.json",
+    "bytes": 16612,
+    "sha256": "d82656c5cf5da57c9165a4fbe6d02ed41df5a0f4ae080656fb21e4839e8ea3e3"
+  },
+  "old_input_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-scope/v8/Scope.class",
+      "bytes": 532,
+      "sha256": "5badc5b105de3cb1a49f1dfcfe417b29d283c596aa06cecc233078538458789d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-declaration/v8/Shape.class",
+      "bytes": 191,
+      "sha256": "91f9a3a0f60fcf6a510c826b87b8e3b484e168d7281d3a1a8f8cc4b01b94f32e"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class",
+      "bytes": 731,
+      "sha256": "9588c94b91d6da16750e52969c6557dcf416a4d1929c796f47d52e142fac4083"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-declaration/v8/Holder.class",
+      "bytes": 359,
+      "sha256": "11cbb8c01e738c5d2c4959b09fbba29e3949e4aff9445970154c87ce1d25b5ea"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-handlers/v8/Guarded.class",
+      "bytes": 3814,
+      "sha256": "db52b41d27a78dcf5bc88fca2879c0f69947949afcc40112b58799245fe9edcf"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class",
+      "bytes": 1114,
+      "sha256": "e6a85f9aa40f585642696f0a391c8be9c8fafa2100e0cf0f9ab7ebd6bfb2bf0d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "bytes": 568,
+      "sha256": "a5827ef4865e7d33aff6ea0c34c46194a69f2436e011f5ad5c848853d2891158"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-nested-eval/v8/NestedEval.class",
+      "bytes": 361,
+      "sha256": "141c3dcb3990605466dd54eb1a9bcc1942d0907e4e32d8d0587eb443f0c5c2e9"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/p5_bulk_corpus.rs",
+      "bytes": 89940,
+      "sha256": "7527b8c616075d61d4c741de779d0dbbebb5b8583ec1912a9bedef45514d6fbe"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/bulk_support.rs",
+      "bytes": 40551,
+      "sha256": "4bdf649027c96d635b8b3a3b4ef72fa3665e3e4c73b4b6712987a635df3af054"
+    }
+  ],
+  "prepared_auditor_limit": "Existing prepared successaudit not changed/notrun. Future newversion must not require8ZIP members: audit all actually present safe unique regular members and require4actual job aggregate logs with Complete job name identity and actual API command boundaries; preserve perstep/aggregate duplication as original archive, do not synthesize perstep files. Actual c075 failedZIP is45members466118B SHA f093ebf12de0e7ebdf459f803abff381460bb42597961a8b05914db2884b6370."
+}

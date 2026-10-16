@@ -1,0 +1,60 @@
+{
+  "schema": "static-prefix-dispatch-local-package-independent-audit-v1",
+  "status": "accepted_local_archive_only",
+  "checks": 611,
+  "errors": [],
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-local-evidence-v1/capture.tar.gz",
+    "bytes": 3521348,
+    "sha256": "1f2683638eba64c39b98576501b368c2d11f2a86d352eecff18054595f54951a"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-local-evidence-v1/manifest.json",
+    "bytes": 44407,
+    "sha256": "5e0e32d60d5b6b74199795b87b39ed9148ca7b11b539215d5564977968d4a0a0"
+  },
+  "package_execution": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-local-evidence-v1/execution.json",
+    "bytes": 478,
+    "sha256": "c927223d57e45bf7c6801bdf4072cbabeca312c4ed2da2a5ba30bcd1caa7abde"
+  },
+  "counts": {
+    "tar_members": 116,
+    "payloads": 115,
+    "actual_command_groups": [
+      6,
+      14,
+      10
+    ],
+    "actual_commands": 30,
+    "actual_command_raw": 60,
+    "auxiliary_launcher_dispatch_raw": 12,
+    "compiled_source_rows": 4915,
+    "full_source_runtime_rows": 8,
+    "metadata_tree_raw": 1
+  },
+  "product_head": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+  "externalCLIpin": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-dispatch-fix-v1",
+    "bytes": 59699632,
+    "sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "mode": "0555",
+    "inside_archive": false
+  },
+  "actual_metric_totals": {
+    "focused-native": [
+      12,
+      0,
+      1
+    ],
+    "product-local-checks": [
+      17,
+      0,
+      3
+    ]
+  },
+  "scope": "Pure Python read-only repo/cache and this audit output only; no native/Git/API/OpenSpec. Reopened every tar member against manifest and original source bytes, safe unique regular payloads. All60 actualcommand raw bound directly to3actual terminal receipts;12aux launcher/dispatch raw independently pinned and launcher paths tied to recorded systemd argv, not counted as product commands. Rechecked actualraw summaries/strict/full report.text and8oracles,4915source binding and sparse savedtree. This is portable local evidence with externalCLIpin, no ownCI/fullworkspace acceptance and no relabeling c075 failedCI.",
+  "known_portability_boundary": "Product4915bytes are described by committeda89source manifest/Gitblob tree, not all copied into archive; fixture/generatedsource/class outputs and executedscript helpers are actualpayload. Frozen nativeCLI remains externalpinned asdeclared.",
+  "source_tree_argv_scope": "The saved literal-pathspec Git argv names exact a89 commit SHA rather than HEAD and then exactly4915unique source paths; exactSHA is stronger provenance. The extra .raw member outside command/launcher streams is the saved Git tree metadata, not an unbound command output.",
+  "audit_predicate_clarification": "Validation distinguishes60commandraw +12launcher/dispatchraw +1metadata tree.raw. No package defect: initial audit assumptions expecting only12noncommand .raw and literalHEAD were corrected against actual payload before final report."
+}

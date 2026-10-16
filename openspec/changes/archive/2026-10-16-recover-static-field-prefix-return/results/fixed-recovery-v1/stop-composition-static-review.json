@@ -1,0 +1,146 @@
+{
+  "status": "accepted_static_composition_with_explicit_phase_and_capability_limits",
+  "fixed_commit": "c075d1a15ab9e29482ee2eb006bc152e5c57980c",
+  "method": "Read-only exact Git blobs plus equal live files; no product/toolchain/test execution, no target access. Existing tests inspected as source only.",
+  "source_pins": [
+    {
+      "path": "crates/jarde-java/src/stop.rs",
+      "git_blob": "0c222099a2d9d97713a1adaa960b2528aa266439",
+      "bytes": 13828,
+      "sha256": "1c5573a0346eacbd87d67ba08360e4ad3f908da7eeba1b772c1c704623c28211",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "crates/jarde-java/src/build.rs",
+      "git_blob": "5c0d09514ad166fd1a27c5ddecb6fbf7cafb16b7",
+      "bytes": 1923177,
+      "sha256": "6eb91978979f2a29ecd82818051e7cbf5ea31e886ea3eafe58c25bfa1806f575",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "crates/jarde-java/src/emit.rs",
+      "git_blob": "027225c973374e5b3d40748ff487d60c4cd3a5fd",
+      "bytes": 184293,
+      "sha256": "80169b0bc68693734d10589831f20cd12695045eb7348fc659a55e25f9fad1d0",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "crates/jarde-java/src/report.rs",
+      "git_blob": "cc6aa6f7d1913d56f0dff910c8512c305e8d5b98",
+      "bytes": 699169,
+      "sha256": "a7f2a5d9350f86f0869e338612a2c0800f95e471f8995a3acd9868ef8fec3118",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "crates/jarde-java/src/facts.rs",
+      "git_blob": "e9e50fe953b44ce1bd334513d427d4185593d5a1",
+      "bytes": 58831,
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "crates/jarde-reader/src/classfile.rs",
+      "git_blob": "76d1f9c9cfa7f7a91861edd810d1decbac5e7c4a",
+      "bytes": 533100,
+      "sha256": "bb9d987ec1e7ed7e9ef6010903f290ee21376473fac4c6df6d7ea10c187d9188",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "crates/jarde-reader/src/budget.rs",
+      "git_blob": "ae47ac1aca9c553f7d812bcddf2a6a81aa9a6e00",
+      "bytes": 56599,
+      "sha256": "3605b5da30231613ef55f91312fbfbe2f2ecba09b0dd5cb7850e4e6b88a26687",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "openspec/changes/recover-static-field-prefix-return/design.md",
+      "git_blob": "24654484cf3c81ce5d7c8646dd4f6111ebd6295c",
+      "bytes": 6292,
+      "sha256": "10be050745d53a6e4fba145555f9c1636375e686683ece08eed4b56259ff4612",
+      "live_equals_fixed_blob": true
+    },
+    {
+      "path": "openspec/changes/recover-static-field-prefix-return/specs/java8-recovery/spec.md",
+      "git_blob": "93d145ce97a881af67fc6e1b98780979c89dc626",
+      "bytes": 3635,
+      "sha256": "2eb355ec5e5e5bf829b8b3982edddb93b1cf68fb9c060daa4dc7c80e42cb4990",
+      "live_equals_fixed_blob": true
+    }
+  ],
+  "stop_composition": [
+    {
+      "at": "crates/jarde-reader/src/budget.rs:499,512,538,618",
+      "finding": "poll checks operation ledger first then local real cancellation/deadline; check polls without charging; charge polls, checks local admission, charges operation ledger then local usage. Refused work is not charged; admitted charges are not refunded. Cancellation after admission is detected at the next cooperative checkpoint."
+    },
+    {
+      "at": "crates/jarde-java/src/stop.rs:116,137,149,177",
+      "finding": "poll/charge/check preserve the existing recovery StopReason vocabulary: real cancellation is Cancelled; elapsed deadline is Interrupted(jre_budget_interrupted), not a new prefix-specific reason. No lossless original reader Error identity is claimed. Counted refusal retains its dimension and position; emission normalizes OutputBytes written/limit to its buffer counters by existing contract."
+    },
+    {
+      "at": "crates/jarde-java/src/build.rs:8750,11929,12041,12083,12178,12191,12197,14371,15541",
+      "finding": "StaticPrefixReturn::prove returns Result<Option<certificate>,StopReason>; every fallible poll/charge and called SSA/effects helper is propagated with ?. Missing facts/mismatch alone returns Ok(None). No stop-to-None adapter, catch/retry or partial ownership is published. Final poll occurs immediately before Some; build itself propagates ?. This is a cooperative observed-stop property, not an assertion that time/token cannot change between checkpoints."
+    },
+    {
+      "at": "crates/jarde-java/src/build.rs:25612,26189; crates/jarde-java/src/report.rs:11961,12024",
+      "finding": "After complete certificate, return creates one typed Field/PrefixUpdate AST. adapt_return is Result<Expr,String> ordinary type adaptation, not a swallowed StopReason channel; pushes remain Result. build failure exits report through stopped rather than continuing successor construction."
+    },
+    {
+      "at": "crates/jarde-java/src/emit.rs:117,607,1360,1534,1580,1663",
+      "finding": "PrefixUpdate writes operator via put? then returns operand Result. operand propagates grouping and child expr writes. Sole commit put polls/checks/charges before append, discards staged text on stop; emit finishes only on Ok. Commit pass records no source-map table. Previously admitted output usage remains real; failed append adds none."
+    },
+    {
+      "at": "crates/jarde-java/src/report.rs:12500,12510,16553,16601,16705",
+      "finding": "Only successful full emission proceeds to committed field presentations. A stop in emission or that presentation admission returns stopped with original StopReason, current usage, stop diagnostic, empty text/fields/maps and not-produced artifact."
+    }
+  ],
+  "phase_qualification": {
+    "at": "crates/jarde-java/src/report.rs:12988-13051",
+    "finding": "Optional evidence/source-map replay follows complete text emission. A later evidence stop intentionally retains Produced complete body and reports Partial/Cancelled execution plus evidence status; source-map gate error returns default map. This is not a partial prefix body and must not be restated as every stop erases all prior committed artifacts. No claim of whole-operation transactional rollback is supported."
+  },
+  "existing_tests_inspected_not_run_here": [
+    {
+      "path": "crates/jarde-java/src/stop.rs:236,245,260",
+      "names": [
+        "cancellation_inside_budget_poll_keeps_the_cancelled_reason",
+        "cancellation_inside_budget_charge_keeps_the_cancelled_reason",
+        "deadline_inside_budget_charge_keeps_the_interrupted_reason"
+      ],
+      "facts": "Real token/ledger cancellation; real elapsed_millis=0 budget rejects OutputBytes and IrItems with Interrupted at23 and zero charge. No fabricated StopReason."
+    },
+    {
+      "path": "crates/jarde-java/src/emit.rs:2037,2065,2791,2828,2857",
+      "names": [
+        "output_admission_preserves_cancellation_after_initial_poll",
+        "cancellation_after_a_prior_write_discards_text_and_keeps_only_prior_charge",
+        "the_budget_is_checked_before_every_write_and_a_refusal_discards_the_buffer",
+        "a_throw_stops_atomically_at_the_output_bound",
+        "a_throw_source_map_budget_stops_before_publishing_a_partial_node"
+      ],
+      "facts": "Shared writer admission, prior-charge retention, exact/one-short output refusal and replay atomic node publication have existing concrete tests. These are generic emitter tests, not new prefix dynamic experiments."
+    },
+    {
+      "path": "crates/jarde-java/src/build.rs:35638",
+      "names": [
+        "static_prefix_late_budget_and_ledger_cancellation_publish_no_certificate"
+      ],
+      "facts": "Inspected actual measured proof, IrItems one-short at9 and ledger cancellation after final accepted charge; asserts no certificate, exact admitted usage and Cancelled at9. Earlier sealed focused-v3 audit supplies execution evidence; this review does not rerun it."
+    }
+  ],
+  "test_requirement_judgment": "The common checked writer plus direct Result composition is sufficient static evidence for this new node to inherit observed deadline/output-stop reason, usage and precommit atomicity. No missing prefix-specific dynamic deadline/output run is disguised as executed coverage. No additional framework or duplicate dedicated test is necessary solely to restate this unchanged common mechanism; a future bypass/new commit boundary would need its own verification.",
+  "scope_closure": {
+    "facts_at": [
+      "crates/jarde-reader/src/classfile.rs:20",
+      "crates/jarde-java/src/facts.rs:82,886",
+      "crates/jarde-java/src/build.rs:12004-12140",
+      "openspec/changes/recover-static-field-prefix-return/design.md:23-29"
+    ],
+    "finding": "AttributeShell has only name/span/content_span; MethodFacts has no generic binder; DeclaringClass carries names/flags/member-name projection, not generic/source scope binding. Requiring actual known class/method headers and rejecting class Signature/InnerClasses/EnclosingMethod or current method Signature presence is therefore a conservative absence proof for this leaf, not attribute payload decoding or a conclusion that every such class is unsafe. Other methods Signature is not rejected. Object/no-interface and real-field identifier collision checks also close presently unobserved inherited/value-name contexts. Fixed design explicitly documents this boundary; delta qualifies capability as proved and preserves inability-to-prove refusal.",
+    "capability_gap": "An otherwise nonconflicting generic class/method or class carrying harmless InnerClasses rows can still be declined. Presence alone does not establish a real shadow/collision. This is a real future admission capability gap, not unsafe successful recovery and not claimed covered by FO success. Expanding it requires adequate typed binding facts, not a global resolver or silently treating attribute absence/presence as semantic equivalence."
+  },
+  "limits": [
+    "Static inspection of fixed c075 only; no new runtime or CI acceptance.",
+    "No prefix-specific dynamic deadline or output-limit experiment is asserted.",
+    "No guarantee of instantaneous asynchronous cancellation between cooperative checkpoints, no refund, and no rollback of already complete artifact on optional evidence stop.",
+    "No general generic/member-scope support, classfile-attribute payload validation, or whole workspace correctness claim."
+  ]
+}

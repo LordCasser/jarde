@@ -1,0 +1,643 @@
+{
+  "schema": "static-prefix-census-local-evidence-v1",
+  "scope": "Accepted 052 fresh focused native and actual fresh complete generated-source replay. Ancestor a89 full local checks and 052 own CI are separate evidence.",
+  "product_head": "052c82484bb20ca8b7e22ffe9943503c961280f9",
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-reader-census-v1",
+    "bytes": 59699632,
+    "sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "mode": "0555",
+    "inside_archive": false
+  },
+  "source_count": 4915,
+  "actual_command_groups": [
+    {
+      "group": "focused-native",
+      "commands": 6,
+      "raw_streams": 12,
+      "all_exit_zero": true
+    },
+    {
+      "group": "full-generated-source",
+      "commands": 14,
+      "raw_streams": 28,
+      "all_exit_zero": true
+    }
+  ],
+  "command_count": 20,
+  "command_raw_count": 40,
+  "focused_totals": {
+    "passed": 11,
+    "failed": 0,
+    "ignored": 2
+  },
+  "ancestor_local_checks": "See separately bound a89 local-product checks; not relabeled 052",
+  "strict": "Not rerun in this focused set; own exact-head CI and ancestor local strict are separate gates",
+  "full_replay": {
+    "commands": 14,
+    "generated_source_compiles": 2,
+    "unchanged_driver_compiles": 2,
+    "rebuilt_only_runtime_oracles": 8,
+    "main_bytes": 6,
+    "driver_bytes": 60,
+    "generated_source_bytes": 1617,
+    "generated_source_sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811"
+  },
+  "limits": [
+    "Own CI and two complete seeded workspace passes are not accepted by this local archive.",
+    "Default ignored tests were not executed by these focused/local commands.",
+    "No new dynamic deadline test; conservative source owner and pre-body commit boundaries remain as documented.",
+    "c075 and a89 ancestor local successes and failed own-CIs are preserved separately and are not relabeled 052."
+  ],
+  "payload_count": 84,
+  "members": [
+    {
+      "path": "dependencies/guard/guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "dependencies/openspec_cli/openspec",
+      "bytes": 2901,
+      "sha256": "9974c0062393e8433d06332e4bbe4d9d2b8da7d97b988dda8aae09fd4fbe63cb",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "dependencies/openspec_local_cli/openspec.js",
+      "bytes": 79,
+      "sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "dependencies/openspec_local_package/package.json",
+      "bytes": 2036,
+      "sha256": "c0f84c16edaec5ce6c124f907366ff90c76b35b0ceb443d26d4c04e63288c63d",
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/package.json",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "dependencies/openspec_package/package.json",
+      "bytes": 2035,
+      "sha256": "6c170954bb57400a0644477666b8f26d376a725e51c1434f6781cdee63618f50",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.pnpm/@fission-ai+openspec@1.11.0/node_modules/@fission-ai/openspec/package.json",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "dependencies/source_closure_runner/workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "dependencies/target_scan/target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "group": "executed_helper_or_package_metadata"
+    },
+    {
+      "path": "fixture/FO.java",
+      "bytes": 291,
+      "sha256": "36fddf93e459829b6caa9d1b8c4af2c73fafbf35b399b755a106a6a15a6f88d3",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/FO.java",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "fixture/README.md",
+      "bytes": 1074,
+      "sha256": "6b56100b3fc0eae98562cf0752252f5dafdab64b57188d6832b8e964187a87ce",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/README.md",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "fixture/StaticPrefixProbe.java",
+      "bytes": 584,
+      "sha256": "866e245fdcbdb09e954f24fcb7348139aaf57a020517bc49378b8c2d22eab0ce",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/StaticPrefixProbe.java",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "fixture/main.stdout",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/main.stdout",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "fixture/probe.stdout",
+      "bytes": 60,
+      "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/probe.stdout",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "fixture/v8-javac8/FO.class",
+      "bytes": 790,
+      "sha256": "c5f1287d9dac890b29c270473d6e8122d9bfb5af24199f78ba441a8e087627e7",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "fixture/v8/FO.class",
+      "bytes": 790,
+      "sha256": "de08332a3eff86160fc606c04664d31f8f80bce207be8315899f2e4f91168134",
+      "source_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/recover-static-field-prefix-return/v8/FO.class",
+      "group": "unchanged_fixture"
+    },
+    {
+      "path": "focused-native/commands.json",
+      "bytes": 1162,
+      "sha256": "23827986b4282a8b54a67902f20d5854d1abeff169fa1213207801422a5f452c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/commands.json",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/dispatch.json",
+      "bytes": 1754,
+      "sha256": "3b55ee68f71308ead50a56d64620d845fdce323b5bac809548974e8bbf6ece74",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/dispatch.json",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/dispatch.stderr.raw",
+      "bytes": 118,
+      "sha256": "416e9f31f6697751f178673d69bfff406ff909afabdb9fcf3be672d39ec90459",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/dispatch.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/dispatch.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/execution.json",
+      "bytes": 2162134,
+      "sha256": "69db413a1a2a620766ab3944df7769d6b318267b74b3f0b53ae763d282a4227c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/execution.json",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/independent-reader-census-native-replay-review-v1.json",
+      "bytes": 7980,
+      "sha256": "8533095723cd8756c26be7d3a35979fc510ac2ca0d6b859da6cc5b0b1def53b9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/independent-reader-census-native-replay-review-v1.json",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/launcher.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/launcher.stdout.raw",
+      "bytes": 409,
+      "sha256": "1ed66a29dad36448f8fcb8676c578e8b946fd8aebffcdd1f65b0aad6b6da9e5f",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/launcher.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/1.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/1.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/2.stderr.raw",
+      "bytes": 2744,
+      "sha256": "a4f93c78996616bac799240435c0c7cf973ba7137348f7e14c39326450e7dac7",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/2.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/2.stdout.raw",
+      "bytes": 66233,
+      "sha256": "695eabfabc0ae2a86ddbbb0fa98c4913633e30ec33f2ca1b5955dd16ebfdf4b0",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/2.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/3.stderr.raw",
+      "bytes": 940,
+      "sha256": "0c8300b1924eb48ef0bd4407c91c2444a20c98b0aa057e4ea4e156fadea77f4e",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/3.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/3.stdout.raw",
+      "bytes": 74076,
+      "sha256": "d2736762b371f6818517276955c990f6499f3d7e6f8bbe62ed52062c86dede1b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/3.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/4.stderr.raw",
+      "bytes": 273,
+      "sha256": "93a80d654dbe89dc6b33251a78bbe90ed658054b5235ae79fe1ed1c71ea911e5",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/4.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/4.stdout.raw",
+      "bytes": 74076,
+      "sha256": "e8f9929de988ce2408a2a25f650882e2da8d016e61e41e91123ef2461a7c989f",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/4.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/5.stderr.raw",
+      "bytes": 1638,
+      "sha256": "8f9cf6fb76b1dd7346aff22a1921e1bd275055afd9181e3239d7165596bba303",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/5.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/5.stdout.raw",
+      "bytes": 56539,
+      "sha256": "5aa90acb7fb41083bd9bd25868f303784343bcfbbf9e83075d16a06dfe22bc67",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/5.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/6.stderr.raw",
+      "bytes": 52,
+      "sha256": "83b6176ccad6e1ec5d9600e54b5f795b86b81c1bef35960e15387e95348f0e4a",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/6.stderr.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/6.stdout.raw",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/command_spec.json",
+      "bytes": 802,
+      "sha256": "bc6cf93243e85c22c638516932d77b5fafd857e9aaed3ec0075d984c2b18246b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/command_spec.json",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run-v1/execution.json",
+      "bytes": 2162134,
+      "sha256": "69db413a1a2a620766ab3944df7769d6b318267b74b3f0b53ae763d282a4227c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run-v1/execution.json",
+      "group": "focused-native"
+    },
+    {
+      "path": "focused-native/run.py",
+      "bytes": 13431,
+      "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/run.py",
+      "group": "focused-native"
+    },
+    {
+      "path": "full-generated-source/dispatch.json",
+      "bytes": 1772,
+      "sha256": "db956361c2c7e4fdc8df2054b8f6759453c92a7f49cafe1e416684d93e704349",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/dispatch.json",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/dispatch.stderr.raw",
+      "bytes": 123,
+      "sha256": "1318f830107798fd4149206099adf165ced03801b45d2cce00b5a0e93baf3505",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/dispatch.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/dispatch.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/launcher.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/launcher.stdout.raw",
+      "bytes": 380,
+      "sha256": "51c38dcdcbd7179603e0fd41204c73e429aa1e25469d7eeb0935716af6a90f0f",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/launcher.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/1.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/1.stdout.raw",
+      "bytes": 66035,
+      "sha256": "882ecb0a98bb9c96acdbf60e0b3536652fab5ee78f63001fa262b78538238c39",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/1.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/10.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/10.stdout.raw",
+      "bytes": 60,
+      "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/10.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/11.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/11.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/11.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/12.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/12.stdout.raw",
+      "bytes": 60,
+      "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/12.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/13.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/13.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/13.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/14.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/14.stdout.raw",
+      "bytes": 60,
+      "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/14.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/2.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/2.stdout.raw",
+      "bytes": 66032,
+      "sha256": "69270fd4c4bd59df6d0e0ef3913c3befb63f8ae38157333688e23d5871531064",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/2.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/3.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/3.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/4.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/4.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/5.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/5.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/6.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/6.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/7.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/7.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/7.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/8.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/8.stdout.raw",
+      "bytes": 60,
+      "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/8.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/9.stderr.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/9.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/9.stdout.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/execution.json",
+      "bytes": 4891409,
+      "sha256": "075f2758dc6a7085846d389db695ba948a51cdc6ba074c962fc5f18199137b91",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/execution.json",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac23-complete-source/FO.java",
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac23-complete-source/FO.java",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac23-frozen-FO.jar",
+      "bytes": 904,
+      "sha256": "d9880855e1ac15593ecf5bf5202b92d8108b4286ccc1975c3558da6dee55941b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac23-frozen-FO.jar",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac23-rebuilt-FO/FO.class",
+      "bytes": 792,
+      "sha256": "5e1d993ed3c36b4d186948b62199ed3b944120af2eb3b5b0e5414c847c263559",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac23-rebuilt-FO/FO.class",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac23-rebuilt-driver/StaticPrefixProbe.class",
+      "bytes": 867,
+      "sha256": "e9258d4eb50fdcace4aa795365ba23096122125895a473647135f879c07cfa53",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac23-rebuilt-driver/StaticPrefixProbe.class",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac8-complete-source/FO.java",
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac8-complete-source/FO.java",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac8-frozen-FO.jar",
+      "bytes": 904,
+      "sha256": "07f0b6a95fec3a87d365c7528d88f8ce8b3fe6200f141f6f2a7a3a58b8a0cd6b",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac8-frozen-FO.jar",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac8-rebuilt-FO/FO.class",
+      "bytes": 792,
+      "sha256": "ec61502bacaf9dc3404dc3bb373b8c4b7774f926484db6fffdd08ca0025a5620",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac8-rebuilt-FO/FO.class",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run-v1/javac8-rebuilt-driver/StaticPrefixProbe.class",
+      "bytes": 867,
+      "sha256": "58d5e021cc61efe8f61c6b12171fdfb65a63302a49137306264252a1118aa8f8",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/javac8-rebuilt-driver/StaticPrefixProbe.class",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/run.py",
+      "bytes": 14546,
+      "sha256": "3fa411e01361454e188b7ad110ed50f89014e8021ccc85ba73adffc69f8561ef",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run.py",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/source-head-binding.json",
+      "bytes": 1496328,
+      "sha256": "c654d13433c42f985b4959cf5f934f5c3b17bd949a3e93ec34327a8eaf22e155",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-binding.json",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/source-head-tree.argv.json",
+      "bytes": 442957,
+      "sha256": "c605e1e5a4a3287be758265cfc4b0615cc8d376d0e87a083890bdb9e0ecfde8d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-tree.argv.json",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "full-generated-source/source-head-tree.raw",
+      "bytes": 678748,
+      "sha256": "115ea8d623ff6ec7410ce5ea7dfce9dee27277dc56c76d244011a9b4ea1adfcd",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-tree.raw",
+      "group": "full-generated-source"
+    },
+    {
+      "path": "package-builder.py",
+      "bytes": 5040,
+      "sha256": "63a677f6cdc3f2c3e628dfcfdecb17ffca890ce53ef673ba83b6680b54960e99",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/package_static_prefix_census_local_v1.py",
+      "group": "package_builder"
+    }
+  ]
+}

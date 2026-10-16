@@ -1,0 +1,104 @@
+{
+  "capture": {
+    "all_raw_stream_references_verified": true,
+    "latest_terminal_jobs_raw": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-dispatch-root-v1/44-jobs.stdout.raw",
+      "sha256": "130159b22079c994b18e4fe93d75c0686eba5359179be8c1ef01453bf4fc17bd"
+    },
+    "latest_terminal_run_raw": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-dispatch-root-v1/44-run.stdout.raw",
+      "sha256": "4ace24087a355b4e7e2d22242bce33119fdff595400ac5f44fa8c7e58c95dd6d"
+    },
+    "observations": 91,
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-dispatch-root-v1/execution.json",
+    "raw_stream_references": 182,
+    "sha256": "bf586aa6ed5b888da3ca00efbd6d7a3dff317722d1fb9658548cdb653601a6bb",
+    "unique_raw_files": 182
+  },
+  "classification": "actual_product_ci_failure; not_success_and_not_auditor_failure",
+  "failed_step": "stable / test and specification :: Run workspace tests with two fixed independent seeds (pass 1)",
+  "failed_step_result": {
+    "failed": 1,
+    "failure": "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections",
+    "failure_detail": "fixture population changed: re-measure these counts; observed left (1175, 5259, 523, 3445, 10), recorded right (1173, 5249, 521, 3445, 10); crates/jarde-reader/src/classfile.rs:11870:9; cargo test exit 101",
+    "ignored": 98,
+    "passed": 3627,
+    "seed": "5350648285461741569",
+    "suite_summaries": 366
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "name": "supply chain",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "fuzz smoke",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "MSRV 1.88.0",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "name": "stable / test and specification",
+      "status": "completed"
+    }
+  ],
+  "later_stable_steps": {
+    "Check layered crate dependency closure": "skipped",
+    "Check normal dependency tree boundary": "skipped",
+    "Check resolved feature tree": "skipped",
+    "Ensure tracked files remain unchanged": "skipped",
+    "Install OpenSpec 1.11.0": "skipped",
+    "Post Install Node.js 22": "skipped",
+    "Run ignored JDK 25 instruction-boundary oracle": "skipped",
+    "Run public API example": "skipped",
+    "Run the BigDecimal Number full-class comparisons": "skipped",
+    "Run the functional-constructor full-class comparison": "skipped",
+    "Run the ignored P3 Java 8 compile-and-execute comparison": "skipped",
+    "Run the nested int array full-class comparisons": "skipped",
+    "Run the returned int array full-class comparison": "skipped",
+    "Run workspace tests with two fixed independent seeds (pass 1)": "failure",
+    "Run workspace tests with two fixed independent seeds (pass 2)": "skipped",
+    "Validate OpenSpec strictly": "skipped"
+  },
+  "logs_zip": {
+    "all_regular_safe_and_crc_readable": true,
+    "bytes": 587110,
+    "exact_failed_test_log_member": "stable _ test and specification/8_Run workspace tests with two fixed independent seeds (pass 1).txt",
+    "members": 45,
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-dispatch-root-v1/logs.zip",
+    "sha256": "6febe161cbac155c89f8bb23567f2e0b1cf7183a39dd733b558ea1ae03c4fc7f",
+    "unique_names": true
+  },
+  "new_static_prefix_gates_in_executed_first_seed": {
+    "build::tests::static_prefix_late_budget_and_ledger_cancellation_publish_no_certificate": "passed",
+    "build::tests::static_prefix_proves_two_real_copied_new_values_and_rejects_unwritable_declarations": "passed",
+    "build::tests::static_prefix_rejects_real_non_one_subtract_and_old_value_consumers": "passed",
+    "saved_return_still_precedes_the_finally_write": "passed",
+    "static_prefix_json_keeps_the_new_sum_and_the_complete_class": "passed",
+    "static_prefix_keeps_read_write_and_return_origins": "passed",
+    "static_prefix_returns_the_new_value_on_both_compiler_legs": "passed"
+  },
+  "run": {
+    "attempt": 1,
+    "branch": "codex/static-field-prefix-return",
+    "conclusion": "failure",
+    "event": "push",
+    "head_sha": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+    "id": 38841427486,
+    "status": "completed"
+  },
+  "schema": "static-prefix-own-ci-failure-independent-audit-v1",
+  "scope_limits": [
+    "Only first fixed seed executed; second seed skipped.",
+    "All later stable job steps after pass 1 were skipped, including strict OpenSpec validation, JDK oracle, and public/API comparisons.",
+    "The seven named static-prefix test gates were individually printed as passing in the first-seed workspace output, but this does not make the overall CI successful.",
+    "Other three jobs (supply chain, fuzz smoke, MSRV) completed successfully.",
+    "Captured run remains a failure; no success auditor was run and no CI restart was triggered."
+  ]
+}

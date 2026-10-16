@@ -1,0 +1,16 @@
+{
+  "status": "all_payloads_preserved_reopened_and_verified",
+  "archive": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-failed-own-ci-c075-evidence-v2/capture.tar.gz",
+  "bytes": 953124,
+  "sha256": "9118dccf44589c7deaa57365637634377f5b923b1e8f74ab8df9b72b79b63d0d",
+  "payload_count": 159,
+  "member_count": 160,
+  "actual_zip_members": 45,
+  "actual_first_seed_metrics": {
+    "workspace_summaries": 253,
+    "nonempty_workspace_summaries": 252,
+    "passed": 1941,
+    "failed": 2,
+    "ignored": 55
+  }
+}

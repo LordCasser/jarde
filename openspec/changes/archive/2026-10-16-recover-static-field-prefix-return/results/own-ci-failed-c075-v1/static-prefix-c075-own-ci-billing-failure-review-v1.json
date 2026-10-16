@@ -1,0 +1,411 @@
+{
+  "schema": "static-prefix-c075-own-ci-billing-failure-independent-review-v1",
+  "status": "confirmed_product_CI_failure_minimum_fix_recommended_not_implemented",
+  "checks": 283,
+  "errors": [],
+  "capture": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/execution.json",
+    "bytes": 71073,
+    "sha256": "bda5903427d01ab00d5779e2e097fc7fa532b69aa8e97a74c0565aee92341dd8"
+  },
+  "original_ZIP": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-c075-root-v1/logs.zip",
+    "bytes": 466118,
+    "sha256": "f093ebf12de0e7ebdf459f803abff381460bb42597961a8b05914db2884b6370"
+  },
+  "run_id": 38838653033,
+  "head": "c075d1a15ab9e29482ee2eb006bc152e5c57980c",
+  "jobs": {
+    "fuzz smoke": "success",
+    "stable / test and specification": "failure",
+    "MSRV 1.88.0": "success",
+    "supply chain": "success"
+  },
+  "actual_ZIP_member_count": 45,
+  "ZIP_member_pins": [
+    {
+      "path": "0_stable _ test and specification.txt",
+      "bytes": 389861,
+      "sha256": "8489638f242c85f88c8b81cf7791fdc259bf1f3b57f40558074b20840a44ae70"
+    },
+    {
+      "path": "stable _ test and specification/system.txt",
+      "bytes": 593,
+      "sha256": "59eb570c99a8dc592e4fa2fd61a0429f02dadb760af4f997e1fe9408500076d9"
+    },
+    {
+      "path": "stable _ test and specification/1_Set up job.txt",
+      "bytes": 2318,
+      "sha256": "d0ee0d7163728c36b47978b74ef165083922a99faed37624d0297db3605e7f9e"
+    },
+    {
+      "path": "stable _ test and specification/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14846,
+      "sha256": "47708ce078eb9a0d2425716842ed010ec472923707101f5c83397f155e0db24d"
+    },
+    {
+      "path": "stable _ test and specification/3_Install stable Rust with lint components.txt",
+      "bytes": 17928,
+      "sha256": "b7f8dae2b5060302a9f0eeb322540fa1f2933f78ac78caba23a0c5d777d394f3"
+    },
+    {
+      "path": "stable _ test and specification/4_Install Temurin 25.0.4+7.txt",
+      "bytes": 3135,
+      "sha256": "7085cdcfc967ba5bee3096638091c73d20f1f464a821a3b35990491119645212"
+    },
+    {
+      "path": "stable _ test and specification/5_Install Node.js 22.txt",
+      "bytes": 1238,
+      "sha256": "d83bd816799c56a81404830e09816a6309c166583564970a8cd082a5a0996bfb"
+    },
+    {
+      "path": "stable _ test and specification/6_Check formatting.txt",
+      "bytes": 815,
+      "sha256": "afd62c2b7e660013e8bb0424b329351601b13c18e5c87fba46510236d7b005a9"
+    },
+    {
+      "path": "stable _ test and specification/7_Run Clippy.txt",
+      "bytes": 14305,
+      "sha256": "857762150590e613f86a771c1fbf2b492aaa58db62cae36da2c763b6cfbc53f2"
+    },
+    {
+      "path": "stable _ test and specification/8_Run workspace tests with two fixed independent seeds (pass 1).txt",
+      "bytes": 331099,
+      "sha256": "7b1313dc331987971ac8861072d81bd37eb3062e5eda8d40067a460a55e581f4"
+    },
+    {
+      "path": "stable _ test and specification/43_Post Install Temurin 25.0.4+7.txt",
+      "bytes": 50,
+      "sha256": "7766680e6c8505e5484751838907316c8eb30a4552dd6e30fff45f47057729fc"
+    },
+    {
+      "path": "stable _ test and specification/44_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "d1d419891653a6b749def86b3df9e08f328fbcdcc2fb9b6634bcf1c0489cf844"
+    },
+    {
+      "path": "stable _ test and specification/45_Complete job.txt",
+      "bytes": 61,
+      "sha256": "eac4c4c1a7c70ad19f2156be8df19313e7d1a9126cae4d14503eda6858e9cced"
+    },
+    {
+      "path": "1_MSRV 1.88.0.txt",
+      "bytes": 50741,
+      "sha256": "6f6d1a4840dd6dab6088b6d2c978d894bfa173f0c2ef1d7a1879c5b1453128eb"
+    },
+    {
+      "path": "MSRV 1.88.0/system.txt",
+      "bytes": 591,
+      "sha256": "043ba31a5d73e8d2eaac82f3e476c20ae23c02b1670ab45cab09de1bfbd378ff"
+    },
+    {
+      "path": "MSRV 1.88.0/1_Set up job.txt",
+      "bytes": 2044,
+      "sha256": "f1af226a8a531dd8b3b74c450c6d42370bf675a863eb0e49e6ad5a2f60f2d1ad"
+    },
+    {
+      "path": "MSRV 1.88.0/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14846,
+      "sha256": "c2723502c9bddab608312d0e64ecebef8bfff8bba75a1cde75b3f6e7aa6465d6"
+    },
+    {
+      "path": "MSRV 1.88.0/3_Install Rust 1.88.0.txt",
+      "bytes": 17407,
+      "sha256": "3089fa280b9d4fd7bb7871af98865ff80cdfcf7d88bcfa75fade93666132a368"
+    },
+    {
+      "path": "MSRV 1.88.0/4_Check workspace on MSRV.txt",
+      "bytes": 12302,
+      "sha256": "4798ff3bc1ef366d23ce64af7ce7670fac84adb50c99a5298df7913bf799727c"
+    },
+    {
+      "path": "MSRV 1.88.0/8_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "9f87ace5f970277b43cb9d1e4dbb0115693506d7ed5262554bf7127351e160e4"
+    },
+    {
+      "path": "MSRV 1.88.0/9_Complete job.txt",
+      "bytes": 61,
+      "sha256": "3c1ca1f07559c3ae001b06a7818018e9420ce3f956b906d0b5b4ef169dc0b19d"
+    },
+    {
+      "path": "2_supply chain.txt",
+      "bytes": 72668,
+      "sha256": "bd8c1518f2b751044f2588e6c2db246bf92a5c16bd82012cfa3059eba74fd95d"
+    },
+    {
+      "path": "supply chain/system.txt",
+      "bytes": 599,
+      "sha256": "2aa0c1993597ac8c5c4e18b4a2e87a34f6ef8c3414987451cba522a167f0275f"
+    },
+    {
+      "path": "supply chain/1_Set up job.txt",
+      "bytes": 2038,
+      "sha256": "fc93ae06295cd606ace3bcae679108d534ff62ea7185226aa4d2b86502519b72"
+    },
+    {
+      "path": "supply chain/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14847,
+      "sha256": "50fa2681f30e3a32a067bf98fce82c95400fefc7f8d556a0d62b4b37f9d33ddb"
+    },
+    {
+      "path": "supply chain/3_Install stable Rust for cargo-deny.txt",
+      "bytes": 17854,
+      "sha256": "6b43bc3bbdaaf2a39fc8812fbd9cf27bc1f9ef1d88e03bb79029dd2c3da7b24f"
+    },
+    {
+      "path": "supply chain/4_Install cargo-deny 0.20.2.txt",
+      "bytes": 22060,
+      "sha256": "2be42f95cefce0ffabfd3da34d4e54ceeaa03e541dc3fed495afeb5359b012c5"
+    },
+    {
+      "path": "supply chain/5_Check root workspace advisories, licenses, bans, and sources.txt",
+      "bytes": 5967,
+      "sha256": "a7ae442d022b7bbcc5ba67e0920816bdd0f043e5457c6262a01d5ccfbc261204"
+    },
+    {
+      "path": "supply chain/6_Check fuzz workspace advisories, licenses, bans, and sources.txt",
+      "bytes": 5766,
+      "sha256": "83d328ed9f69beecf1741d101413866df902cd14a76441264682b175b436e6fb"
+    },
+    {
+      "path": "supply chain/12_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "3c3e35dfc314dc5fe5527c9195423a2f442ba400c96947708a8e277815cb82d0"
+    },
+    {
+      "path": "supply chain/13_Complete job.txt",
+      "bytes": 61,
+      "sha256": "db44bce399af92c0d76714ecb468eb5470fee09c2bd6441f407297fb60129e77"
+    },
+    {
+      "path": "3_fuzz smoke.txt",
+      "bytes": 671655,
+      "sha256": "1bb8cc8bb3f6b97e118865cd3cfb4195a69abbff4016979e5dd8c44ebf3c833a"
+    },
+    {
+      "path": "fuzz smoke/system.txt",
+      "bytes": 597,
+      "sha256": "82650417be763479667ff1513b555abbb07af1d5dc9a6fef6812d5f956e905ce"
+    },
+    {
+      "path": "fuzz smoke/1_Set up job.txt",
+      "bytes": 2043,
+      "sha256": "a0b3a632d23f442908ca15acbf9ce79fc94378e2b63cafee3f41fdbd27b4d89f"
+    },
+    {
+      "path": "fuzz smoke/2_Run actions_checkout@v7.0.1.txt",
+      "bytes": 14585,
+      "sha256": "74da0f3624febcd90d8fb2c8b8c33fe7c2d579c03c0eab3e4f40230c46ac955a"
+    },
+    {
+      "path": "fuzz smoke/3_Install nightly-2026-07-20.txt",
+      "bytes": 17641,
+      "sha256": "d699041f9c5935fa650745a6ec79d28d0870dfb7fecde839d2eaa21558c6769e"
+    },
+    {
+      "path": "fuzz smoke/4_Install cargo-fuzz 0.13.2.txt",
+      "bytes": 9865,
+      "sha256": "b8aad3d66dd07f31fcf92bb99b2fc7b58f6b77eaee35c3462c567a33737c023c"
+    },
+    {
+      "path": "fuzz smoke/5_Prepare the C++ and sanitizer toolchain.txt",
+      "bytes": 1686,
+      "sha256": "7369fab0854f979e456b2d103437c868f817b158c18ba5a3232f8c8ec6272319"
+    },
+    {
+      "path": "fuzz smoke/6_Check the committed corpus against the targets.txt",
+      "bytes": 9714,
+      "sha256": "cb35ddb0d3cb02993613d07ecb9eeddd5b248f9cbee2db29194cdea062555041"
+    },
+    {
+      "path": "fuzz smoke/7_Run the bounded query smoke.txt",
+      "bytes": 163691,
+      "sha256": "d3801a4f8035b71aa5364bcde5cd5b7d5365c32720934303b8c5be3111393faa"
+    },
+    {
+      "path": "fuzz smoke/8_Run the bounded artifact-tree smoke.txt",
+      "bytes": 151601,
+      "sha256": "0528d09eea60dd90917abc01bb619ffd0544365815c29ce38a6c5d2893167297"
+    },
+    {
+      "path": "fuzz smoke/9_Run the bounded method-analysis smoke.txt",
+      "bytes": 296095,
+      "sha256": "8b084b0b89ce8d217d72440a39dc7b6a62016a5595d6ea9baffdd2f67d627d71"
+    },
+    {
+      "path": "fuzz smoke/10_Ensure the smoke runs left the tracked tree unchanged.txt",
+      "bytes": 610,
+      "sha256": "2df440a56b76f5f835a7dfbc414098a412eca7c81ae75f2912a3f58078950856"
+    },
+    {
+      "path": "fuzz smoke/20_Post Run actions_checkout@v7.0.1.txt",
+      "bytes": 4096,
+      "sha256": "c8115c73398918a94912962bbfe519e79bf91232432189db2f7bd3cb87a8723d"
+    },
+    {
+      "path": "fuzz smoke/21_Complete job.txt",
+      "bytes": 61,
+      "sha256": "c38b7a9f14a07a8b3524b521a4a715577194aee802307ddabed7961f71bd6c42"
+    }
+  ],
+  "API_observation_count": 75,
+  "raw_stream_count": 150,
+  "failed_member": "0_stable _ test and specification.txt",
+  "p5_failures": {
+    "summary": {
+      "passed": 3,
+      "failed": 2,
+      "ignored": 1
+    },
+    "Billing_diffs_expected_actual": [
+      {
+        "analysis_steps": [
+          1548,
+          1549
+        ]
+      },
+      {
+        "analysis_steps": [
+          20290,
+          20304
+        ]
+      }
+    ],
+    "shared20304_is_printed_not_an_executed_shared_pin_assertion": true
+  },
+  "skipped_stable_steps": [
+    "Run workspace tests with two fixed independent seeds (pass 2)",
+    "Run ignored JDK 25 instruction-boundary oracle",
+    "Run the ignored P3 Java 8 compile-and-execute comparison",
+    "Run the functional-constructor full-class comparison",
+    "Run the BigDecimal Number full-class comparisons",
+    "Run the nested int array full-class comparisons",
+    "Run the returned int array full-class comparison",
+    "Run public API example",
+    "Check resolved feature tree",
+    "Check normal dependency tree boundary",
+    "Check layered crate dependency closure",
+    "Install OpenSpec 1.11.0",
+    "Validate OpenSpec strictly",
+    "Ensure tracked files remain unchanged",
+    "Post Install Node.js 22"
+  ],
+  "candidate_inspection": {
+    "method": "Pure Python classfile CP/Code parsing and JVM opcode-length walk of8 exact committed inputs, plus static reading of2 Rust corpus class generators; no JVM/native execution.",
+    "committed_class_count": 8,
+    "six_instruction_int_return_methods": 12,
+    "first_getstatic_methods": 2,
+    "full_prefix_opcode_candidates": 0,
+    "examples": [
+      {
+        "class": "Scope",
+        "method": "reassign(JI)I",
+        "Code": "1c04603d1cac",
+        "opcodes": [
+          "iload_2",
+          "iconst_1",
+          "iadd",
+          "istore_2",
+          "iload_2",
+          "ireturn"
+        ],
+        "case": "flat-mixed; current proof admits first AnalysisSteps then rejects wrongopcode at first instruction"
+      },
+      {
+        "class": "NestedEval",
+        "method": "tick(I)I",
+        "Code": "b200070460b300071aac",
+        "opcodes": [
+          "getstatic",
+          "iconst_1",
+          "iadd",
+          "putstatic",
+          "iload_0",
+          "ireturn"
+        ],
+        "case": "whole corpus; first-opcode-only gate would still pay4steps before fourthopcode mismatch"
+      },
+      {
+        "class": "BooleanContexts",
+        "method": "staticFlagCount()I",
+        "Code": "b2000d99000504ac03ac",
+        "opcodes": [
+          "getstatic",
+          "ifeq",
+          "iconst_1",
+          "ireturn",
+          "iconst_0",
+          "ireturn"
+        ],
+        "case": "first getstatic but multi-block already excludes; nottrueprefix"
+      }
+    ],
+    "generated_inputs": "wide_class methods are4instructions iload/bipush/iadd/ireturn; deep_expression lengths34 and130instructions, fields_count0. Neither sixinstruction prefix."
+  },
+  "minimum_fix": {
+    "recommended": "Add fixed six-opcode candidate discriminator BEFORE the first poll/AnalysisSteps charge inside StaticPrefixReturn::prove, analogous to unit_instance_candidate. Given exact len6 checked, compare raw code.instructions[i].opcode for [b2,04,60,59,b3,ac] in a fixed6step O(1) predicate. Nonmatching methods return Ok(None) with no NEW proof fee.",
+    "why_full_six": "Firstopcode getstatic alone is insufficient: real old NestedEval.tick passes first3opcodes and would continue to incur4newfees before missingdup. Full6gate rejects all inspected legacy noncandidates without needing budget change.",
+    "true_candidates": "Keep existing complete raw/SSA BCI/opcode/type/local/use/field/name/signature/effect checks and every genuine candidate poll/charge unchanged. Cheap opcode shape is only admission, never certificate authority. Preserve final poll before commit.",
+    "do_not": "Do not change p5 billing pins/assertions, introduce refund/retry, skip required truecandidate work, label shared20304 assert executed, rerun successauditor on failedcapture or claim pass2/JDK/strict ran.",
+    "future_validation_not_run": "Root serially run unchanged p5_bulk_corpus real pin tests, all three staticprefix proof tests (including latebudget/cancel) and public/CLI, then freeze/build/replay as source changes require and new product commit ownCI. No new successful outcome claimed."
+  },
+  "input_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-scope/v8/Scope.class",
+      "bytes": 532,
+      "sha256": "5badc5b105de3cb1a49f1dfcfe417b29d283c596aa06cecc233078538458789d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-declaration/v8/Shape.class",
+      "bytes": 191,
+      "sha256": "91f9a3a0f60fcf6a510c826b87b8e3b484e168d7281d3a1a8f8cc4b01b94f32e"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class",
+      "bytes": 731,
+      "sha256": "9588c94b91d6da16750e52969c6557dcf416a4d1929c796f47d52e142fac4083"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-declaration/v8/Holder.class",
+      "bytes": 359,
+      "sha256": "11cbb8c01e738c5d2c4959b09fbba29e3949e4aff9445970154c87ce1d25b5ea"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-handlers/v8/Guarded.class",
+      "bytes": 3814,
+      "sha256": "db52b41d27a78dcf5bc88fca2879c0f69947949afcc40112b58799245fe9edcf"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class",
+      "bytes": 1114,
+      "sha256": "e6a85f9aa40f585642696f0a391c8be9c8fafa2100e0cf0f9ab7ebd6bfb2bf0d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-nested-arithmetic/v8/ModLike.class",
+      "bytes": 568,
+      "sha256": "a5827ef4865e7d33aff6ea0c34c46194a69f2436e011f5ad5c848853d2891158"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/fixtures/p3-nested-eval/v8/NestedEval.class",
+      "bytes": 361,
+      "sha256": "141c3dcb3990605466dd54eb1a9bcc1942d0907e4e32d8d0587eb443f0c5c2e9"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/p5_bulk_corpus.rs",
+      "bytes": 89940,
+      "sha256": "7527b8c616075d61d4c741de779d0dbbebb5b8583ec1912a9bedef45514d6fbe"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/bulk_support.rs",
+      "bytes": 40551,
+      "sha256": "4bdf649027c96d635b8b3a3b4ef72fa3665e3e4c73b4b6712987a635df3af054"
+    }
+  ],
+  "prepared_success_auditor": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-c075-independent-audit-prepared-v1/audit_own_ci_static_prefix_v1.py",
+    "bytes": 35541,
+    "sha256": "7df4da4728632da93ca83224758bf4d629720873456035b82131c574223a03ab"
+  },
+  "scope": "Cache-only failure audit/static recommendation. No repository writes/native/Git/OpenSpec/API and successauditor not executed. Billing-only diffs are actual asserted rows; complete oldarms physical/text comparisons occur earlier in failed test but no new global semantic equivalence claim. Source fix not yet applied or tested by this audit."
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "static-prefix-census-local-package-independent-audit-v1",
+  "status": "accepted",
+  "checks": 25061,
+  "errors": [],
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-local-evidence-v1/capture.tar.gz",
+    "bytes": 2528942,
+    "sha256": "52e0d559703c5a52742703a4a8cd98edecdffee9216c9d7b612a376843f6d9fb"
+  },
+  "manifest_sha256": "2f5e92aa2954fadaf63ff96c4d80a25f85e88f3655d9a9df41320da6e593d2bd",
+  "product_head": "052c82484bb20ca8b7e22ffe9943503c961280f9",
+  "members": 85,
+  "payload": 84,
+  "commands": 20,
+  "command_raw_streams": 40,
+  "other_raw_members": [
+    "focused-native/dispatch.stderr.raw",
+    "focused-native/dispatch.stdout.raw",
+    "focused-native/launcher.stderr.raw",
+    "focused-native/launcher.stdout.raw",
+    "full-generated-source/dispatch.stderr.raw",
+    "full-generated-source/dispatch.stdout.raw",
+    "full-generated-source/launcher.stderr.raw",
+    "full-generated-source/launcher.stdout.raw",
+    "full-generated-source/source-head-tree.raw"
+  ],
+  "native_actual_summaries": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      1
+    ],
+    [
+      5,
+      0,
+      1
+    ]
+  ],
+  "source_count": 4915,
+  "replay_commands": 14,
+  "rebuilt_only_runtime_oracles": 8,
+  "scope": "Only fresh 052 focused native and fresh full generated-source replay accepted. Ancestor a89 strict/Clippy are references, not rerun/relabelled 052. Own CI and full seeded workspace acceptance remain separate. Pure Python only; no Git/native/repository writes.",
+  "receipt_additional_unique_pins_reopened": 4936,
+  "audit_lineage": {
+    "v2": "Accepted; v3 additionally reopens replay tool/fixture/input/generated/class receipt pins, including external JDK bytes.",
+    "v1": "Preserved v1 records auditor schema error: method outcome is an object with kind=recovered, not a string. v2 corrects that exact reader and additionally checks all five method identities. No package/product error was found."
+  },
+  "finished_at": "2026-10-16T06:22:02.592420+00:00"
+}

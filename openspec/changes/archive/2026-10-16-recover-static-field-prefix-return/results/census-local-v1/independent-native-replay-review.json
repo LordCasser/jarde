@@ -1,0 +1,214 @@
+{
+  "schema": "static-prefix-052-reader-census-native-replay-independent-audit-v1",
+  "status": "accepted_native_and_new_replay_only",
+  "checks": 198,
+  "errors": [],
+  "native_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/execution.json",
+    "bytes": 2162134,
+    "sha256": "69db413a1a2a620766ab3944df7769d6b318267b74b3f0b53ae763d282a4227c"
+  },
+  "replay_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/execution.json",
+    "bytes": 4891409,
+    "sha256": "075f2758dc6a7085846d389db695ba948a51cdc6ba074c962fc5f18199137b91"
+  },
+  "source_binding": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-binding.json",
+    "bytes": 1496328,
+    "sha256": "c654d13433c42f985b4959cf5f934f5c3b17bd949a3e93ec34327a8eaf22e155"
+  },
+  "source_tree": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-tree.raw",
+    "bytes": 678748,
+    "sha256": "115ea8d623ff6ec7410ce5ea7dfce9dee27277dc56c76d244011a9b4ea1adfcd"
+  },
+  "head": "052c82484bb20ca8b7e22ffe9943503c961280f9",
+  "source_count": 4915,
+  "source_byte_gitblob_comparisons": 4915,
+  "source_comparison_errors": [],
+  "only_source_delta_from_a89": [
+    "crates/jarde-reader/src/classfile.rs"
+  ],
+  "exact_old_reader_reconstructed_by_reversing_only_census_tuple_comment": true,
+  "CLI": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-reader-census-v1",
+    "bytes": 59699632,
+    "sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "CLI_actualbytes_equal_a89": true,
+  "native_actual_suites": [
+    {
+      "label": "reader-fixture-census",
+      "summary": [
+        "ok",
+        "1",
+        "0",
+        "0"
+      ],
+      "named_outcomes": [
+        [
+          "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections",
+          "ok"
+        ]
+      ]
+    },
+    {
+      "label": "normal-corpus-fingerprint",
+      "summary": [
+        "ok",
+        "5",
+        "0",
+        "1"
+      ],
+      "named_outcomes": [
+        [
+          "corpus_files_match_the_recorded_fingerprint",
+          "ok"
+        ],
+        [
+          "every_acceptance_row_is_indexed_against_existing_corpus",
+          "ok"
+        ],
+        [
+          "every_dimension_is_carried_by_existing_corpus",
+          "ok"
+        ],
+        [
+          "regenerate_corpus_fingerprint",
+          "ignored"
+        ],
+        [
+          "the_indexed_rows_are_the_rows_the_acceptance_table_names",
+          "ok"
+        ],
+        [
+          "the_manifest_matches_its_rendered_classification",
+          "ok"
+        ]
+      ]
+    },
+    {
+      "label": "p5-bulk-all-features-unchanged-billing",
+      "summary": [
+        "ok",
+        "5",
+        "0",
+        "1"
+      ],
+      "named_outcomes": [
+        [
+          "a_slow_consumer_changes_the_readings_and_not_the_shape",
+          "ok"
+        ],
+        [
+          "every_case_holds_the_shape_it_is_named_for",
+          "ok"
+        ],
+        [
+          "record_the_billing_table",
+          "ignored"
+        ],
+        [
+          "the_corpus_is_rebuilt_from_the_committed_bytes_every_time",
+          "ok"
+        ],
+        [
+          "the_fixed_shape_bills_the_counts_the_corpus_pins",
+          "ok"
+        ],
+        [
+          "the_old_per_method_arms_keep_their_ledger_and_the_same_text",
+          "ok"
+        ]
+      ]
+    }
+  ],
+  "results": {
+    "native_commands": 6,
+    "native_raw": 12,
+    "native_tests_passed": 11,
+    "native_tests_failed": 0,
+    "native_tests_ignored": 2,
+    "new_replay_commands": 14,
+    "new_replay_raw": 28,
+    "new_rebuilt_runtime": [
+      {
+        "label": "javac23-java8-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/7.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac23-java8-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/8.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      },
+      {
+        "label": "javac23-java23-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/9.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac23-java23-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/10.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      },
+      {
+        "label": "javac8-java8-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/11.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac8-java8-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/12.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      },
+      {
+        "label": "javac8-java23-rebuilt-main",
+        "bytes": 6,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/13.stdout.raw",
+          "bytes": 6,
+          "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+        }
+      },
+      {
+        "label": "javac8-java23-rebuilt-unmodified-probe",
+        "bytes": 60,
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/run-v1/14.stdout.raw",
+          "bytes": 60,
+          "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+        }
+      }
+    ]
+  },
+  "scope": "Pure Python/read-only repo/cache; no native/Git/API/OpenSpec. Actual052native6 and fresh052replay14 reverified; no borrowing olda89outputs despite byte-identicalCLI. Onlycfgtestpopulationtuple+comment differs; exact reversal reconstructs a89reader source, so decoder/assertion constraints outside intended census remain unchanged. Saved052tree4915 and allsourceblob hashes independently checked. Oldc075/a89CI failures remain separate history; no new052ownCI/fullworkspace acceptance. Historicalguard/defaultstack/clean/targetabsence recorded; no claim later unrelated runs absent.",
+  "additional_explicit_tool_and_binding_checks": "Bindingrows bytes/SHA exactly equal native4915. Actualjavac23 --release8 vs actualjavac8 -source8 -target8 used for each FO+driver; every runtime argv[0] is corresponding pinnedjava8/java23 path, not just a label."
+}

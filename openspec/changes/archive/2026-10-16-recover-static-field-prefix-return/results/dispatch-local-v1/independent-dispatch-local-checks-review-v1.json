@@ -1,0 +1,303 @@
+{
+  "schema": "static-prefix-a89-dispatch-local-checks-independent-review-v1",
+  "status": "accepted_local_checks_only",
+  "checks": 75,
+  "errors": [],
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-product-checks-v1/execution.json",
+    "bytes": 2170143,
+    "sha256": "573d7282b0b85c1b3b2fcd6abbd3e01a776a399ec9aacf09e903e8ac29178100"
+  },
+  "runner": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-product-checks-v1/run.py",
+    "bytes": 13431,
+    "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322"
+  },
+  "head": "a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b",
+  "source_count": 4915,
+  "source_binding": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/source-head-binding.json",
+    "bytes": 1496325,
+    "sha256": "9673556848977ab1ef6fca4ad15386e38540f409f2468ffbf55f4914a05a992d"
+  },
+  "source_tree": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-fixed-source-replay-v1/source-head-tree.raw",
+    "bytes": 678748,
+    "sha256": "b7f99304abe79d2f4d53142cf1e30744af77a3672c3142228aab651acaf50020"
+  },
+  "same_native_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-candidate-dispatch-fix-v1/execution.json",
+    "bytes": 2162474,
+    "sha256": "d28e3c3d76c63e1199085d03d9f3cb33d32f0b76d3abf3d1ac4afaa9e5f78358"
+  },
+  "prior_independent_source_audit": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-candidate-dispatch-fix-v1/independent-dispatch-native-replay-review-v1.json",
+    "bytes": 8385,
+    "sha256": "08da8dda810f7aeb106c3ee408892a284db0eafc272f7fb621b1be1af8d99063"
+  },
+  "results": {
+    "commands": 10,
+    "raw_files": 20,
+    "all_exit_codes": 0,
+    "suites": [
+      {
+        "label": "corpus-fingerprint",
+        "summary": [
+          "ok",
+          "5",
+          "0",
+          "1"
+        ],
+        "named_outcomes": [
+          [
+            "corpus_files_match_the_recorded_fingerprint",
+            "ok"
+          ],
+          [
+            "every_acceptance_row_is_indexed_against_existing_corpus",
+            "ok"
+          ],
+          [
+            "every_dimension_is_carried_by_existing_corpus",
+            "ok"
+          ],
+          [
+            "regenerate_corpus_fingerprint",
+            "ignored"
+          ],
+          [
+            "the_indexed_rows_are_the_rows_the_acceptance_table_names",
+            "ok"
+          ],
+          [
+            "the_manifest_matches_its_rendered_classification",
+            "ok"
+          ]
+        ]
+      },
+      {
+        "label": "p5-bulk-all-features-unchanged-billing",
+        "summary": [
+          "ok",
+          "5",
+          "0",
+          "1"
+        ],
+        "named_outcomes": [
+          [
+            "a_slow_consumer_changes_the_readings_and_not_the_shape",
+            "ok"
+          ],
+          [
+            "every_case_holds_the_shape_it_is_named_for",
+            "ok"
+          ],
+          [
+            "record_the_billing_table",
+            "ignored"
+          ],
+          [
+            "the_corpus_is_rebuilt_from_the_committed_bytes_every_time",
+            "ok"
+          ],
+          [
+            "the_fixed_shape_bills_the_counts_the_corpus_pins",
+            "ok"
+          ],
+          [
+            "the_old_per_method_arms_keep_their_ledger_and_the_same_text",
+            "ok"
+          ]
+        ]
+      },
+      {
+        "label": "instance-field-increment",
+        "summary": [
+          "ok",
+          "3",
+          "0",
+          "0"
+        ],
+        "named_outcomes": [
+          [
+            "a_post_increment_returns_the_old_value_and_a_pre_increment_the_sum",
+            "ok"
+          ],
+          [
+            "field_summary_is_independent_of_details_and_driver_range",
+            "ok"
+          ],
+          [
+            "the_update_is_the_text_the_instructions_that_perform_it_are_anchored_at",
+            "ok"
+          ]
+        ]
+      },
+      {
+        "label": "static-postfix-old-snapshot",
+        "summary": [
+          "ok",
+          "4",
+          "0",
+          "1"
+        ],
+        "named_outcomes": [
+          [
+            "no_recovering_method_keeps_a_quote",
+            "ok"
+          ],
+          [
+            "the_healthy_shapes_stay_byte_identical_on_both_legs",
+            "ok"
+          ],
+          [
+            "the_negatives_keep_their_refusals_on_both_legs",
+            "ok"
+          ],
+          [
+            "the_phase_a_positions_write_the_postfix_expression_on_both_legs",
+            "ok"
+          ],
+          [
+            "the_recovered_text_compiles_and_runs_identically_on_both_legs",
+            "ignored"
+          ]
+        ]
+      }
+    ],
+    "tests_passed": 17,
+    "tests_failed": 0,
+    "tests_ignored": 3,
+    "two_strict": [
+      {
+        "label": "openspec-ci-strict",
+        "totals": [
+          "364",
+          "0",
+          "364"
+        ],
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-product-checks-v1/run-v1/8.stdout.raw",
+          "bytes": 16829,
+          "sha256": "638c62786737d4201cb9f55cea9dd55e663acffcb17354c93476376e81f10035"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-product-checks-v1/run-v1/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "label": "openspec-local-strict",
+        "totals": [
+          "364",
+          "0",
+          "364"
+        ],
+        "stdout": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-product-checks-v1/run-v1/9.stdout.raw",
+          "bytes": 16829,
+          "sha256": "638c62786737d4201cb9f55cea9dd55e663acffcb17354c93476376e81f10035"
+        },
+        "stderr": {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-dispatch-product-checks-v1/run-v1/9.stderr.raw",
+          "bytes": 2201,
+          "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85"
+        }
+      }
+    ],
+    "peak_target_bytes": 615831294,
+    "target_absent": true
+  },
+  "explicit_JDK23_evidence": {
+    "mechanism": "Pinned executed runner constructs child env PATH with explicitJDK23bin first before Node/OpenSpec/inherited PATH; bare Java test helpers therefore select these tools. Receipt env_overrides only lists guard-selected Cargo keys, so it is not a complete process-env dump. No fresh java --version command is claimed.",
+    "bin": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin",
+    "actual_tool_pins": {
+      "javac23": {
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "bytes": 12416,
+        "sha256": "1cfe54c125f77428cc9b489ba95469e71b2d37775f4e1f2ab01915067d6d656a"
+      },
+      "java23": {
+        "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/java",
+        "bytes": 12328,
+        "sha256": "88f4c29648dcccbcac68115673eb4e3fc9b49d911cbd1279fe11b6de1bd7e7e5"
+      }
+    }
+  },
+  "P5_entire_source_unchanged_pin": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/tests/p5_bulk_corpus.rs",
+    "bytes": 89940,
+    "sha256": "7527b8c616075d61d4c741de779d0dbbebb5b8583ec1912a9bedef45514d6fbe"
+  },
+  "Clippy_exactworkflow_argv": [
+    "cargo",
+    "clippy",
+    "--workspace",
+    "--all-targets",
+    "--all-features",
+    "--locked",
+    "--",
+    "-A",
+    "clippy::too_many_arguments",
+    "-A",
+    "clippy::cloned_ref_to_slice_refs",
+    "-A",
+    "clippy::collapsible_if",
+    "-A",
+    "clippy::type_complexity",
+    "-A",
+    "clippy::len_zero",
+    "-A",
+    "clippy::needless_option_as_deref",
+    "-A",
+    "clippy::needless_borrow",
+    "-A",
+    "clippy::useless_conversion",
+    "-A",
+    "clippy::large_enum_variant",
+    "-A",
+    "clippy::question_mark",
+    "-A",
+    "clippy::comparison_to_empty",
+    "-A",
+    "clippy::op_ref",
+    "-A",
+    "clippy::manual_range_patterns",
+    "-A",
+    "clippy::if_same_then_else",
+    "-A",
+    "clippy::filter_map_bool_then",
+    "-A",
+    "clippy::filter_next",
+    "-A",
+    "clippy::unneeded_struct_pattern",
+    "-A",
+    "clippy::redundant_guards",
+    "-A",
+    "clippy::map_identity",
+    "-A",
+    "clippy::redundant_slicing",
+    "-A",
+    "clippy::unnecessary_get_then_check",
+    "-A",
+    "clippy::unnecessary_unwrap",
+    "-A",
+    "clippy::redundant_locals",
+    "-A",
+    "clippy::replace_box",
+    "-A",
+    "clippy::map_clone",
+    "-A",
+    "clippy::unnecessary_mut_passed",
+    "-A",
+    "clippy::single_element_loop",
+    "-A",
+    "clippy::unnecessary_to_owned",
+    "-A",
+    "clippy::needless_lifetimes",
+    "-D",
+    "warnings"
+  ],
+  "scope": "Pure Python/read-only repo/cache, no native/Git/OpenSpec/API. Verifies actual10argv/20raw, namedoutcomes, P5allfeatures original counted pins with regeneration ignored, MSRV+1.88, both actualstrict364/0 and full4915same source closure=a89saved binding. This is local only: no two seeded fullworkspace run, no acceptance of pending remoteownCI38841427486; ignored runtime gates remain ignored here and fullsource replay is separately audited."
+}

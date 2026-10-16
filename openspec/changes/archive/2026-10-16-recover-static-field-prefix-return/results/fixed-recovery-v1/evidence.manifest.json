@@ -1,0 +1,50 @@
+{
+  "status": "copied_exact_reopened_archive_verified",
+  "items": [
+    {
+      "file": "FO.java",
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811"
+    },
+    {
+      "file": "README.md",
+      "bytes": 4207,
+      "sha256": "5a950154b5863fcde2ba29820fd1d8b8a98067f1d646645199feed89e2729e4d"
+    },
+    {
+      "file": "capture.tar.gz",
+      "bytes": 7591281,
+      "sha256": "09fa92f2269a7fc5a635908eac175f4d4cd8d750f2077dd65a76f2c540f43232"
+    },
+    {
+      "file": "independent-full-source-review.json",
+      "bytes": 6170,
+      "sha256": "d0f834e8e15d3c826c155826844bc3801a4989fa23823223b39019274fe65d3d"
+    },
+    {
+      "file": "independent-native-review.json",
+      "bytes": 9949,
+      "sha256": "c3b00507cabb08a6d4b6bcf68c0bc2ccc78a05e4264acca44b36eea89ca0a776"
+    },
+    {
+      "file": "independent-package-audit.json",
+      "bytes": 4298,
+      "sha256": "563b3999f749e756bbc3eee59cec8eb012ceb8ea7d6e81c5bbb081302c5ac323"
+    },
+    {
+      "file": "manifest.json",
+      "bytes": 46689,
+      "sha256": "74fdd25c4496f06afa3d0b43cfe71d553f728ce10692acf350370a66324693c7"
+    },
+    {
+      "file": "package-execution.json",
+      "bytes": 478,
+      "sha256": "d03fef1817df757854eedef99f84f9f1df063ab555e7e316e5049ff1192c0661"
+    },
+    {
+      "file": "stop-composition-static-review.json",
+      "bytes": 10276,
+      "sha256": "0af64013a7ab65c289dc743d87ecd2efc6afbdf31da6d6fa3127ea787f686886"
+    }
+  ]
+}

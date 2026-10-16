@@ -1,0 +1,2090 @@
+{
+  "schema": "static-prefix-052-own-ci-evidence-v1",
+  "status": "packaged_actual_successful_exact_head_ci",
+  "product_head": "052c82484bb20ca8b7e22ffe9943503c961280f9",
+  "run_id": 38859590941,
+  "conclusion": "success",
+  "api_observations": 133,
+  "api_raw_streams": 266,
+  "jobs": 4,
+  "successful_jobs": 4,
+  "workspace_seeds": [
+    {
+      "seed": "5350648285461741569",
+      "summaries": 370,
+      "passed": 3649,
+      "failed": 0,
+      "ignored": 98
+    },
+    {
+      "seed": "5350648285461741570",
+      "summaries": 370,
+      "passed": 3649,
+      "failed": 0,
+      "ignored": 98
+    }
+  ],
+  "strict_items": 364,
+  "required_named_gates": 139,
+  "zip_members": 60,
+  "original_zip": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/logs.zip",
+    "bytes": 851262,
+    "sha256": "fad67f6f7e5ac242d2cff6e5a175dc37bff43d1d0b99683204bc835b2918ba88"
+  },
+  "scope": "Only product052 ownCI; docs/archive/main tracked separately. Prior failed c075/a89 retained separately.",
+  "payload_count": 293,
+  "members": [
+    {
+      "path": "capture-launch/dispatch.json",
+      "bytes": 1435,
+      "sha256": "0eaf03b5b4f2b5bce778794d42e6b25417b178bf3852b282da599107cc8660ed",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-launch-v1/dispatch.json",
+      "group": "actual_capture_dispatch"
+    },
+    {
+      "path": "capture-launch/dispatch.stderr.raw",
+      "bytes": 111,
+      "sha256": "0b7f996ddca342ee6506d0adb56b271d20b8c8ce9ae5e7a3a7224f0b2060644a",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-launch-v1/dispatch.stderr.raw",
+      "group": "actual_capture_dispatch"
+    },
+    {
+      "path": "capture-launch/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-launch-v1/dispatch.stdout.raw",
+      "group": "actual_capture_dispatch"
+    },
+    {
+      "path": "capture-launch/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-launch-v1/launcher.stderr.raw",
+      "group": "actual_capture_dispatch"
+    },
+    {
+      "path": "capture-launch/launcher.stdout.raw",
+      "bytes": 114,
+      "sha256": "5dd253f8f8cd7b6dea733fbb728be72fd75554a26533d910b71e0f7fef273791",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-launch-v1/launcher.stdout.raw",
+      "group": "actual_capture_dispatch"
+    },
+    {
+      "path": "capture-runner.py",
+      "bytes": 1909,
+      "sha256": "7070184fed2450094b0b4d0cb062934e8f66c632e302c3c7c6c74ab100dad0e8",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/capture_product_ci_v3.py",
+      "group": "executed_capture_runner"
+    },
+    {
+      "path": "capture/0-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/0-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/0-jobs.stdout.raw",
+      "bytes": 10017,
+      "sha256": "658abeb8efd265b2c8eaa56a824f947748c22599b7fea0c2fa5bf31f08673fa3",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/0-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/0-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/0-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/0-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/0-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/1-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/1-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/1-jobs.stdout.raw",
+      "bytes": 10568,
+      "sha256": "e638188488a3e609e497c8633148157cffee385e48409aee1af6a8ac37f84a5a",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/1-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/1-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/1-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/1-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/1-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/10-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/10-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/10-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/10-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/10-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/10-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/10-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/10-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/11-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/11-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/11-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/11-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/11-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/11-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/11-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/11-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/12-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/12-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/12-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/12-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/12-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/12-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/12-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/12-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/13-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/13-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/13-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/13-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/13-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/13-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/13-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/13-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/14-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/14-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/14-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/14-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/14-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/14-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/14-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/14-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/15-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/15-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/15-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/15-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/15-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/15-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/15-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/15-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/16-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/16-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/16-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/16-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/16-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/16-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/16-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/16-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/17-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/17-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/17-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/17-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/17-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/17-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/17-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/17-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/18-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/18-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/18-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/18-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/18-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/18-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/18-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/18-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/19-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/19-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/19-jobs.stdout.raw",
+      "bytes": 11389,
+      "sha256": "0767827ba1f85d068d0fdd2fae299ad4b6bc33f3a80bbb29dc85c54a26ccc198",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/19-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/19-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/19-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/19-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/19-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/2-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/2-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/2-jobs.stdout.raw",
+      "bytes": 10654,
+      "sha256": "c11dd41b72f1b3013e21f5613aea736793cfccc9260c69c536cdad2aeadeafd1",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/2-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/2-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/2-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/2-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/2-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/20-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/20-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/20-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/20-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/20-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/20-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/20-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/20-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/21-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/21-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/21-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/21-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/21-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/21-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/21-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/21-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/22-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/22-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/22-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/22-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/22-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/22-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/22-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/22-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/23-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/23-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/23-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/23-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/23-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/23-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/23-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/23-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/24-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/24-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/24-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/24-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/24-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/24-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/24-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/24-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/25-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/25-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/25-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/25-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/25-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/25-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/25-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/25-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/26-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/26-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/26-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/26-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/26-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/26-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/26-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/26-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/27-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/27-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/27-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/27-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/27-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/27-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/27-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/27-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/28-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/28-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/28-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/28-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/28-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/28-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/28-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/28-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/29-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/29-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/29-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/29-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/29-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/29-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/29-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/29-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/3-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/3-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/3-jobs.stdout.raw",
+      "bytes": 10697,
+      "sha256": "84bcf2fb71953b3e4a925edb3e309408d1afc996ffef153dc236306f6a362565",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/3-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/3-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/3-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/3-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/3-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/30-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/30-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/30-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/30-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/30-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/30-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/30-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/30-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/31-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/31-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/31-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/31-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/31-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/31-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/31-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/31-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/32-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/32-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/32-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/32-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/32-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/32-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/32-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/32-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/33-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/33-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/33-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/33-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/33-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/33-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/33-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/33-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/34-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/34-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/34-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/34-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/34-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/34-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/34-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/34-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/35-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/35-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/35-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/35-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/35-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/35-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/35-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/35-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/36-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/36-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/36-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/36-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/36-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/36-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/36-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/36-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/37-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/37-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/37-jobs.stdout.raw",
+      "bytes": 11671,
+      "sha256": "f725cc4fedbcbec24cb8bf1376e0269ace35623a502ea1be3ec90a0f256fbf54",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/37-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/37-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/37-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/37-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/37-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/38-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/38-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/38-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/38-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/38-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/38-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/38-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/38-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/39-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/39-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/39-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/39-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/39-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/39-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/39-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/39-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/4-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/4-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/4-jobs.stdout.raw",
+      "bytes": 10935,
+      "sha256": "c9135b648faac0b3b236131bc4c3a8c167ab012256ded7daca45218115bd350e",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/4-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/4-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/4-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/4-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/4-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/40-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/40-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/40-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/40-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/40-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/40-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/40-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/40-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/41-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/41-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/41-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/41-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/41-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/41-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/41-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/41-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/42-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/42-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/42-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/42-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/42-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/42-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/42-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/42-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/43-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/43-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/43-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/43-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/43-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/43-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/43-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/43-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/44-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/44-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/44-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/44-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/44-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/44-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/44-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/44-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/45-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/45-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/45-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/45-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/45-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/45-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/45-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/45-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/46-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/46-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/46-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/46-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/46-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/46-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/46-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/46-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/47-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/47-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/47-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/47-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/47-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/47-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/47-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/47-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/48-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/48-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/48-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/48-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/48-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/48-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/48-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/48-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/49-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/49-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/49-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/49-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/49-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/49-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/49-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/49-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/5-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/5-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/5-jobs.stdout.raw",
+      "bytes": 10978,
+      "sha256": "f8faa6a295b6b4188e953ef37abc1a9a55c11e00f9e04d0c784eb6b824949144",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/5-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/5-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/5-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/5-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/5-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/50-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/50-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/50-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/50-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/50-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/50-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/50-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/50-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/51-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/51-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/51-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/51-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/51-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/51-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/51-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/51-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/52-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/52-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/52-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/52-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/52-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/52-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/52-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/52-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/53-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/53-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/53-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/53-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/53-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/53-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/53-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/53-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/54-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/54-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/54-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/54-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/54-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/54-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/54-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/54-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/55-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/55-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/55-jobs.stdout.raw",
+      "bytes": 11714,
+      "sha256": "d5bf4d9c8635373bcce7a7e60e9dc3b82500b2a907572833365dc88373349959",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/55-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/55-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/55-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/55-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/55-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/56-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/56-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/56-jobs.stdout.raw",
+      "bytes": 11757,
+      "sha256": "fd3be6b396b30812e29e5a08c99f0594aa14c1dfaa5f2e0cd0f6fa4ebd1dcfd6",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/56-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/56-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/56-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/56-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/56-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/57-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/57-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/57-jobs.stdout.raw",
+      "bytes": 11757,
+      "sha256": "fd3be6b396b30812e29e5a08c99f0594aa14c1dfaa5f2e0cd0f6fa4ebd1dcfd6",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/57-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/57-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/57-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/57-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/57-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/58-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/58-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/58-jobs.stdout.raw",
+      "bytes": 11800,
+      "sha256": "93a84c93342076dab68704fc8e3fd242013a716dd528f2c7d079d20633a3df18",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/58-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/58-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/58-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/58-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/58-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/59-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/59-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/59-jobs.stdout.raw",
+      "bytes": 11800,
+      "sha256": "93a84c93342076dab68704fc8e3fd242013a716dd528f2c7d079d20633a3df18",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/59-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/59-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/59-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/59-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/59-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/6-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/6-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/6-jobs.stdout.raw",
+      "bytes": 11064,
+      "sha256": "e8763c09c2d262c53b18effc7b28b07b7d23e09037982f4f9a5a314cf7aec159",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/6-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/6-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/6-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/6-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/6-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/60-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/60-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/60-jobs.stdout.raw",
+      "bytes": 11800,
+      "sha256": "93a84c93342076dab68704fc8e3fd242013a716dd528f2c7d079d20633a3df18",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/60-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/60-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/60-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/60-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/60-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/61-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/61-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/61-jobs.stdout.raw",
+      "bytes": 11800,
+      "sha256": "93a84c93342076dab68704fc8e3fd242013a716dd528f2c7d079d20633a3df18",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/61-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/61-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/61-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/61-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/61-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/62-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/62-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/62-jobs.stdout.raw",
+      "bytes": 11843,
+      "sha256": "cc4ae53f54facb617a65836e13fc277eece4047078937975a707826c1761bcdf",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/62-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/62-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/62-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/62-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/62-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/63-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/63-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/63-jobs.stdout.raw",
+      "bytes": 11843,
+      "sha256": "cc4ae53f54facb617a65836e13fc277eece4047078937975a707826c1761bcdf",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/63-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/63-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/63-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/63-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/63-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/64-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/64-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/64-jobs.stdout.raw",
+      "bytes": 12316,
+      "sha256": "8d2f30281d648fe46a4deb950fcf0c0bcbc234eb6192c24c8f72c5afb61ab88c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/64-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/64-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/64-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/64-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/64-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/65-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/65-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/65-jobs.stdout.raw",
+      "bytes": 12598,
+      "sha256": "4989b15b66b755d2000441473fb2f718c397fb33b6fe376acc072e5c964eb085",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/65-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/65-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/65-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/65-run.stdout.raw",
+      "bytes": 11878,
+      "sha256": "3c57d19cbc7d3760face0573e31de1009813c3b69265978ea09a379211f65ced",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/65-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/7-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/7-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/7-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/7-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/7-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/7-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/7-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/7-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/8-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/8-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/8-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/8-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/8-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/8-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/8-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/8-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/9-jobs.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/9-jobs.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/9-jobs.stdout.raw",
+      "bytes": 11303,
+      "sha256": "9fb153473f6498c5ba87270a800b82cf9c2ec63032d54f34cb818fe974de3b35",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/9-jobs.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/9-run.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/9-run.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/9-run.stdout.raw",
+      "bytes": 11875,
+      "sha256": "ca3c660867a5fdd9b7a42b34dceebed688a2b712378365a41841b93e81810d62",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/9-run.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/completed-log-zip.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/completed-log-zip.stderr.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/completed-log-zip.stdout.raw",
+      "bytes": 851262,
+      "sha256": "fad67f6f7e5ac242d2cff6e5a175dc37bff43d1d0b99683204bc835b2918ba88",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/completed-log-zip.stdout.raw",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/execution.json",
+      "bytes": 112207,
+      "sha256": "df410ed0e2cea7eca645aead22c3d66c894ad9714541c5eb024820d4f3d03e8a",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/execution.json",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "capture/logs.zip",
+      "bytes": 851262,
+      "sha256": "fad67f6f7e5ac242d2cff6e5a175dc37bff43d1d0b99683204bc835b2918ba88",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/own-ci-static-prefix-census-root-v1/logs.zip",
+      "group": "original_terminal_capture"
+    },
+    {
+      "path": "independent-audit/audit-result-v1.json",
+      "bytes": 172211,
+      "sha256": "ec25c5e398c17930a6fe806f4b31f4a159897a477129606ff4b15035c6abf0f1",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-census-independent-audit-v1/audit-result-v1.json",
+      "group": "independent_ci_audit"
+    },
+    {
+      "path": "independent-audit/audit-result-v2.json",
+      "bytes": 239975,
+      "sha256": "97bbd012c4d9f4ab05a99d295122e1938249725c1ebe4c271d4c7d69b7c2fd66",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-census-independent-audit-v1/audit-result-v2.json",
+      "group": "independent_ci_audit"
+    },
+    {
+      "path": "independent-audit/audit_own_ci_static_prefix_census_v1.py",
+      "bytes": 38050,
+      "sha256": "55051409c829ca065323e379c1f8f5df0086e2a494749e223f82cf5a914c7b60",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-census-independent-audit-v1/audit_own_ci_static_prefix_census_v1.py",
+      "group": "independent_ci_audit"
+    },
+    {
+      "path": "independent-audit/audit_own_ci_static_prefix_census_v2.py",
+      "bytes": 38237,
+      "sha256": "d2086bc0474dc0e20cd031f5cce7184f9d7eaaad7d6fba3d3b5be244c6797f7a",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-census-independent-audit-v1/audit_own_ci_static_prefix_census_v2.py",
+      "group": "independent_ci_audit"
+    },
+    {
+      "path": "independent-audit/preparation-pins-v1.json",
+      "bytes": 2101,
+      "sha256": "1a5f5344d447aa33df08e1c8af8eb72e139a9104f1d8846e5fc3f3ac590d3be9",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-census-independent-audit-v1/preparation-pins-v1.json",
+      "group": "independent_ci_audit"
+    },
+    {
+      "path": "independent-audit/preparation-pins-v2.json",
+      "bytes": 1464,
+      "sha256": "833d959197075c7322367594e13766cf1880482a48b79155816036f233f6bc49",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-static-prefix-census-independent-audit-v1/preparation-pins-v2.json",
+      "group": "independent_ci_audit"
+    },
+    {
+      "path": "package-builder.py",
+      "bytes": 4276,
+      "sha256": "bb7976c963e1f87ca2b91ae95832290c0807027489cee92ddea497e774428596",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/package_static_prefix_052_own_ci_v1.py",
+      "group": "package_builder"
+    },
+    {
+      "path": "root-audit/actual-execution.json",
+      "bytes": 8963,
+      "sha256": "6b6dc0640f90e193a0c0958ecbf2412b61d9362b1a63dbc9005c864548e79e20",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-own-ci-root-audit-plan-v1/actual-execution.json",
+      "group": "prepared_and_actual_root_audit"
+    },
+    {
+      "path": "root-audit/actual.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-own-ci-root-audit-plan-v1/actual.stderr.raw",
+      "group": "prepared_and_actual_root_audit"
+    },
+    {
+      "path": "root-audit/actual.stdout.raw",
+      "bytes": 3244,
+      "sha256": "b23a224790424a281fb43679194b5213f6ac26c80b1cb957facc5ae457ed5324",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-own-ci-root-audit-plan-v1/actual.stdout.raw",
+      "group": "prepared_and_actual_root_audit"
+    },
+    {
+      "path": "root-audit/argv.json",
+      "bytes": 8557,
+      "sha256": "1c8646a8d437dee9a6d31f371389e1fee9b2cc426e227a7eb28ab9f6f45cdbbe",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-own-ci-root-audit-plan-v1/argv.json",
+      "group": "prepared_and_actual_root_audit"
+    },
+    {
+      "path": "root-audit/flat-plan-v2.json",
+      "bytes": 24855,
+      "sha256": "1539d6e10e6f6a35c896b4913374888ecaee9d19273875aabada5652c0eb9ff2",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-own-ci-root-audit-plan-v1/flat-plan-v2.json",
+      "group": "prepared_and_actual_root_audit"
+    },
+    {
+      "path": "root-audit/plan.json",
+      "bytes": 25789,
+      "sha256": "e2567c341f345291cdbd3d78ac6f940f550dc4fd7cd9ce1a4a6c4ea2441eb245",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-own-ci-root-audit-plan-v1/plan.json",
+      "group": "prepared_and_actual_root_audit"
+    },
+    {
+      "path": "root-ci-acceptance.json",
+      "bytes": 15153,
+      "sha256": "0536e8adfa6c837bd5c66a4bc58d1785c6b68b0649c5ca1e645566457d6d86b4",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/static-prefix-052-own-ci-root-acceptance-v1.json",
+      "group": "actual_exact_head_ci_acceptance"
+    },
+    {
+      "path": "root-ci-auditor.py",
+      "bytes": 8551,
+      "sha256": "605b5728aeef93f556907cfdd42383cfaa179db0267e3738d7aba30624338fc0",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/accept_product_ci_v4.py",
+      "group": "executed_root_auditor"
+    },
+    {
+      "path": "source-lineage/native-execution.json",
+      "bytes": 2162134,
+      "sha256": "69db413a1a2a620766ab3944df7769d6b318267b74b3f0b53ae763d282a4227c",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-reader-census-native-v1/execution.json",
+      "group": "prior_build_reference_not_this_ci_execution"
+    },
+    {
+      "path": "source-lineage/source-head-binding.json",
+      "bytes": 1496328,
+      "sha256": "c654d13433c42f985b4959cf5f934f5c3b17bd949a3e93ec34327a8eaf22e155",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-binding.json",
+      "group": "actual_source_binding"
+    },
+    {
+      "path": "source-lineage/source-head-tree.argv.json",
+      "bytes": 442957,
+      "sha256": "c605e1e5a4a3287be758265cfc4b0615cc8d376d0e87a083890bdb9e0ecfde8d",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-tree.argv.json",
+      "group": "actual_source_binding"
+    },
+    {
+      "path": "source-lineage/source-head-tree.raw",
+      "bytes": 678748,
+      "sha256": "115ea8d623ff6ec7410ce5ea7dfce9dee27277dc56c76d244011a9b4ea1adfcd",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-census-full-source-replay-v1/source-head-tree.raw",
+      "group": "actual_source_binding"
+    }
+  ]
+}

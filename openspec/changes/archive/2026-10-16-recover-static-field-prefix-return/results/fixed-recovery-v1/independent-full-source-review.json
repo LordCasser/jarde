@@ -1,0 +1,171 @@
+{
+  "schema": "static-prefix-full-generated-source-independent-audit-v1",
+  "status": "accepted_no_blockers",
+  "execution": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-full-source-replay-v2/run-v1/execution.json",
+    "bytes": 4890480,
+    "sha256": "cadadf57c80a6cf5ff8113564de5674806eb34576640f75a4fb3789ce2a9cc9a",
+    "status": "captured_14_command_full_source_replay",
+    "command_count": 14,
+    "all_command_raw_stream_pins_match": true,
+    "expected_exit_mismatches": []
+  },
+  "product_binding": {
+    "head": "c075d1a15ab9e29482ee2eb006bc152e5c57980c",
+    "branch": "codex/static-field-prefix-return",
+    "source_receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-fixed-native-v3/execution.json",
+      "bytes": 2172606,
+      "sha256": "e133d38c62d35ee39de44059f08cf9f685c768d26bf4635ee5e0092ab73b7976"
+    },
+    "source_receipt_cli": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-fixed-v3",
+      "bytes": 59699272,
+      "sha256": "3596a781705c46e51a182d45cd7a54ea8f448cf6951e1f4ce3f07cf5a00af821",
+      "mode": "0555",
+      "built_from": "target/debug/jarde-cli"
+    },
+    "manifest_count": 4915,
+    "union_count": 4915,
+    "source_union_identical_after": true,
+    "target_absent_before_and_after": true
+  },
+  "physical_methods": {
+    "javac23": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "outcome": "recovered"
+      },
+      {
+        "name": "bump",
+        "descriptor": "()I",
+        "outcome": "recovered"
+      },
+      {
+        "name": "evalThenFin",
+        "descriptor": "()I",
+        "outcome": "recovered"
+      },
+      {
+        "name": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "outcome": "recovered"
+      },
+      {
+        "name": "<clinit>",
+        "descriptor": "()V",
+        "outcome": "recovered"
+      }
+    ],
+    "javac8": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "outcome": "recovered"
+      },
+      {
+        "name": "bump",
+        "descriptor": "()I",
+        "outcome": "recovered"
+      },
+      {
+        "name": "evalThenFin",
+        "descriptor": "()I",
+        "outcome": "recovered"
+      },
+      {
+        "name": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "outcome": "recovered"
+      },
+      {
+        "name": "<clinit>",
+        "descriptor": "()V",
+        "outcome": "recovered"
+      }
+    ]
+  },
+  "generated_full_source": {
+    "javac23": {
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811"
+    },
+    "javac8": {
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811"
+    },
+    "both_exactly_equal_to_each_json_report_text": true,
+    "both_compiles_succeeded": true,
+    "empty_sourcepath_each_leg": true,
+    "compile_classpath_rebuilt_output_only": true
+  },
+  "driver_and_runtime": {
+    "unmodified_driver_path": "tests/fixtures/recover-static-field-prefix-return/StaticPrefixProbe.java",
+    "driver_compile_pins": [
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-full-source-replay-v2/run-v1/javac23-rebuilt-driver/StaticPrefixProbe.class",
+        "bytes": 867,
+        "sha256": "e9258d4eb50fdcace4aa795365ba23096122125895a473647135f879c07cfa53"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-full-source-replay-v2/run-v1/javac8-rebuilt-driver/StaticPrefixProbe.class",
+        "bytes": 867,
+        "sha256": "58d5e021cc61efe8f61c6b12171fdfb65a63302a49137306264252a1118aa8f8"
+      }
+    ],
+    "driver_compiled_against_rebuilt_only": true,
+    "runtime_commands": 8,
+    "java8_java23_rebuilt_only_oracles_exact": true,
+    "main_oracle_bytes": 6,
+    "probe_oracle_bytes": 60
+  },
+  "source_maps": {
+    "bump_text": "return ++FO.i;",
+    "read_field": {
+      "bci": 0,
+      "owner": "FO",
+      "name": "i",
+      "descriptor": "I",
+      "presented": true
+    },
+    "write_field": {
+      "bci": 6,
+      "owner": "FO",
+      "name": "i",
+      "descriptor": "I",
+      "presented": true
+    },
+    "verified_in_both_actual_report_jsons": true
+  },
+  "checks": {
+    "commands_all_14_expected_exits": true,
+    "all_28_raw_stream_pins": true,
+    "source_receipt_pin": true,
+    "c075_product_head_and_branch": true,
+    "4915_source_closure_matches_receipt_and_before_after": true,
+    "preexisting_target_absent_after": true,
+    "frozen_cli_exact_receipt_and_passed_pin": true,
+    "five_physical_methods_all_recovered_both_reports": true,
+    "full_report_text_exactly_written_and_unchanged": true,
+    "actual_bump_prefix_and_source_fields": true,
+    "exact_generated_compile_argv_empty_sourcepath": true,
+    "generated_compile_uses_only_rebuilt_fo_directory": true,
+    "original_driver_source_pinned_and_rebuilt_only_compile": true,
+    "eight_rebuilt_only_verify_runs": true,
+    "both_oracles_match_fixture_pins": true,
+    "all_eight_actual_oracles_exact": true,
+    "fixture_and_jdk_binary_pins": true,
+    "inputs_and_generated_sources_before_after_identical": true,
+    "owner_root_reserved_before_parameter_names": true
+  },
+  "blockers": [],
+  "parameter_shadow_review_correction": {
+    "prior_concern_retracted": true,
+    "evidence": "report.rs:11785-11835 adds the owner path first component from static field/invoke operations to reserved_names before NameTable construction; names.rs::decide (about lines 599-636) collision-suffixes any evidenced parameter/local spelling already in reserved. The naming functions receive &reserved_names. This prevents an emitted parameter from shadowing the owner root in this path; no descriptor gate is indicated by the earlier concern."
+  },
+  "limits": [
+    "Audited stored execution receipt/raws/pins and source artifacts; did not rerun CLI, compiler, JVM, native tests, Git, or OpenSpec.",
+    "This certifies this fixed FO source replay only, not broad Java semantic equivalence."
+  ]
+}

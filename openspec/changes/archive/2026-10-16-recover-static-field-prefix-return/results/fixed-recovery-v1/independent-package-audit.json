@@ -1,0 +1,179 @@
+{
+  "schema": "static-prefix-fixed-recovery-evidence-independent-audit-v1",
+  "status": "accepted_package_integrity_and_evidence_scope",
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-fixed-recovery-evidence-v1/capture.tar.gz",
+    "bytes": 7591281,
+    "sha256": "09fa92f2269a7fc5a635908eac175f4d4cd8d750f2077dd65a76f2c540f43232"
+  },
+  "manifest": {
+    "payload_count": 122,
+    "member_count": 123,
+    "safe_unique_regular": true,
+    "all_122_manifest_size_sha256_checks_pass": true,
+    "outside_manifest_byte_equal": true
+  },
+  "groups": {
+    "failed-native-v1": {
+      "commands": 2,
+      "command_raw_streams": 4,
+      "exit_codes": [
+        101,
+        0
+      ]
+    },
+    "failed-native-v2": {
+      "commands": 3,
+      "command_raw_streams": 6,
+      "exit_codes": [
+        0,
+        101,
+        0
+      ]
+    },
+    "accepted-focused-v3": {
+      "commands": 10,
+      "command_raw_streams": 20,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "generated-source-replay-v2": {
+      "commands": 14,
+      "command_raw_streams": 28,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "focused_actual_libtest_summaries": {
+    "1": {
+      "label": "prefix-proof-unit",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    "2": {
+      "label": "prefix-public",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    "3": {
+      "label": "prefix-cli",
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "4": {
+      "label": "em23_field_unit_updates",
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    "5": {
+      "label": "p3_postfix_lvalue_values",
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 2
+    },
+    "6": {
+      "label": "p3_compound_lvalue_updates",
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0
+    },
+    "7": {
+      "label": "recover_postfix_condition_positions",
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 1
+    },
+    "8": {
+      "label": "recover_conditional_rhs_field_compound",
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "totals": {
+    "commands": 29,
+    "command_raw_streams": 58,
+    "all_raw_members": 75,
+    "launcher_dispatch_raw_separate": 16,
+    "source_head_tree_raw": {
+      "member": "generated-source-replay-v2/source-head-tree.raw",
+      "bytes": 37637453,
+      "sha256": "64f2f828f67351a8547abf356cb8c50edabaace06c364f9835a941c82c544bb7"
+    }
+  },
+  "independent_reviews": {
+    "native": {
+      "status": "accepted_native_focused_only",
+      "checks": 99,
+      "head": "c075d1a15ab9e29482ee2eb006bc152e5c57980c",
+      "source_count": 4915,
+      "git_blob_comparisons": 4915,
+      "errors": []
+    },
+    "generated_source": {
+      "status": "accepted_no_blockers",
+      "checks": 19,
+      "all_checks_true": true,
+      "commands": 14,
+      "both_generated_source_compiles": true,
+      "driver_compile_rebuilt_only": true,
+      "rebuilt_only_runs": 8,
+      "all_oracles_exact": true
+    }
+  },
+  "lineage_scope": {
+    "native_v1_failed_retained": true,
+    "native_v2_failed_retained": true,
+    "native_v3_independent_review_accepts_focused_only": true,
+    "generated_replay_v2_14_commands": true,
+    "prepared_replay_v1_unexecuted_and_wrong_target_preserved": true,
+    "overwritten_preimplementation_review_lineage_preserved": true,
+    "pending_local_product_checks_or_CI_counted_as_accepted": false,
+    "no_repackage_or_repo_or_native_action": true
+  },
+  "source_count": 4915,
+  "frozen_cli_external_pin": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-fixed-v3",
+    "bytes": 59699272,
+    "sha256": "3596a781705c46e51a182d45cd7a54ea8f448cf6951e1f4ce3f07cf5a00af821",
+    "mode": "0555",
+    "inside_archive": false
+  },
+  "errors": []
+}
