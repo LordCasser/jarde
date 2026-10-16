@@ -23,4 +23,4 @@
 
 ## Impact
 
-前提为既有只读真实IR、已实现的SavedReturn与私有loop_header授权；NoCall产品02de294f7af2d0798e33d52ce5474e60efe17b03的自身CI与主线交付另行完成，本片不得借用它的CI。预计修改`jarde-java`私有guard及测试、按需最小region接线、公共库/CLI测试和fixture指纹；不新增依赖、报告平面或预算维度。不是任意finally、任意循环、异常表或全部JAR/WAR的恢复承诺；不改原Java/driver/oracle/生成文本，不删除失败方法，不改旧全局计费基线。固定c0纯函数的运行不能直接观察调用次数/时点，必须另由SSA与来源闭合证明。
+前提为既有只读真实IR、已实现的SavedReturn与私有loop_header授权；NoCall产品02de294f7af2d0798e33d52ce5474e60efe17b03已通过自身CI并归档交付主线e00c48c44928bf051377f23cbf9244f378a61a5a，本分支已承接，本片不得借用它的CI。预计修改`jarde-java`私有guard及测试、按需最小region接线、公共库/CLI测试和fixture指纹；不新增依赖、报告平面或预算维度。不是任意finally、任意循环、异常表或全部JAR/WAR的恢复承诺；不改原Java/driver/oracle/生成文本，不删除失败方法，不改旧全局计费基线。固定c0纯函数的运行不能直接观察调用次数/时点，必须另由SSA与来源闭合证明。

@@ -12272,7 +12272,10 @@ mod tests {
             // NoCall loop-local finally adds two frozen classes, four Code bodies,
             // four handlers and eight direct target records (60, 40, 54, 10 per leg).
             // The complete independent methods retain all 62 Code bytes; no jsr.
-            (1179, 5267, 529, 3459, 10),
+            // Call-return loop finally adds two frozen independent classes, six Code bodies,
+            // four handler rows and eight targets (125, 59, 119, 7 per compiler leg).
+            // Both finReturn methods keep all 127 Code bytes; no jsr.
+            (1181, 5273, 533, 3467, 10),
             "fixture population changed: re-measure these counts"
         );
     }

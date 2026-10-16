@@ -9891,6 +9891,31 @@
       "path": "tests/fixtures/recover-branching-guard-body/v8/Order.class"
     },
     {
+      "blake3": "bca1bdb3d5588c2d8f10d12cb9e631a5269055aac1e4571007aca5a7e3c4648f",
+      "bytes": 327,
+      "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java"
+    },
+    {
+      "blake3": "b0b9d9ba9c93951c4075d644e39ed6c0ad6092ecdde863109cb98a89cbcd69df",
+      "bytes": 1679,
+      "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java"
+    },
+    {
+      "blake3": "5ef6487f5c68cdc58a4397383791e0ec1957ae70270655e8012fcb571928b5a4",
+      "bytes": 217,
+      "path": "tests/fixtures/recover-call-return-loop-finally/probe.stdout"
+    },
+    {
+      "blake3": "caca249c8ca5bf86280aedfc0832ca38e0f8e1ce5d31dcb28123098df4ca13ab",
+      "bytes": 781,
+      "path": "tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class"
+    },
+    {
+      "blake3": "c51816dc194e6a0250cebaa438de25b9fd44a1ddc41325bda101b39da4562a50",
+      "bytes": 781,
+      "path": "tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+    },
+    {
       "blake3": "e7ac9292a93c6bf9b27f4fd9dde5ac89daaa8c297d39943cc339f79a3505f2d1",
       "bytes": 1682,
       "path": "tests/fixtures/recover-chained-field-assignment/CF.java"

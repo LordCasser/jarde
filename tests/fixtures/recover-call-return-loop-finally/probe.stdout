@@ -1,0 +1,10 @@
+empty:-1:0:
+one:-1:1:fin:1
+two:-1:2:fin:1,fin:2
+hit:3000:1:fin:3
+late:3000:2:fin:1,fin:3
+first:3000:1:fin:3
+null:null:0:
+throw-return:cleanup:1:fin:3
+throw-late:cleanup:2:fin:1,fin:3
+throw-fallthrough:cleanup:1:fin:1

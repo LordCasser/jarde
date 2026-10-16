@@ -18,7 +18,7 @@
 2. 证书覆盖lead12..17、body17..30、savedStore28/return58、cleanup30..56；fallthrough59..85之后transfer85至Tail119..125。owned为{12,23,59,88}，join/header7。复用私有loop_header与当前region额外返回授权，handler88只在成功后认领；不把handler加入正常child scope。尾部iinc119/goto122融合于真实block59，不能假设独立tail块。
 3. 三份10操作cleanup分别30/59/90起始。按每copy内部SSA映射核对System.out、Allocate(StringBuilder)、Duplicate双未初始化alias、Special构造器初始化写回、"fin:"、append(String)、当前x、append(int)、toString、println。精确核类型/slot/producer/consumers及effect；NewSite按各copy物理分配位置对应，不能把三次分配当同一个对象，也不把全输出单消费者当必要假设（实际dup一个alias被构造器覆盖且uses为空）。saved call→store→load→return链则必须唯一。
 4. cleanup读取的x均resolve到store15的值；handler local4 phi输入[x,自身]且replaced_by x，要核实际phi与替换证据。异常stack phi有来自23与88的caught inputs，store88→load116→athrow118保持主异常身份。完整核对自绑定row非抛出、c0受保护、清理均在保护区外，保持清理异常替代pending completion。两row的finally_copy_shape=true仅局部形状；现有cleanup_sequence=false也不等于已观察到旧整体proof的首拒点。
-5. 真实class变体反例在重新analyze后的不可伪造Facts中拒绝：副本参数/CP/receiver/slot、saved return、构造器alias、分支/尾更新/保护边界、异常存取等。证明收费中触发晚预算与取消，确保停止传播且未发布ownership，保留已收费量。
+5. 真实class变体反例在重新analyze后的不可伪造Facts中拒绝：副本参数/CP/receiver/slot、saved return、构造器alias、分支/尾更新/保护边界、异常存取等。证明收费中触发晚预算、取消及真实期限检查，确保停止传播且未发布ownership，保留已收费量；期限沿既有ElapsedMillis语义，不以sleep或伪造错误代替。
 6. 最终冻结CLI对每编译器独立完整class恢复；每份report.text原样重编，driver rebuilt-only编译并双JVM运行。固定driver只观察cleanup顺序/计数/异常和返回值，不直接观察纯c0调用次数，也未触达try内异常；这两点由证明/来源覆盖，报告必须限定。原完整FX可仍有finContinue/finBreak失败，保留原样结果，不能删除它们使整类编译过关。
 
 ## Risks / Trade-offs
@@ -30,4 +30,4 @@
 
 ## Migration Plan
 
-先交付NoCall自身CI/归档主线，再让本分支承接主线文档；产品代码按独立fixture/proof/公共入口顺序提交。验证完成后仅用本片产品exact-head自身CI，正常同步新增规格并归档；回退可回滚本片提交，不影响已有窄规则。
+NoCall已通过自身CI并正常归档交付主线e00c48c44，本分支已承接；产品代码按独立fixture/proof/公共入口顺序提交。验证完成后仅用本片产品exact-head自身CI，正常同步新增规格并归档；回退可回滚本片提交，不影响已有窄规则。
