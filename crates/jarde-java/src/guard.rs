@@ -12861,6 +12861,9 @@ mod finally_copy_tests {
         };
         let analyzed = analyze_method_ir(&[snapshot], &request, &mut budget).unwrap();
         let ir = analyzed.ir();
+        if name == "finContinue" || name == "finBreak" {
+            println!("{name}: ACTUAL FRAMES {:?}", ir.frames());
+        }
         let canonical = ir.canonical().unwrap();
         let ssa = ir.ssa().unwrap();
         let code = ir.code().unwrap();
@@ -13527,6 +13530,59 @@ mod finally_copy_tests {
                 ));
             })
             .unwrap();
+        }
+    }
+
+    #[test]
+    fn loop_transfer_baseline_probes_actual_handler_values_effects_and_loop_scope() {
+        for (leg, class) in [
+            (
+                "javac23",
+                &include_bytes!(
+                    "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+                )[..],
+            ),
+            (
+                "javac8",
+                &include_bytes!(
+                    "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8-javac8/LoopTransferFinally.class"
+                )[..],
+            ),
+        ] {
+            for name in ["finContinue", "finBreak"] {
+                println!("BEGIN ACTUAL {leg}/{name}");
+                let old = probe_descriptor(class, name, b"([I)I", false, None, |facts| {
+                    assert!(facts.canonical.completeness().is_complete());
+                    assert_eq!(facts.order.len(), 35);
+                    assert_eq!(facts.handlers.len(), 3);
+                    println!("{leg}/{name}: actual rows {:?}", facts.handlers);
+                    println!("{leg}/{name}: actual canonical edges {:?}", facts.canonical.edges());
+                    for block in facts.canonical.blocks() {
+                        let id = block.id();
+                        let node = facts.view.index_of(id).unwrap();
+                        println!("{leg}/{name}: canonical node={node} block={id:?} end={} normal_predecessors={:?} normal_successors={:?}", block.end_bci(), facts.view.predecessors(node), facts.view.successors(node));
+                        if let Some(natural) = facts.view.loop_entered_at(node) {
+                            println!("{leg}/{name}: actual natural_loop={natural:?}");
+                        }
+                        println!("{leg}/{name}: actual entry {:?}", facts.ssa.block(id).unwrap().entry());
+                        for instruction in facts.in_block(id) {
+                            println!("{leg}/{name}: SSA bci={} op={:?} reads={:?} writes={:?}", instruction.bci(), facts.op(instruction.bci()), instruction.reads(), instruction.writes());
+                        }
+                    }
+                    println!("{leg}/{name}: actual phis {:?}", facts.ssa.phis());
+                    for (value, definition) in facts.ssa.values_with_ids() {
+                        println!("{leg}/{name}: value {value:?} def={:?} type={:?} uses={:?} replaced_by={:?}", definition.def(), definition.ty(), definition.uses(), definition.replaced_by());
+                    }
+                    for effect in facts.ssa.effects().instructions() {
+                        println!("{leg}/{name}: effect bci={} handlers={:?} may_throw={}", effect.bci(), effect.handlers(), effect.may_throw());
+                    }
+                }).unwrap();
+                assert!(
+                    old.is_none(),
+                    "the old straight-copy proof does not own this handler"
+                );
+                println!("END ACTUAL {leg}/{name}");
+            }
         }
     }
 

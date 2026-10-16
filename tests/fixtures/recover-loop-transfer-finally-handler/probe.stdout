@@ -1,0 +1,11 @@
+empty:0:0
+one:101:101
+two:203:203
+hit:100:100
+late:305:201
+first:201:100
+repeat:200:100
+negative:201:201
+overflow:-2147483549:-2147483549
+twomax:198:198
+null:null:null

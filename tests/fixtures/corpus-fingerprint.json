@@ -10996,6 +10996,31 @@
       "path": "tests/fixtures/recover-loop-test-copy-store/v8/ProbeControls.class"
     },
     {
+      "blake3": "b43ebd92d2be8e4599565baadfe17f4c18eadd0852591326808e4afbe4e4a7c4",
+      "bytes": 470,
+      "path": "tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinally.java"
+    },
+    {
+      "blake3": "4f8f5f463b6700b5e5c7bba9189ea6b9d4938094a25819b8e3a54717adb1e961",
+      "bytes": 942,
+      "path": "tests/fixtures/recover-loop-transfer-finally-handler/LoopTransferFinallyProbe.java"
+    },
+    {
+      "blake3": "af23f66e5c992910d39152b0ef1c87eee4c5722d43c9d95643e3a78c149052c7",
+      "bytes": 168,
+      "path": "tests/fixtures/recover-loop-transfer-finally-handler/probe.stdout"
+    },
+    {
+      "blake3": "e3ea6833541830e550c80e0e619846ef1f7aa80489b64ed110dda82e12fa848f",
+      "bytes": 514,
+      "path": "tests/fixtures/recover-loop-transfer-finally-handler/v8-javac8/LoopTransferFinally.class"
+    },
+    {
+      "blake3": "508603eee5462ab76f507a895ca58983040740b27e63d51ccdccc46707e111ec",
+      "bytes": 514,
+      "path": "tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+    },
+    {
       "blake3": "c99436e1b06de27241ea65f95637a9a9f26d3da3e0374cb78320b41d78209cfe",
       "bytes": 1230,
       "path": "tests/fixtures/recover-nested-lock-finally-bodies/ML.java"
