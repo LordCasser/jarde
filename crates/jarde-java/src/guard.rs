@@ -13557,6 +13557,7 @@ mod finally_copy_tests {
                     assert_eq!(facts.handlers.len(), 3);
                     println!("{leg}/{name}: actual rows {:?}", facts.handlers);
                     println!("{leg}/{name}: actual canonical edges {:?}", facts.canonical.edges());
+                    println!("{leg}/{name}: actual throw_sites {:?}", facts.canonical.throw_sites());
                     for block in facts.canonical.blocks() {
                         let id = block.id();
                         let node = facts.view.index_of(id).unwrap();
