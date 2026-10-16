@@ -1,0 +1,7 @@
+# WAR容器真实路径完整源码验证
+
+capture.tar.gz：1,082,160B，SHA-256 5e8703eedd4c93e6a43c4dd512e6b75fe870ab38e15ded0370b215ecab6f4ae3，60 payload加嵌入manifest共61安全唯一普通成员，逐项重开校验。
+
+最终CLI对两份原781B class建立三entry固定WAR，通过真实enumerate_artifact_tree取得container origin，再声明WEB-INF/classes/前缀LoadRoot，以explicit-classpath/layout war恢复完整类。12命令/24 raw全0，两腿3方法均structured/java无fallback，1706B text逐字等对应JAR；真实javac8/23原样重编、未改driver rebuilt-only编译与四次timeout隔离运行217B oracle逐字等。
+
+独审bdb5b3e8bd5681a67eb4240ab92cebc14dd946be99e0d28c5f39660ed7964cea为5112 checks/0 errors。JAR参考两份raw另标reference，Git tree.raw是metadata，不能并入24份WAR命令raw。CLI/JDK/timeout二进制仅外部pin，搬迁后按manifest映射，不能宣称任意WAR或父finally全恢复。

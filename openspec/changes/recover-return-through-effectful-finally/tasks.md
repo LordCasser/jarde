@@ -1,8 +1,9 @@
 ## 当前状态
 
 - 主线f4a81440d已交付FO/loopless；旧patrol矩阵保留为历史。
-- noCall产品02de294f7的本地最终CLI重筛：FY/FO各5方法均structured/java、无fallback，完整源码两种javac原样重编与main双JVM共8次观察一致；自身CI38872425446已终态独审通过，正在正常归档交付；父剩余任务不由子片替代。
-- FX保留6方法，finContinue/finReturn/finBreak仍mixed/fallback，finReturn缺return造成两份完整源码编译失败。父级完整FX/JADX/逐字节对照仍未完成。
+- noCall产品02de294f7的本地最终CLI重筛：FY/FO各5方法均structured/java、无fallback，完整源码两种javac原样重编与main双JVM共8次观察一致；自身CI38872425446已终态独审通过，并已正常归档交付main e00c48c44928bf051377f23cbf9244f378a61a5a；父剩余任务不由子片替代。
+- CallReturn叶片最终CLI b4a6b2ce…c9c851已恢复FX.finReturn为structured/java，FX两份完整源码现在原样重编成功；FY/FX/FO共6完整类/12 main输出等原始基线。FX保留6方法，finContinue/finBreak仍有jre_region_uncovered_blocks handler45（注释45/47/50/52）。固定main匹配不等于handler已恢复；父全锚/JADX/逐字节对照仍未完成。CallReturn自身CI38913819742尚在运行。
+- 固定JADX1.5.6最新三方观察：FY/FO两腿完整源码重编0、8 main匹配；FX两完整输出因未定义th重编1，无FX重建运行。JADX包改为defpackage按实记录；不修文本、不以其它工具失败证明jarde语义完整，父全锚/handler仍待办。
 - 各checkbox按原验收范围判断：已交付子片不代替整条父任务；设计与父级instrumentation文件缺失不伪称已补齐。
 
 ## 1. 取证与基线
