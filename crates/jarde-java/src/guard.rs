@@ -608,6 +608,15 @@ pub enum FinallyCompletion {
     },
 }
 
+/// The second normal cleanup of a conditional saved-return finally. Its body boundary is the
+/// cleanup entry; its continuation is reached only after the whole try/finally has completed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct FinallyFallthrough {
+    pub(crate) cleanup: (u32, u32),
+    pub(crate) transfer: u32,
+    pub(crate) continuation: Continuation,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SharedFinallyCompletion {
     SavedReturns([(u32, u32); 2]),
@@ -658,6 +667,8 @@ pub struct Plan {
     /// for every other guarded shape. Boxed: the clause is the rare statement's own, and the
     /// verdict this plan travels in stays no larger than it has to be.
     enclosing: Option<Box<EnclosingCatch>>,
+    /// Private second completion; the public saved-return shape stays unchanged.
+    finally_fallthrough: Option<FinallyFallthrough>,
     /// The instructions the proof **read**: the resources' own stores, the closes the handlers
     /// perform, the `addSuppressed` calls and the rethrows. They write no text of their own — the
     /// statement took their place — and they are the anchors the artifact records beside it, so that
@@ -741,6 +752,10 @@ impl Plan {
     /// The whole-construct `catch` the statement presents, when its table states one.
     pub fn enclosing(&self) -> Option<&EnclosingCatch> {
         self.enclosing.as_deref()
+    }
+
+    pub(crate) fn finally_fallthrough(&self) -> Option<&FinallyFallthrough> {
+        self.finally_fallthrough.as_ref()
     }
 
     /// The instructions the proof read, in BCI order.
@@ -2728,10 +2743,264 @@ struct FinallyCopyProof {
     normal_cleanup: (u32, u32),
     handler_cleanup: (u32, u32),
     saved_return: (u32, u32),
+    fallthrough: Option<FinallyFallthrough>,
     primary: (u32, u32, u32),
     owned: Vec<CanonicalBlockId>,
     join: Option<CanonicalBlockId>,
     origins: Vec<u32>,
+}
+
+/// The fixed conditional body has one saved int return and one fallthrough. All three cleanup
+/// copies are checked before either normal completion owns anything. Unrelated shapes pay no
+/// new proof scan: the finite opcode discriminator is only admission, never the certificate.
+fn prove_conditional_return_finally(
+    facts: &mut Facts<'_>,
+    row: &ExceptionHandlerFact,
+) -> Result<Option<FinallyCopyProof>, StopReason> {
+    const OPCODES: [u8; 27] = [
+        0x2a, 0xbe, 0x9e, 0x2a, 0x03, 0x2e, 0x06, 0xa0, 0, 0x3c, 0xb2, 0x12, 0xb6, 0x1b, 0xac,
+        0xb2, 0x12, 0xb6, 0xa7, 0x4d, 0xb2, 0x12, 0xb6, 0x2c, 0xbf, 0x02, 0xac,
+    ];
+    let Ok(b) = <[u32; 27]>::try_from(facts.order.as_slice()) else {
+        return Ok(None);
+    };
+    if facts.handlers.len() != 1
+        || row.catch_type_index.is_some()
+        || b[0] != 0
+        || row.start_bci != b[0]
+        || !facts.canonical.completeness().is_complete()
+        || !facts.canonical.unreachable().is_empty()
+        || facts.canonical.blocks().len() != 5
+        || facts.ssa.blocks().len() != 5
+        || b.iter().enumerate().any(|(index, at)| {
+            let Some(step) = facts.step(*at) else {
+                return true;
+            };
+            if index == 8 {
+                !matches!(step.instruction.opcode(), 0xb2 | 0x11)
+            } else {
+                step.instruction.opcode() != OPCODES[index]
+            }
+        })
+    {
+        return Ok(None);
+    }
+    for at in b {
+        facts.charge(at)?;
+    }
+    // The decoded operation list must cover precisely these reachable, non-cloned instructions.
+    let ops = facts.ops;
+    let mut decoded = 0;
+    for (at, _) in ops.iter() {
+        facts.charge(*at)?;
+        if b.get(decoded) != Some(at) {
+            return Ok(None);
+        }
+        decoded += 1;
+    }
+    if decoded != b.len()
+        || row.end_bci != b[10]
+        || row.end_bci != facts.span_end(b[9])
+        || row.handler_bci != b[19]
+        || !matches!(facts.op(b[2]), Some(Operation::Comparison { target, .. }) if *target == b[15])
+        || !matches!(facts.op(b[7]), Some(Operation::Comparison { target, .. }) if *target == b[15])
+        || !(matches!(
+            facts.op(b[8]),
+            Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
+        ) || matches!(facts.op(b[8]), Some(Operation::Field { access: crate::facts::FieldAccess::Read, is_static: true, descriptor, .. }) if descriptor == "I"))
+    {
+        return Ok(None);
+    }
+    let (
+        Some(Operation::Store { slot: saved }),
+        Some(Operation::Load { slot: loaded }),
+        Some(Operation::Store { slot: primary }),
+        Some(Operation::Load { slot: reloaded }),
+    ) = (
+        facts.op(b[9]),
+        facts.op(b[13]),
+        facts.op(b[19]),
+        facts.op(b[23]),
+    )
+    else {
+        return Ok(None);
+    };
+    if saved != loaded || primary != reloaded || saved == primary {
+        return Ok(None);
+    }
+    let Some(handler) = facts.row_handler(row) else {
+        return Ok(None);
+    };
+    if handler.bci() != b[19] {
+        return Ok(None);
+    }
+    // These five exact blocks prove all entrances, both protected normal exits, the rethrow and
+    // the fused transfer tail. In particular, no normal edge enters the handler or a copy midway.
+    let block_specs = [
+        (b[0], b[0..3].to_vec(), vec![b[3], b[15]]),
+        (b[3], b[3..8].to_vec(), vec![b[8], b[15]]),
+        (b[8], b[8..15].to_vec(), vec![]),
+        (
+            b[15],
+            vec![b[15], b[16], b[17], b[18], b[25], b[26]],
+            vec![],
+        ),
+        (b[19], b[19..25].to_vec(), vec![]),
+    ];
+    let mut owned = Vec::new();
+    for (start, instructions, mut successors) in block_specs {
+        facts.charge(start)?;
+        let Some(block) = facts.starts.get(&start).copied() else {
+            return Ok(None);
+        };
+        if !block.path().is_empty()
+            || facts
+                .in_block(block)
+                .iter()
+                .map(SsaInstruction::bci)
+                .collect::<Vec<_>>()
+                != instructions
+        {
+            return Ok(None);
+        }
+        let actual = facts.view.successor_ids(block);
+        if actual.iter().any(|id| !id.path().is_empty()) {
+            return Ok(None);
+        }
+        let mut actual: Vec<_> = actual.iter().map(CanonicalBlockId::bci).collect();
+        actual.sort_unstable();
+        successors.sort_unstable();
+        if actual != successors {
+            return Ok(None);
+        }
+        owned.push(block.clone());
+    }
+    if owned.iter().collect::<BTreeSet<_>>().len() != 5 {
+        return Ok(None);
+    }
+    let effects = facts.ssa.effects();
+    for at in b {
+        facts.charge(at)?;
+        let Some(effect) = effects
+            .instructions()
+            .iter()
+            .find(|effect| effect.bci() == at)
+        else {
+            return Ok(None);
+        };
+        let protected = row.start_bci <= at && at < row.end_bci;
+        let covering = facts.covering(at);
+        if (protected && (covering.len() != 1 || covering[0].ordinal != row.ordinal))
+            || (!protected && !covering.is_empty())
+            || effect
+                .handlers()
+                .iter()
+                .any(|ordinal| !protected || *ordinal != row.ordinal)
+            || (protected && effect.may_throw() && effect.handlers() != [row.ordinal])
+        {
+            return Ok(None);
+        }
+    }
+    let normal = &b[10..13];
+    let fallthrough = &b[15..18];
+    let exceptional = &b[20..23];
+    let (Some(normal_code), Some(fallthrough_code), Some(exceptional_code)) = (
+        cleanup_sequence(facts, normal, false),
+        cleanup_sequence(facts, fallthrough, false),
+        cleanup_sequence(facts, exceptional, false),
+    ) else {
+        return Ok(None);
+    };
+    if normal_code != fallthrough_code || normal_code != exceptional_code {
+        return Ok(None);
+    }
+    // Every value between the producer, the local binding and the consumed return/rethrow is an
+    // actual single-use SSA definition. A same-numbered slot or display name is not that proof.
+    for (producer, consumer, int_value) in [
+        (8, 9, true),
+        (9, 13, true),
+        (13, 14, true),
+        (19, 23, false),
+        (23, 24, false),
+        (25, 26, true),
+    ] {
+        facts.charge(b[producer])?;
+        let (Some(produced), Some(consumed)) = (facts.step(b[producer]), facts.step(b[consumer]))
+        else {
+            return Ok(None);
+        };
+        let [(_, value)] = produced.instruction.writes() else {
+            return Ok(None);
+        };
+        let [(_, read)] = consumed.instruction.reads() else {
+            return Ok(None);
+        };
+        let resolved = facts.ssa.value(facts.resolve(*value));
+        if !facts.same(*value, *read)
+            || (int_value && resolved.ty() != &jarde_jvm::method_ir::Value::Int)
+            || !matches!(resolved.def(), Definition::Instruction { block, bci }
+                if *bci == b[producer] && block == produced.block)
+            || resolved.uses().len() != 1
+            || resolved.uses()[0].bci() != Some(b[consumer])
+            || resolved.uses()[0].block() != consumed.block
+        {
+            return Ok(None);
+        }
+        let mut reads = 0;
+        for at in b {
+            facts.charge(at)?;
+            let Some(step) = facts.step(at) else {
+                return Ok(None);
+            };
+            reads += step
+                .instruction
+                .reads()
+                .iter()
+                .filter(|(_, read)| facts.same(*read, *value))
+                .count();
+        }
+        if reads != 1 {
+            return Ok(None);
+        }
+    }
+    let primary_store = facts.step(b[19]).unwrap().instruction;
+    let Some(handler_names) = facts.ssa.block(&handler) else {
+        return Ok(None);
+    };
+    let [(_, primary_read)] = primary_store.reads() else {
+        return Ok(None);
+    };
+    if !handler_names
+        .entry()
+        .iter()
+        .any(|(slot, value)| *slot == Slot::Stack(0) && facts.same(*value, *primary_read))
+    {
+        return Ok(None);
+    }
+    let last = facts.span_end(b[26]);
+    if facts.end_of(facts.block_of(b[15]).unwrap()) != last {
+        return Ok(None);
+    }
+    owned.sort_by_key(CanonicalBlockId::bci);
+    poll(facts.budget, Some(b[26]))?;
+    Ok(Some(FinallyCopyProof {
+        row_ordinal: row.ordinal,
+        protected: (b[0], b[10]),
+        normal_cleanup: (b[10], facts.span_end(b[12])),
+        handler_cleanup: (b[20], facts.span_end(b[22])),
+        saved_return: (b[9], b[14]),
+        fallthrough: Some(FinallyFallthrough {
+            cleanup: (b[15], facts.span_end(b[17])),
+            transfer: b[18],
+            continuation: Continuation::Tail {
+                span: (b[25], last),
+            },
+        }),
+        primary: (b[19], b[23], b[24]),
+        owned,
+        join: None,
+        origins: b.to_vec(),
+    }))
 }
 
 /// Each stack operand must come from an earlier instruction of this copy. The returned producer
@@ -3185,6 +3454,7 @@ fn prove_finally_copy(
             facts.span_end(*handler_cleanup.last().unwrap()),
         ),
         saved_return: (save, normal_return),
+        fallthrough: None,
         primary: (primary_store, primary_load, rethrow),
         owned,
         join: None,
@@ -3614,6 +3884,7 @@ fn prove_conditional_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -4188,6 +4459,7 @@ fn prove_lock_guard_finally(
         owned,
         join,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -4770,6 +5042,7 @@ fn prove_resource_guard_finally(
         owned,
         join,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -5138,6 +5411,7 @@ fn prove_nullable_resource_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -5990,6 +6264,7 @@ fn prove_flag_conditional_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -6720,6 +6995,7 @@ fn prove_local_null_conditional_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -7240,6 +7516,7 @@ fn prove_empty_catch_call_finally(
         owned: vec![body_block, facts.row_handler(named).unwrap(), primary_block],
         join: Some(join),
         enclosing: None,
+        finally_fallthrough: None,
         facts: facts.order.clone(),
     }))
 }
@@ -7567,6 +7844,7 @@ fn prove_nested_cleanup_finally(
         owned,
         join: Some(join),
         enclosing: None,
+        finally_fallthrough: None,
         facts: BCIS.to_vec(),
     }))
 }
@@ -7927,6 +8205,7 @@ fn prove_two_catch_return_finally(
         owned: vec![body_block, first_block, second_block, primary_block],
         join: Some(join),
         enclosing: None,
+        finally_fallthrough: None,
         facts: facts.order.clone(),
     }))
 }
@@ -8181,6 +8460,7 @@ fn prove_nested_join_finally(
         owned,
         join,
         enclosing: None,
+        finally_fallthrough: None,
         facts: facts.bcis((start, handler_end)),
     }))
 }
@@ -8998,6 +9278,7 @@ fn prove_shared_join_finally(
         owned,
         join: Some(join.clone()),
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -9343,6 +9624,7 @@ fn prove_shared_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -9689,6 +9971,7 @@ fn prove_segmented_finally(
         owned,
         join: Some(join.clone()),
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -10172,6 +10455,7 @@ fn prove_segmented_null_lead_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: origins,
     }))
 }
@@ -10499,6 +10783,7 @@ fn prove_multi_return_loop_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: BCIS.iter().copied().filter(|bci| *bci >= 21).collect(),
     }))
 }
@@ -10788,6 +11073,7 @@ fn prove_void_loop_finally(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: BCIS.iter().copied().filter(|bci| *bci >= 9).collect(),
     }))
 }
@@ -11072,6 +11358,7 @@ fn prove_loop_finally(
         owned: facts.blocks_in((0, 79)),
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: BCIS.to_vec(),
     }))
 }
@@ -11343,6 +11630,185 @@ mod finally_copy_tests {
         );
         inspect(&mut facts);
         prove_finally_copy(&mut facts, row, false)
+    }
+
+    #[test]
+    fn conditional_return_proves_three_copies_and_the_saved_field_value() {
+        for class in [
+            &include_bytes!(
+                "../../../tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class"
+            )[..],
+            &include_bytes!(
+                "../../../tests/fixtures/recover-conditional-return-finally-copies/v8-javac8/LooplessFinally.class"
+            )[..],
+        ] {
+            probe_descriptor(class, "loopless", b"([I)I", false, None, |facts| {
+                let row = facts.handlers[0].clone();
+                let proof = prove_conditional_return_finally(facts, &row)
+                    .unwrap()
+                    .expect("three copies are proved from actual SSA");
+                assert_eq!(proof.protected, (0, 16));
+                assert_eq!(proof.saved_return, (15, 25));
+                assert_eq!(proof.normal_cleanup, (16, 24));
+                assert_eq!(proof.handler_cleanup, (38, 46));
+                assert_eq!(proof.primary, (37, 46, 47));
+                assert_eq!(proof.owned.len(), 5);
+                assert_eq!(proof.origins, facts.order);
+                assert!(proof.join.is_none());
+                assert_eq!(
+                    proof.fallthrough,
+                    Some(FinallyFallthrough {
+                        cleanup: (26, 34),
+                        transfer: 34,
+                        continuation: Continuation::Tail { span: (48, 50) },
+                    })
+                );
+                let mut self_protected = row.clone();
+                self_protected.end_bci = 24;
+                assert!(
+                    prove_conditional_return_finally(facts, &self_protected)
+                        .unwrap()
+                        .is_none()
+                );
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn conditional_return_rejects_analyzed_copy_value_handler_and_edge_neighbors() {
+        let original = include_bytes!(
+            "../../../tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class"
+        );
+        let prefix = [0x2a, 0xbe, 0x9e, 0x00, 0x18, 0x2a, 0x03, 0x2e];
+        let starts: Vec<_> = original
+            .windows(prefix.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == prefix).then_some(at))
+            .collect();
+        assert_eq!(starts.len(), 1, "one physical Code mutation site");
+        let start = starts[0];
+        let mut controls = Vec::new();
+        // Append one real String constant to this frozen class's CP, then only change the second
+        // cleanup's ldc. Both strings type-check; operation equality, not a decoding failure,
+        // must keep different cleanup effects from sharing a finally.
+        let mut copy = original.to_vec();
+        assert_eq!(&copy[8..10], &[0, 33]);
+        assert_eq!(&copy[305..315], &[0, 0x21, 0, 8, 0, 2, 0, 0, 0, 1]);
+        copy[8..10].copy_from_slice(&[0, 35]);
+        copy.splice(305..305, [1, 0, 1, b'g', 8, 0, 33]);
+        copy[start + 7 + 30] = 34;
+        controls.push(("different cleanup literal", copy));
+        for (label, at, byte) in [
+            ("saved value is not consumed", 24, 0x03),
+            ("the primary exception is not rethrown", 46, 0x01),
+            ("foreign protected edge into the return arm", 4, 0x0a),
+        ] {
+            let mut changed = original.to_vec();
+            changed[start + at] = byte;
+            controls.push((label, changed));
+        }
+        let mut self_protected = original.to_vec();
+        let row = start + 50 + 2;
+        assert_eq!(&self_protected[row..row + 8], &[0, 0, 0, 16, 0, 37, 0, 0]);
+        self_protected[row + 3] = 24;
+        controls.push(("cleanup is covered by its own handler", self_protected));
+        for (label, class) in controls {
+            probe_descriptor(&class, "loopless", b"([I)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete(), "{label}");
+                let row = facts.handlers[0].clone();
+                assert!(
+                    prove_conditional_return_finally(facts, &row)
+                        .unwrap()
+                        .is_none(),
+                    "{label}"
+                );
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn conditional_return_late_budget_and_charge_cancellation_publish_no_certificate() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                    if self.cancel_at == Some(count) {
+                        self.token.cancel();
+                    }
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class"
+        );
+        probe_descriptor(class, "loopless", b"([I)I", false, None, |facts| {
+            let row = facts.handlers[0].clone();
+            *facts.budget = Budget::new(limits());
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                token: CancellationToken::new(),
+            });
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(
+                prove_conditional_return_finally(facts, &row)
+                    .unwrap()
+                    .is_some()
+            );
+            let usage = facts.budget.usage().clone();
+            let charges = observer.charges.load(Ordering::SeqCst);
+            assert!(charges > 200);
+            let mut late_limits = limits();
+            late_limits.analysis_steps = usage.analysis_steps - 1;
+            *facts.budget = Budget::new(late_limits);
+            assert!(matches!(
+                prove_conditional_return_finally(facts, &row),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(49),
+                    written: 0,
+                    ..
+                })
+            ));
+            assert_eq!(
+                facts.budget.usage().analysis_steps,
+                usage.analysis_steps - 1
+            );
+            let token = CancellationToken::new();
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: Some(charges),
+                token: token.clone(),
+            });
+            *facts.budget = Budget::with_cancellation_token(limits(), token);
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert_eq!(
+                prove_conditional_return_finally(facts, &row).unwrap_err(),
+                StopReason::Cancelled { at: Some(49) }
+            );
+            assert_eq!(facts.budget.usage().analysis_steps, usage.analysis_steps);
+            assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+            *facts.budget = Budget::new(limits());
+        })
+        .unwrap();
     }
 
     #[test]
@@ -11957,7 +12423,7 @@ mod finally_copy_tests {
             completion,
             FinallyCompletion::SavedReturn {
                 save: 24,
-                returns: 31
+                returns: 31,
             }
         ));
         assert!(*structured);
@@ -13037,7 +13503,18 @@ mod finally_copy_tests {
     #[test]
     fn an_extra_cleanup_result_consumer_is_refused() {
         let class = include_bytes!("../../../tests/fixtures/p3-finally-proof/ExtraConsumer.class");
-        assert!(proof(class, "run").is_none());
+        assert!(
+            probe_descriptor(class, "run", b"()I", false, None, |facts| {
+                let row = facts.handlers[0].clone();
+                assert!(
+                    prove_conditional_return_finally(facts, &row)
+                        .unwrap()
+                        .is_none()
+                );
+            })
+            .unwrap()
+            .is_none()
+        );
     }
 
     #[test]
@@ -14679,6 +15156,7 @@ fn monitor(
         owned,
         join,
         enclosing: None,
+        finally_fallthrough: None,
         facts: facts_read,
     })))
 }
@@ -15239,6 +15717,7 @@ fn monitor_branches(
         owned,
         join: None,
         enclosing: None,
+        finally_fallthrough: None,
         facts: facts_read,
     }))
 }
@@ -15282,7 +15761,10 @@ fn resources(
                 .filter(|before| *before >= start)
                 .and_then(|before| completed_null_local_lead(facts, before, start, row.start_bci));
             let proof = if FINALLY.admits(profile) {
-                prove_finally_copy(facts, row, null_lead.is_some())?
+                match prove_conditional_return_finally(facts, row)? {
+                    Some(proof) => Some(proof),
+                    None => prove_finally_copy(facts, row, null_lead.is_some())?,
+                }
             } else {
                 None
             };
@@ -15319,7 +15801,7 @@ fn resources(
             let structured = !facts.statement_free(proof.protected);
             let return_end = facts.span_end(proof.saved_return.1);
             let handler_end = facts.span_end(proof.primary.2);
-            let pieces = [
+            let mut pieces = vec![
                 (start, proof.protected.0),
                 proof.protected,
                 proof.normal_cleanup,
@@ -15328,12 +15810,26 @@ fn resources(
                 proof.handler_cleanup,
                 (proof.handler_cleanup.1, handler_end),
             ];
-            if explained(facts, start, handler_end, &pieces).is_ok()
+            let mut guard_end = handler_end;
+            if let Some(fallthrough) = &proof.fallthrough {
+                pieces.push(fallthrough.cleanup);
+                pieces.push((fallthrough.cleanup.1, facts.span_end(fallthrough.transfer)));
+                match &fallthrough.continuation {
+                    Continuation::Tail { span } => {
+                        pieces.push(*span);
+                        guard_end = guard_end.max(span.1);
+                    }
+                    Continuation::Block(_) => {
+                        return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
+                    }
+                }
+            }
+            if explained(facts, start, guard_end, &pieces).is_ok()
                 && proof.owned.iter().all(|block| {
                     facts.in_block(block).iter().all(|instruction| {
                         let bci = instruction.bci();
                         start <= bci
-                            && bci < handler_end
+                            && bci < guard_end
                             && pieces.iter().any(|piece| piece.0 <= bci && bci < piece.1)
                     })
                 })
@@ -15353,6 +15849,7 @@ fn resources(
                     owned: proof.owned,
                     join: proof.join,
                     enclosing: None,
+                    finally_fallthrough: proof.fallthrough,
                     facts: proof.origins,
                 }));
             }
@@ -16126,6 +16623,7 @@ fn twr<'a>(
         owned,
         join,
         enclosing,
+        finally_fallthrough: None,
         facts: facts_read,
     })
 }
@@ -16909,6 +17407,7 @@ fn twr_lead(
         owned,
         join,
         enclosing: None,
+        finally_fallthrough: None,
         facts: facts_read,
     }))
 }
