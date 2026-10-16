@@ -1,0 +1,9 @@
+# 固定WAR全源码对照
+
+最终产品02de294f7af2d0798e33d52ce5474e60efe17b03及冻结CLI fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25，真实4929项源码闭包前后一致。自身CI38872425446另待终态，不由本实验替代。
+
+真实javac8与javac23 --release8的原NoCallFinally.class分别原样放入783B WAR：WEB-INF/classes/NoCallFinally.class、META-INF/MANIFEST.MF、WEB-INF/web.xml，共3 entries。12命令/24raw全部exit0：每腿先实际enumerate_artifact_tree，读取返回的根ContainerOrigin，再显式声明WEB-INF/classes/前缀根（explicit-classpath、layout war），完整恢复两方法。location的snapshot/origin/entry ordinal/raw name绑定实际WAR条目。两份1430B完整Java与对应JAR对照逐字一致，原样javac重编，未改driver仅对rebuilt类编译；Java8/23共四次-Xverify:all运行逐字匹配84B原oracle，无原class/JAR混入运行classpath。
+
+capture.tar.gz为1568376B，SHA256 6c2689cc9bcd8dc4fef90940cd18c78bb59d806d7085c2fe5d8d5611aadc497e；53载荷+内嵌manifest共54个唯一普通成员，manifest SHA256 3e4d145900ae013c4620a2b3273e3a596caea7b8e2fdf02d37ba926f12184e8f。独审SHA256 596bca545c063dd7ade1de875fb6c7ab07ae50a0a1aaf9fda9196789a0927826。包内含本次全部原始流、WAR/声明根/request/生成Java/重建classes、原fixture/runner/helper及工具manifest、产品source/CLI绑定收据；不含CLI/JDK二进制或历史native raw。
+
+结论限于这两个固定WAR和显式根；不代表任意WAR/嵌套依赖部署或全部方法恢复。局部变量清理的死值更新次数仍不由driver直接观察，沿用实际IR证明边界。
