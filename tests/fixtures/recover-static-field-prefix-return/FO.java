@@ -1,0 +1,1 @@
+public class FO { static int i = 0; static int bump(){ return ++i; } static int evalThenFin(){ try { return bump(); } finally { i = 100; } } public static void main(String[] a){ System.out.println(evalThenFin() + "/" + i); } }  // return 表达式先求值(1)，finally 改 i=100，返回 1

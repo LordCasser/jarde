@@ -11551,6 +11551,36 @@
       "path": "tests/fixtures/recover-statement-position-news/v8/SPN.class"
     },
     {
+      "blake3": "bb056bbf398964ea6a282ad90f35dafb7516b5b54097a1b7a4d85cc9eafedd81",
+      "bytes": 291,
+      "path": "tests/fixtures/recover-static-field-prefix-return/FO.java"
+    },
+    {
+      "blake3": "b55835ac828610587984b43c10d8a328831163e19e3b9072c1de65e5b347fe13",
+      "bytes": 584,
+      "path": "tests/fixtures/recover-static-field-prefix-return/StaticPrefixProbe.java"
+    },
+    {
+      "blake3": "369298369db6db41f75cf17ce7a032252a18ca2752f4ff7cbaa34d9b009bd1f9",
+      "bytes": 6,
+      "path": "tests/fixtures/recover-static-field-prefix-return/main.stdout"
+    },
+    {
+      "blake3": "c11bb4315fddedff306a4e7a3fcc5bc4d21d8e637b2561993054c8b40450eebc",
+      "bytes": 60,
+      "path": "tests/fixtures/recover-static-field-prefix-return/probe.stdout"
+    },
+    {
+      "blake3": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+      "bytes": 790,
+      "path": "tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class"
+    },
+    {
+      "blake3": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+      "bytes": 790,
+      "path": "tests/fixtures/recover-static-field-prefix-return/v8/FO.class"
+    },
+    {
       "blake3": "d1931c0fb11995fb21ef735f3749b11c91b8edae9ee0d67b9817db540421de78",
       "bytes": 396,
       "path": "tests/fixtures/recover-static-generic-field-init-text/MN.java"
