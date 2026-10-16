@@ -11943,8 +11943,25 @@ impl StaticPrefixReturn {
         return_type: Option<&Type>,
         budget: &mut Budget,
     ) -> Result<Option<Self>, StopReason> {
-        if code.instructions.len() != 6
-            || return_type != Some(&Type::Int)
+        // Fixed-width eligibility is a dispatch predicate, like unit_static_candidate. Do not
+        // start a metered SSA proof for an unrelated six-instruction int method: its old billing
+        // and all other recovery rules remain unchanged. A real candidate still pays every
+        // instruction, declaration, use and effect check below before any ownership is created.
+        let [read, one, add, copy, store, returns] = code.instructions.as_slice() else {
+            return Ok(None);
+        };
+        if [
+            read.opcode,
+            one.opcode,
+            add.opcode,
+            copy.opcode,
+            store.opcode,
+            returns.opcode,
+        ] != [0xb2, 0x04, 0x60, 0x59, 0xb3, 0xac]
+        {
+            return Ok(None);
+        }
+        if return_type != Some(&Type::Int)
             || code.stopped_at.is_some()
             || code.exception_handler_count != 0
             || !code.exception_handlers.is_empty()
