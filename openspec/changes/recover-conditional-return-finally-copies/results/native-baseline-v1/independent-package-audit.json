@@ -1,0 +1,223 @@
+{
+  "archive": {
+    "all_payload_lengths_hashes_verified": true,
+    "bytes": 3740595,
+    "members": 77,
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-native-baseline-evidence-v1/capture.tar.gz",
+    "payload_count": 76,
+    "sha256": "26ba0c4368ce49102316fb1e66c915d7d6d4caadc0a63cfb9d98b0ca86ec84fd",
+    "unique_safe_regular_members": true
+  },
+  "baseline_interpretation": {
+    "abab_complete_source_red": {
+      "both_compile_fail_missing_return": true,
+      "codes": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "rebuilt_runtime_commands": 0,
+      "text_bytes": 1560,
+      "text_sha256": "57926d1ddc3ad60342c853a185ff5fa3d8e8ae5c79288da0cffe65f5ad76a8c1"
+    },
+    "intentional_fingerprint": {
+      "added_nonmd_files": 5,
+      "changed_existing": 0,
+      "new": 2231,
+      "nonfiles_fields_unchanged": true,
+      "old": 2226,
+      "removed": 0
+    },
+    "new_proof_implemented": false,
+    "old_red": {
+      "cli": "0 passed / 1 actual assertion failure / 0 ignored",
+      "codes": [
+        0,
+        0,
+        101,
+        101,
+        0,
+        0
+      ],
+      "public": "0 passed / 2 actual assertion failures / 0 ignored"
+    },
+    "private_probe": {
+      "canonical_block26": [
+        26,
+        29,
+        31,
+        34,
+        48,
+        49
+      ],
+      "codes": [
+        0,
+        0,
+        0
+      ],
+      "failed": 0,
+      "first_mismatch": "row.end 16 != inferred cleanup start 25",
+      "passed": 1
+    }
+  },
+  "e00_source_binding": {
+    "all_git_blobs_match_binding_receipt": true,
+    "branch": "codex/conditional-return-finally-copies",
+    "commit": "e00c3cbe363a01dadb8d3d47d153f1998c992d18",
+    "count": 4922,
+    "tree_raw_entry_count": 4922,
+    "tree_rows_all_match_binding": true
+  },
+  "executions": {
+    "actual_exit_sequences": {
+      "actual-Facts-probe": [
+        0,
+        0,
+        0
+      ],
+      "new-abab-cli-red": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "old-behavior-red": [
+        0,
+        0,
+        101,
+        101,
+        0,
+        0
+      ]
+    },
+    "all_streams_match_both_receipt_and_archive": true,
+    "command_count": 13,
+    "commands": [
+      {
+        "exit_code": 0,
+        "group": "old-behavior-red",
+        "index": 1,
+        "label": "explicit-intended-regenerator"
+      },
+      {
+        "exit_code": 0,
+        "group": "old-behavior-red",
+        "index": 2,
+        "label": "normal-corpus-fingerprint"
+      },
+      {
+        "exit_code": 101,
+        "group": "old-behavior-red",
+        "index": 3,
+        "label": "old-public-behavior-red"
+      },
+      {
+        "exit_code": 101,
+        "group": "old-behavior-red",
+        "index": 4,
+        "label": "old-cli-behavior-red"
+      },
+      {
+        "exit_code": 0,
+        "group": "old-behavior-red",
+        "index": 5,
+        "label": "build-cli"
+      },
+      {
+        "exit_code": 0,
+        "group": "old-behavior-red",
+        "index": 6,
+        "label": "finally-exact-cargo-clean"
+      },
+      {
+        "exit_code": 0,
+        "group": "actual-Facts-probe",
+        "index": 1,
+        "label": "actual-facts-straight-proof-first-refusal"
+      },
+      {
+        "exit_code": 0,
+        "group": "actual-Facts-probe",
+        "index": 2,
+        "label": "build-cli"
+      },
+      {
+        "exit_code": 0,
+        "group": "actual-Facts-probe",
+        "index": 3,
+        "label": "finally-exact-cargo-clean"
+      },
+      {
+        "exit_code": 0,
+        "group": "new-abab-cli-red",
+        "index": 1,
+        "label": "javac23-full-json-current-probe-cli"
+      },
+      {
+        "exit_code": 1,
+        "group": "new-abab-cli-red",
+        "index": 2,
+        "label": "javac23-compile-exact-complete-generated"
+      },
+      {
+        "exit_code": 0,
+        "group": "new-abab-cli-red",
+        "index": 3,
+        "label": "javac8-full-json-current-probe-cli"
+      },
+      {
+        "exit_code": 1,
+        "group": "new-abab-cli-red",
+        "index": 4,
+        "label": "javac8-compile-exact-complete-generated"
+      }
+    ],
+    "group_counts": {
+      "actual-Facts-probe": 3,
+      "new-abab-cli-red": 4,
+      "old-behavior-red": 6
+    },
+    "raw_stream_count": 26
+  },
+  "frozen_cli": {
+    "phase_hashes_differ": true,
+    "pins": [
+      {
+        "bytes": 59699632,
+        "mode": "555",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-old-v1",
+        "phase": "frozen_cli_phase1",
+        "sha256": "6e075292bf761f178858f5714b3dbbf51e57a9e711ca1d87d45e77312228db96"
+      },
+      {
+        "bytes": 59699632,
+        "mode": "555",
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-old-v2",
+        "phase": "frozen_cli_phase2",
+        "sha256": "abab495171f4f1a56ca9d4ccaddf77678a15349dfd52416e6485a037651816e4"
+      }
+    ]
+  },
+  "limitations": [
+    "The Facts probe observes the existing private proof refusal; it is not new production proof.",
+    "The source red replay compiles no generated class, so there are no rebuilt runtime results.",
+    "This bundle retains its own receipt and raw records; it is not evidence that the later product change is implemented or green."
+  ],
+  "phase_source_comparison": {
+    "change_scope": "guard.rs cfg(test) probe helper",
+    "only_phase1_to_phase2_changed_path": [
+      "crates/jarde-java/src/guard.rs"
+    ],
+    "phase1_before_after_equal": true,
+    "phase2_before_after_equal": true,
+    "source_count_per_phase": 4922
+  },
+  "prior_independent_reports_in_archive": {
+    "actual-Facts-probe/independent-audit-v1.json": "6559db09bea4776447c229be5e5178858d427e4d712c49a000b5167a77222749",
+    "new-abab-cli-red/independent-audit-v1.json": "b075e199c70c3d885b54f534fc53dd90b0bfebd984211ad6f8a91bd772527545",
+    "old-behavior-red/independent-audit-v1.json": "557be1c6d8b4b5f10c89c7623c9c64b07b9248d2cf4c47526e41f31b45162293"
+  },
+  "schema": "conditional-return-finally-native-baseline-independent-audit-v1",
+  "status": "independent_audit_passed_all_bundle_and_native_pins"
+}

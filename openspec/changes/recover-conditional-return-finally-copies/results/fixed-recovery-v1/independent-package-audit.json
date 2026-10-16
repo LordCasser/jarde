@@ -1,0 +1,111 @@
+{
+  "schema": "independent-portable-conditional-return-finally-evidence-v2-audit-v1",
+  "status": "pass",
+  "archive": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-recovery-evidence-v2/capture.tar.gz",
+  "archive_bytes": 7708858,
+  "archive_sha256": "47ce07081b61df32eccbb3c97a0e3a41fde53eead2721ee8e7b333206c4db112",
+  "manifest_sha256": "db57dff9087b8ccf3ffd19b930019c9fc7d280c0625605ab87d9ad3a608b8632",
+  "payloads": 231,
+  "tar_members": 232,
+  "source_payload_pins": 231,
+  "phase_summary": [
+    {
+      "name": "first-compile",
+      "recorded_status": "failed",
+      "commands": 2,
+      "raw_streams_expected": 4,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "second-native",
+      "recorded_status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 5,
+      "raw_streams_expected": 10,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "wip-replay",
+      "recorded_status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+      "commands": 10,
+      "raw_streams_expected": 20,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "negative-compat",
+      "recorded_status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 4,
+      "raw_streams_expected": 8,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "final-native",
+      "recorded_status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 15,
+      "raw_streams_expected": 30,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "final-replay",
+      "recorded_status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+      "commands": 10,
+      "raw_streams_expected": 20,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "first-FYFX-screen",
+      "recorded_status": "failed_raw_preserved",
+      "commands": 1,
+      "raw_streams_expected": 2,
+      "command_status_matches_manifest": true
+    },
+    {
+      "name": "final-FYFX-screen",
+      "recorded_status": "captured_current_eight_command_refusal_screen",
+      "commands": 8,
+      "raw_streams_expected": 16,
+      "command_status_matches_manifest": true
+    }
+  ],
+  "stream_payloads_verified": 110,
+  "bad_members": [],
+  "final_native_cli_sha256": "a9896b7e3011499e6536b82f14345c37f407ce9f577286e0d81e33cd65fe7668",
+  "source_tree": {
+    "head": "51de58710291cd3a3587f7040eec6f972cb26229",
+    "branch": "codex/conditional-return-finally-copies",
+    "rows": 4922,
+    "all_git_blobs_match": true
+  },
+  "failure_scope": {
+    "first_compile": "captured as failed on stale enum test field before behavioral tests; retained raw, not relabeled as product final.",
+    "first_FYFX_screen": "one successful CLI then harness assertion expecting direct literal return; actual source saves 3000 in local1 then returns local1. No javac reached.",
+    "own_ci": "pending separately; not included or borrowed"
+  },
+  "checks": {
+    "outer_archive_exact_size_hash": true,
+    "external_manifest_hash_matches_execution": true,
+    "manifest_payload_member_count": true,
+    "safe_unique_tar_members": true,
+    "all_231_payloads_match_manifest": true,
+    "tar_embedded_manifest_identical": true,
+    "source_cache_entries_match_external_pins": true,
+    "portable_phase_counts_add_to_55_and_110": true,
+    "phase_execution_receipts_match_counts": true,
+    "all_110_stream_payloads_match_phase_receipt_pins": true,
+    "manifest_marks_each_historical_phase_explicitly": true,
+    "own_ci_outside_package_pending": true,
+    "final_binding_51de_4922_and_cli_matches_native": true,
+    "final_source_binding_rows_equal_manifest": true,
+    "final_native_actual_cli_matches_expected_pin": true,
+    "final_replay_10_commands_oracle_and_source_are_stable": true,
+    "frozen_fixture_files_exactly_pinned": true,
+    "final_replay_javac23_source_1225B_pinned": true,
+    "final_replay_javac23_runtime_oracles_exact": true,
+    "final_replay_javac8_source_1225B_pinned": true,
+    "final_replay_javac8_runtime_oracles_exact": true,
+    "first_FYFX_failure_is_only_harness_assertion_after_CLI": true,
+    "first_FYFX_expected_literal_mismatches_saved_local": true
+  },
+  "limitations": [
+    "This validates portable package integrity and captured evidence only; no CI or native commands were run. Own CI is excluded/pending."
+  ]
+}

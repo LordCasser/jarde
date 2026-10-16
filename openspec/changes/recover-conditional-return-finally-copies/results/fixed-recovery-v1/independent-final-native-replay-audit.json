@@ -1,0 +1,258 @@
+{
+  "schema": "independent-final-conditional-return-finally-audit-v1",
+  "status": "pass",
+  "product_head": "51de58710291cd3a3587f7040eec6f972cb26229",
+  "source_count": 4922,
+  "final_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+    "bytes": 59753256,
+    "sha256": "a9896b7e3011499e6536b82f14345c37f407ce9f577286e0d81e33cd65fe7668",
+    "mode": "0o555"
+  },
+  "native": {
+    "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/execution.json",
+    "receipt_sha256": "62ded0fe4449899b0b1227fd95275c2de2f5af1d1b9ef8d985ccb85027b51288",
+    "commands": 15,
+    "all_success_no_guard": true,
+    "test_totals": "74 passed, 0 failed, 4 ignored (summed from actual command summaries)",
+    "last_command": "finally-exact-cargo-clean",
+    "target_absent": true
+  },
+  "full_source_replay": {
+    "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/execution.json",
+    "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+    "commands": 10,
+    "all_success_no_guard": true,
+    "input_and_source_manifests_unchanged": true,
+    "target_absent": true,
+    "fixed_oracle": {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/probe.stdout",
+      "bytes": 134,
+      "sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b"
+    },
+    "legs": {
+      "javac23": {
+        "wholeclass_raw_stdout_bytes": 52611,
+        "wholeclass_raw_stdout_sha256": "bd0e0cd967f29387bdd13883b64de2364d9f007b64d8e0c7c812a8aca7689047",
+        "emitted_full_source_bytes": 1225,
+        "emitted_full_source_sha256": "7380b8a5bf6f503d3a149bae8479caf07baf25748cca107cac8c560df1f8c074",
+        "raw_CLI_text_exactly_matches_saved_source": true,
+        "method_count": 2,
+        "method_item_and_outcome_equal_report_capture": true,
+        "all_method_outcomes_recovered_diagnostics_zero": true,
+        "original_jar_class_matches_pinned_fixture_bytes": true,
+        "report_identity_origin_checked": true,
+        "generated_source_compile_exit": 0,
+        "rebuilt_runtimes": [
+          {
+            "command": 4,
+            "label": "javac23-javac8-java-rebuilt-probe",
+            "exit": 0,
+            "stdout_bytes": 134,
+            "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+            "exact_oracle": true,
+            "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/classes",
+            "rebuilt_only_classpath": true
+          },
+          {
+            "command": 5,
+            "label": "javac23-javac23-java-rebuilt-probe",
+            "exit": 0,
+            "stdout_bytes": 134,
+            "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+            "exact_oracle": true,
+            "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/classes",
+            "rebuilt_only_classpath": true
+          }
+        ],
+        "runtime_oracle_exact": true
+      },
+      "javac8": {
+        "wholeclass_raw_stdout_bytes": 52611,
+        "wholeclass_raw_stdout_sha256": "c93b7580e9d198cb046f123d330eb3e0e2c00b45c1762203a1929a05f756114d",
+        "emitted_full_source_bytes": 1225,
+        "emitted_full_source_sha256": "7380b8a5bf6f503d3a149bae8479caf07baf25748cca107cac8c560df1f8c074",
+        "raw_CLI_text_exactly_matches_saved_source": true,
+        "method_count": 2,
+        "method_item_and_outcome_equal_report_capture": true,
+        "all_method_outcomes_recovered_diagnostics_zero": true,
+        "original_jar_class_matches_pinned_fixture_bytes": true,
+        "report_identity_origin_checked": true,
+        "generated_source_compile_exit": 0,
+        "rebuilt_runtimes": [
+          {
+            "command": 9,
+            "label": "javac8-javac8-java-rebuilt-probe",
+            "exit": 0,
+            "stdout_bytes": 134,
+            "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+            "exact_oracle": true,
+            "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/classes",
+            "rebuilt_only_classpath": true
+          },
+          {
+            "command": 10,
+            "label": "javac8-javac23-java-rebuilt-probe",
+            "exit": 0,
+            "stdout_bytes": 134,
+            "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+            "exact_oracle": true,
+            "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/classes",
+            "rebuilt_only_classpath": true
+          }
+        ],
+        "runtime_oracle_exact": true
+      }
+    },
+    "typed_member_origins": [
+      {
+        "leg": "javac23",
+        "method": "<init>",
+        "descriptor": "()V",
+        "index": 0,
+        "identity_class_digest": "831972f4759d4a9e4744f8dd8f7529ea69660dd60ab3b729d071997f23e5c1da",
+        "class_length": 456,
+        "class_location_kind": "archive_entry",
+        "entry_ordinal": 0,
+        "entry_name": "LooplessFinally.class",
+        "same_identity_as_actual_report_class": true,
+        "origin_bound_to_cli_input": true
+      },
+      {
+        "leg": "javac23",
+        "method": "loopless",
+        "descriptor": "([I)I",
+        "index": 1,
+        "identity_class_digest": "831972f4759d4a9e4744f8dd8f7529ea69660dd60ab3b729d071997f23e5c1da",
+        "class_length": 456,
+        "class_location_kind": "archive_entry",
+        "entry_ordinal": 0,
+        "entry_name": "LooplessFinally.class",
+        "same_identity_as_actual_report_class": true,
+        "origin_bound_to_cli_input": true
+      },
+      {
+        "leg": "javac8",
+        "method": "<init>",
+        "descriptor": "()V",
+        "index": 0,
+        "identity_class_digest": "3f2d94e19073b924c52fef6efc76f5c5e6522604233ab442ccf4f23d5c882097",
+        "class_length": 456,
+        "class_location_kind": "archive_entry",
+        "entry_ordinal": 0,
+        "entry_name": "LooplessFinally.class",
+        "same_identity_as_actual_report_class": true,
+        "origin_bound_to_cli_input": true
+      },
+      {
+        "leg": "javac8",
+        "method": "loopless",
+        "descriptor": "([I)I",
+        "index": 1,
+        "identity_class_digest": "3f2d94e19073b924c52fef6efc76f5c5e6522604233ab442ccf4f23d5c882097",
+        "class_length": 456,
+        "class_location_kind": "archive_entry",
+        "entry_ordinal": 0,
+        "entry_name": "LooplessFinally.class",
+        "same_identity_as_actual_report_class": true,
+        "origin_bound_to_cli_input": true
+      }
+    ],
+    "rebuilt_driver_compilation": [
+      {
+        "leg": "javac23",
+        "command": 3,
+        "exit": 0,
+        "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/classes",
+        "rebuilt_classes_only": true
+      },
+      {
+        "leg": "javac8",
+        "command": 8,
+        "exit": 0,
+        "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/classes",
+        "rebuilt_classes_only": true
+      }
+    ],
+    "rebuilt_runtime_outputs": [
+      {
+        "command": 4,
+        "label": "javac23-javac8-java-rebuilt-probe",
+        "exit": 0,
+        "stdout_bytes": 134,
+        "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+        "exact_oracle": true,
+        "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/classes",
+        "rebuilt_only_classpath": true
+      },
+      {
+        "command": 5,
+        "label": "javac23-javac23-java-rebuilt-probe",
+        "exit": 0,
+        "stdout_bytes": 134,
+        "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+        "exact_oracle": true,
+        "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac23-generated/classes",
+        "rebuilt_only_classpath": true
+      },
+      {
+        "command": 9,
+        "label": "javac8-javac8-java-rebuilt-probe",
+        "exit": 0,
+        "stdout_bytes": 134,
+        "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+        "exact_oracle": true,
+        "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/classes",
+        "rebuilt_only_classpath": true
+      },
+      {
+        "command": 10,
+        "label": "javac8-javac23-java-rebuilt-probe",
+        "exit": 0,
+        "stdout_bytes": 134,
+        "stdout_sha256": "670efde94903ad30106789ea411c876a08e45ff16700c3e94d5b41c99081548b",
+        "exact_oracle": true,
+        "classpath": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/driver:/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-full-source-v1/run-v1/javac8-generated/classes",
+        "rebuilt_only_classpath": true
+      }
+    ]
+  },
+  "checks": {
+    "native_all15_success_no_guard": true,
+    "native_4922_manifests_stable": true,
+    "source_binding_51de_matches_native_manifest": true,
+    "actual_final_cli_size_hash_mode": true,
+    "full_replay_uses_final_cli_and_native_receipt": true,
+    "full_replay_10_success_no_guard": true,
+    "full_source_inputs_manifests_unchanged_target_absent": true,
+    "fixed_oracle_134_bytes": true,
+    "both_CLI_reports_equal_complete_1225B_source": true,
+    "stored_member_item_outcomes_match_raw_CLI": true,
+    "original_class_JAR_entries_match_fixture_exactly": true,
+    "all_typed_origins_match_report_input_and_entry": true,
+    "all_four_rebuilt_runtimes_equal_134B_oracle": true,
+    "all_four_rebuilt_classpaths_exclude_original_jar": true,
+    "driver_compilation_is_rebuilt_classes_only": true,
+    "final_cli_source_binding_actual_git_rows": true
+  },
+  "limitations": [
+    "Git source-tree binding was independently compared against both cached 4,922-row native manifests; no Git command or direct repository rehash was performed.",
+    "This replay validates this specific LooplessFinally class and frozen driver, not every finally shape."
+  ],
+  "source_binding": {
+    "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+    "status": "actual_fixed_git_source_and_final_native_cli_bound",
+    "branch": "codex/conditional-return-finally-copies",
+    "product_head": "51de58710291cd3a3587f7040eec6f972cb26229",
+    "source_count": 4922,
+    "all_git_blobs_match": true,
+    "rows_equal_original_cached_binding": true,
+    "frozen_cli": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+      "bytes": 59753256,
+      "sha256": "a9896b7e3011499e6536b82f14345c37f407ce9f577286e0d81e33cd65fe7668",
+      "mode": "0555",
+      "built_from": "target/debug/jarde-cli"
+    }
+  }
+}

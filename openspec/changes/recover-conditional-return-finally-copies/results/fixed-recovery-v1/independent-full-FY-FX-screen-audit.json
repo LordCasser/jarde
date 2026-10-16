@@ -1,0 +1,491 @@
+{
+  "schema": "independent-effectful-finally-fy-fx-screen-v2-audit-v1",
+  "status": "pass",
+  "v2_receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/execution.json",
+  "v2_receipt_sha256": "ea3ab947d58db76629dab0cda0a92bc3966264a2443eb4ced19678f15ed1af90",
+  "product_head": "51de58710291cd3a3587f7040eec6f972cb26229",
+  "cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+    "bytes": 59753256,
+    "sha256": "a9896b7e3011499e6536b82f14345c37f407ce9f577286e0d81e33cd65fe7668",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "source_count": 4922,
+  "commands": 8,
+  "command_rows": [
+    {
+      "index": 1,
+      "label": "javac23-current-whole-source-FY",
+      "exit": 0,
+      "expected_exit": 0,
+      "tool": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+        "--class",
+        "FY",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--budget",
+        "elapsed_millis=10000"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/1.stdout.raw",
+        "bytes": 126869,
+        "sha256": "b246b37b75d109821af9a9a8221c385c66d60211d54501a7ec660fa15412840f"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac23-compile-exact-current-generated-FY",
+      "exit": 1,
+      "expected_exit": 1,
+      "tool": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FY/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FY/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FY/classes",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FY/FY.java"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/2.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/2.stderr.raw",
+        "bytes": 205,
+        "sha256": "08b841d88da9eb21021fe56b80f661c407b149c328ad2dba75ca54f71de9bdd6"
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac23-current-whole-source-FX",
+      "exit": 0,
+      "expected_exit": 0,
+      "tool": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+        "--class",
+        "FX",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--budget",
+        "elapsed_millis=10000"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/3.stdout.raw",
+        "bytes": 156568,
+        "sha256": "3fff191a267ff6c0db239cc1debd4ed5940661e6daf1f197ecc9cceeab264c48"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/3.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac23-compile-exact-current-generated-FX",
+      "exit": 1,
+      "expected_exit": 1,
+      "tool": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FX/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FX/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FX/classes",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FX/FX.java"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/4.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/4.stderr.raw",
+        "bytes": 205,
+        "sha256": "2bc008e193f47a49ed3f7095aa8676afb3c6003a9f1f8a7773a5cc7b2aeedf00"
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac8-current-whole-source-FY",
+      "exit": 0,
+      "expected_exit": 0,
+      "tool": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+        "--class",
+        "FY",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--budget",
+        "elapsed_millis=10000"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/5.stdout.raw",
+        "bytes": 126869,
+        "sha256": "5dbdd21caabac583c12ef99c263cfdb99a490018eebfdf45607eb13fe93c39c4"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/5.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac8-compile-exact-current-generated-FY",
+      "exit": 1,
+      "expected_exit": 1,
+      "tool": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FY/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FY/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FY/classes",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FY/FY.java"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/6.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/6.stderr.raw",
+        "bytes": 204,
+        "sha256": "8cc2a2d14f7d4bb0a2cfce001fc99d6dbd8f3e1aeb71922b77a4b6e4a303cfc6"
+      }
+    },
+    {
+      "index": 7,
+      "label": "javac8-current-whole-source-FX",
+      "exit": 0,
+      "expected_exit": 0,
+      "tool": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-conditional-return-finally-final-product-v1",
+        "class-source",
+        "--input",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+        "--class",
+        "FX",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all",
+        "--budget",
+        "elapsed_millis=10000"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/7.stdout.raw",
+        "bytes": 156567,
+        "sha256": "419405593fa06ca69e9fe384b35b40607924e74a41812cd3c1df1d151c4b81a5"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/7.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 8,
+      "label": "javac8-compile-exact-current-generated-FX",
+      "exit": 1,
+      "expected_exit": 1,
+      "tool": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk23/jdk-23.0.1/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FX/classes",
+        "-sourcepath",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FX/empty-sourcepath",
+        "-d",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FX/classes",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FX/FX.java"
+      ],
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/8.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/8.stderr.raw",
+        "bytes": 204,
+        "sha256": "762d77ce3501a1d927d0aa675024acfa4b0b2e5649cbf7893c7691961ee10d25"
+      }
+    }
+  ],
+  "generated_outputs": {
+    "javac23/FY": {
+      "source_bytes": 2788,
+      "source_sha256": "825ec0edc17de25d7d73e3a33fae76805216968eeae4e90b4c1b8ed9ab30bb67",
+      "cli_text_equals_saved_complete_source": true,
+      "full_method_count": 5,
+      "full_methods_match_raw_JSON": true,
+      "method_names": [
+        "<init>",
+        "emptyFin",
+        "noCall",
+        "loopless",
+        "main"
+      ]
+    },
+    "javac23/FX": {
+      "source_bytes": 3820,
+      "source_sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f",
+      "cli_text_equals_saved_complete_source": true,
+      "full_method_count": 6,
+      "full_methods_match_raw_JSON": true,
+      "method_names": [
+        "<init>",
+        "finContinue",
+        "finReturn",
+        "c0",
+        "finBreak",
+        "main"
+      ]
+    },
+    "javac8/FY": {
+      "source_bytes": 2788,
+      "source_sha256": "825ec0edc17de25d7d73e3a33fae76805216968eeae4e90b4c1b8ed9ab30bb67",
+      "cli_text_equals_saved_complete_source": true,
+      "full_method_count": 5,
+      "full_methods_match_raw_JSON": true,
+      "method_names": [
+        "<init>",
+        "emptyFin",
+        "noCall",
+        "loopless",
+        "main"
+      ]
+    },
+    "javac8/FX": {
+      "source_bytes": 3820,
+      "source_sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f",
+      "cli_text_equals_saved_complete_source": true,
+      "full_method_count": 6,
+      "full_methods_match_raw_JSON": true,
+      "method_names": [
+        "<init>",
+        "finContinue",
+        "finReturn",
+        "c0",
+        "finBreak",
+        "main"
+      ]
+    }
+  },
+  "compiler_error_stderr": {
+    "2": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FY/FY.java:33: error: missing return statement\n    }\n    ^\n1 error\n",
+    "4": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac23-FX/FX.java:44: error: missing return statement\n    }\n    ^\n1 error\n",
+    "6": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FY/FY.java:33: error: missing return statement\n    }\n    ^\n1 error\n",
+    "8": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v2/run-v1/javac8-FX/FX.java:44: error: missing return statement\n    }\n    ^\n1 error\n"
+  },
+  "remaining_partial_methods": [
+    {
+      "case": "javac23/FY",
+      "method": "noCall",
+      "text": "// @method noCall([I)I\n// @declaration a static method of `FY`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 10 16 28 40 46 54 60\n    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+      "diagnostic_codes": [
+        "jre_region_uncovered_blocks",
+        "jre_recovery_produced",
+        "jre_enumswitch_shape",
+        "jre_enumswitch",
+        "jre_declaration"
+      ],
+      "region_fallbacks": [
+        "2 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 46]"
+      ]
+    },
+    {
+      "case": "javac23/FY",
+      "method": "loopless",
+      "text": "// @method loopless([I)I\n// @declaration a static method of `FY`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    try {\n        if (arg0.length > 0) {\n            if (arg0[0] == 3) {\n                int local1 = 3000;\n                return local1;\n            }\n        }\n    } finally {\n        java.lang.System.out.println(\"f\");\n    }\n    return -1;\n}\n",
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_enumswitch_shape",
+        "jre_enumswitch",
+        "jre_declaration"
+      ],
+      "region_fallbacks": []
+    },
+    {
+      "case": "javac23/FX",
+      "method": "finReturn",
+      "text": "// @method finReturn([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 7 12 23 59 88 119 125\n    // local 4 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+      "diagnostic_codes": [
+        "jre_region_uncovered_blocks",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_enumswitch_shape",
+        "jre_enumswitch",
+        "jre_declaration"
+      ],
+      "region_fallbacks": [
+        "2 live block(s) are reachable only through edges the normal-flow view leaves out: [23, 88]"
+      ]
+    },
+    {
+      "case": "javac8/FY",
+      "method": "noCall",
+      "text": "// @method noCall([I)I\n// @declaration a static method of `FY`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 10 16 28 40 46 54 60\n    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+      "diagnostic_codes": [
+        "jre_region_uncovered_blocks",
+        "jre_recovery_produced",
+        "jre_enumswitch_shape",
+        "jre_enumswitch",
+        "jre_declaration"
+      ],
+      "region_fallbacks": [
+        "2 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 46]"
+      ]
+    },
+    {
+      "case": "javac8/FY",
+      "method": "loopless",
+      "text": "// @method loopless([I)I\n// @declaration a static method of `FY`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    try {\n        if (arg0.length > 0) {\n            if (arg0[0] == 3) {\n                int local1 = 3000;\n                return local1;\n            }\n        }\n    } finally {\n        java.lang.System.out.println(\"f\");\n    }\n    return -1;\n}\n",
+      "diagnostic_codes": [
+        "jre_recovery_produced",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_enumswitch_shape",
+        "jre_enumswitch",
+        "jre_declaration"
+      ],
+      "region_fallbacks": []
+    },
+    {
+      "case": "javac8/FX",
+      "method": "finReturn",
+      "text": "// @method finReturn([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 7 12 23 59 88 119 125\n    // local 4 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+      "diagnostic_codes": [
+        "jre_region_uncovered_blocks",
+        "jre_recovery_produced",
+        "jre_concat_chains",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_not_emitted",
+        "jre_field_accesses",
+        "jre_enumswitch_shape",
+        "jre_enumswitch",
+        "jre_declaration"
+      ],
+      "region_fallbacks": [
+        "2 live block(s) are reachable only through edges the normal-flow view leaves out: [23, 88]"
+      ]
+    }
+  ],
+  "v1_failed_harness": {
+    "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-conditional-return-screen-v1/run-v1/execution.json",
+    "status": "failed_raw_preserved",
+    "error": "AssertionError()",
+    "commands": 1,
+    "first_cli_exit": 0,
+    "scope": "The preserved v1 harness stopped after its first successful FY CLI due to an assertion expecting literal `return 3000;`; raw output instead presents `int local1 = 3000; return local1;`. It ran no javac command."
+  },
+  "checks": {
+    "v2_all8_expected_exit_and_no_guard": true,
+    "v2_4_wholeclass_cli_and_4_compile_commands": true,
+    "v2_compilation_all_jdk23_release8": true,
+    "v2_final_cli_binding_actual": true,
+    "v2_sources_inputs_stable_target_absent": true,
+    "v2_native_receipt_reference_matches_final_native": true,
+    "javac23/FY_source_and_all_methods_raw_bound": true,
+    "javac23/FY_whole_source_report_has_expected_class_methods": true,
+    "javac23/FX_source_and_all_methods_raw_bound": true,
+    "javac23/FX_whole_source_report_has_expected_class_methods": true,
+    "javac8/FY_source_and_all_methods_raw_bound": true,
+    "javac8/FY_whole_source_report_has_expected_class_methods": true,
+    "javac8/FX_source_and_all_methods_raw_bound": true,
+    "javac8/FX_whole_source_report_has_expected_class_methods": true,
+    "FY_two_input_leg_source_text_identical": true,
+    "FX_two_input_leg_source_text_identical": true,
+    "expected_full_method_counts_FY5_FX6": true,
+    "all_four_full_generated_java_compile_refusals_are_missing_return": true,
+    "no_rebuilt_runtime_claim_or_command": true,
+    "v1_harness_failure_preserved_after_one_successful_CLI": true,
+    "v1_assertion_expected_literal_return_but_source_saves_local": true,
+    "FY_noCall_still_bytecode_fallback": true,
+    "FX_finReturn_still_bytecode_fallback": true,
+    "all_preserved_v1_v2_raw_streams_match_sha_pins": true,
+    "v2_source_and_cli_actual_input_pins_match": true
+  },
+  "limits": [
+    "The v2 compile commands are all JDK 23 javac with --release 8; there are not two distinct javac compiler implementations in this screen.",
+    "No original or rebuilt runtime was executed in v2; the compile failures are expected missing-return refusals from the full generated source.",
+    "This screen does not close FY.noCall, FX.finReturn, or the broader parent finally change."
+  ],
+  "raw_stream_pin_count": 18
+}
