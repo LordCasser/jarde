@@ -1,0 +1,211 @@
+{
+  "schema": "no-call-finally-implementation-evidence-v4-independent-audit-v1",
+  "status": "pass",
+  "archive_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-implementation-evidence-v4/capture.tar.gz",
+  "archive_bytes": 12032591,
+  "archive_sha256": "9f27f207505053e9aac29998b01d7496c3b7af49cfad6c1be2d258ae39b94450",
+  "manifest_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-implementation-evidence-v4/manifest.json",
+  "manifest_sha256": "028906910d26c8537ee21b84d3677170f227b7a8682f0d0e4e93fde245135d1e",
+  "payload_count": 401,
+  "manifest_member_count": 1,
+  "tar_member_count": 402,
+  "embedded_manifest_exact": true,
+  "source_paths_exist_and_match": true,
+  "errors": [],
+  "stage_command_and_raw_recount": [
+    {
+      "stage": "no-call-finally-first-implementation-native-v1",
+      "commands_with_exit_receipts": 2,
+      "exit_codes": [
+        101,
+        0
+      ],
+      "raw_refs": 4,
+      "unique_raw_refs": 4,
+      "status": "failed"
+    },
+    {
+      "stage": "no-call-finally-format-v1",
+      "attempted_commands": 1,
+      "commands_with_exit_receipts": 0,
+      "raw_refs": 2,
+      "status": "guard_stream_path_capture_error_after_formatter_command_no_exit_receipt"
+    },
+    {
+      "stage": "no-call-finally-format-v2",
+      "commands_with_exit_receipts": 1,
+      "exit_codes": [
+        0
+      ],
+      "raw_refs": 2,
+      "unique_raw_refs": 2,
+      "status": null
+    },
+    {
+      "stage": "no-call-finally-second-implementation-native-v1",
+      "commands_with_exit_receipts": 5,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_refs": 10,
+      "unique_raw_refs": 10,
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance"
+    },
+    {
+      "stage": "no-call-finally-intermediate-full-source-v1",
+      "commands_with_exit_receipts": 10,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_refs": 20,
+      "unique_raw_refs": 20,
+      "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success"
+    },
+    {
+      "stage": "no-call-finally-complete-local-native-v1",
+      "commands_with_exit_receipts": 8,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -15,
+        0
+      ],
+      "raw_refs": 16,
+      "unique_raw_refs": 16,
+      "status": "failed"
+    },
+    {
+      "stage": "no-call-finally-local-native-continuation-v1",
+      "commands_with_exit_receipts": 20,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_refs": 40,
+      "unique_raw_refs": 40,
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance"
+    },
+    {
+      "stage": "no-call-finally-final-full-source-v1",
+      "commands_with_exit_receipts": 10,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_refs": 20,
+      "unique_raw_refs": 20,
+      "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success"
+    },
+    {
+      "stage": "effectful-finally-after-no-call-screen-v1",
+      "commands_with_exit_receipts": 20,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_refs": 40,
+      "unique_raw_refs": 40,
+      "status": "captured_twenty_command_FY_FO_rebuilt_main_success_FX_compile_refusal",
+      "labels": [
+        "javac23-current-whole-source-FY",
+        "javac23-compile-exact-current-generated-FY",
+        "javac23-java8-rebuilt-main-FY",
+        "javac23-java23-rebuilt-main-FY",
+        "javac23-current-whole-source-FX",
+        "javac23-compile-exact-current-generated-FX",
+        "javac23-current-whole-source-FO",
+        "javac23-compile-exact-current-generated-FO",
+        "javac23-java8-rebuilt-main-FO",
+        "javac23-java23-rebuilt-main-FO",
+        "javac8-current-whole-source-FY",
+        "javac8-compile-exact-current-generated-FY",
+        "javac8-java8-rebuilt-main-FY",
+        "javac8-java23-rebuilt-main-FY",
+        "javac8-current-whole-source-FX",
+        "javac8-compile-exact-current-generated-FX",
+        "javac8-current-whole-source-FO",
+        "javac8-compile-exact-current-generated-FO",
+        "javac8-java8-rebuilt-main-FO",
+        "javac8-java23-rebuilt-main-FO"
+      ]
+    }
+  ],
+  "all_archive_raw_files": 195,
+  "source_binding": {
+    "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+    "source_count": 4929,
+    "rows": 4929,
+    "git_blobs_match": true,
+    "CLI_bytes": 59902896,
+    "CLI_sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+    "tree_raw_included": true,
+    "tree_argv_included": true
+  },
+  "independent_reviews": [
+    "no-call-finally-local-composite-native-source-independent-audit-v1.json",
+    "no-call-finally-local-composite-native-source-independent-audit-addendum-v1.json",
+    "independent-final-source-parent-review-v1.json"
+  ],
+  "superseded_prior_build": "v3 preserved; v4 corrects singleton formatter receipt counting and includes manifest inside archive."
+}

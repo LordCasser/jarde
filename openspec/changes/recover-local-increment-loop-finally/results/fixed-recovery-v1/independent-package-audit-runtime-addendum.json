@@ -1,0 +1,28 @@
+{
+  "archive_sha256": "9f27f207505053e9aac29998b01d7496c3b7af49cfad6c1be2d258ae39b94450",
+  "note": "This supplements the package-integrity audit with direct checks of each rebuilt driver stdout against the archived 84-byte oracle; original JARs were not the compile/runtime classpath.",
+  "replays": {
+    "final": {
+      "classpaths_rebuilt_only": true,
+      "commands": 10,
+      "generated_full_source_bytes_per_leg": 1430,
+      "javac_legs": 2,
+      "method_count_per_leg": 2,
+      "oracle_bytes": 84,
+      "oracle_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "rebuilt_runtime_outputs_exactly_match_oracle": 4
+    },
+    "intermediate": {
+      "classpaths_rebuilt_only": true,
+      "commands": 10,
+      "generated_full_source_bytes_per_leg": 1430,
+      "javac_legs": 2,
+      "method_count_per_leg": 2,
+      "oracle_bytes": 84,
+      "oracle_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "rebuilt_runtime_outputs_exactly_match_oracle": 4
+    }
+  },
+  "schema": "no-call-finally-implementation-evidence-v4-independent-audit-addendum-v1",
+  "status": "verified_generated_driver_runtime_oracles"
+}

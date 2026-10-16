@@ -1,0 +1,3103 @@
+{
+  "schema": "no-call-finally-final-source-parent-independent-review-v1",
+  "status": "accepted_fixed_fixture_rebuild_and_parent_screen_with_explicit_FX_failures",
+  "checks": 10305,
+  "errors": [],
+  "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+  "source_count": 4929,
+  "source_binding": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+    "bytes": 1501395,
+    "sha256": "b7ec2826e05eeb5da8f978ad5b9d82fab1e819168c98cd726b00ffb18d167e96"
+  },
+  "source_tree": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/source-head-tree.raw",
+    "bytes": 680487,
+    "sha256": "ae99e12e6b52b6abcf62e49751c0d0359b688ab8d6acf11f876eaf428db745bd"
+  },
+  "source_tree_argv": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/source-head-tree.argv.json",
+    "bytes": 453979,
+    "sha256": "bc2e1b0e05cf02e9163dea49b65d78598bf48c6449876251e69dce817d9d6f09"
+  },
+  "native_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+    "bytes": 2199389,
+    "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1"
+  },
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+    "bytes": 59902896,
+    "sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "NoCall_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/execution.json",
+    "bytes": 2612843,
+    "sha256": "79fbd46fe9faa3350c138c8e421467c5042217c8d58f15a2c3ce971992c08912"
+  },
+  "parent_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/execution.json",
+    "bytes": 2333567,
+    "sha256": "23aa9f2ab1b9cbd19faafbd1ab0f20513c6e4505686e5647bb82d2b489810740"
+  },
+  "commands": 30,
+  "raw_streams": 60,
+  "raw_pins": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/1.stdout.raw",
+      "bytes": 57549,
+      "sha256": "cc9fddfafe968dcffd0164a9b481532852980fb58e2a795c0c508c0e5b4e0c34"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/4.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/5.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/6.stdout.raw",
+      "bytes": 57549,
+      "sha256": "7a6621fade49a36ee59b502a5c78e1d4a77bed1575cf265e0d7604b041ea6f22"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/9.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/10.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/1.stdout.raw",
+      "bytes": 157232,
+      "sha256": "13dcc3432bc316d53745dca9ab4451820487f136bafffb191e56f35174bc0f69"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/3.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/4.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/5.stdout.raw",
+      "bytes": 156568,
+      "sha256": "75a9a410e7c60a5a41f6cae954b13025e13839245fa5a7003535bdafe23b4734"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/6.stderr.raw",
+      "bytes": 194,
+      "sha256": "0db594ae0b5992be156a3fba078b38c68474c0a3848443c4a6f203cae778c4c9"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/7.stdout.raw",
+      "bytes": 66032,
+      "sha256": "ca599b6f1ad20ebce9dfa949cf468f8d4b9afdb492e024ca913abc05bfcbba57"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/9.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/10.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/11.stdout.raw",
+      "bytes": 157231,
+      "sha256": "1f140e2398ec9fb650adb1a3bd8b4ac124643a85baa1db1dc05eae5ddb993c99"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/13.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/14.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/15.stdout.raw",
+      "bytes": 156572,
+      "sha256": "9f3388cfa040a874140d2054575a155fb6d1e11c83143436b10ba55dd20040b9"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/16.stderr.raw",
+      "bytes": 193,
+      "sha256": "dab1601f75ca6006a8c42d712b7739bdd110552643703d2eaecc7c52fc16087d"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/17.stdout.raw",
+      "bytes": 66032,
+      "sha256": "f752a0ff79fce0738655e2fd7c0ee91f659d5cccb5d699e8384086e9b49a7960"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/19.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/20.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "additional_unique_receipt_pins_reopened": 128,
+  "methods": [
+    {
+      "case": "NoCall/javac23",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-frozen.jar",
+        "bytes": 472,
+        "sha256": "875339a4f2f3165755b960c2805d11fe7f5649c082819d4b35b8345fedd796f0"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+        "bytes": 336,
+        "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/NoCallFinally.java",
+        "bytes": 1430,
+        "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478"
+      },
+      "compile_command": 2,
+      "compile_exit": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "7e2c940de5f547eab33ce0d65e4bf3e29bcd2975e7ba9a847eac32bbc4e45b27",
+                "length": 336
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "d7da6c61faa1f17aa7afc459fb396612db0f9d89b2b770437704237c075dab57",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    78,
+                    111,
+                    67,
+                    97,
+                    108,
+                    108,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "noCall",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              110,
+              111,
+              67,
+              97,
+              108,
+              108
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "7e2c940de5f547eab33ce0d65e4bf3e29bcd2975e7ba9a847eac32bbc4e45b27",
+                "length": 336
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "d7da6c61faa1f17aa7afc459fb396612db0f9d89b2b770437704237c075dab57",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    78,
+                    111,
+                    67,
+                    97,
+                    108,
+                    108,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "NoCall/javac8",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-frozen.jar",
+        "bytes": 472,
+        "sha256": "4cf2ba22dfcd7abfb558f3b6b6b7f3bf7ba082e9030e4b5eceac3c67b0fb0159"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+        "bytes": 336,
+        "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/NoCallFinally.java",
+        "bytes": 1430,
+        "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478"
+      },
+      "compile_command": 7,
+      "compile_exit": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "deeb2a79c56175b7637714a89225e71eca53dafd4c78ce0367a8a54a15e6b4a2",
+                "length": 336
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "da85a1a793fa3c4cd3ceccec12e9fabb6263a6e03ac60bd4de59636df964ec6c",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    78,
+                    111,
+                    67,
+                    97,
+                    108,
+                    108,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "noCall",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              110,
+              111,
+              67,
+              97,
+              108,
+              108
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "deeb2a79c56175b7637714a89225e71eca53dafd4c78ce0367a8a54a15e6b4a2",
+                "length": 336
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "da85a1a793fa3c4cd3ceccec12e9fabb6263a6e03ac60bd4de59636df964ec6c",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    78,
+                    111,
+                    67,
+                    97,
+                    108,
+                    108,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "parent/javac23/FY",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+        "bytes": 1147,
+        "sha256": "2b83776763367fceeba5b0b53dee22b8070779d0cb0c2ea7bae4e4b281255f64"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FY.class",
+        "bytes": 1033,
+        "sha256": "2e5e68e15111d69db91e3a9b7fc15f2afac263587cf000129fd18cf91f5c8fdb"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/FY.java",
+        "bytes": 2990,
+        "sha256": "b5f8b673630dda867f306fea1cbb345b36ee1487ac198d4f091e6a8224cd7912"
+      },
+      "compile_command": 2,
+      "compile_exit": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a083df780a180fa6ec326f4acba1974be8cd19a897e8e6bf4c96acb1ac8dee62",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9cc67578d6472cd71d63d64310add5667c3eb16b2485d5a8aa2dc8b88f1afa1e",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "emptyFin",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              101,
+              109,
+              112,
+              116,
+              121,
+              70,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a083df780a180fa6ec326f4acba1974be8cd19a897e8e6bf4c96acb1ac8dee62",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9cc67578d6472cd71d63d64310add5667c3eb16b2485d5a8aa2dc8b88f1afa1e",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "noCall",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              110,
+              111,
+              67,
+              97,
+              108,
+              108
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a083df780a180fa6ec326f4acba1974be8cd19a897e8e6bf4c96acb1ac8dee62",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9cc67578d6472cd71d63d64310add5667c3eb16b2485d5a8aa2dc8b88f1afa1e",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "loopless",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              108,
+              111,
+              111,
+              112,
+              108,
+              101,
+              115,
+              115
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a083df780a180fa6ec326f4acba1974be8cd19a897e8e6bf4c96acb1ac8dee62",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9cc67578d6472cd71d63d64310add5667c3eb16b2485d5a8aa2dc8b88f1afa1e",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              109,
+              97,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a083df780a180fa6ec326f4acba1974be8cd19a897e8e6bf4c96acb1ac8dee62",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9cc67578d6472cd71d63d64310add5667c3eb16b2485d5a8aa2dc8b88f1afa1e",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "parent/javac23/FX",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+        "bytes": 1391,
+        "sha256": "30628e70303e42082e72f0364385e1905c03d2fc61493b2fe48aacc6236729d0"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FX.class",
+        "bytes": 1277,
+        "sha256": "72eb3e11a54a8056b501ab60971f18fab857b76f0a6cadaffc37beb907d69a8d"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FX/FX.java",
+        "bytes": 3820,
+        "sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f"
+      },
+      "compile_command": 6,
+      "compile_exit": 1,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "cdcaeeacb0f91eafc46e649558e866c74e853cef4be155c615ba206ee64c44ab",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9c0cd8277f05c602688ac5fc6d0e7f17dd58b949b07fd6afa41eece58f913660",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "finContinue",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "fallback",
+          "representation": "mixed",
+          "content": "contains_statements",
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "all_regions_structured": false,
+          "bytecode_quote": true,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              102,
+              105,
+              110,
+              67,
+              111,
+              110,
+              116,
+              105,
+              110,
+              117,
+              101
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "cdcaeeacb0f91eafc46e649558e866c74e853cef4be155c615ba206ee64c44ab",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9c0cd8277f05c602688ac5fc6d0e7f17dd58b949b07fd6afa41eece58f913660",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "finReturn",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "fallback",
+          "representation": "mixed",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "all_regions_structured": false,
+          "bytecode_quote": true,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              102,
+              105,
+              110,
+              82,
+              101,
+              116,
+              117,
+              114,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "cdcaeeacb0f91eafc46e649558e866c74e853cef4be155c615ba206ee64c44ab",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9c0cd8277f05c602688ac5fc6d0e7f17dd58b949b07fd6afa41eece58f913660",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "c0",
+          "descriptor": "(I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              99,
+              48
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "cdcaeeacb0f91eafc46e649558e866c74e853cef4be155c615ba206ee64c44ab",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9c0cd8277f05c602688ac5fc6d0e7f17dd58b949b07fd6afa41eece58f913660",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "finBreak",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "fallback",
+          "representation": "mixed",
+          "content": "contains_statements",
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "all_regions_structured": false,
+          "bytecode_quote": true,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              102,
+              105,
+              110,
+              66,
+              114,
+              101,
+              97,
+              107
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "cdcaeeacb0f91eafc46e649558e866c74e853cef4be155c615ba206ee64c44ab",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9c0cd8277f05c602688ac5fc6d0e7f17dd58b949b07fd6afa41eece58f913660",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              109,
+              97,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "cdcaeeacb0f91eafc46e649558e866c74e853cef4be155c615ba206ee64c44ab",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "9c0cd8277f05c602688ac5fc6d0e7f17dd58b949b07fd6afa41eece58f913660",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "parent/javac23/FO",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FO.jar",
+        "bytes": 904,
+        "sha256": "d9880855e1ac15593ecf5bf5202b92d8108b4286ccc1975c3558da6dee55941b"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FO.class",
+        "bytes": 790,
+        "sha256": "de08332a3eff86160fc606c04664d31f8f80bce207be8315899f2e4f91168134"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/FO.java",
+        "bytes": 1617,
+        "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811"
+      },
+      "compile_command": 8,
+      "compile_exit": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "24a6b42e9841487daa560bd21373e847a77e5b9dd9ab5d7645ab86d080c8306f",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "bump",
+          "descriptor": "()I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              73
+            ],
+            "name": [
+              98,
+              117,
+              109,
+              112
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "24a6b42e9841487daa560bd21373e847a77e5b9dd9ab5d7645ab86d080c8306f",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "evalThenFin",
+          "descriptor": "()I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              73
+            ],
+            "name": [
+              101,
+              118,
+              97,
+              108,
+              84,
+              104,
+              101,
+              110,
+              70,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "24a6b42e9841487daa560bd21373e847a77e5b9dd9ab5d7645ab86d080c8306f",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              109,
+              97,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "24a6b42e9841487daa560bd21373e847a77e5b9dd9ab5d7645ab86d080c8306f",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              99,
+              108,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "24a6b42e9841487daa560bd21373e847a77e5b9dd9ab5d7645ab86d080c8306f",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "parent/javac8/FY",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+        "bytes": 1147,
+        "sha256": "c53036f4ecc1fa2438fb0460c82593972e0b8abb71ee9f9f30b5225b3d47717c"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FY.class",
+        "bytes": 1033,
+        "sha256": "3af9ae86d3d5326ec87ad68e11719d3d9f819758c501b5c6c911b026cc92a452"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/FY.java",
+        "bytes": 2990,
+        "sha256": "b5f8b673630dda867f306fea1cbb345b36ee1487ac198d4f091e6a8224cd7912"
+      },
+      "compile_command": 12,
+      "compile_exit": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9c8e35c59bd6bc7ddf425734bdde5ba81e0a0331532e004b307b5f60a05b3fc3",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "0d414931041fbc88c9907a8c4499022fe956a593d8a855f01a1de58ef1459c11",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "emptyFin",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              101,
+              109,
+              112,
+              116,
+              121,
+              70,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9c8e35c59bd6bc7ddf425734bdde5ba81e0a0331532e004b307b5f60a05b3fc3",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "0d414931041fbc88c9907a8c4499022fe956a593d8a855f01a1de58ef1459c11",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "noCall",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              110,
+              111,
+              67,
+              97,
+              108,
+              108
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9c8e35c59bd6bc7ddf425734bdde5ba81e0a0331532e004b307b5f60a05b3fc3",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "0d414931041fbc88c9907a8c4499022fe956a593d8a855f01a1de58ef1459c11",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "loopless",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              108,
+              111,
+              111,
+              112,
+              108,
+              101,
+              115,
+              115
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9c8e35c59bd6bc7ddf425734bdde5ba81e0a0331532e004b307b5f60a05b3fc3",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "0d414931041fbc88c9907a8c4499022fe956a593d8a855f01a1de58ef1459c11",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              109,
+              97,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "9c8e35c59bd6bc7ddf425734bdde5ba81e0a0331532e004b307b5f60a05b3fc3",
+                "length": 1033
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "0d414931041fbc88c9907a8c4499022fe956a593d8a855f01a1de58ef1459c11",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    89,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "parent/javac8/FX",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+        "bytes": 1391,
+        "sha256": "878babf755b019f35105c30191dfc81559481353cc623a0b72f6da5ebc4c3bd2"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FX.class",
+        "bytes": 1277,
+        "sha256": "631767a43ef6c35e28478cbfe6492cd02a67a8738a72fe7c5e37e3fbb25846b7"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FX/FX.java",
+        "bytes": 3820,
+        "sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f"
+      },
+      "compile_command": 16,
+      "compile_exit": 1,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a5c0ac14c9e9a940c7811d0314e56ff9ccd9d12b057ac6c534dbfbdf32739afb",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "dc46229ef1a7f39e140eb06f1c446866845aaa705182e4ad65864d8895e719d6",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "finContinue",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "fallback",
+          "representation": "mixed",
+          "content": "contains_statements",
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "all_regions_structured": false,
+          "bytecode_quote": true,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              102,
+              105,
+              110,
+              67,
+              111,
+              110,
+              116,
+              105,
+              110,
+              117,
+              101
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a5c0ac14c9e9a940c7811d0314e56ff9ccd9d12b057ac6c534dbfbdf32739afb",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "dc46229ef1a7f39e140eb06f1c446866845aaa705182e4ad65864d8895e719d6",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "finReturn",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "fallback",
+          "representation": "mixed",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "all_regions_structured": false,
+          "bytecode_quote": true,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              102,
+              105,
+              110,
+              82,
+              101,
+              116,
+              117,
+              114,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a5c0ac14c9e9a940c7811d0314e56ff9ccd9d12b057ac6c534dbfbdf32739afb",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "dc46229ef1a7f39e140eb06f1c446866845aaa705182e4ad65864d8895e719d6",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "c0",
+          "descriptor": "(I)I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              99,
+              48
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a5c0ac14c9e9a940c7811d0314e56ff9ccd9d12b057ac6c534dbfbdf32739afb",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "dc46229ef1a7f39e140eb06f1c446866845aaa705182e4ad65864d8895e719d6",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "finBreak",
+          "descriptor": "([I)I",
+          "wrapper_kind": "recovered",
+          "quality": "fallback",
+          "representation": "mixed",
+          "content": "contains_statements",
+          "fallbacks": [
+            "jre_region_uncovered_blocks"
+          ],
+          "all_regions_structured": false,
+          "bytecode_quote": true,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              102,
+              105,
+              110,
+              66,
+              114,
+              101,
+              97,
+              107
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a5c0ac14c9e9a940c7811d0314e56ff9ccd9d12b057ac6c534dbfbdf32739afb",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "dc46229ef1a7f39e140eb06f1c446866845aaa705182e4ad65864d8895e719d6",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              109,
+              97,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a5c0ac14c9e9a940c7811d0314e56ff9ccd9d12b057ac6c534dbfbdf32739afb",
+                "length": 1277
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "dc46229ef1a7f39e140eb06f1c446866845aaa705182e4ad65864d8895e719d6",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    88,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "parent/javac8/FO",
+      "input_jar": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FO.jar",
+        "bytes": 904,
+        "sha256": "07f0b6a95fec3a87d365c7528d88f8ce8b3fe6200f141f6f2a7a3a58b8a0cd6b"
+      },
+      "original_class": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FO.class",
+        "bytes": 790,
+        "sha256": "c5f1287d9dac890b29c270473d6e8122d9bfb5af24199f78ba441a8e087627e7"
+      },
+      "generated_source": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/FO.java",
+        "bytes": 1617,
+        "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811"
+      },
+      "compile_command": 18,
+      "compile_exit": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "ebe00a3b3206e4ce58129734883c699009b7d2a3191dbb86b9cfa74c8edbe2dd",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "bump",
+          "descriptor": "()I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              73
+            ],
+            "name": [
+              98,
+              117,
+              109,
+              112
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "ebe00a3b3206e4ce58129734883c699009b7d2a3191dbb86b9cfa74c8edbe2dd",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "evalThenFin",
+          "descriptor": "()I",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              73
+            ],
+            "name": [
+              101,
+              118,
+              97,
+              108,
+              84,
+              104,
+              101,
+              110,
+              70,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "ebe00a3b3206e4ce58129734883c699009b7d2a3191dbb86b9cfa74c8edbe2dd",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              91,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              109,
+              97,
+              105,
+              110
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "ebe00a3b3206e4ce58129734883c699009b7d2a3191dbb86b9cfa74c8edbe2dd",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "wrapper_kind": "recovered",
+          "quality": "structured",
+          "representation": "java",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "all_regions_structured": true,
+          "bytecode_quote": false,
+          "method_identity": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "name": [
+              60,
+              99,
+              108,
+              105,
+              110,
+              105,
+              116,
+              62
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+                "length": 790
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "ebe00a3b3206e4ce58129734883c699009b7d2a3191dbb86b9cfa74c8edbe2dd",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    70,
+                    79,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "runtime_evidence": [
+    {
+      "group": "NoCall",
+      "case": "javac23",
+      "command": 4,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "stdout_utf8": "empty:0\none:100\ntwo:200\nhit:7\nlate:107\nlater:207\nfirst:7\ntwice:7\nnone:300\nnull:null\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/classes"
+      ]
+    },
+    {
+      "group": "NoCall",
+      "case": "javac23",
+      "command": 5,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "stdout_utf8": "empty:0\none:100\ntwo:200\nhit:7\nlate:107\nlater:207\nfirst:7\ntwice:7\nnone:300\nnull:null\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/classes"
+      ]
+    },
+    {
+      "group": "NoCall",
+      "case": "javac8",
+      "command": 9,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "stdout_utf8": "empty:0\none:100\ntwo:200\nhit:7\nlate:107\nlater:207\nfirst:7\ntwice:7\nnone:300\nnull:null\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/classes"
+      ]
+    },
+    {
+      "group": "NoCall",
+      "case": "javac8",
+      "command": 10,
+      "stdout_bytes": 84,
+      "stdout_sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "stdout_utf8": "empty:0\none:100\ntwo:200\nhit:7\nlate:107\nlater:207\nfirst:7\ntwice:7\nnone:300\nnull:null\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/driver",
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac23/FY",
+      "command": 3,
+      "stdout_bytes": 16,
+      "stdout_sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "stdout_utf8": "f\n3000/107/3000\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac23/FY",
+      "command": 4,
+      "stdout_bytes": 16,
+      "stdout_sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "stdout_utf8": "f\n3000/107/3000\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac23/FO",
+      "command": 9,
+      "stdout_bytes": 6,
+      "stdout_sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "stdout_utf8": "1/100\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac23/FO",
+      "command": 10,
+      "stdout_bytes": 6,
+      "stdout_sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "stdout_utf8": "1/100\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac8/FY",
+      "command": 13,
+      "stdout_bytes": 16,
+      "stdout_sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "stdout_utf8": "f\n3000/107/3000\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac8/FY",
+      "command": 14,
+      "stdout_bytes": 16,
+      "stdout_sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "stdout_utf8": "f\n3000/107/3000\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac8/FO",
+      "command": 19,
+      "stdout_bytes": 6,
+      "stdout_sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "stdout_utf8": "1/100\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/classes"
+      ]
+    },
+    {
+      "group": "parent",
+      "case": "javac8/FO",
+      "command": 20,
+      "stdout_bytes": 6,
+      "stdout_sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "stdout_utf8": "1/100\n",
+      "classpath": [
+        "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/classes"
+      ]
+    }
+  ],
+  "original_parent_source_class_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FO.java",
+      "bytes": 291,
+      "sha256": "36fddf93e459829b6caa9d1b8c4af2c73fafbf35b399b755a106a6a15a6f88d3"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FY.java",
+      "bytes": 875,
+      "sha256": "d12080bcdbab08ed99c88a4be5f3910313cb3d1c6d121184ba8e9ef75921c5e2"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FX.java",
+      "bytes": 901,
+      "sha256": "0a321fb9ed4c7f72fdd323ce7c0f0c45a650be1562238ae4a27aab9c2d9ff53d"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FO.class",
+      "bytes": 790,
+      "sha256": "de08332a3eff86160fc606c04664d31f8f80bce207be8315899f2e4f91168134"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FX.class",
+      "bytes": 1277,
+      "sha256": "72eb3e11a54a8056b501ab60971f18fab857b76f0a6cadaffc37beb907d69a8d"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FY.class",
+      "bytes": 1033,
+      "sha256": "2e5e68e15111d69db91e3a9b7fc15f2afac263587cf000129fd18cf91f5c8fdb"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FO.java",
+      "bytes": 291,
+      "sha256": "36fddf93e459829b6caa9d1b8c4af2c73fafbf35b399b755a106a6a15a6f88d3"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FY.java",
+      "bytes": 875,
+      "sha256": "d12080bcdbab08ed99c88a4be5f3910313cb3d1c6d121184ba8e9ef75921c5e2"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FX.java",
+      "bytes": 901,
+      "sha256": "0a321fb9ed4c7f72fdd323ce7c0f0c45a650be1562238ae4a27aab9c2d9ff53d"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FO.class",
+      "bytes": 790,
+      "sha256": "c5f1287d9dac890b29c270473d6e8122d9bfb5af24199f78ba441a8e087627e7"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FX.class",
+      "bytes": 1277,
+      "sha256": "631767a43ef6c35e28478cbfe6492cd02a67a8738a72fe7c5e37e3fbb25846b7"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FY.class",
+      "bytes": 1033,
+      "sha256": "3af9ae86d3d5326ec87ad68e11719d3d9f819758c501b5c6c911b026cc92a452"
+    }
+  ],
+  "NoCall_frozen_driver": {
+    "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+    "bytes": 580,
+    "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2"
+  },
+  "NoCall_old_original_control": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/execution.json",
+    "bytes": 2303068,
+    "sha256": "0247c04350620d3647c853dd77fbd7c924f4214e38b53e2a154a91209c530c4f"
+  },
+  "scope_correction": "Actual new FY and FO JSONs each have5methods, all quality=structured/representation=java/fallbacks=[] and no@bytecode. Their complete unchanged report.text compiles on truejavac8 and JDK23release8 and each rebuilt class runs on bothJava8/23 with old exactoracle. The earlier warning that FY/FO retain quotes was not an actual finding and is superseded by these raw facts. FXfinContinue/finReturn/finBreak remain mixed/fallback/quoted; finReturn explanation_only and both wholeFXjavac failmissingreturn, noFX rebuilt runtime.",
+  "accepted_scope": "IsolatedNoCall:2complete source compiles+2unchanged driver compiles+4rebuilt-only84B oracles. ParentFY/FO:4complete source compiles+8isolatedmain oracles. FX:2honest whole-sourcecompilefailures preserved. This is fixedfixture evidence, not allfinally/globalcorpus/JADX comparison or parentOpenSpec completion; ownCI remains separate.",
+  "execution_boundary": "Auditor only read files, parsed raw/classfile/ZIP and hashed source/CLI/JDK bytes in purePython. No product/native/Git/network execution or repository edits.",
+  "finished_at": "2026-10-16T08:20:58.995303+00:00",
+  "fresh_output_script_pins": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_final_full_source_v1.py",
+      "bytes": 6488,
+      "sha256": "ca86c76f371cb53957e2838affea389f3856493e71191e34d0af38bbe6d2358d"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/screen_effectful_finally_after_no_call_v1.py",
+      "bytes": 7653,
+      "sha256": "cb71bece52ba19759d8403b6c237a3f4e5453bfbb42e969bebb222ebdb8bfd30"
+    }
+  ],
+  "original_FY_FO_actual_runtime_oracle_rows": [
+    {
+      "command": 2,
+      "label": "javac23-java8-original-FO",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/2.stdout.raw",
+        "bytes": 6,
+        "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/2.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 3,
+      "label": "javac23-java23-original-FO",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/3.stdout.raw",
+        "bytes": 6,
+        "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/3.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 4,
+      "label": "javac23-java8-original-FY",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/4.stdout.raw",
+        "bytes": 16,
+        "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/4.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 5,
+      "label": "javac23-java23-original-FY",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/5.stdout.raw",
+        "bytes": 16,
+        "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/5.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 9,
+      "label": "javac8-java8-original-FO",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/9.stdout.raw",
+        "bytes": 6,
+        "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/9.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 10,
+      "label": "javac8-java23-original-FO",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/10.stdout.raw",
+        "bytes": 6,
+        "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/10.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 11,
+      "label": "javac8-java8-original-FY",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/11.stdout.raw",
+        "bytes": 16,
+        "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/11.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": 12,
+      "label": "javac8-java23-original-FY",
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/12.stdout.raw",
+        "bytes": 16,
+        "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/12.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "additional_checks": "Native CLI build/pin correspondence; actual complete generated/driver class inventory; both executed scripts create fresh output roots and save raw doc.text unchanged; original8FY/FO oracle runs reread. No new native/test execution."
+}

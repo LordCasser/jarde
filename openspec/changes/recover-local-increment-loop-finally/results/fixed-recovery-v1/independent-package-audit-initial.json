@@ -1,0 +1,93 @@
+{
+  "archive": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-implementation-evidence-v4/capture.tar.gz",
+  "archive_bytes": 12032591,
+  "archive_sha256": "9f27f207505053e9aac29998b01d7496c3b7af49cfad6c1be2d258ae39b94450",
+  "command_receipts": {
+    "note": "Some execution.json receipts are deliberately duplicated under stage and run paths; manifest preserves both identical copies.",
+    "receipt_command_count_sum_with_duplicate_aliases": 110,
+    "stream_references_checked_across_receipt_files": 220,
+    "unique_receipt_files": 13,
+    "unique_stream_source_paths": 150
+  },
+  "effectful_finally_screen": {
+    "FX_compile_refusals": 2,
+    "FY_FO_success": true,
+    "commands": 20,
+    "failures_preserved": true
+  },
+  "excluded_cli_and_toolchain_binaries": true,
+  "limitations": [
+    "The first formatter attempt has no exit receipt; the second formatter invocation is the recorded exit-0 command.",
+    "The first native batch preserves a resource-guard termination and the 9 partial passes are explicitly excluded from unique totals.",
+    "FY/FO generated sources passed the recorded checks; FX compile refusals remain failures and are not represented as a green screen."
+  ],
+  "members": {
+    "every_payload_reopened_and_matched_manifest_and_source": true,
+    "manifest": 1,
+    "payload": 401,
+    "total": 402,
+    "unique_safe_regular": true
+  },
+  "native_scope": {
+    "continuation": {
+      "all_exit_0": true,
+      "commands": 20
+    },
+    "first_implementation": {
+      "commands": 2,
+      "exit_codes": [
+        101,
+        0
+      ],
+      "historical_failure_preserved": true
+    },
+    "formatter_v1_attempted_no_exit_receipt": true,
+    "formatter_v2_exit": 0,
+    "guard_interrupted_partial_passes": 9,
+    "guarded_local_batch": {
+      "commands": 8,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -15,
+        0
+      ],
+      "guard_limit_bytes": 1073741824,
+      "resource_guard_target_bytes": 1160514355
+    },
+    "partial_passes_not_double_counted": true,
+    "second_implementation": {
+      "all_exit_0": true,
+      "commands": 5
+    },
+    "stream_audit_count": 56,
+    "unique_completed_test_totals": {
+      "failed": 0,
+      "ignored": 8,
+      "passed": 102
+    }
+  },
+  "schema": "no-call-finally-implementation-evidence-v4-independent-audit-v1",
+  "source_binding": {
+    "branch": "codex/local-increment-loop-finally",
+    "cli_external_pin_sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+    "head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+    "source_rows": 4929,
+    "tree_argv_bound": true,
+    "tree_rows": 4929
+  },
+  "source_replay": {
+    "final_all_exit_0": true,
+    "final_commands": 10,
+    "generated_source_classpaths_and_oracle_reviewed": true,
+    "inputs_and_source_manifests_unchanged": true,
+    "intermediate_all_exit_0": true,
+    "intermediate_commands": 10,
+    "source_rows_each": 4929
+  },
+  "status": "accepted_package_integrity_and_scope"
+}

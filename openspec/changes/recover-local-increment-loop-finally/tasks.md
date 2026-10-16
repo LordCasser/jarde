@@ -11,7 +11,7 @@
 
 ## 3. 完整源码与集成验收
 
-- [ ] 3.1 最终冻结CLI原样恢复两编译器独立完整类，真实javac8和JDK23 --release8分别重编、未改driver仅针对rebuilt编译后双JVM隔离运行，保存完整原始流与独审；另screen原完整FY/FX/FO。验收：10组观察逐字等于84B原oracle，不改源/生成文本/方法/oracle，不把不可观察局部更新次数说成运行已证明，父剩余失败明确保留。
+- [x] 3.1 最终冻结CLI原样恢复两编译器独立完整类，真实javac8和JDK23 --release8分别重编、未改driver仅针对rebuilt编译后双JVM隔离运行，保存完整原始流与独审；另screen原完整FY/FX/FO。验收：10组观察逐字等于84B原oracle，不改源/生成文本/方法/oracle，不把不可观察局部更新次数说成运行已证明，父剩余失败明确保留。
 - [ ] 3.2 完成fmt、CI同参数Clippy、指纹、相关finally/loop/typedcatch兼容测试、MSRV与两版OpenSpec strict，以及最终产品exact-head自身CI独审。验收：真实非空测试与日志、source/CLI/head一致，默认stack、5GiB free/1GiB target磁盘门、exact clean、完整双seed全部实际通过；不通胀旧P5基线，不借前片CI。
 
 ## Workflow follow-up

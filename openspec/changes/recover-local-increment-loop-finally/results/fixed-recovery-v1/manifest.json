@@ -1,0 +1,3013 @@
+{
+  "schema": "no-call-finally-implementation-evidence-v4",
+  "status": "packaged_after_final_source_binding_and_independent_audits",
+  "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+    "bytes": 59902896,
+    "sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "baseline_reference": {
+    "archive_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-planning-evidence-v1/capture.tar.gz",
+    "bytes": 3945428,
+    "sha256": "374b75a1ab5dabfb9ce388a824b30b5ab97890a951ceca8fa3cada7e17ae357e",
+    "manifest_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-planning-evidence-v1/manifest.json",
+    "manifest_sha256": "bec413dc1a943a4b6c2b098c99543de45d1180556c7c895d1759864252a14135",
+    "payload_count": 134
+  },
+  "stages": [
+    {
+      "stage": "no-call-finally-first-implementation-native-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/execution.json",
+      "status": "failed",
+      "attempted_commands": 2,
+      "commands_with_exit_receipt": 2,
+      "exit_codes": [
+        101,
+        0
+      ],
+      "raw_stream_references": 4,
+      "unique_raw_paths": 4
+    },
+    {
+      "stage": "no-call-finally-format-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v1/harness-error.json",
+      "status": "guard_stream_path_capture_error_after_formatter_command_no_exit_receipt",
+      "attempted_commands": 1,
+      "commands_with_exit_receipt": 0,
+      "exit_codes": [],
+      "raw_stream_references": 2,
+      "unique_raw_paths": 2
+    },
+    {
+      "stage": "no-call-finally-format-v2",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v2/execution.json",
+      "status": "single_command_receipt",
+      "attempted_commands": 1,
+      "commands_with_exit_receipt": 1,
+      "exit_codes": [
+        0
+      ],
+      "raw_stream_references": 2,
+      "unique_raw_paths": 2
+    },
+    {
+      "stage": "no-call-finally-second-implementation-native-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "attempted_commands": 5,
+      "commands_with_exit_receipt": 5,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_stream_references": 10,
+      "unique_raw_paths": 10
+    },
+    {
+      "stage": "no-call-finally-intermediate-full-source-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/execution.json",
+      "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+      "attempted_commands": 10,
+      "commands_with_exit_receipt": 10,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_stream_references": 20,
+      "unique_raw_paths": 20
+    },
+    {
+      "stage": "no-call-finally-complete-local-native-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/execution.json",
+      "status": "failed",
+      "attempted_commands": 8,
+      "commands_with_exit_receipt": 8,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -15,
+        0
+      ],
+      "raw_stream_references": 16,
+      "unique_raw_paths": 16
+    },
+    {
+      "stage": "no-call-finally-local-native-continuation-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/execution.json",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "attempted_commands": 20,
+      "commands_with_exit_receipt": 20,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_stream_references": 40,
+      "unique_raw_paths": 40
+    },
+    {
+      "stage": "no-call-finally-final-full-source-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/execution.json",
+      "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+      "attempted_commands": 10,
+      "commands_with_exit_receipt": 10,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_stream_references": 20,
+      "unique_raw_paths": 20
+    },
+    {
+      "stage": "effectful-finally-after-no-call-screen-v1",
+      "receipt": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/execution.json",
+      "status": "captured_twenty_command_FY_FO_rebuilt_main_success_FX_compile_refusal",
+      "commands": 20,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_stream_references": 40
+    }
+  ],
+  "payload_count": 401,
+  "manifest_member_count": 1,
+  "tar_member_count": 402,
+  "members": [
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/README-no-call-finally-implementation-v4.md",
+      "archive_path": "README.md",
+      "bytes": 1211,
+      "sha256": "91d75acf83dfbbb6f8e8f86e2cb22ec0015a887c8df503aa0397f42c4f5ccbca",
+      "group": "package_scope_and_limits"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-independent-review-v1.py",
+      "archive_path": "analysis/no-call-finally-actual-facts-probe-independent-review-v1.py",
+      "bytes": 11897,
+      "sha256": "0598b2fa02fe074565841e2fbffef37fe1dcc90bb1d11884a87cba479ec2498f",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-source-parent-independent-review-v1.py",
+      "archive_path": "analysis/no-call-finally-final-source-parent-independent-review-v1.py",
+      "bytes": 13700,
+      "sha256": "7f3f3de2c1fa057f3a44f24f64d4659e6fc9c6495a6eea1dcef3bcc62a279af5",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-wip-independent-audit-v1.json",
+      "archive_path": "analysis/no-call-finally-intermediate-wip-independent-audit-v1.json",
+      "bytes": 3643,
+      "sha256": "ca5e27ffd8dda4db21adbd2fa98fe94f8e6f06369d6280c5620a39f98f49e4dd",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-composite-native-source-independent-audit-addendum-v1.json",
+      "archive_path": "analysis/no-call-finally-local-composite-native-source-independent-audit-addendum-v1.json",
+      "bytes": 1211,
+      "sha256": "39da9bf29065d11f49e085f656908349bab5e3a0ea13ab3139d1b1d77faca122",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-composite-native-source-independent-audit-v1.json",
+      "archive_path": "analysis/no-call-finally-local-composite-native-source-independent-audit-v1.json",
+      "bytes": 1715,
+      "sha256": "b1a0c22e50c41b81a9dd5669d8e89eaad10f2945f0d1be3a9cf885e18625260d",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-minimal-inner-loop-seam-review-v1.json",
+      "archive_path": "analysis/no-call-finally-minimal-inner-loop-seam-review-v1.json",
+      "bytes": 12351,
+      "sha256": "83ee6dee4cd55c5a4c7e6dd2dd3eb6e65842dccfc5f54d88e523ac50f03447a3",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-next-slice-static-review-v1.json",
+      "archive_path": "analysis/no-call-finally-next-slice-static-review-v1.json",
+      "bytes": 18186,
+      "sha256": "e479437df6af5dd4a2b93618c54800ece57007f6a792369aef372c6795ecc579",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-next-slice-static-review-v1.py",
+      "archive_path": "analysis/no-call-finally-next-slice-static-review-v1.py",
+      "bytes": 11883,
+      "sha256": "e96f74e6a55b5c4b10908ce5fa02a09f2d042c116515a29e035f648b0c45e09a",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-planning-independent-audit-v1.json",
+      "archive_path": "analysis/no-call-finally-planning-independent-audit-v1.json",
+      "bytes": 3586,
+      "sha256": "f717640bbf5f6c05b0753b6690a9d6772fb2eaeb81a801b3fa9029ce26093251",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-proposal-minimal-production-design-review-v1.json",
+      "archive_path": "analysis/no-call-finally-proposal-minimal-production-design-review-v1.json",
+      "bytes": 15551,
+      "sha256": "09354cbdcb13e93ab2d3285edcc78aaae230b133d566e04e9138d4910318a8d8",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-region-probe-independent-addendum-v1.py",
+      "archive_path": "analysis/no-call-finally-region-probe-independent-addendum-v1.py",
+      "bytes": 9443,
+      "sha256": "e3b0ac86a0e779eae38e5c2b85a4edc08615171c3636270d4b7dc131a5b02b4f",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-region-probe-independent-addendum-v2.py",
+      "archive_path": "analysis/no-call-finally-region-probe-independent-addendum-v2.py",
+      "bytes": 9764,
+      "sha256": "5b31deac3645d59f6ea319ad3937a247bd1cb91bb97d53bfcba2a9ae96ed67f6",
+      "group": "related_review_or_static_analysis"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/baseline-reference-for-implementation-v3.json",
+      "archive_path": "baseline-package-reference.json",
+      "bytes": 502,
+      "sha256": "22fb0b601fe9293afa793c73a499cd1082597e361cd6986a0a0f4530beac821d",
+      "group": "prior_red_baseline_reference"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+      "archive_path": "bindings/final-source-cli-head-binding.json",
+      "bytes": 1501395,
+      "sha256": "b7ec2826e05eeb5da8f978ad5b9d82fab1e819168c98cd726b00ffb18d167e96",
+      "group": "final_git_source_and_frozen_cli_metadata"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/source-head-tree.argv.json",
+      "archive_path": "bindings/source-head-tree.argv.json",
+      "bytes": 453979,
+      "sha256": "bc2e1b0e05cf02e9163dea49b65d78598bf48c6449876251e69dce817d9d6f09",
+      "group": "final_git_source_tree_raw_binding"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/source-head-tree.raw",
+      "archive_path": "bindings/source-head-tree.raw",
+      "bytes": 680487,
+      "sha256": "ae99e12e6b52b6abcf62e49751c0d0359b688ab8d6acf11f876eaf428db745bd",
+      "group": "final_git_source_tree_raw_binding"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/build-no-call-finally-implementation-evidence-v4.py",
+      "archive_path": "builder/build-no-call-finally-implementation-evidence-v4.py",
+      "bytes": 14196,
+      "sha256": "6da4a12775e80ceda9169c99a9353dd5da5ba3b4435f696c3c9f6a44fd3e9f1b",
+      "group": "cache_only_package_builder"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/independent-final-source-parent-review-v1.json",
+      "archive_path": "independent-audits/independent-final-source-parent-review-v1.json",
+      "bytes": 103641,
+      "sha256": "ba680133868d2c7f9c3d87a84002e4b021a2cc11dffd7edf830d452a43f89daf",
+      "group": "independent_final_audit"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-composite-native-source-independent-audit-addendum-v1.json",
+      "archive_path": "independent-audits/no-call-finally-local-composite-native-source-independent-audit-addendum-v1.json",
+      "bytes": 1211,
+      "sha256": "39da9bf29065d11f49e085f656908349bab5e3a0ea13ab3139d1b1d77faca122",
+      "group": "independent_final_audit"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-composite-native-source-independent-audit-v1.json",
+      "archive_path": "independent-audits/no-call-finally-local-composite-native-source-independent-audit-v1.json",
+      "bytes": 1715,
+      "sha256": "b1a0c22e50c41b81a9dd5669d8e89eaad10f2945f0d1be3a9cf885e18625260d",
+      "group": "independent_final_audit"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/10.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/000-10.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/11.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/001-11.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/12.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/002-12.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/13.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/003-13.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/14.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/004-14.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/2.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/005-2.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/3.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/006-3.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/4.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/007-4.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/5.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/008-5.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/6.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/009-6.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/7.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/010-7.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/9.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/011-9.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/execution.json",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/012-execution.json",
+      "bytes": 4916596,
+      "sha256": "27cca97edfd0b2946564c63558b254d4a11813be5c1623bb0515b7f8dec48012",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FO.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/013-FO.jar",
+      "bytes": 904,
+      "sha256": "d9880855e1ac15593ecf5bf5202b92d8108b4286ccc1975c3558da6dee55941b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/014-FX.jar",
+      "bytes": 1391,
+      "sha256": "30628e70303e42082e72f0364385e1905c03d2fc61493b2fe48aacc6236729d0",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/015-FY.jar",
+      "bytes": 1147,
+      "sha256": "2b83776763367fceeba5b0b53dee22b8070779d0cb0c2ea7bae4e4b281255f64",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FO.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/016-FO.jar",
+      "bytes": 904,
+      "sha256": "07f0b6a95fec3a87d365c7528d88f8ce8b3fe6200f141f6f2a7a3a58b8a0cd6b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/017-FX.jar",
+      "bytes": 1391,
+      "sha256": "878babf755b019f35105c30191dfc81559481353cc623a0b72f6da5ebc4c3bd2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/018-FY.jar",
+      "bytes": 1147,
+      "sha256": "c53036f4ecc1fa2438fb0460c82593972e0b8abb71ee9f9f30b5225b3d47717c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/019-execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/screen_effectful_finally_after_no_call_v1.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/021-screen_effectful_finally_after_no_call_v1.py",
+      "bytes": 7653,
+      "sha256": "cb71bece52ba19759d8403b6c237a3f4e5453bfbb42e969bebb222ebdb8bfd30",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/026-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/027-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/028-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FO.java",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/029-FO.java",
+      "bytes": 291,
+      "sha256": "36fddf93e459829b6caa9d1b8c4af2c73fafbf35b399b755a106a6a15a6f88d3",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FX.java",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/030-FX.java",
+      "bytes": 901,
+      "sha256": "0a321fb9ed4c7f72fdd323ce7c0f0c45a650be1562238ae4a27aab9c2d9ff53d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FY.java",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_after/031-FY.java",
+      "bytes": 875,
+      "sha256": "d12080bcdbab08ed99c88a4be5f3910313cb3d1c6d121184ba8e9ef75921c5e2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/10.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/000-10.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/11.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/001-11.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/12.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/002-12.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/13.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/003-13.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/14.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/004-14.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/2.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/005-2.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/3.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/006-3.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/4.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/007-4.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/5.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/008-5.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/6.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/009-6.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/7.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/010-7.stdout.raw",
+      "bytes": 25,
+      "sha256": "c4994a6a62b3a33c6b7247ff883b663969c8759638e6c7ac59f4cab41df17020",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/9.stdout.raw",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/011-9.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/execution.json",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/012-execution.json",
+      "bytes": 4916596,
+      "sha256": "27cca97edfd0b2946564c63558b254d4a11813be5c1623bb0515b7f8dec48012",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FO.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/013-FO.jar",
+      "bytes": 904,
+      "sha256": "d9880855e1ac15593ecf5bf5202b92d8108b4286ccc1975c3558da6dee55941b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FX.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/014-FX.jar",
+      "bytes": 1391,
+      "sha256": "30628e70303e42082e72f0364385e1905c03d2fc61493b2fe48aacc6236729d0",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-jars/FY.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/015-FY.jar",
+      "bytes": 1147,
+      "sha256": "2b83776763367fceeba5b0b53dee22b8070779d0cb0c2ea7bae4e4b281255f64",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FO.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/016-FO.jar",
+      "bytes": 904,
+      "sha256": "07f0b6a95fec3a87d365c7528d88f8ce8b3fe6200f141f6f2a7a3a58b8a0cd6b",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FX.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/017-FX.jar",
+      "bytes": 1391,
+      "sha256": "878babf755b019f35105c30191dfc81559481353cc623a0b72f6da5ebc4c3bd2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-jars/FY.jar",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/018-FY.jar",
+      "bytes": 1147,
+      "sha256": "c53036f4ecc1fa2438fb0460c82593972e0b8abb71ee9f9f30b5225b3d47717c",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/019-execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/screen_effectful_finally_after_no_call_v1.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/021-screen_effectful_finally_after_no_call_v1.py",
+      "bytes": 7653,
+      "sha256": "cb71bece52ba19759d8403b6c237a3f4e5453bfbb42e969bebb222ebdb8bfd30",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/026-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/027-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/028-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FO.java",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/029-FO.java",
+      "bytes": 291,
+      "sha256": "36fddf93e459829b6caa9d1b8c4af2c73fafbf35b399b755a106a6a15a6f88d3",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FX.java",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/030-FX.java",
+      "bytes": 901,
+      "sha256": "0a321fb9ed4c7f72fdd323ce7c0f0c45a650be1562238ae4a27aab9c2d9ff53d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FY.java",
+      "archive_path": "pinned-inputs/effectful-finally-after-no-call-screen-v1/inputs_before/031-FY.java",
+      "bytes": 875,
+      "sha256": "d12080bcdbab08ed99c88a4be5f3910313cb3d1c6d121184ba8e9ef75921c5e2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/000-execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_final_full_source_v1.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/002-replay_no_call_final_full_source_v1.py",
+      "bytes": 6488,
+      "sha256": "ca86c76f371cb53957e2838affea389f3856493e71191e34d0af38bbe6d2358d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/003-jdk-manifest.json",
+      "bytes": 1806,
+      "sha256": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/008-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/009-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/010-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/011-NoCallFinally.java",
+      "bytes": 283,
+      "sha256": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/012-NoCallFinallyProbe.java",
+      "bytes": 580,
+      "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/README.md",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/013-README.md",
+      "bytes": 812,
+      "sha256": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/probe.stdout",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/014-probe.stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/015-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_after/016-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/000-execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_final_full_source_v1.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/002-replay_no_call_final_full_source_v1.py",
+      "bytes": 6488,
+      "sha256": "ca86c76f371cb53957e2838affea389f3856493e71191e34d0af38bbe6d2358d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/003-jdk-manifest.json",
+      "bytes": 1806,
+      "sha256": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/008-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/009-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/010-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/011-NoCallFinally.java",
+      "bytes": 283,
+      "sha256": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/012-NoCallFinallyProbe.java",
+      "bytes": 580,
+      "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/README.md",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/013-README.md",
+      "bytes": 812,
+      "sha256": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/probe.stdout",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/014-probe.stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/015-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-final-full-source-v1/inputs_before/016-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/execution.json",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/000-execution.json",
+      "bytes": 2166396,
+      "sha256": "f4000204a943986af4896e448ffa5f109a89d437f9cbf5f29424e43df9034a73",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_intermediate_full_source_v1.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/002-replay_no_call_intermediate_full_source_v1.py",
+      "bytes": 6499,
+      "sha256": "a419b9d4649672b5d8d6b98edc48fe7d3dfea4ca4b9aa899357aad419396c51a",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/003-jdk-manifest.json",
+      "bytes": 1806,
+      "sha256": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/008-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/009-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/010-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/011-NoCallFinally.java",
+      "bytes": 283,
+      "sha256": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/012-NoCallFinallyProbe.java",
+      "bytes": 580,
+      "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/README.md",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/013-README.md",
+      "bytes": 812,
+      "sha256": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/probe.stdout",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/014-probe.stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/015-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_after/016-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/execution.json",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/000-execution.json",
+      "bytes": 2166396,
+      "sha256": "f4000204a943986af4896e448ffa5f109a89d437f9cbf5f29424e43df9034a73",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/replay_no_call_intermediate_full_source_v1.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/002-replay_no_call_intermediate_full_source_v1.py",
+      "bytes": 6499,
+      "sha256": "a419b9d4649672b5d8d6b98edc48fe7d3dfea4ca4b9aa899357aad419396c51a",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/jdk-manifest.json",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/003-jdk-manifest.json",
+      "bytes": 1806,
+      "sha256": "5daeb9b6e864c3f28f62acc0b4c32bf61679546f6d7db077bd4171a6eafad6d6",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/008-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/009-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/010-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinally.java",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/011-NoCallFinally.java",
+      "bytes": 283,
+      "sha256": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/NoCallFinallyProbe.java",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/012-NoCallFinallyProbe.java",
+      "bytes": 580,
+      "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/README.md",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/013-README.md",
+      "bytes": 812,
+      "sha256": "b6a42ec5dfaa0cda1ae96303ccc81e8db88a52da36166b38e962490fe6a439c9",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/probe.stdout",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/014-probe.stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/015-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+      "archive_path": "pinned-inputs/no-call-finally-intermediate-full-source-v1/inputs_before/016-NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "exact_input_before_after_pin"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/1.stdout.raw",
+      "bytes": 157232,
+      "sha256": "13dcc3432bc316d53745dca9ab4451820487f136bafffb191e56f35174bc0f69",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/10.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/10.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/10.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/11.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/11.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/11.stdout.raw",
+      "bytes": 157231,
+      "sha256": "1f140e2398ec9fb650adb1a3bd8b4ac124643a85baa1db1dc05eae5ddb993c99",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/12.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/12.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/13.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/13.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/13.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/14.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/14.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/14.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/15.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/15.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/15.stdout.raw",
+      "bytes": 156572,
+      "sha256": "9f3388cfa040a874140d2054575a155fb6d1e11c83143436b10ba55dd20040b9",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/16.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/16.stderr.raw",
+      "bytes": 193,
+      "sha256": "dab1601f75ca6006a8c42d712b7739bdd110552643703d2eaecc7c52fc16087d",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/16.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/17.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/17.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/17.stdout.raw",
+      "bytes": 66032,
+      "sha256": "f752a0ff79fce0738655e2fd7c0ee91f659d5cccb5d699e8384086e9b49a7960",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/18.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/18.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/19.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/19.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/19.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/20.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/20.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/20.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/3.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/3.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/3.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/4.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/4.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/4.stdout.raw",
+      "bytes": 16,
+      "sha256": "5252e7e743a771f9dd2303fa28cfcfd1d496119ac3fbe57c5b44ba47f4a6916c",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/5.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/5.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/5.stdout.raw",
+      "bytes": 156568,
+      "sha256": "75a9a410e7c60a5a41f6cae954b13025e13839245fa5a7003535bdafe23b4734",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/6.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/6.stderr.raw",
+      "bytes": 194,
+      "sha256": "0db594ae0b5992be156a3fba078b38c68474c0a3848443c4a6f203cae778c4c9",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/6.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/7.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/7.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/7.stdout.raw",
+      "bytes": 66032,
+      "sha256": "ca599b6f1ad20ebce9dfa949cf468f8d4b9afdb492e024ca913abc05bfcbba57",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/8.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/8.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/9.stderr.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/9.stdout.raw",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/9.stdout.raw",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/execution.json",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/execution.json",
+      "bytes": 2333567,
+      "sha256": "23aa9f2ab1b9cbd19faafbd1ab0f20513c6e4505686e5647bb82d2b489810740",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/FO.java",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/FO.java",
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/classes/FO.class",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FO/classes/FO.class",
+      "bytes": 792,
+      "sha256": "5e1d993ed3c36b4d186948b62199ed3b944120af2eb3b5b0e5414c847c263559",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FX/FX.java",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FX/FX.java",
+      "bytes": 3820,
+      "sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/FY.java",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/FY.java",
+      "bytes": 2990,
+      "sha256": "b5f8b673630dda867f306fea1cbb345b36ee1487ac198d4f091e6a8224cd7912",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/classes/FY.class",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac23-FY/classes/FY.class",
+      "bytes": 1071,
+      "sha256": "03e63a33ec755cc524041452d330a05cc5e689763c327ebb237b26391ec1556c",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/FO.java",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/FO.java",
+      "bytes": 1617,
+      "sha256": "eabbf22187e0b3c24bb984d9496a4785acc479fe05ca9e07acf8952337e25811",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/classes/FO.class",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FO/classes/FO.class",
+      "bytes": 792,
+      "sha256": "ec61502bacaf9dc3404dc3bb373b8c4b7774f926484db6fffdd08ca0025a5620",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FX/FX.java",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FX/FX.java",
+      "bytes": 3820,
+      "sha256": "ad195f187a3ca72a40004db46a75b6dbb9862ddf95b5d5cae1da2f34d5e6e10f",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/FY.java",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/FY.java",
+      "bytes": 2990,
+      "sha256": "b5f8b673630dda867f306fea1cbb345b36ee1487ac198d4f091e6a8224cd7912",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/classes/FY.class",
+      "archive_path": "stages/effectful-finally-after-no-call-screen-v1/run-v1/javac8-FY/classes/FY.class",
+      "bytes": 1071,
+      "sha256": "8d937795de7b837f09a7c5c5d0439b4bf6d3b3654f73812fefccd854c332f2cd",
+      "group": "actual_FY_FO_success_FX_compile_refusal_screen"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/commands.json",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/commands.json",
+      "bytes": 5228,
+      "sha256": "3b892317563fca8ba61f4162998222d1081a23c968274eadbbca437914e81046",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-cli/tests/class_source_cli.rs",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-cli/tests/class_source_cli.rs",
+      "bytes": 64035,
+      "sha256": "c813527314dc69a2ceede3bef4430a4f6c570e1c619622a729d6deb7f7a3b50a",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "bytes": 750640,
+      "sha256": "ca28499b019aeca3654c9c10cfad26314a2c8c4c8b1335bcd1a3913cdac39a49",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "bytes": 1072544,
+      "sha256": "aa55fe215fdeb01da75f3d81e176d18c93b711d1e15506e001c937681182b36c",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-reader/src/classfile.rs",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/crates/jarde-reader/src/classfile.rs",
+      "bytes": 534002,
+      "sha256": "07fac0f34e488bdfbf0828948a5f67a0f049f939af9eec172227c51287994087",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "bytes": 491144,
+      "sha256": "48bf9410095afe293fabae6237e9716df1e3561d52f5f72965a69f1c27d4143f",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/tests/recover_local_increment_loop_finally.rs",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/tests/recover_local_increment_loop_finally.rs",
+      "bytes": 4250,
+      "sha256": "83f30fb5d0712498e3685948486d968113b128633f12faf3d9402989a73473ac",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source/working.diff",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/compiled-source/working.diff",
+      "bytes": 38093,
+      "sha256": "8c41d66addaf9b46bab39565bb3c63e604d1764f39203a9fe412dd1b6727f0fe",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/dispatch.json",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/dispatch.json",
+      "bytes": 1226,
+      "sha256": "a07f39f465df281ceb6ef918cc30852a21cd08e8bdc818314c7ef3b52ceac1fc",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/dispatch.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/dispatch.stderr.raw",
+      "bytes": 121,
+      "sha256": "0e670f546abe036ca4702fa5b01eb76a848784bc0e964b4404f20fa0605a5565",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/dispatch.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/execution.json",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/execution.json",
+      "bytes": 2179720,
+      "sha256": "4b86035f26ef07e9bc12fe7b45ff8e323f599ea6409aaa52e997375b3d855c09",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/launcher.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/launcher.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/launcher.stdout.raw",
+      "bytes": 84,
+      "sha256": "607a7e6337c032ed38a9ea1873eedd58e87d866e6613a5b71641ac4990d6a62e",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/2.stderr.raw",
+      "bytes": 4014,
+      "sha256": "dc116419c50747c959e1aa1e37a7e1e9e43148d33ab0056ea79b858860f3357b",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/3.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/3.stderr.raw",
+      "bytes": 2452,
+      "sha256": "75710a6407a00bd83762ab63feb8aa541c0528eae1aee48dac2a4ab6454f3ddb",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/3.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/3.stdout.raw",
+      "bytes": 67520,
+      "sha256": "c266ae75553e3d7f3533de87b86211ab5bb92fbe074425bb633f9377d7254848",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/4.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/4.stderr.raw",
+      "bytes": 940,
+      "sha256": "59a7bc3eefbfa97ccfbe3de5ea354198c27667c656d0c145548d4a6a67071b05",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/4.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/4.stdout.raw",
+      "bytes": 43525,
+      "sha256": "a07e6ab292e937ba1fe53e8b30291546a07f4162f78cc78bac22291ee9e3a60c",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/5.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/5.stderr.raw",
+      "bytes": 812,
+      "sha256": "3c14a8acbff8807808ac81ada45fce2db198b7cfca09456766993015606ac42c",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/5.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/5.stdout.raw",
+      "bytes": 75692,
+      "sha256": "cb685cf2285b0599bd413fa8e4ab7a367359646c08476eb345778c0cff17079d",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/6.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/6.stderr.raw",
+      "bytes": 281,
+      "sha256": "5ea440f6d44e0c7f5c65d9591d7a343bb09a652475908c5d200563053ca432f8",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/6.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/6.stdout.raw",
+      "bytes": 75696,
+      "sha256": "ddd0ecd4a416912d760dc8fd200d139dd78ab6ac7432b653b5157b9418bf38d5",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/7.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/7.stderr.raw",
+      "bytes": 527,
+      "sha256": "5d1d8f1d274d413c0b242f3358a875e82a2b1dd76ac734c0575477e565e147bc",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/7.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/7.stdout.raw",
+      "bytes": 85994,
+      "sha256": "6cbf7e9167c44e483d9e5ea3e71409201cad7930e7049b017ab3b3c6d29a9d1e",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/8.stderr.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/8.stderr.raw",
+      "bytes": 51,
+      "sha256": "0c4f19f2ef707ff813beca1cde97a5be0ec5fd475e3074a4227aded9e459ee1e",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/8.stdout.raw",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/command_spec.json",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/command_spec.json",
+      "bytes": 4051,
+      "sha256": "0bfc552fa12685028b36e5586efbb7bc714db265d474b451acf7cd2727228fd5",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run-v1/execution.json",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run-v1/execution.json",
+      "bytes": 2179720,
+      "sha256": "4b86035f26ef07e9bc12fe7b45ff8e323f599ea6409aaa52e997375b3d855c09",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run.py",
+      "archive_path": "stages/no-call-finally-complete-local-native-v1/run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "native_batch_with_actual_resource_guard_stop"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/independent-final-source-parent-review-v1.json",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/independent-final-source-parent-review-v1.json",
+      "bytes": 103641,
+      "sha256": "ba680133868d2c7f9c3d87a84002e4b021a2cc11dffd7edf830d452a43f89daf",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/1.stdout.raw",
+      "bytes": 57549,
+      "sha256": "cc9fddfafe968dcffd0164a9b481532852980fb58e2a795c0c508c0e5b4e0c34",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/10.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/10.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/10.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/3.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/3.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/4.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/4.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/4.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/5.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/5.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/5.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/6.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/6.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/6.stdout.raw",
+      "bytes": 57549,
+      "sha256": "7a6621fade49a36ee59b502a5c78e1d4a77bed1575cf265e0d7604b041ea6f22",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/7.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/7.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/8.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/8.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/9.stderr.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/9.stdout.raw",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/9.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/execution.json",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/execution.json",
+      "bytes": 2612843,
+      "sha256": "79fbd46fe9faa3350c138c8e421467c5042217c8d58f15a2c3ce971992c08912",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-frozen.jar",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac23-frozen.jar",
+      "bytes": 472,
+      "sha256": "875339a4f2f3165755b960c2805d11fe7f5649c082819d4b35b8345fedd796f0",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "bytes": 1430,
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/classes/NoCallFinally.class",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac23-generated/classes/NoCallFinally.class",
+      "bytes": 347,
+      "sha256": "888d715f8c15afbcd072aed8461a182530a9015f1d9689c10c2c30fdd3f366aa",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac23-generated/driver/NoCallFinallyProbe.class",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac23-generated/driver/NoCallFinallyProbe.class",
+      "bytes": 1098,
+      "sha256": "5912d8511859ed6a92495097bbb889d94efc8cce646429f66bceb05c7a4b0d5a",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-frozen.jar",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac8-frozen.jar",
+      "bytes": 472,
+      "sha256": "4cf2ba22dfcd7abfb558f3b6b6b7f3bf7ba082e9030e4b5eceac3c67b0fb0159",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "bytes": 1430,
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/classes/NoCallFinally.class",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac8-generated/classes/NoCallFinally.class",
+      "bytes": 347,
+      "sha256": "552edb95d842aa87869c4906950b27d9b3a3a4d793d99401194ba1a17752b8a0",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-full-source-v1/run-v1/javac8-generated/driver/NoCallFinallyProbe.class",
+      "archive_path": "stages/no-call-finally-final-full-source-v1/run-v1/javac8-generated/driver/NoCallFinallyProbe.class",
+      "bytes": 1101,
+      "sha256": "b0d20563cf4fab3cc53439e2b26fb77eb6c95f7eea09bc3ca5c4858a957d9f8a",
+      "group": "final_complete_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/commands.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/commands.json",
+      "bytes": 977,
+      "sha256": "38c7c3740c23795619a62249d453189ee304f9324382647656bec20b945f1bc0",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "bytes": 747862,
+      "sha256": "7f39161664ef261b8454279fa94f02be47de7e5a09e8fbb85d37af6273a82675",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "bytes": 1072544,
+      "sha256": "aa55fe215fdeb01da75f3d81e176d18c93b711d1e15506e001c937681182b36c",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "bytes": 491144,
+      "sha256": "48bf9410095afe293fabae6237e9716df1e3561d52f5f72965a69f1c27d4143f",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/tests/recover_local_increment_loop_finally.rs",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/compiled-source/tests/recover_local_increment_loop_finally.rs",
+      "bytes": 4250,
+      "sha256": "83f30fb5d0712498e3685948486d968113b128633f12faf3d9402989a73473ac",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/working.diff",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/compiled-source/working.diff",
+      "bytes": 33498,
+      "sha256": "85c8d73dcfd89db66f004d9fb0aa3ecf8914f47f72490726a8a5361f95671528",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/dispatch.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/dispatch.json",
+      "bytes": 1267,
+      "sha256": "8054587685c2c85ff5e2694fbb190d762324290f755bb0adf45393bdd74f61a1",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/dispatch.stderr.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/dispatch.stderr.raw",
+      "bytes": 127,
+      "sha256": "010e9c545539954523629aa31cd9fdfeedd1f518c27e6452846f7bb0626e2db5",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/dispatch.stdout.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/execution.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/execution.json",
+      "bytes": 2158746,
+      "sha256": "80fd29a6bd45f38546bfb19802cebab6cc7abda60658acaa7d8a95af1914fdf2",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/independent-first-proof-static-review-v1.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/independent-first-proof-static-review-v1.json",
+      "bytes": 12561,
+      "sha256": "89e7a704fa51646c8e7197e146bd207a5dd000485958cf72c1b8b366906d83fb",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/launcher.stderr.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/launcher.stdout.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/launcher.stdout.raw",
+      "bytes": 84,
+      "sha256": "44d7d9edf0b7895c615bfb75fa31954a086392598a55c3a9d9e98a070e2887d5",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run-v1/1.stderr.raw",
+      "bytes": 2486,
+      "sha256": "f5811db1097ba9fac50e150ab669d379176dcdc31e84f69163335c75b806e0f1",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run-v1/1.stdout.raw",
+      "bytes": 38340,
+      "sha256": "d92bbb41b9a10e3df7ae717dcde952dc7711abd7f71d6d9c6350fa9a68b8619f",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run-v1/2.stderr.raw",
+      "bytes": 52,
+      "sha256": "54790157c5df86bfdc2530d0ed2c75cfbd6663c9b1923f95dc25a8b07dc5166f",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/command_spec.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run-v1/command_spec.json",
+      "bytes": 683,
+      "sha256": "ba97bd4f1e931343eb8a2d10613ebea4f5656a946d3411886e4111e006596971",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/execution.json",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run-v1/execution.json",
+      "bytes": 2158746,
+      "sha256": "80fd29a6bd45f38546bfb19802cebab6cc7abda60658acaa7d8a95af1914fdf2",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run.py",
+      "archive_path": "stages/no-call-finally-first-implementation-native-v1/run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "historical_first_native_101_then_clean"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-format-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_formatter_harness_error_no_exit_receipt"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-format-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_formatter_harness_error_no_exit_receipt"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v1/harness-error.json",
+      "archive_path": "stages/no-call-finally-format-v1/harness-error.json",
+      "bytes": 895,
+      "sha256": "8087bf5630c697a8c8a71a318c5e4f44a31331a7f27489fbb0e0f6b12d267532",
+      "group": "historical_formatter_harness_error_no_exit_receipt"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v2/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-format-v2/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "formatter_actual_exit_zero"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v2/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-format-v2/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "formatter_actual_exit_zero"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-format-v2/execution.json",
+      "archive_path": "stages/no-call-finally-format-v2/execution.json",
+      "bytes": 1384,
+      "sha256": "b77667d231ea4d2d63b034fb51db2bd57e6bc27b274ee8a192f2a9a2cda04f87",
+      "group": "formatter_actual_exit_zero"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/1.stdout.raw",
+      "bytes": 57549,
+      "sha256": "733c0d5b0a4888d7528e9cf255aeea42082d84b34cf77a4ffb9fbfbcab3a40bb",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/10.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/10.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/10.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/3.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/3.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/4.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/4.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/4.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/5.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/5.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/5.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/6.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/6.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/6.stdout.raw",
+      "bytes": 57549,
+      "sha256": "7f7652af3c825f02002594662c7c47d5c72bc58daa99cda06da32d0619f5bcf0",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/7.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/7.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/8.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/8.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/9.stderr.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/9.stdout.raw",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/9.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/execution.json",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/execution.json",
+      "bytes": 2613215,
+      "sha256": "18cc046d57ece87ab8154984392db26a761f5c069defffc45e3650c1d998e833",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac23-frozen.jar",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac23-frozen.jar",
+      "bytes": 472,
+      "sha256": "875339a4f2f3165755b960c2805d11fe7f5649c082819d4b35b8345fedd796f0",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "bytes": 1430,
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac23-generated/classes/NoCallFinally.class",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac23-generated/classes/NoCallFinally.class",
+      "bytes": 347,
+      "sha256": "888d715f8c15afbcd072aed8461a182530a9015f1d9689c10c2c30fdd3f366aa",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac23-generated/driver/NoCallFinallyProbe.class",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac23-generated/driver/NoCallFinallyProbe.class",
+      "bytes": 1098,
+      "sha256": "5912d8511859ed6a92495097bbb889d94efc8cce646429f66bceb05c7a4b0d5a",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac8-frozen.jar",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac8-frozen.jar",
+      "bytes": 472,
+      "sha256": "4cf2ba22dfcd7abfb558f3b6b6b7f3bf7ba082e9030e4b5eceac3c67b0fb0159",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "bytes": 1430,
+      "sha256": "2e0931d026e53ed344e4d6b59aeb0ac189cac01155f10c0647b3b351cafc3478",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac8-generated/classes/NoCallFinally.class",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac8-generated/classes/NoCallFinally.class",
+      "bytes": 347,
+      "sha256": "552edb95d842aa87869c4906950b27d9b3a3a4d793d99401194ba1a17752b8a0",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-intermediate-full-source-v1/run-v1/javac8-generated/driver/NoCallFinallyProbe.class",
+      "archive_path": "stages/no-call-finally-intermediate-full-source-v1/run-v1/javac8-generated/driver/NoCallFinallyProbe.class",
+      "bytes": 1101,
+      "sha256": "b0d20563cf4fab3cc53439e2b26fb77eb6c95f7eea09bc3ca5c4858a957d9f8a",
+      "group": "intermediate_full_source_10_command_replay"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/commands.json",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/commands.json",
+      "bytes": 4445,
+      "sha256": "f265563f0ae0913c552dfac20dde134de15a83ed2bf7b6c12d3bd468c8e9a90e",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/continuation.json",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/continuation.json",
+      "bytes": 421,
+      "sha256": "558902292133651bff744cf64fb8d4ac79c4deddf89a39bede2e128d8879ec7c",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/dispatch.json",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/dispatch.json",
+      "bytes": 1258,
+      "sha256": "0783c5be6a9e39c1e8f2ffcb66a646ad1b00e89cf926b171baa976594ed91fb0",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/dispatch.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/dispatch.stderr.raw",
+      "bytes": 125,
+      "sha256": "6c1764cd235e547ceeb81ddbe318797f1f3e2abd8f072dedc5b35deeb8e5eef5",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/dispatch.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/execution.json",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/launcher.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/launcher.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/launcher.stdout.raw",
+      "bytes": 424,
+      "sha256": "d6b7e722401b466419d3e5e495cc1c2bf0a240c04974aa193818dee9dd5cb512",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/1.stderr.raw",
+      "bytes": 3430,
+      "sha256": "fc2cd2bfe389dc2b7a510d0c69aa1efc65298e1e2939193de2b155e26277b6b0",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/1.stdout.raw",
+      "bytes": 75657,
+      "sha256": "adbae2caac59ad3a320a74de9366ee3dbcc4d953016bc687bf5897328b5c01d8",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/10.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/10.stderr.raw",
+      "bytes": 307,
+      "sha256": "31d85762047adfcf24e0c08f86572f043623c420ffe073a881fe9d5e614541ad",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/10.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/10.stdout.raw",
+      "bytes": 76064,
+      "sha256": "b8eb8c4aba5b6c74f858f1cd6cc6e80852129ce3ed5975f8e3cc17013c9c0ed4",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/11.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/11.stderr.raw",
+      "bytes": 289,
+      "sha256": "182b771c00d84adbd8136da215738bac44f6c0befc709dae9ab356cf954ac5a5",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/11.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/11.stdout.raw",
+      "bytes": 75547,
+      "sha256": "4c84c8ce49ce766a31966dc7ba509ba9b677f2c4845ac68328fa38d60360ec22",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/12.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/12.stderr.raw",
+      "bytes": 281,
+      "sha256": "d67d84aa4abdb416edf2840ac144675a778c7edf01de3f7315a4cc827b8b9d50",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/12.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/12.stdout.raw",
+      "bytes": 75667,
+      "sha256": "5a7db458cc3c1c8bee8923c2bef78d2b5eb31d878136d8a720e27c7b2d1fe184",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/13.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/13.stderr.raw",
+      "bytes": 1799,
+      "sha256": "de3d2c1f9c035b393a078cfcc78da166bb23ec05a29c73bae043e01318308a41",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/13.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/13.stdout.raw",
+      "bytes": 58913,
+      "sha256": "854ed0c347e8a178d4d87e131b6eb3181691e8983d80ed2a58a6405b6ef257b9",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/14.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/14.stderr.raw",
+      "bytes": 317,
+      "sha256": "93bd13d61125b7258b8f4aef627c0378d2543fc69980f6f852946a7041d650e0",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/14.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/14.stdout.raw",
+      "bytes": 433,
+      "sha256": "b6c40003cff65a2560768abdbcb2a07ffe8a85195df3612d22d5770a38fbb533",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/15.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/15.stderr.raw",
+      "bytes": 316,
+      "sha256": "69f2706f73186eccbdfd0d1dd2f3b22f5ea384ab7453a60a37a979d82a1f0a0b",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/15.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/15.stdout.raw",
+      "bytes": 6482,
+      "sha256": "5ee19b767d067f1a1b70cc32cb5698a351730cc7e4eed558548d79457875869b",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/16.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/16.stderr.raw",
+      "bytes": 4014,
+      "sha256": "de96e97619bb249637f3bd20972a2a50c10f3403f2037b60d2ca2fa95452fc86",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/16.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/17.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/17.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/17.stdout.raw",
+      "bytes": 16831,
+      "sha256": "585976904e9dd83d7b48575784e00f668e2d048ba7f190e5974090a5dc253a1f",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/18.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/18.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/18.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/18.stdout.raw",
+      "bytes": 16831,
+      "sha256": "585976904e9dd83d7b48575784e00f668e2d048ba7f190e5974090a5dc253a1f",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/19.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/19.stderr.raw",
+      "bytes": 73,
+      "sha256": "0feeef4b4902872c05b97665a4b0b7d4201ae75f5754b916e16fa10172cd70d1",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/19.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/19.stdout.raw",
+      "bytes": 57800,
+      "sha256": "6f190bb30dfd6e3f4354fa5827cc3e7a5656ed2dd8473e4b92a0183647c2a86e",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/2.stderr.raw",
+      "bytes": 305,
+      "sha256": "eb34c7ffe2c94483635b16d16756034ba212806b2afce637599e5063845fd99a",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/2.stdout.raw",
+      "bytes": 75632,
+      "sha256": "a5c0c3b37929c0553c412041312221e113b569d025bb776a275b8776e8c2e91d",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/20.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/20.stderr.raw",
+      "bytes": 53,
+      "sha256": "924ee389ca7e15a1759d303f250881dedcde151a7faeb3d9dd8575c3968a752f",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/20.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/20.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/3.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/3.stderr.raw",
+      "bytes": 315,
+      "sha256": "0d3f878075c2197eec99b2d2a40902da8b30b0bc7487a3b8aaf7b1bc10618541",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/3.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/3.stdout.raw",
+      "bytes": 75611,
+      "sha256": "34064676d12fd20d58aa5da825db8017880bc486098fbd0037e3ad343f60a3f7",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/4.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/4.stderr.raw",
+      "bytes": 321,
+      "sha256": "b240340d9740582dc139c43baff648ac59078b2017b48c57c88518c4eda099d4",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/4.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/4.stdout.raw",
+      "bytes": 76098,
+      "sha256": "94610784f44c1b3b39182af83554e7a3dedd1e315eb9866aa649bc29ab1c56cd",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/5.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/5.stderr.raw",
+      "bytes": 321,
+      "sha256": "01a09d49826346b33da71f3fc3c58a10d169e75fd7ef05c110c01be17ba7af6c",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/5.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/5.stdout.raw",
+      "bytes": 75477,
+      "sha256": "e828d2833b418c2df236ba3b12d25ec903cdeaa2ec4d584af4e96899b3196bff",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/6.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/6.stderr.raw",
+      "bytes": 335,
+      "sha256": "a79b98b48b445e423ee1e57f6648291b8cbbd30e79213e2072a0b7a253c9e1a0",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/6.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/6.stdout.raw",
+      "bytes": 75461,
+      "sha256": "ad66e8b65b210102db101cbdb64a0cc047c4d47f9b4940f638dbe44059bdcc5b",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/7.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/7.stderr.raw",
+      "bytes": 325,
+      "sha256": "b64eeb057dc0cb6529fc356185d742b34fff3099b3c381576fd2a30337bb1ef6",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/7.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/7.stdout.raw",
+      "bytes": 75443,
+      "sha256": "4f7012ba127fe5a96b67933fd740f5b03ec9f2802bbc071c5a4446c5af694b78",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/8.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/8.stderr.raw",
+      "bytes": 309,
+      "sha256": "90e8f084b974282524cfe5b2b0a0e9645c0d7517b41b8c2598e7e941edcc91c2",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/8.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/8.stdout.raw",
+      "bytes": 75784,
+      "sha256": "a2f374458e195cac653157230fc2fe21ed24ce4e11dcbe886064f4d42ffab1d5",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/9.stderr.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/9.stderr.raw",
+      "bytes": 309,
+      "sha256": "a6e1940513349121f7fba0a6857c93b0f6dd32703dd78d3d8c652d4ac3a13047",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/9.stdout.raw",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/9.stdout.raw",
+      "bytes": 75776,
+      "sha256": "c0691fb1ff32c44c1d0b685dde35f734f0b7534fd05dda02eb7be0f10940b2c6",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/command_spec.json",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/command_spec.json",
+      "bytes": 2932,
+      "sha256": "028ae9ae6c17137be78a4a35eaf7cc5526c526e82a388b0ab27bd499b426ff99",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run-v1/execution.json",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run-v1/execution.json",
+      "bytes": 2199389,
+      "sha256": "0d366c957566a969587077af698426b1c721698e73a2cbde728244c5e2a0e9c1",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run.py",
+      "archive_path": "stages/no-call-finally-local-native-continuation-v1/run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "terminal_local_native_continuation"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/commands.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/commands.json",
+      "bytes": 977,
+      "sha256": "38c7c3740c23795619a62249d453189ee304f9324382647656bec20b945f1bc0",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "bytes": 747861,
+      "sha256": "d067009349a2a153354c1429cf22afe50be1dbb8c48befe589d4976ba696b4d4",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "bytes": 1072544,
+      "sha256": "aa55fe215fdeb01da75f3d81e176d18c93b711d1e15506e001c937681182b36c",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/compiled-source/execution.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/compiled-source/execution.json",
+      "bytes": 773,
+      "sha256": "0eb0ff47dcf836ed7268e585698910904349111d5beda98215eb5afc63e4a137",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/compiled-source/tests/fixtures/corpus-fingerprint.json",
+      "bytes": 491144,
+      "sha256": "48bf9410095afe293fabae6237e9716df1e3561d52f5f72965a69f1c27d4143f",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/compiled-source/tests/recover_local_increment_loop_finally.rs",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/compiled-source/tests/recover_local_increment_loop_finally.rs",
+      "bytes": 4250,
+      "sha256": "83f30fb5d0712498e3685948486d968113b128633f12faf3d9402989a73473ac",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/compiled-source/working.diff",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/compiled-source/working.diff",
+      "bytes": 34668,
+      "sha256": "aa93d0284f0a0526e81677935381d8d07b46eee6f9b6643efccfd317e4d62962",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/dispatch.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/dispatch.json",
+      "bytes": 1275,
+      "sha256": "f45d6b9b07467bfda1d08c997de7c2cf9a24d4396da3ded3b71f8fb3a66c8ad9",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/dispatch.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/dispatch.stderr.raw",
+      "bytes": 128,
+      "sha256": "46941b16952b9b089f590511a4482cb34784f9cf33a89bef73e04af1443fa31b",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/dispatch.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/execution.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/execution.json",
+      "bytes": 2166396,
+      "sha256": "f4000204a943986af4896e448ffa5f109a89d437f9cbf5f29424e43df9034a73",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/launcher.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/launcher.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/launcher.stdout.raw",
+      "bytes": 419,
+      "sha256": "6084852f3abcc3bc9fe790ae2a4da8e2c34dd029f9a09069f0b54ecd89672e0d",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/1.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/1.stderr.raw",
+      "bytes": 2069,
+      "sha256": "16e4400a9713a1920910f5fd870fd80ce42f6e0e0f9ba30c0f0b9a4f270d6399",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/1.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/1.stdout.raw",
+      "bytes": 39552,
+      "sha256": "f26771958d0607c760a9192b28932b30498b3fc31516e2167ae82bd7dbea3e06",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/2.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/2.stderr.raw",
+      "bytes": 2162,
+      "sha256": "ac74d2c45abbb1c4cd5c712110c310a3881cf7684b6b414dceec4c7a7e2d6997",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/2.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/2.stdout.raw",
+      "bytes": 75487,
+      "sha256": "8cf13ca9b5b23f9cd192ec1ffef5894e0e6bacd2508dc4e3eafb9ef6cfc1476f",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/3.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/3.stderr.raw",
+      "bytes": 295,
+      "sha256": "9f5a18102be0e13beb3a8aa11c10db7484be1f9674c6d85e91229f7b344b2070",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/3.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/3.stdout.raw",
+      "bytes": 75687,
+      "sha256": "569790cfb916b69c7a4b23591b8e09f103e38d20c9c562d273d0c03ee2dd2fdd",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/4.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/4.stderr.raw",
+      "bytes": 1611,
+      "sha256": "2fbde47eb1e61017fd6263d4f9838820a1a273a548c728b3ad84bc817119052b",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/4.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/4.stdout.raw",
+      "bytes": 57824,
+      "sha256": "62962490c7efc3e821fe7541d3c00175f65df5938c97c9b592b7053e8bab5d7a",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/5.stderr.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/5.stderr.raw",
+      "bytes": 52,
+      "sha256": "1c76605bc47370030dd5be1d6ae1e355e99108548ee6a5ea403b82a5bf13f5e9",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/5.stdout.raw",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/command_spec.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/command_spec.json",
+      "bytes": 683,
+      "sha256": "ba97bd4f1e931343eb8a2d10613ebea4f5656a946d3411886e4111e006596971",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run-v1/execution.json",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run-v1/execution.json",
+      "bytes": 2166396,
+      "sha256": "f4000204a943986af4896e448ffa5f109a89d437f9cbf5f29424e43df9034a73",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run.py",
+      "archive_path": "stages/no-call-finally-second-implementation-native-v1/run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "historical_second_native_5_commands"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/guard-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/openspec_cli-openspec",
+      "bytes": 2901,
+      "sha256": "9974c0062393e8433d06332e4bbe4d9d2b8da7d97b988dda8aae09fd4fbe63cb",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/openspec_local_cli-openspec.js",
+      "bytes": 79,
+      "sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/openspec_local_package-package.json",
+      "bytes": 2036,
+      "sha256": "c0f84c16edaec5ce6c124f907366ff90c76b35b0ceb443d26d4c04e63288c63d",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.pnpm/@fission-ai+openspec@1.11.0/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/openspec_package-package.json",
+      "bytes": 2035,
+      "sha256": "6c170954bb57400a0644477666b8f26d376a725e51c1434f6781cdee63618f50",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/run.py",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/runner-run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "pinned_stage_runner"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/source_closure_runner-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "tooling/no-call-finally-complete-local-native-v1/target_scan-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/guard-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/openspec_cli-openspec",
+      "bytes": 2901,
+      "sha256": "9974c0062393e8433d06332e4bbe4d9d2b8da7d97b988dda8aae09fd4fbe63cb",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/openspec_local_cli-openspec.js",
+      "bytes": 79,
+      "sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/openspec_local_package-package.json",
+      "bytes": 2036,
+      "sha256": "c0f84c16edaec5ce6c124f907366ff90c76b35b0ceb443d26d4c04e63288c63d",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.pnpm/@fission-ai+openspec@1.11.0/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/openspec_package-package.json",
+      "bytes": 2035,
+      "sha256": "6c170954bb57400a0644477666b8f26d376a725e51c1434f6781cdee63618f50",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run.py",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/runner-run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "pinned_stage_runner"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/source_closure_runner-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "tooling/no-call-finally-first-implementation-native-v1/target_scan-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/guard-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/openspec_cli-openspec",
+      "bytes": 2901,
+      "sha256": "9974c0062393e8433d06332e4bbe4d9d2b8da7d97b988dda8aae09fd4fbe63cb",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/openspec_local_cli-openspec.js",
+      "bytes": 79,
+      "sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/openspec_local_package-package.json",
+      "bytes": 2036,
+      "sha256": "c0f84c16edaec5ce6c124f907366ff90c76b35b0ceb443d26d4c04e63288c63d",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.pnpm/@fission-ai+openspec@1.11.0/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/openspec_package-package.json",
+      "bytes": 2035,
+      "sha256": "6c170954bb57400a0644477666b8f26d376a725e51c1434f6781cdee63618f50",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-local-native-continuation-v1/run.py",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/runner-run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "pinned_stage_runner"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/source_closure_runner-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "tooling/no-call-finally-local-native-continuation-v1/target_scan-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/guard-guard.py",
+      "bytes": 23521,
+      "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/openspec_cli-openspec",
+      "bytes": 2901,
+      "sha256": "9974c0062393e8433d06332e4bbe4d9d2b8da7d97b988dda8aae09fd4fbe63cb",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/bin/openspec.js",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/openspec_local_cli-openspec.js",
+      "bytes": 79,
+      "sha256": "ca136f0e9fd4951dcf93d8ed729ebc97b2d97d3980cd9dc9d42fc80e32e797c6",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.local/lib/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/openspec_local_package-package.json",
+      "bytes": 2036,
+      "sha256": "c0f84c16edaec5ce6c124f907366ff90c76b35b0ceb443d26d4c04e63288c63d",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.pnpm/@fission-ai+openspec@1.11.0/node_modules/@fission-ai/openspec/package.json",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/openspec_package-package.json",
+      "bytes": 2035,
+      "sha256": "6c170954bb57400a0644477666b8f26d376a725e51c1434f6781cdee63618f50",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-second-implementation-native-v1/run.py",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/runner-run.py",
+      "bytes": 13440,
+      "sha256": "9f4160fa203ff685c7197975d58b178292e957fe30bcdf9113e4d23e93f370cd",
+      "group": "pinned_stage_runner"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/source_closure_runner-workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "pinned_stage_dependency_helper"
+    },
+    {
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/target_scan.py",
+      "archive_path": "tooling/no-call-finally-second-implementation-native-v1/target_scan-target_scan.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "group": "pinned_stage_dependency_helper"
+    }
+  ],
+  "excluded": [
+    "frozen CLI executable",
+    "JDK/Rust toolchain executables",
+    "target/build outputs",
+    "__pycache__ and .pyc"
+  ],
+  "interpretation": "Historical outcomes are preserved phase-by-phase. Nonzero/terminated commands remain so; no all-green implication."
+}

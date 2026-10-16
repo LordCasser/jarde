@@ -1,0 +1,31 @@
+{
+  "continuation_streams": 40,
+  "correct_composite_unique_completed_test_totals": {
+    "failed": 0,
+    "ignored": 8,
+    "passed": 102
+  },
+  "guarded_batch_partial_observations": {
+    "additional_passes_observed": 9,
+    "completed_target_summaries_in_raw_stdout": [
+      {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 4
+      },
+      {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 5
+      }
+    ],
+    "reason": "The command was terminated before a completed batch summary and these targets were rerun in the continuation receipt; the partial 9 passes are not added to the 102 unique completed tests.",
+    "unique_completed_tests_counted_in_composite": 0
+  },
+  "native_streams": 16,
+  "note": "The earlier report verified each stream but misstated the number as 48 in the message to the parent. The correct recorded and reverified count is 56 (16 + 40).",
+  "schema": "no-call-finally-local-composite-native-independent-audit-addendum-v1",
+  "status": "verified_stream_count_and_partial_guarded_batch_scope",
+  "streams_independently_reopened_and_sha256_verified": 56,
+  "supersedes_report_sha256": "b1a0c22e50c41b81a9dd5669d8e89eaad10f2945f0d1be3a9cf885e18625260d"
+}

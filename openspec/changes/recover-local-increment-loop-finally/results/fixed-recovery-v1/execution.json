@@ -1,0 +1,11 @@
+{
+  "status": "copied_actual_v4_implementation_capture_with_independent_root_v2_acceptance",
+  "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-implementation-evidence-v4/capture.tar.gz",
+  "archive_bytes": 12032591,
+  "archive_sha256": "9f27f207505053e9aac29998b01d7496c3b7af49cfad6c1be2d258ae39b94450",
+  "payload_count": 401,
+  "manifest_member_count": 1,
+  "tar_member_count": 402,
+  "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+  "own_ci": "38872425446_pending_separate_terminal_acceptance"
+}

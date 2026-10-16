@@ -1,0 +1,60 @@
+{
+  "branch": "codex/local-increment-loop-finally",
+  "composite_completed_test_totals": {
+    "failed": 0,
+    "ignored": 8,
+    "passed": 102
+  },
+  "continuation_receipt": {
+    "all_exit_0": true,
+    "cleanup_exit": 0,
+    "commands": 20,
+    "compatibility_targets": 12,
+    "completed_test_summaries": {
+      "failed": 0,
+      "ignored": 6,
+      "passed": 49
+    },
+    "strict_items_per_validator": 364
+  },
+  "default_stack_and_guards_verified": true,
+  "frozen_cli": {
+    "bytes": 59902896,
+    "fresh_artifact": true,
+    "mode": "0555",
+    "sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25"
+  },
+  "limitations": [
+    "The guarded compatibility batch in the first receipt was terminated before a completed test summary; those targets are covered by the continuation receipt.",
+    "The guard-terminated command is excluded from completed test counts."
+  ],
+  "native_receipt": {
+    "cleanup_exit": 0,
+    "commands": 8,
+    "completed_test_summaries": {
+      "failed": 0,
+      "ignored": 2,
+      "passed": 53
+    },
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -15,
+      0
+    ],
+    "guard_limit_bytes": 1073741824,
+    "guard_stopped_command": "finally-and-prefix-public-compatibility",
+    "guard_target_bytes": 1160514355
+  },
+  "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+  "remote_ci": "not evaluated; run was in progress per task scope",
+  "schema": "no-call-finally-local-composite-native-source-independent-audit-v1",
+  "source_rows_verified": 4929,
+  "source_tree_rows_independently_verified": 4929,
+  "status": "accepted_local_composite_receipts_and_source_binding",
+  "target_absent_after_both": true
+}
