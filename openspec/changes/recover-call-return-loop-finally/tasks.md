@@ -12,7 +12,7 @@
 ## 3. 完整源码与产品验收
 
 - [x] 3.1 最终冻结CLI对两编译器独立完整类原样恢复/重编，未改driver rebuilt-only编译后双JVM隔离运行，保存原始流与独审；另screen原完整FX/FY/FO。验收：四次217B oracle逐字匹配，清理返回/继续路径异常行为一致，不改Java/driver/生成源码/方法/oracle，不把未观察的c0调用时点或try异常说成运行已覆盖，保留父剩余失败。
-- [ ] 3.2 完成fmt、CI同参数Clippy、指纹/reader、相关finally/loop/typedcatch兼容、MSRV与两版OpenSpec strict及最终产品exact-head自身CI独审。验收：真实非空测试、source/CLI/head一致、默认stack与5GiB free/1GiB target磁盘门、exact clean、完整双seed均通过，不借NoCall CI或改旧P5基线。
+- [x] 3.2 完成fmt、CI同参数Clippy、指纹/reader、相关finally/loop/typedcatch兼容、MSRV与两版OpenSpec strict及最终产品exact-head自身CI独审。验收：真实非空测试、source/CLI/head一致、默认stack与5GiB free/1GiB target磁盘门、exact clean、完整双seed均通过，不借NoCall CI或改旧P5基线。
 
 ## Workflow follow-up
 

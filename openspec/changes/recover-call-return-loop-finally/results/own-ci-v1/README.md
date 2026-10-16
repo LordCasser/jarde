@@ -1,0 +1,9 @@
+# 产品提交自身CI终态验收
+
+产品464543594b6fad00c67be016ffa5e21d18bc1591，branch codex/call-return-loop-finally，push run38913819742。149 API observations/298 raw、0 transport失败，4jobs/52steps成功。双seed各373 summaries/3670 passed/0 failed/98 ignored；160 primary按各自Cargo target/FQN每seed唯一ok，旧support7按显式6JDK命令9ok另验；strict364是实际单workflow step。
+
+根审953checks/0errors，独审2863checks/0errors，报告SHA256 5f58b2413db431aa8475f46984e09fbd17592599b46f95369ff48e7ffc715a63。官方ZIP862229B/ac75085a92090e7dab93216e885b0f01cb1c51f38583cc57d36c9ea3c1a17e5d，60安全唯一成员已CRC/内容核对。
+
+capture.tar.gz为4,680,381B，SHA256 b555a296cd99a507e0e317a08c12c5803d497baccde04be420255613c7ea9b66；416 payload加嵌入manifest共417安全唯一普通成员，全部重开hash。含collector/dispatch/push/discovery、原API与ZIP、根审/独审执行与seal、4936行真实Git source/blob/mode/CLI/native绑定及38门源码快照。原prepared-only v1错误runner标签保留且未执行，v2五标签修正后实际执行；旧NoCall仅参考外pin，不能代替本产品CI。
+
+330份receipt绑定命令流与6份显式dispatch辅助流分别列出；Git tree.raw是metadata。CLI/JDK二进制和target不入包，绝对历史路径按manifest映射；包外旧27命令证据另在implementation包，不冒称本包内重复包含。后续docs/归档head不是该产品CI的head，交付须另验证4936行源码与冻结CLI一致。
