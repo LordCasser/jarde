@@ -4793,28 +4793,36 @@ impl Walker<'_> {
                     )
                 })
             });
-            let mut guard_verdict = if (leaving.is_some() || monitor_entry)
-                && frame.own_finally.is_none()
-                && self.own_monitor.is_none()
-                && !self.visited.contains(&node)
-                && !(frame.own_try == Some(node)
-                    && self.handlers.len() == 1
-                    && self.handlers[0].catch_type_index.is_none())
-            {
-                Some(crate::guard::examine(
+            let loop_call_finally_entry = frame.own_loop.is_some()
+                && crate::guard::call_return_loop_finally_entry(
                     self.canonical,
-                    self.view,
                     self.ssa,
-                    self.operations,
                     self.handlers,
-                    self.sites,
-                    self.profile,
                     &current,
-                    self.budget,
-                )?)
-            } else {
-                None
-            };
+                );
+            let mut guard_verdict =
+                if (leaving.is_some() || monitor_entry || loop_call_finally_entry)
+                    && frame.own_finally.is_none()
+                    && self.own_monitor.is_none()
+                    && !self.visited.contains(&node)
+                    && !(frame.own_try == Some(node)
+                        && self.handlers.len() == 1
+                        && self.handlers[0].catch_type_index.is_none())
+                {
+                    Some(crate::guard::examine(
+                        self.canonical,
+                        self.view,
+                        self.ssa,
+                        self.operations,
+                        self.handlers,
+                        self.sites,
+                        self.profile,
+                        &current,
+                        self.budget,
+                    )?)
+                } else {
+                    None
+                };
             // A finally certificate with control flow needs the same pre-visited recursive entry
             // as a named try. Nothing is claimed until the child has covered the exact protected
             // block set and every edge has been accounted for.

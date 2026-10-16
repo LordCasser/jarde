@@ -2752,6 +2752,748 @@ struct FinallyCopyProof {
     origins: Vec<u32>,
 }
 
+const CALL_RETURN_LOOP_BCIS: [u32; 60] = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 17, 19, 20, 23, 25, 28, 30, 33, 36, 37, 40, 42,
+    45, 47, 50, 53, 56, 58, 59, 62, 65, 66, 69, 71, 74, 76, 79, 82, 85, 88, 90, 93, 96, 97, 100,
+    102, 105, 107, 110, 113, 116, 118, 119, 122, 125, 126,
+];
+const CALL_RETURN_LOOP_OPCODES: [u8; 60] = [
+    0x2a, 0x4c, 0x2b, 0xbe, 0x3d, 0x3, 0x3e, 0x1d, 0x1c, 0xa2, 0x2b, 0x1d, 0x2e, 0x36, 0x15, 0x6,
+    0xa0, 0x15, 0xb8, 0x36, 0xb2, 0xbb, 0x59, 0xb7, 0x12, 0xb6, 0x15, 0xb6, 0xb6, 0xb6, 0x15, 0xac,
+    0xb2, 0xbb, 0x59, 0xb7, 0x12, 0xb6, 0x15, 0xb6, 0xb6, 0xb6, 0xa7, 0x3a, 0xb2, 0xbb, 0x59, 0xb7,
+    0x12, 0xb6, 0x15, 0xb6, 0xb6, 0xb6, 0x19, 0xbf, 0x84, 0xa7, 0x2, 0xac,
+];
+
+/// Finite admission only: the complete paid certificate still decides every claim.
+/// This loop's entry block has no exception edge: its throwing call is in the return arm.
+pub(crate) fn call_return_loop_finally_entry(
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    handlers: &[ExceptionHandlerFact],
+    current: &CanonicalBlockId,
+) -> bool {
+    current.bci() == 12
+        && current.path().is_empty()
+        && handlers.len() == 2
+        && canonical.blocks().len() == 7
+        && ssa.blocks().len() == 7
+        && ssa.phis().len() <= 16
+        && ssa.values().len() <= 100
+        && canonical.completeness().is_complete()
+        && canonical.unreachable().is_empty()
+        && ssa
+            .blocks()
+            .iter()
+            .all(|block| block.instructions().len() <= 60)
+        && ssa
+            .blocks()
+            .iter()
+            .map(|block| block.instructions().len())
+            .sum::<usize>()
+            == 60
+        && ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .all(|step| {
+                CALL_RETURN_LOOP_BCIS
+                    .binary_search(&step.bci())
+                    .is_ok_and(|index| step.opcode() == CALL_RETURN_LOOP_OPCODES[index])
+            })
+}
+
+/// One fixed array loop with a protected int call and three complete StringBuilder cleanups.
+/// Each copy has its own allocation identity; only its internal dependency graph is shared.
+fn prove_call_return_loop_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    use crate::facts::{CallTarget, ConstantValue, FieldAccess};
+    use jarde_jvm::method_ir::{RefType, Value};
+    const BCIS: [u32; 60] = CALL_RETURN_LOOP_BCIS;
+    const OPCODES: [u8; 60] = CALL_RETURN_LOOP_OPCODES;
+    // No paid scan for unrelated shapes. This finite discriminator is not the proof.
+    if current.bci() != 12
+        || facts.order.as_slice() != BCIS
+        || facts.handlers.len() != 2
+        || facts.canonical.blocks().len() != 7
+        || facts.ssa.blocks().len() != 7
+        || facts.ssa.phis().len() > 16
+        || facts.ssa.values().len() > 100
+        || !facts.canonical.completeness().is_complete()
+        || !facts.canonical.unreachable().is_empty()
+        || BCIS.iter().zip(OPCODES).any(|(at, opcode)| {
+            facts
+                .step(*at)
+                .is_none_or(|s| s.instruction.opcode() != opcode)
+        })
+    {
+        return Ok(None);
+    }
+    for at in BCIS {
+        facts.charge(at)?;
+    }
+    for phi in facts.ssa.phis() {
+        facts.charge(phi.block().bci())?;
+        for _ in phi.inputs() {
+            facts.charge(phi.block().bci())?;
+        }
+    }
+    for (_, value) in facts.ssa.values_with_ids() {
+        facts.charge(12)?;
+        for usage in value.uses() {
+            facts.charge(usage.bci().unwrap_or(usage.block().bci()))?;
+        }
+    }
+    if facts.ssa.values().len() != 66
+        || facts.ops.iter().map(|(at, _)| *at).collect::<Vec<_>>() != BCIS
+    {
+        return Ok(None);
+    }
+    let [row, binding] = facts.handlers else {
+        return Ok(None);
+    };
+    if (
+        row.ordinal,
+        row.start_bci,
+        row.end_bci,
+        row.handler_bci,
+        row.catch_type_index,
+    ) != (0, 17, 30, 88, None)
+        || (
+            binding.ordinal,
+            binding.start_bci,
+            binding.end_bci,
+            binding.handler_bci,
+            binding.catch_type_index,
+        ) != (1, 88, 90, 88, None)
+    {
+        return Ok(None);
+    }
+    let Some(Operation::Invoke(call)) = facts.op(25) else {
+        return Ok(None);
+    };
+    // The body call is retained, not evaluated or assumed pure by this proof.
+    if call.kind() != InvokeKind::Static
+        || call.is_interface_reference()
+        || call.descriptor() != "(I)I"
+    {
+        return Ok(None);
+    }
+    let operations = [
+        (0, Operation::Load { slot: 0 }),
+        (1, Operation::Store { slot: 1 }),
+        (2, Operation::Load { slot: 1 }),
+        (3, Operation::ArrayLength),
+        (4, Operation::Store { slot: 2 }),
+        (5, Operation::Push(ConstantValue::Int(0))),
+        (6, Operation::Store { slot: 3 }),
+        (7, Operation::Load { slot: 3 }),
+        (8, Operation::Load { slot: 2 }),
+        (
+            9,
+            Operation::Comparison {
+                op: CompareOp::JumpIfGreaterOrEqual,
+                target: 125,
+            },
+        ),
+        (12, Operation::Load { slot: 1 }),
+        (13, Operation::Load { slot: 3 }),
+        (14, Operation::ArrayLoad),
+        (15, Operation::Store { slot: 4 }),
+        (17, Operation::Load { slot: 4 }),
+        (19, Operation::Push(ConstantValue::Int(3))),
+        (
+            20,
+            Operation::Comparison {
+                op: CompareOp::JumpIfDifferent,
+                target: 59,
+            },
+        ),
+        (23, Operation::Load { slot: 4 }),
+        (28, Operation::Store { slot: 5 }),
+        (56, Operation::Load { slot: 5 }),
+        (58, Operation::Return),
+        (85, Operation::Transfer),
+        (88, Operation::Store { slot: 6 }),
+        (116, Operation::Load { slot: 6 }),
+        (118, Operation::Throw),
+        (119, Operation::Increment { slot: 3, amount: 1 }),
+        (122, Operation::Transfer),
+        (125, Operation::Push(ConstantValue::Int(-1))),
+        (126, Operation::Return),
+    ];
+    for (at, op) in &operations {
+        facts.charge(*at)?;
+        if facts.op(*at) != Some(op) {
+            return Ok(None);
+        }
+    }
+    for base in [30, 59, 90] {
+        let operations = [
+            (
+                0,
+                Operation::Field {
+                    access: FieldAccess::Read,
+                    is_static: true,
+                    owner: "java/lang/System".into(),
+                    name: "out".into(),
+                    descriptor: "Ljava/io/PrintStream;".into(),
+                },
+            ),
+            (
+                3,
+                Operation::Allocate {
+                    ty: "java/lang/StringBuilder".into(),
+                },
+            ),
+            (6, Operation::Duplicate),
+            (
+                7,
+                Operation::Invoke(CallTarget::new(
+                    InvokeKind::Special,
+                    "java/lang/StringBuilder",
+                    "<init>",
+                    "()V",
+                    false,
+                )),
+            ),
+            (10, Operation::Push(ConstantValue::String("fin:".into()))),
+            (
+                12,
+                Operation::Invoke(CallTarget::new(
+                    InvokeKind::Virtual,
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                    false,
+                )),
+            ),
+            (15, Operation::Load { slot: 4 }),
+            (
+                17,
+                Operation::Invoke(CallTarget::new(
+                    InvokeKind::Virtual,
+                    "java/lang/StringBuilder",
+                    "append",
+                    "(I)Ljava/lang/StringBuilder;",
+                    false,
+                )),
+            ),
+            (
+                20,
+                Operation::Invoke(CallTarget::new(
+                    InvokeKind::Virtual,
+                    "java/lang/StringBuilder",
+                    "toString",
+                    "()Ljava/lang/String;",
+                    false,
+                )),
+            ),
+            (
+                23,
+                Operation::Invoke(CallTarget::new(
+                    InvokeKind::Virtual,
+                    "java/io/PrintStream",
+                    "println",
+                    "(Ljava/lang/String;)V",
+                    false,
+                )),
+            ),
+        ];
+        for (offset, op) in &operations {
+            facts.charge(base + offset)?;
+            if facts.op(base + offset) != Some(op) {
+                return Ok(None);
+            }
+        }
+    }
+    let block_specs: [(u32, u32, &[u32]); 7] = [
+        (0, 7, &[0, 1, 2, 3, 4, 5, 6]),
+        (7, 12, &[7, 8, 9]),
+        (12, 23, &[12, 13, 14, 15, 17, 19, 20]),
+        (
+            23,
+            59,
+            &[23, 25, 28, 30, 33, 36, 37, 40, 42, 45, 47, 50, 53, 56, 58],
+        ),
+        (
+            59,
+            125,
+            &[59, 62, 65, 66, 69, 71, 74, 76, 79, 82, 85, 119, 122],
+        ),
+        (
+            88,
+            119,
+            &[88, 90, 93, 96, 97, 100, 102, 105, 107, 110, 113, 116, 118],
+        ),
+        (125, 127, &[125, 126]),
+    ];
+    for (at, end, instructions) in block_specs {
+        facts.charge(at)?;
+        let Some(block) = facts.starts.get(&at).copied() else {
+            return Ok(None);
+        };
+        if !block.path().is_empty()
+            || facts.end_of(block) != end
+            || facts
+                .in_block(block)
+                .iter()
+                .map(SsaInstruction::bci)
+                .collect::<Vec<_>>()
+                != instructions
+        {
+            return Ok(None);
+        }
+    }
+    let mut edges = Vec::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let kind = match edge.kind() {
+            CanonicalEdgeKind::Normal => None,
+            CanonicalEdgeKind::Exception { handler_ordinal } => Some(handler_ordinal),
+            _ => return Ok(None),
+        };
+        edges.push((edge.from().bci(), edge.to().bci(), kind));
+    }
+    edges.sort_unstable();
+    let mut expected = vec![
+        (0, 7, None),
+        (7, 12, None),
+        (7, 125, None),
+        (12, 23, None),
+        (12, 59, None),
+        (23, 88, Some(0)),
+        (59, 7, None),
+        (88, 88, Some(1)),
+    ];
+    expected.sort_unstable();
+    if edges != expected {
+        return Ok(None);
+    }
+    let header = facts.starts[&7];
+    let Some(header_node) = facts.view.index_of(header) else {
+        return Ok(None);
+    };
+    let Some(natural) = facts.view.loop_entered_at(header_node) else {
+        return Ok(None);
+    };
+    let nodes: Option<BTreeSet<_>> = [7, 12, 59]
+        .iter()
+        .map(|at| facts.view.index_of(facts.starts[at]))
+        .collect();
+    let Some(latch) = facts.view.index_of(facts.starts[&59]) else {
+        return Ok(None);
+    };
+    if natural.is_irreducible()
+        || Some(natural.blocks()) != nodes.as_ref()
+        || natural.latches() != &BTreeSet::from([latch])
+    {
+        return Ok(None);
+    }
+    if facts.ssa.effects().instructions().len() != 60 {
+        return Ok(None);
+    }
+    for at in BCIS {
+        facts.charge(at)?;
+        let Some(effect) = facts
+            .ssa
+            .effects()
+            .instructions()
+            .iter()
+            .find(|e| e.bci() == at)
+        else {
+            return Ok(None);
+        };
+        let covering = if (17..30).contains(&at) {
+            vec![0]
+        } else if at == 88 {
+            vec![1]
+        } else {
+            vec![]
+        };
+        let cleanup_throw = [30, 59, 90].iter().any(|base| {
+            [0, 3, 7, 10, 12, 17, 20, 23]
+                .iter()
+                .any(|offset| at == base + offset)
+        });
+        if facts
+            .covering(at)
+            .iter()
+            .map(|r| r.ordinal)
+            .collect::<Vec<_>>()
+            != covering
+            || effect.may_throw() != ([3, 14, 25, 118].contains(&at) || cleanup_throw)
+            || effect.handlers() != (if at == 25 { &[0][..] } else { &[][..] })
+        {
+            return Ok(None);
+        }
+    }
+    // Complete write/type/producer matrix, including both DUP outputs and the initialized alias.
+    let write_specs: [(u32, &[Slot]); 60] = [
+        (0, &[Slot::Stack(0)]),
+        (1, &[Slot::Local(1)]),
+        (2, &[Slot::Stack(0)]),
+        (3, &[Slot::Stack(0)]),
+        (4, &[Slot::Local(2)]),
+        (5, &[Slot::Stack(0)]),
+        (6, &[Slot::Local(3)]),
+        (7, &[Slot::Stack(0)]),
+        (8, &[Slot::Stack(1)]),
+        (9, &[]),
+        (12, &[Slot::Stack(0)]),
+        (13, &[Slot::Stack(1)]),
+        (14, &[Slot::Stack(0)]),
+        (15, &[Slot::Local(4)]),
+        (17, &[Slot::Stack(0)]),
+        (19, &[Slot::Stack(1)]),
+        (20, &[]),
+        (23, &[Slot::Stack(0)]),
+        (25, &[Slot::Stack(0)]),
+        (28, &[Slot::Local(5)]),
+        (30, &[Slot::Stack(0)]),
+        (33, &[Slot::Stack(1)]),
+        (36, &[Slot::Stack(1), Slot::Stack(2)]),
+        (37, &[Slot::Stack(1)]),
+        (40, &[Slot::Stack(2)]),
+        (42, &[Slot::Stack(1)]),
+        (45, &[Slot::Stack(2)]),
+        (47, &[Slot::Stack(1)]),
+        (50, &[Slot::Stack(1)]),
+        (53, &[]),
+        (56, &[Slot::Stack(0)]),
+        (58, &[]),
+        (59, &[Slot::Stack(0)]),
+        (62, &[Slot::Stack(1)]),
+        (65, &[Slot::Stack(1), Slot::Stack(2)]),
+        (66, &[Slot::Stack(1)]),
+        (69, &[Slot::Stack(2)]),
+        (71, &[Slot::Stack(1)]),
+        (74, &[Slot::Stack(2)]),
+        (76, &[Slot::Stack(1)]),
+        (79, &[Slot::Stack(1)]),
+        (82, &[]),
+        (85, &[]),
+        (88, &[Slot::Local(6)]),
+        (90, &[Slot::Stack(0)]),
+        (93, &[Slot::Stack(1)]),
+        (96, &[Slot::Stack(1), Slot::Stack(2)]),
+        (97, &[Slot::Stack(1)]),
+        (100, &[Slot::Stack(2)]),
+        (102, &[Slot::Stack(1)]),
+        (105, &[Slot::Stack(2)]),
+        (107, &[Slot::Stack(1)]),
+        (110, &[Slot::Stack(1)]),
+        (113, &[]),
+        (116, &[Slot::Stack(0)]),
+        (118, &[]),
+        (119, &[Slot::Local(3)]),
+        (122, &[]),
+        (125, &[Slot::Stack(0)]),
+        (126, &[]),
+    ];
+    let mut values = BTreeMap::<(u32, usize), ValueId>::new();
+    for (at, slots) in write_specs {
+        facts.charge(at)?;
+        let step = facts.step(at).unwrap();
+        if step.instruction.writes().len() != slots.len() {
+            return Ok(None);
+        }
+        for (ordinal, ((slot, id), expected_slot)) in
+            step.instruction.writes().iter().zip(slots).enumerate()
+        {
+            let value = facts.ssa.value(*id);
+            if slot != expected_slot
+                || value.replaced_by().is_some()
+                || !matches!(value.def(),Definition::Instruction { block,bci } if block==step.block && *bci==at)
+            {
+                return Ok(None);
+            }
+            let copy = [30, 59, 90]
+                .into_iter()
+                .find(|base| (*base..*base + 26).contains(&at));
+            let expected_ref = if [0, 1, 2, 12].contains(&at) {
+                Some(&b"[I"[..])
+            } else if let Some(base) = copy {
+                match at - base {
+                    0 => Some(&b"Ljava/io/PrintStream;"[..]),
+                    7 => Some(&b"java/lang/StringBuilder"[..]),
+                    12 | 17 => Some(&b"Ljava/lang/StringBuilder;"[..]),
+                    20 => Some(&b"Ljava/lang/String;"[..]),
+                    _ => None,
+                }
+            } else {
+                None
+            };
+            let type_ok = if let Some(name) = expected_ref {
+                matches!(value.ty(),Value::Ref(RefType::Named { name:actual,.. }) if actual.as_slice()==name)
+            } else if let Some(base) = copy {
+                match at - base {
+                    3 | 6 => {
+                        matches!(value.ty(),Value::Uninitialized { new_site } if new_site.bci()==base+3 && new_site.block()==facts.block_of(base+3).unwrap())
+                    }
+                    10 => matches!(value.ty(), Value::Ref(RefType::Unknown)),
+                    15 => value.ty() == &Value::Int,
+                    _ => false,
+                }
+            } else if [88, 116].contains(&at) {
+                matches!(value.ty(), Value::Ref(RefType::Unknown))
+            } else {
+                value.ty() == &Value::Int
+            };
+            if !type_ok || values.insert((at, ordinal), *id).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+    let Some((_, arg)) = facts
+        .ssa
+        .block(facts.starts[&0])
+        .unwrap()
+        .entry()
+        .iter()
+        .find(|(s, _)| *s == Slot::Local(0))
+    else {
+        return Ok(None);
+    };
+    if !matches!(facts.ssa.value(*arg).def(),Definition::Entry { block,slot:Slot::Local(0) } if block==facts.starts[&0])
+        || !matches!(facts.ssa.value(*arg).ty(),Value::Ref(RefType::Named { name,.. }) if name.as_slice()==b"[I")
+    {
+        return Ok(None);
+    }
+    let mut phis = BTreeMap::new();
+    for phi in facts.ssa.phis() {
+        if phis.insert((phi.block().bci(), phi.slot()), phi).is_some() {
+            return Ok(None);
+        }
+    }
+    if phis.len() != 10 {
+        return Ok(None);
+    }
+    let (Some(index), Some(caught)) = (
+        phis.get(&(7, Slot::Local(3))),
+        phis.get(&(88, Slot::Stack(0))),
+    ) else {
+        return Ok(None);
+    };
+    values.extend([
+        ((1000, 0), *arg),
+        ((1001, 0), index.value()),
+        ((1002, 0), caught.value()),
+    ]);
+    let mut expected_uses = BTreeMap::<ValueId, Vec<(CanonicalBlockId, Option<u32>)>>::new();
+    // Every phi is checked, including the raw trivial x phi. Neither slot equality nor an
+    // unproved resolution rewrite substitutes for the two actual predecessor inputs.
+    let phi_specs = [
+        (7, Slot::Local(0), (1000, 0), None),
+        (7, Slot::Local(1), (1, 0), None),
+        (7, Slot::Local(2), (4, 0), None),
+        (7, Slot::Local(3), (6, 0), Some((119, 0))),
+        (88, Slot::Local(0), (1000, 0), None),
+        (88, Slot::Local(1), (1, 0), None),
+        (88, Slot::Local(2), (4, 0), None),
+        (88, Slot::Local(3), (1001, 0), None),
+        (88, Slot::Local(4), (15, 0), None),
+    ];
+    for (block, slot, first, second) in phi_specs {
+        facts.charge(block)?;
+        let Some(phi) = phis.get(&(block, slot)) else {
+            return Ok(None);
+        };
+        let value = facts.ssa.value(phi.value());
+        if phi.inputs().len() != 2
+            || !matches!(value.def(),Definition::Phi { block:id,slot:s } if id==facts.starts[&block] && *s==slot)
+            || !matches!(phi.inputs()[0],PhiInput::Value(v) if v==values[&first])
+        {
+            return Ok(None);
+        }
+        expected_uses
+            .entry(values[&first])
+            .or_default()
+            .push((facts.starts[&block].clone(), None));
+        if let Some(second) = second {
+            if !matches!(phi.inputs()[1],PhiInput::Value(v) if v==values[&second])
+                || value.replaced_by().is_some()
+                || value.ty() != &Value::Int
+            {
+                return Ok(None);
+            }
+            expected_uses
+                .entry(values[&second])
+                .or_default()
+                .push((facts.starts[&block].clone(), None));
+        } else if !matches!(phi.inputs()[1], PhiInput::Itself)
+            || value.replaced_by() != Some(values[&first])
+            || value.ty() != facts.ssa.value(values[&first]).ty()
+        {
+            return Ok(None);
+        }
+    }
+    let exception = facts.ssa.value(caught.value());
+    if caught.inputs().len() != 2
+        || exception.replaced_by().is_some()
+        || !matches!(exception.def(),Definition::Phi { block,slot:Slot::Stack(0) } if block==facts.starts[&88])
+        || !matches!(exception.ty(), Value::Ref(RefType::Unknown))
+    {
+        return Ok(None);
+    }
+    for (input, (at, throw_bci)) in caught.inputs().iter().zip([(23, 25), (88, 88)]) {
+        facts.charge(at)?;
+        let PhiInput::Value(id) = input else {
+            return Ok(None);
+        };
+        let value = facts.ssa.value(*id);
+        if value.replaced_by().is_some()
+            || !matches!(value.def(),Definition::Caught { block,bci } if block==facts.starts[&at] && *bci==throw_bci)
+            || !matches!(value.ty(), Value::Ref(RefType::Unknown))
+        {
+            return Ok(None);
+        }
+        expected_uses
+            .entry(*id)
+            .or_default()
+            .push((facts.starts[&88].clone(), None));
+    }
+    // Read slots and producers for the entire method. Symbols above are actual entry/phi IDs.
+    let read_specs: [(u32, &[(Slot, (u32, usize))]); 60] = [
+        (0, &[(Slot::Local(0), (1000, 0))]),
+        (1, &[(Slot::Stack(0), (0, 0))]),
+        (2, &[(Slot::Local(1), (1, 0))]),
+        (3, &[(Slot::Stack(0), (2, 0))]),
+        (4, &[(Slot::Stack(0), (3, 0))]),
+        (5, &[]),
+        (6, &[(Slot::Stack(0), (5, 0))]),
+        (7, &[(Slot::Local(3), (1001, 0))]),
+        (8, &[(Slot::Local(2), (4, 0))]),
+        (9, &[(Slot::Stack(1), (8, 0)), (Slot::Stack(0), (7, 0))]),
+        (12, &[(Slot::Local(1), (1, 0))]),
+        (13, &[(Slot::Local(3), (1001, 0))]),
+        (14, &[(Slot::Stack(1), (13, 0)), (Slot::Stack(0), (12, 0))]),
+        (15, &[(Slot::Stack(0), (14, 0))]),
+        (17, &[(Slot::Local(4), (15, 0))]),
+        (19, &[]),
+        (20, &[(Slot::Stack(1), (19, 0)), (Slot::Stack(0), (17, 0))]),
+        (23, &[(Slot::Local(4), (15, 0))]),
+        (25, &[(Slot::Stack(0), (23, 0))]),
+        (28, &[(Slot::Stack(0), (25, 0))]),
+        (30, &[]),
+        (33, &[]),
+        (36, &[(Slot::Stack(1), (33, 0))]),
+        (37, &[(Slot::Stack(2), (36, 1))]),
+        (40, &[]),
+        (42, &[(Slot::Stack(2), (40, 0)), (Slot::Stack(1), (37, 0))]),
+        (45, &[(Slot::Local(4), (15, 0))]),
+        (47, &[(Slot::Stack(2), (45, 0)), (Slot::Stack(1), (42, 0))]),
+        (50, &[(Slot::Stack(1), (47, 0))]),
+        (53, &[(Slot::Stack(1), (50, 0)), (Slot::Stack(0), (30, 0))]),
+        (56, &[(Slot::Local(5), (28, 0))]),
+        (58, &[(Slot::Stack(0), (56, 0))]),
+        (59, &[]),
+        (62, &[]),
+        (65, &[(Slot::Stack(1), (62, 0))]),
+        (66, &[(Slot::Stack(2), (65, 1))]),
+        (69, &[]),
+        (71, &[(Slot::Stack(2), (69, 0)), (Slot::Stack(1), (66, 0))]),
+        (74, &[(Slot::Local(4), (15, 0))]),
+        (76, &[(Slot::Stack(2), (74, 0)), (Slot::Stack(1), (71, 0))]),
+        (79, &[(Slot::Stack(1), (76, 0))]),
+        (82, &[(Slot::Stack(1), (79, 0)), (Slot::Stack(0), (59, 0))]),
+        (85, &[]),
+        (88, &[(Slot::Stack(0), (1002, 0))]),
+        (90, &[]),
+        (93, &[]),
+        (96, &[(Slot::Stack(1), (93, 0))]),
+        (97, &[(Slot::Stack(2), (96, 1))]),
+        (100, &[]),
+        (
+            102,
+            &[(Slot::Stack(2), (100, 0)), (Slot::Stack(1), (97, 0))],
+        ),
+        (105, &[(Slot::Local(4), (15, 0))]),
+        (
+            107,
+            &[(Slot::Stack(2), (105, 0)), (Slot::Stack(1), (102, 0))],
+        ),
+        (110, &[(Slot::Stack(1), (107, 0))]),
+        (
+            113,
+            &[(Slot::Stack(1), (110, 0)), (Slot::Stack(0), (90, 0))],
+        ),
+        (116, &[(Slot::Local(6), (88, 0))]),
+        (118, &[(Slot::Stack(0), (116, 0))]),
+        (119, &[(Slot::Local(3), (1001, 0))]),
+        (122, &[]),
+        (125, &[]),
+        (126, &[(Slot::Stack(0), (125, 0))]),
+    ];
+    for (at, inputs) in read_specs {
+        facts.charge(at)?;
+        let step = facts.step(at).unwrap();
+        if step.instruction.reads().len() != inputs.len() {
+            return Ok(None);
+        }
+        for ((slot, id), (expected_slot, producer)) in step.instruction.reads().iter().zip(inputs) {
+            if slot != expected_slot || *id != values[producer] {
+                return Ok(None);
+            }
+            expected_uses
+                .entry(*id)
+                .or_default()
+                .push((step.block.clone(), Some(at)));
+        }
+    }
+    // Closing every published value also proves the DUP alias overwritten by <init> is unused,
+    // and that the saved call result/store/reload each has precisely its sole intended consumer.
+    for (id, value) in facts.ssa.values_with_ids() {
+        facts.charge(12)?;
+        let mut actual = value
+            .uses()
+            .iter()
+            .map(|u| (u.block().clone(), u.bci()))
+            .collect::<Vec<_>>();
+        let mut expected = expected_uses.remove(&id).unwrap_or_default();
+        actual.sort();
+        expected.sort();
+        if actual != expected {
+            return Ok(None);
+        }
+    }
+    if !expected_uses.is_empty() {
+        return Ok(None);
+    }
+    facts.charge(126)?;
+    poll(facts.budget, Some(126))?;
+    Ok(Some(Plan {
+        shape: Shape::Finally {
+            normal_cleanup: (30, 56),
+            completion: FinallyCompletion::SavedReturn {
+                save: 28,
+                returns: 58,
+            },
+            row_ordinal: row.ordinal,
+            structured: true,
+        },
+        lead: (12, 17),
+        body: (17, 30),
+        owned: [12, 23, 59, 88]
+            .iter()
+            .map(|at| facts.starts[at].clone())
+            .collect(),
+        join: Some(header.clone()),
+        enclosing: None,
+        finally_fallthrough: Some(FinallyFallthrough {
+            cleanup: (59, 85),
+            transfer: 85,
+            continuation: Continuation::Tail { span: (119, 125) },
+            loop_header: Some(header.clone()),
+        }),
+        facts: BCIS
+            .into_iter()
+            .filter(|at| (12..125).contains(at))
+            .collect(),
+    }))
+}
+
 /// The fixed array loop has a nonthrowing protected body and three local-int cleanup copies.
 /// The handler's conservative phi is checked as published; it is never equated with the loop phi.
 fn prove_local_increment_loop_finally(
@@ -12535,6 +13277,260 @@ mod finally_copy_tests {
     }
 
     #[test]
+    fn call_return_loop_finally_late_budget_cancel_and_real_deadline_publish_no_certificate() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                    if self.cancel_at == Some(count) {
+                        self.token.cancel();
+                    }
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+        );
+        probe_descriptor(class, "finReturn", b"([I)I", false, None, |facts| {
+            let current = facts.starts[&12].clone();
+            *facts.budget = Budget::new(limits());
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                token: CancellationToken::new(),
+            });
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(
+                prove_call_return_loop_finally(facts, &current)
+                    .unwrap()
+                    .is_some()
+            );
+            let usage = facts.budget.usage().clone();
+            let charges = observer.charges.load(Ordering::SeqCst);
+            assert!(charges > 200);
+            let mut late_limits = limits();
+            late_limits.analysis_steps = usage.analysis_steps - 1;
+            *facts.budget = Budget::new(late_limits);
+            assert!(matches!(
+                prove_call_return_loop_finally(facts, &current),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(126),
+                    written: 0,
+                    ..
+                })
+            ));
+            assert_eq!(
+                facts.budget.usage().analysis_steps,
+                usage.analysis_steps - 1
+            );
+            let token = CancellationToken::new();
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: Some(charges),
+                token: token.clone(),
+            });
+            *facts.budget = Budget::with_cancellation_token(limits(), token);
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert_eq!(
+                prove_call_return_loop_finally(facts, &current).unwrap_err(),
+                StopReason::Cancelled { at: Some(126) }
+            );
+            assert_eq!(facts.budget.usage().analysis_steps, usage.analysis_steps);
+            assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+            let mut deadline_limits = limits();
+            deadline_limits.elapsed_millis = 0;
+            *facts.budget = Budget::new(deadline_limits);
+            assert!(matches!(
+                prove_call_return_loop_finally(facts, &current),
+                Err(StopReason::Interrupted { at: Some(0), .. })
+            ));
+            assert_eq!(facts.budget.usage().analysis_steps, 0);
+            *facts.budget = Budget::new(limits());
+        })
+        .unwrap();
+    }
+
+    #[test]
+    fn call_return_loop_finally_rejects_analyzed_copy_alias_value_and_range_neighbors() {
+        let original = include_bytes!(
+            "../../../tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+        );
+        let code = [
+            0x2a, 0x4c, 0x2b, 0xbe, 0x3d, 0x3, 0x3e, 0x1d, 0x1c, 0xa2, 0x0, 0x74, 0x2b, 0x1d, 0x2e,
+            0x36, 0x4, 0x15, 0x4, 0x6, 0xa0, 0x0, 0x27, 0x15, 0x4, 0xb8, 0x0, 0x7, 0x36, 0x5, 0xb2,
+            0x0, 0xd, 0xbb, 0x0, 0x13, 0x59, 0xb7, 0x0, 0x15, 0x12, 0x16, 0xb6, 0x0, 0x18, 0x15,
+            0x4, 0xb6, 0x0, 0x1c, 0xb6, 0x0, 0x1f, 0xb6, 0x0, 0x23, 0x15, 0x5, 0xac, 0xb2, 0x0,
+            0xd, 0xbb, 0x0, 0x13, 0x59, 0xb7, 0x0, 0x15, 0x12, 0x16, 0xb6, 0x0, 0x18, 0x15, 0x4,
+            0xb6, 0x0, 0x1c, 0xb6, 0x0, 0x1f, 0xb6, 0x0, 0x23, 0xa7, 0x0, 0x22, 0x3a, 0x6, 0xb2,
+            0x0, 0xd, 0xbb, 0x0, 0x13, 0x59, 0xb7, 0x0, 0x15, 0x12, 0x16, 0xb6, 0x0, 0x18, 0x15,
+            0x4, 0xb6, 0x0, 0x1c, 0xb6, 0x0, 0x1f, 0xb6, 0x0, 0x23, 0x19, 0x6, 0xbf, 0x84, 0x3,
+            0x1, 0xa7, 0xff, 0x8d, 0x2, 0xac,
+        ];
+        let starts: Vec<_> = original
+            .windows(code.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == code).then_some(at))
+            .collect();
+        assert_eq!(starts.len(), 1);
+        let start = starts[0];
+        let mut controls = Vec::new();
+        for (label, at, byte) in [
+            ("normal cleanup reads the induction value", 46, 3),
+            ("continue cleanup reads the induction value", 75, 3),
+            ("exception cleanup reads the induction value", 106, 3),
+            ("return reloads x instead of the saved call", 57, 4),
+            ("protected call reads the induction value", 24, 3),
+            ("loop advances by two", 121, 2),
+            ("condition has the opposite sense", 20, 0x9f),
+        ] {
+            let mut changed = original.to_vec();
+            changed[start + at] = byte;
+            controls.push((label, changed));
+        }
+        let mut primary = original.to_vec();
+        primary[start + 89] = 1;
+        primary[start + 117] = 1;
+        controls.push((
+            "exception is saved and loaded in another live slot",
+            primary,
+        ));
+        let table = start + code.len() + 2;
+        assert_eq!(
+            &original[table..table + 16],
+            &[0, 17, 0, 30, 0, 88, 0, 0, 0, 88, 0, 90, 0, 88, 0, 0]
+        );
+        for (label, at, byte) in [
+            ("normal cleanup is protected", 3, 33),
+            ("self row catches cleanup allocation", 11, 97),
+        ] {
+            let mut changed = original.to_vec();
+            changed[table + at] = byte;
+            controls.push((label, changed));
+        }
+        let mut extra = original.to_vec();
+        assert_eq!(&extra[start - 8..start - 6], &[0, 3]);
+        extra[start - 7] = 4;
+        extra[start + 28..start + 30].copy_from_slice(&[0x59, 0x57]);
+        extra[start + 56..start + 58].copy_from_slice(&[0, 0]);
+        controls.push(("pending call has an extra dup pop consumer", extra));
+        // Add one real string constant; only the return cleanup uses it. No fake Facts exist.
+        let mut literal = original.to_vec();
+        assert_eq!(&literal[8..10], &[0, 49]);
+        assert_eq!(&literal[505..507], &[0, 0x21]);
+        literal[8..10].copy_from_slice(&[0, 51]);
+        literal.splice(505..505, [1, 0, 4, b'g', b'i', b'n', b':', 8, 0, 49]);
+        literal[start + 10 + 41] = 50;
+        controls.push(("one cleanup has a different string constant", literal));
+        // StringBuffer has the same actual constructor/append signatures, but is outside this
+        // fixed StringBuilder proof. Rewriting UTF8 lengths keeps a complete readable class.
+        let mut buffer = original.to_vec();
+        for old in [
+            "java/lang/StringBuilder",
+            "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+            "(I)Ljava/lang/StringBuilder;",
+        ] {
+            let new = old.replace("StringBuilder", "StringBuffer");
+            let mut needle = (old.len() as u16).to_be_bytes().to_vec();
+            needle.extend(old.as_bytes());
+            let matches: Vec<_> = buffer
+                .windows(needle.len())
+                .enumerate()
+                .filter_map(|(at, bytes)| (bytes == needle).then_some(at))
+                .collect();
+            assert_eq!(matches.len(), 1);
+            let mut replacement = (new.len() as u16).to_be_bytes().to_vec();
+            replacement.extend(new.as_bytes());
+            buffer.splice(matches[0]..matches[0] + needle.len(), replacement);
+        }
+        controls.push(("other allocation and constructor owner", buffer));
+        assert_eq!(controls.len(), 13);
+        for (label, class) in controls {
+            probe_descriptor(&class, "finReturn", b"([I)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete(), "{label}");
+                let current = facts.starts[&12].clone();
+                assert!(
+                    prove_call_return_loop_finally(facts, &current)
+                        .unwrap()
+                        .is_none(),
+                    "{label}"
+                );
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn call_return_loop_finally_proves_three_fresh_cleanup_graphs_and_saved_call() {
+        for class in [
+            &include_bytes!(
+                "../../../tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+            )[..],
+            &include_bytes!(
+                "../../../tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class"
+            )[..],
+        ] {
+            probe_descriptor(class, "finReturn", b"([I)I", false, None, |facts| {
+                let current = facts.starts[&12].clone();
+                let plan = prove_call_return_loop_finally(facts, &current)
+                    .unwrap()
+                    .expect("the actual three cleanup value graphs and pending call close");
+                assert_eq!(plan.lead(), (12, 17));
+                assert_eq!(plan.body(), (17, 30));
+                assert_eq!(
+                    plan.owned()
+                        .iter()
+                        .map(CanonicalBlockId::bci)
+                        .collect::<Vec<_>>(),
+                    [12, 23, 59, 88]
+                );
+                assert_eq!(plan.join().unwrap().bci(), 7);
+                assert_eq!(
+                    plan.finally_fallthrough()
+                        .unwrap()
+                        .loop_header
+                        .as_ref()
+                        .unwrap()
+                        .bci(),
+                    7
+                );
+                assert_eq!(
+                    plan.finally_fallthrough().unwrap().continuation,
+                    Continuation::Tail { span: (119, 125) }
+                );
+                assert!(matches!(
+                    plan.shape(),
+                    Shape::Finally {
+                        normal_cleanup: (30, 56),
+                        completion: FinallyCompletion::SavedReturn {
+                            save: 28,
+                            returns: 58
+                        },
+                        ..
+                    }
+                ));
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
     fn call_return_baseline_probes_actual_call_cleanup_and_loop_scope() {
         for class in [
             &include_bytes!(
@@ -14789,6 +15785,9 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile) {
+        if let Some(plan) = prove_call_return_loop_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
         if let Some(plan) = prove_local_increment_loop_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }

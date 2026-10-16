@@ -196,6 +196,59 @@ fn loop_local_finally_json_keeps_both_returns_and_the_whole_class() {
     }
 }
 
+#[test]
+fn loop_call_return_finally_json_keeps_both_returns_and_the_whole_class() {
+    for leg in ["v8", "v8-javac8"] {
+        let fixture = repository_fixture(&format!(
+            "../../tests/fixtures/recover-call-return-loop-finally/{leg}/CallReturnFinally.class"
+        ));
+        let output = run(&[
+            "class-source",
+            "--input",
+            path_of(&fixture),
+            "--class",
+            "CallReturnFinally",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all",
+        ]);
+        assert_eq!(status(&output), EXIT_COMPLETE, "{}", stderr_text(&output));
+        let document: Value = serde_json::from_slice(&output.stdout).unwrap();
+        let methods = document["methods"].as_array().unwrap();
+        assert_eq!(methods.len(), 3, "all physical methods remain");
+        let method = methods
+            .iter()
+            .find(|m| m["item"]["name"]["escaped"] == "finReturn")
+            .unwrap();
+        assert_eq!(method["item"]["descriptor"]["escaped"], "([I)I");
+        let text = method["outcome"]["report"]["text"].as_str().unwrap();
+        assert!(!text.contains("@bytecode"), "{leg}: {text}");
+        assert!(
+            text.contains("try {")
+                && text.contains("finally {")
+                && text.matches("return ").count() == 2,
+            "{leg}: {text}"
+        );
+        assert_eq!(text.matches("finally {").count(), 1, "{leg}: {text}");
+        assert_eq!(
+            document["text"].as_str().unwrap(),
+            library_report(
+                &fixture,
+                ClassRef::Name {
+                    class: jarde::ClassNameQuery::internal("CallReturnFinally")
+                },
+                EnvironmentPolicy::SingleClass,
+            )
+            .text
+        );
+    }
+}
+
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
 
 struct TempDir {
