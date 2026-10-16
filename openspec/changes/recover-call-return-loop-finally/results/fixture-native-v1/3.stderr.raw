@@ -1,0 +1,7 @@
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m jarde v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 27.70s
+[1m[92m     Running[0m tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-00b61db8b8dc7d7f)

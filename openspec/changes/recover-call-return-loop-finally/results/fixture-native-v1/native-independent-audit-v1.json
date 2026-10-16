@@ -1,0 +1,290 @@
+{
+  "schema": "call-return-finally-fixture-native-independent-audit-v1",
+  "status": "findings_require_attention",
+  "source_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/execution.json",
+    "bytes": 2166446,
+    "sha256": "8d5a358eb7ce609528d7652e7ab43c7b021e6b03c4c452d0557386b2a1c0c61d",
+    "status": "expected_command_outcomes_observed_pending_independent_acceptance"
+  },
+  "baseline_binding": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+    "product_head": "02de294f7af2d0798e33d52ce5474e60efe17b03",
+    "source_count": 4929,
+    "frozen_cli": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-no-call-finally-local-native-continuation-v1",
+      "bytes": 59902896,
+      "sha256": "fd7b33ce0411854e480186c7ade82ecc21d4401b79d1a0b1bd0d5c7774bbff25",
+      "mode": "0555",
+      "built_from": "target/debug/jarde-cli"
+    }
+  },
+  "actual_native_commands": [
+    {
+      "index": 1,
+      "label": "reader-actual-population",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "--",
+        "--exact"
+      ],
+      "exit_code": 0,
+      "summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "named_tests": [
+        {
+          "name": "classfile::tests::repository_class_fixtures_validate_without_false_target_rejections",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "label": "baseline-private-refusal",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "guard::finally_copy_tests::call_return_baseline_probes_actual_call_cleanup_and_loop_scope",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "--",
+        "--exact"
+      ],
+      "exit_code": 0,
+      "summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "named_tests": [
+        {
+          "name": "guard::finally_copy_tests::call_return_baseline_probes_actual_call_cleanup_and_loop_scope",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "label": "fingerprint",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked",
+        "--message-format=json-render-diagnostics"
+      ],
+      "exit_code": 0,
+      "summaries": [
+        [
+          "ok",
+          "5",
+          "0",
+          "1"
+        ]
+      ],
+      "named_tests": [
+        {
+          "name": "corpus_files_match_the_recorded_fingerprint",
+          "status": "ok"
+        },
+        {
+          "name": "every_acceptance_row_is_indexed_against_existing_corpus",
+          "status": "ok"
+        },
+        {
+          "name": "every_dimension_is_carried_by_existing_corpus",
+          "status": "ok"
+        },
+        {
+          "name": "regenerate_corpus_fingerprint",
+          "status": "ignored"
+        },
+        {
+          "name": "the_indexed_rows_are_the_rows_the_acceptance_table_names",
+          "status": "ok"
+        },
+        {
+          "name": "the_manifest_matches_its_rendered_classification",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "label": "finally-exact-cargo-clean",
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "summaries": null,
+      "named_tests": null
+    }
+  ],
+  "raw_streams": [
+    {
+      "command": 1,
+      "label": "reader-actual-population",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/1.stdout.raw",
+      "bytes": 66954,
+      "sha256": "c0023d439331ff978d08d0365807f9940e3e3a69d73c7993de1321bc40250b7f",
+      "matches_receipt": true
+    },
+    {
+      "command": 1,
+      "label": "reader-actual-population",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/1.stderr.raw",
+      "bytes": 2749,
+      "sha256": "7fc88ed40653a5c1900304d745680825782e3a558c17b8b31f64e35af75b89ef",
+      "matches_receipt": true
+    },
+    {
+      "command": 2,
+      "label": "baseline-private-refusal",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/2.stdout.raw",
+      "bytes": 39004,
+      "sha256": "88742c81600c70e903f6d04f30931d7acdc6b3ee911d9804f45f4298de7ec049",
+      "matches_receipt": true
+    },
+    {
+      "command": 2,
+      "label": "baseline-private-refusal",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/2.stderr.raw",
+      "bytes": 924,
+      "sha256": "7ddbfb7b0aa73ce1c095ee4217b50099c84b70a6ce8d6db2759742902850365a",
+      "matches_receipt": true
+    },
+    {
+      "command": 3,
+      "label": "fingerprint",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/3.stdout.raw",
+      "bytes": 74972,
+      "sha256": "b81bb1cd04e7b179076a06c9c4d3dc8faab1862c8c6a1ef8f181f83438f87151",
+      "matches_receipt": true
+    },
+    {
+      "command": 3,
+      "label": "fingerprint",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/3.stderr.raw",
+      "bytes": 792,
+      "sha256": "88bc8abb9a2a3cc39f10abe1d34a4761d778cb6f08b2fb4e322f85c3ccc56fd9",
+      "matches_receipt": true
+    },
+    {
+      "command": 4,
+      "label": "finally-exact-cargo-clean",
+      "stream": "stdout",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches_receipt": true
+    },
+    {
+      "command": 4,
+      "label": "finally-exact-cargo-clean",
+      "stream": "stderr",
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/run-v1/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "74583d16932ea635785178102f38f34e0d545e60c6ee98ed165681bf29f62699",
+      "matches_receipt": true
+    }
+  ],
+  "source_closure": {
+    "before_count": 4935,
+    "after_count": 4935,
+    "before_after_identical": true,
+    "baseline_binding_rows": 4929,
+    "added_paths": [
+      "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java",
+      "tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java",
+      "tests/fixtures/recover-call-return-loop-finally/README.md",
+      "tests/fixtures/recover-call-return-loop-finally/probe.stdout",
+      "tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class",
+      "tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+    ],
+    "removed_paths": [],
+    "changed_preexisting_paths": [
+      "crates/jarde-java/src/guard.rs",
+      "crates/jarde-reader/src/classfile.rs",
+      "tests/fixtures/corpus-fingerprint.json"
+    ],
+    "scope_note": "Receipt is internally stable before/after. Relative to the supplied 02de product binding, this run includes six added paths (five fixture artifacts plus README) and three changed pre-existing source files; therefore it does not support the anticipated +5-only scope or an unchanged-production-source claim."
+  },
+  "guard_cleanup": {
+    "default_stack": true,
+    "guard": {
+      "minimum_free_bytes": 5368709120,
+      "maximum_target_bytes": 1073741824,
+      "interval_seconds": 1
+    },
+    "guards": {
+      "free_bytes_minimum": 5368709120,
+      "target_bytes_maximum": 1073741824,
+      "poll_seconds": 1,
+      "process_group_termination": true
+    },
+    "target_absent": true,
+    "cleanup_exit": 0
+  },
+  "checks": [
+    {
+      "name": "receipt_has_four_expected_commands",
+      "passed": true
+    },
+    {
+      "name": "all_native_commands_exit_zero",
+      "passed": true
+    },
+    {
+      "name": "native_named_test_summaries",
+      "passed": true
+    },
+    {
+      "name": "all_eight_raw_streams_match_receipt",
+      "passed": true
+    },
+    {
+      "name": "manifest_pre_post_identical",
+      "passed": true
+    },
+    {
+      "name": "baseline_source_content_comparison",
+      "passed": false
+    },
+    {
+      "name": "guards_and_cleanup",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "The receipt demonstrates these targeted native tests and cargo clean only; it is not a full native/workspace or OpenSpec acceptance.",
+    "Fingerprint test reports 5 passed and 1 ignored. No independent claim is made about corpus cardinality beyond the recorded test results.",
+    "No frozen CLI artifact was recorded in this execution."
+  ]
+}

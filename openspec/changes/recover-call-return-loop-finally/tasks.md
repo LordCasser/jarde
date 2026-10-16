@@ -2,7 +2,7 @@
 
 ## 1. 原始控制与永久样例
 
-- [ ] 1.1 固化独立原Java/未改driver/217B oracle/真实两class及12命令原始控制、2命令actual Facts/Region探针收据和说明；更新真实fixture指纹与reader census。验收：完整源码切片/类名变化明确，四次原运行逐字匹配，两份完整生成Java缺return保持红基线，census由实际测试确认，不伪称重建成功。
+- [x] 1.1 固化独立原Java/未改driver/217B oracle/真实两class及12命令原始控制、2命令actual Facts/Region探针收据和说明；更新真实fixture指纹与reader census。验收：完整源码切片/类名变化明确，四次原运行逐字匹配，两份完整生成Java缺return保持红基线，census由实际测试确认，不伪称重建成功。
 
 ## 2. 私有证明与恢复接线
 

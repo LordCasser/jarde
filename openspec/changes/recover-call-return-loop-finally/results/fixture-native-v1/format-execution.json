@@ -1,0 +1,45 @@
+{
+  "command": {
+    "index": 1,
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all"
+    ],
+    "cwd": "/home/lordcasser/.codex/worktrees/call-return-finally/jarde",
+    "started_at": "2026-10-16T08:53:08.575533+00:00",
+    "duration_seconds": 5.001767319001374,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 0,
+    "free_bytes_after": 784654532608,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": null,
+    "streams": {
+      "stdout": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-format-v1/1.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-format-v1/1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "default_stack": true,
+  "target_absent": true,
+  "guard": {
+    "path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/guard.py",
+    "bytes": 23521,
+    "sha256": "a312c70cd7e4f15851d26dd27f51127d441ba5f886bc54c1118e6f533b5fdb39"
+  }
+}

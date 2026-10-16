@@ -1,0 +1,21 @@
+{
+  "archive": "capture.tar.gz",
+  "archive_bytes": 2868412,
+  "archive_sha256": "cb756ab18173ff3ab70ec398b8f331d4e442119d62553fd4e82c453012033516",
+  "cli_binary_included": false,
+  "control_command_raw_streams": 24,
+  "control_commands": 12,
+  "jdk_binaries_included": false,
+  "manifest_count": 1,
+  "native_raw_included": false,
+  "payload_count": 78,
+  "payload_source_manifest_archive_hashes_all_match": true,
+  "probe_command_raw_streams": 4,
+  "probe_commands": 2,
+  "safe_unique_regular_members": true,
+  "schema": "call-return-finally-planning-evidence-pack-summary-v1",
+  "source_rows_probe": 4931,
+  "source_rows_product": 4929,
+  "status": "packaged_and_reopened_all_members_verified",
+  "tar_member_count": 79
+}

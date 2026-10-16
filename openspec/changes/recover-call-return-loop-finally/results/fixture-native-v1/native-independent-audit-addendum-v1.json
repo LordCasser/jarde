@@ -1,0 +1,169 @@
+{
+  "schema": "call-return-finally-fixture-native-scope-addendum-v1",
+  "status": "accepted_within_fixture_baseline_scope",
+  "supersedes_no_prior_report": true,
+  "prior_audit": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/call-return-finally-fixture-native-v1/native-independent-audit-v1.json",
+    "sha256": "eeeab41458bff2b9a138adaee9ce2868c8af84b7c20d5383fc750a1cf615a863"
+  },
+  "baseline_snapshot": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-complete-local-native-v1/compiled-source",
+    "corresponds_to": "02de294f7af2d0798e33d52ce5474e60efe17b03 source binding compiled snapshot"
+  },
+  "checks": [
+    {
+      "name": "guard_diff_is_test_only_and_no_temporary_region_probe_remains",
+      "passed": true,
+      "basis": "Diff from exact 02de compiled-source snapshot: only removed the temporary `crate::region::recover`/println instrumentation inside probe helper and added `#[cfg(test)] mod finally_copy_tests` test assertions and old-proof `None` assertion; no production function diff."
+    },
+    {
+      "name": "reader_change_is_test_population_expectation_only",
+      "passed": true,
+      "basis": "Diff from exact 02de compiled-source snapshot changes the cfg(test) repository fixture population expected tuple/comment from (1179,5267,529,3459,10) to (1181,5273,533,3467,10)."
+    },
+    {
+      "name": "fingerprint_adds_exactly_five_non_markdown_entries",
+      "passed": true,
+      "basis": {
+        "added_paths": [
+          "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java",
+          "tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java",
+          "tests/fixtures/recover-call-return-loop-finally/probe.stdout",
+          "tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class",
+          "tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+        ],
+        "removed_paths": [],
+        "modified_existing_entries": [],
+        "old_files": 2236,
+        "new_files": 2241
+      }
+    },
+    {
+      "name": "all_five_non_markdown_fixture_files_match_independent_control_bytes",
+      "passed": true,
+      "basis": [
+        {
+          "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java",
+          "bytes": 327,
+          "sha256": "5f179acaa1933a614e3e575ccb88f0cfd128288bed0de5809979ddeb8cd6603d",
+          "control_bytes": 327,
+          "control_sha256": "5f179acaa1933a614e3e575ccb88f0cfd128288bed0de5809979ddeb8cd6603d",
+          "byte_identical": true
+        },
+        {
+          "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java",
+          "bytes": 1679,
+          "sha256": "e66a0d305ba8c57576364d8c9e121fee8cff1e39149fd04690f6e4b2c294acab",
+          "control_bytes": 1679,
+          "control_sha256": "e66a0d305ba8c57576364d8c9e121fee8cff1e39149fd04690f6e4b2c294acab",
+          "byte_identical": true
+        },
+        {
+          "path": "tests/fixtures/recover-call-return-loop-finally/probe.stdout",
+          "bytes": 217,
+          "sha256": "1d065e41effda9ff49f1f1c6a0f0669b67b8a6f4c210644017425ef390aa076a",
+          "control_bytes": 217,
+          "control_sha256": "1d065e41effda9ff49f1f1c6a0f0669b67b8a6f4c210644017425ef390aa076a",
+          "byte_identical": true
+        },
+        {
+          "path": "tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class",
+          "bytes": 781,
+          "sha256": "43d7e99a13aa5eaec5ad8536527af180056b403a4cdc89a1c6c643e08843832b",
+          "control_bytes": 781,
+          "control_sha256": "43d7e99a13aa5eaec5ad8536527af180056b403a4cdc89a1c6c643e08843832b",
+          "byte_identical": true
+        },
+        {
+          "path": "tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class",
+          "bytes": 781,
+          "sha256": "d03aaf2dde244afc5530007c18f9896698a3240d790defc9f2b886eb51071645",
+          "control_bytes": 781,
+          "control_sha256": "d03aaf2dde244afc5530007c18f9896698a3240d790defc9f2b886eb51071645",
+          "byte_identical": true
+        }
+      ]
+    },
+    {
+      "name": "native_before_after_source_closure_remained_identical",
+      "passed": true
+    }
+  ],
+  "three_changed_existing_files": {
+    "crates/jarde-java/src/guard.rs": {
+      "baseline_sha256": "ca28499b019aeca3654c9c10cfad26314a2c8c4c8b1335bcd1a3913cdac39a49",
+      "current_sha256": "a02d4fe2dd56828ddc93ed8f8a7dabd2b49a797d627391c56e03771ddbb5bace",
+      "diff_lines": 59,
+      "diff_excerpt": "--- \n\n+++ \n\n@@ -12536,4 +12536,56 @@\n\n \n     #[test]\n+    fn call_return_baseline_probes_actual_call_cleanup_and_loop_scope() {\n+        for class in [\n+            &include_bytes!(\n+                \"../../../tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class\"\n+            )[..],\n+            &include_bytes!(\n+                \"../../../tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class\"\n+            )[..],\n+        ] {\n+            let old = probe_descriptor(class, \"finReturn\", b\"([I)I\", false, None, |facts| {\n+                assert!(facts.canonical.completeness().is_complete());\n+                assert_eq!(facts.order.len(), 60);\n+                assert_eq!(facts.canonical.blocks().len(), 7);\n+                assert_eq!(facts.canonical.edges().len(), 8);\n+                assert_eq!(facts.handlers.len(), 2);\n+                assert_eq!(\n+                    (\n+                        facts.handlers[0].start_bci,\n+                        facts.handlers[0].end_bci,\n+                        facts.handlers[0].handler_bci\n+                    ),\n+                    (17, 30, 88)\n+                );\n+                let cleanup = facts.bcis((90, 116));\n+                assert_eq!(cleanup.len(), 10);\n+                assert!(cleanup_sequence(facts, &cleanup, false).is_none());\n+                let call = facts\n+                    .ssa\n+                    .effects()\n+                    .instructions()\n+                    .iter()\n+                    .find(|effect| effect.bci() == 25)\n+                    .unwrap();\n+                assert!(call.may_throw());\n+                assert_eq!(call.handlers(), &[0]);\n+                for effect in facts.ssa.effects().instructions().iter().filter(|effect| {\n+                    (30..56).contains(&effect.bci())\n+                        || (59..85).contains(&effect.bci())\n+                        || (90..116).contains(&effect.bci())\n+                }) {\n+                    assert!(effect.handlers().is_empty());\n+                }\n+            })\n+            .unwrap();\n+            assert!(\n+                old.is_none(),\n+                \"the straight-copy proof does not certify this loop/call cleanup\"\n+            );\n+        }\n+    }\n+\n+    #[test]\n     fn no_call_baseline_probes_real_increment_cleanup_and_loop_boundaries() {\n         for (leg, class) in ["
+    },
+    "crates/jarde-reader/src/classfile.rs": {
+      "baseline_sha256": "07fac0f34e488bdfbf0828948a5f67a0f049f939af9eec172227c51287994087",
+      "current_sha256": "0de0dd0fdb63722c7e62d7cbab73e866b3eb08643885d408f3e4a6a22c5ee1e4",
+      "diff_lines": 12,
+      "diff_excerpt": "--- \n\n+++ \n\n@@ -12273,5 +12273,8 @@\n\n             // four handlers and eight direct target records (60, 40, 54, 10 per leg).\n             // The complete independent methods retain all 62 Code bytes; no jsr.\n-            (1179, 5267, 529, 3459, 10),\n+            // Call-return loop finally adds two frozen independent classes, six Code bodies,\n+            // four handler rows and eight targets (125, 59, 119, 7 per compiler leg).\n+            // Both finReturn methods keep all 127 Code bytes; no jsr.\n+            (1181, 5273, 533, 3467, 10),\n             \"fixture population changed: re-measure these counts\"\n         );"
+    },
+    "tests/fixtures/corpus-fingerprint.json": {
+      "baseline_sha256": "48bf9410095afe293fabae6237e9716df1e3561d52f5f72965a69f1c27d4143f",
+      "current_sha256": "cdb573c22db5fd0b7294d3ec90faa747cb6e30b2b67742a4f97202d5733ce206",
+      "diff_lines": 32,
+      "diff_excerpt": "--- \n\n+++ \n\n@@ -9890,4 +9890,29 @@\n\n       \"bytes\": 1367,\n       \"path\": \"tests/fixtures/recover-branching-guard-body/v8/Order.class\"\n+    },\n+    {\n+      \"blake3\": \"bca1bdb3d5588c2d8f10d12cb9e631a5269055aac1e4571007aca5a7e3c4648f\",\n+      \"bytes\": 327,\n+      \"path\": \"tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java\"\n+    },\n+    {\n+      \"blake3\": \"b0b9d9ba9c93951c4075d644e39ed6c0ad6092ecdde863109cb98a89cbcd69df\",\n+      \"bytes\": 1679,\n+      \"path\": \"tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java\"\n+    },\n+    {\n+      \"blake3\": \"5ef6487f5c68cdc58a4397383791e0ec1957ae70270655e8012fcb571928b5a4\",\n+      \"bytes\": 217,\n+      \"path\": \"tests/fixtures/recover-call-return-loop-finally/probe.stdout\"\n+    },\n+    {\n+      \"blake3\": \"caca249c8ca5bf86280aedfc0832ca38e0f8e1ce5d31dcb28123098df4ca13ab\",\n+      \"bytes\": 781,\n+      \"path\": \"tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class\"\n+    },\n+    {\n+      \"blake3\": \"c51816dc194e6a0250cebaa438de25b9fd44a1ddc41325bda101b39da4562a50\",\n+      \"bytes\": 781,\n+      \"path\": \"tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class\"\n     },\n     {"
+    }
+  },
+  "fingerprint_scope": {
+    "old_non_markdown_file_count": 2236,
+    "new_non_markdown_file_count": 2241,
+    "new_entries": [
+      "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java",
+      "tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java",
+      "tests/fixtures/recover-call-return-loop-finally/probe.stdout",
+      "tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class",
+      "tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+    ],
+    "removed_entries": [],
+    "modified_preexisting_entries": [],
+    "note": "Corpus fingerprint excludes README.md and the fingerprint file itself. The closure therefore has six new paths, while fingerprint has five added non-Markdown fixture entries."
+  },
+  "fixture_control_comparison": [
+    {
+      "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinally.java",
+      "bytes": 327,
+      "sha256": "5f179acaa1933a614e3e575ccb88f0cfd128288bed0de5809979ddeb8cd6603d",
+      "control_bytes": 327,
+      "control_sha256": "5f179acaa1933a614e3e575ccb88f0cfd128288bed0de5809979ddeb8cd6603d",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/fixtures/recover-call-return-loop-finally/CallReturnFinallyProbe.java",
+      "bytes": 1679,
+      "sha256": "e66a0d305ba8c57576364d8c9e121fee8cff1e39149fd04690f6e4b2c294acab",
+      "control_bytes": 1679,
+      "control_sha256": "e66a0d305ba8c57576364d8c9e121fee8cff1e39149fd04690f6e4b2c294acab",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/fixtures/recover-call-return-loop-finally/probe.stdout",
+      "bytes": 217,
+      "sha256": "1d065e41effda9ff49f1f1c6a0f0669b67b8a6f4c210644017425ef390aa076a",
+      "control_bytes": 217,
+      "control_sha256": "1d065e41effda9ff49f1f1c6a0f0669b67b8a6f4c210644017425ef390aa076a",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class",
+      "bytes": 781,
+      "sha256": "43d7e99a13aa5eaec5ad8536527af180056b403a4cdc89a1c6c643e08843832b",
+      "control_bytes": 781,
+      "control_sha256": "43d7e99a13aa5eaec5ad8536527af180056b403a4cdc89a1c6c643e08843832b",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class",
+      "bytes": 781,
+      "sha256": "d03aaf2dde244afc5530007c18f9896698a3240d790defc9f2b886eb51071645",
+      "control_bytes": 781,
+      "control_sha256": "d03aaf2dde244afc5530007c18f9896698a3240d790defc9f2b886eb51071645",
+      "byte_identical": true
+    }
+  ],
+  "interpretation": "The earlier audit correctly reported six added source-closure paths and three changed existing paths relative to 02de. This addendum verifies those existing-file edits are the expected cfg(test) probe cleanup/test additions, reader cfg(test) population update, and five-entry corpus fingerprint extension. It does not assert that the 02de source tree was byte-unchanged; native receipt before/after closure is unchanged."
+}

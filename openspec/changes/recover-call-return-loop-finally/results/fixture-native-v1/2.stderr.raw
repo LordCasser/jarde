@@ -1,0 +1,12 @@
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/home/lordcasser/.codex/worktrees/call-return-finally/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 25.80s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-453301d2792a07f4)
