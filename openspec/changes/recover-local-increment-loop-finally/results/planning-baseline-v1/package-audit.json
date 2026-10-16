@@ -1,0 +1,49 @@
+{
+  "schema": "no-call-finally-planning-evidence-package-audit-v1",
+  "status": "pass",
+  "archive": "capture.tar.gz",
+  "archive_bytes": 3945428,
+  "archive_sha256": "374b75a1ab5dabfb9ce388a824b30b5ab97890a951ceca8fa3cada7e17ae357e",
+  "manifest": "manifest.json",
+  "manifest_sha256": "bec413dc1a943a4b6c2b098c99543de45d1180556c7c895d1759864252a14135",
+  "payload_count": 134,
+  "all_manifest_sources_exist": true,
+  "all_archive_members_have_manifest_hashes": true,
+  "required_members_present": true,
+  "actual_runs": {
+    "independent_control": {
+      "commands": 12,
+      "raw_streams": 24,
+      "original_oracle_passed": true,
+      "complete_generated_source_compile_failed": true,
+      "rebuilt_runtime": false
+    },
+    "facts_probe_v2": {
+      "commands": 2,
+      "raw_streams": 4,
+      "test": "1 passed, 0 failed, 0 ignored",
+      "feature_recovery": false
+    },
+    "region_probe_v3": {
+      "commands": 2,
+      "raw_streams": 4,
+      "feature_recovery": false
+    }
+  },
+  "historical_v1": "include-escape source-closure preflight failed before Cargo launch; preserved raw and receipt",
+  "source_binding": {
+    "head": "51de58710291cd3a3587f7040eec6f972cb26229",
+    "source_rows": 4922,
+    "frozen_cli_binary_included": false
+  },
+  "excluded": [
+    "CLI binary",
+    "target/build outputs",
+    "rebuilt output classes (the expected generated compilations fail)",
+    "current WIP source"
+  ],
+  "limitations": [
+    "Package evidence is red-baseline and instrumentation-only; no NoCall feature is implemented or proven.",
+    "No independent generated-source runtime is present."
+  ]
+}

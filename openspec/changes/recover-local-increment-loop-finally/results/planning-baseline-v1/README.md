@@ -1,0 +1,5 @@
+# NoCall真实红基线与探针
+
+本包由原类独立控制12命令、实际Facts v2两命令、实际Region v3两命令及v1预检失败组成。134个payload，manifest作为相邻文件交付，3945428B，SHA256 `374b75a1ab5dabfb9ce388a824b30b5ab97890a951ceca8fa3cada7e17ae357e`。冻结CLI仅保存元数据与51de真实Git tree绑定，不重复携带二进制。
+
+原类四次双JVM观察均为84字节固定oracle；两次CLI虽退出0，完整生成Java均编译失败，没有重建运行。两个探针是cfg(test)事实记录，不是功能恢复。v1在Cargo启动前被include闭包越界检查拒绝；v2将原class副本放入fixture树，未放宽检查。历史失败与源快照均保留，后续产品成功不覆盖它们。

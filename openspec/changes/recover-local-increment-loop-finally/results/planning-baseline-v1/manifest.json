@@ -1,0 +1,956 @@
+{
+  "schema": "no-call-finally-planning-evidence-v1",
+  "status": "built_cache_only_red_baseline_probe_package",
+  "product_head": "51de58710291cd3a3587f7040eec6f972cb26229",
+  "payload_count": 134,
+  "members": [
+    {
+      "archive_path": "README.md",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-planning-evidence-v1/README.md",
+      "bytes": 1010,
+      "sha256": "e6529c40e5761176c28a6fca760c31e4a55e91acc73608fb84c5fac40d6f3b46",
+      "group": "package_scope"
+    },
+    {
+      "archive_path": "analysis/effectful-finally-loopless-fixture-acceptance-plan-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-loopless-fixture-acceptance-plan-v1.json",
+      "bytes": 8016,
+      "sha256": "505aba3cf43959255c5a3767eae4f9b3c7881d52893f3e3d38b23480c0ab1b6c",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "analysis/loopless-design-notes-root-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loopless-design-notes-root-v1.json",
+      "bytes": 2908,
+      "sha256": "9b235188806ccda5c9eb5a4a3d533c19803db931fb247a9fd59f53fc154d571d",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "analysis/no-call-finally-actual-facts-probe-independent-review-v1.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-independent-review-v1.py",
+      "bytes": 11897,
+      "sha256": "0598b2fa02fe074565841e2fbffef37fe1dcc90bb1d11884a87cba479ec2498f",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "analysis/no-call-finally-next-slice-static-review-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-next-slice-static-review-v1.json",
+      "bytes": 18186,
+      "sha256": "e479437df6af5dd4a2b93618c54800ece57007f6a792369aef372c6795ecc579",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "analysis/no-call-finally-proposal-minimal-production-design-review-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-proposal-minimal-production-design-review-v1.json",
+      "bytes": 15551,
+      "sha256": "09354cbdcb13e93ab2d3285edcc78aaae230b133d566e04e9138d4910318a8d8",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "analysis/no-call-finally-region-probe-independent-addendum-v1.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-region-probe-independent-addendum-v1.py",
+      "bytes": 9443,
+      "sha256": "e3b0ac86a0e779eae38e5c2b85a4edc08615171c3636270d4b7dc131a5b02b4f",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "analysis/no-call-finally-region-probe-independent-addendum-v2.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-region-probe-independent-addendum-v2.py",
+      "bytes": 9764,
+      "sha256": "5b31deac3645d59f6ea319ad3937a247bd1cb91bb97d53bfcba2a9ae96ed67f6",
+      "group": "planning_and_static_review"
+    },
+    {
+      "archive_path": "bindings/conditional-return-finally-final-main-binding-v1/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-main-binding-v1/execution.json",
+      "bytes": 1498190,
+      "sha256": "109162ad9e47bed30f4ce58769a0f4c9c201382a4676dc954ef7852b32662c30",
+      "group": "final_product_main_tree_binding"
+    },
+    {
+      "archive_path": "bindings/conditional-return-finally-final-main-binding-v1/remote-head-verification.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-main-binding-v1/remote-head-verification.json",
+      "bytes": 462,
+      "sha256": "c43dfbb5a2fe2de0de1c06619d98b6fa7fbe7a50d3542cc6a5e695cff1be3bd1",
+      "group": "final_product_main_tree_binding"
+    },
+    {
+      "archive_path": "bindings/conditional-return-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-source-binding-v1/final-source-cli-head-binding.json",
+      "bytes": 1498530,
+      "sha256": "67368f949647d70023f5e96ce489d70b29a8e42858b0c68c893ed8de59d48bc8",
+      "group": "final_product_source_and_cli_pin"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/1.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/1.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/10.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/10.stderr.raw",
+      "bytes": 319,
+      "sha256": "1da8db53432137d4bd91e23462e19fbbf6883e1d25c9e8fa12db6bcb869c659b",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/10.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/10.stdout.raw",
+      "bytes": 6482,
+      "sha256": "5ee19b767d067f1a1b70cc32cb5698a351730cc7e4eed558548d79457875869b",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/11.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/11.stderr.raw",
+      "bytes": 4032,
+      "sha256": "cf0a38f204e9a6ee7560c1f22299bca9d36cbd7dfe5788692fe3337a75f05ce4",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/11.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/12.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/12.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/12.stdout.raw",
+      "bytes": 16836,
+      "sha256": "9a88c6167314fedeb6a5f818795b044522dfafde299b4ba85243f1c42ada38ea",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/13.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/13.stderr.raw",
+      "bytes": 2201,
+      "sha256": "c463ea4e7ee411e3db3eb084eb4f01e02c81d5dd63ce14a774c1bab969a86d85",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/13.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/13.stdout.raw",
+      "bytes": 16836,
+      "sha256": "9a88c6167314fedeb6a5f818795b044522dfafde299b4ba85243f1c42ada38ea",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/14.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/14.stderr.raw",
+      "bytes": 73,
+      "sha256": "0feeef4b4902872c05b97665a4b0b7d4201ae75f5754b916e16fa10172cd70d1",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/14.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/14.stdout.raw",
+      "bytes": 58229,
+      "sha256": "7b0ff7d963dfad8f1e6c78ccf9f60a8f3297077b4933ec75760acebb1bfde4ac",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/15.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/15.stderr.raw",
+      "bytes": 53,
+      "sha256": "984d41d3ce2a943e3d5a76f60e3bf10801295a4509116b94892139d5db65aadc",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/15.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/2.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/2.stderr.raw",
+      "bytes": 4032,
+      "sha256": "6c7f6c1cf66aa4d8f9ddedfb0ddce51a619f3903e5384402b47dbdd5f444095f",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/2.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/3.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/3.stderr.raw",
+      "bytes": 2455,
+      "sha256": "22a097f2f5f417018bfe7878ce8379c5184626c47ff35f961b8d95e911623b24",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/3.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/3.stdout.raw",
+      "bytes": 67961,
+      "sha256": "6b67a53987eda2458fb3789a28c06717fbe597d9eb5e843cf2ae2952f1825c92",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/4.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/4.stderr.raw",
+      "bytes": 952,
+      "sha256": "7f15a9834a035f4e9b9d1b699a190734785df3dae9d9b90c8bba096cb382b262",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/4.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/4.stdout.raw",
+      "bytes": 43362,
+      "sha256": "6c260b3703c6493e747f49ea96cab67ac1777c9e7346210f36f5fb476f721de9",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/5.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/5.stderr.raw",
+      "bytes": 827,
+      "sha256": "9325f0a034b96d139e2d238dbaffb1f746b1c9eec43d1703a0c96ae19d86f461",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/5.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/5.stdout.raw",
+      "bytes": 76232,
+      "sha256": "249a127e22df2d0e4b9cd521912ff4577214dc0e72668d0ca6d067320d0bc7e7",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/6.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/6.stderr.raw",
+      "bytes": 284,
+      "sha256": "b49d74412f5f20e88dd21625a768123f63b9a6e201dd17321d64655d874d3746",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/6.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/6.stdout.raw",
+      "bytes": 76236,
+      "sha256": "17a4d55596517b3ecebbfa8de95a1ac20d8528ff122cc2f7bde73b32e4a047f4",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/7.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/7.stderr.raw",
+      "bytes": 996,
+      "sha256": "84e88ec81a2de24bdd19de016ec408a6a70868f6151d5acf8ffc942cbf63f6f3",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/7.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/7.stdout.raw",
+      "bytes": 83200,
+      "sha256": "90ce11a1ea1831adf6b7413b63b80e906fbe7d8d44dc740baa1513263ef5c305",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/8.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/8.stderr.raw",
+      "bytes": 1519,
+      "sha256": "dc145171c99815955ddfbea8ba7ac059ea9171a7f222b9efab59387870e6b6ce",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/8.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/8.stdout.raw",
+      "bytes": 59362,
+      "sha256": "e1880a5ddc89103d03179d6ffdc88753965ee9173afda48cc70569ff58f25ed5",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/9.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/9.stderr.raw",
+      "bytes": 320,
+      "sha256": "b352a59bbe5f9342d72259db1218989ad85cca38a3d6608355c6e2d4321a3a88",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/9.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/9.stdout.raw",
+      "bytes": 433,
+      "sha256": "b6c40003cff65a2560768abdbcb2a07ffe8a85195df3612d22d5770a38fbb533",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "bindings/final-product-native-run/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-final-product-native-v1/run-v1/execution.json",
+      "bytes": 2193511,
+      "sha256": "62ded0fe4449899b0b1227fd95275c2de2f5af1d1b9ef8d985ccb85027b51288",
+      "group": "final_product_source_and_cli_raw_binding"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/commands.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/commands.json",
+      "bytes": 389,
+      "sha256": "fa2f60fa58da874da1f39b36e0d66defbba1a2c9ef656d0894e286fac8fb609c",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/dispatch.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/dispatch.json",
+      "bytes": 1215,
+      "sha256": "a280782c8321ec529fe040938aac2df08cf04ddefe6a03a7924e4496f573e647",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/dispatch.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/dispatch.stderr.raw",
+      "bytes": 118,
+      "sha256": "d73a007fb9962c50dcc861cc970ae8ad248227ccac8c884b1b2db8ec889cc4a7",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/dispatch.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/launcher.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/launcher.stderr.raw",
+      "bytes": 1108,
+      "sha256": "ef0f508a6f67e4f0b875c98c1cb9862f1278f2ae2a1949a0cd14d7e99f6fa008",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/launcher.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/launcher.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "historical/facts-probe-v1/run.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v1/run.py",
+      "bytes": 13945,
+      "sha256": "316b3fba7699330b2d517e25c95145bbbb630846473b8b20217f4f42aa7b5852",
+      "group": "preflight_rejected_before_cargo"
+    },
+    {
+      "archive_path": "planning/recover-return-through-effectful-finally/proposal.md",
+      "source_path": "/home/lordcasser/workspace/projects/jarde/openspec/changes/recover-return-through-effectful-finally/proposal.md",
+      "bytes": 2609,
+      "sha256": "6b9b7f670cd01b63b26d2c7ba549a00dcc4fbe5b39416c98fe38df9ae4959baf",
+      "group": "current_parent_plan_unreconciled"
+    },
+    {
+      "archive_path": "planning/recover-return-through-effectful-finally/tasks.md",
+      "source_path": "/home/lordcasser/workspace/projects/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "bytes": 586,
+      "sha256": "8b01675b5e47df0d90928a73497a8bce2b3bd3106781d002a1c97a8d9a389939",
+      "group": "current_parent_plan_unreconciled"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/commands.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/commands.json",
+      "bytes": 389,
+      "sha256": "fa2f60fa58da874da1f39b36e0d66defbba1a2c9ef656d0894e286fac8fb609c",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/compiled-probe-source/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/compiled-probe-source/execution.json",
+      "bytes": 421,
+      "sha256": "329269a0f6702d6c3d64b50e04c9aef2076aac1def7efd6f0215b7a50898234a",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/compiled-probe-source/guard.rs",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/compiled-probe-source/guard.rs",
+      "bytes": 725154,
+      "sha256": "8edae6c07e8281ccc54227dd8250a5b961f1afa181d2c968fbdc3a287ad54c0a",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/compiled-probe-source/v8-javac8/NoCallFinally.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/compiled-probe-source/v8-javac8/NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/compiled-probe-source/v8/NoCallFinally.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/compiled-probe-source/v8/NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/compiled-probe-source/working.diff",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/compiled-probe-source/working.diff",
+      "bytes": 3759,
+      "sha256": "4047b629fafa107ed8f4550c7204fb7cf184fd8d196b6978f37b4ff78f7d2733",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/dispatch.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/dispatch.json",
+      "bytes": 1215,
+      "sha256": "8b2592a635dc244bd98a8d83a4904eb4d0a7527fbf2f3b8012a5a26d8f8106f8",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/dispatch.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/dispatch.stderr.raw",
+      "bytes": 118,
+      "sha256": "c8ebbff276bf9533680fe8941e7f849eb923db3ce2a1fd51549d47210fe7b46e",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/dispatch.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/execution.json",
+      "bytes": 2158385,
+      "sha256": "27973fa4153688a6d1bf34dd420663f39dc2f30bf61aa0b38f56031764bfc7a3",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/independent-audit-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/independent-audit-v1.json",
+      "bytes": 5361,
+      "sha256": "49fa726974769ccae3780507bbc8294e88313dc4454c6778acec8cd685b1e6be",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/independent-facts-audit-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/independent-facts-audit-v1.json",
+      "bytes": 24982,
+      "sha256": "4c9e7aa9b965fc738c2740f1281fa83c3b5c09700f3156b9f11b03262369ff13",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/launcher.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/launcher.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/launcher.stdout.raw",
+      "bytes": 143,
+      "sha256": "0f2b47bd8dae5aafe8c7e00ae8ac9646fcb8f97bce278c057e700313111ee88b",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run-v1/1.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run-v1/1.stderr.raw",
+      "bytes": 2069,
+      "sha256": "774d0be0e6a94505f94c58489e6346872115058eb54ee74cc36eec1d4dd7485e",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run-v1/1.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run-v1/1.stdout.raw",
+      "bytes": 82730,
+      "sha256": "15432082a82739d662c271712c9ee85d7d4b0a85a01199864cb0405b5771587f",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run-v1/2.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run-v1/2.stderr.raw",
+      "bytes": 52,
+      "sha256": "9a6978f7126dea6f41e9c2caae320dbf7badaff8a39acde58f77e0cff7c4ee96",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run-v1/2.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run-v1/command_spec.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run-v1/command_spec.json",
+      "bytes": 286,
+      "sha256": "50b5fb6aa95a268e7729a8d8651019392ac0dd43a6a78062ec52a064867d6a57",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run-v1/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run-v1/execution.json",
+      "bytes": 2158385,
+      "sha256": "27973fa4153688a6d1bf34dd420663f39dc2f30bf61aa0b38f56031764bfc7a3",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-facts-probe-v2/run.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-facts-probe-v2/run.py",
+      "bytes": 13945,
+      "sha256": "316b3fba7699330b2d517e25c95145bbbb630846473b8b20217f4f42aa7b5852",
+      "group": "actual_cfg_test_facts_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/commands.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/commands.json",
+      "bytes": 389,
+      "sha256": "fa2f60fa58da874da1f39b36e0d66defbba1a2c9ef656d0894e286fac8fb609c",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/compiled-probe-source/crates/jarde-java/src/guard.rs",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/compiled-probe-source/crates/jarde-java/src/guard.rs",
+      "bytes": 725845,
+      "sha256": "db174261535003a45408ca89bcc44a134817da65eaacc16043ba7a3eaf14589e",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/compiled-probe-source/crates/jarde-java/src/region.rs",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/compiled-probe-source/crates/jarde-java/src/region.rs",
+      "bytes": 1071297,
+      "sha256": "a91fdfa625b372113dde927e7ed40ae97aaaf424ae5fcae5e5c534aa8fa5e5d5",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/compiled-probe-source/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/compiled-probe-source/execution.json",
+      "bytes": 473,
+      "sha256": "b2833d08ed0460af04fbb65ca51ca48c2ee63476f31ddc43f66a5d2852a3b2d6",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/compiled-probe-source/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/compiled-probe-source/tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/compiled-probe-source/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/compiled-probe-source/tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/compiled-probe-source/working.diff",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/compiled-probe-source/working.diff",
+      "bytes": 7190,
+      "sha256": "032057839a7ad77d49f0485a3551c9302a2f4acede9565d6a827a95b653dd4bc",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/dispatch.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/dispatch.json",
+      "bytes": 1223,
+      "sha256": "0fe7f11fdb2662ce9085fe3fb23c03518aa632d5ed45dcd81bcaa06fad1a64c4",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/dispatch.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/dispatch.stderr.raw",
+      "bytes": 119,
+      "sha256": "a9786d43918bc1e608d1fc24bb876f0fd3bf42bacab09c8cf8f344d6395b5340",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/dispatch.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/dispatch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/execution.json",
+      "bytes": 2158393,
+      "sha256": "c6dc1f6f1001ca2578deeaa9f1527e8889cbcf1b01ad273f96d97d5cbe15b9d8",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/independent-dynamic-scope-addendum-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/independent-dynamic-scope-addendum-v1.json",
+      "bytes": 8045,
+      "sha256": "a9a5ea31632622fa3110e71cf0ab7a53dfc3e0494245f2d91631b794a66ce1da",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/independent-dynamic-scope-addendum-v2.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/independent-dynamic-scope-addendum-v2.json",
+      "bytes": 8332,
+      "sha256": "defad1ee60d1350685545c7de0b07452dd5e8d3947c78aa046753f730eca3e15",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/launcher.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/launcher.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/launcher.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/launcher.stdout.raw",
+      "bytes": 143,
+      "sha256": "0f2b47bd8dae5aafe8c7e00ae8ac9646fcb8f97bce278c057e700313111ee88b",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run-v1/1.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run-v1/1.stderr.raw",
+      "bytes": 2069,
+      "sha256": "41f3e4fc20f2b9b06aca140a36238f682d601951ea1b36f7489d148c97a54e07",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run-v1/1.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run-v1/1.stdout.raw",
+      "bytes": 89790,
+      "sha256": "c2c47b3d0a09c0d4cef4950b0749afd50ceed8900915ade257f657632af3d5c6",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run-v1/2.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run-v1/2.stderr.raw",
+      "bytes": 52,
+      "sha256": "9a6978f7126dea6f41e9c2caae320dbf7badaff8a39acde58f77e0cff7c4ee96",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run-v1/2.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run-v1/command_spec.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run-v1/command_spec.json",
+      "bytes": 286,
+      "sha256": "50b5fb6aa95a268e7729a8d8651019392ac0dd43a6a78062ec52a064867d6a57",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run-v1/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run-v1/execution.json",
+      "bytes": 2158393,
+      "sha256": "c6dc1f6f1001ca2578deeaa9f1527e8889cbcf1b01ad273f96d97d5cbe15b9d8",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-actual-region-probe-v3/run.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-actual-region-probe-v3/run.py",
+      "bytes": 13945,
+      "sha256": "316b3fba7699330b2d517e25c95145bbbb630846473b8b20217f4f42aa7b5852",
+      "group": "actual_cfg_test_region_probe_no_feature"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/actual-code-comparison-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/actual-code-comparison-v1.json",
+      "bytes": 11218,
+      "sha256": "14851de3c8619cb11735b29ea7dcd9b3aa2a3bc1a2dc03ef50124ee9c7b4b22b",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/fixture/NoCallFinally.java",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/fixture/NoCallFinally.java",
+      "bytes": 283,
+      "sha256": "245bc94a84b54922df2bd0152f318840b8ad27b5424943ff8c9e018fd9d3d8f0",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/fixture/NoCallFinallyProbe.java",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/fixture/NoCallFinallyProbe.java",
+      "bytes": 580,
+      "sha256": "fdd239275fb1077b674364b649713bcad9f62397a429c9519fc9c9efec4af6f2",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/fixture/derivation.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/fixture/derivation.json",
+      "bytes": 714,
+      "sha256": "a1d0e035cdb35660ccf16d7419a78173716812bb8a65458cfe98ae2b8e93adcc",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/fixture/probe.stdout",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/fixture/probe.stdout",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/independent-audit-v1.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/independent-audit-v1.json",
+      "bytes": 8521,
+      "sha256": "3a102de6b4e105cae4f99897d5a9140ee16031f938a894b91f572d5a6b8151df",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/1.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/1.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/10.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/10.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/10.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/11.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/11.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/11.stdout.raw",
+      "bytes": 24867,
+      "sha256": "93f43d52a04c9201b6630e6fb6cd59ae8b386dfe260422e220973cc84951dd02",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/12.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/12.stderr.raw",
+      "bytes": 208,
+      "sha256": "97801db96878ff14a5a78314b80733f2f0f863b202fd5c4666c77d9d1bec1b76",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/12.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/2.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/2.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/3.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/3.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/3.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/4.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/4.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/4.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/5.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/5.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/5.stdout.raw",
+      "bytes": 24867,
+      "sha256": "0ff3bdff05c65ccab3759d51f2c17946c2e64a3000423178a009d70d2082bfdf",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/6.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/6.stderr.raw",
+      "bytes": 209,
+      "sha256": "f61bf888384dc8b0c880e7b90a9b4c9a53c2e73335a6b6f9731f30787eb7a325",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/6.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/7.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/7.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/8.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/8.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/9.stderr.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/9.stdout.raw",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/9.stdout.raw",
+      "bytes": 84,
+      "sha256": "c2b016932f2a3bd6a769735b564a42aae3e52f2de2bfd3fbc1c1ab3639008854",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/execution.json",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/execution.json",
+      "bytes": 2303068,
+      "sha256": "0247c04350620d3647c853dd77fbd7c924f4214e38b53e2a154a91209c530c4f",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac23-driver/NoCallFinallyProbe.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac23-driver/NoCallFinallyProbe.class",
+      "bytes": 1098,
+      "sha256": "5912d8511859ed6a92495097bbb889d94efc8cce646429f66bceb05c7a4b0d5a",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac23-generated/NoCallFinally.java",
+      "bytes": 1228,
+      "sha256": "1d901acb72c5754d592c39d6a87ec84a44648dbf0cb99548d58d0a398eeb8b18",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac23-original.jar",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac23-original.jar",
+      "bytes": 472,
+      "sha256": "875339a4f2f3165755b960c2805d11fe7f5649c082819d4b35b8345fedd796f0",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac23-original/NoCallFinally.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac23-original/NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "d3d9a221b8a24362921c7a9ff4fdc5cc7aeff06d3dd11e5308a70fd3ceb2cd8d",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac8-driver/NoCallFinallyProbe.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac8-driver/NoCallFinallyProbe.class",
+      "bytes": 1101,
+      "sha256": "b0d20563cf4fab3cc53439e2b26fb77eb6c95f7eea09bc3ca5c4858a957d9f8a",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac8-generated/NoCallFinally.java",
+      "bytes": 1228,
+      "sha256": "1d901acb72c5754d592c39d6a87ec84a44648dbf0cb99548d58d0a398eeb8b18",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac8-original.jar",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac8-original.jar",
+      "bytes": 472,
+      "sha256": "4cf2ba22dfcd7abfb558f3b6b6b7f3bf7ba082e9030e4b5eceac3c67b0fb0159",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "runs/no-call-finally-independent-control-v1/run-v1/javac8-original/NoCallFinally.class",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-independent-control-v1/run-v1/javac8-original/NoCallFinally.class",
+      "bytes": 336,
+      "sha256": "f6375534ddb46e07190b6096a2820b4ce9efa7b665c65c47a405ed4939831fd3",
+      "group": "independent_original_oracle_and_generated_source_red"
+    },
+    {
+      "archive_path": "tools/workspace_runner.py",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools-prep/workspace_runner.py",
+      "bytes": 59053,
+      "sha256": "1321734497436389470a12452b29101656d64c7f94eb5526358ffc9822b8e467",
+      "group": "closure_helper"
+    }
+  ],
+  "excluded": [
+    "frozen CLI executable",
+    "target/build outputs",
+    "unrelated current WIP source"
+  ],
+  "limitations": [
+    "NoCall feature recovery is not implemented or proven by these probes.",
+    "The facts/region probes are instrumentation-only.",
+    "No rebuilt runtime exists for the independently generated NoCall source."
+  ]
+}
