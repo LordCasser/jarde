@@ -1,0 +1,76 @@
+{
+  "changeName": "recover-conditional-return-finally-copies",
+  "changeDir": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/proposal.md"
+    ],
+    "specs": [
+      "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/design.md"
+    ],
+    "tasks": [
+      "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 6,
+    "complete": 6,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 将实际a89新CLI/4915源码、两独立原class、未改source/driver/oracle及完整FY/FX重筛绑定并保存可移交raw；冻结永久fixture和指纹。验收：两原class的唯一row[0,16)→37、50B Code和三cleanup事实分别核实；12命令原类控制及完整生成源码缺return红可复核，四次driver134B exact；FP只新增本片预期输入、不删旧项。原类成功不计为恢复。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "line": 5
+    },
+    {
+      "id": "2",
+      "description": "1.2 在真实Facts/SSA固定现有首拒链及region边界，加入最窄证明、公共库与JSON CLI具名回归并在旧生产先证行为红。验收：具体失败指向两正常出口/第三copy的缺证，非工具或路径故障；记录guard首拒/若后续路径未到不得冒称到达，原FY loopless与完整FY/FX其它失败分别保留。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "line": 6
+    },
+    {
+      "id": "3",
+      "description": "2.1 实现最小有预算三副本完成证书，证明值保存/唯一consumer、row/handler/三cleanup等价与每个出口的真实continuation；同步边界文档和负控制。验收：真实分析后copy差异、自保护范围、异常对象/返回值误连、额外前驱或消费者不被新证书认领；真实late预算与收费中取消无部分证书/ownership且保留原原因用量，不用入口预取消/退款/改P5快照代替。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "line": 10
+    },
+    {
+      "id": "4",
+      "description": "2.2 复用bounded Region/Try/Return/Finally接缝接入两正常完成，完整认领与原子发射并补来源/兼容测试。验收：保存值在实际try内求得，落穿回真实join，全部物理BCI与方法身份闭合；不完整child/fallback/未声明local保持原拒绝；既有直线/条件清理/共享catch/循环finally与FO控制按自身契约通过，P5 all-features旧计费原断言通过，不放宽其它规则。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "line": 11
+    },
+    {
+      "id": "5",
+      "description": "3.1 冻结最终CLI，对两腿完整独立report.text原样重编，未改driver只对rebuilt编译并在Java8/23运行。验收：实际10命令全部exit0，4次134B六case oracle逐字一致，return字段3000→99仍返回3000、清理恰一次、原NPE与cleanup覆盖顺序正确；无原class/JAR混入，无生成文本修补/删方法。另保留原完整FY/FX实际重编结果，loopless恢复不伪称其它锚完成。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "line": 15
+    },
+    {
+      "id": "6",
+      "description": "3.2 完成fmt/CI原参数Clippy/指纹/两版OpenSpec strict、MSRV及最终产品自身CI全门禁独审。验收：前片交付后主线重绑定，真实非空命令与日志、full source/CLI/CI exact head一致；默认stack、5GiB free/1GiB target磁盘门及exact clean；双seed完整workspace、workflow全部实际通过，保留失败/skipped，不借a89或前片CI。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "line": 16
+    }
+  ],
+  "taskTrackingConfigured": true,
+  "state": "all_done",
+  "instruction": "All tracked tasks are complete.\nReview or verify the change as appropriate before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde",
+    "source": "nearest"
+  }
+}

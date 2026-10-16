@@ -1,0 +1,161 @@
+{
+  "schema": "independent-conditional-return-finally-recovery-evidence-v3-audit-v1",
+  "status": "pass",
+  "archive": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/conditional-return-finally-recovery-evidence-v3/capture.tar.gz",
+  "bytes": 7847819,
+  "sha256": "cf86e81f36224e1a2b8e66862562f4430acf718e7fde670d06788f44796bebf9",
+  "manifest_sha256": "273924ed48cac9a262751756432005a08db044f5a7b6fe1ad3104a398190d780",
+  "payloads": 233,
+  "members": 234,
+  "phase_summary": [
+    {
+      "name": "first-compile",
+      "status": "failed",
+      "commands": 2,
+      "expected": 2,
+      "raw_count": 4,
+      "receipt_count_match": true
+    },
+    {
+      "name": "second-native",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 5,
+      "expected": 5,
+      "raw_count": 10,
+      "receipt_count_match": true
+    },
+    {
+      "name": "wip-replay",
+      "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+      "commands": 10,
+      "expected": 10,
+      "raw_count": 20,
+      "receipt_count_match": true
+    },
+    {
+      "name": "negative-compat",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 4,
+      "expected": 4,
+      "raw_count": 8,
+      "receipt_count_match": true
+    },
+    {
+      "name": "final-native",
+      "status": "expected_command_outcomes_observed_pending_independent_acceptance",
+      "commands": 15,
+      "expected": 15,
+      "raw_count": 30,
+      "receipt_count_match": true
+    },
+    {
+      "name": "final-replay",
+      "status": "captured_ten_command_complete_generated_source_and_rebuilt_oracle_success",
+      "commands": 10,
+      "expected": 10,
+      "raw_count": 20,
+      "receipt_count_match": true
+    },
+    {
+      "name": "first-FYFX-screen",
+      "status": "failed_raw_preserved",
+      "commands": 1,
+      "expected": 1,
+      "raw_count": 2,
+      "receipt_count_match": true
+    },
+    {
+      "name": "final-FYFX-screen",
+      "status": "captured_current_eight_command_refusal_screen",
+      "commands": 8,
+      "expected": 8,
+      "raw_count": 16,
+      "receipt_count_match": true
+    }
+  ],
+  "raw_stream_payloads_checked": 110,
+  "source_cache_pins_checked": 233,
+  "v2_delta": {
+    "added": [
+      "source/conditional-return-finally-negative-compat-source-snapshot-v1/execution.json",
+      "source/conditional-return-finally-negative-compat-source-snapshot-v1/guard.rs"
+    ],
+    "removed": [],
+    "changed_shared": [
+      "package-builder.py"
+    ],
+    "v2_capture_sha256": "47ce07081b61df32eccbb3c97a0e3a41fde53eead2721ee8e7b333206c4db112",
+    "v3_builder": {
+      "path": "package-builder.py",
+      "bytes": 6200,
+      "sha256": "eb890c8d93e910209de27b39888cf793d5c76c39f836d00cd101765e99de3276",
+      "source_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/package_conditional_return_finally_recovery_v3.py",
+      "group": "package_builder"
+    }
+  },
+  "negative_snapshot": {
+    "status": "exact_historical_negative_compat_guard_reconstructed",
+    "sha256": "c29b2c80dd351495d416b050acbcf465d2ba5622979c36ffd4f448052a608006",
+    "bytes": 721503,
+    "matches_negative_native_before_after": true,
+    "diff_from_final_guard_lines": [
+      "--- \n",
+      "+++ \n",
+      "@@ -13503,18 +13503,7 @@\n",
+      "     #[test]",
+      "     fn an_extra_cleanup_result_consumer_is_refused() {",
+      "         let class = include_bytes!(\"../../../tests/fixtures/p3-finally-proof/ExtraConsumer.class\");",
+      "-        assert!(",
+      "-            probe_descriptor(class, \"run\", b\"()I\", false, None, |facts| {",
+      "-                let row = facts.handlers[0].clone();",
+      "-                assert!(",
+      "-                    prove_conditional_return_finally(facts, &row)",
+      "-                        .unwrap()",
+      "-                        .is_none()",
+      "-                );",
+      "-            })",
+      "-            .unwrap()",
+      "-            .is_none()",
+      "-        );",
+      "+        assert!(proof(class, \"run\").is_none());",
+      "     }",
+      " ",
+      "     #[test]"
+    ],
+    "scope": "Only later ExtraConsumer test callback is reversed: final callback uses prove_conditional_return_finally in probe_descriptor; historical snapshot uses proof(class, \"run\").is_none(). Matches negative-compat native source manifest."
+  },
+  "final_binding": {
+    "head": "51de58710291cd3a3587f7040eec6f972cb26229",
+    "branch": "codex/conditional-return-finally-copies",
+    "source_rows": 4922,
+    "git_blobs_match": true,
+    "cli_sha256": "a9896b7e3011499e6536b82f14345c37f407ce9f577286e0d81e33cd65fe7668"
+  },
+  "own_ci": "pending separately; excluded from the pack",
+  "checks": {
+    "archive_size_sha_exact": true,
+    "manifest_hash_and_counts": true,
+    "234_safe_unique_regular_members": true,
+    "all_233_payloads_match_manifest": true,
+    "embedded_manifest_equals_external": true,
+    "all_external_source_pins_match": true,
+    "v2_delta_only_new_snapshot_pair_and_builder_changed": true,
+    "v2_original_archive_still_exact": true,
+    "55_commands_and_110_receipt_raws_all_present": true,
+    "stages_and_historical_failures_distinct": true,
+    "negative_snapshot_exactly_matches_negative_native_manifest": true,
+    "negative_snapshot_only_reverts_extra_consumer_callback": true,
+    "final_binding_and_native_replay_head_cli_match": true,
+    "final_cli_pin_expected": true,
+    "final_replay_10_success_stable": true,
+    "six_frozen_fixture_files_exact": true,
+    "javac23_final_source_1225B_pinned": true,
+    "javac8_final_source_1225B_pinned": true,
+    "v1_only_first_cli_assertion_failure_preserved": true,
+    "final_replay_javac23_runtime_pair_oracles_exact": true,
+    "final_replay_javac8_runtime_pair_oracles_exact": true
+  },
+  "limitations": [
+    "Read-only integrity verification; no Git, native, or CI executed."
+  ]
+}

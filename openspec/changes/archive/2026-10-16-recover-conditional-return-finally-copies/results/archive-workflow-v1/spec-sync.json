@@ -1,0 +1,14 @@
+{
+  "status": "synced_one_added_requirement_eight_scenarios_preserving_entire_old_spec_bytes",
+  "before_sha256": "c0a142cd136625332e603923a4c43dbf9155e02795e01eef0a1d5cf846bcbad7",
+  "after_sha256": "772d0ec5706fd2efd9ed51cd690b09c6881a56f597bb635e65e805edc252053e",
+  "counts_before": [
+    20,
+    132
+  ],
+  "counts_after": [
+    21,
+    140
+  ],
+  "analysis_contracts_unchanged": true
+}

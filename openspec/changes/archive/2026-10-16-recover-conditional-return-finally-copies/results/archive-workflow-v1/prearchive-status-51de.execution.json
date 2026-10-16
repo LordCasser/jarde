@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/home/lordcasser/.local/bin/openspec",
+    "status",
+    "--change",
+    "recover-conditional-return-finally-copies",
+    "--json"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/conditional-return-finally-openspec-root-v1/prearchive-status-51de.stdout.raw",
+      "bytes": 3644,
+      "sha256": "ce5a865f49c65a9d31e35123cc6f38950c8a4b8102102fe518fcc7363b8abfcd"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/conditional-return-finally-openspec-root-v1/prearchive-status-51de.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

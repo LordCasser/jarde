@@ -1,0 +1,10 @@
+{
+  "status": "root_reopened_verified_all_payloads",
+  "bytes": 7847819,
+  "sha256": "cf86e81f36224e1a2b8e66862562f4430acf718e7fde670d06788f44796bebf9",
+  "payload_count": 233,
+  "member_count": 234,
+  "commands": 55,
+  "command_raw_streams": 110,
+  "manifest_sha256": "273924ed48cac9a262751756432005a08db044f5a7b6fe1ad3104a398190d780"
+}

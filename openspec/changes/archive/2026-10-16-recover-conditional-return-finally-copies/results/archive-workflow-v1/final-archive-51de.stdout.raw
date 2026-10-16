@@ -1,0 +1,12 @@
+{
+  "archive": {
+    "change": "recover-conditional-return-finally-copies",
+    "archivedAs": "2026-10-16-recover-conditional-return-finally-copies",
+    "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/archive/2026-10-16-recover-conditional-return-finally-copies",
+    "specsUpdated": false
+  },
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde",
+    "source": "nearest"
+  }
+}

@@ -2,7 +2,7 @@
 
 ## Why
 
-当前 a89 产品的 `FY.loopless([I)I` 仍以 `jre_guard_finally_copy` 拒绝；其一个受保护条件体有保存值返回与正常落穿两条出口，分别执行相同清理，另有异常清理副本。新独立完整类的实际12命令对照已确认：四次原类Java8/23 driver行为一致，但两份完整生成源码均缺return而不能重编，现有直线finally证明未覆盖这三副本形态。
+立项时 a89 产品的 `FY.loopless([I)I` 仍以 `jre_guard_finally_copy` 拒绝；其一个受保护条件体有保存值返回与正常落穿两条出口，分别执行相同清理，另有异常清理副本。新独立完整类的实际12命令对照已确认：四次原类Java8/23 driver行为一致，但两份完整生成源码均缺return而不能重编，现有直线finally证明未覆盖这三副本形态。
 
 ## What Changes
 
@@ -12,7 +12,7 @@
 
 本片是 `recover-return-through-effectful-finally` 的有界子项，不替代其FY.noCall与FX.finReturn剩余目标。旧父计划把所有位置归为local-crosses及把FO当finally缺口的描述已经过时：FO静态prefix是独立缺口，a89新CLI的完整源码重编与运行已通过，父计划本身仍未完成。本片不修改旧父规划或其任务状态，也不把新独立类误称原FY同字节。
 
-前置状态：从实际源码 a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b 建独立工作树；静态prefix片自身CI和归档尚在完成中。本片可先规划/冻结红基线，最终产品交付须在前片完成归档后重绑定主线。当前没有新恢复实现或rebuilt运行成功。
+立项前置状态（历史）：从实际源码 a89d423c9a6e5d62ceb3f8185a818ebe3d67a17b 建独立工作树；静态prefix片自身CI和归档尚在完成中。本片可先规划/冻结红基线，最终产品交付须在前片完成归档后重绑定主线。该段记录立项前置，非当前完成状态。当前实施及验收状态以tasks.md和results/fixed-recovery-v1为准。
 
 非目标：循环、多个返回竞争、嵌套/交叉handler、任意副本图等价、清理自身分支/非局部出口、跨请求求解器、全局类型/名称解析；不增加CF11/CF18/71/612等全局覆盖数字，不改变原Java/driver/oracle或生成源码来过门。
 

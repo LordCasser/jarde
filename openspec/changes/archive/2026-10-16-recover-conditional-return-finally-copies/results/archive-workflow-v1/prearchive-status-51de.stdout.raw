@@ -1,0 +1,104 @@
+{
+  "changeName": "recover-conditional-return-finally-copies",
+  "schemaName": "spec-driven",
+  "planningHome": {
+    "kind": "repo",
+    "root": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde",
+    "changesDir": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes",
+    "defaultSchema": "spec-driven"
+  },
+  "changeRoot": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies",
+  "artifactPaths": {
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/proposal.md",
+      "existingOutputPaths": [
+        "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/specs/**/*.md",
+      "existingOutputPaths": [
+        "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/specs/java8-recovery/spec.md"
+      ]
+    },
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/design.md",
+      "existingOutputPaths": [
+        "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/design.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md",
+      "existingOutputPaths": [
+        "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/openspec/changes/recover-conditional-return-finally-copies/tasks.md"
+      ]
+    }
+  },
+  "isPlanningComplete": true,
+  "isComplete": true,
+  "applyRequires": [
+    "tasks"
+  ],
+  "nextSteps": [
+    "All planning artifacts are complete. Run openspec instructions apply --change \"recover-conditional-return-finally-copies\" --json to inspect implementation progress."
+  ],
+  "actionContext": {
+    "mode": "repo-local",
+    "sourceOfTruth": "repo",
+    "planningArtifacts": [
+      "proposal",
+      "specs",
+      "design",
+      "tasks"
+    ],
+    "linkedContext": [],
+    "allowedEditRoots": [
+      "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde"
+    ],
+    "requiresAffectedAreaSelection": false,
+    "constraints": [
+      "Repo-local change artifacts and implementation edits are scoped to this project."
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "proposal",
+      "outputPath": "proposal.md",
+      "status": "done",
+      "requires": []
+    },
+    {
+      "id": "specs",
+      "outputPath": "specs/**/*.md",
+      "status": "done",
+      "requires": [
+        "proposal"
+      ]
+    },
+    {
+      "id": "design",
+      "outputPath": "design.md",
+      "status": "done",
+      "requires": [
+        "proposal"
+      ]
+    },
+    {
+      "id": "tasks",
+      "outputPath": "tasks.md",
+      "status": "done",
+      "requires": [
+        "specs",
+        "design"
+      ]
+    }
+  ],
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde",
+    "source": "nearest"
+  }
+}

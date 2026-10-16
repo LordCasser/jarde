@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--json"
+  ],
+  "cwd": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde",
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/conditional-return-finally-openspec-root-v1/final-postarchive-strict-111.stdout.raw",
+      "bytes": 55862,
+      "sha256": "c36f9a1ce5a6d9ff567fa5fb8b524ea6ee4e79fc00b3a0289f45d0be9e7b5fcb"
+    },
+    "stderr": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/conditional-return-finally-openspec-root-v1/final-postarchive-strict-111.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

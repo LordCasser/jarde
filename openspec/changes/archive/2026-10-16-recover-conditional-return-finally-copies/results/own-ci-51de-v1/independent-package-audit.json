@@ -1,0 +1,78 @@
+{
+  "actual_ci": {
+    "conclusion": "success",
+    "head": "51de58710291cd3a3587f7040eec6f972cb26229",
+    "named_gates": 146,
+    "per_seed": [
+      {
+        "failed": 0,
+        "ignored": 98,
+        "passed": 3656,
+        "seed": "5350648285461741569",
+        "summaries": 371
+      },
+      {
+        "failed": 0,
+        "ignored": 98,
+        "passed": 3656,
+        "seed": "5350648285461741570",
+        "summaries": 371
+      }
+    ],
+    "run_id": 38863891656,
+    "strict_items": 364
+  },
+  "archive": {
+    "bytes": 2839608,
+    "members_including_manifest": 268,
+    "payloads": 267,
+    "sha256": "1d367b2808fb5aa4d7d33b0abce730c4a7e078dcb774bfb2f00adbc1e90dc6e8"
+  },
+  "group_counts": {
+    "actual_capture_dispatch": 5,
+    "actual_exact_head_ci_acceptance": 1,
+    "actual_source_binding": 3,
+    "earlier_auditor_rejection_not_product_failure": 13,
+    "earlier_executed_auditor": 2,
+    "earlier_transport_dispatch": 5,
+    "earlier_transport_failure_not_ci_failure": 7,
+    "executed_capture_runner": 1,
+    "executed_root_auditor": 1,
+    "executed_transport_failure_runner": 1,
+    "independent_ci_audit": 10,
+    "original_terminal_capture": 212,
+    "package_builder": 1,
+    "prepared_and_actual_root_audit": 4,
+    "prior_build_reference_not_this_ci_execution": 1
+  },
+  "lineage": {
+    "collector_v1": "preserved API transport failure before terminal capture; not CI failure",
+    "independent_v2": "preserved auditor path mistake; v3 accepted",
+    "independent_v3": "accepted independent CI audit, 1894 checks and 0 errors",
+    "root_v1_v2": "preserved audit range/extraction rejections; not CI failures",
+    "root_v3": "accepted product CI audit, 793 checks and 0 errors",
+    "terminal_v2": "105 successful observations; no transport failures"
+  },
+  "schema": "conditional-return-finally-51de-own-ci-independent-package-audit-v1",
+  "scope": "Package integrity and historical exact-head own-CI evidence only.",
+  "source_binding": {
+    "all_git_tree_and_worktree_bytes_sha_git_blob_match": true,
+    "frozen_cli_mode": "0555",
+    "frozen_cli_sha256": "a9896b7e3011499e6536b82f14345c37f407ce9f577286e0d81e33cd65fe7668",
+    "source_count": 4922
+  },
+  "status": "accepted_exact_package_integrity_and_lineage",
+  "verified": {
+    "api_raw_streams": 210,
+    "frozen_cli_bytes": 59753256,
+    "independent_acceptance_checks": 1894,
+    "payload_member_manifest_bytes_sha_and_source": 267,
+    "root_acceptance_checks": 793,
+    "source_rows_vs_tree_and_worktree": 4922,
+    "successful_jobs": "4/4",
+    "terminal_api_observations": 105,
+    "terminal_transport_failures": 0,
+    "workflow_steps": 52,
+    "zip_members": 60
+  }
+}
