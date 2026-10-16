@@ -16,4 +16,4 @@ Plan复用Finally/SavedReturn：lead12..17在try外，body17..30，normal cleanu
 
 最终冻结CLI再次独立运行完整类10命令与父screen24命令，分别20/48份raw全0，源码及工具输入前后完全一致；两份1706B完整源码原样javac8/javac23重编、未改driver rebuilt-only编译、四次Java8/23运行217B逐字匹配。父6完整类重编0、12 main逐字匹配，FX finContinue/finBreak的handler45 fallback仍未关闭。最终合并独审48e1e2276c03c390990742dc73f7dd7841f9db0d504eb7bc6519e2289cf59e34通过12项检查，任务3.1已完成。
 
-产品提交464543594b6fad00c67be016ffa5e21d18bc1591通过实际Git ls-tree与每行blob SHA1/mode将4936行最终native源码和冻结CLI绑定。该提交自身push CI38913819742运行中，任务3.2保留待办；本地成功不替代双seed完整自身CI。最终便携包将保留首次proof失败、公共v1前置失败与v2 entry缺口，不能将这些历史失败写成重编或重建运行成功。
+产品提交464543594b6fad00c67be016ffa5e21d18bc1591通过实际Git ls-tree与每行blob SHA1/mode将4936行最终native源码和冻结CLI绑定。该提交自身push CI38913819742已终态成功；根审953 checks/0 errors，独审2863 checks/0 errors，149 API observations/298 raw、4 jobs/52 steps、双seed各373 summaries/3670 passed/0 failed/98 ignored、160 primary每target-FQN唯一ok、6 JDK命令9项控制、单实际strict364均闭合。任务3.2完成，独审SHA-256 5f58b2413db431aa8475f46984e09fbd17592599b46f95369ff48e7ffc715a63；CLI/source/产品head绑定未变。最终便携包将保留首次proof失败、公共v1前置失败与v2 entry缺口，不能将这些历史失败写成重编或重建运行成功。
