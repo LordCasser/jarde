@@ -13,7 +13,7 @@
 
 #### Scenario: A call result is captured before cleanup
 
-- **WHEN** try内调用可能抛异常，其正常int结果在清理前保存并在清理后返回
+- **WHEN** try内具有may-throw效果的调用正常完成，其int结果在清理前保存并在清理后返回
 - **THEN** 调用、保存与返回 SHALL 保持同一值链和原求值位置，不能重执行调用、在清理后改读另一个值或把调用移出try；固定纯c0的运行结果不能单独证明其调用次数和时点
 
 #### Scenario: All cleanup operations keep their order

@@ -12535,6 +12535,58 @@ mod finally_copy_tests {
     }
 
     #[test]
+    fn call_return_baseline_probes_actual_call_cleanup_and_loop_scope() {
+        for class in [
+            &include_bytes!(
+                "../../../tests/fixtures/recover-call-return-loop-finally/v8/CallReturnFinally.class"
+            )[..],
+            &include_bytes!(
+                "../../../tests/fixtures/recover-call-return-loop-finally/v8-javac8/CallReturnFinally.class"
+            )[..],
+        ] {
+            let old = probe_descriptor(class, "finReturn", b"([I)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete());
+                assert_eq!(facts.order.len(), 60);
+                assert_eq!(facts.canonical.blocks().len(), 7);
+                assert_eq!(facts.canonical.edges().len(), 8);
+                assert_eq!(facts.handlers.len(), 2);
+                assert_eq!(
+                    (
+                        facts.handlers[0].start_bci,
+                        facts.handlers[0].end_bci,
+                        facts.handlers[0].handler_bci
+                    ),
+                    (17, 30, 88)
+                );
+                let cleanup = facts.bcis((90, 116));
+                assert_eq!(cleanup.len(), 10);
+                assert!(cleanup_sequence(facts, &cleanup, false).is_none());
+                let call = facts
+                    .ssa
+                    .effects()
+                    .instructions()
+                    .iter()
+                    .find(|effect| effect.bci() == 25)
+                    .unwrap();
+                assert!(call.may_throw());
+                assert_eq!(call.handlers(), &[0]);
+                for effect in facts.ssa.effects().instructions().iter().filter(|effect| {
+                    (30..56).contains(&effect.bci())
+                        || (59..85).contains(&effect.bci())
+                        || (90..116).contains(&effect.bci())
+                }) {
+                    assert!(effect.handlers().is_empty());
+                }
+            })
+            .unwrap();
+            assert!(
+                old.is_none(),
+                "the straight-copy proof does not certify this loop/call cleanup"
+            );
+        }
+    }
+
+    #[test]
     fn no_call_baseline_probes_real_increment_cleanup_and_loop_boundaries() {
         for (leg, class) in [
             (
