@@ -1,0 +1,776 @@
+{
+  "status": "accepted_staged_only_selected_openspec_archive_and_evidence",
+  "files": 116,
+  "counts": {
+    "R100": 65,
+    "A": 49,
+    "R075": 1,
+    "M": 1
+  },
+  "rows": [
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/.openspec.yaml",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/.openspec.yaml"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/design.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/design.md"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/proposal.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/proposal.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/analysis-contracts-before.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/apply-final.execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/ci-strict.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/apply-final.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/apply-final.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/archive-execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/archive-instructions.execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-design.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/archive-instructions.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/archive-instructions.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-proposal.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/archive.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/archive.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/evidence.manifest.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/finish_archive.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/java8-recovery-before.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/main-specs-before.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-specs.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/postarchive-ci-strict.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/postarchive-ci-strict.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/local-strict.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/postarchive-local-strict.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/postarchive-local-strict.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-tasks.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/prearchive-ci-strict.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/prearchive-ci-strict.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/prearchive-local-strict.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/prearchive-local-strict.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/product-source-parity.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/record_cli.py"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/specs-instructions.execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-final.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/specs-instructions.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/specs-instructions.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/status.execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/validate-change.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/status.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-final.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/status.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/sync-receipt.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/validate-main.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/validate-main.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/validate-main.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/closure-v1/workflow-context-review.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/README.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/README.md"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/capture.tar.gz",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/independent-failure-audit.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/independent-failure-audit.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/package-execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/failed-own-ci-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/README.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/README.md"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/capture.tar.gz",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/independent-audit-v1.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/independent-audit-v1.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/package-execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/root-acceptance.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/fingerprint-maintenance-v1/root-acceptance.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/README.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/README.md"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/capture.tar.gz",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/evidence.manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/evidence.manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/independent-focused-audit.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/independent-focused-audit.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/independent-replay-audit.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/independent-replay-audit.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/package-execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/local-final-v1/root-replay-acceptance.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/local-final-v1/root-replay-acceptance.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/old-native-v1/README.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/old-native-v1/README.md"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/old-native-v1/capture.tar.gz",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/old-native-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/old-native-v1/evidence.manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/old-native-v1/evidence.manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/old-native-v1/independent-native-audit.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/old-native-v1/independent-native-audit.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/old-native-v1/manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/old-native-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/old-native-v1/package-execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/old-native-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/adapter-failures-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/adapter-failures-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/adapter-failures-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/capture-interruption-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/capture-interruption-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/capture-interruption-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/evidence.manifest.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/independent-package-audit.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/lineage-gap-resolution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/README.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/README.md"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/ci-strict.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/ci-strict.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/ci-strict.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/evidence.manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/evidence.manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/independent-plan-review-v1.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/independent-plan-review-v1.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-design.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-design.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-design.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-design.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-design.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-proposal.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-proposal.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-proposal.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-proposal.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-proposal.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-specs.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-specs.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-specs.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-specs.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-specs.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-tasks.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-tasks.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-tasks.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-tasks.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/instructions-tasks.stdout.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/local-strict.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/local-strict.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/local-strict.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/plan-only-source-parity.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/plan-only-source-parity.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-final.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-final.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-final.stderr.raw"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-final.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-summary.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-summary.execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-summary.stderr.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-summary.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-summary.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/status-summary.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/strict-execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/strict-execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/validate-change.execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/validate-change.execution.json"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/validate-change.stderr.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/planning-v1/validate-change.stdout.raw",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/planning-v1/validate-change.stdout.raw"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/README.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/repro-v1/README.md"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/capture.tar.gz",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/repro-v1/capture.tar.gz"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/evidence.manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/repro-v1/evidence.manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/independent-package-audit.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/repro-v1/independent-package-audit.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/manifest.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/repro-v1/manifest.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/results/repro-v1/package-execution.json",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/repro-v1/package-execution.json"
+      ]
+    },
+    {
+      "status": "R100",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/specs/java8-recovery/spec.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/specs/java8-recovery/spec.md"
+      ]
+    },
+    {
+      "status": "R075",
+      "paths": [
+        "openspec/changes/preserve-reference-overload-dependency-proof-stops/tasks.md",
+        "openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/tasks.md"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "openspec/specs/java8-recovery/spec.md"
+      ]
+    }
+  ],
+  "compiled_source_inputs_unchanged": 4907,
+  "target_absent": true
+}

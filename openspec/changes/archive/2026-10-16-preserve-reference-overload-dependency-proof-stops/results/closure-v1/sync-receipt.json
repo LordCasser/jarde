@@ -1,0 +1,35 @@
+{
+  "status": "synced_and_all_selected_delta_rechecked_no_remaining_operations",
+  "change": "preserve-reference-overload-dependency-proof-stops",
+  "planning_home": {
+    "kind": "repo",
+    "root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "changesDir": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes",
+    "defaultSchema": "spec-driven"
+  },
+  "delta_paths": [
+    "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/preserve-reference-overload-dependency-proof-stops/specs/java8-recovery/spec.md"
+  ],
+  "specs_instructions_snapshot_sha256": "9817e60257f2cc1d4fc521e918c27888811f847060174e8a114f6058475aea28",
+  "rules_applied_to_main_content_only": [
+    "Use observable SHALL/MUST requirements and testable WHEN/THEN scenarios.",
+    "Keep dependencies and implementation choices in design, not behavioral specs."
+  ],
+  "before_bytes": 66674,
+  "before_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+  "after_bytes": 70436,
+  "after_sha256": "a652db934a90c261ca0abaf6039c142d7019df05a97520cc2705479dbc27a978",
+  "delta_sha256": "29e76acc037d7aa0a23516353f71cde9bee461af3b2ae20dc1d0b1d6eaf4f27a",
+  "added_block_sha256": "4316243c0a2a42bf08f061a3ff4045b4e3cce2916a140ae25c2186722ed576bd",
+  "old_prefix_byte_identical": true,
+  "requirements": [
+    18,
+    19
+  ],
+  "scenarios": [
+    118,
+    125
+  ],
+  "analysis_contracts_unchanged": true,
+  "all_selected_deltas_fully_present": true
+}

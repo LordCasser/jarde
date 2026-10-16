@@ -1,0 +1,36 @@
+{
+  "status": "resolved_by_exact_independent_failure_annex",
+  "original_review": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops/results/own-ci-v1/independent-package-audit.json",
+    "bytes": 9153,
+    "sha256": "5c70f74aa64f5e5a17049bcd1ef8365884b0de2c4bae988aa2487f3209452c05"
+  },
+  "original_success_package_unchanged": true,
+  "original_gap": "independent adapter failures v3-v5 absent from original v4 package",
+  "resolution": "all15 original auditor failure artifacts match independent package-audit pins and safe reopened annex; capture interruption/raw/parser failure separately annexed",
+  "annexes": [
+    {
+      "kind": "adapter-failures-v1",
+      "archive": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-independent-adapter-failures-v1/reference-overload-independent-adapter-failures-v1.tar.gz",
+        "bytes": 81493,
+        "sha256": "a8969808650f658ae9fb6c4286c2bd74064898035959a96949a6c4370ecb441b"
+      },
+      "payload_files": 15,
+      "tar_members": 16
+    },
+    {
+      "kind": "capture-interruption-v1",
+      "archive": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-capture-interruption-v1/capture.tar.gz",
+        "bytes": 17630,
+        "sha256": "d6133c77ddabd63266538d21ff2713e81b371545fb658190f4b192fa79013e61"
+      },
+      "payload_files": 65,
+      "tar_members": 66
+    }
+  ],
+  "product_ci_head": "82611166fc0b8a2e3a8d925e7a3e9f12738c0f87",
+  "run_id": 38721617088,
+  "no_ci_rerun": true
+}

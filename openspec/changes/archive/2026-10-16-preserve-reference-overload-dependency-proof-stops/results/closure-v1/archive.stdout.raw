@@ -1,0 +1,12 @@
+{
+  "archive": {
+    "change": "preserve-reference-overload-dependency-proof-stops",
+    "archivedAs": "2026-10-16-preserve-reference-overload-dependency-proof-stops",
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops",
+    "specsUpdated": false
+  },
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "source": "nearest"
+  }
+}

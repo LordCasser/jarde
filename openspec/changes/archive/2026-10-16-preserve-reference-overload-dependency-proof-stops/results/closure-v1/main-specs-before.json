@@ -1,0 +1,14 @@
+{
+  "openspec/specs/java8-recovery/spec.md": {
+    "bytes": 66674,
+    "sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+    "requirements": 18,
+    "scenarios": 118
+  },
+  "openspec/specs/analysis-contracts/spec.md": {
+    "bytes": 22886,
+    "sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684",
+    "requirements": 12,
+    "scenarios": 46
+  }
+}

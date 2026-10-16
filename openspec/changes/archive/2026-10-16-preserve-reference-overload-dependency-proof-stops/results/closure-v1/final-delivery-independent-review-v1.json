@@ -1,0 +1,104 @@
+{
+  "schema": "reference-overload-archive-final-delivery-independent-review-v1",
+  "status": "accepted_no_blockers",
+  "scope": "Read-only delivery audit; no Git, OpenSpec, CLI, JDK, native toolchain, or repository writes.",
+  "archive": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/archive/2026-10-16-preserve-reference-overload-dependency-proof-stops",
+    "exists": true,
+    "active_change_path_absent": true,
+    "tasks_checked": 6,
+    "tasks_total": 6
+  },
+  "main_spec": {
+    "path": "openspec/specs/java8-recovery/spec.md",
+    "prior_prefix_bytes": 66674,
+    "prefix_exact": true,
+    "prior_prefix_sha256": "d111f79c6e51c1158724937a386a505aeb35482532c938ae69621d5e5d265bfd",
+    "current_bytes": 70436,
+    "requirements": 19,
+    "scenarios": 125,
+    "added_delta_claim": "1 requirement / 7 scenarios; main moved 18/118 to 19/125"
+  },
+  "analysis_contracts": {
+    "path": "openspec/specs/analysis-contracts/spec.md",
+    "bytes": 22886,
+    "unchanged_exact": true,
+    "sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684"
+  },
+  "closure": {
+    "status": "accepted_archive_after_verified_agent_sync",
+    "archive_command_exit": 0,
+    "strict_pre_items": 365,
+    "strict_post_items": 364,
+    "post_versions": [
+      "1.11",
+      "1.14"
+    ],
+    "source_parity": "accepted_working_and_index_product_source_parity_after_archive",
+    "product_ci_head": "82611166fc0b8a2e3a8d925e7a3e9f12738c0f87",
+    "product_sources": 4907,
+    "all_source_bytes_modes_and_git_blobs_match": true,
+    "frozen_cli_sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "target_absent": true
+  },
+  "own_ci": {
+    "readme_counts": "4 jobs/52 steps; two seeds 369 suites, 3642 pass/0 fail/98 ignored each; 132 gates each; strict 365; 7 named JDK/full-class regressions (as specified, not all 9 JDKs); EM11 complete-source and six runtime comparisons explicitly reused, not rerun.",
+    "product_head": "82611166fc0b8a2e3a8d925e7a3e9f12738c0f87",
+    "docs_head_not_claimed_as_ci_head": true,
+    "old_review_gap": {
+      "original_review_checks": 277,
+      "resolution_status": "resolved_by_exact_independent_failure_annex",
+      "original_success_package_unchanged": true,
+      "annexes": [
+        {
+          "kind": "adapter-failures-v1",
+          "archive": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-independent-adapter-failures-v1/reference-overload-independent-adapter-failures-v1.tar.gz",
+            "bytes": 81493,
+            "sha256": "a8969808650f658ae9fb6c4286c2bd74064898035959a96949a6c4370ecb441b"
+          },
+          "payload_files": 15,
+          "tar_members": 16
+        },
+        {
+          "kind": "capture-interruption-v1",
+          "archive": {
+            "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-capture-interruption-v1/capture.tar.gz",
+            "bytes": 17630,
+            "sha256": "d6133c77ddabd63266538d21ff2713e81b371545fb658190f4b192fa79013e61"
+          },
+          "payload_files": 65,
+          "tar_members": 66
+        }
+      ],
+      "annex_manifest_pins_checked": true,
+      "top_level_evidence_copies_exact": true,
+      "top_level_copy_mismatches": [],
+      "original_package_artifact_exact_matches": [
+        {
+          "destination": "capture.tar.gz",
+          "matches_original": true
+        },
+        {
+          "destination": "manifest.json",
+          "matches_original": true
+        },
+        {
+          "destination": "independent-package-audit.json",
+          "matches_original": true
+        }
+      ],
+      "preserves_original_failure_review": true
+    }
+  },
+  "other_change_state": {
+    "path": "openspec/changes/recover-static-field-prefix-return/tasks.md",
+    "checked": 0,
+    "total": 6
+  },
+  "limitations": [
+    "Did not independently rerun CI, strict validation, archive, or source builds; report relies on archived raw/receipts and exact file/hash comparisons.",
+    "Historical OpenSpec strict count changes are cited from archive README/recorded command receipts; no new strict execution."
+  ],
+  "blockers": []
+}

@@ -1,0 +1,27 @@
+{
+  "status": "read_and_applied_without_conflict",
+  "selected_change": "preserve-reference-overload-dependency-proof-stops",
+  "selected_root": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+  "artifact_paths_source": "status.stdout.raw artifactPaths.specs.existingOutputPaths only",
+  "sync_instructions_snapshot": "specs-instructions.stdout.raw",
+  "specs_instruction_lookup_count": 1,
+  "applied_content_rules": [
+    "observable SHALL/MUST behavior and WHEN/THEN scenarios",
+    "dependencies and implementation choices remain outside behavioral main spec"
+  ],
+  "archive_context": "zh-CN artifacts; smallest complete pure-Rust layered change; preserved historical evidence and physical origins; scoped comparison only, no broad product completion claim",
+  "operation_guidance": "field omitted, no additional advice",
+  "execution_authority": "Existing human goal authorization and previously authorized integration; no need to ask again. CI independent acceptance is prerequisite, not permission prompt.",
+  "date_basis": "current user environment 2026-10-16 Asia/Shanghai; archive target date16, not stale checkpoint date15",
+  "delta_summary": {
+    "java8-recovery": {
+      "added_requirements": 1,
+      "added_scenarios": 7,
+      "modified": 0,
+      "removed": 0,
+      "renamed": 0
+    },
+    "other_specs": "untouched"
+  },
+  "no_main_spec_write_yet": true
+}

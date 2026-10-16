@@ -1,0 +1,20 @@
+{
+  "status": "accepted_working_and_index_product_source_parity_after_archive",
+  "product_ci_head": "82611166fc0b8a2e3a8d925e7a3e9f12738c0f87",
+  "source_count": 4907,
+  "unique_git_blob_count": 3914,
+  "all_source_bytes_modes_and_git_blobs_match": true,
+  "actual_closure_equals_fresh_build_before_and_after": true,
+  "build_receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-maintenance-v1/run-v1/execution.json",
+    "sha256": "2e5443672b54a96b88b8903034aa38087ce2dc0a6f3764f6943ffe9eabd60cfb"
+  },
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-reference-overload-fingerprint-v2",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "mode": "0555"
+  },
+  "target_absent": true,
+  "ci_lineage": "exact8261 CI; subsequent docs/archive commit not asserted as owning that CI"
+}

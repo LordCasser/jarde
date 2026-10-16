@@ -1,0 +1,182 @@
+{
+  "schema": "reference-overload-fingerprint-own-ci-independent-package-audit-v1",
+  "status": "accepted_success_package_with_lineage_gap",
+  "checks": 277,
+  "archive": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-own-ci-evidence-package-v4/reference-overload-fingerprint-own-ci-evidence-v4.tar.gz",
+    "bytes": 2122749,
+    "sha256": "ed51f689800e7db0bf88021fb8ba04f973b7ef085656d3c8c9e09040dd1dd1c9"
+  },
+  "manifest": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-own-ci-evidence-package-v4/manifest.json",
+    "bytes": 33690,
+    "sha256": "6569b98aac46a7f171a898a68f15a71b3a6d39263b8b9272aa5a9d6601892eb1"
+  },
+  "execution": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-own-ci-evidence-package-v4/execution.json",
+    "bytes": 3318,
+    "sha256": "a1476877235123d1459d57d69918a5a00dc3ad2cd3e0f117e121b923fa394403"
+  },
+  "packager": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/reference-overload-fingerprint-own-ci-evidence-package-v4/package.py",
+    "bytes": 18104,
+    "sha256": "9980989bbd608cfd54095f2fe356d2664899f3b98f0368c0d5e76ffd261b7d94"
+  },
+  "counts": {
+    "tar_members": 38,
+    "payload_files": 37,
+    "receipt_bound_raw": 10,
+    "api_observations": 3,
+    "zip_members": 8,
+    "jobs": 4,
+    "steps": 52,
+    "root_checks": 404,
+    "independent_checks": 589,
+    "per_seed_suites_pass_fail_ignored": [
+      [
+        369,
+        3642,
+        0,
+        98
+      ],
+      [
+        369,
+        3642,
+        0,
+        98
+      ]
+    ],
+    "gates_per_seed": 132,
+    "strict_items": 365
+  },
+  "product_sha": "82611166fc0b8a2e3a8d925e7a3e9f12738c0f87",
+  "run_id": 38721617088,
+  "independent_adaptation_failure_lineage": [
+    {
+      "version": 3,
+      "status": "rejected_independent_exact_product_ci_review",
+      "checks": 603,
+      "errors_count": 303,
+      "exit_code": 1,
+      "pins": [
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit-result-v3.json",
+          "bytes": 135729,
+          "sha256": "879f9b92f148dd8f07d7d521ba3bbb75207186faaa8870f2c2ec6fabb2397cff"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-execution-v3.json",
+          "bytes": 837,
+          "sha256": "9a2ea38e03ecf5b0a4850bacf21e5fbe64f01d360edd0a8c9647a6bd3868d560"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit_own_ci_v3.py",
+          "bytes": 37206,
+          "sha256": "26a8e2be9e36e66c21ac8c6cbde87c49feeb0923ead1b08715a3304f06458b1a"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit-own-ci-v3.argv.json",
+          "bytes": 169,
+          "sha256": "237d0b466df5e82c63d23855d40d09c22ce7c797c0795314f153853a9398e9e5"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-v3.stdout.raw",
+          "bytes": 40538,
+          "sha256": "8a71399d8cda9902bd91166b7c31be846a43f6a60314d913a4bf12ee65593a24"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-v3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "in_package": false
+    },
+    {
+      "version": 4,
+      "status": "rejected_independent_exact_product_ci_review",
+      "checks": 585,
+      "errors_count": 13,
+      "exit_code": 1,
+      "pins": [
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit-result-v4.json",
+          "bytes": 93953,
+          "sha256": "4e9f668d101d93a9b7ed7e48fb90650f50e4982a12f3f0bcd795d73136291b39"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-execution-v4.json",
+          "bytes": 836,
+          "sha256": "ec8aca9b68609a4f7e62456f2b2e0435c83f40433743686a45e99a585594e9a0"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit_own_ci_v4.py",
+          "bytes": 36909,
+          "sha256": "45417015e4563013b1e28aab5f909a0fc6b2e93fbebbd077c1a1de86e5b23241"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit-own-ci-v4.argv.json",
+          "bytes": 169,
+          "sha256": "8b6140ecb0012637de1ab7cddf924adc373f42435c01fd230090bf08716fc8c9"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-v4.stdout.raw",
+          "bytes": 1001,
+          "sha256": "7b06eded621dcb03d473a2e954947a7791710cf748642aeb35af9f99363f74d8"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-v4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "in_package": false
+    },
+    {
+      "version": 5,
+      "status": "rejected_independent_exact_product_ci_review",
+      "checks": 586,
+      "errors_count": 10,
+      "exit_code": 1,
+      "pins": [
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit-result-v5.json",
+          "bytes": 94359,
+          "sha256": "12d404faad2b6009bcc17b0b4e707ae96b7fc5ffe291ede886ac03b6880a82ac"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-execution-v5.json",
+          "bytes": 835,
+          "sha256": "004b2385435b51c62c1d6f98ebf8b76205303eb992378e6262f98e0d577c52a6"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit_own_ci_v5.py",
+          "bytes": 43057,
+          "sha256": "4e536434a6a2133012a8b40cdf5e0de549d3f4808a3c508041abb7c73be84008"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-reference-overload-fingerprint-independent-audit-v1/audit-own-ci-v5.argv.json",
+          "bytes": 169,
+          "sha256": "bca6a600e3de26f905be8b78bbdf2cfc99e89b237ab05d77c93ad28c21c43e6f"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-v5.stdout.raw",
+          "bytes": 950,
+          "sha256": "4c1e3746ca43a34890730e751d846ce92c2e48b9e39ea2177f55d328ee5d3902"
+        },
+        {
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/reference-overload-fingerprint-own-ci-independent-auditor-v5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "in_package": false
+    }
+  ],
+  "finding": "Current v4 package safely preserves exact successful CI evidence and external partial-v2/root-v3 failure pins. Independent audit v3/v4/v5 rejected artifacts and wrappers remain unmodified in cache, but no pins/classification for them are present in this package or final v6 prior_audit_attempt; required lineage is incomplete. This audit records their actual pins without altering the archive. Rejections are auditor adaptation failures, not evidence of product CI failure or accepted passes. Successful CI metrics and accepted product result are unaffected by this transferability gap; a separately pinned historical-adaptation-failure annex can complete lineage without modifying v4 or rerunning CI.",
+  "scope": "Pure Python read-only cache/repo inspection and this cache report write only; no native/Git/OpenSpec/API execution. Reopened every tar payload byte against original; verified ZIP/actual API/log segments and external pins. Does not rerun tests or accept static-prefix implementation.",
+  "gaps": [
+    "Independent auditor v3/v4/v5 adaptation-failure lineage is absent from the v4 archive/manifest; original artifacts remain pinned in this audit for a separate annex."
+  ],
+  "errors": []
+}
