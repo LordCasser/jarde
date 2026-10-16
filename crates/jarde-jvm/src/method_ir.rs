@@ -488,6 +488,12 @@ impl MethodIr {
         self.facts.as_ref().map(|facts| facts.methods.as_slice())
     }
 
+    /// Attribute shells from the same class header. Absence of a header remains unknown;
+    /// callers can distinguish it from a header that declares no attributes.
+    pub fn class_attributes(&self) -> Option<&[jarde_reader::classfile::AttributeShell]> {
+        self.facts.as_ref().map(|facts| facts.attributes.as_slice())
+    }
+
     /// The field headers of the same class header, when that header travelled with this body.
     ///
     /// This is the declaration view for field rules: it borrows the already-read headers beside

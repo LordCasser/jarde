@@ -295,6 +295,11 @@ pub enum ExprKind {
         target: Box<Expr>,
         direction: PostfixDirection,
     },
+    /// A prefix update whose returned value is the proved new value of its writable target.
+    PrefixUpdate {
+        target: Box<Expr>,
+        direction: PostfixDirection,
+    },
     /// `array.length` — the length of an array, written where the value is consumed.
     ///
     /// It is a node of its own and never a field access (P3 2b): `array.length` is an operator of
@@ -573,7 +578,9 @@ fn presented_of(kind: &ExprKind) -> Option<Type> {
         ExprKind::ArrayLength { .. } => Some(Type::Int),
         // Java's postfix update expression has the type of its variable; this node is built only
         // for a proved writable target and update direction.
-        ExprKind::PostfixUpdate { target, .. } => target.presented.clone(),
+        ExprKind::PostfixUpdate { target, .. } | ExprKind::PrefixUpdate { target, .. } => {
+            target.presented.clone()
+        }
         // A creation's own shape states the array it builds: the element type and one dimension per
         // length. A node with no length at all states no array — it builds nothing — and presents
         // none rather than the bare element.

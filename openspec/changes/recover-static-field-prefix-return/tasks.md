@@ -3,7 +3,7 @@
 ## 1. 实施基线与永久反例
 
 - [x] 1.1 在reference片自身CI/归档后重绑定实际实施head、两FO原编译腿与未改原Java/driver/oracle；冻结永久fixture并同步语料指纹。验收：Code/声明/输入SHA、原四次1/100与四次60B控制、完整旧FO重编exit1及具体bump拒绝、所有raw可移交；只新增预期fixture指纹条目，不删样本或借历史CI。
-- [ ] 1.2 补入具名库/CLI与最窄证明期回归，在旧生产先证实行为红。验收：旧红因静态prefix新值缺口而非路径/工具缺失；校物理字段读写、dup新值消费者与来源，预算/取消必须在实际证明工作中观察，不以入口预取消代替；逐项保留未执行/失败边界。
+- [x] 1.2 补入具名库/CLI与最窄证明期回归，在旧生产先证实行为红。验收：旧红因静态prefix新值缺口而非路径/工具缺失；校物理字段读写、dup新值消费者与来源，预算/取消必须在实际证明工作中观察，不以入口预取消代替；逐项保留未执行/失败边界。
 
 ## 2. 局部恢复与兼容性
 
@@ -17,7 +17,7 @@
 
 ## Workflow follow-up
 
-- 当前1/6；仅1.1完成，规划与原类控制不算恢复实现。reference片的82611166自身CI已通过、正常归档并交付main fc195175；本片从该实际head开始，不能借前片CI完成本片产品门。
+- 当前2/6；1.1与1.2完成，规划与原类控制不算恢复实现。reference片的82611166自身CI已通过、正常归档并交付main fc195175；本片从该实际head开始，不能借前片CI完成本片产品门。
 - 实际验收后同步本片delta至主spec、正常archive并核实主线源码/证据绑定；不增加全局CF11/CF18/71/612覆盖主张。
 
 ## 实施进展（2026-10-16）
@@ -28,4 +28,6 @@
 - 新旧生产CLI从实际native构建冻结，59,657,968B、0555、SHA256 c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396，与此前旧CLI逐字相同；Cargo artifact的fresh实际true（此前CLI测试已构建），不称新实现或fresh=false。exact clean后target缺失。
 - 基线完整源清单4914=原4907加7fixture文件；旧native收据实际selected4902，未纳入13个fuzz种子，不能将其改称完整4915。正常指纹门实际验证全2226，独审另读13种子与基线相同；两个范围分别记录。实际source/inputs before-after与raw见results/old-baseline-v1。
 - 额外两条受控javac命令确认同名字段可遮蔽owner：合法手写原控制可编译，独立手写的++PrefixOwnerShadow.i候选报int cannot be dereferenced。此处不是Jarde生成结果，也没有改原FO/driver；实现须保护合法owner拼写，不扩全局名称解析。
-- 1.2已有永久行为红，但证明期真实预算/取消测试尚未完成，仍未勾选。生产恢复逻辑尚未修改，2.x/3.x均待实际验收。
+- 首轮新实现编译成功，但把dup误判成Other导致两证明测试失败；修为项目实际Duplicate后，证明与取消测试通过。第二轮公共库2通过/1来源断言失败：现有source-map API把owner路径与Field子节点都按primary BCI检索；初始count=1错误。保留失败，改为精确断言两文本FO/FO.i及Derived/Direct provenance，并增加全部origin的实际方法身份检查，未弱化来源约束。
+- fixed-native-v3实际10命令：proof3/0/0、public3/0/0、CLI1/0/0、void单位更新3/0/0、postfix4/0/2、compound7/0/0、条件postfix4/0/1、条件compound4/0/1，合计29通过/0失败/4默认忽略。三种独立内存class变体经实际分析获得SSA后验证非one/subtract/old-value不被新proof认领；原fixture文件未改。真实late IrItems拒付和最后accepted charge之后取消均无证书，原StopReason与已接受usage保留，未声称动态验证deadline。
+- 本片新CLI已冻结为59,699,272B、0555，SHA256 3596a781705c46e51a182d45cd7a54ea8f448cf6951e1f4ce3f07cf5a00af821；本次完整union4915项source前后相同，exact clean后无target。1.2完成，2.x/3.x仍待剩余边界、完整源码与产品门验收。
