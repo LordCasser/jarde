@@ -12269,7 +12269,10 @@ mod tests {
             // Conditional-return finally adds two independent LooplessFinally compiler legs:
             // four Code bodies, two handlers and six direct target records (26, 26, 48
             // in each method); repeated targets count per instruction, with no jsr.
-            (1177, 5263, 525, 3451, 10),
+            // NoCall loop-local finally adds two frozen classes, four Code bodies,
+            // four handlers and eight direct target records (60, 40, 54, 10 per leg).
+            // The complete independent methods retain all 62 Code bytes; no jsr.
+            (1179, 5267, 529, 3459, 10),
             "fixture population changed: re-measure these counts"
         );
     }
