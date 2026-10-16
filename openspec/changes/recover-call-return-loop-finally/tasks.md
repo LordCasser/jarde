@@ -6,8 +6,8 @@
 
 ## 2. 私有证明与恢复接线
 
-- [ ] 2.1 实现固定调用返回循环finally证明及本组测试/文档。验收：两真实class完整60指令/7块/8边/两rows、Operation/CP/effects/SSA与三份构造器清理值图闭合，正常saved链唯一，真实可分析class反例拒绝；证明收费中的晚预算/取消及真实期限检查保留原原因和用量且无证书。
-- [ ] 2.2 复用既有Finally/SavedReturn/loop_header授权与Tail完成最小接线，增加公共库/CLI与来源测试及说明。验收：lead在try外，唯一授权return23、handler仅证书owned，融合tail119..125更新一次；完整正文无bytecode fallback，全部60物理BCI绑定真实方法，失败/停止不发布部分产物。
+- [x] 2.1 实现固定调用返回循环finally证明及本组测试/文档。验收：两真实class完整60指令/7块/8边/两rows、Operation/CP/effects/SSA与三份构造器清理值图闭合，正常saved链唯一，真实可分析class反例拒绝；证明收费中的晚预算/取消及真实期限检查保留原原因和用量且无证书。
+- [x] 2.2 复用既有Finally/SavedReturn/loop_header授权与Tail完成最小接线，增加公共库/CLI与来源测试及说明。验收：lead在try外，唯一授权return23、handler仅证书owned，融合tail119..125更新一次；完整正文无bytecode fallback，全部60物理BCI绑定真实方法，失败/停止不发布部分产物。
 
 ## 3. 完整源码与产品验收
 
