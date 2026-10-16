@@ -12275,7 +12275,7 @@ mod tests {
             // Call-return loop finally adds two frozen independent classes, six Code bodies,
             // four handler rows and eight targets (125, 59, 119, 7 per compiler leg).
             // Both finReturn methods keep all 127 Code bytes; no jsr.
-            (1181, 5273, 533, 3467, 10),
+            (1183, 5279, 545, 3487, 10),
             "fixture population changed: re-measure these counts"
         );
     }
