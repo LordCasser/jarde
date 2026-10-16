@@ -90,6 +90,8 @@
 //! the statement's own start and its join has to belong to one of the shape's pieces, so a block
 //! claimed and not written cannot drop a statement.
 
+mod loop_transfer;
+
 use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{
@@ -12869,6 +12871,26 @@ mod finally_copy_tests {
         let code = ir.code().unwrap();
         let ops = Operations::of(code, ir.constant_pool());
         let view = NormalFlowView::build(canonical, &mut budget).unwrap();
+        if name == "finContinue" || name == "finBreak" {
+            let mut region_budget = Budget::new(limits());
+            let recovered = crate::region::recover(
+                canonical,
+                &view,
+                ssa,
+                &ops,
+                ir.constant_pool(),
+                &crate::concat::Plan::empty(),
+                &Sites::empty(),
+                code,
+                Some(false),
+                false,
+                &crate::pass::JAVA_8,
+                &mut region_budget,
+            )
+            .unwrap();
+            println!("{name}: actual Region result {recovered:#?}");
+        }
+
         let mut rows = code.exception_handlers.clone();
         if competing {
             let mut other = rows[0].clone();
@@ -13531,6 +13553,219 @@ mod finally_copy_tests {
             })
             .unwrap();
         }
+    }
+
+    #[test]
+    fn loop_transfer_dead_handler_proves_actual_nonthrowing_ranges_and_distinct_targets() {
+        for class in [
+            &include_bytes!(
+                "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+            )[..],
+            &include_bytes!(
+                "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8-javac8/LoopTransferFinally.class"
+            )[..],
+        ] {
+            for (name, target) in [("finContinue", 53), ("finBreak", 59)] {
+                probe_descriptor(class, name, b"([I)I", false, None, |facts| {
+                    let proof = loop_transfer::prove(facts).unwrap().expect(
+                        "all physical ranges are nonthrowing, not an absent canonical edge",
+                    );
+                    assert_eq!(proof.handler.bci(), 45);
+                    assert_eq!(proof.header.bci(), 10);
+                    assert_eq!(proof.transfer_target, target);
+                    assert_eq!(proof.elided_bcis(), [45, 47, 50, 52]);
+                    assert_eq!(
+                        facts
+                            .canonical
+                            .edges()
+                            .iter()
+                            .filter(|e| matches!(e.kind(), CanonicalEdgeKind::Exception { .. }))
+                            .count(),
+                        3
+                    );
+                })
+                .unwrap();
+            }
+        }
+    }
+
+    #[test]
+    fn loop_transfer_dead_handler_rejects_analyzed_copy_range_and_value_neighbors() {
+        let original = include_bytes!(
+            "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+        );
+        let code = [
+            0x03, 0x3c, 0x2a, 0x4d, 0x2c, 0xbe, 0x3e, 0x03, 0x36, 0x04, 0x15, 0x04, 0x1d, 0xa2,
+            0x00, 0x2e, 0x2c, 0x15, 0x04, 0x2e, 0x36, 0x05, 0x15, 0x05, 0x06, 0xa0, 0x00, 0x09,
+            0x84, 0x01, 0x64, 0xa7, 0x00, 0x16, 0x1b, 0x15, 0x05, 0x60, 0x3c, 0x84, 0x01, 0x64,
+            0xa7, 0x00, 0x0b, 0x3a, 0x06, 0x84, 0x01, 0x64, 0x19, 0x06, 0xbf, 0x84, 0x04, 0x01,
+            0xa7, 0xff, 0xd2, 0x1b, 0xac,
+        ];
+        let starts: Vec<_> = original
+            .windows(code.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == code).then_some(at))
+            .collect();
+        assert_eq!(starts.len(), 1);
+        let start = starts[0];
+        let mut controls = Vec::new();
+        for (label, at, byte) in [
+            ("transfer cleanup differs", 30, 99),
+            ("fallthrough cleanup differs", 41, 99),
+            ("exception cleanup differs", 49, 99),
+            ("loop step is two", 55, 2),
+            ("body subtracts", 37, 0x64),
+            ("protected body can divide by zero", 37, 0x6c),
+            ("condition is inverted", 25, 0x9f),
+            ("body adds induction value", 36, 4),
+            ("exception cleanup is negative", 49, 0x9c),
+        ] {
+            let mut changed = original.to_vec();
+            changed[start + at] = byte;
+            controls.push((label, changed));
+        }
+        let mut transfer = original.to_vec();
+        transfer[start + 32..start + 34].copy_from_slice(&[0, 3]);
+        controls.push(("transfer enters body arm", transfer));
+        let mut binding = original.to_vec();
+        binding[start + 46] = 0;
+        binding[start + 51] = 0;
+        controls.push(("handler overwrites array argument", binding));
+        let table = start + code.len() + 2;
+        assert_eq!(
+            &original[table..table + 24],
+            &[
+                0, 22, 0, 28, 0, 45, 0, 0, 0, 34, 0, 39, 0, 45, 0, 0, 0, 45, 0, 47, 0, 45, 0, 0
+            ]
+        );
+        for (label, at, byte) in [
+            ("array read enters protection", 1, 19),
+            ("transfer cleanup enters protection", 3, 31),
+            ("handler increment enters self protection", 19, 50),
+        ] {
+            let mut changed = original.to_vec();
+            changed[table + at] = byte;
+            controls.push((label, changed));
+        }
+        assert_eq!(controls.len(), 14);
+        for (label, class) in controls {
+            probe_descriptor(&class, "finContinue", b"([I)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete(), "{label}");
+                assert!(loop_transfer::prove(facts).unwrap().is_none(), "{label}");
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn loop_transfer_dead_handler_late_budget_cancel_and_real_deadline_publish_no_certificate() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            expire_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                    if self.cancel_at == Some(count) {
+                        self.token.cancel();
+                    }
+                    if self.expire_at == Some(count) {
+                        // Let the real operation clock expire after the final admitted charge.
+                        std::thread::sleep(std::time::Duration::from_millis(1_050));
+                    }
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+        );
+        probe_descriptor(class, "finContinue", b"([I)I", false, None, |facts| {
+            *facts.budget = Budget::new(limits());
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                expire_at: None,
+                token: CancellationToken::new(),
+            });
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(loop_transfer::prove(facts).unwrap().is_some());
+            let usage = facts.budget.usage().clone();
+            let charges = observer.charges.load(Ordering::SeqCst);
+            assert!(charges > 200);
+            let mut late_limits = limits();
+            late_limits.analysis_steps = usage.analysis_steps - 1;
+            *facts.budget = Budget::new(late_limits);
+            assert!(matches!(
+                loop_transfer::prove(facts),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(60),
+                    written: 0,
+                    ..
+                })
+            ));
+            assert_eq!(
+                facts.budget.usage().analysis_steps,
+                usage.analysis_steps - 1
+            );
+            let token = CancellationToken::new();
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: Some(charges),
+                expire_at: None,
+                token: token.clone(),
+            });
+            *facts.budget = Budget::with_cancellation_token(limits(), token);
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert_eq!(
+                loop_transfer::prove(facts).unwrap_err(),
+                StopReason::Cancelled { at: Some(60) }
+            );
+            assert_eq!(facts.budget.usage().analysis_steps, usage.analysis_steps);
+            assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+            let mut deadline_limits = limits();
+            deadline_limits.elapsed_millis = 0;
+            *facts.budget = Budget::new(deadline_limits);
+            assert!(matches!(
+                loop_transfer::prove(facts),
+                Err(StopReason::Interrupted { at: Some(0), .. })
+            ));
+            assert_eq!(facts.budget.usage().analysis_steps, 0);
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                expire_at: Some(charges),
+                token: CancellationToken::new(),
+            });
+            let mut deadline_limits = limits();
+            deadline_limits.elapsed_millis = 1_000;
+            *facts.budget = Budget::new(deadline_limits);
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(matches!(
+                loop_transfer::prove(facts),
+                Err(StopReason::Interrupted { at: Some(60), .. })
+            ));
+            assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+            assert_eq!(facts.budget.usage().analysis_steps, usage.analysis_steps);
+            assert!(facts.budget.usage().elapsed_millis >= 1_000);
+            *facts.budget = Budget::new(limits());
+        })
+        .unwrap();
     }
 
     #[test]

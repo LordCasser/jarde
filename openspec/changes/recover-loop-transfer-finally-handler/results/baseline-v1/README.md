@@ -9,3 +9,7 @@ fixture native5命令全0，reader1/privateprobe1/指纹5共7 passed/0 failed/1 
 真实四上下文（双编译器×continue/break）各35指令/effects、三rows、8块/11边；canonical异常边16→45/row0、34→45/row1、45→45/row2保留。直接throw_sites只有5/19/52且handlers=[]；三保护范围[22,28)、[34,39)、[45,47)内实际操作均nonthrowing。handler无normal前驱，caught phi的三个来源是canonical保守Caught(16,16)/(34,34)/(45,45)，不是数组load19的保护边。保存45→局部更新47→重载50→throw52及完整uses/frames均保留；31目的地continue53/break59分别核对。正常IR/源码不修改这些原事实，后续产品证明和source-map/执行仍待实现。
 
 包v1曾把exit0误写为0次编译，并把每腿2原运行误写4；v2数字修正后遗留一条旧说明。两历史包cache只作失败元数据审查留存；v3更正元数据并加入实际matrix独审，不改原收据/raw/源码/oracle。原prepared-only runner v1未执行，实际runner v2在执行前修正了head/JSON字段/timeout argv，不能混同产品失败。
+
+此前实际CLI已有RegionDetails覆盖观察，但该包未采集完整内部Region树；task1.2的直接Region探针仍保留待办，已在新一轮私有native中加入实际recover结果采集，不能把CLI摘要当作完整内部树。
+
+后续 private-proof-v1 包已补真实 Region::recover 树及其独立核对；本基线包保持冻结，不把较晚 probe 回填为早期证据。

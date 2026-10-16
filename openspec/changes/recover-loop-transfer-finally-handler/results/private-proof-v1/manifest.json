@@ -1,0 +1,176 @@
+{
+  "schema": "loop-transfer-private-proof-portable-v1",
+  "files": [
+    {
+      "path": "compiled-source/crates/jarde-java/src/guard/loop_transfer.rs",
+      "bytes": 15780,
+      "sha256": "76ed567a3e53b7703ff6dc7d3d0853e6247093fd71ac27b2b50f9b16212801f3"
+    },
+    {
+      "path": "compiled-source/crates/jarde-java/src/guard.rs",
+      "bytes": 803710,
+      "sha256": "f5d0c20b38ddbb2c62f0552982f7f4cd16946ae45818a7b7cbaf4aed5278e104"
+    },
+    {
+      "path": "first-proof-static-review-v1.json",
+      "bytes": 7893,
+      "sha256": "0ef159b5d1dad3ae97092c950e058a0a50df3e1a1831d075a9064bb1e4a02ade"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-format-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-format-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-format-v1/execution.json",
+      "bytes": 2703233,
+      "sha256": "32450f82daaf93999f7180654adb803c0ebffb69ea6228d4eb4e701c3997a609"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/commands.json",
+      "bytes": 445,
+      "sha256": "4b680c6baf7b6b477a0f2203f2d3b68f5a7457d8fdaeb8a9487d1c5e5c1f21f4"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/compiled-source/crates/jarde-java/src/guard/loop_transfer.rs",
+      "bytes": 15780,
+      "sha256": "76ed567a3e53b7703ff6dc7d3d0853e6247093fd71ac27b2b50f9b16212801f3"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "bytes": 802416,
+      "sha256": "4ea8603d405d4f68fc6560188759b2ea4af133f3f03bed69a6188a9c671bbb8b"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/execution.json",
+      "bytes": 2166145,
+      "sha256": "3cff0f3d9d866488c13c430ce5375ac69aaffb9b336a94107cde0a317124777d"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/region-projection-review-v1.json",
+      "bytes": 5427,
+      "sha256": "70e9739e7c91dc9a0846c70a20b872f9002d1f1b925a877424939be41d291a5c"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/2.stderr.raw",
+      "bytes": 2033,
+      "sha256": "318113626b280f133eb6900b17d57fb78ef64a938ae326f8c3ac415258b7cc60"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/2.stdout.raw",
+      "bytes": 291115,
+      "sha256": "f97d8487bbdd3458629bb88ba22120b3e8974ea71907106219f117429e2834a7"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "9a6978f7126dea6f41e9c2caae320dbf7badaff8a39acde58f77e0cff7c4ee96"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/command_spec.json",
+      "bytes": 289,
+      "sha256": "5cd501dd71c80cd35444f6a3bb9c85a3550bc9e1e4aaf7071d9a3360e9b481f6"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run-v1/execution.json",
+      "bytes": 2166145,
+      "sha256": "3cff0f3d9d866488c13c430ce5375ac69aaffb9b336a94107cde0a317124777d"
+    },
+    {
+      "path": "loop-transfer-finally-first-proof-native-v1/run.py",
+      "bytes": 13431,
+      "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-format-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-format-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-format-v1/execution.json",
+      "bytes": 2703245,
+      "sha256": "aa7e6c42c0383290312f83924c5a3c25ec106d170c9b9c66153830583dc9caf6"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/commands.json",
+      "bytes": 445,
+      "sha256": "4b680c6baf7b6b477a0f2203f2d3b68f5a7457d8fdaeb8a9487d1c5e5c1f21f4"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/execution.json",
+      "bytes": 2166204,
+      "sha256": "6cfe2093de926c102c0841ea758477dbbbdc13be44aa3b8b1b70236ebaecb23a"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/2.stderr.raw",
+      "bytes": 2033,
+      "sha256": "e6c9c2b4f234099f9db8ca21324063ac0279c7cc69fa3e26f237a4f5b4137f13"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/2.stdout.raw",
+      "bytes": 291115,
+      "sha256": "e87b2aa131cf1d9460ff28c31913e27af5e2aab21d8ecdaaa2c8d7f97c15812f"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/3.stderr.raw",
+      "bytes": 52,
+      "sha256": "9a6978f7126dea6f41e9c2caae320dbf7badaff8a39acde58f77e0cff7c4ee96"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/command_spec.json",
+      "bytes": 289,
+      "sha256": "5cd501dd71c80cd35444f6a3bb9c85a3550bc9e1e4aaf7071d9a3360e9b481f6"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run-v1/execution.json",
+      "bytes": 2166204,
+      "sha256": "6cfe2093de926c102c0841ea758477dbbbdc13be44aa3b8b1b70236ebaecb23a"
+    },
+    {
+      "path": "loop-transfer-finally-inflight-deadline-native-v1/run.py",
+      "bytes": 13431,
+      "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322"
+    }
+  ],
+  "boundary": "4 focused tests include 1 existing baseline and 3 new private proof tests; native first-proof 14 real-class refusals; second native adds real in-flight deadline at final charge; no public recovery integration or rebuilt-runtime result."
+}
