@@ -1,0 +1,108 @@
+{
+  "schema": "conditional-return-finally-current-implementation-static-review-v1",
+  "status": "no_static_blocker_found",
+  "scope": "Current three production source files read only; no Git/native/toolchain/repository writes. This static review does not independently claim dynamic test success or whole-parent FY/FX recovery. Prior metadata recommendation superseded by private Plan field.",
+  "findings": [],
+  "files": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 721503,
+      "sha256": "c29b2c80dd351495d416b050acbcf465d2ba5622979c36ffd4f448052a608006"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1070264,
+      "sha256": "8cb8a8d5da980317992536dc8bc090b626851917973787d80f16231521deec2c"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1925212,
+      "sha256": "93b8c094d0eac51d53fc16b114daf18d50eaeb8761f7e2c9cff47c253ff4a1b5"
+    }
+  ],
+  "checks": [
+    {
+      "area": "compatibility",
+      "sites": [
+        "guard.rs:585",
+        "guard.rs:614",
+        "guard.rs:671",
+        "guard.rs:757"
+      ],
+      "conclusion": "FinallyCompletion::SavedReturn still has only save/returns. FinallyFallthrough, Plan.finally_fallthrough and getter are crate/private. Existing Plan construction sites initialize None, and only the new proved branch carries Some. No public completion enum expansion remains."
+    },
+    {
+      "area": "candidate billing",
+      "sites": [
+        "guard.rs:2756-2798",
+        "guard.rs:15753"
+      ],
+      "conclusion": "Fixed27 instruction/opcode discriminator, one catch-all, complete reachable canonical graph and exact5block counts precede new charges. Its pre-charge loop is bounded27, with no scalable allocation. Rejected unrelated shapes continue old prove_finally_copy; accepted candidates retain charged27 instruction, decoded list, block, effect and SSA consumer scans. No refund or billing assertion change is introduced by these seams."
+    },
+    {
+      "area": "certificate physical closure",
+      "sites": [
+        "guard.rs:2799-2906",
+        "guard.rs:2980-3006",
+        "guard.rs:15794-15842"
+      ],
+      "conclusion": "Exact operation order and five physical SSA block instruction lists/successors close both protected test exits, return copy, fallthrough copy, handler and fused48/49tail. Catch-all range is exactly protected0..16, handler37; all per-instruction covering/effect handler ownership checked. No cloned/unreachable blocks admitted. pieces now cover cleanup26..34, transfer34 and48..50tail before full ownership is claimed."
+    },
+    {
+      "area": "copy and value identity",
+      "sites": [
+        "guard.rs:2907-2978",
+        "guard.rs:3020-3090"
+      ],
+      "conclusion": "Three cleanup sequences compare semantic Operation plus copy-local producer roles, not CP ordinal/display text. Producer→save→load→return, handler store→load→throw and final constant→return chains bind resolved instruction definitions, physical blocks, types, exact one SSA use plus whole27read counts. Handler stack0 entry binds actual exception. Saved static field value therefore cannot silently become current field read after cleanup."
+    },
+    {
+      "area": "typed stop and delivery",
+      "sites": [
+        "guard.rs:2982-2984",
+        "guard.rs:15753"
+      ],
+      "conclusion": "New proof uses Facts::charge and final poll at last49 before returning Some; callers propagate Result through ?. No fake Error, swallowed cancellation, refunds or partial ownership writes seen. Explained/physical-piece validation following certificate is bounded by already fixed27 instructions."
+    },
+    {
+      "area": "region boundary and ownership",
+      "sites": [
+        "region.rs:9353-9380",
+        "region.rs:9450-9474"
+      ],
+      "conclusion": "Boundary is owned cleanup entry block26 and excluded from protected expected set; frame.scope remains exact protected nodes and frame.boundary preserves the real0/5→26 exits. Child next must equal that boundary, which must remain unvisited. Exact body blocks/save_count/visited difference retained. Every Err/refusal restores previous visited. Existing outer guard commit owns full Plan set and join stays None; no fictional block48 or catch row used."
+    },
+    {
+      "area": "return order and source origin",
+      "sites": [
+        "build.rs:20968-21060",
+        "build.rs:24300-24383"
+      ],
+      "conclusion": "Existing finally_return pair drives return emission only in the block containing save15, inside the protected conditional arm. Body span excludes physical cleanup/return copies while saved local store and actual getstatic producer evaluate before Java finally. Guarded return retains physical return origin; Try derives all27 facts; trailing48/49 uses normal range origins. No unconditional return appended after finally and no reread-after-cleanup transformation seen."
+    },
+    {
+      "area": "atomic emission",
+      "sites": [
+        "build.rs:19597-19599",
+        "build.rs:20993-21079",
+        "build.rs:21116-21172",
+        "build.rs:17123-17184"
+      ],
+      "conclusion": "Existing pre-guard FinallyCheckpoint spans body/cleanup/try and new tail. self.push(try), optional old fused_return, self.range(48,50) share one closure. All Err restore; new tail Ok-with-fallback or undeclared also restores then emits whole guard fallback. Child fallback and declaration validation remain. Ledger itself is not restored/refunded. New metadata cannot produce Block continuation: proof and caller both refuse it."
+    },
+    {
+      "area": "real analyzed negative controls",
+      "sites": [
+        "guard.rs:11680-11737"
+      ],
+      "conclusion": "Tests mutate actual class bytes then require complete canonical analysis before proof None: append real String CP and alter cleanup ldc, replace saved-return iload with iconst0, replace exception aload with aconst_null, retarget protected conditional to return arm, extend catch-all to cleanup. These are SSA-analyzable semantic/consumer/edge/row neighbors, not parser-corrupt controls. This review read tests only; root test receipts establish actual execution."
+    }
+  ],
+  "nonblocking_limits": [
+    "The certificate intentionally admits the fixed27 instruction layout, two branch tests, one saved int return and fixed3instruction cleanup copies; no generic finally matcher is claimed.",
+    "No new dynamic runtime/CI verification was run by this reviewer. Parent reports private/public/P5/rebuild passes separately.",
+    "Source field owner declaration legality, overload selection and optional post-body evidence retain existing writer mechanisms; this patch introduces no resolver framework.",
+    "Current metadata setter paths are internal; all Source/Region ownership invariants still depend on constructing a Plan only from the full proof."
+  ],
+  "finished_at": "2026-10-16T06:51:42.958903+00:00"
+}

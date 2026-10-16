@@ -1,0 +1,109 @@
+{
+  "status": "measured_both_frozen_class_Code_and_rows",
+  "base_population": [
+    1175,
+    5259,
+    523,
+    3445,
+    10
+  ],
+  "actual_delta": [
+    2,
+    4,
+    2,
+    6,
+    0
+  ],
+  "expected_population": [
+    1177,
+    5263,
+    525,
+    3451,
+    10
+  ],
+  "note": "branch target records count26 twice per compiler leg; no dedup; decoder unchanged",
+  "legs": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/v8/LooplessFinally.class",
+      "bytes": 456,
+      "sha256": "d061317f86a0bdc1272589b2182e353bf31661a37be7abc9d014ba086048600c",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "code_bytes": 5,
+          "handlers": [],
+          "branch_target_records": []
+        },
+        {
+          "name": "loopless",
+          "descriptor": "([I)I",
+          "code_bytes": 50,
+          "handlers": [
+            [
+              0,
+              16,
+              37,
+              0
+            ]
+          ],
+          "branch_target_records": [
+            {
+              "bci": 2,
+              "target": 26
+            },
+            {
+              "bci": 9,
+              "target": 26
+            },
+            {
+              "bci": 34,
+              "target": 48
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/conditional-return-finally/jarde/tests/fixtures/recover-conditional-return-finally-copies/v8-javac8/LooplessFinally.class",
+      "bytes": 456,
+      "sha256": "b2c34b111b69943a3b41914dbfb122dfbfb28056fe7e92c2806623117a9f7cbc",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "code_bytes": 5,
+          "handlers": [],
+          "branch_target_records": []
+        },
+        {
+          "name": "loopless",
+          "descriptor": "([I)I",
+          "code_bytes": 50,
+          "handlers": [
+            [
+              0,
+              16,
+              37,
+              0
+            ]
+          ],
+          "branch_target_records": [
+            {
+              "bci": 2,
+              "target": 26
+            },
+            {
+              "bci": 9,
+              "target": 26
+            },
+            {
+              "bci": 34,
+              "target": 48
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

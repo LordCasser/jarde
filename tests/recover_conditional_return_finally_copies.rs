@@ -109,7 +109,8 @@ fn conditional_finally_keeps_all_three_copy_and_value_origins() {
             body.text
         );
         for bci in [
-            0, 2, 9, 12, 15, 16, 19, 21, 24, 25, 26, 29, 31, 34, 37, 38, 41, 43, 46, 47, 48, 49,
+            0, 1, 2, 5, 6, 7, 8, 9, 12, 15, 16, 19, 21, 24, 25, 26, 29, 31, 34, 37, 38, 41, 43, 46,
+            47, 48, 49,
         ] {
             assert!(
                 !body.source_map.direct_of_bci(bci).is_empty()

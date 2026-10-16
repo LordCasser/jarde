@@ -25,3 +25,6 @@
 
 - 真实双腿私有probe1/0/0已固定旧proof None与首拒row.end16!=推导copy起点25，实际canonical block26包含48/49尾部；见instrumentation.md。此测试是原拒绝/图边界控制，不算新证书成功。phase2旧CLI v2实际abab495…（与phase1 6e075不同）；另实际4命令双完整生成源码红重放，两CLI0、真javac8/23完整原样编译各1/missing return，没有rebuilt runtime。新生产proof/region尚未修改。
 - 新增fixture后还须维护reader人口原断言：前片052修正两FO类；本片两Loopless类的增量须按实际Code/handler/target独立核后维护，不能只更新FP而漏现有人口门。该项与最终自身CI一并验收，不放宽decoder约束。
+
+- 中间WIP实现已真实通过private3/public2/CLI1及10命令完整源码重编运行，双腿完整生成源码1225B，四runtime stdout134B exact；独审v2通过并核四个历史变更源快照。随后private38、P5原all-features5/0/1、六compat suites24/0/2，合67/0/3；真实负控制经class变异后实际SSA分析，未修改原fixture。任务2.x最终确认还须本轮固定Git head检查，3.1最终CLI重放仍待执行。
+- 已继承前片实际交付main7970ca890，reader人口按两新class物理Code/rows/目标记录维护1177/5263/525/3451/10，最终具名人口门待运行；主线重放仅改提交身份，旧raw/head关系仍按历史证据记录。

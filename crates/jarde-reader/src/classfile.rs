@@ -12266,7 +12266,10 @@ mod tests {
             // two classes, ten Code bodies and two handler records (evalThenFin once per leg),
             // with no branch/switch target or subroutine. The same complete decoder/member-walk
             // assertions above still validate every body; only the intended population moves.
-            (1175, 5259, 523, 3445, 10),
+            // Conditional-return finally adds two independent LooplessFinally compiler legs:
+            // four Code bodies, two handlers and six direct target records (26, 26, 48
+            // in each method); repeated targets count per instruction, with no jsr.
+            (1177, 5263, 525, 3451, 10),
             "fixture population changed: re-measure these counts"
         );
     }

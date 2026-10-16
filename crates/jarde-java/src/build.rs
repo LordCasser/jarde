@@ -21113,12 +21113,41 @@ impl Builder<'_> {
                 } else {
                     None
                 };
+                let tail = plan.finally_fallthrough().and_then(|fallthrough| {
+                    match &fallthrough.continuation {
+                        guard::Continuation::Tail { span } => Some(*span),
+                        guard::Continuation::Block(_) => None,
+                    }
+                });
+                let mark = self.stmts.len();
                 let pushed = self.push(statement).and_then(|()| {
                     if let Some(return_stmt) = fused_return {
                         self.push(return_stmt)?;
                     }
+                    if let Some(span) = tail {
+                        self.range(span)?;
+                    }
                     Ok(())
                 });
+                if pushed.is_ok()
+                    && let Some(span) = tail
+                    && self.stmts[mark..].iter().any(|statement| {
+                        statement_has_fallback(statement)
+                            || undeclared_local(statement, &self.undeclared).is_some()
+                    })
+                {
+                    let bcis = self.region_quote(region, span.0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("conditional finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the proved finally continuation cannot be stated",
+                        span.0,
+                    );
+                }
                 if pushed.is_err()
                     && let Some(checkpoint) = finally_checkpoint.take()
                 {

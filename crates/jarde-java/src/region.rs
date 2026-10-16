@@ -9350,10 +9350,31 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
+        let fallthrough = plan.finally_fallthrough();
+        let boundary = if let Some(fallthrough) = fallthrough {
+            let Some(block) = plan
+                .owned()
+                .iter()
+                .find(|block| block.bci() == fallthrough.cleanup.0)
+            else {
+                return Ok(None);
+            };
+            let Some(node) = self.view.index_of(block) else {
+                return Ok(None);
+            };
+            if expected.contains(&node) || self.visited.contains(&node) {
+                return Ok(None);
+            }
+            Some(node)
+        } else {
+            None
+        };
         let previous = self.visited.clone();
         let mut frame = outer.clone();
         frame.scope = Some(expected.clone());
-        frame.boundary = None;
+        // A conditional body stops at its proved second cleanup entry, not at the fused tail.
+        // Keeping it as the real boundary preserves both successors of each protected test.
+        frame.boundary = boundary;
         frame.own_try = None;
         let (save, nested_row) = match completion {
             crate::guard::FinallyCompletion::SavedReturn { save, .. } => (Some(*save), None),
@@ -9425,7 +9446,13 @@ impl Walker<'_> {
                 })
             })
             .count();
-        if (nested_row.is_none() && next.is_some())
+        let normal_completion_matches = if let Some(boundary) = boundary {
+            next.as_ref().and_then(|at| self.view.index_of(at)) == Some(boundary)
+                && !self.visited.contains(&boundary)
+        } else {
+            next.is_none()
+        };
+        if (nested_row.is_none() && !normal_completion_matches)
             || next.as_ref().is_some_and(|at| {
                 self.view
                     .index_of(at)
