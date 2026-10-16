@@ -226,6 +226,14 @@ fn loop_call_return_finally_json_keeps_both_returns_and_the_whole_class() {
             .find(|m| m["item"]["name"]["escaped"] == "finReturn")
             .unwrap();
         assert_eq!(method["item"]["descriptor"]["escaped"], "([I)I");
+        assert_eq!(method["outcome"]["report"]["representation"], "java");
+        assert_eq!(method["outcome"]["report"]["quality"], "structured");
+        assert!(
+            method["outcome"]["report"]["fallbacks"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
         let text = method["outcome"]["report"]["text"].as_str().unwrap();
         assert!(!text.contains("@bytecode"), "{leg}: {text}");
         assert!(

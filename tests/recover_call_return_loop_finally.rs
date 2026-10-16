@@ -65,6 +65,14 @@ fn body(source: &ClassSourceReport) -> (&ClassSourceMethod, &RecoveryReport) {
             method.outcome
         )
     };
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
     (method, report)
 }
 
