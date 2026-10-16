@@ -1,0 +1,85 @@
+{
+  "schema": "handler45-source-seams-v1",
+  "status": "read_only_source_seam_review",
+  "product_scope": "Original FX.finContinue and FX.finBreak catch-all finally handler; no implementation or execution.",
+  "source_workspace": "/home/lordcasser/.codex/worktrees/call-return-finally/jarde",
+  "findings": [
+    {
+      "path": "crates/jarde-java/src/normal_flow.rs",
+      "lines": [
+        1,
+        20,
+        190,
+        203,
+        336,
+        373,
+        527,
+        535,
+        595,
+        598
+      ],
+      "finding": "NormalFlowView intentionally excludes canonical exception edges from the plain-flow graph. Its separate unreachable-component dominator forest only admits an exception-rooted single-root component with no exception target entering below the root. This can establish dominance for the handler island, but does not itself recover Java try/finally or add a handler edge to normal CFG."
+    },
+    {
+      "path": "crates/jarde-java/src/region.rs",
+      "lines": [
+        1983,
+        2007,
+        2032,
+        2040,
+        2051,
+        2062
+      ],
+      "finding": "named_catch_rows_for_shape refuses CatchTypes not Named, and refuses any overlapping physical exception row with catch_type_index=None. It validates exact physical range and canonical-row binding for named catches. Thus the current guard-to-region proof path cannot certify FX catch-all handler rows through this helper."
+    },
+    {
+      "path": "crates/jarde-java/src/region.rs",
+      "lines": [
+        2803,
+        2834,
+        2844,
+        2860
+      ],
+      "finding": "proved_loop_catch_joins requires handler rows to have a plain successor join, no normal predecessors, and rejects rows with catch_type_index=None or empty protected spans. FX handler is a catch-all terminal rethrow sequence with no plain successor after athrow, so this loop join exemption does not match."
+    },
+    {
+      "path": "crates/jarde-java/src/fragmented_catch.rs",
+      "lines": [
+        1,
+        52,
+        63,
+        66
+      ],
+      "finding": "FragmentedCatch is specifically nested named catches in loops and rejects catch-all rows up front; it is not a reusable certificate for this handler."
+    },
+    {
+      "path": "crates/jarde-java/src/facts.rs",
+      "lines": [
+        814
+      ],
+      "finding": "Existing Operation::Throw facts explicitly describe guarded-handler rethrow as evidence for exceptional finally handling. That operation-level evidence is pertinent, but the current region proof cited above does not consume it as a standalone catch-all finally certificate."
+    },
+    {
+      "path": "crates/jarde-java/src/region/protected_prefix_loop_tests.rs",
+      "lines": [
+        323,
+        329
+      ],
+      "finding": "Existing focused regression asserts that adding a catch-all row to the named-catch shape returns None. This documents the boundary and should remain true for that named-catch helper; any new narrowly scoped finally path must not relax it globally."
+    }
+  ],
+  "candidate_minimal_leaf": {
+    "shape": "Only a handler-rooted catch-all exception component with zero ordinary predecessors; all protected-range rows mapped exactly; exception-only entry at handler; handler stores caught exception, executes modeled cleanup, reloads that same caught value, then athrows it; prove no normal edge enters handler and preserve normal inline cleanup copies independently.",
+    "scope_guard": "A dedicated certificate for this exact catch-all rethrow finally shape, separate from named-catch row ownership and loop join helpers. Do not reinterpret athrow as ordinary return/join or globally accept catch-all rows.",
+    "tests": "Keep original FX methods as fixed-source controls. Add a same-shape deterministic throwing protected-body fixture whose outer catch checks Throwable identity and cleanup count exactly once; retain nonthrowing continue and break cases to check BCI31 distinct targets. Compile all generated method text and run rebuilt-only with unmodified driver on Java 8 and 23. Original FX main oracle alone does not exercise a thrown path.",
+    "not_proven": "No actual SSA dumps for the FX methods are emitted in the final CLI raw; the classfile and CLI report give bytecode, handler provenance and normal-flow/fallback report only. Do not claim SSA value identity from this report."
+  },
+  "basis_report": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-handler45-next-debt-v1.json",
+    "sha256": "6133de697d9540673f0cab887a478f60fc607d4602ae2012bd64e6493a11afcc"
+  },
+  "limitations": [
+    "Static read only; no Cargo, CLI, JVM, Git, network or runtime execution.",
+    "The bounded candidate is an analysis/recovery target, not a product requirement or claim of existing support."
+  ]
+}

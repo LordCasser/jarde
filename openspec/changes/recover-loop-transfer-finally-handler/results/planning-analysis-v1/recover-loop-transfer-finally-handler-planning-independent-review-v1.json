@@ -1,0 +1,100 @@
+{
+  "schema": "loop-transfer-finally-handler-planning-independent-review-v1",
+  "status": "planning_coherent_with_actual_Facts_prerequisite_minor_clarifications",
+  "scope": "Read-only four-artifact planning review against retained bytecode/CLI debt analysis and current production seams. No native/Git/network/OpenSpec execution, no repository changes, no feature implementation or dynamic validation claimed. OwnCI auditor remains sealed/unexecuted.",
+  "planning_inputs": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/design.md",
+      "bytes": 5233,
+      "sha256": "ec61bcfb8431be66528b2e47310cc0ec87a7afd4de166313bccb57b8a8d0b6d3"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/proposal.md",
+      "bytes": 2199,
+      "sha256": "b5d19b290eea510485da30ecceea6e8eac53c8d7dc520bc1c9eb566d8e418fa7"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/specs/java8-recovery/spec.md",
+      "bytes": 3933,
+      "sha256": "a7847d6466b7ef7331847b9001abca326c666c9408e0f3190f44931c7277421a"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "bytes": 2467,
+      "sha256": "d339c6e76e790db74526836a63817d8413eaf060820086376cc8391ae41eaea2"
+    }
+  ],
+  "evidence_inputs": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-handler45-next-debt-v1.json",
+      "bytes": 86474,
+      "sha256": "6133de697d9540673f0cab887a478f60fc607d4602ae2012bd64e6493a11afcc"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-handler45-source-seams-v1.json",
+      "bytes": 4822,
+      "sha256": "8aa4220abc84a92c960dd074b5464c182a4011acc87938d7eee57469687581f9"
+    }
+  ],
+  "source_seams": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 790234,
+      "sha256": "80764cf0e287dee26e3e0c50cb5490e512aebeffbfa5885a26b9ccb1e2c82df6"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1072953,
+      "sha256": "5a539f33ac7b5fcc9f3d9d73d75c235f832669e0ec1d82101f3ab722af9a6e73"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-java/src/fragmented_catch.rs",
+      "bytes": 19066,
+      "sha256": "cbfe7ded051fd7a02e6a3aaea9b924d2d1160aeec039218d278a69bd51f3c3a6"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/crates/jarde-java/src/facts.rs",
+      "bytes": 58831,
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef"
+    }
+  ],
+  "tasks_unchecked": 6,
+  "blocking_findings": [],
+  "minor_findings": [
+    {
+      "id": "WAR_acceptance_wording",
+      "severity": "minor_planning_consistency",
+      "design": "design.md Decision6 requires complete original FX/FY/FO methods and real JAR/WAR load-root results.",
+      "task": "tasks.md3.1 makes WAR load-root replay conditional: 必要时WAR真实加载根复核.",
+      "recommendation": "Use one consistent bounded commitment: either require one concrete final-fixture WAR root check, or make Decision6 conditional too. This is an acceptance-definition ambiguity, not a demonstrated implementation defect."
+    },
+    {
+      "id": "dead_edge_terminology",
+      "severity": "clarification_before_implementation",
+      "design": "Decision3 permits normal representation only after all protected physical operations are nonthrowing and no reachable exception edges exist.",
+      "source": "region.rs11100..11161 explicitly preserves table/range-derived canonical exception edges that have no matching throw_site; exception_edge_takeable uses canonical.throw_sites block+handler ordinal.",
+      "recommendation": "Task1.2 should separately record raw canonical exception edges, throw-site coverage and semantically takeable reachability. Do not replace the no-throw proof with canonical-edge absence, and do not reject the optimization solely because a dead table edge remains. This does not relax the current requirement."
+    }
+  ],
+  "confirmed": [
+    "Physical-debt analysis agrees with61B/35instructions, rows[22,28)->45,[34,39)->45,[45,47)->45, handler astore6/iinc1+100/aload6/athrow at45/47/50/52, and onlyBCI31 transfer destination differing53vs59. Raw canonical/SSA/effects are explicitly not yet observed for this new leaf.",
+    "Task1.2 is an explicit gate before proof2.1: actual P2 canonical/frames/SSA/effects/Region plus both compiler legs, full rows/edges/phis/uses. It must choose the evidence-supported representation or retain fallback/revise plan; a source-code intuition is insufficient.",
+    "No-throw/elision remains a conditional alternative, not permission to mark handler visited. Exact all protected physical operations/ranges/handler caught-value chain/three cleanup copies must still close; no normal handler predecessor is only a necessary condition.",
+    "Existing named_catch_rows_for_shape1983 and proved_loop_catch_joins2803 intentionally reject catch-all; fragmented_catch63 rejects it too. The proposal/design/spec preserve those boundaries and require a dedicated narrow certificate.",
+    "Current FinallyCompletion585 supportsSavedReturn/Joined(named_row)/Void. FinallyFallthrough614 is private saved-return metadata; no exact continue/break completion carrier is pre-proved. Task1.2/2.1 must not fake named_row or savedreturn merely to reuse finally_body9310.",
+    "Existing exception_edge_takeable11118 and leaves_only_through_dead_edges11141 deliberately let normal flow continue while retaining handler in uncovered-block scan. They are evidence predicates, not standalone ownership certificates; planning correctly requires more before removing fallback.",
+    "All provided scenario numbers are consistent with source c+=x except hit3 and exactly one c+=100 per completed iteration: [3,4]204/100,[1,3,4]305/201,[3,3]200/100; empty0,[1]101,[1,2]203. Overflow/null controls remain to be frozen by actual original executions.",
+    "Arraylength5 and iaload19 are before protectedBCI22, so preservation of try-external reads is meaningful. Cleanup28/39 must remain outside the two protected body ranges, and handler binding row ends47 before cleanup47.",
+    "Negative mutated real-class controls and actual late budget/charge cancellation/deadline are required; no pre-cancel/fakeFacts exception shortcut is authorized. Fixed admission must avoid charging unrelated old corpus and preserve P5 ledger assertions.",
+    "Full physical35BCI+same method identity/source provenance, unchanged whole text/driver/rebuilt-only dualJVM, original FX/FY/FO/JADX observations and exact new-head ownCI are distinct acceptance planes; original normal-path main cannot establish exception identity.",
+    "CallReturn CI/main delivery/rebase is a final-delivery dependency; the plan claims no new implementation pass or inherited CI acceptance. All6 tasks remainunchecked."
+  ],
+  "task1_2_minimum_decision_record": [
+    "Exact canonical rows/edges including dead range edges versus actual throw_sites/effect.handlers; all protected operations must independently be nonthrowing for the dead-handler alternative.",
+    "All handlerSSA values and conservative phis/caught definitions/astore-load-athrow consumers must be recorded rather than inferred from local6 or same-class bytes; handler reachability/frame admission may differ from bytecode intuition.",
+    "Normal c live-in, branch normal updates28/39, handler47 input and loop/exit phis need path-sensitive correspondence, not forced identical SSA IDs simply because local1 is shared.",
+    "One atomic private certificate must authorize exactly the verified handler/source evidence while normal loop regions retain target31=53/59 and exactly-once index update53; no blanketvisited/unbounded normal scope/namedcatch broadening.",
+    "If choose retainedFinally, prove an existing legal completion/body/continuation representation for discontiguous protected spans; otherwise revise the narrow private carrier only after actualFacts, without public IR/AST expansion."
+  ],
+  "finished_utc": "2026-10-16T14:28:44.146416+00:00"
+}

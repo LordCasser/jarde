@@ -1,0 +1,2821 @@
+{
+  "actual_bytecode_findings": {
+    "classfile_methods_code_equal_across_javac_legs": true,
+    "dynamic_reachability_limit": "The source try body has array-element comparison and local integer updates only; these paths did not trigger the handler in the fixed main executions. The current 12 parent-screen FX runs therefore show fixed input behavior but do not dynamically establish the catch-all path.",
+    "exception_table_same_both": [
+      {
+        "catch_type_index": 0,
+        "end_bci": 28,
+        "handler_bci": 45,
+        "ordinal": 0,
+        "start_bci": 22
+      },
+      {
+        "catch_type_index": 0,
+        "end_bci": 39,
+        "handler_bci": 45,
+        "ordinal": 1,
+        "start_bci": 34
+      },
+      {
+        "catch_type_index": 0,
+        "end_bci": 47,
+        "handler_bci": 45,
+        "ordinal": 2,
+        "start_bci": 45
+      }
+    ],
+    "handler_instructions": [
+      {
+        "bci": 45,
+        "opcode": "astore",
+        "operands": [
+          6
+        ]
+      },
+      {
+        "bci": 47,
+        "opcode": "iinc",
+        "operands": [
+          1,
+          100
+        ]
+      },
+      {
+        "bci": 50,
+        "opcode": "aload",
+        "operands": [
+          6
+        ]
+      },
+      {
+        "bci": 52,
+        "opcode": "athrow",
+        "operands": []
+      }
+    ],
+    "normal_and_exception_edges": "The parsed normal-flow CFG has no normal predecessor for handler block 45. Catch-all table rows route protected body ranges [22,28) and [34,39) to handler 45; a third row [45,47) routes to the same handler. Inline nonexceptional cleanup is bci 28 (continue and break paths) and bci 39 (non-transfer path).",
+    "shared_code_shape": "61 byte Code attribute in each; same local setup, loop condition, branch, inlined finally copy/copies, and handler; the source method differs only at bci 31 transfer target (finContinue -> 53 loop update; finBreak -> 59 loop exit).",
+    "shared_prefix_suffix_bcis": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      12,
+      13,
+      16,
+      17,
+      19,
+      20,
+      22,
+      24,
+      25,
+      28,
+      31,
+      34,
+      35,
+      37,
+      38,
+      39,
+      42,
+      45,
+      47,
+      50,
+      52,
+      53,
+      56,
+      59,
+      60
+    ],
+    "ssa_evidence": "The retained class-source JSON provides complete evidence-category states, compact region records and source maps, but does not serialize raw SSA value/phi/read/write lists or exception-table rows. The actual original classfile Code attributes provide physical instructions and exception tables; the basic-block graph above is independently derived from those bytes, not a runtime SSA observation.",
+    "why_current_cli_marks_fallback": "CLI report regions cover entry block 0, loop blocks [10,16,28,34,53], and normal exit 59; block 45 is emitted as jre_region_uncovered_blocks because it is reached only through exception-table edges omitted from the normal-flow structured view. Handler instructions are still source-mapped: bci45 primary with derived BCIs 47,50,52, in a tail comment."
+  },
+  "evidence": {
+    "cli_method_reports": {
+      "javac23": {
+        "json_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-final-call-return-screen-v1/run-v1/5.stdout.raw",
+        "methods": {
+          "finBreak": {
+            "diagnostic": [
+              {
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "provenance": null,
+                "severity": "warning"
+              }
+            ],
+            "fallbacks": [
+              "jre_region_uncovered_blocks"
+            ],
+            "method_text": "// @method finBreak([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    int local1;\n    int[] local2;\n    int local3;\n    int local4;\n    local1 = 0;\n    local2 = arg0;\n    local3 = local2.length;\n    for (local4 = 0; local4 < local3; local4 = local4 + 1) {\n        int local5 = local2[local4];\n        if (local5 == 3) {\n            local1 = local1 + 100;\n            break;\n        } else {\n            local1 = local1 + local5;\n            local1 = local1 + 100;\n        }\n    }\n    return local1;\n    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n}\n",
+            "quality": "fallback",
+            "regions": [
+              {
+                "bci": 0,
+                "blocks": [
+                  0
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 10,
+                "blocks": [
+                  10,
+                  16,
+                  28,
+                  34,
+                  53
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "loop",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 59,
+                "blocks": [
+                  59
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 45,
+                "blocks": [
+                  45
+                ],
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "rule": null,
+                "structured": false
+              }
+            ],
+            "semantic_validation": "unproven",
+            "source_map_handler45_spans": [
+              {
+                "derived_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "end": 711,
+                "primary_bci": 45,
+                "start": 588,
+                "text": "    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n"
+              }
+            ],
+            "verification": "not_performed"
+          },
+          "finContinue": {
+            "diagnostic": [
+              {
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "provenance": null,
+                "severity": "warning"
+              }
+            ],
+            "fallbacks": [
+              "jre_region_uncovered_blocks"
+            ],
+            "method_text": "// @method finContinue([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    int local1;\n    int[] local2;\n    int local3;\n    int local4;\n    local1 = 0;\n    local2 = arg0;\n    local3 = local2.length;\n    for (local4 = 0; local4 < local3; local4 = local4 + 1) {\n        int local5 = local2[local4];\n        if (local5 == 3) {\n            local1 = local1 + 100;\n        } else {\n            local1 = local1 + local5;\n            local1 = local1 + 100;\n        }\n    }\n    return local1;\n    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n}\n",
+            "quality": "fallback",
+            "regions": [
+              {
+                "bci": 0,
+                "blocks": [
+                  0
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 10,
+                "blocks": [
+                  10,
+                  16,
+                  28,
+                  34,
+                  53
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "loop",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 59,
+                "blocks": [
+                  59
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 45,
+                "blocks": [
+                  45
+                ],
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "rule": null,
+                "structured": false
+              }
+            ],
+            "semantic_validation": "unproven",
+            "source_map_handler45_spans": [
+              {
+                "derived_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "end": 695,
+                "primary_bci": 45,
+                "start": 572,
+                "text": "    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n"
+              }
+            ],
+            "verification": "not_performed"
+          },
+          "finReturn": {
+            "diagnostic": [],
+            "fallbacks": [],
+            "method_text": "// @method finReturn([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    int[] local1;\n    int local2;\n    int local3;\n    local1 = arg0;\n    local2 = local1.length;\n    local3 = 0;\n    while (local3 < local2) {\n        int local4;\n        local4 = local1[local3];\n        try {\n            if (local4 == 3) {\n                int local5 = c0(local4);\n                return local5;\n            }\n        } finally {\n            java.lang.System.out.println(\"fin:\" + local4);\n        }\n        local3 = local3 + 1;\n    }\n    return -1;\n}\n",
+            "quality": "structured",
+            "regions": [
+              {
+                "bci": 0,
+                "blocks": [
+                  0
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 7,
+                "blocks": [
+                  7,
+                  12,
+                  23,
+                  59,
+                  88
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "loop",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 125,
+                "blocks": [
+                  125
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              }
+            ],
+            "semantic_validation": "unproven",
+            "source_map_handler45_spans": [
+              {
+                "derived_bcis": [
+                  47
+                ],
+                "end": 559,
+                "primary_bci": 45,
+                "start": 553,
+                "text": "local4"
+              }
+            ],
+            "verification": "not_performed"
+          }
+        }
+      },
+      "javac8": {
+        "json_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-final-call-return-screen-v1/run-v1/17.stdout.raw",
+        "methods": {
+          "finBreak": {
+            "diagnostic": [
+              {
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "provenance": null,
+                "severity": "warning"
+              }
+            ],
+            "fallbacks": [
+              "jre_region_uncovered_blocks"
+            ],
+            "method_text": "// @method finBreak([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    int local1;\n    int[] local2;\n    int local3;\n    int local4;\n    local1 = 0;\n    local2 = arg0;\n    local3 = local2.length;\n    for (local4 = 0; local4 < local3; local4 = local4 + 1) {\n        int local5 = local2[local4];\n        if (local5 == 3) {\n            local1 = local1 + 100;\n            break;\n        } else {\n            local1 = local1 + local5;\n            local1 = local1 + 100;\n        }\n    }\n    return local1;\n    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n}\n",
+            "quality": "fallback",
+            "regions": [
+              {
+                "bci": 0,
+                "blocks": [
+                  0
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 10,
+                "blocks": [
+                  10,
+                  16,
+                  28,
+                  34,
+                  53
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "loop",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 59,
+                "blocks": [
+                  59
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 45,
+                "blocks": [
+                  45
+                ],
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "rule": null,
+                "structured": false
+              }
+            ],
+            "semantic_validation": "unproven",
+            "source_map_handler45_spans": [
+              {
+                "derived_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "end": 711,
+                "primary_bci": 45,
+                "start": 588,
+                "text": "    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n"
+              }
+            ],
+            "verification": "not_performed"
+          },
+          "finContinue": {
+            "diagnostic": [
+              {
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "provenance": null,
+                "severity": "warning"
+              }
+            ],
+            "fallbacks": [
+              "jre_region_uncovered_blocks"
+            ],
+            "method_text": "// @method finContinue([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    int local1;\n    int[] local2;\n    int local3;\n    int local4;\n    local1 = 0;\n    local2 = arg0;\n    local3 = local2.length;\n    for (local4 = 0; local4 < local3; local4 = local4 + 1) {\n        int local5 = local2[local4];\n        if (local5 == 3) {\n            local1 = local1 + 100;\n        } else {\n            local1 = local1 + local5;\n            local1 = local1 + 100;\n        }\n    }\n    return local1;\n    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n}\n",
+            "quality": "fallback",
+            "regions": [
+              {
+                "bci": 0,
+                "blocks": [
+                  0
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 10,
+                "blocks": [
+                  10,
+                  16,
+                  28,
+                  34,
+                  53
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "loop",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 59,
+                "blocks": [
+                  59
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 45,
+                "blocks": [
+                  45
+                ],
+                "code": "jre_region_uncovered_blocks",
+                "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]",
+                "rule": null,
+                "structured": false
+              }
+            ],
+            "semantic_validation": "unproven",
+            "source_map_handler45_spans": [
+              {
+                "derived_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "end": 695,
+                "primary_bci": 45,
+                "start": 572,
+                "text": "    // @bytecode 45 47 50 52\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [45]\n"
+              }
+            ],
+            "verification": "not_performed"
+          },
+          "finReturn": {
+            "diagnostic": [],
+            "fallbacks": [],
+            "method_text": "// @method finReturn([I)I\n// @declaration a static method of `FX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    int[] local1;\n    int local2;\n    int local3;\n    local1 = arg0;\n    local2 = local1.length;\n    local3 = 0;\n    while (local3 < local2) {\n        int local4;\n        local4 = local1[local3];\n        try {\n            if (local4 == 3) {\n                int local5 = c0(local4);\n                return local5;\n            }\n        } finally {\n            java.lang.System.out.println(\"fin:\" + local4);\n        }\n        local3 = local3 + 1;\n    }\n    return -1;\n}\n",
+            "quality": "structured",
+            "regions": [
+              {
+                "bci": 0,
+                "blocks": [
+                  0
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 7,
+                "blocks": [
+                  7,
+                  12,
+                  23,
+                  59,
+                  88
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "loop",
+                  "version": "1"
+                },
+                "structured": true
+              },
+              {
+                "bci": 125,
+                "blocks": [
+                  125
+                ],
+                "code": null,
+                "message": null,
+                "rule": {
+                  "rule": "straight",
+                  "version": "1"
+                },
+                "structured": true
+              }
+            ],
+            "semantic_validation": "unproven",
+            "source_map_handler45_spans": [
+              {
+                "derived_bcis": [
+                  47
+                ],
+                "end": 559,
+                "primary_bci": 45,
+                "start": 553,
+                "text": "local4"
+              }
+            ],
+            "verification": "not_performed"
+          }
+        }
+      }
+    },
+    "cli_sha256": "b4a6b2ce2911165da5bb38f7a56a7d8c14d286936c97b4181e647cff7fc9c851",
+    "compiled_original_classes": {
+      "javac23": {
+        "bytes": 1277,
+        "class_major": 52,
+        "methods": {
+          "finBreak": {
+            "basic_blocks": [
+              {
+                "end_bci": 10,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 0
+              },
+              {
+                "end_bci": 16,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  10,
+                  12,
+                  13
+                ],
+                "last_opcode": "if_icmpge",
+                "normal_successors": [
+                  16,
+                  59
+                ],
+                "start_bci": 10
+              },
+              {
+                "end_bci": 22,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  16,
+                  17,
+                  19,
+                  20
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  22
+                ],
+                "start_bci": 16
+              },
+              {
+                "end_bci": 28,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  22,
+                  24,
+                  25
+                ],
+                "last_opcode": "if_icmpne",
+                "normal_successors": [
+                  28,
+                  34
+                ],
+                "start_bci": 22
+              },
+              {
+                "end_bci": 34,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  28,
+                  31
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  59
+                ],
+                "start_bci": 28
+              },
+              {
+                "end_bci": 39,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  34,
+                  35,
+                  37,
+                  38
+                ],
+                "last_opcode": "istore_1",
+                "normal_successors": [
+                  39
+                ],
+                "start_bci": 34
+              },
+              {
+                "end_bci": 45,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  39,
+                  42
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  53
+                ],
+                "start_bci": 39
+              },
+              {
+                "end_bci": 47,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  45
+                ],
+                "last_opcode": "astore",
+                "normal_successors": [
+                  47
+                ],
+                "start_bci": 45
+              },
+              {
+                "end_bci": 53,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "last_opcode": "athrow",
+                "normal_successors": [],
+                "start_bci": 47
+              },
+              {
+                "end_bci": 59,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  53,
+                  56
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 53
+              },
+              {
+                "end_bci": 61,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  59,
+                  60
+                ],
+                "last_opcode": "ireturn",
+                "normal_successors": [],
+                "start_bci": 59
+              }
+            ],
+            "code_hex": "033c2a4d2cbe3e03360415041da2002e2c15042e3605150506a00009840164a7001c1b1505603c840164a7000b3a068401641906bf840401a7ffd21bac",
+            "code_length": 61,
+            "code_sha256": "8eb6ad184bbfd82b0d83f23dcb35b8ede357fd227ef5e829606c74321201b8d4",
+            "descriptor": "([I)I",
+            "exception_table": [
+              {
+                "catch_type_index": 0,
+                "end_bci": 28,
+                "handler_bci": 45,
+                "ordinal": 0,
+                "start_bci": 22
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 39,
+                "handler_bci": 45,
+                "ordinal": 1,
+                "start_bci": 34
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 47,
+                "handler_bci": 45,
+                "ordinal": 2,
+                "start_bci": 45
+              }
+            ],
+            "instructions": [
+              {
+                "bci": 0,
+                "branch_targets": [],
+                "end_bci": 1,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 1,
+                "branch_targets": [],
+                "end_bci": 2,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 2,
+                "branch_targets": [],
+                "end_bci": 3,
+                "opcode": "aload_0",
+                "opcode_hex": "2a",
+                "operands": [
+                  0
+                ]
+              },
+              {
+                "bci": 3,
+                "branch_targets": [],
+                "end_bci": 4,
+                "opcode": "astore_2",
+                "opcode_hex": "4d",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 4,
+                "branch_targets": [],
+                "end_bci": 5,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 5,
+                "branch_targets": [],
+                "end_bci": 6,
+                "opcode": "arraylength",
+                "opcode_hex": "be",
+                "operands": []
+              },
+              {
+                "bci": 6,
+                "branch_targets": [],
+                "end_bci": 7,
+                "opcode": "istore_3",
+                "opcode_hex": "3e",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 7,
+                "branch_targets": [],
+                "end_bci": 8,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 8,
+                "branch_targets": [],
+                "end_bci": 10,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 10,
+                "branch_targets": [],
+                "end_bci": 12,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 12,
+                "branch_targets": [],
+                "end_bci": 13,
+                "opcode": "iload_3",
+                "opcode_hex": "1d",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 13,
+                "branch_targets": [
+                  59
+                ],
+                "end_bci": 16,
+                "opcode": "if_icmpge",
+                "opcode_hex": "a2",
+                "operands": [
+                  46
+                ]
+              },
+              {
+                "bci": 16,
+                "branch_targets": [],
+                "end_bci": 17,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 17,
+                "branch_targets": [],
+                "end_bci": 19,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 19,
+                "branch_targets": [],
+                "end_bci": 20,
+                "opcode": "iaload",
+                "opcode_hex": "2e",
+                "operands": []
+              },
+              {
+                "bci": 20,
+                "branch_targets": [],
+                "end_bci": 22,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 22,
+                "branch_targets": [],
+                "end_bci": 24,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 24,
+                "branch_targets": [],
+                "end_bci": 25,
+                "opcode": "iconst_3",
+                "opcode_hex": "06",
+                "operands": []
+              },
+              {
+                "bci": 25,
+                "branch_targets": [
+                  34
+                ],
+                "end_bci": 28,
+                "opcode": "if_icmpne",
+                "opcode_hex": "a0",
+                "operands": [
+                  9
+                ]
+              },
+              {
+                "bci": 28,
+                "branch_targets": [],
+                "end_bci": 31,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 31,
+                "branch_targets": [
+                  59
+                ],
+                "end_bci": 34,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  28
+                ]
+              },
+              {
+                "bci": 34,
+                "branch_targets": [],
+                "end_bci": 35,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 35,
+                "branch_targets": [],
+                "end_bci": 37,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 37,
+                "branch_targets": [],
+                "end_bci": 38,
+                "opcode": "iadd",
+                "opcode_hex": "60",
+                "operands": []
+              },
+              {
+                "bci": 38,
+                "branch_targets": [],
+                "end_bci": 39,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 39,
+                "branch_targets": [],
+                "end_bci": 42,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 42,
+                "branch_targets": [
+                  53
+                ],
+                "end_bci": 45,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  11
+                ]
+              },
+              {
+                "bci": 45,
+                "branch_targets": [],
+                "end_bci": 47,
+                "opcode": "astore",
+                "opcode_hex": "3a",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 47,
+                "branch_targets": [],
+                "end_bci": 50,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 50,
+                "branch_targets": [],
+                "end_bci": 52,
+                "opcode": "aload",
+                "opcode_hex": "19",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 52,
+                "branch_targets": [],
+                "end_bci": 53,
+                "opcode": "athrow",
+                "opcode_hex": "bf",
+                "operands": []
+              },
+              {
+                "bci": 53,
+                "branch_targets": [],
+                "end_bci": 56,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  4,
+                  1
+                ]
+              },
+              {
+                "bci": 56,
+                "branch_targets": [
+                  10
+                ],
+                "end_bci": 59,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  -46
+                ]
+              },
+              {
+                "bci": 59,
+                "branch_targets": [],
+                "end_bci": 60,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 60,
+                "branch_targets": [],
+                "end_bci": 61,
+                "opcode": "ireturn",
+                "opcode_hex": "ac",
+                "operands": []
+              }
+            ],
+            "max_locals": 7,
+            "max_stack": 2,
+            "normal_predecessors_of_handlers": {
+              "45": []
+            }
+          },
+          "finContinue": {
+            "basic_blocks": [
+              {
+                "end_bci": 10,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 0
+              },
+              {
+                "end_bci": 16,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  10,
+                  12,
+                  13
+                ],
+                "last_opcode": "if_icmpge",
+                "normal_successors": [
+                  16,
+                  59
+                ],
+                "start_bci": 10
+              },
+              {
+                "end_bci": 22,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  16,
+                  17,
+                  19,
+                  20
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  22
+                ],
+                "start_bci": 16
+              },
+              {
+                "end_bci": 28,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  22,
+                  24,
+                  25
+                ],
+                "last_opcode": "if_icmpne",
+                "normal_successors": [
+                  28,
+                  34
+                ],
+                "start_bci": 22
+              },
+              {
+                "end_bci": 34,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  28,
+                  31
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  53
+                ],
+                "start_bci": 28
+              },
+              {
+                "end_bci": 39,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  34,
+                  35,
+                  37,
+                  38
+                ],
+                "last_opcode": "istore_1",
+                "normal_successors": [
+                  39
+                ],
+                "start_bci": 34
+              },
+              {
+                "end_bci": 45,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  39,
+                  42
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  53
+                ],
+                "start_bci": 39
+              },
+              {
+                "end_bci": 47,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  45
+                ],
+                "last_opcode": "astore",
+                "normal_successors": [
+                  47
+                ],
+                "start_bci": 45
+              },
+              {
+                "end_bci": 53,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "last_opcode": "athrow",
+                "normal_successors": [],
+                "start_bci": 47
+              },
+              {
+                "end_bci": 59,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  53,
+                  56
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 53
+              },
+              {
+                "end_bci": 61,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  59,
+                  60
+                ],
+                "last_opcode": "ireturn",
+                "normal_successors": [],
+                "start_bci": 59
+              }
+            ],
+            "code_hex": "033c2a4d2cbe3e03360415041da2002e2c15042e3605150506a00009840164a700161b1505603c840164a7000b3a068401641906bf840401a7ffd21bac",
+            "code_length": 61,
+            "code_sha256": "b1c42c7680d0545d638e7071606961d94187c97b03044b38c5f0989f81af04fa",
+            "descriptor": "([I)I",
+            "exception_table": [
+              {
+                "catch_type_index": 0,
+                "end_bci": 28,
+                "handler_bci": 45,
+                "ordinal": 0,
+                "start_bci": 22
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 39,
+                "handler_bci": 45,
+                "ordinal": 1,
+                "start_bci": 34
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 47,
+                "handler_bci": 45,
+                "ordinal": 2,
+                "start_bci": 45
+              }
+            ],
+            "instructions": [
+              {
+                "bci": 0,
+                "branch_targets": [],
+                "end_bci": 1,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 1,
+                "branch_targets": [],
+                "end_bci": 2,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 2,
+                "branch_targets": [],
+                "end_bci": 3,
+                "opcode": "aload_0",
+                "opcode_hex": "2a",
+                "operands": [
+                  0
+                ]
+              },
+              {
+                "bci": 3,
+                "branch_targets": [],
+                "end_bci": 4,
+                "opcode": "astore_2",
+                "opcode_hex": "4d",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 4,
+                "branch_targets": [],
+                "end_bci": 5,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 5,
+                "branch_targets": [],
+                "end_bci": 6,
+                "opcode": "arraylength",
+                "opcode_hex": "be",
+                "operands": []
+              },
+              {
+                "bci": 6,
+                "branch_targets": [],
+                "end_bci": 7,
+                "opcode": "istore_3",
+                "opcode_hex": "3e",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 7,
+                "branch_targets": [],
+                "end_bci": 8,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 8,
+                "branch_targets": [],
+                "end_bci": 10,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 10,
+                "branch_targets": [],
+                "end_bci": 12,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 12,
+                "branch_targets": [],
+                "end_bci": 13,
+                "opcode": "iload_3",
+                "opcode_hex": "1d",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 13,
+                "branch_targets": [
+                  59
+                ],
+                "end_bci": 16,
+                "opcode": "if_icmpge",
+                "opcode_hex": "a2",
+                "operands": [
+                  46
+                ]
+              },
+              {
+                "bci": 16,
+                "branch_targets": [],
+                "end_bci": 17,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 17,
+                "branch_targets": [],
+                "end_bci": 19,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 19,
+                "branch_targets": [],
+                "end_bci": 20,
+                "opcode": "iaload",
+                "opcode_hex": "2e",
+                "operands": []
+              },
+              {
+                "bci": 20,
+                "branch_targets": [],
+                "end_bci": 22,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 22,
+                "branch_targets": [],
+                "end_bci": 24,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 24,
+                "branch_targets": [],
+                "end_bci": 25,
+                "opcode": "iconst_3",
+                "opcode_hex": "06",
+                "operands": []
+              },
+              {
+                "bci": 25,
+                "branch_targets": [
+                  34
+                ],
+                "end_bci": 28,
+                "opcode": "if_icmpne",
+                "opcode_hex": "a0",
+                "operands": [
+                  9
+                ]
+              },
+              {
+                "bci": 28,
+                "branch_targets": [],
+                "end_bci": 31,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 31,
+                "branch_targets": [
+                  53
+                ],
+                "end_bci": 34,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  22
+                ]
+              },
+              {
+                "bci": 34,
+                "branch_targets": [],
+                "end_bci": 35,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 35,
+                "branch_targets": [],
+                "end_bci": 37,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 37,
+                "branch_targets": [],
+                "end_bci": 38,
+                "opcode": "iadd",
+                "opcode_hex": "60",
+                "operands": []
+              },
+              {
+                "bci": 38,
+                "branch_targets": [],
+                "end_bci": 39,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 39,
+                "branch_targets": [],
+                "end_bci": 42,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 42,
+                "branch_targets": [
+                  53
+                ],
+                "end_bci": 45,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  11
+                ]
+              },
+              {
+                "bci": 45,
+                "branch_targets": [],
+                "end_bci": 47,
+                "opcode": "astore",
+                "opcode_hex": "3a",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 47,
+                "branch_targets": [],
+                "end_bci": 50,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 50,
+                "branch_targets": [],
+                "end_bci": 52,
+                "opcode": "aload",
+                "opcode_hex": "19",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 52,
+                "branch_targets": [],
+                "end_bci": 53,
+                "opcode": "athrow",
+                "opcode_hex": "bf",
+                "operands": []
+              },
+              {
+                "bci": 53,
+                "branch_targets": [],
+                "end_bci": 56,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  4,
+                  1
+                ]
+              },
+              {
+                "bci": 56,
+                "branch_targets": [
+                  10
+                ],
+                "end_bci": 59,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  -46
+                ]
+              },
+              {
+                "bci": 59,
+                "branch_targets": [],
+                "end_bci": 60,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 60,
+                "branch_targets": [],
+                "end_bci": 61,
+                "opcode": "ireturn",
+                "opcode_hex": "ac",
+                "operands": []
+              }
+            ],
+            "max_locals": 7,
+            "max_stack": 2,
+            "normal_predecessors_of_handlers": {
+              "45": []
+            }
+          }
+        },
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FX.class",
+        "sha256": "72eb3e11a54a8056b501ab60971f18fab857b76f0a6cadaffc37beb907d69a8d"
+      },
+      "javac8": {
+        "bytes": 1277,
+        "class_major": 52,
+        "methods": {
+          "finBreak": {
+            "basic_blocks": [
+              {
+                "end_bci": 10,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 0
+              },
+              {
+                "end_bci": 16,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  10,
+                  12,
+                  13
+                ],
+                "last_opcode": "if_icmpge",
+                "normal_successors": [
+                  16,
+                  59
+                ],
+                "start_bci": 10
+              },
+              {
+                "end_bci": 22,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  16,
+                  17,
+                  19,
+                  20
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  22
+                ],
+                "start_bci": 16
+              },
+              {
+                "end_bci": 28,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  22,
+                  24,
+                  25
+                ],
+                "last_opcode": "if_icmpne",
+                "normal_successors": [
+                  28,
+                  34
+                ],
+                "start_bci": 22
+              },
+              {
+                "end_bci": 34,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  28,
+                  31
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  59
+                ],
+                "start_bci": 28
+              },
+              {
+                "end_bci": 39,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  34,
+                  35,
+                  37,
+                  38
+                ],
+                "last_opcode": "istore_1",
+                "normal_successors": [
+                  39
+                ],
+                "start_bci": 34
+              },
+              {
+                "end_bci": 45,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  39,
+                  42
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  53
+                ],
+                "start_bci": 39
+              },
+              {
+                "end_bci": 47,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  45
+                ],
+                "last_opcode": "astore",
+                "normal_successors": [
+                  47
+                ],
+                "start_bci": 45
+              },
+              {
+                "end_bci": 53,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "last_opcode": "athrow",
+                "normal_successors": [],
+                "start_bci": 47
+              },
+              {
+                "end_bci": 59,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  53,
+                  56
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 53
+              },
+              {
+                "end_bci": 61,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  59,
+                  60
+                ],
+                "last_opcode": "ireturn",
+                "normal_successors": [],
+                "start_bci": 59
+              }
+            ],
+            "code_hex": "033c2a4d2cbe3e03360415041da2002e2c15042e3605150506a00009840164a7001c1b1505603c840164a7000b3a068401641906bf840401a7ffd21bac",
+            "code_length": 61,
+            "code_sha256": "8eb6ad184bbfd82b0d83f23dcb35b8ede357fd227ef5e829606c74321201b8d4",
+            "descriptor": "([I)I",
+            "exception_table": [
+              {
+                "catch_type_index": 0,
+                "end_bci": 28,
+                "handler_bci": 45,
+                "ordinal": 0,
+                "start_bci": 22
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 39,
+                "handler_bci": 45,
+                "ordinal": 1,
+                "start_bci": 34
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 47,
+                "handler_bci": 45,
+                "ordinal": 2,
+                "start_bci": 45
+              }
+            ],
+            "instructions": [
+              {
+                "bci": 0,
+                "branch_targets": [],
+                "end_bci": 1,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 1,
+                "branch_targets": [],
+                "end_bci": 2,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 2,
+                "branch_targets": [],
+                "end_bci": 3,
+                "opcode": "aload_0",
+                "opcode_hex": "2a",
+                "operands": [
+                  0
+                ]
+              },
+              {
+                "bci": 3,
+                "branch_targets": [],
+                "end_bci": 4,
+                "opcode": "astore_2",
+                "opcode_hex": "4d",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 4,
+                "branch_targets": [],
+                "end_bci": 5,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 5,
+                "branch_targets": [],
+                "end_bci": 6,
+                "opcode": "arraylength",
+                "opcode_hex": "be",
+                "operands": []
+              },
+              {
+                "bci": 6,
+                "branch_targets": [],
+                "end_bci": 7,
+                "opcode": "istore_3",
+                "opcode_hex": "3e",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 7,
+                "branch_targets": [],
+                "end_bci": 8,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 8,
+                "branch_targets": [],
+                "end_bci": 10,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 10,
+                "branch_targets": [],
+                "end_bci": 12,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 12,
+                "branch_targets": [],
+                "end_bci": 13,
+                "opcode": "iload_3",
+                "opcode_hex": "1d",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 13,
+                "branch_targets": [
+                  59
+                ],
+                "end_bci": 16,
+                "opcode": "if_icmpge",
+                "opcode_hex": "a2",
+                "operands": [
+                  46
+                ]
+              },
+              {
+                "bci": 16,
+                "branch_targets": [],
+                "end_bci": 17,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 17,
+                "branch_targets": [],
+                "end_bci": 19,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 19,
+                "branch_targets": [],
+                "end_bci": 20,
+                "opcode": "iaload",
+                "opcode_hex": "2e",
+                "operands": []
+              },
+              {
+                "bci": 20,
+                "branch_targets": [],
+                "end_bci": 22,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 22,
+                "branch_targets": [],
+                "end_bci": 24,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 24,
+                "branch_targets": [],
+                "end_bci": 25,
+                "opcode": "iconst_3",
+                "opcode_hex": "06",
+                "operands": []
+              },
+              {
+                "bci": 25,
+                "branch_targets": [
+                  34
+                ],
+                "end_bci": 28,
+                "opcode": "if_icmpne",
+                "opcode_hex": "a0",
+                "operands": [
+                  9
+                ]
+              },
+              {
+                "bci": 28,
+                "branch_targets": [],
+                "end_bci": 31,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 31,
+                "branch_targets": [
+                  59
+                ],
+                "end_bci": 34,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  28
+                ]
+              },
+              {
+                "bci": 34,
+                "branch_targets": [],
+                "end_bci": 35,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 35,
+                "branch_targets": [],
+                "end_bci": 37,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 37,
+                "branch_targets": [],
+                "end_bci": 38,
+                "opcode": "iadd",
+                "opcode_hex": "60",
+                "operands": []
+              },
+              {
+                "bci": 38,
+                "branch_targets": [],
+                "end_bci": 39,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 39,
+                "branch_targets": [],
+                "end_bci": 42,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 42,
+                "branch_targets": [
+                  53
+                ],
+                "end_bci": 45,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  11
+                ]
+              },
+              {
+                "bci": 45,
+                "branch_targets": [],
+                "end_bci": 47,
+                "opcode": "astore",
+                "opcode_hex": "3a",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 47,
+                "branch_targets": [],
+                "end_bci": 50,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 50,
+                "branch_targets": [],
+                "end_bci": 52,
+                "opcode": "aload",
+                "opcode_hex": "19",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 52,
+                "branch_targets": [],
+                "end_bci": 53,
+                "opcode": "athrow",
+                "opcode_hex": "bf",
+                "operands": []
+              },
+              {
+                "bci": 53,
+                "branch_targets": [],
+                "end_bci": 56,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  4,
+                  1
+                ]
+              },
+              {
+                "bci": 56,
+                "branch_targets": [
+                  10
+                ],
+                "end_bci": 59,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  -46
+                ]
+              },
+              {
+                "bci": 59,
+                "branch_targets": [],
+                "end_bci": 60,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 60,
+                "branch_targets": [],
+                "end_bci": 61,
+                "opcode": "ireturn",
+                "opcode_hex": "ac",
+                "operands": []
+              }
+            ],
+            "max_locals": 7,
+            "max_stack": 2,
+            "normal_predecessors_of_handlers": {
+              "45": []
+            }
+          },
+          "finContinue": {
+            "basic_blocks": [
+              {
+                "end_bci": 10,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 0
+              },
+              {
+                "end_bci": 16,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  10,
+                  12,
+                  13
+                ],
+                "last_opcode": "if_icmpge",
+                "normal_successors": [
+                  16,
+                  59
+                ],
+                "start_bci": 10
+              },
+              {
+                "end_bci": 22,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  16,
+                  17,
+                  19,
+                  20
+                ],
+                "last_opcode": "istore",
+                "normal_successors": [
+                  22
+                ],
+                "start_bci": 16
+              },
+              {
+                "end_bci": 28,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  22,
+                  24,
+                  25
+                ],
+                "last_opcode": "if_icmpne",
+                "normal_successors": [
+                  28,
+                  34
+                ],
+                "start_bci": 22
+              },
+              {
+                "end_bci": 34,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  28,
+                  31
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  53
+                ],
+                "start_bci": 28
+              },
+              {
+                "end_bci": 39,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  34,
+                  35,
+                  37,
+                  38
+                ],
+                "last_opcode": "istore_1",
+                "normal_successors": [
+                  39
+                ],
+                "start_bci": 34
+              },
+              {
+                "end_bci": 45,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  39,
+                  42
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  53
+                ],
+                "start_bci": 39
+              },
+              {
+                "end_bci": 47,
+                "exception_successors": [
+                  45
+                ],
+                "instruction_bcis": [
+                  45
+                ],
+                "last_opcode": "astore",
+                "normal_successors": [
+                  47
+                ],
+                "start_bci": 45
+              },
+              {
+                "end_bci": 53,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  47,
+                  50,
+                  52
+                ],
+                "last_opcode": "athrow",
+                "normal_successors": [],
+                "start_bci": 47
+              },
+              {
+                "end_bci": 59,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  53,
+                  56
+                ],
+                "last_opcode": "goto",
+                "normal_successors": [
+                  10
+                ],
+                "start_bci": 53
+              },
+              {
+                "end_bci": 61,
+                "exception_successors": [],
+                "instruction_bcis": [
+                  59,
+                  60
+                ],
+                "last_opcode": "ireturn",
+                "normal_successors": [],
+                "start_bci": 59
+              }
+            ],
+            "code_hex": "033c2a4d2cbe3e03360415041da2002e2c15042e3605150506a00009840164a700161b1505603c840164a7000b3a068401641906bf840401a7ffd21bac",
+            "code_length": 61,
+            "code_sha256": "b1c42c7680d0545d638e7071606961d94187c97b03044b38c5f0989f81af04fa",
+            "descriptor": "([I)I",
+            "exception_table": [
+              {
+                "catch_type_index": 0,
+                "end_bci": 28,
+                "handler_bci": 45,
+                "ordinal": 0,
+                "start_bci": 22
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 39,
+                "handler_bci": 45,
+                "ordinal": 1,
+                "start_bci": 34
+              },
+              {
+                "catch_type_index": 0,
+                "end_bci": 47,
+                "handler_bci": 45,
+                "ordinal": 2,
+                "start_bci": 45
+              }
+            ],
+            "instructions": [
+              {
+                "bci": 0,
+                "branch_targets": [],
+                "end_bci": 1,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 1,
+                "branch_targets": [],
+                "end_bci": 2,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 2,
+                "branch_targets": [],
+                "end_bci": 3,
+                "opcode": "aload_0",
+                "opcode_hex": "2a",
+                "operands": [
+                  0
+                ]
+              },
+              {
+                "bci": 3,
+                "branch_targets": [],
+                "end_bci": 4,
+                "opcode": "astore_2",
+                "opcode_hex": "4d",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 4,
+                "branch_targets": [],
+                "end_bci": 5,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 5,
+                "branch_targets": [],
+                "end_bci": 6,
+                "opcode": "arraylength",
+                "opcode_hex": "be",
+                "operands": []
+              },
+              {
+                "bci": 6,
+                "branch_targets": [],
+                "end_bci": 7,
+                "opcode": "istore_3",
+                "opcode_hex": "3e",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 7,
+                "branch_targets": [],
+                "end_bci": 8,
+                "opcode": "iconst_0",
+                "opcode_hex": "03",
+                "operands": []
+              },
+              {
+                "bci": 8,
+                "branch_targets": [],
+                "end_bci": 10,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 10,
+                "branch_targets": [],
+                "end_bci": 12,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 12,
+                "branch_targets": [],
+                "end_bci": 13,
+                "opcode": "iload_3",
+                "opcode_hex": "1d",
+                "operands": [
+                  3
+                ]
+              },
+              {
+                "bci": 13,
+                "branch_targets": [
+                  59
+                ],
+                "end_bci": 16,
+                "opcode": "if_icmpge",
+                "opcode_hex": "a2",
+                "operands": [
+                  46
+                ]
+              },
+              {
+                "bci": 16,
+                "branch_targets": [],
+                "end_bci": 17,
+                "opcode": "aload_2",
+                "opcode_hex": "2c",
+                "operands": [
+                  2
+                ]
+              },
+              {
+                "bci": 17,
+                "branch_targets": [],
+                "end_bci": 19,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  4
+                ]
+              },
+              {
+                "bci": 19,
+                "branch_targets": [],
+                "end_bci": 20,
+                "opcode": "iaload",
+                "opcode_hex": "2e",
+                "operands": []
+              },
+              {
+                "bci": 20,
+                "branch_targets": [],
+                "end_bci": 22,
+                "opcode": "istore",
+                "opcode_hex": "36",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 22,
+                "branch_targets": [],
+                "end_bci": 24,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 24,
+                "branch_targets": [],
+                "end_bci": 25,
+                "opcode": "iconst_3",
+                "opcode_hex": "06",
+                "operands": []
+              },
+              {
+                "bci": 25,
+                "branch_targets": [
+                  34
+                ],
+                "end_bci": 28,
+                "opcode": "if_icmpne",
+                "opcode_hex": "a0",
+                "operands": [
+                  9
+                ]
+              },
+              {
+                "bci": 28,
+                "branch_targets": [],
+                "end_bci": 31,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 31,
+                "branch_targets": [
+                  53
+                ],
+                "end_bci": 34,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  22
+                ]
+              },
+              {
+                "bci": 34,
+                "branch_targets": [],
+                "end_bci": 35,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 35,
+                "branch_targets": [],
+                "end_bci": 37,
+                "opcode": "iload",
+                "opcode_hex": "15",
+                "operands": [
+                  5
+                ]
+              },
+              {
+                "bci": 37,
+                "branch_targets": [],
+                "end_bci": 38,
+                "opcode": "iadd",
+                "opcode_hex": "60",
+                "operands": []
+              },
+              {
+                "bci": 38,
+                "branch_targets": [],
+                "end_bci": 39,
+                "opcode": "istore_1",
+                "opcode_hex": "3c",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 39,
+                "branch_targets": [],
+                "end_bci": 42,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 42,
+                "branch_targets": [
+                  53
+                ],
+                "end_bci": 45,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  11
+                ]
+              },
+              {
+                "bci": 45,
+                "branch_targets": [],
+                "end_bci": 47,
+                "opcode": "astore",
+                "opcode_hex": "3a",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 47,
+                "branch_targets": [],
+                "end_bci": 50,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  1,
+                  100
+                ]
+              },
+              {
+                "bci": 50,
+                "branch_targets": [],
+                "end_bci": 52,
+                "opcode": "aload",
+                "opcode_hex": "19",
+                "operands": [
+                  6
+                ]
+              },
+              {
+                "bci": 52,
+                "branch_targets": [],
+                "end_bci": 53,
+                "opcode": "athrow",
+                "opcode_hex": "bf",
+                "operands": []
+              },
+              {
+                "bci": 53,
+                "branch_targets": [],
+                "end_bci": 56,
+                "opcode": "iinc",
+                "opcode_hex": "84",
+                "operands": [
+                  4,
+                  1
+                ]
+              },
+              {
+                "bci": 56,
+                "branch_targets": [
+                  10
+                ],
+                "end_bci": 59,
+                "opcode": "goto",
+                "opcode_hex": "a7",
+                "operands": [
+                  -46
+                ]
+              },
+              {
+                "bci": 59,
+                "branch_targets": [],
+                "end_bci": 60,
+                "opcode": "iload_1",
+                "opcode_hex": "1b",
+                "operands": [
+                  1
+                ]
+              },
+              {
+                "bci": 60,
+                "branch_targets": [],
+                "end_bci": 61,
+                "opcode": "ireturn",
+                "opcode_hex": "ac",
+                "operands": []
+              }
+            ],
+            "max_locals": 7,
+            "max_stack": 2,
+            "normal_predecessors_of_handlers": {
+              "45": []
+            }
+          }
+        },
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FX.class",
+        "sha256": "631767a43ef6c35e28478cbfe6492cd02a67a8738a72fe7c5e37e3fbb25846b7"
+      }
+    },
+    "fixture_source": {
+      "bytes": 901,
+      "path": "/home/lordcasser/.codex/worktrees/call-return-finally/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FX.java",
+      "sha256": "0a321fb9ed4c7f72fdd323ce7c0f0c45a650be1562238ae4a27aab9c2d9ff53d",
+      "text": "public class FX {\n    static int finContinue(int[] xs){                       // continue 穿过 finally\n        int c = 0;\n        for(int x : xs){ try { if(x == 3){ continue; } c += x; } finally { c += 100; } }\n        return c;\n    }\n    static int finReturn(int[] xs){                          // return 穿过 finally（finally 后有副作用）\n        for(int x : xs){ try { if(x == 3){ return c0(x); } } finally { System.out.println(\"fin:\" + x); } }\n        return -1;\n    }\n    static int c0(int x){ return x * 1000; }\n    static int finBreak(int[] xs){                           // break 穿过 finally\n        int c = 0;\n        for(int x : xs){ try { if(x == 3){ break; } c += x; } finally { c += 100; } }\n        return c;\n    }\n    public static void main(String[] a){ System.out.println(\"\"+finContinue(new int[]{3,4})+\"/\"+finReturn(new int[]{1,3,5})+\"/\"+finBreak(new int[]{3,4})); }\n}\n"
+    },
+    "native_receipt_sha256": "570ecc9aca847afe9cbc928806933bdb6f350cd73cd9f71747ecf76741c1d958",
+    "parent_execution": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-final-call-return-screen-v1/run-v1/execution.json",
+    "parent_execution_sha256": "f2da37c4848dc54d5b8e8e6c637c0071eb0004ed65c9cc96e556e965059fd4ee"
+  },
+  "limitations": [
+    "No JDK, native command, Git or network used.",
+    "No SSA dump for these two methods was fabricated; available evidence and independently decoded classfile facts are labeled separately.",
+    "This is investigation only and does not complete either method or change the active parent scope."
+  ],
+  "next_bounded_leaf_recommendation": {
+    "candidate": "Model a catch-all, exception-only finally handler ending in rethrow for this narrow handler shape, while keeping normal transfer cleanup copies separate. Restrict initial scope to a handler entry with no normal predecessors, catch_type_index 0, exception-local store, one cleanup effect, reload of that local, and athrow; do not generalize all exception handlers or change unrelated region structuring.",
+    "distinction": "The deterministic-throw control necessarily changes bytecode from the historical FX input; it is a separate shape control and cannot substitute for exact FX class-byte review. No new run has been executed.",
+    "minimum_controls_before_product_patch": [
+      "Keep the exact original FX both-compiler whole-class case as the normal-path control, preserving finContinue/finBreak/main and current fallback evidence.",
+      "Add a tiny isolated control with a deterministic throw inside the protected body and a finally side effect, catch outside and assert original throwable identity plus exactly-once side effect; this makes the exceptional handler dynamically observable.",
+      "Add corresponding nonthrowing continue and break cases to show the BCI31 destinations stay distinct and cleanup executes once.",
+      "For implementation validation, retain full generated source; compile unmodified full class with JDK8/JDK23 and run same unmodified driver on rebuilt-only classes across both runtime JDKs."
+    ],
+    "why_bounded": "Both original methods share the same exact handler shape; their sole relevant transfer difference is the ordinary goto target at BCI31. The currently unrepresented semantic path is the handler-only cleanup and rethrow at BCI45..52."
+  },
+  "observed_fixed_samples": {
+    "claim_limit": "Matches hold for each captured main run only; they do not prove exceptional handler semantics or semantic_validation (reported unproven).",
+    "inputs": [
+      "finContinue([3,4])",
+      "finReturn([1,3,5])",
+      "finBreak([3,4])"
+    ],
+    "parent_rebuilt_main_mismatches": []
+  },
+  "schema": "effectful-finally-handler45-next-debt-v1",
+  "source_scope": "Current FX.finContinue/finBreak in immutable original javac23/javac8 class inputs; final product CLI receipt/parent screen. Does not change or expand the current CallReturn slice.",
+  "status": "cache_only_static_analysis"
+}
