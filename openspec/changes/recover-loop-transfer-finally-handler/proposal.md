@@ -10,7 +10,7 @@
 - 对这组int数组循环、局部加法及三份相同局部+100清理建立有界私有证明，完整核对正常continue/break、非transfer体、异常保存/清理/原值重抛和try外数组读取。只有证明成功才消除handler未覆盖；不能简单把该块标为visited。
 - 明确检查受保护操作是否全部nonthrowing以及真实异常边/SSA来源。若拟利用不可抛异常结论，必须独立证明所有物理操作effects、完整异常范围与handler值链，并保留来源，不能仅凭没有正常前驱或固定样例没抛异常省略handler。
 - 增加真实class近邻拒绝与证明期停止、公库/CLI完整平面及全部物理BCI来源；最终完整类原样重编和未改driver rebuilt-only双JVM对照，另保留原FX/FY/FO和JADX完整源码观察。
-- 前置：依赖CallReturn产品464543594的既有能力；本片最终交付前须等待其自身CI、正常归档及main交付并rebase，不借其CI验收新片。
+- 前置：依赖CallReturn产品464543594的既有能力；其自身CI、正常归档及main b12b0d9e交付已完成，本片已rebase，不借其CI验收新片。
 
 ## Capabilities
 
