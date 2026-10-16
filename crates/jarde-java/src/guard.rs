@@ -615,6 +615,8 @@ pub(crate) struct FinallyFallthrough {
     pub(crate) cleanup: (u32, u32),
     pub(crate) transfer: u32,
     pub(crate) continuation: Continuation,
+    /// Only a complete loop-local proof grants its one terminal body an outer-scope exception.
+    pub(crate) loop_header: Option<CanonicalBlockId>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -2750,6 +2752,526 @@ struct FinallyCopyProof {
     origins: Vec<u32>,
 }
 
+/// The fixed array loop has a nonthrowing protected body and three local-int cleanup copies.
+/// The handler's conservative phi is checked as published; it is never equated with the loop phi.
+fn prove_local_increment_loop_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    const BCIS: [u32; 36] = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 13, 16, 17, 19, 20, 22, 24, 25, 28, 29, 31, 32, 34, 37,
+        39, 40, 43, 46, 48, 51, 53, 54, 57, 60, 61,
+    ];
+    const OPCODES: [u8; 36] = [
+        0x03, 0x3c, 0x2a, 0x4d, 0x2c, 0xbe, 0x3e, 0x03, 0x36, 0x15, 0x1d, 0xa2, 0x2c, 0x15, 0x2e,
+        0x36, 0x15, 0x06, 0xa0, 0x1b, 0x10, 0x60, 0x36, 0x84, 0x15, 0xac, 0x84, 0xa7, 0x3a, 0x84,
+        0x19, 0xbf, 0x84, 0xa7, 0x1b, 0xac,
+    ];
+    // Finite admission only: unrelated methods retain their original proof work and charges.
+    if current.bci() != 16
+        || facts.order.as_slice() != BCIS
+        || facts.handlers.len() != 2
+        || facts.canonical.blocks().len() != 7
+        || facts.ssa.blocks().len() != 7
+        || facts.ssa.phis().len() > 16
+        || facts.ssa.values().len() > 64
+        || !facts.canonical.completeness().is_complete()
+        || !facts.canonical.unreachable().is_empty()
+        || BCIS.iter().zip(OPCODES).any(|(at, opcode)| {
+            facts
+                .step(*at)
+                .is_none_or(|step| step.instruction.opcode() != opcode)
+        })
+    {
+        return Ok(None);
+    }
+    for at in BCIS {
+        facts.charge(at)?;
+    }
+    for phi in facts.ssa.phis() {
+        facts.charge(phi.block().bci())?;
+        for _ in phi.inputs() {
+            facts.charge(phi.block().bci())?;
+        }
+    }
+    for (_, value) in facts.ssa.values_with_ids() {
+        facts.charge(16)?;
+        for usage in value.uses() {
+            facts.charge(usage.bci().unwrap_or(usage.block().bci()))?;
+        }
+    }
+    let decoded: Vec<_> = facts.ops.iter().map(|(at, _)| *at).collect();
+    if decoded != BCIS {
+        return Ok(None);
+    }
+    let [row, binding] = facts.handlers else {
+        return Ok(None);
+    };
+    if (
+        row.ordinal,
+        row.start_bci,
+        row.end_bci,
+        row.handler_bci,
+        row.catch_type_index,
+    ) != (0, 22, 34, 46, None)
+        || (
+            binding.ordinal,
+            binding.start_bci,
+            binding.end_bci,
+            binding.handler_bci,
+            binding.catch_type_index,
+        ) != (1, 46, 48, 46, None)
+    {
+        return Ok(None);
+    }
+    use crate::facts::{ArithmeticOp, ConstantValue};
+    let operations = [
+        (0, Operation::Push(ConstantValue::Int(0))),
+        (1, Operation::Store { slot: 1 }),
+        (2, Operation::Load { slot: 0 }),
+        (3, Operation::Store { slot: 2 }),
+        (4, Operation::Load { slot: 2 }),
+        (5, Operation::ArrayLength),
+        (6, Operation::Store { slot: 3 }),
+        (7, Operation::Push(ConstantValue::Int(0))),
+        (8, Operation::Store { slot: 4 }),
+        (10, Operation::Load { slot: 4 }),
+        (12, Operation::Load { slot: 3 }),
+        (
+            13,
+            Operation::Comparison {
+                op: CompareOp::JumpIfGreaterOrEqual,
+                target: 60,
+            },
+        ),
+        (16, Operation::Load { slot: 2 }),
+        (17, Operation::Load { slot: 4 }),
+        (19, Operation::ArrayLoad),
+        (20, Operation::Store { slot: 5 }),
+        (22, Operation::Load { slot: 5 }),
+        (24, Operation::Push(ConstantValue::Int(3))),
+        (
+            25,
+            Operation::Comparison {
+                op: CompareOp::JumpIfDifferent,
+                target: 40,
+            },
+        ),
+        (28, Operation::Load { slot: 1 }),
+        (29, Operation::Push(ConstantValue::Int(7))),
+        (
+            31,
+            Operation::Arithmetic {
+                op: ArithmeticOp::Add,
+            },
+        ),
+        (32, Operation::Store { slot: 6 }),
+        (
+            34,
+            Operation::Increment {
+                slot: 1,
+                amount: 100,
+            },
+        ),
+        (37, Operation::Load { slot: 6 }),
+        (39, Operation::Return),
+        (
+            40,
+            Operation::Increment {
+                slot: 1,
+                amount: 100,
+            },
+        ),
+        (43, Operation::Transfer),
+        (46, Operation::Store { slot: 7 }),
+        (
+            48,
+            Operation::Increment {
+                slot: 1,
+                amount: 100,
+            },
+        ),
+        (51, Operation::Load { slot: 7 }),
+        (53, Operation::Throw),
+        (54, Operation::Increment { slot: 4, amount: 1 }),
+        (57, Operation::Transfer),
+        (60, Operation::Load { slot: 1 }),
+        (61, Operation::Return),
+    ];
+    for (at, operation) in &operations {
+        facts.charge(*at)?;
+        if facts.op(*at) != Some(operation) {
+            return Ok(None);
+        }
+    }
+    let block_specs: [(u32, u32, &[u32]); 7] = [
+        (0, 10, &BCIS[..9]),
+        (10, 16, &BCIS[9..12]),
+        (16, 28, &BCIS[12..19]),
+        (28, 40, &BCIS[19..26]),
+        (40, 60, &[40, 43, 54, 57]),
+        (46, 54, &[46, 48, 51, 53]),
+        (60, 62, &[60, 61]),
+    ];
+    for (at, end, instructions) in block_specs {
+        facts.charge(at)?;
+        let Some(block) = facts.starts.get(&at).copied() else {
+            return Ok(None);
+        };
+        if !block.path().is_empty()
+            || facts.end_of(block) != end
+            || facts
+                .in_block(block)
+                .iter()
+                .map(SsaInstruction::bci)
+                .collect::<Vec<_>>()
+                != instructions
+        {
+            return Ok(None);
+        }
+    }
+    let mut edges = Vec::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let kind = match edge.kind() {
+            CanonicalEdgeKind::Normal => None,
+            CanonicalEdgeKind::Exception { handler_ordinal } => Some(handler_ordinal),
+            _ => return Ok(None),
+        };
+        edges.push((edge.from().bci(), edge.to().bci(), kind));
+    }
+    edges.sort_unstable();
+    let mut expected_edges = vec![
+        (0, 10, None),
+        (10, 16, None),
+        (10, 60, None),
+        (16, 28, None),
+        (16, 40, None),
+        (16, 46, Some(0)),
+        (28, 46, Some(0)),
+        (40, 10, None),
+        (46, 46, Some(1)),
+    ];
+    expected_edges.sort_unstable();
+    if edges != expected_edges {
+        return Ok(None);
+    }
+    let header = facts.starts[&10];
+    let Some(header_node) = facts.view.index_of(header) else {
+        return Ok(None);
+    };
+    let Some(natural) = facts.view.loop_entered_at(header_node) else {
+        return Ok(None);
+    };
+    let loop_nodes: Option<BTreeSet<_>> = [10, 16, 40]
+        .iter()
+        .map(|at| facts.view.index_of(facts.starts[at]))
+        .collect();
+    let Some(latch) = facts.view.index_of(facts.starts[&40]) else {
+        return Ok(None);
+    };
+    if natural.is_irreducible()
+        || Some(natural.blocks()) != loop_nodes.as_ref()
+        || natural.latches() != &BTreeSet::from([latch])
+    {
+        return Ok(None);
+    }
+    // The only actual throw sites precede the try or are the unprotected rethrow. The raw
+    // block-level exception edges remain present, including the handler's binding-only self row.
+    if facts.ssa.effects().instructions().len() != BCIS.len() {
+        return Ok(None);
+    }
+    for at in BCIS {
+        facts.charge(at)?;
+        let Some(effect) = facts
+            .ssa
+            .effects()
+            .instructions()
+            .iter()
+            .find(|e| e.bci() == at)
+        else {
+            return Ok(None);
+        };
+        let expected_row = if (22..34).contains(&at) {
+            Some(0)
+        } else if at == 46 {
+            Some(1)
+        } else {
+            None
+        };
+        let covering = facts.covering(at);
+        if covering.iter().map(|r| r.ordinal).collect::<Vec<_>>()
+            != expected_row.into_iter().collect::<Vec<_>>()
+            || effect.may_throw() != [5, 19, 53].contains(&at)
+            || !effect.handlers().is_empty()
+        {
+            return Ok(None);
+        }
+    }
+    // Collect the actual instruction definitions first; every write has the expected slot,
+    // type and physical producer. Constants are not used as substitutes for SSA identities.
+    let write_specs = [
+        (0, Slot::Stack(0)),
+        (1, Slot::Local(1)),
+        (2, Slot::Stack(0)),
+        (3, Slot::Local(2)),
+        (4, Slot::Stack(0)),
+        (5, Slot::Stack(0)),
+        (6, Slot::Local(3)),
+        (7, Slot::Stack(0)),
+        (8, Slot::Local(4)),
+        (10, Slot::Stack(0)),
+        (12, Slot::Stack(1)),
+        (16, Slot::Stack(0)),
+        (17, Slot::Stack(1)),
+        (19, Slot::Stack(0)),
+        (20, Slot::Local(5)),
+        (22, Slot::Stack(0)),
+        (24, Slot::Stack(1)),
+        (28, Slot::Stack(0)),
+        (29, Slot::Stack(1)),
+        (31, Slot::Stack(0)),
+        (32, Slot::Local(6)),
+        (34, Slot::Local(1)),
+        (37, Slot::Stack(0)),
+        (40, Slot::Local(1)),
+        (46, Slot::Local(7)),
+        (48, Slot::Local(1)),
+        (51, Slot::Stack(0)),
+        (54, Slot::Local(4)),
+        (60, Slot::Stack(0)),
+    ];
+    let mut writes = BTreeMap::new();
+    for at in BCIS {
+        facts.charge(at)?;
+        let step = facts.step(at).unwrap();
+        let expected = write_specs.iter().find(|(bci, _)| *bci == at);
+        if let Some((_, slot)) = expected {
+            let [(written_slot, value)] = step.instruction.writes() else {
+                return Ok(None);
+            };
+            let value_facts = facts.ssa.value(facts.resolve(*value));
+            let reference = [2, 3, 4, 16, 46, 51].contains(&at);
+            if written_slot != slot
+                || !matches!(value_facts.def(), Definition::Instruction { block, bci }
+                    if block == step.block && *bci == at)
+                || (reference && !matches!(value_facts.ty(), jarde_jvm::method_ir::Value::Ref(_)))
+                || (!reference && value_facts.ty() != &jarde_jvm::method_ir::Value::Int)
+            {
+                return Ok(None);
+            }
+            writes.insert(at, *value);
+        } else if !step.instruction.writes().is_empty() {
+            return Ok(None);
+        }
+    }
+    let phi_value = |block, slot| {
+        facts
+            .ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.block().bci() == block && phi.slot() == slot)
+            .map(|p| p.value())
+    };
+    let (Some(c), Some(index), Some(handler_c), Some(caught)) = (
+        phi_value(10, Slot::Local(1)),
+        phi_value(10, Slot::Local(4)),
+        phi_value(46, Slot::Local(1)),
+        phi_value(46, Slot::Stack(0)),
+    ) else {
+        return Ok(None);
+    };
+    for (value, block, slot, inputs) in [
+        (c, 10, Slot::Local(1), vec![writes[&1], writes[&40]]),
+        (index, 10, Slot::Local(4), vec![writes[&8], writes[&54]]),
+        (
+            handler_c,
+            46,
+            Slot::Local(1),
+            vec![c, writes[&34], writes[&48]],
+        ),
+    ] {
+        facts.charge(block)?;
+        let Some(phi) = facts.ssa.phis().iter().find(|p| p.value() == value) else {
+            return Ok(None);
+        };
+        let def = facts.ssa.value(value);
+        if def.ty() != &jarde_jvm::method_ir::Value::Int
+            || !matches!(def.def(), Definition::Phi { block: id, slot: s }
+                if id == facts.starts[&block] && *s == slot)
+            || phi.inputs().len() != inputs.len()
+            || phi
+                .inputs()
+                .iter()
+                .zip(inputs)
+                .any(|(a, b)| !matches!(a, PhiInput::Value(v) if facts.same(*v,b)))
+        {
+            return Ok(None);
+        }
+    }
+    let Some(exception_phi) = facts.ssa.phis().iter().find(|p| p.value() == caught) else {
+        return Ok(None);
+    };
+    if exception_phi.inputs().len() != 3 {
+        return Ok(None);
+    }
+    for (input, at) in exception_phi.inputs().iter().zip([16, 28, 46]) {
+        facts.charge(at)?;
+        let PhiInput::Value(value) = input else {
+            return Ok(None);
+        };
+        if !matches!(facts.ssa.value(facts.resolve(*value)).def(), Definition::Caught { block, bci }
+            if *bci == at && block == facts.starts[&at])
+        {
+            return Ok(None);
+        }
+    }
+    let Some((_, arg)) = facts
+        .ssa
+        .block(facts.starts[&0])
+        .unwrap()
+        .entry()
+        .iter()
+        .find(|(slot, _)| *slot == Slot::Local(0))
+    else {
+        return Ok(None);
+    };
+    if !matches!(facts.ssa.value(facts.resolve(*arg)).def(), Definition::Entry { block, slot: Slot::Local(0) }
+        if block == facts.starts[&0])
+        || !matches!(
+            facts.ssa.value(facts.resolve(*arg)).ty(),
+            jarde_jvm::method_ir::Value::Ref(_)
+        )
+    {
+        return Ok(None);
+    }
+    // Sentinels denote already-proved actual phi/entry values, not slot numbers.
+    const C: u32 = 1000;
+    const INDEX: u32 = 1001;
+    const HC: u32 = 1002;
+    const EXCEPTION: u32 = 1003;
+    const ARG: u32 = 1004;
+    writes.extend([
+        (C, c),
+        (INDEX, index),
+        (HC, handler_c),
+        (EXCEPTION, caught),
+        (ARG, *arg),
+    ]);
+    let read_specs: [(u32, &[u32]); 36] = [
+        (0, &[]),
+        (1, &[0]),
+        (2, &[ARG]),
+        (3, &[2]),
+        (4, &[3]),
+        (5, &[4]),
+        (6, &[5]),
+        (7, &[]),
+        (8, &[7]),
+        (10, &[INDEX]),
+        (12, &[6]),
+        (13, &[12, 10]),
+        (16, &[3]),
+        (17, &[INDEX]),
+        (19, &[17, 16]),
+        (20, &[19]),
+        (22, &[20]),
+        (24, &[]),
+        (25, &[24, 22]),
+        (28, &[C]),
+        (29, &[]),
+        (31, &[29, 28]),
+        (32, &[31]),
+        (34, &[C]),
+        (37, &[32]),
+        (39, &[37]),
+        (40, &[C]),
+        (43, &[]),
+        (46, &[EXCEPTION]),
+        (48, &[HC]),
+        (51, &[46]),
+        (53, &[51]),
+        (54, &[INDEX]),
+        (57, &[]),
+        (60, &[C]),
+        (61, &[60]),
+    ];
+    for (at, inputs) in read_specs {
+        facts.charge(at)?;
+        let reads = facts.step(at).unwrap().instruction.reads();
+        if reads.len() != inputs.len()
+            || reads
+                .iter()
+                .zip(inputs)
+                .any(|((_, read), producer)| !facts.same(*read, writes[producer]))
+        {
+            return Ok(None);
+        }
+    }
+    // Explicitly close all values whose single consumer preserves the pending return/rethrow,
+    // and the increment results whose only consumer is their own loop/handler phi.
+    for (producer, consumer, phi_block) in [
+        (28, Some(31), None),
+        (29, Some(31), None),
+        (31, Some(32), None),
+        (32, Some(37), None),
+        (37, Some(39), None),
+        (46, Some(51), None),
+        (51, Some(53), None),
+        (34, None, Some(46)),
+        (40, None, Some(10)),
+        (48, None, Some(46)),
+        (54, None, Some(10)),
+    ] {
+        facts.charge(producer)?;
+        let value = facts.ssa.value(facts.resolve(writes[&producer]));
+        if value.uses().len() != 1
+            || value.uses()[0].bci() != consumer
+            || value.uses()[0].block()
+                != facts.starts
+                    [&phi_block.unwrap_or_else(|| facts.block_of(consumer.unwrap()).unwrap().bci())]
+        {
+            return Ok(None);
+        }
+    }
+    // No instruction outside the fully checked grammar can write/read an unaccounted local;
+    // the complete instruction and phi chains above also cover the array lead and loop carry.
+    let owned: Vec<_> = [16, 28, 40, 46]
+        .iter()
+        .map(|at| facts.starts[at].clone())
+        .collect();
+    let origins = BCIS
+        .iter()
+        .copied()
+        .filter(|at| (16..60).contains(at))
+        .collect();
+    facts.charge(61)?;
+    poll(facts.budget, Some(61))?;
+    Ok(Some(Plan {
+        shape: Shape::Finally {
+            normal_cleanup: (34, 37),
+            completion: FinallyCompletion::SavedReturn {
+                save: 32,
+                returns: 39,
+            },
+            row_ordinal: row.ordinal,
+            structured: true,
+        },
+        lead: (16, 22),
+        body: (22, 34),
+        owned,
+        join: Some(header.clone()),
+        enclosing: None,
+        finally_fallthrough: Some(FinallyFallthrough {
+            cleanup: (40, 43),
+            transfer: 43,
+            continuation: Continuation::Tail { span: (54, 60) },
+            loop_header: Some(header.clone()),
+        }),
+        facts: origins,
+    }))
+}
+
 /// The fixed conditional body has one saved int return and one fallthrough. All three cleanup
 /// copies are checked before either normal completion owns anything. Unrelated shapes pay no
 /// new proof scan: the finite opcode discriminator is only admission, never the certificate.
@@ -2995,6 +3517,7 @@ fn prove_conditional_return_finally(
             continuation: Continuation::Tail {
                 span: (b[25], last),
             },
+            loop_header: None,
         }),
         primary: (b[19], b[23], b[24]),
         owned,
@@ -11661,6 +12184,7 @@ mod finally_copy_tests {
                         cleanup: (26, 34),
                         transfer: 34,
                         continuation: Continuation::Tail { span: (48, 50) },
+                        loop_header: None,
                     })
                 );
                 let mut self_protected = row.clone();
@@ -11726,6 +12250,89 @@ mod finally_copy_tests {
             })
             .unwrap();
         }
+    }
+
+    #[test]
+    fn local_increment_loop_finally_late_budget_and_charge_cancellation_publish_no_certificate() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_)) {
+                    let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                    if self.cancel_at == Some(count) {
+                        self.token.cancel();
+                    }
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class"
+        );
+        probe_descriptor(class, "noCall", b"([I)I", false, None, |facts| {
+            let current = facts.starts[&16].clone();
+            *facts.budget = Budget::new(limits());
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                token: CancellationToken::new(),
+            });
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(
+                prove_local_increment_loop_finally(facts, &current)
+                    .unwrap()
+                    .is_some()
+            );
+            let usage = facts.budget.usage().clone();
+            let charges = observer.charges.load(Ordering::SeqCst);
+            assert!(charges > 200);
+            let mut late_limits = limits();
+            late_limits.analysis_steps = usage.analysis_steps - 1;
+            *facts.budget = Budget::new(late_limits);
+            assert!(matches!(
+                prove_local_increment_loop_finally(facts, &current),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(61),
+                    written: 0,
+                    ..
+                })
+            ));
+            assert_eq!(
+                facts.budget.usage().analysis_steps,
+                usage.analysis_steps - 1
+            );
+            let token = CancellationToken::new();
+            let observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: Some(charges),
+                token: token.clone(),
+            });
+            *facts.budget = Budget::with_cancellation_token(limits(), token);
+            let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert_eq!(
+                prove_local_increment_loop_finally(facts, &current).unwrap_err(),
+                StopReason::Cancelled { at: Some(61) }
+            );
+            assert_eq!(facts.budget.usage().analysis_steps, usage.analysis_steps);
+            assert_eq!(observer.charges.load(Ordering::SeqCst), charges);
+            *facts.budget = Budget::new(limits());
+        })
+        .unwrap();
     }
 
     #[test]
@@ -11809,6 +12416,179 @@ mod finally_copy_tests {
             *facts.budget = Budget::new(limits());
         })
         .unwrap();
+    }
+
+    #[test]
+    fn local_increment_loop_finally_rejects_analyzed_copy_value_and_row_variants() {
+        let original = include_bytes!(
+            "../../../tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class"
+        );
+        let code = [
+            0x03, 0x3c, 0x2a, 0x4d, 0x2c, 0xbe, 0x3e, 0x03, 0x36, 0x04, 0x15, 0x04, 0x1d, 0xa2,
+            0x00, 0x2f, 0x2c, 0x15, 0x04, 0x2e, 0x36, 0x05, 0x15, 0x05, 0x06, 0xa0, 0x00, 0x0f,
+            0x1b, 0x10, 0x07, 0x60, 0x36, 0x06, 0x84, 0x01, 0x64, 0x15, 0x06, 0xac, 0x84, 0x01,
+            0x64, 0xa7, 0x00, 0x0b, 0x3a, 0x07, 0x84, 0x01, 0x64, 0x19, 0x07, 0xbf, 0x84, 0x04,
+            0x01, 0xa7, 0xff, 0xd1, 0x1b, 0xac,
+        ];
+        let starts: Vec<_> = original
+            .windows(code.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == code).then_some(at))
+            .collect();
+        assert_eq!(starts.len(), 1);
+        let start = starts[0];
+        let mut controls = Vec::new();
+        for (label, at, byte) in [
+            ("different return cleanup amount", 36, 101),
+            ("different exceptional cleanup amount", 50, 99),
+            ("cleanup writes the induction slot", 35, 4),
+            ("return reloads changed c instead of saved value", 38, 1),
+            ("induction step differs", 56, 2),
+            ("return expression is throwing division", 31, 0x6c),
+        ] {
+            let mut changed = original.to_vec();
+            changed[start + at] = byte;
+            controls.push((label, changed));
+        }
+        let mut extra = original.to_vec();
+        extra[start + 34..start + 37].copy_from_slice(&[0x15, 6, 0x57]);
+        controls.push(("extra saved-value consumer replaces cleanup", extra));
+        let table = start + code.len() + 2;
+        assert_eq!(
+            &original[table..table + 16],
+            &[0, 22, 0, 34, 0, 46, 0, 0, 0, 46, 0, 48, 0, 46, 0, 0]
+        );
+        for (label, at, byte) in [
+            ("protected range covers normal cleanup", 3, 37),
+            ("self row covers handler update", 11, 51),
+        ] {
+            let mut changed = original.to_vec();
+            changed[table + at] = byte;
+            controls.push((label, changed));
+        }
+        for (label, class) in controls {
+            probe_descriptor(&class, "noCall", b"([I)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete(), "{label}");
+                let current = facts.starts[&16].clone();
+                assert!(
+                    prove_local_increment_loop_finally(facts, &current)
+                        .unwrap()
+                        .is_none(),
+                    "{label}"
+                );
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn local_increment_loop_finally_proves_actual_carry_and_saved_return() {
+        for class in [
+            &include_bytes!(
+                "../../../tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class"
+            )[..],
+            &include_bytes!(
+                "../../../tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class"
+            )[..],
+        ] {
+            probe_descriptor(class, "noCall", b"([I)I", false, None, |facts| {
+                let current = facts.starts[&16].clone();
+                let plan = prove_local_increment_loop_finally(facts, &current)
+                    .unwrap()
+                    .expect("actual loop/handler phis and all three cleanup copies close");
+                assert_eq!(plan.lead(), (16, 22));
+                assert_eq!(plan.body(), (22, 34));
+                assert_eq!(
+                    plan.owned()
+                        .iter()
+                        .map(CanonicalBlockId::bci)
+                        .collect::<Vec<_>>(),
+                    [16, 28, 40, 46]
+                );
+                assert_eq!(plan.join().unwrap().bci(), 10);
+                assert_eq!(
+                    plan.finally_fallthrough()
+                        .unwrap()
+                        .loop_header
+                        .as_ref()
+                        .unwrap()
+                        .bci(),
+                    10
+                );
+                assert_eq!(
+                    plan.finally_fallthrough().unwrap().continuation,
+                    Continuation::Tail { span: (54, 60) }
+                );
+                assert!(matches!(
+                    plan.shape(),
+                    Shape::Finally {
+                        completion: FinallyCompletion::SavedReturn {
+                            save: 32,
+                            returns: 39
+                        },
+                        ..
+                    }
+                ));
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn no_call_baseline_probes_real_increment_cleanup_and_loop_boundaries() {
+        for (leg, class) in [
+            (
+                "javac23",
+                &include_bytes!(
+                    "../../../tests/fixtures/recover-local-increment-loop-finally/v8/NoCallFinally.class"
+                )[..],
+            ),
+            (
+                "javac8",
+                &include_bytes!(
+                    "../../../tests/fixtures/recover-local-increment-loop-finally/v8-javac8/NoCallFinally.class"
+                )[..],
+            ),
+        ] {
+            let old = probe_descriptor(class, "noCall", b"([I)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete());
+                assert_eq!(facts.handlers.len(), 2);
+                println!("{leg}: actual rows {:?}", facts.handlers);
+                for row in facts.handlers {
+                    let handler = facts.row_handler(row).unwrap();
+                    println!("{leg}: candidate row={} handler={handler:?} shape={}", row.ordinal, finally_copy_shape(facts, row).is_some());
+                    assert!(finally_copy_shape(facts, row).is_none(), "pure Increment is not in the current candidate grammar");
+                }
+                assert!(matches!(facts.op(48), Some(Operation::Increment { .. })));
+                assert!(cleanup_sequence(facts, &[48], false).is_none());
+                let row = facts.handlers[0].clone();
+                assert!(prove_conditional_return_finally(facts, &row).unwrap().is_none());
+                for block in facts.canonical.blocks() {
+                    let id = block.id();
+                    let node = facts.view.index_of(id).unwrap();
+                    println!("{leg}: canonical node={node} block={id:?} end={} normal_predecessors={:?} normal_successors={:?}", block.end_bci(), facts.view.predecessors(node), facts.view.successors(node));
+                    if let Some(natural) = facts.view.loop_entered_at(node) {
+                        println!("{leg}: actual natural_loop={natural:?}");
+                    }
+                    println!("{leg}: actual entry {:?}", facts.ssa.block(id).unwrap().entry());
+                    for instruction in facts.in_block(id) {
+                        println!("{leg}: SSA bci={} op={:?} reads={:?} writes={:?}", instruction.bci(), facts.op(instruction.bci()), instruction.reads(), instruction.writes());
+                    }
+                }
+                println!("{leg}: actual canonical edges {:?}", facts.canonical.edges());
+                println!("{leg}: actual phis {:?}", facts.ssa.phis());
+                for (value, definition) in facts.ssa.values_with_ids() {
+                    println!("{leg}: value {value:?} def={:?} type={:?} uses={:?} replaced_by={:?}", definition.def(), definition.ty(), definition.uses(), definition.replaced_by());
+                }
+                for effect in facts.ssa.effects().instructions() {
+                    println!("{leg}: effect bci={} handlers={:?} may_throw={}", effect.bci(), effect.handlers(), effect.may_throw());
+                }
+            }).unwrap();
+            assert!(
+                old.is_none(),
+                "old straight-copy certificate is not loop recovery"
+            );
+        }
     }
 
     #[test]
@@ -13957,6 +14737,9 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile) {
+        if let Some(plan) = prove_local_increment_loop_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
         if let Some(plan) = prove_nullable_resource_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }

@@ -6,8 +6,8 @@
 
 ## 2. 有界证明与接线
 
-- [ ] 2.1 实现固定循环局部更新finally证书及其正/负测试和说明。验收：两真实class的完整CFG/rows/effects/SSA/phis、所有写入与消费者闭合；副本差异、错误返回/phi/保护边界等真实分析反例拒绝；真实晚预算/取消无证书或owner且用量不退款。非候选旧计费保持。
-- [ ] 2.2 局部接入既有Finally/SavedReturn、region范围与Tail发射，增加公共库/CLI与source map测试及说明。验收：lead16..22在try外、唯一授权return28、handler只按已证owned认领；完整正文无bytecode fallback，所有36物理BCI可追溯，loop更新一次，失败/停止原子回滚。
+- [x] 2.1 实现固定循环局部更新finally证书及其正/负测试和说明。验收：两真实class的完整CFG/rows/effects/SSA/phis、所有写入与消费者闭合；副本差异、错误返回/phi/保护边界等真实分析反例拒绝；真实晚预算/取消无证书或owner且用量不退款。非候选旧计费保持。
+- [x] 2.2 局部接入既有Finally/SavedReturn、region范围与Tail发射，增加公共库/CLI与source map测试及说明。验收：lead16..22在try外、唯一授权return28、handler只按已证owned认领；完整正文无bytecode fallback，所有36物理BCI可追溯，loop更新一次，失败/停止原子回滚。
 
 ## 3. 完整源码与集成验收
 

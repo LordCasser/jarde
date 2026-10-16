@@ -1,0 +1,277 @@
+{
+  "schema": "no-call-finally-first-proof-static-review-v1",
+  "status": "no_substantive_static_blocker_after_one_type_fix",
+  "open_findings": [],
+  "scope": "Independent static review of entire current guard/region production delta and first formatted snapshot. No native/Git/network/repository writes. Future private/public/P5/replay/CI outcomes are not proof inputs. First compilation failure is preserved separately.",
+  "pins": {
+    "first_guard": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/crates/jarde-java/src/guard.rs",
+      "bytes": 747862,
+      "sha256": "7f39161664ef261b8454279fa94f02be47de7e5a09e8fbb85d37af6273a82675"
+    },
+    "first_region": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/crates/jarde-java/src/region.rs",
+      "bytes": 1072544,
+      "sha256": "aa55fe215fdeb01da75f3d81e176d18c93b711d1e15506e001c937681182b36c"
+    },
+    "first_diff": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/compiled-source/working.diff",
+      "bytes": 33498,
+      "sha256": "85c8d73dcfd89db66f004d9fb0aa3ecf8914f47f72490726a8a5361f95671528"
+    },
+    "current_guard": {
+      "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/crates/jarde-java/src/guard.rs",
+      "bytes": 747861,
+      "sha256": "d067009349a2a153354c1429cf22afe50be1dbb8c48befe589d4976ba696b4d4"
+    },
+    "current_region": {
+      "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 1072544,
+      "sha256": "aa55fe215fdeb01da75f3d81e176d18c93b711d1e15506e001c937681182b36c"
+    },
+    "unchanged_builder": {
+      "path": "/home/lordcasser/.codex/worktrees/local-increment-finally/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1925212,
+      "sha256": "93b8c094d0eac51d53fc16b114daf18d50eaeb8761f7e2c9cff47c253ff4a1b5"
+    }
+  },
+  "first_compile_lineage": {
+    "receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/execution.json",
+      "bytes": 2158746,
+      "sha256": "80fd29a6bd45f38546bfb19802cebab6cc7abda60658acaa7d8a95af1914fdf2"
+    },
+    "actual_command_exits": [
+      101,
+      0
+    ],
+    "raw_pins_verified": [
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/1.stdout.raw",
+        "bytes": 38340,
+        "sha256": "d92bbb41b9a10e3df7ae717dcde952dc7711abd7f71d6d9c6350fa9a68b8619f"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/1.stderr.raw",
+        "bytes": 2486,
+        "sha256": "f5811db1097ba9fac50e150ab669d379176dcdc31e84f69163335c75b806e0f1"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/2.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/no-call-finally-first-implementation-native-v1/run-v1/2.stderr.raw",
+        "bytes": 52,
+        "sha256": "54790157c5df86bfdc2530d0ed2c75cfbd6663c9b1923f95dc25a8b07dc5166f"
+      }
+    ],
+    "E0614_actual": true,
+    "tests_did_not_run": true,
+    "fix": "First snapshot incorrectly dereferences handler_ordinal returned by-value from CanonicalEdgeKind::Exception. Current source differs by exactly Some(*handler_ordinal)→Some(handler_ordinal); region byte-identical. This current static review sees that correction; no compilation/test success claimed."
+  },
+  "grammar_coverage": {
+    "fixed_bcis": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      12,
+      13,
+      16,
+      17,
+      19,
+      20,
+      22,
+      24,
+      25,
+      28,
+      29,
+      31,
+      32,
+      34,
+      37,
+      39,
+      40,
+      43,
+      46,
+      48,
+      51,
+      53,
+      54,
+      57,
+      60,
+      61
+    ],
+    "read_specs_exact_all36": true,
+    "write_specs_all29": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      12,
+      16,
+      17,
+      19,
+      20,
+      22,
+      24,
+      28,
+      29,
+      31,
+      32,
+      34,
+      37,
+      40,
+      46,
+      48,
+      51,
+      54,
+      60
+    ],
+    "claimed_block_instruction_partition": {
+      "16": [
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        25
+      ],
+      "28": [
+        28,
+        29,
+        31,
+        32,
+        34,
+        37,
+        39
+      ],
+      "40": [
+        40,
+        43,
+        54,
+        57
+      ],
+      "46": [
+        46,
+        48,
+        51,
+        53
+      ]
+    },
+    "emission_partition": {
+      "lead": [
+        16,
+        17,
+        19,
+        20
+      ],
+      "protected_body": [
+        22,
+        24,
+        25,
+        28,
+        29,
+        31,
+        32
+      ],
+      "normal_cleanup": [
+        34
+      ],
+      "saved_load_return": [
+        37,
+        39
+      ],
+      "folded_fall_cleanup_transfer": [
+        40,
+        43
+      ],
+      "folded_handler": [
+        46,
+        48,
+        51,
+        53
+      ],
+      "tail": [
+        54,
+        57
+      ]
+    },
+    "conclusion": "The four claimed canonical blocks contain22 physical instructions; all are explained by lead, protected/save, selected cleanup+return, folded second/exceptional copies or fused tail. Header/init/final exit are checked as context but not inner-owned; derived facts16..60 include every inner instruction."
+  },
+  "proof_checks": [
+    {
+      "area": "admission and old rules",
+      "site": "guard.rs:2757 admission; guarded14677",
+      "result": "Fixed36 actual BCI/opcode order, current16,2rows,7canonical/SSAblocks, boundedphi/value counts, complete/no-unreachable before any NEW charge. Existing generic rules remain unchanged; old conditional metadata gets loop_header=None. Only full new proof constructs Some(loop_header)."
+    },
+    {
+      "area": "full physical graph/rows",
+      "site": "guard.rs:2800-2990",
+      "result": "Decoded operation starts equalBCIS; all36 semantic Operations include amounts/targets/slots; all7blocks have exact instruction lists/ends and empty clone paths. Exact9 canonical edges include28→46 and46 selfrow and sole40→10backedge; actual natural loop{10,16,40}/latch40 and irreducibility checked. Exact2table rows and effect coverage close protected and binding spans."
+    },
+    {
+      "area": "nonthrowing",
+      "site": "guard.rs:2990-3028 effects",
+      "result": "Exact36effect entries plus perBCI lookup closes duplicates/omissions. may_throw true only5/19/53, all effect.handlers empty, while structural covering rows still exact. Thus protected22..34 and binding46..48 cannot throw; arraylength/arrayload lead remain outsideTry. Handler semantic phi is not confused with same-value normal input."
+    },
+    {
+      "area": "SSA write/read matrix",
+      "site": "guard.rs:3030-3224",
+      "result": "All29writes check exact count/slot, resolved physical DefinitionInstruction and Int/reference role; remaining7instructions must write nothing. All36read vectors check exact count and facts.same with actual producer/entry/phi, including arrayalias/index/element, c+7 arithmetic, savedreturn/rethrow and finalexit. Sentinels1000..1004 are local map keys for actual proven ValueIds, not invented SSA values."
+    },
+    {
+      "area": "phis and identity",
+      "site": "guard.rs:3100-3176",
+      "result": "c/index/handlerc exact Phi definitions/types/slots and input lists bind initial+backedge c, separate induction and conservative handler c=[normalinput,returnincrement,handlerincrement]. Caught Stackphi has exact3 Caught definitions16/28/46. Actual entryLocal0 binds array argument. No demand that handlerinput equal normalc, and no weakened incoming row facts."
+    },
+    {
+      "area": "single consumers",
+      "site": "guard.rs:3227-3253",
+      "result": "Eleven critical values (return producer/load/store, exception store/load and all4increment results) require one actual use, exact consumingBCI or phi block. Every instruction read is already closed by all36matrix and exactgraph, so noncritical array/alias/constant uses cannot hide another executable consumer. Extra unused alias/entry phis do not introduce an instruction effect."
+    },
+    {
+      "area": "loop-local region permission",
+      "site": "region.rs:9334-9401",
+      "result": "Authorization only when private Some(loop_header) matches actualouter.own_loop and Plan.join, current andcleanup already in outer.scope, expected exactly{start,returnterminal}, unique normal predecessor and no normal successor. Only returnterminal28 gets scope exception. Handler46 remains outsidechild and is claimed atomically later by existing fullowned commit."
+    },
+    {
+      "area": "child ownership/continuation",
+      "site": "region.rs:9402 onward finally_body",
+      "result": "Existing child.scope exact expected16/28 and boundary40; require next40, boundaryunvisited, exactbody/visiteddifference and once save32. Refusal/Err restores previousvisited. Header10 remains outerloop; Tail54..60 and Plan.join10 explain update/backedge without inventing Block54 or changing wholefor intoTry."
+    },
+    {
+      "area": "lead/tail source and atomicity",
+      "site": "unchanged build.rs ShapeFinally20964+ and finallycheckpoint17123+",
+      "result": "Plan.lead16..22 executes element load/store beforeTry, body_span22..34 excludes copies, saved-return is emitted at store32 from previouslycomputed c+7. Normal body_range34..37 emits one c increment in finally. Existing atomic Try+Tail closure includes54/57 with no fake goto source; stops, fallback-with-Ok and undeclared cause rollback to preguard checkpoint. No ledger refund. All claimedBCIs remain direct/derived origins."
+    }
+  ],
+  "billing_boundary": {
+    "new_work_is_charged": "Initial36charge loop; perphi and perinput charges; pervalue and every actualuse charges; peroperation/block/edge/effect/write/read and criticalconsumer checks; finalcharge61 and poll before delivery. Critical use check itself is O(1) len/first-use; the potentially variable uses vector was already iterated and charged first. All uncharged searches/allocations are bounded by fixed36/7 or admissioncaps16phis/64values (with variableinputs/uses explicitly charged).",
+    "unrelated_rejection": "Shapes outside fixedBCI/op/current/rowcount/blockcount admission returnNone before any addedcharge. Same-opcode skeleton with wrong semanticoperand/rowposition/phi is a true candidate and legitimately pays proofwork before refusal. Do not claim all unrecovered methods are feeidentical from static reading alone. Unchanged actual P5 --all-features remains required.",
+    "typedstops": "No new catch/suppression of Result<_,StopReason>; all Facts charges propagate?, finalpoll61 precedes PlanSome. No fake error or reset/refund. Region authorization inspects only certified4owned/2expected blocks, bounded not genericgraph rescan."
+  },
+  "pending_actual_verification": [
+    "New private positive/negative/realledger tests and public/JSONCLI/fullreport rebuild must complete on corrected compiledsource.",
+    "Current baseline for_header None/continue10. If new actual for_header becomesSome/updateblock40, observe boundary40 versus continue40 priority, once-only indexupdate and returned next. No broad loop-target/scope relaxation is justified.",
+    "Preserve rejected analyzed copy/consumer/phi/row/foreignedge neighbors and defaultignored boundaries; source recovery must not erase old loud refusal outside the exact proof.",
+    "Verify full generatedtext and frozen driver raw oracles, old P5 snapshots and exactfinalproduct native/ownCI separately."
+  ],
+  "limits": "No positive dynamic verdict derives from this report. First compilefailed without tests; current one-line corrected source was statically reviewed only. Source snapshot and current hashes bound above prevent conflating later edits.",
+  "finished_at": "2026-10-16T08:03:48.517887+00:00"
+}

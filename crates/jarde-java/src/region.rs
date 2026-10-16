@@ -9331,13 +9331,67 @@ impl Walker<'_> {
         let Some(start_node) = self.view.index_of(start) else {
             return Ok(None);
         };
+        // Only this complete private certificate may bring its one return arm into the
+        // current loop's protected child. The exceptional handler is claimed after success,
+        // never traversed as an ordinary child or granted generic access to outer scope.
+        let authorized_terminal = if let Some(header) = plan
+            .finally_fallthrough()
+            .and_then(|fallthrough| fallthrough.loop_header.as_ref())
+        {
+            let Some(header_node) = self.view.index_of(header) else {
+                return Ok(None);
+            };
+            let crate::guard::FinallyCompletion::SavedReturn { returns, .. } = completion else {
+                return Ok(None);
+            };
+            let Some(terminal) = plan
+                .owned()
+                .iter()
+                .find(|block| {
+                    self.ssa.block(block).is_some_and(|names| {
+                        names
+                            .instructions()
+                            .iter()
+                            .any(|instruction| instruction.bci() == *returns)
+                    })
+                })
+                .and_then(|block| self.view.index_of(block))
+            else {
+                return Ok(None);
+            };
+            let Some(cleanup) = plan
+                .finally_fallthrough()
+                .and_then(|fallthrough| {
+                    plan.owned()
+                        .iter()
+                        .find(|block| block.bci() == fallthrough.cleanup.0)
+                })
+                .and_then(|block| self.view.index_of(block))
+            else {
+                return Ok(None);
+            };
+            if outer.own_loop != Some(header_node)
+                || plan.join() != Some(header)
+                || outer
+                    .scope
+                    .as_ref()
+                    .is_none_or(|scope| !scope.contains(&start_node) || !scope.contains(&cleanup))
+                || expected != BTreeSet::from([start_node, terminal])
+                || self.view.predecessors(terminal) != [start_node]
+                || !self.view.successors(terminal).is_empty()
+            {
+                return Ok(None);
+            }
+            Some(terminal)
+        } else {
+            None
+        };
         if !expected.contains(&start_node)
             || expected.iter().any(|node| {
                 self.visited.contains(node)
-                    || outer
-                        .scope
-                        .as_ref()
-                        .is_some_and(|scope| !scope.contains(node))
+                    || outer.scope.as_ref().is_some_and(|scope| {
+                        !scope.contains(node) && Some(*node) != authorized_terminal
+                    })
             })
             || expected.iter().any(|node| {
                 *node != start_node
