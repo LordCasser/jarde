@@ -12262,7 +12262,11 @@ mod tests {
             // twenty Code bodies and twelve direct branch targets, with no handler/subroutine.
             // Its two complete receiver-assignment refusal controls add four bodies and four
             // direct branch targets, with no handler/subroutine.
-            (1173, 5249, 521, 3445, 10),
+            // The 2026-10-16 static-prefix return fixture adds both frozen FO compiler legs:
+            // two classes, ten Code bodies and two handler records (evalThenFin once per leg),
+            // with no branch/switch target or subroutine. The same complete decoder/member-walk
+            // assertions above still validate every body; only the intended population moves.
+            (1175, 5259, 523, 3445, 10),
             "fixture population changed: re-measure these counts"
         );
     }
