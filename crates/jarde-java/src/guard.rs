@@ -91,6 +91,7 @@
 //! claimed and not written cannot drop a statement.
 
 mod loop_transfer;
+pub(crate) use loop_transfer::{BCIS as LOOP_TRANSFER_BCIS, DeadLoopTransferHandler};
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -13627,6 +13628,10 @@ mod finally_copy_tests {
         let mut transfer = original.to_vec();
         transfer[start + 32..start + 34].copy_from_slice(&[0, 3]);
         controls.push(("transfer enters body arm", transfer));
+        let mut normal_handler = original.to_vec();
+        normal_handler[start + 28..start + 31].copy_from_slice(&[0x01, 0x00, 0x00]);
+        normal_handler[start + 32..start + 34].copy_from_slice(&[0, 14]);
+        controls.push(("normal transfer supplies null to handler", normal_handler));
         let mut binding = original.to_vec();
         binding[start + 46] = 0;
         binding[start + 51] = 0;
@@ -13647,7 +13652,7 @@ mod finally_copy_tests {
             changed[table + at] = byte;
             controls.push((label, changed));
         }
-        assert_eq!(controls.len(), 14);
+        assert_eq!(controls.len(), 15);
         for (label, class) in controls {
             probe_descriptor(&class, "finContinue", b"([I)I", false, None, |facts| {
                 assert!(facts.canonical.completeness().is_complete(), "{label}");
@@ -16033,6 +16038,46 @@ mod monitor_branch_tests {
             })
         )));
     }
+}
+
+/// A fixed nonthrowing handler candidate; ordinary methods pay nothing for this admission hint.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn prove_dead_loop_transfer_handler(
+    canonical: &CanonicalCfg,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    ops: &Operations,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    sites: &Sites,
+    profile: &crate::pass::RecoveryProfile,
+    budget: &mut Budget,
+) -> Result<Option<DeadLoopTransferHandler>, StopReason> {
+    if !FINALLY.admits(profile)
+        || code.instructions.len() != 35
+        || code.exception_handlers.len() != 3
+        || canonical.blocks().len() != 8
+        || ssa.blocks().len() != 8
+        || ssa.blocks().iter().any(|b| b.instructions().len() > 35)
+        || ssa
+            .blocks()
+            .iter()
+            .map(|b| b.instructions().len())
+            .sum::<usize>()
+            != 35
+    {
+        return Ok(None);
+    }
+    charge(budget, CountedBudgetDimension::AnalysisSteps, 35, Some(0))?;
+    let mut facts = Facts::new(
+        canonical,
+        view,
+        ssa,
+        ops,
+        &code.exception_handlers,
+        sites,
+        budget,
+    );
+    loop_transfer::prove(&mut facts)
 }
 
 /// Examines one block the walk cannot leave through the normal flow.

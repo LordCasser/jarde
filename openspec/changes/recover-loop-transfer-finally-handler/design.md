@@ -43,3 +43,5 @@
 任务1取得的canonical.throw_sites仅5/19/52、handlers均空；全部三个物理保护区逐指令nonthrowing，保守canonical异常边仍三条。选择本组固定形态的不可触发handler证书，不把它呈现为活的catch/finally运行路径。正常28/39清理与continue/break不改，原始handler图/phi/来源不删。
 
 后续实现以最小私有投影为界：先在原region walk/ownership/P3字节完整性检查完成后，对完整35操作、全部row/effect/throw-site及handler SSA和正常树作有界paid proof，保持原Fallback45待最终产物确认。Builder仍按既有树构建；只有正常AST完整、唯一For主锚BCI13（Region header10、init8、update53、gateway56）与唯一handler fallback45/47/50/52完全对应时，准备全部来源和ownership核对并在末次poll后原子移除该已证fallback、把四BCI派生到真实Loop语句；公共报告明确补充已证handler45 RegionDetails及原finally规则。若AST/来源检查不满足，保留原fallback/质量与树，不发布证书；真实Stop仍不交付部分产物。不增加公开Recovered字段或Region/AST变体，不伪造节点/空语句/网关来源，也不把该证书带入通用named-catch。
+
+实际原 CLI 来源闭合额外发现正常 goto42（两方法）与56（break）未映射；同一证书已证明42→53与56→10，因此最终投影将这两物理转移也派生到实际For13，保留已有Continue来源56，并由公库核全部35BCI。Region.gateway_origins仍只记录原normal-flow恢复的网关，不承载handler。Program.statements只减去唯一quote的1；init/update已由既有Builder折叠计数，不重数AST节点。

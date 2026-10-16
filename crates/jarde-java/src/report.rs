@@ -11958,7 +11958,7 @@ fn recover_inner(
     // builder reads it as this run's fact — like the parameter types, it is derived here rather than
     // re-read out of a descriptor inside the layer that writes the statements.
     let return_type = build::return_type(request.facts.method().descriptor());
-    let program = match build::build(
+    let mut program = match build::build(
         canonical,
         ssa,
         &operations,
@@ -12021,6 +12021,30 @@ fn recover_inner(
         budget,
     ) {
         Ok(program) => program,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    let dead_loop_handler = match crate::guard::prove_dead_loop_transfer_handler(
+        canonical,
+        &view,
+        ssa,
+        &operations,
+        code,
+        &sites,
+        &request.profile,
+        budget,
+    ) {
+        Ok(Some(proof)) => match build::project_dead_loop_transfer_handler(
+            &mut recovered,
+            &mut program,
+            &proof,
+            &view,
+            budget,
+        ) {
+            Ok(true) => Some(proof),
+            Ok(false) => None,
+            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        },
+        Ok(None) => None,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     // The AST is retained for three reasons, each a consumer that cannot re-derive it: the
@@ -12607,7 +12631,7 @@ fn recover_inner(
         DiagnosticSeverity::Info,
         &format!(
             "{} region(s), {} statement(s), {} segment(s), {} byte(s) written from {} canonical block(s)",
-            recovered.regions.len(),
+            recovered.regions.len() + usize::from(dead_loop_handler.is_some()),
             program.statements,
             emitted.segments,
             emitted.written,
@@ -12628,6 +12652,9 @@ fn recover_inner(
         // the site or refused it, so the report's rule list states both. A body with no site names no
         // lambda rule, which is why the list is built from the plan rather than from a record table.
         let mut answered: Vec<RuleVersion> = Vec::new();
+        if dead_loop_handler.is_some() {
+            answered.push(crate::pass::FINALLY.rule());
+        }
         if !program.lambdas.is_empty() {
             answered.push(crate::lambda::RULE);
         }
@@ -12909,11 +12936,26 @@ fn recover_inner(
     {
         phase.materialize(
             budget,
-            recovered
-                .regions
-                .iter()
-                .filter(|region| in_driver_range(region, range)),
-            region_record,
+            recovered.regions.iter().map(RegionRecordSource::Region)
+                .chain(dead_loop_handler.iter().map(RegionRecordSource::DeadLoopHandler))
+                .filter(|source| match source {
+                    RegionRecordSource::Region(region) => in_driver_range(region, range),
+                    RegionRecordSource::DeadLoopHandler(proof) => range.is_none_or(|range| range.intersects_any([proof.handler.bci()])),
+                }),
+            |source| match source {
+                RegionRecordSource::Region(region) => region_record(region),
+                RegionRecordSource::DeadLoopHandler(proof) => {
+                    crate::demand_counts::record_built(RecoveryEvidenceKind::RegionDetails);
+                    RegionRecord {
+                        bci: proof.handler.bci(),
+                        structured: true,
+                        blocks: vec![proof.handler.bci()],
+                        code: None,
+                        message: Some("the fixed loop-transfer catch-all has no throwable protected instruction; its physical handler is accounted for by the loop certificate".to_owned()),
+                        rule: Some(crate::pass::FINALLY.rule()),
+                    }
+                }
+            },
         )
     } else {
         (Vec::new(), Materialized::None)
@@ -13979,6 +14021,12 @@ fn in_driver_range(region: &Region, range: Option<crate::evidence::BytecodeRange
     range.is_none_or(|range| range.intersects_any(region.blocks().iter().map(|block| block.bci())))
 }
 
+/// A private evidence source; owning public records are built only after the phase pays.
+enum RegionRecordSource<'a> {
+    Region(&'a Region),
+    DeadLoopHandler(&'a crate::guard::DeadLoopTransferHandler),
+}
+
 /// One region record, with its fallbacks stated: what a selected `RegionDetails` category holds for
 /// one region, built when the evidence phase materializes it.
 ///
@@ -14285,6 +14333,70 @@ mod generic_void_parameter_census_tests {
             .expect("a conservative refusal is not a stop")
             .is_none()
         );
+    }
+
+    #[test]
+    fn loop_transfer_handler_evidence_obeys_selection_and_driver_block_range() {
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+        );
+        for name in ["finContinue", "finBreak"] {
+            let (analysis, _) = analyzed(class, name, "([I)I", 1);
+            let facts = crate::facts::RecoveryFacts::new(
+                crate::facts::MethodFacts::new(name, "([I)I", 1)
+                    .with_access_flags(0x0008)
+                    .with_declaring_class(crate::facts::DeclaringClass::new(
+                        "LoopTransferFinally",
+                        0x0021,
+                    )),
+            );
+            let request = RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8);
+            let all = recover(
+                &request
+                    .clone()
+                    .with_evidence(RecoveryEvidenceRequest::all()),
+                &mut Budget::new(limits()),
+            );
+            assert_eq!(all.quality, Quality::Structured, "{}", all.text);
+            assert_eq!(all.regions.len(), 4);
+            assert_eq!(
+                all.regions.iter().filter(|region| region.bci == 45).count(),
+                1
+            );
+            assert!(all.rules.contains(&crate::pass::FINALLY.rule()));
+            let essential = recover(&request, &mut Budget::new(limits()));
+            assert_eq!(essential.text, all.text);
+            assert!(essential.regions.is_empty() && essential.rules.is_empty());
+            for (range, expected) in [
+                (crate::evidence::BytecodeRange::new(45, 47), vec![45]),
+                (crate::evidence::BytecodeRange::new(47, 50), vec![]),
+                (crate::evidence::BytecodeRange::new(10, 12), vec![10]),
+            ] {
+                let report = recover(
+                    &request
+                        .clone()
+                        .with_evidence(RecoveryEvidenceRequest::all().with_driver_bci_range(range)),
+                    &mut Budget::new(limits()),
+                );
+                assert_eq!(report.text, all.text);
+                assert_eq!(
+                    report
+                        .regions
+                        .iter()
+                        .map(|region| region.bci)
+                        .collect::<Vec<_>>(),
+                    expected
+                );
+                assert!(
+                    report.rules.contains(&crate::pass::FINALLY.rule()),
+                    "rule index describes the same committed body across driver ranges"
+                );
+                assert_eq!(
+                    report.evidence.state(RecoveryEvidenceKind::RegionDetails),
+                    crate::evidence::EvidenceState::Complete
+                );
+            }
+        }
     }
 
     #[test]

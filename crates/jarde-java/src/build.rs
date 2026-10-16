@@ -37,6 +37,9 @@
 //! question each of them asks of the body, whether some reader really writes that value, because an
 //! instruction nothing reads would be an effect silently dropped.
 
+mod loop_transfer;
+pub(crate) use loop_transfer::project_dead_loop_transfer_handler;
+
 use std::cell::OnceCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
@@ -38574,6 +38577,256 @@ mod tests {
             &regions,
             budget,
         )
+    }
+
+    fn loop_transfer_unprojected_fixture(
+        name: &str,
+    ) -> (
+        jarde_jvm::method_ir::MethodIrAnalysis,
+        crate::normal_flow::NormalFlowView,
+        crate::region::Recovered,
+        Program,
+        guard::DeadLoopTransferHandler,
+    ) {
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-loop-transfer-finally-handler/v8/LoopTransferFinally.class"
+        );
+        let context = iterator_test_context(class, name, "([I)I", 8);
+        let analysis = context.analysis;
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("SSA");
+        let code = ir.code().expect("method code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let declaration = ir.declaration().unwrap();
+        let mut budget = child_array_test_budget();
+        let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget).unwrap();
+        let chains = crate::concat::Plan::empty();
+        let sites = crate::init::Sites::empty();
+        let recovered = crate::region::recover(
+            canonical,
+            &view,
+            ssa,
+            &operations,
+            ir.constant_pool(),
+            &chains,
+            &sites,
+            code,
+            Some(false),
+            false,
+            &crate::pass::JAVA_8,
+            &mut budget,
+        )
+        .unwrap();
+        let proof = guard::prove_dead_loop_transfer_handler(
+            canonical,
+            &view,
+            ssa,
+            &operations,
+            code,
+            &sites,
+            &crate::pass::JAVA_8,
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let fields = field::Plan::empty();
+        let arrays = ArrayInitializers::prove(ssa, &operations, &fields, &mut budget).unwrap();
+        let names = context.names;
+        let reuse = context.reuse;
+        let method = crate::facts::MethodFacts::new(name, "([I)I", 1).with_access_flags(0x0009);
+        let parameter_types = method.parameter_types();
+        let prologues = crate::init::Prologues::none();
+        let enums = crate::enumswitch::Plan::empty();
+        let debug = iterator_test_debug_locals(code);
+        let program = build(
+            canonical,
+            ssa,
+            &operations,
+            Inputs {
+                code,
+                pool: ir.constant_pool(),
+                bootstrap: ir.bootstrap_methods(),
+                profile: crate::pass::JAVA_8.clone(),
+                parameters: 1,
+                has_receiver: false,
+                parameter_types: &parameter_types,
+                return_type: return_type("([I)I"),
+                method_access_flags: Some(0x0009),
+                debug_locals: &debug,
+                names: &names,
+                reuse: &reuse,
+                chains: &chains,
+                field_copies: &FieldCopies::default(),
+                members: None,
+                member_inner_targets: &[],
+                typed_functional_target: None,
+                interface_super_calls: &[],
+                reference_overload_calls: &[],
+                snapshot_hierarchy_widenings: &[],
+                captured_outer_reads: &[],
+                outer_super_calls: &[],
+                nested_class_members: &[],
+                pool_spelled_members: false,
+                physical_method: Some(declaration.identity()),
+                declaring_class: Some("LoopTransferFinally"),
+                direct_super_class: ir.direct_super_class(),
+                direct_interfaces: ir.direct_interfaces(),
+                class_methods: ir.class_methods(),
+                class_fields: ir.class_fields(),
+                class_attributes: ir.class_attributes(),
+                bridge: None,
+                sites: &sites,
+                prologues: &prologues,
+                fields: &fields,
+                array_initializers: arrays,
+                enums: &enums,
+                allow_array_constructor_method_references: false,
+            },
+            &recovered.regions,
+            &mut budget,
+        )
+        .unwrap();
+        (analysis, view, recovered, program, proof)
+    }
+
+    #[test]
+    fn loop_transfer_projection_checks_actual_ast_and_commits_both_owners_together() {
+        for name in ["finContinue", "finBreak"] {
+            let (_analysis, view, mut recovered, mut program, proof) =
+                loop_transfer_unprojected_fixture(name);
+            println!("{name}: actual preprojection Program {program:#?}");
+            let original = (recovered.clone(), program.clone());
+            assert!(!recovered.is_structured() && program.ragged);
+            assert!(
+                project_dead_loop_transfer_handler(
+                    &mut recovered,
+                    &mut program,
+                    &proof,
+                    &view,
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+            );
+            assert!(recovered.is_structured() && !program.ragged);
+            assert_eq!(recovered.claimed.len(), 8);
+            assert_eq!(program.statements + 1, original.1.statements);
+            assert_eq!(recovered.regions.len() + 1, original.0.regions.len());
+            let mut wrong = original.clone();
+            let for_stmt = wrong
+                .1
+                .stmts
+                .iter_mut()
+                .find(|s| matches!(s.kind, StmtKind::For { .. }))
+                .unwrap();
+            for_stmt.origin = OriginSet::new(Origin::direct(10));
+            let unchanged = wrong.clone();
+            assert!(
+                !project_dead_loop_transfer_handler(
+                    &mut wrong.0,
+                    &mut wrong.1,
+                    &proof,
+                    &view,
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+            );
+            assert_eq!(
+                wrong, unchanged,
+                "Region header10 cannot replace the actual For anchor13"
+            );
+            let mut competing = original.clone();
+            competing
+                .0
+                .claimed
+                .insert(view.index_of(&proof.handler).unwrap());
+            let unchanged = competing.clone();
+            assert!(
+                !project_dead_loop_transfer_handler(
+                    &mut competing.0,
+                    &mut competing.1,
+                    &proof,
+                    &view,
+                    &mut child_array_test_budget()
+                )
+                .unwrap()
+            );
+            assert_eq!(
+                competing, unchanged,
+                "a competing owner leaves both original values intact"
+            );
+        }
+    }
+
+    #[test]
+    fn loop_transfer_projection_final_budget_and_cancel_keep_original_ast_and_regions() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::Arc;
+        #[derive(Debug)]
+        struct CancelAfterFinalCharge(
+            jarde_reader::budget::CancellationToken,
+            std::sync::atomic::AtomicUsize,
+        );
+        impl LedgerObserver for CancelAfterFinalCharge {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_))
+                    && self.1.fetch_add(1, std::sync::atomic::Ordering::SeqCst) == 1
+                {
+                    self.0.cancel();
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+        let (_analysis, view, recovered, program, proof) =
+            loop_transfer_unprojected_fixture("finBreak");
+        let original = (recovered, program);
+        let mut limited = child_array_test_budget().limits().clone();
+        limited.ir_items = 5;
+        let mut budget = Budget::new(limited);
+        let mut stopped = original.clone();
+        assert!(matches!(
+            project_dead_loop_transfer_handler(
+                &mut stopped.0,
+                &mut stopped.1,
+                &proof,
+                &view,
+                &mut budget
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                at: Some(45),
+                ..
+            })
+        ));
+        assert_eq!(stopped, original);
+        assert_eq!(budget.usage().analysis_steps, 512);
+        assert_eq!(budget.usage().ir_items, 0);
+        let token = jarde_reader::budget::CancellationToken::new();
+        let mut budget = Budget::with_cancellation_token(
+            child_array_test_budget().limits().clone(),
+            token.clone(),
+        );
+        let ledger = OperationLedger::new(&budget).with_observer(Arc::new(CancelAfterFinalCharge(
+            token,
+            std::sync::atomic::AtomicUsize::new(0),
+        )));
+        budget.with_ledger(ledger, UsageOwner::Methods);
+        assert_eq!(
+            project_dead_loop_transfer_handler(
+                &mut stopped.0,
+                &mut stopped.1,
+                &proof,
+                &view,
+                &mut budget
+            )
+            .unwrap_err(),
+            StopReason::Cancelled { at: Some(45) }
+        );
+        assert_eq!(stopped, original);
+        assert_eq!(budget.usage().ir_items, 6);
+        assert_eq!(budget.usage().analysis_steps, 512);
     }
 
     fn own_grid_code_variant(

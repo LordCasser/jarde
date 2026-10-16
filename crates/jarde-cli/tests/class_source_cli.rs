@@ -257,6 +257,66 @@ fn loop_call_return_finally_json_keeps_both_returns_and_the_whole_class() {
     }
 }
 
+#[test]
+fn loop_transfer_finally_json_keeps_both_distinct_loops_and_the_whole_class() {
+    for leg in ["v8", "v8-javac8"] {
+        let fixture = repository_fixture(&format!(
+            "../../tests/fixtures/recover-loop-transfer-finally-handler/{leg}/LoopTransferFinally.class"
+        ));
+        let output = run(&[
+            "class-source",
+            "--input",
+            path_of(&fixture),
+            "--class",
+            "LoopTransferFinally",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all",
+        ]);
+        assert_eq!(status(&output), EXIT_COMPLETE, "{}", stderr_text(&output));
+        let document: Value = serde_json::from_slice(&output.stdout).unwrap();
+        let methods = document["methods"].as_array().unwrap();
+        assert_eq!(methods.len(), 3, "all physical methods remain");
+        for name in ["finContinue", "finBreak"] {
+            let method = methods
+                .iter()
+                .find(|method| method["item"]["name"]["escaped"] == name)
+                .unwrap();
+            let report = &method["outcome"]["report"];
+            assert_eq!(method["item"]["descriptor"]["escaped"], "([I)I");
+            assert_eq!(report["representation"], "java");
+            assert_eq!(report["quality"], "structured");
+            assert!(report["fallbacks"].as_array().unwrap().is_empty());
+            let text = report["text"].as_str().unwrap();
+            assert!(
+                text.contains("for (") && !text.contains("@bytecode"),
+                "{leg}/{name}: {text}"
+            );
+            assert_eq!(
+                text.contains("break;"),
+                name == "finBreak",
+                "{leg}/{name}: {text}"
+            );
+        }
+        assert_eq!(
+            document["text"].as_str().unwrap(),
+            library_report(
+                &fixture,
+                ClassRef::Name {
+                    class: jarde::ClassNameQuery::internal("LoopTransferFinally")
+                },
+                EnvironmentPolicy::SingleClass,
+            )
+            .text
+        );
+    }
+}
+
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
 
 struct TempDir {
