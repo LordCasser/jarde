@@ -20,6 +20,12 @@
 4. **兼容控制与拒绝分开。** 不放宽现有instance receiver、void单位更新或postfix旧值判据。构造异字段、错误新旧值、非一/非add、额外alias、效果/handler/跨块及缺失声明等边界；若其它既有规则能正确恢复，不把必须拒绝写成所有规则的全局限制。解析/方言/运行选择/verifier保持原管线，源码恢复成功必须另由完整编译执行证明。
 5. **双编译腿完整重放。** 原FO.java与driver冻结，不改原类/Runner/oracle，不从产物删bump以单测finally。最终CLI每腿完整report.text原样编译，rebuilt-only执行固定main与独立driver，核0/0、8/8、MIN/MIN、8/100、MIN/100、1/100；保留所有失败及未执行步骤。可按需补当前JADX完整对照，JVM原类行为与证书才是判据。
 
+### 实施期补充：owner的合法解析
+
+两条独立手写javac控制已确认：同名int字段会让 `++PrefixOwnerShadow.i` 中的首标识符解析成字段，产生 `int cannot be dereferenced`。该控制不涉及FO或Jarde生成文本。`spell_reference` 可拼写并不等于表达式中的owner已正确绑定；现有命名阶段已保留静态owner首标识符以避免生成局部/参数遮蔽，但不能改真实字段。
+
+本片继续使用有真实字段子节点的限定owner表达式。在认领前预算核对实际class_fields中的首标识符冲突；现有输入只能在已知Object直接父、无接口时排除未读继承字段的遮蔽。未知继承关系或冲突属于本新投影缺少合法owner证明，保留原拒绝；不改field@1或其它更新规则，不新建依赖展开/名称解析框架，也不偷偷以裸字段名或Local文本替代Field。FO满足这项证明前提。更一般的owner绑定须补齐证据后另扩准入，不能凭当前字段表没有冲突猜测继承表也没有冲突。
+
 ## Risks / Trade-offs
 
 - [把copy的producer BCI相同误当两份值相同] → 核实际SSA输入/输出及唯一consumer，而非只凭opcode或comes_from(copy)放行。

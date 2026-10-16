@@ -1,0 +1,222 @@
+{
+  "schema": "static-prefix-old-native-independent-audit-v1",
+  "status": "accepted_old_behavior_reds_with_explicit_closure_scope",
+  "checks": 75,
+  "errors": [],
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/execution.json",
+    "bytes": 3233845,
+    "sha256": "b1858a9f3148f7d8b309ebc9da22e35238eb8b0a3f26ac29865c6eeef529addc"
+  },
+  "results": {
+    "commands": 5,
+    "raw_files": 10,
+    "normal_fingerprint": [
+      5,
+      0,
+      1
+    ],
+    "public_behavior": [
+      1,
+      2,
+      0
+    ],
+    "CLI_behavior": [
+      0,
+      1,
+      0
+    ],
+    "build_exit": 0,
+    "clean_exit": 0
+  },
+  "actual_receipt_source_count": 4902,
+  "derived_supplemented_full_source_count": 4915,
+  "source_scope_explanation": "Actual workspace_runner.source_paths closure excludes13fuzz/corpus seeds present in earlier4914 baseline; +new publictest =>4902. Receipt before/after stable4902. Supplemental13pins equal prior baseline; derived full4915 is explicitly not relabeling actual receipt source_count.",
+  "excluded13_supplemental_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/artifact_tree/damaged-entry.jar",
+      "bytes": 498,
+      "sha256": "1c2eb1f019396688fb7dc1d8db0461cc5729514368cebad814b61ea889e8b494"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/artifact_tree/minimal-jar",
+      "bytes": 659,
+      "sha256": "e40e8212e4bb0d80f7f69b55ed9ba7797aa806309e54509a5de4ebd2cefce456"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/artifact_tree/multi-release.jar",
+      "bytes": 866,
+      "sha256": "e62f90dd135b10a59b3816626841aa1f92079db967f3881e0e749248e45e633d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/artifact_tree/truncated-jar",
+      "bytes": 80,
+      "sha256": "8e677c19609a57aae4acca413b669f04af926a48c281f2db0434d7fdc1bca833"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/method_analysis/exception-overlap.class",
+      "bytes": 214,
+      "sha256": "dec4deae4816fa089e9e3e074f2a77bf83ecacd9766e4b50f7a0227519c1ced2"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/method_analysis/jsr-ret.class",
+      "bytes": 258,
+      "sha256": "ecd9c7cca0cd3c145be129e3342d4af6e985a2872091cc2b848e557370f5438d"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/method_analysis/legacy-clone.class",
+      "bytes": 131,
+      "sha256": "1e63109fc6c3ad646549855cd88d7bf8278ec324970250db77c304c07e2b5fa4"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/method_analysis/wide-switch.class",
+      "bytes": 194,
+      "sha256": "5b834a4130548c422992f87cf735335cef12d3a66a4dde65b12a3fa6e757c2bb"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/method_analysis/wide-switch.jar",
+      "bytes": 334,
+      "sha256": "574c4c18db87f057aed95d83ab46905672f15a5201d99fdc4ae55358949af41c"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/query/corrupt-payload.jar",
+      "bytes": 659,
+      "sha256": "f6024656e338ddf57d880bf3f37daa4702f83abc4209243dfc88ac1d9ec5fe6c"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/query/damaged-candidate.jar",
+      "bytes": 498,
+      "sha256": "1c2eb1f019396688fb7dc1d8db0461cc5729514368cebad814b61ea889e8b494"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/query/minimal-class",
+      "bytes": 185,
+      "sha256": "7f4c40a79be7805f554253b4abe33509e9751bfb8ef3b4e1acdbfa5f3d994d83"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/fuzz/corpus/query/truncated-class",
+      "bytes": 20,
+      "sha256": "6fe24a9d34ae7f04938f1f36fd54216f69964393367b3f52f87a5ff547f61dfa"
+    }
+  ],
+  "authorized_overlap_changes": [
+    "crates/jarde-cli/tests/class_source_cli.rs",
+    "tests/fixtures/corpus-fingerprint.json"
+  ],
+  "prior_regenerator": {
+    "receipt": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v1/run-v1/execution.json",
+      "bytes": 2148622,
+      "sha256": "b8143af66f3a00ac2c65f973fdcedd387fb8112ff263df86b1729c40073fcde8"
+    },
+    "status": "capture_failed_or_expected_outcome_mismatch_raw_preserved",
+    "error": "RuntimeError: fingerprint regenerator: unexpected actual test summary/names: summary=('ok', '1', '0', '0'), names=[]",
+    "actual_regenerator_exit": 0,
+    "actual_summary": [
+      1,
+      0,
+      0
+    ],
+    "actual_clean_exit": 0,
+    "later_tests_not_executed": true,
+    "reinterpreted_as_successful_v1_runner": false
+  },
+  "fingerprint_semantic_diff": {
+    "old": 2220,
+    "new": 2226,
+    "added": [
+      {
+        "blake3": "bb056bbf398964ea6a282ad90f35dafb7516b5b54097a1b7a4d85cc9eafedd81",
+        "bytes": 291,
+        "path": "tests/fixtures/recover-static-field-prefix-return/FO.java"
+      },
+      {
+        "blake3": "b55835ac828610587984b43c10d8a328831163e19e3b9072c1de65e5b347fe13",
+        "bytes": 584,
+        "path": "tests/fixtures/recover-static-field-prefix-return/StaticPrefixProbe.java"
+      },
+      {
+        "blake3": "369298369db6db41f75cf17ce7a032252a18ca2752f4ff7cbaa34d9b009bd1f9",
+        "bytes": 6,
+        "path": "tests/fixtures/recover-static-field-prefix-return/main.stdout"
+      },
+      {
+        "blake3": "c11bb4315fddedff306a4e7a3fcc5bc4d21d8e637b2561993054c8b40450eebc",
+        "bytes": 60,
+        "path": "tests/fixtures/recover-static-field-prefix-return/probe.stdout"
+      },
+      {
+        "blake3": "c6698a15da03d707479418276032aa996ed0ada64bfeafc7be2d6a6b145bd843",
+        "bytes": 790,
+        "path": "tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class"
+      },
+      {
+        "blake3": "9b4a9c3159ce4be2fb7d34e9a2d9add993d17d267671e34d86c65aa441ab6bff",
+        "bytes": 790,
+        "path": "tests/fixtures/recover-static-field-prefix-return/v8/FO.class"
+      }
+    ],
+    "existing_rows_and_nonfiles_unchanged": true
+  },
+  "frozen_cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-static-prefix-old-native-v2",
+    "bytes": 59657968,
+    "sha256": "c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli",
+    "cargo_artifact_fresh": true
+  },
+  "scope": "Pure Python/cache review only, no native/Git/API. Actual old reds are named behavior assertions, not compile/tool failures; public tests fail on javac23 leg first, so later per-leg assertion paths are unexecuted. Normal p5 did run and pass. V1 regeneration succeeded but parser failed on libtest inline output; later tests/build were not reached. No production implementation accepted, no new CI acceptance.",
+  "raw_pins": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/1.stdout.raw",
+      "bytes": 565,
+      "sha256": "885c0be264ceb4a0afaf09e706b608959c937b88bce532d0fa9b92dc9286da44"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/1.stderr.raw",
+      "bytes": 3389,
+      "sha256": "4908823adac9bf0dbb0d06caf3507b706f7ecdd694b73eb2f80be2dbcc3d59dd"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/2.stdout.raw",
+      "bytes": 2086,
+      "sha256": "678e53586ebdd214725c0cf3b8ee1b385b367306653406522404a990e5b918c4"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/2.stderr.raw",
+      "bytes": 403,
+      "sha256": "e03607e43446b1ae940da4f5ae58716a34e514027cfcee8f560b9c885f04d96b"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/3.stdout.raw",
+      "bytes": 1064,
+      "sha256": "25b8d39cd955d362616345e28351989a9e950d29829a90f832a839476b7779b7"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/3.stderr.raw",
+      "bytes": 1831,
+      "sha256": "8f1d86413777e8442ecedb3eb60edbbe00ccdc91373de7bc5257efeb235364a5"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/4.stdout.raw",
+      "bytes": 56513,
+      "sha256": "ea11cf05c19e6f910761185403174e3933a8171886a6e20e11d0e7142e03575c"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/4.stderr.raw",
+      "bytes": 73,
+      "sha256": "f5b94e0a161aef0aa6e81459c4f501280983bc9c6c77a899edc668622dd16546"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/run-v1/5.stderr.raw",
+      "bytes": 52,
+      "sha256": "1126c87f9f2f1c9bfa19bb89fac814d8ab2e98d8e9bf37509921a256efbf8d78"
+    }
+  ]
+}

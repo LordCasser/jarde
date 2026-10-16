@@ -2,7 +2,7 @@
 
 ## 1. 实施基线与永久反例
 
-- [ ] 1.1 在reference片自身CI/归档后重绑定实际实施head、两FO原编译腿与未改原Java/driver/oracle；冻结永久fixture并同步语料指纹。验收：Code/声明/输入SHA、原四次1/100与四次60B控制、完整旧FO重编exit1及具体bump拒绝、所有raw可移交；只新增预期fixture指纹条目，不删样本或借历史CI。
+- [x] 1.1 在reference片自身CI/归档后重绑定实际实施head、两FO原编译腿与未改原Java/driver/oracle；冻结永久fixture并同步语料指纹。验收：Code/声明/输入SHA、原四次1/100与四次60B控制、完整旧FO重编exit1及具体bump拒绝、所有raw可移交；只新增预期fixture指纹条目，不删样本或借历史CI。
 - [ ] 1.2 补入具名库/CLI与最窄证明期回归，在旧生产先证实行为红。验收：旧红因静态prefix新值缺口而非路径/工具缺失；校物理字段读写、dup新值消费者与来源，预算/取消必须在实际证明工作中观察，不以入口预取消代替；逐项保留未执行/失败边界。
 
 ## 2. 局部恢复与兼容性
@@ -17,5 +17,15 @@
 
 ## Workflow follow-up
 
-- 当前0/6；规划与原类行为控制不算实现。reference片ba3fa76自身CI已因漏列有意新增fixture的指纹失败，必须补齐其维护并取得新提交自身CI，再结束前片收尾和应用本片。
+- 当前1/6；仅1.1完成，规划与原类控制不算恢复实现。reference片的82611166自身CI已通过、正常归档并交付main fc195175；本片从该实际head开始，不能借前片CI完成本片产品门。
 - 实际验收后同步本片delta至主spec、正常archive并核实主线源码/证据绑定；不增加全局CF11/CF18/71/612覆盖主张。
+
+## 实施进展（2026-10-16）
+
+- 原FO/driver/oracle与两份790B class逐字冻结，field与Code物理身份核实。新16命令基线中，两套原FO重新编译逐字相同；四次main输出6B、四次driver输出60B在Java8/23全部exact。两次CLI全部5方法的report.text原样保存，完整javac均退出1，missing return在bump()I；evalThenFin的保存值/finally原已正确，rebuilt runtime为0。
+- 显式再生成实际1通过/0失败，语料2220→2226恰新增六个非md输入，旧条目及所有分类字段原样。首次采集因regenerator在测试名称与ok之间打印状态而解析失败，原raw与clean保留；后续正常指纹套件5通过/0失败/1默认忽略，没有伪称首次后继测试已运行。
+- 旧生产公共测试1通过/2行为失败，JSON CLI单项0通过/1行为失败，具体为未呈现新值返回和字段read/write均false。两红及CLI均在第一个javac23腿的首断言退出，第二javac8腿和后续来源断言未到；既有finally顺序控制实际两腿通过。双腿完整源码红另由16命令基线证明，不能互相冒称覆盖。
+- 新旧生产CLI从实际native构建冻结，59,657,968B、0555、SHA256 c44bde2cdbbf32f70a29bef345c19f11b86229b2e399a0936ed90c1a264fa396，与此前旧CLI逐字相同；Cargo artifact的fresh实际true（此前CLI测试已构建），不称新实现或fresh=false。exact clean后target缺失。
+- 基线完整源清单4914=原4907加7fixture文件；旧native收据实际selected4902，未纳入13个fuzz种子，不能将其改称完整4915。正常指纹门实际验证全2226，独审另读13种子与基线相同；两个范围分别记录。实际source/inputs before-after与raw见results/old-baseline-v1。
+- 额外两条受控javac命令确认同名字段可遮蔽owner：合法手写原控制可编译，独立手写的++PrefixOwnerShadow.i候选报int cannot be dereferenced。此处不是Jarde生成结果，也没有改原FO/driver；实现须保护合法owner拼写，不扩全局名称解析。
+- 1.2已有永久行为红，但证明期真实预算/取消测试尚未完成，仍未勾选。生产恢复逻辑尚未修改，2.x/3.x均待实际验收。

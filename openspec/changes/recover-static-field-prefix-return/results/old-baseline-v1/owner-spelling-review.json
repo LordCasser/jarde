@@ -1,0 +1,20 @@
+{
+  "schema": "static-prefix-owner-spelling-review-v1",
+  "status": "static_recommendation_only",
+  "scope": "Read-only local source reasoning; no implementation, external dependency lookup or runtime validation. Companion old-native audit separately preserves actual reds.",
+  "finding": "report.rs:11762-11796 reserves the first static-owner identifier against generated/debug local and parameter names. It does not prove Java expression-name resolution against same-class or inherited fields. A legal lexical owner path is not by itself proof that Path(owner).i denotes the intended static field.",
+  "minimum_for_planned_qualified_Field_target": [
+    "Keep existing reservation and spell_reference(owner) legality guard. Extract the FIRST emitted identifier from actual spelled owner path (FO for FO, p for p.FO), not blindly last class component; dollar/nested spelling must match emitter.",
+    "Before ownership commit, budget-scan full same-class class_fields and reject this prefix projection if any declared field has that exact first identifier (any type/staticness/access). Do not only compare target int field name; a distinct object field FO can shadow FO.i.",
+    "Inherited members cannot be ruled out merely because current class_fields lacks a collision. Current build::Inputs already carries direct_super_class and direct_interfaces (build.rs:375-377); no new header loader/framework is needed for a conservative first slice. For planned qualified path, accept the hierarchy boundary with known java/lang/Object direct superclass and no direct interfaces, plus no declared collision; FO meets it. Other unknown hierarchy candidates conservatively keep existing fallback/other rules, not global rejection.",
+    "If the pipeline already has exact complete inherited field evidence, it can prove absence of FIRST-identifier collisions instead of hierarchy guard, but do not add a transitive dependency resolver merely for this slice. Access/inheritance details cannot be guessed from an unknown superclass name. Treat Object-empty-field premise as target Java platform boundary, not a fabricated resolved-header proof."
+  ],
+  "less_restrictive_alternative_if_needed": "Because the target is proved declared in the CURRENT class, an unqualified field-name target i avoids owner-name shadowing by any inherited FO/p field. The class-declared i itself hides inherited i. A bounded scan of actual NameTable::names() (names.rs:734) can reject/rename a parameter or local rendered exactly i; complete six-instruction FO bump has none. However planned AST currently represents a Field with mandatory receiver, and design explicitly wants owner-qualified Field. Do not silently emit a bare i as Local/Path while claiming full Field-node provenance. If parent elects this alternative, make minimal explicit semantic/name-resolution representation and document that choice; it is not necessary to unblock FO.",
+  "why_conservative_not_arbitrary": "Without exact inherited-name evidence, emitting qualified FO.i for a subclass with an inherited field FO can fail compilation or resolve another object field. The hierarchy guard is a narrow unsupported-evidence boundary for this new projection, not a change to field@1 identity or a claim that such bytecode is invalid. FO ordinary class remains supported. An intentional later unqualified-current-field spelling proof can remove this limitation without general dependency traversal.",
+  "unit_controls": [
+    "A same-class field named first owner identifier must prevent new certificate commit; preserve all six fallback sources, accepted charges and original stop semantics.",
+    "A superclass/interface with potential first-identifier field and unavailable exact member evidence must not be admitted by mere current class_fields scan.",
+    "FO extends Object/no interfaces, unrelated differently named fields, and existing local/parameter owner-name reservation remain positive controls.",
+    "For packaged owner p.FO, collision name p is relevant; a field FO alone does not shadow initial package identifier p. Tests must use actual emitted owner spelling."
+  ]
+}

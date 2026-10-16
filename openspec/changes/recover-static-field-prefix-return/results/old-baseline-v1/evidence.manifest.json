@@ -1,0 +1,47 @@
+{
+  "status": "copied_exact_and_reopened_all_payloads",
+  "items": [
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-baseline-evidence-v4/capture.tar.gz",
+      "file": "capture.tar.gz",
+      "bytes": 3631764,
+      "sha256": "1325b7c3074859581b1b263bd90f797f2be7da6d2a6234c10185e22178ee5810"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-baseline-evidence-v4/manifest.json",
+      "file": "manifest.json",
+      "bytes": 39272,
+      "sha256": "2300b485b3808a115b34c845d0167e979b0c6cb41f0d42a835da1570190a5dce"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-baseline-evidence-v4/execution.json",
+      "file": "package-execution.json",
+      "bytes": 617,
+      "sha256": "fb7602b389e4fed71caa874d66f0af50d4b5a569e622aab54ce7bf3b518b1c4b"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/static-prefix-apply-root-v1/frozen-fixture-identity-v1.json",
+      "file": "frozen-fixture-identity.json",
+      "bytes": 5881,
+      "sha256": "9e6f588b41b2ffd41067122044f0637f84a865050b681b70e7f59a1bebad95da"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-apply-baseline-v1/independent-audit-v1.json",
+      "file": "independent-baseline-audit.json",
+      "bytes": 11726,
+      "sha256": "80854e0ef4a675ab814deefd98e5581322a6d6802b5af58b1d953fcf4d0db62b"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-native-v2/independent-audit-v1.json",
+      "file": "independent-old-native-audit.json",
+      "bytes": 9652,
+      "sha256": "30e8e7516b62b49d18431f9b0a03c603378cd1d5f22f4107e90a9ec87e25668d"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-owner-spelling-review-v1.json",
+      "file": "owner-spelling-review.json",
+      "bytes": 4130,
+      "sha256": "3b04dca599cee757f87ee92d92c84e1d4b51acb24c0afe18f6c806ae5338f04b"
+    }
+  ]
+}

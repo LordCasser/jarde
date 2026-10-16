@@ -1,0 +1,188 @@
+{
+  "status": "frozen_original_inputs_exact",
+  "implementation_base": "fc195175d2a162a2ac8caa286a7cd5c69796d3e2",
+  "product_ci_base": "82611166fc0b8a2e3a8d925e7a3e9f12738c0f87",
+  "files": [
+    {
+      "source": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FO.java",
+      "destination": "tests/fixtures/recover-static-field-prefix-return/FO.java",
+      "bytes": 291,
+      "sha256": "36fddf93e459829b6caa9d1b8c4af2c73fafbf35b399b755a106a6a15a6f88d3"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-original-runtime-controls-v1/StaticPrefixProbe.java",
+      "destination": "tests/fixtures/recover-static-field-prefix-return/StaticPrefixProbe.java",
+      "bytes": 584,
+      "sha256": "866e245fdcbdb09e954f24fcb7348139aaf57a020517bc49378b8c2d22eab0ce"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac23-original-classes/FO.class",
+      "destination": "tests/fixtures/recover-static-field-prefix-return/v8/FO.class",
+      "bytes": 790,
+      "sha256": "de08332a3eff86160fc606c04664d31f8f80bce207be8315899f2e4f91168134"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/javac8-original-classes/FO.class",
+      "destination": "tests/fixtures/recover-static-field-prefix-return/v8-javac8/FO.class",
+      "bytes": 790,
+      "sha256": "c5f1287d9dac890b29c270473d6e8122d9bfb5af24199f78ba441a8e087627e7"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-current-screen-v1/run-v1/2.stdout.raw",
+      "destination": "tests/fixtures/recover-static-field-prefix-return/main.stdout",
+      "bytes": 6,
+      "sha256": "d8e1921ee861d7552766f500d96495868192a941c0e1f0863bf57bba1454645b"
+    },
+    {
+      "source": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-original-runtime-controls-v1/run-v1/2.stdout.raw",
+      "destination": "tests/fixtures/recover-static-field-prefix-return/probe.stdout",
+      "bytes": 60,
+      "sha256": "294d05426caeb2767eb588a0ee9c8481ed37ffd045f2af581dacf48c94e48bd1"
+    }
+  ],
+  "identity": [
+    {
+      "leg": "v8",
+      "owner": "FO",
+      "class_major": 52,
+      "class_minor": 0,
+      "fields": [
+        {
+          "flags": 8,
+          "name": "i",
+          "descriptor": "I"
+        }
+      ],
+      "methods": [
+        {
+          "ordinal": 0,
+          "flags": 1,
+          "name": "<init>",
+          "descriptor": "()V",
+          "code_hex": "2ab70001b1",
+          "exception_table_count": 0
+        },
+        {
+          "ordinal": 1,
+          "flags": 8,
+          "name": "bump",
+          "descriptor": "()I",
+          "code_hex": "b20007046059b30007ac",
+          "exception_table_count": 0
+        },
+        {
+          "ordinal": 2,
+          "flags": 8,
+          "name": "evalThenFin",
+          "descriptor": "()I",
+          "code_hex": "b8000d3b1064b300071aac4c1064b300072bbf",
+          "exception_table_count": 1
+        },
+        {
+          "ordinal": 3,
+          "flags": 9,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "code_hex": "b20011bb001759b70019b8001ab6001d1221b60023b20007b6001db60026b6002ab1",
+          "exception_table_count": 0
+        },
+        {
+          "ordinal": 4,
+          "flags": 8,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "code_hex": "03b30007b1",
+          "exception_table_count": 0
+        }
+      ],
+      "bump_field_references": [
+        {
+          "bci": 0,
+          "cp_index": 7,
+          "owner": "FO",
+          "name": "i",
+          "descriptor": "I"
+        },
+        {
+          "bci": 6,
+          "cp_index": 7,
+          "owner": "FO",
+          "name": "i",
+          "descriptor": "I"
+        }
+      ]
+    },
+    {
+      "leg": "v8-javac8",
+      "owner": "FO",
+      "class_major": 52,
+      "class_minor": 0,
+      "fields": [
+        {
+          "flags": 8,
+          "name": "i",
+          "descriptor": "I"
+        }
+      ],
+      "methods": [
+        {
+          "ordinal": 0,
+          "flags": 1,
+          "name": "<init>",
+          "descriptor": "()V",
+          "code_hex": "2ab70001b1",
+          "exception_table_count": 0
+        },
+        {
+          "ordinal": 1,
+          "flags": 8,
+          "name": "bump",
+          "descriptor": "()I",
+          "code_hex": "b20002046059b30002ac",
+          "exception_table_count": 0
+        },
+        {
+          "ordinal": 2,
+          "flags": 8,
+          "name": "evalThenFin",
+          "descriptor": "()I",
+          "code_hex": "b800033b1064b300021aac4c1064b300022bbf",
+          "exception_table_count": 1
+        },
+        {
+          "ordinal": 3,
+          "flags": 9,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "code_hex": "b20004bb000559b70006b80007b600081209b6000ab20002b60008b6000bb6000cb1",
+          "exception_table_count": 0
+        },
+        {
+          "ordinal": 4,
+          "flags": 8,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "code_hex": "03b30002b1",
+          "exception_table_count": 0
+        }
+      ],
+      "bump_field_references": [
+        {
+          "bci": 0,
+          "cp_index": 2,
+          "owner": "FO",
+          "name": "i",
+          "descriptor": "I"
+        },
+        {
+          "bci": 6,
+          "cp_index": 2,
+          "owner": "FO",
+          "name": "i",
+          "descriptor": "I"
+        }
+      ]
+    }
+  ],
+  "scope": "original source/classes/driver/oracles frozen only; no product implementation or rebuilt acceptance"
+}

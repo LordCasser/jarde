@@ -44,6 +44,54 @@ const EXIT_INCOMPLETE: i32 = 4;
 const HISTORICAL: &str =
     "../../tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class";
 
+#[test]
+fn static_prefix_json_keeps_the_new_sum_and_the_complete_class() {
+    for leg in ["v8", "v8-javac8"] {
+        let fixture = repository_fixture(&format!(
+            "../../tests/fixtures/recover-static-field-prefix-return/{leg}/FO.class"
+        ));
+        let output = run(&[
+            "class-source",
+            "--input",
+            path_of(&fixture),
+            "--class",
+            "FO",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all",
+        ]);
+        assert_eq!(status(&output), EXIT_COMPLETE, "{}", stderr_text(&output));
+        let document: Value = serde_json::from_slice(&output.stdout).unwrap();
+        let bump = document["methods"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|method| method["item"]["name"]["escaped"] == "bump")
+            .unwrap();
+        let text = bump["outcome"]["report"]["text"].as_str().unwrap();
+        assert!(text.contains("return ++FO.i;"), "{leg}: {text}");
+        assert!(!text.contains("@bytecode"), "{leg}: {text}");
+        assert_eq!(bump["item"]["index"], 1);
+        assert_eq!(bump["item"]["descriptor"]["escaped"], "()I");
+        assert_eq!(
+            document["text"].as_str().unwrap(),
+            library_report(
+                &fixture,
+                ClassRef::Name {
+                    class: jarde::ClassNameQuery::internal("FO"),
+                },
+                EnvironmentPolicy::SingleClass,
+            )
+            .text,
+        );
+    }
+}
+
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
 
 struct TempDir {

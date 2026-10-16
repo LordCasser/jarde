@@ -1,0 +1,14 @@
+{
+  "schema": "static-prefix-old-baseline-package-build-v4",
+  "status": "all_members_reopened_and_verified",
+  "archive": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/static-prefix-old-baseline-evidence-v4/capture.tar.gz",
+  "archive_bytes": 3631764,
+  "archive_sha256": "1325b7c3074859581b1b263bd90f797f2be7da6d2a6234c10185e22178ee5810",
+  "payload_count": 91,
+  "member_count": 92,
+  "command_count": 25,
+  "command_raw_count": 50,
+  "launcher_dispatch_raw": 12,
+  "launcher_dispatch_metadata": 5,
+  "manifest_sha256": "2300b485b3808a115b34c845d0167e979b0c6cb41f0d42a835da1570190a5dce"
+}
