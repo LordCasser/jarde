@@ -1,0 +1,35 @@
+{
+  "status": "root accepted",
+  "commands": 6,
+  "raw_streams_verified": 12,
+  "fmt_and_exact_CI_Clippy": true,
+  "tests": [
+    [
+      [
+        "ok",
+        "453",
+        "0",
+        "0"
+      ]
+    ],
+    [
+      [
+        "ok",
+        "2",
+        "0",
+        "0"
+      ]
+    ]
+  ],
+  "cli": {
+    "path": "/private/tmp/jarde-nested-local-gates-root-v3-20261017/candidate-cli",
+    "bytes": 62697056,
+    "sha256": "4811eea2d7f52d4c1b818c86acc1d961c91e3d7fe9d5adaa2c53131f84140f8e"
+  },
+  "source_unchanged": true,
+  "target_absent": true,
+  "default_stack": true,
+  "original_prove_finally_copy_unchanged": true,
+  "archive_bytes": 13353478,
+  "archive_sha256": "37a85c390eee00cd1f4d39a2c988b591e73cbb22819b762e30189029aad2337e"
+}

@@ -47,3 +47,9 @@ root在产品6b32源码上实际加最窄诊断并运行真实资源入口：候
 Jarde当前default/all完整类共12次原样重编失败（缺少返回语句），没有rebuilt运行。固定JADX1.5.6的三输入完整源码共6次重编成功，但12次运行均在第二个case n2/in0/out RuntimeException时得到IOIO，而正确为IO；每次先通过第一个正常case，随后failfast，不声称它运行了全部18组合。outer catch(Throwable)包住了正常cleanup导致再次执行in/out，这正是本证明要求四份out均无保护handler、按嵌套finally呈现而非外层catch的原因。见baseline-matrix-root-v2及sealed-class-oracle-root-v1。
 
 首次采集器只因日志空格解析失败，raw单独保存在baseline-collector-failure-root-v1；修复已用真实stdout核对，未改任何生成目标或原始源码。当前3/16，仅取证和JADX比较关闭，候选未集成、未作为正向产品验收。
+
+## Root integration review (2026-10-17)
+
+候选已在finThrow clean checkpoint b7db5c875之后接入。实际focused-v3为25库/2公库测试全部通过；初稿slice API编译失败与SSA首次拒绝raw分别保留。SSA保存返回的三段必须分开：divide写stack→store读stack、store写local→load读local、load写stack→return读stack；load产生新Stack Value31不能与原Local Value18直接比较。修复绑定确切单值链，不放松身份检查。
+
+15个邻变体先经真实reader/canonical/SSA完整性及资源入口拒绝测试，root再用Java8/23 -Xverify:all独立URLClassLoader反射检查全部30次通过，未调用目标。JVM有效性收据见neighbor-jvm-verification-root-v1。公开Finally/SavedReturn、Try AST及原证书所有权保持不变，新增描述仅两个半开BCI区间。最终完整源码/运行与自身CI仍须实际执行，不能按本节静态审查关闭叶片。

@@ -1,0 +1,41 @@
+{
+  "status": "incomplete run preserved, not a final-gates success",
+  "error": "test command 6 must report exactly one target/debug/deps binary; got 2",
+  "successful_actual_test_summaries": [
+    [
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "5",
+      "0",
+      "1"
+    ],
+    [
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "453",
+      "0",
+      "0"
+    ],
+    [
+      "2",
+      "0",
+      "0"
+    ],
+    [
+      "2",
+      "0",
+      "0"
+    ]
+  ],
+  "raw_streams_verified": 14,
+  "target_absent": true,
+  "archive_bytes": 331233,
+  "archive_sha256": "ac4c831a8f1d52bb868cc88e199dd5941695d093ece37f00b985af95e9fa0754",
+  "explanation": "v1 actual all tests passed through two API targets; artifact-cleaner only supports one target per command and correctly stopped. v2 precise/P5 passed; Clippy rejected vec for a fixed four-element set. Later array correction and final run are separate."
+}

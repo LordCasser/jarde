@@ -19597,9 +19597,15 @@ impl Builder<'_> {
             let at = bcis.first().copied().unwrap_or(0);
             return self.fallback(bcis, &reason, at);
         }
-        let finally_checkpoint = matches!(region, Region::Guard { body: Some(_), .. })
-            .then(|| self.finally_checkpoint());
-        self.declare_at(path)?;
+        let mut finally_checkpoint = matches!(region, Region::Guard { plan, body, .. }
+            if body.is_some() || plan.nested_finally().is_some())
+        .then(|| self.finally_checkpoint());
+        if let Err(stop) = self.declare_at(path) {
+            if let Some(checkpoint) = finally_checkpoint.take() {
+                self.restore_finally(checkpoint);
+            }
+            return Err(stop);
+        }
         match region {
             Region::Sequence { regions } => {
                 for (index, region) in regions.iter().enumerate() {
@@ -20979,7 +20985,56 @@ impl Builder<'_> {
                     | guard::FinallyCompletion::Void { .. } => None,
                 };
                 let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
-                let body = if let Some(inner) = structured_body {
+                let nested_cleanup = plan.nested_finally();
+                let body = if nested_cleanup.is_some() {
+                    if structured_body.is_some() {
+                        let bcis = self.region_quote(region, plan.body().0);
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("nested finally checkpoint"),
+                        );
+                        return self.fallback(
+                            bcis,
+                            "the nested finally also has a separately owned region body",
+                            plan.body().0,
+                        );
+                    }
+                    let mut body = match self.body_range(plan.body()) {
+                        Ok(body) => body,
+                        Err(stop) => {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                    };
+                    let Some((_, returns)) = saved_return else {
+                        let bcis = self.region_quote(region, at);
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("nested finally checkpoint"),
+                        );
+                        return self.fallback(bcis, "the nested finally has no saved return", at);
+                    };
+                    let return_stmt = match self.guarded_return(returns) {
+                        Ok(statement) => statement,
+                        Err(reason) => {
+                            let bcis = self.region_quote(region, returns);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested finally checkpoint"),
+                            );
+                            return self.fallback(bcis, &reason, returns);
+                        }
+                    };
+                    body.push(return_stmt);
+                    body
+                } else if let Some(inner) = structured_body {
                     let outer = std::mem::take(&mut self.stmts);
                     self.body_span = Some(plan.body());
                     self.finally_return = saved_return;
@@ -21022,13 +21077,56 @@ impl Builder<'_> {
                     body.push(return_stmt);
                     body
                 };
-                let finally_body = match self.body_range(*normal_cleanup) {
-                    Ok(body) => body,
-                    Err(stop) => {
-                        if let Some(checkpoint) = finally_checkpoint.take() {
-                            self.restore_finally(checkpoint);
+                let finally_body = if let Some(nested) = nested_cleanup {
+                    let inner_body = match self.body_range(nested.inner_body()) {
+                        Ok(body) => body,
+                        Err(stop) => {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested finally checkpoint"),
+                            );
+                            return Err(stop);
                         }
-                        return Err(stop);
+                    };
+                    let inner_cleanup = match self.body_range(nested.normal_cleanup()) {
+                        Ok(body) => body,
+                        Err(stop) => {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                    };
+                    let mut inner_origin = OriginSet::new(Origin::direct(nested.inner_body().0));
+                    for bci in plan.facts().iter().copied().filter(|bci| {
+                        nested.inner_body().0 <= *bci
+                            && *bci < nested.normal_cleanup().1
+                            && *bci != nested.inner_body().0
+                    }) {
+                        inner_origin = inner_origin.plus_derived(Origin::derived(bci));
+                    }
+                    let statement = Stmt::new(
+                        StmtKind::Try {
+                            resources: Vec::new(),
+                            catches: Vec::new(),
+                            body: inner_body,
+                            finally_body: Some(inner_cleanup),
+                        },
+                        inner_origin,
+                    );
+                    vec![statement]
+                } else {
+                    match self.body_range(*normal_cleanup) {
+                        Ok(body) => body,
+                        Err(stop) => {
+                            if let Some(checkpoint) = finally_checkpoint.take() {
+                                self.restore_finally(checkpoint);
+                            }
+                            return Err(stop);
+                        }
                     }
                 };
                 let nested_complete = saved_return.is_some()
@@ -21061,7 +21159,7 @@ impl Builder<'_> {
                     },
                     origin,
                 );
-                if structured_body.is_some()
+                if (structured_body.is_some() || nested_cleanup.is_some())
                     && (undeclared_local(&statement, &self.undeclared).is_some()
                         || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
                             self.stmts[checkpoint.stmts.len()..]

@@ -622,6 +622,26 @@ pub(crate) struct FinallyFallthrough {
     pub(crate) loop_header: Option<CanonicalBlockId>,
 }
 
+/// The one bounded inner try/finally whose instructions share the outer protected block.
+///
+/// The parent plan owns every physical block. These half-open BCI ranges only tell the writer
+/// where to split that fused block into the inner try body and its normal finally clause.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct NestedFinallyCleanup {
+    inner_body: (u32, u32),
+    normal_cleanup: (u32, u32),
+}
+
+impl NestedFinallyCleanup {
+    pub(crate) fn inner_body(&self) -> (u32, u32) {
+        self.inner_body
+    }
+
+    pub(crate) fn normal_cleanup(&self) -> (u32, u32) {
+        self.normal_cleanup
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SharedFinallyCompletion {
     SavedReturns([(u32, u32); 2]),
@@ -674,6 +694,8 @@ pub struct Plan {
     enclosing: Option<Box<EnclosingCatch>>,
     /// Private second completion; the public saved-return shape stays unchanged.
     finally_fallthrough: Option<FinallyFallthrough>,
+    /// A proved inner `try/finally` whose instructions share a canonical block with the outer body.
+    nested_finally: Option<NestedFinallyCleanup>,
     /// The instructions the proof **read**: the resources' own stores, the closes the handlers
     /// perform, the `addSuppressed` calls and the rethrows. They write no text of their own — the
     /// statement took their place — and they are the anchors the artifact records beside it, so that
@@ -761,6 +783,10 @@ impl Plan {
 
     pub(crate) fn finally_fallthrough(&self) -> Option<&FinallyFallthrough> {
         self.finally_fallthrough.as_ref()
+    }
+
+    pub(crate) fn nested_finally(&self) -> Option<&NestedFinallyCleanup> {
+        self.nested_finally.as_ref()
     }
 
     /// The instructions the proof read, in BCI order.
@@ -3490,6 +3516,7 @@ fn prove_call_return_loop_finally(
             continuation: Continuation::Tail { span: (119, 125) },
             loop_header: Some(header.clone()),
         }),
+        nested_finally: None,
         facts: BCIS
             .into_iter()
             .filter(|at| (12..125).contains(at))
@@ -4013,6 +4040,7 @@ fn prove_local_increment_loop_finally(
             continuation: Continuation::Tail { span: (54, 60) },
             loop_header: Some(header.clone()),
         }),
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -4730,6 +4758,680 @@ fn prove_finally_copy(
     }))
 }
 
+/// Whether a handler's caught value passes through one local and is the exact value rethrown.
+fn caught_value_rethrown(facts: &Facts<'_>, store_bci: u32, load_bci: u32, throw_bci: u32) -> bool {
+    let (Some(Operation::Store { slot: stored_slot }), Some(Operation::Load { slot: loaded_slot })) =
+        (facts.op(store_bci), facts.op(load_bci))
+    else {
+        return false;
+    };
+    if stored_slot != loaded_slot
+        || facts.op(throw_bci) != Some(&Operation::Throw)
+        || !handler_binding(facts, store_bci)
+    {
+        return false;
+    }
+    let (Some(stored), Some(reloaded), Some(thrown)) = (
+        facts.step(store_bci),
+        facts.step(load_bci),
+        facts.step(throw_bci),
+    ) else {
+        return false;
+    };
+    let stored_values: Vec<ValueId> = stored
+        .instruction
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Local(local) if local == stored_slot))
+        .map(|(_, value)| *value)
+        .collect();
+    let loaded_values: Vec<ValueId> = reloaded
+        .instruction
+        .reads()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Local(local) if local == loaded_slot))
+        .map(|(_, value)| *value)
+        .collect();
+    let produced_values: Vec<ValueId> = reloaded
+        .instruction
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let thrown_values: Vec<ValueId> = stack_operands(thrown.instruction)
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let (Some(stored), Some(loaded), Some(produced), Some(thrown)) = (
+        stored_values.first(),
+        loaded_values.first(),
+        produced_values.first(),
+        thrown_values.first(),
+    ) else {
+        return false;
+    };
+    stored_values.len() == 1
+        && loaded_values.len() == 1
+        && produced_values.len() == 1
+        && thrown_values.len() == 1
+        && facts.same(*stored, *loaded)
+        && facts.same(*produced, *thrown)
+}
+
+/// Proves the bounded two-level return-finally lowering whose normal body and inner try share one
+/// canonical block. All boundaries are derived from the four catch-all rows and operation/edge
+/// relations; the returned descriptor is only for rendering the two normal inner ranges.
+fn prove_nested_return_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    if facts.handlers.len() != 4
+        || facts
+            .handlers
+            .iter()
+            .any(|row| row.catch_type_index.is_some())
+        || facts.canonical.blocks().len() != 6
+        || !facts.canonical.unreachable().is_empty()
+        || !facts.canonical.completeness().is_complete()
+        || facts.order.len() > 64
+        || facts.ssa.phis().len() > 32
+        || facts.ssa.values().len() > 128
+        || facts.canonical.blocks().first().map(|block| block.id()) != Some(current)
+    {
+        return Ok(None);
+    }
+
+    // Charge the complete bounded physical walk before helper comparisons so exact-operation
+    // checks cannot turn this certificate into unmetered work.
+    for bci in facts.order.clone() {
+        facts.charge(bci)?;
+    }
+
+    let mut outer_rows = Vec::new();
+    for row in facts.handlers {
+        facts.charge(row.start_bci)?;
+        if row.start_bci == current.bci() {
+            outer_rows.push(row);
+        }
+    }
+    let [outer] = outer_rows.as_slice() else {
+        return Ok(None);
+    };
+    let mut inner_rows = Vec::new();
+    for row in facts.handlers {
+        facts.charge(row.start_bci)?;
+        if row.start_bci == outer.end_bci && row.ordinal != outer.ordinal {
+            inner_rows.push(row);
+        }
+    }
+    let [inner] = inner_rows.as_slice() else {
+        return Ok(None);
+    };
+
+    let Some(outer_handler) = facts.row_handler(outer) else {
+        return Ok(None);
+    };
+    let outer_handler_steps = facts.in_block(&outer_handler);
+    let Some(binding) = outer_handler_steps.first().map(SsaInstruction::bci) else {
+        return Ok(None);
+    };
+    if !matches!(facts.op(binding), Some(Operation::Store { .. }))
+        || !handler_binding(facts, binding)
+    {
+        return Ok(None);
+    }
+    let Some(inner_outer_start) = facts.next_bci(binding) else {
+        return Ok(None);
+    };
+    let mut nested_rows = Vec::new();
+    for row in facts.handlers {
+        facts.charge(row.start_bci)?;
+        if row.start_bci == inner_outer_start && row.ordinal != outer.ordinal {
+            nested_rows.push(row);
+        }
+    }
+    let [nested] = nested_rows.as_slice() else {
+        return Ok(None);
+    };
+    let Some(nested_handler) = facts.row_handler(nested) else {
+        return Ok(None);
+    };
+    let Some(nested_binding) = facts
+        .in_block(&nested_handler)
+        .first()
+        .map(SsaInstruction::bci)
+    else {
+        return Ok(None);
+    };
+    if !matches!(facts.op(nested_binding), Some(Operation::Store { .. }))
+        || !handler_binding(facts, nested_binding)
+    {
+        return Ok(None);
+    }
+    let Some(self_end) = facts.next_bci(nested_binding) else {
+        return Ok(None);
+    };
+    let mut self_rows = Vec::new();
+    for row in facts.handlers {
+        facts.charge(row.start_bci)?;
+        if row.start_bci == nested_binding
+            && row.end_bci == self_end
+            && row.handler_bci == nested_handler.bci()
+        {
+            self_rows.push(row);
+        }
+    }
+    let [self_row] = self_rows.as_slice() else {
+        return Ok(None);
+    };
+    let Some(outer_transfer) = outer_handler_steps.last().map(SsaInstruction::bci) else {
+        return Ok(None);
+    };
+    let Some(binding_end) = facts.next_bci(binding) else {
+        return Ok(None);
+    };
+    let Some(last_nested_body_bci) = facts
+        .bcis((nested.start_bci, nested.end_bci))
+        .last()
+        .copied()
+    else {
+        return Ok(None);
+    };
+    if binding != outer_handler.bci()
+        || facts.op(outer_transfer) != Some(&Operation::Transfer)
+        || facts.block_of(outer_transfer) != Some(&outer_handler)
+        || binding_end != nested.start_bci
+        || facts.block_of(last_nested_body_bci) != Some(&outer_handler)
+    {
+        return Ok(None);
+    }
+    let outer_normal_cleanup = (nested.end_bci, outer_transfer);
+    let outer_normal_cleanup_bcis = facts.bcis(outer_normal_cleanup);
+    let Some(last_outer_cleanup_bci) = outer_normal_cleanup_bcis.last().copied() else {
+        return Ok(None);
+    };
+    if facts.next_bci(last_outer_cleanup_bci) != Some(outer_transfer) {
+        return Ok(None);
+    }
+    if [
+        outer.ordinal,
+        inner.ordinal,
+        nested.ordinal,
+        self_row.ordinal,
+    ]
+    .into_iter()
+    .collect::<BTreeSet<_>>()
+    .len()
+        != facts.handlers.len()
+    {
+        return Ok(None);
+    }
+
+    let Some(inner_handler) = facts.row_handler(inner) else {
+        return Ok(None);
+    };
+    let Some(inner_copy) = finally_copy_shape(facts, inner) else {
+        return Ok(None);
+    };
+    let Some(nested_copy) = finally_copy_shape(facts, nested) else {
+        return Ok(None);
+    };
+    if inner_handler == nested_handler
+        || outer_handler == inner_handler
+        || outer_handler == nested_handler
+        || inner_copy.entry != inner_handler
+        || nested_copy.entry != nested_handler
+        || inner_copy.rethrow == nested_copy.rethrow
+    {
+        return Ok(None);
+    }
+
+    let outer_body = facts.bcis((outer.start_bci, outer.end_bci));
+    if outer_body.len() != 4
+        || !matches!(facts.op(outer_body[0]), Some(Operation::Push(_)))
+        || !matches!(facts.op(outer_body[1]), Some(Operation::Load { .. }))
+        || !matches!(
+            facts.op(outer_body[2]),
+            Some(Operation::Arithmetic {
+                op: crate::facts::ArithmeticOp::Divide
+            })
+        )
+        || !matches!(facts.op(outer_body[3]), Some(Operation::Store { .. }))
+        || outer_body[0] >= outer_body[1]
+        || outer_body[1] >= outer_body[2]
+        || outer_body[2] >= outer_body[3]
+        || facts.block_of(outer_body[3]) != Some(current)
+        || inner.start_bci != outer.end_bci
+        || inner.end_bci <= inner.start_bci
+        || facts.block_of(inner.start_bci) != Some(current)
+        || facts
+            .bcis((inner.start_bci, inner.end_bci))
+            .last()
+            .is_none_or(|bci| facts.block_of(*bci) != Some(current))
+    {
+        return Ok(None);
+    }
+    let save = outer_body[3];
+    let Some(Operation::Store { slot: saved_slot }) = facts.op(save) else {
+        return Ok(None);
+    };
+    let mut normal_transfers = Vec::new();
+    for instruction in facts.in_block(current) {
+        facts.charge(instruction.bci())?;
+        if instruction.bci() >= inner.end_bci
+            && matches!(facts.op(instruction.bci()), Some(Operation::Transfer))
+        {
+            normal_transfers.push(instruction.bci());
+        }
+    }
+    let [normal_transfer] = normal_transfers.as_slice() else {
+        return Ok(None);
+    };
+    if *normal_transfer <= inner.end_bci
+        || facts.in_block(current).last().map(SsaInstruction::bci) != Some(*normal_transfer)
+    {
+        return Ok(None);
+    }
+    let normal_cleanup = (inner.end_bci, *normal_transfer);
+    let nested_normal_body = facts.bcis((inner.start_bci, inner.end_bci));
+    let nested_normal_cleanup = facts.bcis(normal_cleanup);
+    if nested_normal_body.is_empty() || nested_normal_cleanup.is_empty() {
+        return Ok(None);
+    }
+
+    let outer_handler_tail = facts.view.successor_ids(&outer_handler);
+    let [rethrow_block] = outer_handler_tail.as_slice() else {
+        return Ok(None);
+    };
+    let tail_steps = facts.in_block(rethrow_block);
+    let [tail_load, tail_throw] = tail_steps else {
+        return Ok(None);
+    };
+    if !matches!(facts.op(tail_load.bci()), Some(Operation::Load { .. }))
+        || facts.op(tail_throw.bci()) != Some(&Operation::Throw)
+        || !facts.view.successor_ids(&inner_handler).is_empty()
+        || !facts.view.successor_ids(&nested_handler).is_empty()
+        || facts.view.successor_ids(current).len() != 1
+    {
+        return Ok(None);
+    }
+    let return_successors = facts.view.successor_ids(current);
+    let [return_block] = return_successors.as_slice() else {
+        return Ok(None);
+    };
+    if return_block == &outer_handler
+        || return_block == &inner_handler
+        || return_block == &nested_handler
+    {
+        return Ok(None);
+    }
+    let return_steps = facts.in_block(return_block);
+    let [return_load, return_instruction] = return_steps else {
+        return Ok(None);
+    };
+    let Some(return_bci) = (facts.op(return_instruction.bci()) == Some(&Operation::Return))
+        .then_some(return_instruction.bci())
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Load { slot: loaded_slot }) = facts.op(return_load.bci()) else {
+        return Ok(None);
+    };
+    if saved_slot != loaded_slot || facts.op(outer_transfer) != Some(&Operation::Transfer) {
+        return Ok(None);
+    }
+
+    let Some(normal_inner_copy) = cleanup_sequence(facts, &nested_normal_body, false) else {
+        return Ok(None);
+    };
+    let Some(exception_inner_copy) = cleanup_sequence(facts, &inner_copy.cleanup, false) else {
+        return Ok(None);
+    };
+    let Some(normal_outer_cleanup) = cleanup_sequence(facts, &nested_normal_cleanup, false) else {
+        return Ok(None);
+    };
+    let Some(exception_outer_cleanup) = cleanup_sequence(facts, &nested_copy.cleanup, false) else {
+        return Ok(None);
+    };
+    let outer_inner_body = facts.bcis((nested.start_bci, nested.end_bci));
+    let Some(exceptional_inner_body) = cleanup_sequence(facts, &outer_inner_body, false) else {
+        return Ok(None);
+    };
+    let Some(exceptional_outer_cleanup) =
+        cleanup_sequence(facts, &outer_normal_cleanup_bcis, false)
+    else {
+        return Ok(None);
+    };
+    if normal_inner_copy != exceptional_inner_body
+        || normal_outer_cleanup != exception_inner_copy
+        || normal_outer_cleanup != exceptional_outer_cleanup
+        || normal_outer_cleanup != exception_outer_cleanup
+    {
+        return Ok(None);
+    }
+
+    // The normal out-copy and both exceptional out-copies must be outside the rows that route
+    // exceptions from the inner body. The two inner-body rows and the outer body row are disjoint.
+    let mut protected = [outer, inner, nested, self_row];
+    protected.sort_by_key(|row| row.ordinal);
+    for bci in facts.order.clone() {
+        facts.charge(bci)?;
+        let expected: Vec<u32> = protected
+            .iter()
+            .filter(|row| row.start_bci <= bci && bci < row.end_bci)
+            .map(|row| row.ordinal)
+            .collect();
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+        {
+            return Ok(None);
+        }
+        let Some(effect) = facts
+            .ssa
+            .effects()
+            .instructions()
+            .iter()
+            .find(|effect| effect.bci() == bci)
+        else {
+            return Ok(None);
+        };
+        if (effect.may_throw() && effect.handlers() != expected)
+            || (!effect.may_throw() && !effect.handlers().is_empty())
+        {
+            return Ok(None);
+        }
+    }
+    let effects = facts.ssa.effects().instructions();
+    let throwing: BTreeSet<u32> = effects
+        .iter()
+        .filter(|effect| effect.may_throw())
+        .map(|effect| effect.bci())
+        .collect();
+    let mut sites = BTreeSet::new();
+    for site in facts.canonical.throw_sites() {
+        facts.charge(site.bci())?;
+        let Some(effect) = effects.iter().find(|effect| effect.bci() == site.bci()) else {
+            return Ok(None);
+        };
+        if !effect.may_throw()
+            || site.handlers() != effect.handlers()
+            || facts.block_of(site.bci()) != Some(site.block())
+            || !sites.insert(site.bci())
+        {
+            return Ok(None);
+        }
+    }
+    if sites != throwing {
+        return Ok(None);
+    }
+
+    // State the exception-routing obligations directly as well as checking the complete table:
+    // the divide and each `in` body have exactly their own row; every `out` copy is unprotected;
+    // the self-row protects only the nonthrowing caught-value store.
+    for (range, ordinal) in [
+        ((outer.start_bci, outer.end_bci), outer.ordinal),
+        ((inner.start_bci, inner.end_bci), inner.ordinal),
+        ((nested.start_bci, nested.end_bci), nested.ordinal),
+    ] {
+        for bci in facts.bcis(range) {
+            facts.charge(bci)?;
+            let actual_rows: Vec<u32> = facts.covering(bci).iter().map(|row| row.ordinal).collect();
+            let Some(effect) = effects.iter().find(|effect| effect.bci() == bci) else {
+                return Ok(None);
+            };
+            if actual_rows.as_slice() != [ordinal]
+                || (effect.may_throw() && effect.handlers() != [ordinal])
+                || (!effect.may_throw() && !effect.handlers().is_empty())
+            {
+                return Ok(None);
+            }
+        }
+    }
+    let mut unprotected_cleanup_ranges = vec![normal_cleanup, outer_normal_cleanup];
+    for copy in [&inner_copy.cleanup, &nested_copy.cleanup] {
+        let (Some(first), Some(last)) = (copy.first().copied(), copy.last().copied()) else {
+            return Ok(None);
+        };
+        let range = (first, facts.span_end(last));
+        if facts.bcis(range).as_slice() != copy.as_slice() {
+            return Ok(None);
+        }
+        unprotected_cleanup_ranges.push(range);
+    }
+    for range in unprotected_cleanup_ranges {
+        for bci in facts.bcis(range) {
+            facts.charge(bci)?;
+            let Some(effect) = effects.iter().find(|effect| effect.bci() == bci) else {
+                return Ok(None);
+            };
+            if !facts.covering(bci).is_empty() || !effect.handlers().is_empty() {
+                return Ok(None);
+            }
+        }
+    }
+    let self_row_bcis = facts.bcis((self_row.start_bci, self_row.end_bci));
+    if self_row_bcis.as_slice() != [nested_binding]
+        || effects
+            .iter()
+            .find(|effect| effect.bci() == nested_binding)
+            .is_none_or(|effect| effect.may_throw() || !effect.handlers().is_empty())
+    {
+        return Ok(None);
+    }
+
+    if facts.op(*normal_transfer) != Some(&Operation::Transfer) {
+        return Ok(None);
+    }
+    let Some(save_instruction) = facts.step(save) else {
+        return Ok(None);
+    };
+    let stored_values: Vec<ValueId> = save_instruction
+        .instruction
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Local(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let [stored_value] = stored_values.as_slice() else {
+        return Ok(None);
+    };
+    let reloaded_values: Vec<ValueId> = return_load
+        .reads()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Local(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let [reloaded_value] = reloaded_values.as_slice() else {
+        return Ok(None);
+    };
+    let return_values: Vec<ValueId> = stack_operands(return_instruction)
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let [return_value] = return_values.as_slice() else {
+        return Ok(None);
+    };
+    let loaded_stack_values: Vec<ValueId> = return_load
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    let [loaded_stack_value] = loaded_stack_values.as_slice() else {
+        return Ok(None);
+    };
+    if !facts.same(*stored_value, *reloaded_value)
+        || !facts.same(*return_value, *loaded_stack_value)
+        || !facts.step(outer_body[2]).is_some_and(|divide| {
+            divide.instruction.writes().iter().any(|(_, value)| {
+                facts.step(save).is_some_and(|store| {
+                    store
+                        .instruction
+                        .reads()
+                        .iter()
+                        .any(|(_, read)| facts.same(*value, *read))
+                })
+            })
+        })
+    {
+        return Ok(None);
+    }
+    for (row, copy) in [(inner, &inner_copy), (nested, &nested_copy)] {
+        facts.charge(copy.primary_store)?;
+        facts.charge(copy.rethrow)?;
+        let Some(handler) = facts.row_handler(row) else {
+            return Ok(None);
+        };
+        let instructions = facts.in_block(&handler);
+        let Some(load) = instructions.iter().rev().nth(1).map(SsaInstruction::bci) else {
+            return Ok(None);
+        };
+        if !caught_value_rethrown(facts, copy.primary_store, load, copy.rethrow) {
+            return Ok(None);
+        }
+    }
+    if !caught_value_rethrown(facts, binding, tail_load.bci(), tail_throw.bci()) {
+        return Ok(None);
+    }
+
+    let expected_blocks: BTreeSet<_> = [
+        current.clone(),
+        return_block.clone(),
+        inner_handler.clone(),
+        outer_handler.clone(),
+        rethrow_block.clone(),
+        nested_handler.clone(),
+    ]
+    .into_iter()
+    .collect();
+    if expected_blocks.len() != facts.canonical.blocks().len()
+        || facts
+            .canonical
+            .blocks()
+            .iter()
+            .map(|block| block.id().clone())
+            .collect::<BTreeSet<_>>()
+            != expected_blocks
+    {
+        return Ok(None);
+    }
+    let expected_edges = BTreeSet::from([
+        (
+            CanonicalEdgeKind::Normal,
+            current.clone(),
+            return_block.clone(),
+        ),
+        (
+            CanonicalEdgeKind::Normal,
+            outer_handler.clone(),
+            rethrow_block.clone(),
+        ),
+        (
+            CanonicalEdgeKind::Exception {
+                handler_ordinal: inner.ordinal,
+            },
+            current.clone(),
+            inner_handler.clone(),
+        ),
+        (
+            CanonicalEdgeKind::Exception {
+                handler_ordinal: outer.ordinal,
+            },
+            current.clone(),
+            outer_handler.clone(),
+        ),
+        (
+            CanonicalEdgeKind::Exception {
+                handler_ordinal: nested.ordinal,
+            },
+            outer_handler.clone(),
+            nested_handler.clone(),
+        ),
+        (
+            CanonicalEdgeKind::Exception {
+                handler_ordinal: self_row.ordinal,
+            },
+            nested_handler.clone(),
+            nested_handler.clone(),
+        ),
+    ]);
+    let mut actual_edges = BTreeSet::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        actual_edges.insert((edge.kind(), edge.from().clone(), edge.to().clone()));
+    }
+    if actual_edges != expected_edges {
+        return Ok(None);
+    }
+
+    let Some(binding_end) = facts.next_bci(binding) else {
+        return Ok(None);
+    };
+    let mut pieces = vec![
+        (outer.start_bci, outer.end_bci),
+        (inner.start_bci, inner.end_bci),
+        normal_cleanup,
+        (*normal_transfer, facts.span_end(*normal_transfer)),
+        (inner_copy.entry.bci(), facts.span_end(inner_copy.rethrow)),
+        (outer_handler.bci(), binding_end),
+        (nested.start_bci, nested.end_bci),
+        outer_normal_cleanup,
+        (outer_transfer, facts.span_end(outer_transfer)),
+        (nested_handler.bci(), facts.end_of(&nested_handler)),
+        (rethrow_block.bci(), facts.end_of(rethrow_block)),
+        (return_block.bci(), facts.end_of(return_block)),
+    ];
+    pieces.sort_unstable();
+    let end = facts.end_of(rethrow_block).max(facts.end_of(return_block));
+    if explained(facts, current.bci(), end, &pieces).is_err() {
+        return Ok(None);
+    }
+    for block in facts.canonical.blocks() {
+        facts.charge(block.id().bci())?;
+        if !expected_blocks.contains(block.id())
+            || facts.in_block(block.id()).iter().any(|instruction| {
+                !pieces
+                    .iter()
+                    .any(|piece| piece.0 <= instruction.bci() && instruction.bci() < piece.1)
+            })
+        {
+            return Ok(None);
+        }
+    }
+    let owned = expected_blocks.into_iter().collect::<Vec<_>>();
+    let facts_read = facts.order.clone();
+    poll(facts.budget, Some(end))?;
+    Ok(Some(Plan {
+        shape: Shape::Finally {
+            normal_cleanup: (outer.end_bci, *normal_transfer),
+            completion: FinallyCompletion::SavedReturn {
+                save,
+                returns: return_bci,
+            },
+            row_ordinal: outer.ordinal,
+            structured: false,
+        },
+        lead: (current.bci(), current.bci()),
+        body: (outer.start_bci, outer.end_bci),
+        owned,
+        join: None,
+        enclosing: None,
+        finally_fallthrough: None,
+        nested_finally: Some(NestedFinallyCleanup {
+            inner_body: (inner.start_bci, inner.end_bci),
+            normal_cleanup,
+        }),
+        facts: facts_read,
+    }))
+}
+
 /// The null lead's slot identity: both cleanup copies' call reads the slot the lead initialised.
 ///
 /// The copy proof is structural: the two copies match instruction for instruction, but the `Load`
@@ -5153,6 +5855,7 @@ fn prove_conditional_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -5728,6 +6431,7 @@ fn prove_lock_guard_finally(
         join,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -6311,6 +7015,7 @@ fn prove_resource_guard_finally(
         join,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -6680,6 +7385,7 @@ fn prove_nullable_resource_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -7533,6 +8239,7 @@ fn prove_flag_conditional_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -8264,6 +8971,7 @@ fn prove_local_null_conditional_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -8785,6 +9493,7 @@ fn prove_empty_catch_call_finally(
         join: Some(join),
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts.order.clone(),
     }))
 }
@@ -9113,6 +9822,7 @@ fn prove_nested_cleanup_finally(
         join: Some(join),
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: BCIS.to_vec(),
     }))
 }
@@ -9474,6 +10184,7 @@ fn prove_two_catch_return_finally(
         join: Some(join),
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts.order.clone(),
     }))
 }
@@ -9729,6 +10440,7 @@ fn prove_nested_join_finally(
         join,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts.bcis((start, handler_end)),
     }))
 }
@@ -10547,6 +11259,7 @@ fn prove_shared_join_finally(
         join: Some(join.clone()),
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -10893,6 +11606,7 @@ fn prove_shared_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -11240,6 +11954,7 @@ fn prove_segmented_finally(
         join: Some(join.clone()),
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -11724,6 +12439,7 @@ fn prove_segmented_null_lead_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: origins,
     }))
 }
@@ -12052,6 +12768,7 @@ fn prove_multi_return_loop_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: BCIS.iter().copied().filter(|bci| *bci >= 21).collect(),
     }))
 }
@@ -12342,6 +13059,7 @@ fn prove_void_loop_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: BCIS.iter().copied().filter(|bci| *bci >= 9).collect(),
     }))
 }
@@ -12627,6 +13345,7 @@ fn prove_loop_finally(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: BCIS.to_vec(),
     }))
 }
@@ -14899,6 +15618,411 @@ mod finally_copy_tests {
                 Some("cancel"),
             ),
             Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    fn nested_fin_code_start(class: &[u8]) -> usize {
+        const PREFIX: [u8; 8] = [0x10, 0x0a, 0x1a, 0x6c, 0x3c, 0xb2, 0x00, 0x2f];
+        let matches: Vec<_> = class
+            .windows(PREFIX.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == PREFIX).then_some(at))
+            .collect();
+        assert_eq!(
+            matches.len(),
+            1,
+            "sealed EX.nestedFin bytecode must be unique"
+        );
+        matches[0]
+    }
+
+    fn nested_fin_row_field(code: usize, ordinal: u16, field_offset: usize) -> usize {
+        // Code: bytecode[0..72], exception_table_length at +72, rows at +74.
+        // Row fields are start 0, end 2, handler 4, catch_type 6.
+        code + 74 + usize::from(ordinal) * 8 + field_offset
+    }
+
+    fn nested_fin_no_nested_certificate(label: &str, class: &[u8]) {
+        let _copy_proof = probe_descriptor(class, "nestedFin", b"(I)I", false, None, |facts| {
+            assert!(facts.canonical.completeness().is_complete(), "{label}");
+            assert_eq!(
+                facts.ssa.blocks().len(),
+                facts.canonical.blocks().len(),
+                "{label}"
+            );
+        })
+        .unwrap_or_else(|stop| panic!("{label}: complete valid method stopped: {stop:?}"));
+        let verdict = examine_probe_labelled(label, class, b"nestedFin", b"(I)I", None)
+            .unwrap_or_else(|stop| panic!("{label}: complete valid neighbor stopped: {stop:?}"));
+        assert!(
+            !matches!(verdict, Verdict::Claimed(plan) if plan.nested_finally().is_some()),
+            "{label}: altered lowering received the nested-finally certificate"
+        );
+    }
+
+    fn append_extra_cleanup_handler_edge(class: &[u8]) -> Vec<u8> {
+        // Add a fifth, catch-all row for the normal inner cleanup [13, 21), targeting the
+        // already-valid inner exceptional-copy handler at 24. This is a verifier-valid additional
+        // exceptional edge (not merely an altered row ordinal): the handler's existing stack-map
+        // frame already accepts one Throwable. The nested proof must reject this unowned route.
+        let mut changed = class.to_vec();
+        let code = nested_fin_code_start(&changed);
+        assert_eq!(
+            u16::from_be_bytes([changed[code + 72], changed[code + 73]]),
+            4
+        );
+        let rows_end = code + 74 + 4 * 8;
+        changed.splice(
+            rows_end..rows_end,
+            [
+                0, 13, // start_bci = 13
+                0, 21, // end_bci = 21
+                0, 24, // handler_bci = 24
+                0, 0, // catch-all
+            ],
+        );
+        changed[code + 72..code + 74].copy_from_slice(&5_u16.to_be_bytes());
+        // Code attribute_length is the four-byte field twelve bytes before bytecode start:
+        // attribute_name_index(2), attribute_length(4), max_stack/max_locals(4), code_length(4).
+        let code_attribute_length = code - 12;
+        let old_length =
+            u32::from_be_bytes(changed[code_attribute_length..code - 8].try_into().unwrap());
+        changed[code_attribute_length..code - 8]
+            .copy_from_slice(&old_length.checked_add(8).unwrap().to_be_bytes());
+        changed
+    }
+
+    #[test]
+    fn nested_finally_rejects_complete_verifier_valid_classfile_neighbors() {
+        const EX: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        let code = nested_fin_code_start(EX);
+        let mut controls: Vec<(&str, Vec<u8>)> = Vec::new();
+
+        // All four `out` copies matter independently. Replace each String argument with the
+        // existing same-typed "in" constant, including the previously easy-to-miss BCI 49 copy.
+        for (label, ldc_bci) in [
+            ("normal inner out-copy argument differs", 16),
+            ("inner handler out-copy argument differs", 28),
+            ("outer handler out-copy argument differs", 49),
+            ("nested outer-handler out-copy argument differs", 62),
+        ] {
+            let mut changed = EX.to_vec();
+            assert_eq!(changed[code + ldc_bci], 0x12, "{label}: expected ldc");
+            assert_eq!(
+                changed[code + ldc_bci + 1],
+                0x3e,
+                "{label}: expected CP #62 ('out')"
+            );
+            changed[code + ldc_bci + 1] = 0x3c; // CP #60 is the same-typed String "in".
+            controls.push((label, changed));
+        }
+
+        // Change one call receiver from System.out to the valid same-typed System.err field. Reuse
+        // the existing `append_system_err` helper from `finally_copy_tests`; it already appends the
+        // correct sealed-EX CP entries (#98..#100, Fieldref #100).
+        let (mut receiver, err_field) = append_system_err(EX);
+        let moved_code = nested_fin_code_start(&receiver);
+        assert_eq!(receiver[moved_code + 13], 0xb2);
+        receiver[moved_code + 14..moved_code + 16].copy_from_slice(&err_field.to_be_bytes());
+        controls.push(("normal inner out-copy receiver differs", receiver));
+
+        // Widen each cleanup-adjacent catch-all to a valid instruction boundary so it covers a full
+        // normal `out` call. These are changed handler-coverage sets, even where canonical edges to
+        // the existing handler remain coalesced at the block level.
+        for (label, ordinal, old_end, new_end) in [
+            (
+                "inner row covers the normal out-copy",
+                0_u16,
+                13_u16,
+                21_u16,
+            ),
+            ("outer-cleanup row covers the normal out-copy", 2, 46, 54),
+        ] {
+            let mut changed = EX.to_vec();
+            let end = nested_fin_row_field(code, ordinal, 2);
+            assert_eq!(
+                u16::from_be_bytes([changed[end], changed[end + 1]]),
+                old_end
+            );
+            changed[end..end + 2].copy_from_slice(&new_end.to_be_bytes());
+            controls.push((label, changed));
+        }
+
+        // The outer row no longer covers the saved-result store at BCI 4, or no longer catches every
+        // Throwable. Both remain valid table entries with valid instruction boundaries/CP references.
+        let mut missing_store_coverage = EX.to_vec();
+        let end = nested_fin_row_field(code, 1, 2);
+        assert_eq!(
+            u16::from_be_bytes([missing_store_coverage[end], missing_store_coverage[end + 1]]),
+            5
+        );
+        missing_store_coverage[end..end + 2].copy_from_slice(&4_u16.to_be_bytes());
+        controls.push((
+            "outer row misses the saved-result store",
+            missing_store_coverage,
+        ));
+
+        let mut named_outer_row = EX.to_vec();
+        let catch_type = nested_fin_row_field(code, 1, 6);
+        assert_eq!(
+            u16::from_be_bytes([named_outer_row[catch_type], named_outer_row[catch_type + 1]]),
+            0
+        );
+        named_outer_row[catch_type..catch_type + 2].copy_from_slice(&38_u16.to_be_bytes()); // RuntimeException.
+        controls.push(("outer row is not catch-all", named_outer_row));
+
+        // Same verifier type, wrong producer: return the argument instead of the quotient saved by
+        // the protected body. Both are Int, so this is a value-identity proof negative, not a bad type.
+        let mut wrong_saved_value = EX.to_vec();
+        assert_eq!(wrong_saved_value[code + 35], 0x1b); // iload_1, quotient saved at BCI 4.
+        wrong_saved_value[code + 35] = 0x1a; // iload_0, method argument.
+        controls.push((
+            "saved return reload reads another Int producer",
+            wrong_saved_value,
+        ));
+
+        // The three handler reloads become null before athrow. `athrow null` is verifier-valid but
+        // raises a new NullPointerException instead of preserving the caught throwable identity.
+        for (label, bci, expected) in [
+            ("inner handler rethrows another value", 33, 0x2c),
+            ("outer handler rethrows another value", 70, 0x2d),
+        ] {
+            let mut changed = EX.to_vec();
+            assert_eq!(
+                changed[code + bci],
+                expected,
+                "{label}: expected local reload"
+            );
+            changed[code + bci] = 0x01; // aconst_null
+            controls.push((label, changed));
+        }
+        let mut wrong_nested_rethrow = EX.to_vec();
+        assert_eq!(&wrong_nested_rethrow[code + 67..code + 69], &[0x19, 0x04]); // aload 4
+        wrong_nested_rethrow[code + 67..code + 69].copy_from_slice(&[0x01, 0x00]); // aconst_null; nop
+        controls.push((
+            "nested outer handler rethrows another value",
+            wrong_nested_rethrow,
+        ));
+
+        // Remove one exceptional `out` invocation but retain the empty stack expected at BCI 54.
+        let mut missing_static_copy = EX.to_vec();
+        assert_eq!(
+            &missing_static_copy[code + 51..code + 54],
+            &[0xb6, 0x00, 0x37]
+        );
+        missing_static_copy[code + 51..code + 54].copy_from_slice(&[0x57, 0x57, 0x00]);
+        controls.push((
+            "outer cleanup omits one out invocation",
+            missing_static_copy,
+        ));
+
+        // Keep the bytecode and stack maps unchanged: this adds one independent exception-table
+        // route from the normal cleanup to the inner catch-copy handler, with Code attribute_length adjusted.
+        controls.push((
+            "extra cleanup exception edge reaches the inner handler",
+            append_extra_cleanup_handler_edge(EX),
+        ));
+
+        assert_eq!(controls.len(), 15);
+        for (label, changed) in controls {
+            nested_fin_no_nested_certificate(label, &changed);
+        }
+    }
+
+    #[test]
+    fn nested_saved_return_finally_stops_after_most_paid_proof_charges() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        use std::time::Duration;
+
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            delay_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if !matches!(site, LedgerSite::Charge(_)) {
+                    return;
+                }
+                let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                if self.cancel_at == Some(count) {
+                    self.token.cancel();
+                }
+                if self.delay_at == Some(count) {
+                    std::thread::sleep(Duration::from_millis(150));
+                }
+            }
+
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+
+        const EX: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        probe_descriptor(EX, "nestedFin", b"(I)I", false, None, |facts| {
+            let entry = facts.canonical.blocks()[0].id().clone();
+
+            *facts.budget = Budget::new(limits());
+            let baseline_observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                delay_at: None,
+                token: CancellationToken::new(),
+            });
+            let ledger =
+                OperationLedger::new(facts.budget).with_observer(baseline_observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            let Verdict::Claimed(plan) = resources(facts, &crate::pass::JAVA_8, &entry).unwrap()
+            else {
+                panic!("the complete nested saved-return proof claims its entry");
+            };
+            assert!(plan.nested_finally().is_some());
+            let paid = facts.budget.usage().analysis_steps;
+            let charges = baseline_observer.charges.load(Ordering::SeqCst);
+            assert!(paid > 10 && charges > 11);
+            assert_eq!(paid, u64::try_from(charges).unwrap());
+
+            let mut late_limits = limits();
+            late_limits.analysis_steps = paid - 1;
+            *facts.budget = Budget::new(late_limits);
+            assert!(matches!(
+                resources(facts, &crate::pass::JAVA_8, &entry),
+                Err(StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    written: 0,
+                    ..
+                })
+            ));
+            assert_eq!(facts.budget.usage().analysis_steps, paid - 1);
+
+            let cancel_at = charges - 1;
+            assert!(cancel_at > 10);
+            let token = CancellationToken::new();
+            *facts.budget = Budget::with_cancellation_token(limits(), token.clone());
+            let cancel_observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: Some(cancel_at),
+                delay_at: None,
+                token: token.clone(),
+            });
+            let ledger = OperationLedger::new(facts.budget).with_observer(cancel_observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(matches!(
+                resources(facts, &crate::pass::JAVA_8, &entry),
+                Err(StopReason::Cancelled { at: Some(_) })
+            ));
+            assert_eq!(cancel_observer.charges.load(Ordering::SeqCst), cancel_at);
+            assert_eq!(facts.budget.usage().analysis_steps, cancel_at as u64);
+
+            let mut deadline_limits = limits();
+            deadline_limits.elapsed_millis = 100;
+            let deadline_token = CancellationToken::new();
+            *facts.budget =
+                Budget::with_cancellation_token(deadline_limits, deadline_token.clone());
+            let deadline_observer = Arc::new(Observer {
+                charges: AtomicUsize::new(0),
+                cancel_at: None,
+                delay_at: Some(cancel_at),
+                token: deadline_token,
+            });
+            let ledger =
+                OperationLedger::new(facts.budget).with_observer(deadline_observer.clone());
+            facts.budget.with_ledger(ledger, UsageOwner::Methods);
+            assert!(matches!(
+                resources(facts, &crate::pass::JAVA_8, &entry),
+                Err(StopReason::Interrupted { at: Some(_), .. })
+            ));
+            assert_eq!(deadline_observer.charges.load(Ordering::SeqCst), cancel_at);
+            assert_eq!(facts.budget.usage().analysis_steps, cancel_at as u64);
+            assert!(facts.budget.usage().elapsed_millis >= 100);
+
+            // The helper runs its ordinary first-row probe after this inspection closure.
+            // Restore an open local budget so the deliberate stops above do not change that helper.
+            *facts.budget = Budget::new(limits());
+        })
+        .unwrap();
+    }
+
+    #[test]
+    fn nested_finally_saved_return_claims_the_complete_four_row_lowering() {
+        const EX: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        let Verdict::Claimed(plan) =
+            examine_probe_labelled("EX", EX, b"nestedFin", b"(I)I", None).unwrap()
+        else {
+            panic!("the complete nested saved-return finally is claimed");
+        };
+        let Shape::Finally {
+            normal_cleanup,
+            completion,
+            row_ordinal,
+            structured,
+        } = plan.shape()
+        else {
+            panic!(
+                "the public finally shape stays reusable: {:?}",
+                plan.shape()
+            );
+        };
+        assert_eq!(*normal_cleanup, (5, 21));
+        assert_eq!(*row_ordinal, 1);
+        assert!(!structured);
+        assert!(matches!(
+            completion,
+            FinallyCompletion::SavedReturn {
+                save: 4,
+                returns: 36,
+            }
+        ));
+        let nested = plan
+            .nested_finally()
+            .expect("the fused entry block carries one bounded inner finally");
+        assert_eq!(nested.inner_body(), (5, 13));
+        assert_eq!(nested.normal_cleanup(), (13, 21));
+        assert_eq!(plan.body(), (0, 5));
+        assert_eq!(
+            plan.facts(),
+            &[
+                0, 2, 3, 4, 5, 8, 10, 13, 16, 18, 21, 24, 25, 28, 30, 33, 34, 35, 36, 37, 38, 41,
+                43, 46, 49, 51, 54, 57, 59, 62, 64, 67, 69, 70, 71,
+            ]
+        );
+        assert_eq!(
+            plan.owned()
+                .iter()
+                .map(CanonicalBlockId::bci)
+                .collect::<Vec<_>>(),
+            [0, 24, 35, 37, 57, 70]
+        );
+        assert!(matches!(
+            examine_probe_labelled("EX", EX, b"nestedFin", b"(I)I", Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            examine_probe_labelled("EX", EX, b"nestedFin", b"(I)I", Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+
+        // Same-length classfile mutation: only the outer-handler normal out-copy's string
+        // operand changes from the `out` constant to `in`; the physical method remains valid.
+        let mut wrong_outer_copy = EX.to_vec();
+        assert_eq!(&wrong_outer_copy[1388..1391], &[0x12, 0x3e, 0xb6]);
+        wrong_outer_copy[1389] = 0x3c;
+        assert!(!matches!(
+            examine_probe_labelled("EX-wrong-outer-copy", &wrong_outer_copy, b"nestedFin", b"(I)I", None)
+                .unwrap(),
+            Verdict::Claimed(plan) if plan.nested_finally().is_some()
         ));
     }
 
@@ -17646,6 +18770,7 @@ fn monitor(
         join,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts_read,
     })))
 }
@@ -18207,6 +19332,7 @@ fn monitor_branches(
         join: None,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts_read,
     }))
 }
@@ -18229,6 +19355,19 @@ fn resources(
     }
     if candidates.is_empty() {
         return Ok(Verdict::NotGuarded);
+    }
+    // The two-level return shape has one canonical entry block that holds both the outer body and
+    // the inner try/finally. Prove it before the single-row copy loop can report only its first
+    // catch-all refusal; a near miss continues through the existing candidate logic unchanged.
+    if FINALLY.admits(profile)
+        && facts.handlers.len() == 4
+        && facts
+            .handlers
+            .iter()
+            .all(|row| row.catch_type_index.is_none())
+        && let Some(plan) = prove_nested_return_finally(facts, current)?
+    {
+        return Ok(Verdict::Claimed(plan));
     }
     // A catch-all copy is only a candidate. Claim it after the complete certificate and the
     // straight-body presentation gate both pass; otherwise preserve the original refusal — unless
@@ -18339,6 +19478,7 @@ fn resources(
                     join: proof.join,
                     enclosing: None,
                     finally_fallthrough: proof.fallthrough,
+                    nested_finally: None,
                     facts: proof.origins,
                 }));
             }
@@ -19113,6 +20253,7 @@ fn twr<'a>(
         join,
         enclosing,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts_read,
     })
 }
@@ -19897,6 +21038,7 @@ fn twr_lead(
         join,
         enclosing: None,
         finally_fallthrough: None,
+        nested_finally: None,
         facts: facts_read,
     }))
 }

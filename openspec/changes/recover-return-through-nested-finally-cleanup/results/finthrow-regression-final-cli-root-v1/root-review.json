@@ -1,0 +1,20 @@
+{
+  "status": "root accepted",
+  "cli": {
+    "path": "/private/tmp/jarde-nested-local-gates-root-v3-20261017/candidate-cli",
+    "bytes": 62697056,
+    "sha256": "4811eea2d7f52d4c1b818c86acc1d961c91e3d7fe9d5adaa2c53131f84140f8e"
+  },
+  "raw_command_streams_verified": 154,
+  "whole_source_profiles": 4,
+  "independent_whole_source_compiles": 8,
+  "independent_rebuilt_runtime_runs": 16,
+  "independent_cases": 144,
+  "method_map_profiles_verified": 8,
+  "physical_method_ordinals_identity_BLAKE3_and_all_BCIs": true,
+  "source_inputs_unchanged": true,
+  "tools_unchanged": true,
+  "target_absent": true,
+  "archive_bytes": 402565,
+  "archive_sha256": "7d736c580e61df37c87869fb03954a316ea8e67e9d6a410521850b67a64be045"
+}

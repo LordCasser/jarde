@@ -1,0 +1,23 @@
+{
+  "status": "accepted",
+  "raw_streams_verified": 8,
+  "test_summaries": [
+    [
+      "ok",
+      "25",
+      "0",
+      "0"
+    ],
+    [
+      "ok",
+      "2",
+      "0",
+      "0"
+    ]
+  ],
+  "archive_bytes": 319730,
+  "archive_sha256": "0fa165ca7836f2924ba4ac47ab0f0b2e58eae4eef2b5366b391587637f1a6a6c",
+  "coverage": "25 nested-filter Java library tests including 15 complete classfile neighbors and paid late budget/cancel/deadline; 2 public API tests over sealed EX and both compiler fixtures; all-source/evidence/map parity, no partial output late budget",
+  "default_stack": true,
+  "target_absent": true
+}

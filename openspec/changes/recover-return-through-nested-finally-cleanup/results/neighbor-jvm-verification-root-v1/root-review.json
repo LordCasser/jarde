@@ -1,0 +1,9 @@
+{
+  "status": "root accepted",
+  "actual_verification": "15 exact complete EX.class variants reflected under separate parent=null URLClassLoader with -Xverify:all on both Java8 and23; no target invocation",
+  "passes": 30,
+  "variant_hashes_in_both_actual_outputs": true,
+  "command_exits": "8/8 zero",
+  "archive_bytes": 17358,
+  "archive_sha256": "518ed1670e75ca7ee3ecb33a55fe5eb8d40a8a69fa7dddad89b5b0e703aa0dc1"
+}

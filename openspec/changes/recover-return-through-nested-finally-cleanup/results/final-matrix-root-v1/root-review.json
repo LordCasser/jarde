@@ -1,0 +1,42 @@
+{
+  "status": "root accepted",
+  "cli": {
+    "path": "/private/tmp/jarde-nested-local-gates-root-v3-20261017/candidate-cli",
+    "bytes": 62697056,
+    "sha256": "4811eea2d7f52d4c1b818c86acc1d961c91e3d7fe9d5adaa2c53131f84140f8e"
+  },
+  "raw_command_streams_verified": 190,
+  "whole_source_profiles": 4,
+  "independent_whole_source_compiles": 8,
+  "independent_rebuilt_runtime_runs": 16,
+  "independent_cases": 288,
+  "method_map_profiles_verified": 8,
+  "physical_method_ordinals_identity_BLAKE3_and_all_BCIs": true,
+  "source_inputs_unchanged": true,
+  "tools_unchanged": true,
+  "target_absent": true,
+  "archive_bytes": 418155,
+  "archive_sha256": "e8d7ec9fd79c10605f0107ed97798465231ed217921027d4ff543fb07de67941",
+  "sealed_EX_whole_source_compiles": 4,
+  "sealed_EX_rebuilt_runs": 8,
+  "sealed_EX_cases": 144,
+  "sealed_EX_methods_preserved": 6,
+  "all_non_nested_EX_method_texts_unchanged_from_baseline": true,
+  "JADX_unchanged_reference_compile_successes": 6,
+  "JADX_runtime_failfast_IOIO": 12,
+  "root_acceptance": {
+    "status": "accepted",
+    "full_source_profiles": 4,
+    "whole_source_compiles": 8,
+    "rebuilt_18_case_runs": 16,
+    "sealed_ex_profiles": 2,
+    "sealed_ex_methods_per_profile": 6,
+    "sealed_ex_whole_source_compiles": 4,
+    "sealed_ex_rebuilt_18_case_runs": 8,
+    "source_map_method_profiles": 20,
+    "raw_streams_verified": 190,
+    "jadx_control_compiles": 6,
+    "jadx_pinned_duplicate_cleanup_runs": 12,
+    "non_nested_ex_reports_match_baseline_v2": true
+  }
+}

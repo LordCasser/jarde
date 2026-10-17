@@ -10,9 +10,9 @@
 
 产品已提交推送6b32c708d1adea06558478fd0f339cc23885c581；strict365/0、primitive finally旧预期更新后的P5 19/0/1、双fresh seed各375targets/98batches/3686通过/0失败/98忽略均已独立接受。该产品自身[CI39037102727](https://github.com/LordCasser/jarde/actions/runs/39037102727)已由root独立接受：4jobs/52steps，两seed各375targets/3686通过/0失败/98忽略，9项关键门均通过；关闭文档后另核实际clean主线，文档head不冒称自身跑过产品CI。证据均在该change的results及root-review.json；父 `recover-return-through-effectful-finally` 仍4/7，71/612不增加。
 
-`recover-return-through-nested-finally-cleanup` 当前3/16，实际六块/四行Facts、全部四行generic proof及首拒已确认：资源入口候选[1,0]，outer row1被RangeEnd5!=25拒绝。双509B完整独立class与完整EX红基线已采集；JADX1.5.6虽六次编译成功，十二次运行均在out抛错时出现IOIO，不能照搬其outer catch结构。原始source控制8次/144case，另封存EX字节4次/72case输出逐字相同。证据见该change的results/baseline-matrix-root-v2、sealed-class-oracle-root-v1及first-refusal-root-v1。
+`recover-return-through-nested-finally-cleanup` 当前13/16，实际六块/四行Facts、全部四行generic proof及首拒已确认：资源入口候选[1,0]，outer row1被RangeEnd5!=25拒绝。双509B完整独立class与完整EX红基线已采集；JADX1.5.6虽六次编译成功，十二次运行均在out抛错时出现IOIO，不能照搬其outer catch结构。原始source控制8次/144case，另封存EX字节4次/72case输出逐字相同。证据见该change的results/baseline-matrix-root-v2、sealed-class-oracle-root-v1及first-refusal-root-v1。
 
-Luna私有候选保留公开Finally/SavedReturn，Plan私有区间负责fused块内嵌套cleanup。root已审查四份out副本、显式handler集、返回/重抛SSA及Builder原子回滚，并修正未绑定变量、35指令预期和重复测试helper。候选仍未应用、未编译，完整正向对照及自身CI未完成；不能把静态稿或原始class运行当作恢复完成。durable草稿与工具在该change的results/static-review-root-v2及tools，原始错误稿亦单独保留。
+Luna私有候选保留公开Finally/SavedReturn，Plan私有区间负责fused块内嵌套cleanup。root已审查四份out副本、显式handler集、返回/重抛SSA及Builder原子回滚，并修正未绑定变量、35指令预期和重复测试helper。候选已集成并通过实际focused-v3的25库测试/2公库API，包含15邻变体、晚proof stop及三来源文本/映射/35BCI。root修复了切片API和SSA local/stack身份误比，失败raw保留；最终CLI 4811eea2…已通过453库/2API/CI同款Clippy及nested432个重建场景；完整EX4次原样重编、8次nested driver运行通过，六方法/20个方法配置的全部BCI与映射身份已核，非nested文本同基线。该CLI另重验finThrow144case通过。精确产品自身CI、父wide最终门及交付仍待完成，不能提前关闭叶片。durable草稿与工具在该change的results/static-review-root-v2及tools，原始错误稿亦单独保留。
 
 以下10月15日内容为历史记录，当前状态优先看本节与对应change实际任务、raw、源码/工具pin、自身CI。
 

@@ -1,0 +1,10 @@
+{
+  "status": "retained real failure, not accepted product",
+  "raw_streams_verified": 10,
+  "test_summaries": [],
+  "archive_bytes": 969456,
+  "archive_sha256": "791d30c12a4c1ef1e7b414e61e81e23d09f205eb40e153c956665fc4edcf1753",
+  "coverage": "compile-time slice API error or actual SSA identity refusal; temporary logging fully restored, final run separate",
+  "default_stack": true,
+  "target_absent": true
+}

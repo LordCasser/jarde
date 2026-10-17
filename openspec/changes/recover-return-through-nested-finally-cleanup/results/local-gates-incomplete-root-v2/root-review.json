@@ -1,0 +1,21 @@
+{
+  "status": "incomplete run preserved, not a final-gates success",
+  "error": "command failed or guard stopped",
+  "successful_actual_test_summaries": [
+    [
+      "2",
+      "0",
+      "0"
+    ],
+    [
+      "19",
+      "0",
+      "1"
+    ]
+  ],
+  "raw_streams_verified": 8,
+  "target_absent": true,
+  "archive_bytes": 320747,
+  "archive_sha256": "c213bc0d57ac54380579c08dba0493fb5f4010ddbf87f161a93a7fc2de83de6a",
+  "explanation": "v1 actual all tests passed through two API targets; artifact-cleaner only supports one target per command and correctly stopped. v2 precise/P5 passed; Clippy rejected vec for a fixed four-element set. Later array correction and final run are separate."
+}

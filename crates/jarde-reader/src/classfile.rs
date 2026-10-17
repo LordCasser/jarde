@@ -12278,7 +12278,9 @@ mod tests {
             // Branch-throw/return finally: two independent compiler classes, four bodies,
             // two handlers and two targets. Its javac23 extra-exit neighbor adds one class,
             // three bodies, two handlers and two targets; actual javap and Code facts agree.
-            (1186, 5286, 549, 3491, 10),
+            // Nested finally adds two complete compiler classes: four Code bodies,
+            // eight catch-all rows and four goto targets (21/54 per leg); no jsr.
+            (1188, 5290, 557, 3495, 10),
             "fixture population changed: re-measure these counts"
         );
     }
