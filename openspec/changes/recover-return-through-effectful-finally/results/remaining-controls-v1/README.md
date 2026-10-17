@@ -6,6 +6,10 @@
 - physical-origins：对最终FY/FX/FO六整类32方法独立解析724个物理指令实例，报告来源没有缺失/多余且方法身份相符；209项独审无错误。这是来源核对，不是新行为实验。
 - 原始输入、受控runner/guard/工具manifest、两个native元收据和source-binding、历史剩余验收评估保留，早先评估的“未完成”是当时状态，不能当新CI或新运行。
 
-实际FY/FX/FO 24命令/12次固定main、JADX21命令及JAR/WAR/独立driver在已归档`2026-10-17-recover-loop-transfer-finally-handler/results/final-runtime-v1`，当前产品30afa自身CI在同归档own-ci-v1；不将上述旧运行计作本包新命令。父任务仍有待验收项，见tasks.md。
+实际FY/FX/FO 24命令/12次固定main、JADX21命令及JAR/WAR/独立driver在已归档`2026-10-17-recover-loop-transfer-finally-handler/results/final-runtime-v1`，当前产品30afa自身CI在同归档own-ci-v1；不将上述旧运行计作本包新命令。该包本身不完成父验收；随后父独审结论与最终任务状态见tasks.md及workflow-v1，剩余红项保持。
 
 便携包独审325项/0错误，报告相邻保存；首次审计误用内嵌manifest大写名称而拒绝，v1报告与v2路径适配说明保留，未修改包或跳过检查。
+
+本包完整EX raw也包含finThrow/nestedFin的fallback，它们是尚未实现的非覆盖型正向形，不能只登记EX.finReturn覆盖返回边界。已发现并恢复父实现待办；包无修改，原始完整方法输出可直接复核。
+
+后续classfile定位memo不属于原63成员包。memo-v1仅历史report定位；memo-v2曾误把引擎class digest标为EX文件SHA，未接受该元数据；v3实读重算EX.class、两FinallyCompletion.class/目标Code及raw2/3/5的SHA并分别保存引擎标识，v2错误历史保留。物理Code/row定位仍不等于真实canonical CFG/SSA证明，后续必须实际probe。
