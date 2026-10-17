@@ -12287,7 +12287,10 @@ mod tests {
             // three Code bodies and one handler, with no branch target or subroutine.
             // A separately compiled parameter-reassignment refusal adds one class, four Code
             // bodies and one handler; its actual Code has no branch target or subroutine.
-            (1201, 5368, 598, 3496, 10),
+            // Direct-array constructor arguments add 26 complete frozen classes: 78 Code
+            // bodies, four handler rows and six branch targets; no jsr. The new population
+            // was measured by this full reader walk before updating the expected tuple.
+            (1227, 5446, 602, 3502, 10),
             "fixture population changed: re-measure these counts"
         );
     }

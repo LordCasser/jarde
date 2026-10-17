@@ -11704,7 +11704,6 @@ fn recover_inner(
     let array_composition = init::ArrayCompositionContext {
         chains: &chains,
         reserved: reserved_for_arrays,
-        java_release: request.profile.java_release,
         member_targets: request.member_inner_targets,
         method: request.facts.method(),
         code,
@@ -11726,7 +11725,6 @@ fn recover_inner(
         chains.owned(),
         &fields,
         &mut array_initializers,
-        request.profile.java_release,
         request.member_inner_targets,
         request.facts.method(),
         code,

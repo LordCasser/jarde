@@ -2,6 +2,18 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-18 当前：原始 TestFinally3 与直接数组构造参数
+
+`recover-direct-array-constructor-arguments` 当前6/7，正进行双fresh native workspace和自身产品CI交付；本段是产品提交前检查点，后续收据提交记录精确产品SHA。原finThrow/nestedFin/exception-only验收与旧产品CI见下面历史区。本轮root按OpenSpec审查集成Luna：复用完整数组证明，精确匹配constructor物理final ValueId，替换String窄特判，闭合后置实参reader且不吸收sibling所有权；同owner调用按receiver SSA选取，无新solver/pass/carrier。
+
+最终候选CLI62815008B / SHA e01c6014bd1d1d220d72400beeb711791221aa2aa56e60eed0ba52f8714777c0，`/private/tmp/jarde-direct-array-final-gates-root-v4-20261018/candidate-cli`，与实际完整矩阵CLI字节恒同。461库测试通过；最终针对门191通过出现（4API、181reader、1指纹再生、5指纹）、fmt/CI同款Clippy/MSRV1.88通过，exact clean。指纹仅新增30项、原2275项不变；reader先实测新人口，再更新为1227/5446/602/3502/10。
+
+原始TestFinally3 debug/noDebug：100方法配置全BCI/物理身份/UTF8；20原样整类重编、40隔离运行320case等原oracle，88非目标配置不变；JADX6编译均两处inputStream未初始化错误、无runtime。独立完整数组家族88方法全BCI，8重编/16运行224case，JADX112case通过；sameowner8重编16case且class Complete。两种合法重排控制经真实双JVM验证，Jarde保持拒绝，无新增排序机制；其中JADX反序4编译成功但8运行全失败，trace21而原12，真实失败保留。
+
+独立债务：ReverseArrayOrder自然形态三个方法均正确，但唯一普通self-new被误调匿名投影，class Partial/CLI4；不要混入数组实现。通用fallback StringBuilder head53 presented但map缺失，旧7287/新e01双输入与default/all实测均存在；public控制仅核断言前数组来源，完整正类仍全BCI。详见本change `results/README.md`、`separate-architecture-debt.md`及各capture/root-review。所有早期编译/测试/采集失败均保留，不冒称通过。
+
+本地完整回归收据将为 `/private/tmp/jarde-direct-array-workspace-seed{1,2}-root-v1-20261018`；本段会在实际提交与自身CI验收后更新。持续goal active，71/612不变。
+
 ## 2026-10-18 接续：仅异常完成 finally 已完成产品验收
 
 `recover-exception-only-finally-completion` 已11/11，实现和对照已验收，产品 **3fa506df0ccd7da3d38ab769bfd65235817508fe** 已推送。其自身[CI39051492999](https://github.com/LordCasser/jarde/actions/runs/39051492999)实际4jobs/52API步骤全通过：两seed各378targets、3700通过/0失败/98忽略，逐target计数相同，9新关键测试各seed一次通过。完整API/四job日志、collector与独立checker见本change的results/own-product-ci-root-v1；后续文档head不冒称自身运行过该产品CI。
