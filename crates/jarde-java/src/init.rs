@@ -835,12 +835,12 @@ fn verify_metered(
             if operands.first().is_some_and(|(_, receiver)| {
                 is_the_instance(ssa, *receiver, &[head, dup.bci(), bci])
             }) {
-                break Some(instruction);
+                break Some((instruction, operands));
             }
         }
         scan += 1;
     };
-    let Some(constructor) = found else {
+    let Some((constructor, operands)) = found else {
         return Err(shape(format!(
             "the allocation at BCI {head} is never constructed: no `{ty}.<init>(…)` call reads the instance it builds and the copy of it"
         )));
@@ -860,7 +860,6 @@ fn verify_metered(
     // initialized it. A compiler may put the stored value down as any of the three, and what matters
     // is that the value really belongs to *this* allocation.
     let mut produced_by: Vec<u32> = vec![head, dup.bci(), at];
-    let operands = stack_operands_metered(constructor, at, meter)?;
     let Some((_, receiver)) = operands.first().copied() else {
         return Err(shape(format!(
             "the constructor call at BCI {at} reads no receiver this run states"
@@ -967,8 +966,10 @@ fn verify_metered(
         // argument of the `new` expression evaluates it exactly where the bytecode evaluated it. A value
         // produced elsewhere would move, and this rule never moves a value.
         let mut arguments: Vec<u32> = Vec::new();
+        let mut physical_argument_counts = BTreeMap::new();
         for (_, value) in operands.iter().skip(1) {
             meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
+            *physical_argument_counts.entry(*value).or_insert(0usize) += 1;
             let Some(produced) = produced_at(ssa, *value) else {
                 return Err(shape(format!(
                     "an argument of the constructor call at BCI {at} was not produced by an instruction of this body, so where it is evaluated is not stated"
@@ -998,11 +999,6 @@ fn verify_metered(
         // consumer, it must be the exact value in one physical non-receiver constructor operand;
         // repeated values cannot claim more than one position. Bare allocations use the same exact
         // consumer test, including for `String(char[])`.
-        let mut physical_argument_counts = BTreeMap::new();
-        for (_, value) in operands.iter().skip(1) {
-            meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
-            *physical_argument_counts.entry(*value).or_insert(0usize) += 1;
-        }
         let array_serves_argument = |consumer: u32, value: ValueId| {
             matches!(operations.get(consumer), Some(Operation::Invoke(_)))
                 && if consumer == at {

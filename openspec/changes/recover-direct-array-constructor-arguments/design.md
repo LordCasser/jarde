@@ -21,6 +21,7 @@ ArrayInitializers 已证明非空初始化的最终值、唯一 consumer、完�
 5. 统一普通构造准入，移除被通用完整证明覆盖的旧 String(char[]) 窄证书与相应常量/owner/直接 return 限制。它读取同一 ArrayInitializer，只额外缩小条件；真实 effectful String probe 已有完整数组候选，不存在独立机制需求。若实现发现旧证书存在通用证明不能表达的真实能力，须列出实际事实后再决定保留，不能增加无用 fallback。原 wrongOwner/wrongDescriptor/release 白名单测试改核真实语义，额外 use、错误值与 handler 边界继续拒绝。
 6. 首轮真实库测试457通过/2失败暴露 reader 的额外闭合缺口：String([CII)V 和两个数组参数中的第一数组尚无完整候选，不能声称它们原已有证书。现有 array_initializer_reader 在最后 store 后扫描最终调用的全部其他 operands，把早已产生的 receiver/前置实参也要求在此窗口重建。针对真实构造消费，忽略窗口之前已产生的 operands；窗口内后置参数仍用既有 expression 闭合或已完整证明的 sibling array 事实覆盖，禁止无关指令/外部使用/效果漏入。借用已有 ChildArrayFacts，不把 sibling 的 sources/owned 变成当前数组所有权，不全局放宽所有调用。遇到新的实际闭合问题先记录事实，不将已承诺多实参正例降为拒绝。
 7. 同 owner 重载的真实字节码确认旧扫描误选元素的 ctor15 为外层 head0 的构造调用。应在选中调用时用已有 SSA receiver 身份匹配当前 allocation，错 receiver 继续扫描；选中后仍做原身份、参数、effects、异常和唯一消费检查。不得以 owner 名称相同推断对象相同，也无须引入新控制流机制。
+8. 完整工作区回归实际暴露重复工作计费：选中 receiver 时已经读取 operands，后面不再读取第二遍；物理参数次数在既有已计费 producer 检查循环中统计，不再另外扫描一次。保留选中后的 receiver 身份复核及所有参数证明，不调整 P5 旧表值、预算或断言。修正后的全部完整源码及非 usage 报告须与已验收矩阵一致；实测仅允许 ir_items 与 elapsed_millis 数值变化，不能凭递归忽略整个 usage 子树放过其他差异。
 
 ## Risks / Trade-offs
 
