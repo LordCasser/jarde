@@ -1,0 +1,13 @@
+{
+  "status": "all_4945_current_source_bytes_equal_frozen_native_manifest",
+  "source_count": 4945,
+  "native_receipt_sha256": "af07b8528dc3bf41893d3ebdbcc0c424fb2870b2dbccd282220572456b4b283f",
+  "cli": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-loop-transfer-complete-local-native-v1",
+    "bytes": 60514880,
+    "sha256": "05e0272eb8cbc65acb87418cecda6d15571ddaea84c041d30436c1238e60b89d",
+    "mode": "0555",
+    "built_from": "target/debug/jarde-cli"
+  },
+  "scope": "No new compilation or CI; this check excludes parent prose and preserves existing product binding."
+}

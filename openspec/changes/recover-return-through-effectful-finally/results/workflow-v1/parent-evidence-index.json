@@ -1,0 +1,35 @@
+{
+  "scope": "External immutable cache audits; paths are provenance, not embedded files. Current parent has 4/7 tasks, no new native/runtime or CI.",
+  "audits": [
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-archive-and-spec-sync-independent-audit-v1.json",
+      "bytes": 14769,
+      "sha256": "ce840f20ee1268c84a70a65d5bdad88e1126dad810e1a0b7c437fc190071a1d2"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-final-main-binding-independent-audit-v1.json",
+      "bytes": 978336,
+      "sha256": "c5ab8f61db6af4690b54105197c8d3004fadb20c54edc052235b069ebf07ab53"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-own-ci-package-independent-audit-v2.json",
+      "bytes": 116982,
+      "sha256": "2947adc9c9c81efb1a807935a27d69bcc1cfe053882a1a96daa89306e2fe2183"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/independent-audit-v1.json",
+      "bytes": 18891,
+      "sha256": "215bf0e447925c30facc4679888635e70e7fd8f109f8fc3a8f0ce127a9d6f507"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-physical-origin-independent-review-v1.json",
+      "bytes": 32466,
+      "sha256": "c5bf6667e54f12c8374245e9e59c2dec3a3d077b4ad2c7666efc4bbce8ec84ac"
+    },
+    {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/independent-package-audit-v2.json",
+      "bytes": 35429,
+      "sha256": "f9314f0e2250438b5a122150772ff48576d71fd3d3f7e5b6273467cae3ea11bd"
+    }
+  ]
+}

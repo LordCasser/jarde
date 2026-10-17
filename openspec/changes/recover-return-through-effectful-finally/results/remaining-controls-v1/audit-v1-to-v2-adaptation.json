@@ -1,0 +1,8 @@
+{
+  "status": "actual_embedded_manifest_filename_adapter_only",
+  "v1_result": "independent-package-audit-v1.json",
+  "actual_archive_embedded_manifest": "manifest.json",
+  "v1_wrong_assumption": "MANIFEST.json",
+  "byte_observation": "actual manifest.json member is exactly22894B and byte-identical to external manifest.json",
+  "v2_change": "Only embedded manifest literal and new report filename. All safety/hash/original-source/input/raw/scope checks retained. First report preserved; two v1 errors were decoder filename assumption, not corrupt payload."
+}
