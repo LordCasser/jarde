@@ -14,7 +14,7 @@
 
 #### Scenario: 对照零回退
 - **WHEN** 输入为空 finally return（emptyFin）、continue/break 穿副作用 finally（finContinue/finBreak）与 finally 返回值形
-- **THEN** 既有恢复 SHALL 逐字节不变
+- **THEN** 已证明的行为、求值与副作用顺序、物理来源及拒绝边界 SHALL 保持；continue/break本次授权恢复可删除旧fallback，前一CallReturn版本至当前产品的28个非目标方法记录文本 SHALL 逐字不变；后续变更 SHALL 以当前产品30afa的完整输出为对照基线，未证明的finally返回值形 MUST 保留可定位拒绝，不得把相同fallback称为成功恢复
 
 #### Scenario: 不可证明时维持拒绝
 - **WHEN** 多 return 出口竞争同一 finally、finally 自含非局部出口、或求值序不可证（副作用与 return 表达式交织）

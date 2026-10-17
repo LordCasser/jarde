@@ -1,23 +1,18 @@
 ## Why
 
-原patrol矩阵记录2026-10-05历史基线：当时把continue/break/空finally与finally返回值形报告为已恢复，把noCall/finReturn/loopless报告为整方法拒绝。这些旧结论不作为当前能力声明；相同“local crosses”文本也不证明同一缺口。
+2026-10-05 patrol发现单return穿副作用finally的源码恢复缺口。return表达式必须恰好求值一次，先保存结果，再执行finally；FO的`try{return bump();}finally{i=100;}`以`1/100`区分次序。历史矩阵留在[原巡查](../../evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/README.md)，其中“finally返回值形已恢复”不能直接作为当前整类可编译的结论。
 
-当前主线f4a81440d已交付FO静态前置更新与无循环条件finally。后续noCall子片产品 `02de294f7` 已完成本地验证，最终CLI fd7b33ce…ff25 的实际20命令重筛保留两编译器来源的完整FY5方法、FX6方法、FO5方法：FY/FO均原样重编通过，各在Java8/23运行main，总计8次逐字匹配原oracle；它们的逐方法报告均structured/java且无fallback。FX.finContinue/finReturn/finBreak仍为mixed/fallback，其中finReturn使两份整类重编缺return，无重建运行。noCall产品自身CI38872425446已终态独审通过（双seed各3663/0/98），该子片正常同步规格并归档交付；父剩余任务仍保留。
+当前产品`30afa7c9ab2818f41959f9ea6a8ca6f896714dc1`与冻结CLI `05e0272e…b89d`已完成五个独立叶片：FO静态前置求值、FY.loopless条件return副本、FY.noCall局部iinc循环、FX.finReturn调用结果循环，以及FX.finContinue/finBreak残留handler45。最终两编译器来源FY/FX/FO共6完整类、32方法均Java/Structured且无fallback；六份生成源码原样重编通过，12次rebuilt-only main输出逐字等原oracle。详细事实和限制见[instrumentation.md](instrumentation.md)，不由历史诊断同名推断共同原因。
 
-父范围仍包含FX.finReturn、其它未证明形与完整JADX/零回退验收。固定FY/FO的完整成功不代表所有finally或父计划已经完成。
-
-**核心可证性**：Java 语义要求 return 表达式先求值（恰一次）、finally 副作用后执行（[FO 基准](../../evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/fixture/FO.java)：`try{return bump();}finally{i=100;}` 输出 `1/100`）。朴素把 finally 复制到 return 语句之前会错序——正确形是 **temp 绑定**（`t = <expr>; <finally body>; return t;`）或等价可证形式。
-
-取证：[return-effectful-finally-patrol](../../evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/README.md)。
+父计划负责汇总这些可证叶片、完整物理来源、对照与回归验收，不能仅凭某个叶片的成功归档。EX.finReturn及FinallyCompletion的返回覆盖/显式抛出等其它形仍有fallback或完整源码missing return；这些实际红项继续登记，不把固定FY/FX/FO成功扩称任意finally或任意JAR/WAR完成。
 
 ## What Changes
 
-- 复用已存在的Finally/SavedReturn及私有continuation，按可证叶片推进单return穿副作用finally，不另立通用temp框架。FO与loopless已归档；noCall由 `recover-local-increment-loop-finally` 承接，FX.finReturn仍需后续有界证明。
-- 调查结论与历史问题对应：
-  - **Q-i（历史）**：loopless的原始拒绝链与修复见 `2026-10-16-recover-conditional-return-finally-copies` 的实际CFG/SSA/全源码归档；不重复实现。
-  - **Q-ii**：noCall已用真实Facts/Region定位到iinc副本、handler phi与循环scope，子片只授权已证return块；finReturn须独立核实际值流/清理异常及出口，不能凭诊断同名合并。父级instrumentation.md尚未创建，不把子片报告当作该文件已完成。
-- 拒绝边界保持：多 return 出口竞争同一 finally、finally 内含非局部出口（自身 return/break）、求值序不可证（副作用与 return 表达式交织）——维持整方法响亮拒绝。
-- 对照零回退：空 finally、continue/break 分布、finally 返回值形逐字节不变。
+- 复用既有Finally/SavedReturn与私有continuation，按实际CFG、SSA身份、effects、保护区间和出口证明有界叶片；不另建通用temp框架。
+- 将历史Q-i定位到loopless真实首拒与融合尾块；将Q-ii分解为noCall的iinc/handler phi与finReturn的保存调用结果/多调用cleanup，保存各自证明和拒绝边界。
+- 按固定FY/FX/FO的所有物理方法与BCI核来源，并对完整生成类原样重编/运行。固定main覆盖的观察与独立driver观察分别记账。
+- 对照保持行为、求值顺序、来源和拒绝边界。continue/break这次授权改善会删除旧fallback，旧“逐字节不变”不能约束它们保持失败文本；前一CallReturn版本至当前的28个非目标方法记录须逐字不变，未来以当前30afa为新的完整对照基线。
+- finally内显式return/throw等未证明非局部完成继续保留可定位拒绝；不把未改变的fallback称为成功恢复。
 
 ## Capabilities
 
@@ -27,8 +22,8 @@
 
 ### Modified Capabilities
 
-- `java8-recovery`：扩充可证明的 return 穿副作用 finally 恢复，保持求值序、副作用次序与拒绝边界。
+- `java8-recovery`：可证明的return穿副作用finally恢复与父级完整源码验收，保留求值序、副作用次序、物理来源与拒绝边界。
 
 ## Impact
 
-主要涉及 `jarde-java` 呈现层（exit/finally 等价分布）与局部 def-use 词法绑定；验收 fixture：[patrol](../../evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/) 的 FY.java（noCall/loopless/emptyFin 锚）+ FX.java（finContinue/finBreak/finReturn）+ FO.java 求值序判别。
+实现位于`jarde-java`既有guard、region/Builder与来源呈现层，公库和CLI只沿现有入口消费。五个已归档叶片分别维护永久测试、真实双编译器fixture、停止/负控制及自身CI。父级不重复实现已交付叶片，也不修改原Java、driver、oracle、生成Java或旧计费基线。
