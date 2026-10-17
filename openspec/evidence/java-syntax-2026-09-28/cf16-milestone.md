@@ -4,6 +4,12 @@
 
 ## 2026-10-18 增补：仅异常完成 finally 叶片
 
+### 后续原始 TestFinally3 profile 已验收
+
+[recover-direct-array-constructor-arguments](../../changes/recover-direct-array-constructor-arguments/) 已7/7，产品81b0684d5自身CI39062097681的4jobs/52步骤和双seed各381targets、3707/0/98已独立接受。原始JADX源码新编译的debug/noDebug两输入已区别于旧转写Tf3：100物理方法配置全BCI/UTF8来源、20次原样整类重编、40次隔离运行320case通过，88非目标配置不变；JADX六次整类重编均因两处inputStream未初始化失败，无rebuilt runtime。major55测试harness限制owner重编只用javac23，不冒称javac8接受原owner；原close为空，不能由driver推断其调用次数或顺序。
+
+最终605CLI相对完整矩阵e01CLI只删除重复证明遍历，40真实请求重放核完整源码和非usage报告恒同；只ir_items/elapsed_millis变化，按相同源码复用实际JDK证据，不冒称重新运行。完整证据见该change的results/tf3-final-matrix-root-v1、output-replay-root-v1、workspace-acceptance-root-v3及own-product-ci-root-v1。TestFinally3的原始debug/noDebug缺口已闭合；Smali仍独立记账，下表2026-09-30的相关待办属于历史。此项与显式finally return/throw债务分开，不增加CF16或71/612整单元完成数。
+
 [recover-exception-only-finally-completion](../../changes/recover-exception-only-finally-completion/) 在既有Guard/Finally完成枚举及Try AST中补齐直线try抛异常、finally正常落穿的完成类型；handler只重抛同一捕获值，cleanup异常自然覆盖pending primary。产品3fa506df0已推送，最终7287CLI的独立整类144个重建运行case及入口参数24case通过；旧15class正文/来源保持，两fresh native seed各378targets、3700/0/98，来源与逐target计数相同。精确产品自身CI39051492999已独立接受，4jobs/52steps、双seed各378targets/3700通过/0失败/98忽略，9关键各一次通过；本leaf11/11，两版strict各366/0；后续文档不冒称产品CI的新运行。
 
 原FinallyCompletion七方法均保留，本次改善tryThrowsFinallyRuns；finallyReturns/finallyThrows的原样整类编译红项继续作为独立欠账。当前71单元/612文件及本表24主归属文件数保持。下表为2026-09-30首轮范围记录；后续TestFinally3的debug/noDebug/Smali须区分输入来源，转写Tf3不替代原nested TestCls的独立profile证据。
