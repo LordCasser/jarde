@@ -2,6 +2,12 @@
 
 基准为 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 的 `trycatch` 目录 24 个主归属测试文件，文件清单见[控制流账本](../jadx-feature-inventory-2026-09-27/control-flow.md)。**文件数不等于已恢复的 lowering 数**：一个文件可含多个 profile、`@NotYetImplemented` 或禁用编译的断言。下面只给当前证据等级和下一步，不把窄切片当成整个文件通过。
 
+## 2026-10-18 增补：仅异常完成 finally 叶片
+
+[recover-exception-only-finally-completion](../../changes/recover-exception-only-finally-completion/) 在既有Guard/Finally完成枚举及Try AST中补齐直线try抛异常、finally正常落穿的完成类型；handler只重抛同一捕获值，cleanup异常自然覆盖pending primary。产品3fa506df0已推送，最终7287CLI的独立整类144个重建运行case及入口参数24case通过；旧15class正文/来源保持，两fresh native seed各378targets、3700/0/98，来源与逐target计数相同。精确产品自身CI39051492999已独立接受，4jobs/52steps、双seed各378targets/3700通过/0失败/98忽略，9关键各一次通过；本leaf11/11，两版strict各366/0；后续文档不冒称产品CI的新运行。
+
+原FinallyCompletion七方法均保留，本次改善tryThrowsFinallyRuns；finallyReturns/finallyThrows的原样整类编译红项继续作为独立欠账。当前71单元/612文件及本表24主归属文件数保持。下表为2026-09-30首轮范围记录；后续TestFinally3的debug/noDebug/Smali须区分输入来源，转写Tf3不替代原nested TestCls的独立profile证据。
+
 | 组 | 文件 | 当前证据 | 下一关口 |
 | --- | --- | --- | --- |
 | 固定切片已由 root 验收 | `TestEmptyFinally`、`TestTryCatchFinally`、`3`、`4`、`5`、`11`、`12`、`13`、`14`、`16`、`17` | 同布局 Java 8 目标或完整类的原/JADX/Jarde 重编、验证运行及对应反例分别验收；[空 finally](cf16-testemptyfinally/implementation-results.md)的两行透明 handler 已恢复为完整类普通 catch，三条路径和三个有效近邻验收；[Test3](cf16-test3-catch-finally/results/acceptance.txt)四行正文循环已方法级恢复，九条路径、34 个 BCI 来源及七个有效近邻验收，整类 `<clinit>` 仍独立回退；[Test4](cf16-test4-nested-cleanup/README.md)的四行嵌套清理目标有 31 个 BCI 来源与 5 个有效近邻，固定目标仅验证正常路径；[Test5](../../changes/recover-multi-return-loop-finally/verification/root-acceptance.md)的三行双返回、正文 do-while 完整类通过九路径、45 个 BCI 来源和六个有效近邻验收；[Test11](cf16-test11-loop-finally/implementation-evidence.md)的双行 handler 循环覆盖 10 条清理异常路径和 33 个 BCI；`13` 的扩围样本揭示 JADX 漏第二次清理。 | 只在新 profile/组合出现时扩验，不重做已通过切片；Test3 整类静态初始化另案处理。 |
