@@ -11556,6 +11556,26 @@
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/v8/OP.class"
     },
     {
+      "blake3": "f2e3455cef17bef322545f34438574d2154c870b5b805e696255e80fd9b630de",
+      "bytes": 203,
+      "path": "tests/fixtures/recover-return-through-nested-finally-cleanup/source/NestedFinally.java"
+    },
+    {
+      "blake3": "a81f42409c833601ce510d071302389e1e2874e38480a0277f8886d1848ac251",
+      "bytes": 4693,
+      "path": "tests/fixtures/recover-return-through-nested-finally-cleanup/source/NestedFinallyDriver.java"
+    },
+    {
+      "blake3": "ec849b5ea453ad65573dab9386aa072f94b5dcbe8055a7704f67168a208f75b8",
+      "bytes": 509,
+      "path": "tests/fixtures/recover-return-through-nested-finally-cleanup/v8-javac8/NestedFinally.class"
+    },
+    {
+      "blake3": "d8971f4a0d8e461a90c8c9039022025fea5494647e4a3e693081c0cc36cd6016",
+      "bytes": 509,
+      "path": "tests/fixtures/recover-return-through-nested-finally-cleanup/v8/NestedFinally.class"
+    },
+    {
       "blake3": "1ce5d4731e3516a7af2504512545a21c589fece0aef9a970232691999e61f7b8",
       "bytes": 725,
       "path": "tests/fixtures/recover-short-circuit-local-branch-reads/BranchReadNegatives.java"
