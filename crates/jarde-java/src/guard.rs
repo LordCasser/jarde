@@ -12796,6 +12796,324 @@ mod finally_copy_tests {
         probe(class, name, competing, None).unwrap()
     }
 
+    #[test]
+    fn branch_throw_return_finally_resources_claims_the_sealed_method() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        probe_descriptor(
+            class,
+            "finThrow",
+            b"(I)Ljava/lang/String;",
+            false,
+            None,
+            |facts| {
+                let entry = facts.canonical.blocks()[0].id().clone();
+                assert_eq!(entry.bci(), 0);
+                let Verdict::Claimed(plan) =
+                    resources(facts, &crate::pass::JAVA_8, &entry).unwrap()
+                else {
+                    panic!("the existing resource consumer must claim its complete copy proof");
+                };
+                assert_eq!(plan.body(), (0, 17));
+                assert!(matches!(
+                    plan.shape(),
+                    Shape::Finally {
+                        completion: FinallyCompletion::SavedReturn {
+                            save: 16,
+                            returns: 26,
+                        },
+                        normal_cleanup: (17, 25),
+                        row_ordinal: 0,
+                        structured: true,
+                    }
+                ));
+                assert!(plan.owned().iter().any(|block| block.bci() == 14));
+                assert!(plan.owned().iter().any(|block| block.bci() == 27));
+            },
+        )
+        .unwrap()
+        .expect("the sealed method's normal and exceptional copies are fully proved");
+    }
+
+    fn finthrow_code_start(class: &[u8]) -> usize {
+        const CODE: [u8; 38] = [
+            0x1a, 0x9c, 0x00, 0x0d, 0xbb, 0x00, 0x26, 0x59, 0x12, 0x28, 0xb7, 0x00, 0x2a, 0xbf,
+            0x12, 0x2d, 0x4c, 0xb2, 0x00, 0x2f, 0x12, 0x35, 0xb6, 0x00, 0x37, 0x2b, 0xb0, 0x4d,
+            0xb2, 0x00, 0x2f, 0x12, 0x35, 0xb6, 0x00, 0x37, 0x2c, 0xbf,
+        ];
+        let matches: Vec<_> = class
+            .windows(CODE.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == CODE).then_some(at))
+            .collect();
+        assert_eq!(matches.len(), 1, "the sealed finThrow Code must be unique");
+        matches[0]
+    }
+
+    fn finthrow_cp_end(class: &[u8]) -> usize {
+        let count = u16::from_be_bytes([class[8], class[9]]) as usize;
+        let mut at = 10;
+        let mut index = 1;
+        while index < count {
+            let tag = class[at];
+            at += 1;
+            match tag {
+                1 => {
+                    let len = u16::from_be_bytes([class[at], class[at + 1]]) as usize;
+                    at += 2 + len;
+                }
+                3 | 4 => at += 4,
+                5 | 6 => {
+                    at += 8;
+                    index += 1;
+                }
+                7 | 8 | 16 | 19 | 20 => at += 2,
+                9 | 10 | 11 | 12 | 17 | 18 => at += 4,
+                15 => at += 3,
+                other => panic!("unexpected constant pool tag {other}"),
+            }
+            index += 1;
+        }
+        at
+    }
+
+    fn append_system_err(class: &[u8]) -> (Vec<u8>, u16) {
+        let mut changed = class.to_vec();
+        let count = u16::from_be_bytes([changed[8], changed[9]]);
+        let name = count;
+        let name_type = count + 1;
+        let field = count + 2;
+        let mut entries = vec![1, 0, 3, b'e', b'r', b'r'];
+        entries.extend_from_slice(&[12]);
+        entries.extend_from_slice(&name.to_be_bytes());
+        entries.extend_from_slice(&52_u16.to_be_bytes());
+        entries.extend_from_slice(&[9]);
+        entries.extend_from_slice(&48_u16.to_be_bytes());
+        entries.extend_from_slice(&name_type.to_be_bytes());
+        let cp_end = finthrow_cp_end(&changed);
+        changed.splice(cp_end..cp_end, entries);
+        changed[8..10].copy_from_slice(&(count + 3).to_be_bytes());
+        (changed, field)
+    }
+
+    fn finthrow_rejects_changed_proof_inputs(label: &str, class: &[u8]) {
+        let proof = probe_descriptor(
+            class,
+            "finThrow",
+            b"(I)Ljava/lang/String;",
+            false,
+            None,
+            |facts| {
+                assert!(facts.canonical.completeness().is_complete(), "{label}");
+                assert_eq!(
+                    facts.ssa.blocks().len(),
+                    facts.canonical.blocks().len(),
+                    "{label}"
+                );
+                let entry = facts.canonical.blocks()[0].id().clone();
+                assert!(
+                    !matches!(
+                        resources(facts, &crate::pass::JAVA_8, &entry).unwrap(),
+                        Verdict::Claimed(_)
+                    ),
+                    "{label}: resource routing claimed a changed proof input"
+                );
+            },
+        )
+        .unwrap();
+        assert!(
+            proof.is_none(),
+            "{label}: copy proof accepted a changed input"
+        );
+    }
+
+    #[test]
+    fn branch_throw_return_finally_rejects_real_classfile_neighbor_mutations() {
+        let original = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        let mut controls = Vec::new();
+
+        let mut argument = original.to_vec();
+        let code = finthrow_code_start(original);
+        argument[code + 32] = 45; // Handler prints "ok" while normal cleanup prints "ft".
+        controls.push(("handler cleanup argument differs", argument));
+
+        let (mut receiver, err_field) = append_system_err(original);
+        let code = finthrow_code_start(&receiver);
+        receiver[code + 29..code + 31].copy_from_slice(&err_field.to_be_bytes());
+        controls.push(("handler cleanup receiver differs", receiver));
+
+        let mut protected_range = original.to_vec();
+        let code = finthrow_code_start(original);
+        protected_range[code + 42..code + 44].copy_from_slice(&25_u16.to_be_bytes());
+        controls.push((
+            "protected row covers the normal cleanup call",
+            protected_range,
+        ));
+
+        let mut wrong_return = original.to_vec();
+        let code = finthrow_code_start(original);
+        wrong_return[code + 25] = 0x01; // Return null instead of the value saved at BCI16.
+        controls.push(("normal completion returns a different value", wrong_return));
+
+        let mut wrong_rethrow = original.to_vec();
+        let code = finthrow_code_start(original);
+        wrong_rethrow[code + 36] = 0x01; // athrow null changes the thrown identity to NPE.
+        controls.push(("handler throws a different value", wrong_rethrow));
+
+        assert_eq!(controls.len(), 5);
+        for (label, changed) in controls {
+            eprintln!("finThrow analyzed neighbor: {label}");
+            finthrow_rejects_changed_proof_inputs(label, &changed);
+        }
+    }
+
+    #[test]
+    fn branch_throw_return_finally_rejects_a_real_extra_normal_exit() {
+        let class = include_bytes!(
+            "../../../tests/fixtures/recover-branch-throw-return-finally/boundaries/EXExtraExit.class"
+        );
+        let proof = probe_descriptor(
+            class,
+            "finThrow",
+            b"(I)Ljava/lang/String;",
+            false,
+            None,
+            |facts| {
+                assert!(facts.canonical.completeness().is_complete());
+                assert_eq!(facts.ssa.blocks().len(), facts.canonical.blocks().len());
+                assert!(!facts.ssa.values().is_empty());
+            },
+        )
+        .unwrap();
+        assert!(
+            proof.is_none(),
+            "the extra normal exit must not receive the single-completion copy proof"
+        );
+    }
+
+    #[test]
+    fn branch_throw_return_finally_stops_after_paid_resource_probes() {
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        use std::time::Duration;
+
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            delay_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if !matches!(site, LedgerSite::Charge(_)) {
+                    return;
+                }
+                let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                if self.cancel_at == Some(count) {
+                    self.token.cancel();
+                }
+                if self.delay_at == Some(count) {
+                    std::thread::sleep(Duration::from_millis(150));
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        probe_descriptor(
+            class,
+            "finThrow",
+            b"(I)Ljava/lang/String;",
+            false,
+            None,
+            |facts| {
+                let entry = facts.canonical.blocks()[0].id().clone();
+                *facts.budget = Budget::new(limits());
+                let baseline_observer = Arc::new(Observer {
+                    charges: AtomicUsize::new(0),
+                    cancel_at: None,
+                    delay_at: None,
+                    token: CancellationToken::new(),
+                });
+                let ledger =
+                    OperationLedger::new(facts.budget).with_observer(baseline_observer.clone());
+                facts.budget.with_ledger(ledger, UsageOwner::Methods);
+                assert!(matches!(
+                    resources(facts, &crate::pass::JAVA_8, &entry).unwrap(),
+                    Verdict::Claimed(_)
+                ));
+                let paid = facts.budget.usage().analysis_steps;
+                let charges = baseline_observer.charges.load(Ordering::SeqCst);
+                assert!(paid > 10 && charges > 10);
+
+                let mut bounded = limits();
+                bounded.analysis_steps = paid - 1;
+                *facts.budget = Budget::new(bounded);
+                assert!(matches!(
+                    resources(facts, &crate::pass::JAVA_8, &entry),
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        written: 0,
+                        ..
+                    })
+                ));
+                assert_eq!(facts.budget.usage().analysis_steps, paid - 1);
+
+                let token = CancellationToken::new();
+                *facts.budget = Budget::with_cancellation_token(limits(), token.clone());
+                let cancel_observer = Arc::new(Observer {
+                    charges: AtomicUsize::new(0),
+                    cancel_at: Some(10),
+                    delay_at: None,
+                    token: token.clone(),
+                });
+                let ledger =
+                    OperationLedger::new(facts.budget).with_observer(cancel_observer.clone());
+                facts.budget.with_ledger(ledger, UsageOwner::Methods);
+                assert!(matches!(
+                    resources(facts, &crate::pass::JAVA_8, &entry),
+                    Err(StopReason::Cancelled { at: Some(_) })
+                ));
+                assert_eq!(cancel_observer.charges.load(Ordering::SeqCst), 10);
+                assert_eq!(facts.budget.usage().analysis_steps, 10);
+
+                let mut deadline_limits = limits();
+                deadline_limits.elapsed_millis = 100;
+                let token = CancellationToken::new();
+                *facts.budget = Budget::with_cancellation_token(deadline_limits, token.clone());
+                let deadline_observer = Arc::new(Observer {
+                    charges: AtomicUsize::new(0),
+                    cancel_at: None,
+                    delay_at: Some(10),
+                    token,
+                });
+                let ledger =
+                    OperationLedger::new(facts.budget).with_observer(deadline_observer.clone());
+                facts.budget.with_ledger(ledger, UsageOwner::Methods);
+                assert!(matches!(
+                    resources(facts, &crate::pass::JAVA_8, &entry),
+                    Err(StopReason::Interrupted { at: Some(_), .. })
+                ));
+                assert_eq!(deadline_observer.charges.load(Ordering::SeqCst), 10);
+                assert_eq!(facts.budget.usage().analysis_steps, 10);
+                *facts.budget = Budget::new(limits());
+            },
+        )
+        .unwrap()
+        .expect("the helper's final standalone proof remains complete after each stopped probe");
+    }
+
     fn probe(
         class: &[u8],
         name: &str,

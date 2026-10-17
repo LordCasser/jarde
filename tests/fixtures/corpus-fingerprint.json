@@ -9801,6 +9801,36 @@
       "path": "tests/fixtures/recover-boxed-number-widening/v8/C8.class"
     },
     {
+      "blake3": "29f1948a910878bf7fff4a91e553ef2ade29fea8ea080fa034ce5d046b604be1",
+      "bytes": 175,
+      "path": "tests/fixtures/recover-branch-throw-return-finally/BranchThrowFinally.java"
+    },
+    {
+      "blake3": "1e253829f62b6c12b0c9a7decd39a4e61fe46db25ea0631ea011ddad96f113d1",
+      "bytes": 4000,
+      "path": "tests/fixtures/recover-branch-throw-return-finally/BranchThrowFinallyDriver.java"
+    },
+    {
+      "blake3": "f7a06af8cbf416eef06ef82cfda7d83bce38602adf838f4f07ad66c66c640363",
+      "bytes": 443,
+      "path": "tests/fixtures/recover-branch-throw-return-finally/boundaries/EXExtraExit.class"
+    },
+    {
+      "blake3": "f14f2b047fa80255458e6b40f35f8ac88fd0bc8b59f963547e328ef59268a953",
+      "bytes": 378,
+      "path": "tests/fixtures/recover-branch-throw-return-finally/boundaries/EXExtraExit.java"
+    },
+    {
+      "blake3": "081fd3351d1c53d58a034e3f0facb23bba5898de52b218d8b50be2b17d7cd500",
+      "bytes": 492,
+      "path": "tests/fixtures/recover-branch-throw-return-finally/v8-javac8/BranchThrowFinally.class"
+    },
+    {
+      "blake3": "07e80427ff28a531880fa15d129169bb335c00b4aa83d3c2b4d33921baed7b15",
+      "bytes": 492,
+      "path": "tests/fixtures/recover-branch-throw-return-finally/v8/BranchThrowFinally.class"
+    },
+    {
       "blake3": "d3cb4769f9fa5e127f09c3a7fc1cfa4f05d75cdb76efa086962eef1f57550cab",
       "bytes": 2066,
       "path": "tests/fixtures/recover-branching-guard-body/BG.java"

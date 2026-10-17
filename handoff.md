@@ -2,6 +2,18 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-17 当前推进：finThrow 验收中，nestedFin 已独立派发
+
+先从 GitHub 快进64个提交到 e5757b5a9920da5d2b86dc44d8c729c98caf1253，复核新交接与父 finally 真实4/7状态；旧本地 facade 草稿仅备份/stash，未应用。
+
+当前 `recover-branch-throw-return-finally` 为3/5：finThrow 的完整证明原本已有，缺口是纯比较入口无异常边，直到 throw 子分支才调用 guard。最小修复在单 catch-all row 起点、范围内 comparison、双正常 successor 入口提前调用既有 examine；不新增 proof/公开表示/Builder 机制。root已接受实际红基线、450 库单测/2 API测试、全 reader census、指纹与CI同款Clippy，以及最终 CLI 的4 profile/8次完整源码重编/16次隔离运行/144case 对照。JADX1.5.6 对同输入虽可编译，但清理抛异常会打印两次ft，真实失败原样保留。
+
+本条更新时 strict365/0及primitive finally旧预期更新后的P5 19/0/1已通过；fresh双seed工作区、精确产品自身CI和clean主线交接仍待完成，不能按完成接手。证据均在该change的results及root-review.json；父 `recover-return-through-effectful-finally` 仍4/7，71/612不增加。
+
+`recover-return-through-nested-finally-cleanup` 已严格校验，实际六块/四行 Facts/SSA/effects 只读探针已执行；Luna仅在私有目录准备实现。保留公开Finally/SavedReturn，Plan私有有界BCI描述负责fused块内嵌套cleanup。root初稿审查发现遗漏 `[46,54)` out副本等问题，未接受、未合入。原稿与审查记录在该change的results/draft-review-root-v1；修正版仍须实际编译和完整18组合对照。不要把静态草稿当恢复完成。
+
+以下10月15日内容为历史记录，当前状态优先看本节与对应change实际任务、raw、源码/工具pin、自身CI。
+
 ## 2026-10-15 class-view 歧义修复已交付并归档
 
 产品e8c749252a71a857838d0cb854f5a6d80a5c2704已进入main，自身[CI38679565191](https://github.com/LordCasser/jarde/actions/runs/38679565191)由根802项/独立1462项核查接受：4jobs52steps，两seed各365suites、3589/0/98，79具名门及既有额外JDK/examples/层级/fuzz门通过。修复保留foreign-owner优先级，重复Name及listed identity都在body准入前按完整候选返回歧义。既有76/0/2本地门、九组27库请求及三CLI请求保持原范围。
