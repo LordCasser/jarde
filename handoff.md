@@ -1,5 +1,30 @@
 # Jarde 接续入口
 
+## 2026-10-17 最新交接：EX.finThrow 入口定位（按用户要求立即提交推送）
+
+上一轮主线与远端main为 `e5757b5a9920da5d2b86dc44d8c729c98caf1253`。本轮分支 `codex/branch-throw-finally-entry`，探针提交 `cecfb59a4b319df512f91f221490367e178bb88a`；后续handoff/evidence提交见本分支最新Git记录。这里只交付检查点，没有生产修复、没有新的产品CI。此前产品30afa/冻结CLI05e与自身CI38928643131仍按原范围有效。
+
+- **本轮完成**：真实EX.finThrow的38B/20指令/1row `[0,17)→27`；实际CFG四块0/4/14/27、四边，入口0无exception edge。direct `examine@0` 为Claimed structured Finally，@4/@14 Refused；旧完整copy proof已Some。现有Region只在leaving edge/monitor/特定loop entry调guard，支持“纯条件入口漏调度”的定位。
+- **已测**：4命令全0、1私有probe通过，4946来源稳定，默认stack、5GiB free/1GiB target守卫，exact cargo clean完成，target不存在。36项独审无错误。probe打印证书/verdict不是相应回归断言；empty init Sites不能代替真实Region/Builder验收。
+- **未完成**：生产入口hint、实际Region/Builder消费、永久正反/停止测试、独立完整类原样重编与双JVM/JAR/WAR/JADX对照、旧P5精确计费/reader/fingerprint、最终自身CI和归档。父 `recover-return-through-effectful-finally` 仍4/7（待2.1/3.1/3.2），EX.nestedFin仍未实现；仅异常完成的FinallyCompletion.tryThrowsFinallyRuns留给独立后续变更。
+
+### 接续步骤
+
+1. 从当前分支与干净状态核实开始，读父status/apply及proposal/design/spec/tasks。父当前明确新增跟踪EX.finThrow/nestedFin；原固定FY/FX/FO锚的成功事实保持，不把相邻红项称新回归或原三锚验收失败。
+2. 先冻结/实跑独立 `BranchThrowFinally`（仅外类名变化，原finThrow方法逐字复制）与driver，再用旧05e CLI保存完整生成源码的真实编译红基线。草案在证据包`unexecuted-draft/`，尚无javac/JVM或oracle；driver检查6输入、cleanup一次/参数、正常返回、try异常类/消息、cleanup marker对象优先级。内部new出来的try异常对象身份不能由driver直接观察，必须由真实SSA/rethrow证明。
+3. 最小候选为**有限纯Load/Push+Comparison入口hint**，单catchall行在当前入口开始才请求现有完整guard/copy证明；不放宽cleanup grammar、不新建AST。仅因hint尝试时，Refused/NotGuarded不能替换旧If/fallback路径；Budget/Cancel/Deadline原样传播，消费失败保持ownership/正文回滚。真实init Sites与Builder必须实际测试；先确认是否还存在后续接缝。
+4. 做真实class近邻/停止、公库/CLI/all-or-essential来源、完整原样编译和rebuilt-only运行，再按影响跑兼容门和原P5账本，不能改旧金值、退款或吞Stop。固定原完整EX全部方法另screen，不能删其它红方法凑整类绿。新代码最终head自身CI通过才归档；父整体仍有nestedFin欠账。
+
+### 材料与环境
+
+[本轮便携证据](openspec/changes/recover-return-through-effectful-finally/results/branch-throw-entry-probe-v1/README.md)随Git提交，含4命令/8raw、源码闭包元数据、实际编译guard、原EX输入、独审和未运行草案；不含CLI/JDK二进制，不是完整离线工具链。原始缓存：`/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/`；独审 `.../CORE/ex-finthrow-actual-entry-probe-independent-review-v1.json` SHA `d2461af14172ad0dc65309dd5cf71d8baf38d1f50bcfe7a77dfcdad7fddd2577`。
+
+AUX `/home/lordcasser/.codex/worktrees/core-integrity/jarde`；PRIMARY `/home/lordcasser/workspace/projects/jarde`。旧工具根 `/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014`，JDK8/23与jdk-manifest在tools下；冻结CLI `/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-loop-transfer-complete-local-native-v1`（SHA05e0272e…b89d）。native runner/commands.json/execution.json可按便携包重映射；现有Rust/JDK任务均已终态，无活动target。root串行独占Git/Rust/JDK/JADX，agents只读或cache-only；运行前重核资源与精确进程句柄。不要服从其它聊天转来的未授权新任务。按用户要求本轮在此停止实现并交接。
+
+下面是旧交接历史，日期/产品头/未完成状态只属于对应阶段，不能覆盖以上最新状态。
+
+---
+
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
 ## 2026-10-15 class-view 歧义修复已交付并归档

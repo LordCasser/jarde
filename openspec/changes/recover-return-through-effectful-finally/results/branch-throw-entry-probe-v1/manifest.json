@@ -1,0 +1,137 @@
+{
+  "scope": "Actual private probe only; no real Region/Builder or source-recompile/runtime acceptance. Draft fixture/driver are uncompiled and have no observed oracle. This is evidence, not a full offline repository/toolchain.",
+  "files": [
+    {
+      "path": "compiled-source/guard.rs",
+      "bytes": 809062,
+      "sha256": "b91d89c6a09530ce8f16a627f954d00cc382ba87884afb912f490255bdbb052b",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/compiled-source/crates/jarde-java/src/guard.rs"
+    },
+    {
+      "path": "original/EX.class",
+      "bytes": 1632,
+      "sha256": "e6f0eb1e029a2c883d3ee5df5e089eda17fea27833a9244297cede139cd61287",
+      "original_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+    },
+    {
+      "path": "original/EX.java",
+      "bytes": 828,
+      "sha256": "ac271fdab4185ac1705f243ed0b8e93126b5684a0feab0ceb164f7e43223d92e",
+      "original_path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.java"
+    },
+    {
+      "path": "probe/commands.json",
+      "bytes": 599,
+      "sha256": "a8cbfc5dfde0692c71eb533b5a6a069ee1d7662b5f8c20bbf5a3ce068dd8efa4",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/commands.json"
+    },
+    {
+      "path": "probe/execution.json",
+      "bytes": 2168588,
+      "sha256": "e00156371dccb1387ca4c2bb623e25482b2b39d3182cdc37dfc4e112686b19d5",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/execution.json"
+    },
+    {
+      "path": "probe/preflight-format.execution.json",
+      "bytes": 706,
+      "sha256": "c23d316a181f882f5b732cab4d5836d8fa43f6633527fd889c1c8ddca2aa579b",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/preflight-format.execution.json"
+    },
+    {
+      "path": "probe/preflight-format.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/preflight-format.stderr.raw"
+    },
+    {
+      "path": "probe/preflight-format.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/preflight-format.stdout.raw"
+    },
+    {
+      "path": "probe/run.py",
+      "bytes": 13431,
+      "sha256": "c603f790e5cf2f3691cba6a64d3a09d37921bb693d9e8310aba4a0c0f7f20322",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run.py"
+    },
+    {
+      "path": "raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/1.stderr.raw"
+    },
+    {
+      "path": "raw/1.stdout.raw",
+      "bytes": 36,
+      "sha256": "8dc912acd5bfeafc70b01b1d2a2afb0844afa02f5dba2f1ae8d5c212d005afb6",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/1.stdout.raw"
+    },
+    {
+      "path": "raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/2.stderr.raw"
+    },
+    {
+      "path": "raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/2.stdout.raw"
+    },
+    {
+      "path": "raw/3.stderr.raw",
+      "bytes": 2033,
+      "sha256": "f7fc2f28a3cae97e0a26fcb9112f8175ff9f72294cdfbc793e4ef76deb4ed305",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/3.stderr.raw"
+    },
+    {
+      "path": "raw/3.stdout.raw",
+      "bytes": 60382,
+      "sha256": "9a4f077dc25dfce2ef121e1ec4b8d2362b58aa9e0fefa7d57fd9d99d920083d6",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/3.stdout.raw"
+    },
+    {
+      "path": "raw/4.stderr.raw",
+      "bytes": 52,
+      "sha256": "9a6978f7126dea6f41e9c2caae320dbf7badaff8a39acde58f77e0cff7c4ee96",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/4.stderr.raw"
+    },
+    {
+      "path": "raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-v1/run-v1/4.stdout.raw"
+    },
+    {
+      "path": "reviews/ex-finthrow-actual-entry-probe-independent-review-v1.json",
+      "bytes": 8430,
+      "sha256": "d2461af14172ad0dc65309dd5cf71d8baf38d1f50bcfe7a77dfcdad7fddd2577",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-actual-entry-probe-independent-review-v1.json"
+    },
+    {
+      "path": "reviews/ex-finthrow-finally-copy-seam-review-v1.json",
+      "bytes": 12754,
+      "sha256": "5b691535829c23fb63c4fd27feee638b7a07809fefecf0d1c9d8ff35d8eac8d9",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/ex-finthrow-finally-copy-seam-review-v1.json"
+    },
+    {
+      "path": "unexecuted-draft/BranchThrowFinally.java",
+      "bytes": 209,
+      "sha256": "f9bf8e0684e603fb1a70eca2c11a793f4d68b7c76b284e8a7dbff36f501a1532",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/branch-throw-finally-fixture-root-draft-v2/BranchThrowFinally.java"
+    },
+    {
+      "path": "unexecuted-draft/BranchThrowFinallyDriver.java",
+      "bytes": 2404,
+      "sha256": "54746cdb01a35e50dda81507e1651dc73f6ebfb11ef08b32be2c3ae659859a9b",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/branch-throw-finally-fixture-root-draft-v2/BranchThrowFinallyDriver.java"
+    },
+    {
+      "path": "unexecuted-draft/scope.txt",
+      "bytes": 465,
+      "sha256": "d7c8c5609db0202a2cc5ffbad86d6514dd377eee20c7d7335c44bc0dccb256ea",
+      "original_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/branch-throw-finally-fixture-root-draft-v2/scope.txt"
+    }
+  ]
+}
