@@ -12924,6 +12924,90 @@ mod finally_copy_tests {
     }
 
     #[test]
+    fn branch_throw_finally_baseline_probes_real_copy_and_entry_dispatch() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class"
+        );
+        let copy = probe_descriptor(
+            class,
+            "finThrow",
+            b"(I)Ljava/lang/String;",
+            false,
+            None,
+            |facts| {
+                assert!(facts.canonical.completeness().is_complete());
+                assert_eq!(facts.order.len(), 20);
+                assert_eq!(facts.handlers.len(), 1);
+                let row = &facts.handlers[0];
+                assert_eq!((row.start_bci, row.end_bci, row.handler_bci), (0, 17, 27));
+                println!("BEGIN ACTUAL EX.finThrow");
+                println!("actual rows {:?}", facts.handlers);
+                println!("actual canonical edges {:?}", facts.canonical.edges());
+                println!("actual throw_sites {:?}", facts.canonical.throw_sites());
+                for block in facts.canonical.blocks() {
+                    let id = block.id();
+                    let node = facts.view.index_of(id).unwrap();
+                    println!(
+                        "block {id:?} end={} normal_predecessors={:?} normal_successors={:?}",
+                        block.end_bci(),
+                        facts.view.predecessors(node),
+                        facts.view.successors(node)
+                    );
+                    println!("entry {:?}", facts.ssa.block(id).unwrap().entry());
+                    for instruction in facts.in_block(id) {
+                        println!(
+                            "SSA bci={} op={:?} reads={:?} writes={:?}",
+                            instruction.bci(),
+                            facts.op(instruction.bci()),
+                            instruction.reads(),
+                            instruction.writes()
+                        );
+                    }
+                }
+                println!("actual phis {:?}", facts.ssa.phis());
+                for (value, definition) in facts.ssa.values_with_ids() {
+                    println!(
+                        "value {value:?} def={:?} type={:?} uses={:?} replaced_by={:?}",
+                        definition.def(),
+                        definition.ty(),
+                        definition.uses(),
+                        definition.replaced_by()
+                    );
+                }
+                for effect in facts.ssa.effects().instructions() {
+                    println!(
+                        "effect bci={} handlers={:?} may_throw={}",
+                        effect.bci(),
+                        effect.handlers(),
+                        effect.may_throw()
+                    );
+                }
+                // These direct verdicts isolate dispatch from the certificate. The empty init
+                // sites are the existing private helper's, not a complete Builder execution.
+                for bci in [0, 4, 14] {
+                    let current = facts.starts[&bci].clone();
+                    let verdict = examine(
+                        facts.canonical,
+                        facts.view,
+                        facts.ssa,
+                        facts.ops,
+                        facts.handlers,
+                        facts.sites,
+                        &crate::pass::JAVA_8,
+                        &current,
+                        facts.budget,
+                    )
+                    .unwrap();
+                    println!("direct examine@{bci} {verdict:#?}");
+                }
+            },
+        )
+        .unwrap();
+        println!("direct straight-copy certificate {copy:#?}");
+        println!("END ACTUAL EX.finThrow");
+    }
+
+    #[test]
     fn conditional_return_proves_three_copies_and_the_saved_field_value() {
         for class in [
             &include_bytes!(
