@@ -4,15 +4,17 @@
 
 ## 2026-10-18 当前：原始 TestFinally3 与直接数组构造参数
 
-`recover-direct-array-constructor-arguments` 当前6/7，正进行双fresh native workspace和自身产品CI交付。首产品550b7ff922e32fa4ce5d4326d8c7d22bd8fa30a3已推送；本地完整seed1发现P5重复遍历计量失败，root取消旧CI39060504198，原失败/取消日志均保留，不能当作成功。Luna补丁经root审查，仅init.rs复用已读取operands并将物理参数次数并入原有已计费循环，删除重复工作，未改P5旧表值或预算。原finThrow/nestedFin/exception-only验收与旧产品CI见下面历史区。本轮复用完整数组证明，精确匹配constructor物理final ValueId，替换String窄特判，闭合后置实参reader且不吸收sibling所有权；同owner调用按receiver SSA选取，无新solver/pass/carrier。
+`recover-direct-array-constructor-arguments` 已7/7，产品81b0684d579a09e16f328f2840bcd2400338219c已推送并通过自身CI。首产品550b7ff922e32fa4ce5d4326d8c7d22bd8fa30a3的完整seed1曾发现P5重复遍历计量失败，root取消旧CI39060504198，原失败/取消日志均保留，不能当作成功。Luna补丁经root审查，仅init.rs复用已读取operands并将物理参数次数并入原有已计费循环，删除重复工作，未改P5旧表值或预算。原finThrow/nestedFin/exception-only验收与旧产品CI见下面历史区。本轮复用完整数组证明，精确匹配constructor物理final ValueId，替换String窄特判，闭合后置实参reader且不吸收sibling所有权；同owner调用按receiver SSA选取，无新solver/pass/carrier。
 
-修正候选CLI62815152B / SHA605fdd1b2b0cc077bb9440a02b7f995ca33dded37b7527cc306f65a77bdf4c0c，`/private/tmp/jarde-direct-array-final-gates-root-v5-20261018/candidate-cli`。v5共470通过出现（461库、P5 bulk5、四公共门）/0失败/1忽略，fmt/CI同款Clippy/MSRV1.88通过、来源不变、exact clean。40实际请求重放核完整源码/非usage报告恒同已验收矩阵，仅ir_items/elapsed_millis变化；沿用相同源码的真实JDK编译运行证据，不冒称本次重新执行JDK矩阵。此前v4的181reader、指纹再生/检查门保留；指纹仅新增30项、原2275项不变，reader实测1227/5446/602/3502/10。
+最终CLI62815152B / SHA605fdd1b2b0cc077bb9440a02b7f995ca33dded37b7527cc306f65a77bdf4c0c，`/private/tmp/jarde-direct-array-final-gates-root-v5-20261018/candidate-cli`。v5共470通过出现（461库、P5 bulk5、四公共门）/0失败/1忽略，fmt/CI同款Clippy/MSRV1.88通过、来源不变、exact clean。40实际请求重放核完整源码/非usage报告恒同已验收矩阵，仅ir_items/elapsed_millis变化；沿用相同源码的真实JDK编译运行证据，不冒称本次重新执行JDK矩阵。此前v4的181reader、指纹再生/检查门保留；指纹仅新增30项、原2275项不变，reader实测1227/5446/602/3502/10。
 
 原始TestFinally3 debug/noDebug：100方法配置全BCI/物理身份/UTF8；20原样整类重编、40隔离运行320case等原oracle，88非目标配置不变；JADX6编译均两处inputStream未初始化错误、无runtime。独立完整数组家族88方法全BCI，8重编/16运行224case，JADX112case通过；sameowner8重编16case且class Complete。两种合法重排控制经真实双JVM验证，Jarde保持拒绝，无新增排序机制；其中JADX反序4编译成功但8运行全失败，trace21而原12，真实失败保留。
 
 独立债务：ReverseArrayOrder自然形态三个方法均正确，但唯一普通self-new被误调匿名投影，class Partial/CLI4；不要混入数组实现。通用fallback StringBuilder head53 presented但map缺失，旧7287/新e01双输入与default/all实测均存在；public控制仅核断言前数组来源，完整正类仍全BCI。详见本change `results/README.md`、`separate-architecture-debt.md`及各capture/root-review。所有早期编译/测试/采集失败均保留，不冒称通过。
 
-旧完整seed1-v1失败、seed2未执行；修正后的双fresh seed将重新从头执行，收据为 `/private/tmp/jarde-direct-array-workspace-seed{1,2}-root-v2-20261018`。本段会在实际提交与自身CI验收后更新。持续goal active，71/612不变。
+修正产品自身[CI39062097681](https://github.com/LordCasser/jarde/actions/runs/39062097681)已root接受：4jobs/52步骤全成功，两seed各381targets/3707通过/0失败/98忽略、逐target计数恒同、18关键门每seed各一次通过；4job raw/产品及26个class pins见本change results/own-product-ci-root-v1，后续文档head不冒称自身跑过该CI。八all-feature P5目标104/0/5，旧表不变。本地两fresh seed均381targets/100批/3707/0/98，412raw、逐target计数及8关键门通过，默认栈/守卫/exact clean、target不存在，构建3037与每轮4990来源绑定产品，见workspace-acceptance-root-v3。关闭文档/主线检查见final-delivery-root-v1，最终HEAD外置收据 `/private/tmp/jarde-direct-array-final-head-root-v1-20261018/execution.json`。持续goal active，71/612不变。
+
+接续范围备忘见 `openspec/evidence/java-syntax-2026-10-18/explicit-finally-next-analysis-root-v1` 与 `explicit-finally-primary-test-audit-root-v1`。root独立核CF16的24主归属文件：22文件/24个Java finally体无显式return/throw，Luna草稿28计数已更正；该结论不外推612或JADX产品能力。原七方法中的finallyReturns/finallyThrows仍为单列债务，先按既有JADX用例完成差距，再为确有必要的探索取真实SSA/首拒和原JVM覆盖优先级证据，尚无新机制或实现任务。
 
 ## 2026-10-18 接续：仅异常完成 finally 已完成产品验收
 

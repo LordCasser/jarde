@@ -1,6 +1,6 @@
 # 直接数组构造参数：证据索引
 
-架构、最小组合实现及完整源码/JADX/Jarde 对照已由root接受；当前进行双fresh native workspace及产品自身CI交付，tasks3.3尚未完成。固定71/612总数不变。
+架构、最小组合实现、完整源码/JADX/Jarde 对照、双fresh native workspace及产品自身CI已由root接受，tasks7/7。固定71/612总数不变。
 
 | 目录 | 实际范围 |
 | --- | --- |
@@ -47,11 +47,11 @@ reverse-originals-root-v1-failed保留首次将CLI4误作采集失败的收据�
 
 独立架构债务见[separate-architecture-debt.md](separate-architecture-debt.md)。本片不增加71/612完成数；未关闭持续goal。
 
-## 重复遍历修正与交付中检查点
+## 重复遍历修正与最终交付
 
-首产品550b7ff922e32fa4ce5d4326d8c7d22bd8fa30a3已推送。其fresh seed1第65批实际P5失败：flat-mixed IrItems2497→2501、完整direct/shared35654→35687，其余计量维度及正文不变；收据保留在workspace-seed1-root-v1-failed，63批通过不能拼成完整回归成功，seed2未启动。该产品CI39060504198由root主动取消，四job真实日志及精确旧产品来源见cancelled-own-ci-550b7-root-v1；不冒称CI独立复现本地失败或成功。
+首产品550b7ff922e32fa4ce5d4326d8c7d22bd8fa30a3已推送。其fresh seed1命令65（第64测试批）实际P5失败：flat-mixed IrItems2497→2501、完整direct/shared35654→35687，其余计量维度及正文不变；收据保留在workspace-seed1-root-v1-failed，63批通过不能拼成完整回归成功，seed2未启动。该产品CI39060504198由root主动取消，四job真实日志及精确旧产品来源见cancelled-own-ci-550b7-root-v1；不冒称CI独立复现本地失败或成功。
 
-Luna私有补丁经root审查，仅init.rs的12行变动：保留选中调用时已读取的operands，在既有producer循环统计物理参数次数，删除两次重复遍历；原P5表值/预算/语义断言全部未改。最终候选CLI62815152B / SHA605fdd1b2b0cc077bb9440a02b7f995ca33dded37b7527cc306f65a77bdf4c0c。final-gates-root-v5实际11命令22raw、470通过出现/0失败/1忽略（461库、P5 bulk5、四公共门），fmt/当前Clippy/MSRV1.88及构建通过，3037来源前后恒同，exact clean。后续完整native和新产品自身CI仍待完成，tasks3.3保持未勾。
+Luna私有补丁经root审查，仅init.rs的12行变动：保留选中调用时已读取的operands，在既有producer循环统计物理参数次数，删除两次重复遍历；原P5表值/预算/语义断言全部未改。最终CLI62815152B / SHA605fdd1b2b0cc077bb9440a02b7f995ca33dded37b7527cc306f65a77bdf4c0c。final-gates-root-v5实际11命令22raw、470通过出现/0失败/1忽略（461库、P5 bulk5、四公共门），fmt/当前Clippy/MSRV1.88及构建通过，3037来源前后恒同，exact clean。完整native和产品自身CI后续接受结果见末节。
 
 output-replay-root-v1实际40命令80raw，覆盖原始TestFinally3、完整通用数组、同owner、反序、后置维度重排、fallback来源对照及完整char/String家族。所有完整源码字节及非usage报告恒同已接受矩阵；root另核实际全部差异仅usage内ir_items/elapsed_millis，不能把脚本递归忽略usage当作任意计量变化许可。本次未重新执行JDK矩阵；此前真实原样整类重编/隔离运行证据按相同源码字节复用。
 
@@ -60,3 +60,21 @@ output-replay-root-v1实际40命令80raw，覆盖原始TestFinally3、完整通�
 p5-final-root-v1-collector-failed的首命令四target实际58通过/0失败/4忽略，但通用单target收集器要求恰好一个测试binary，因获得四个而停止并clean；不能把它当八target全门成功。改为八条单target命令重新执行，未更改产品或测试。
 
 p5-final-root-v2-feature-missing前四target仍58/0/4，第五definition_read_reuse因未启用test-support实际运行0测试，收集器如实拒绝并clean；v3全部使用--all-features重新执行，未降低“必须实际运行测试”的门。output-replay-independent-review-root-v1独立逐值重算1255差异，只有整数ir_items696处与elapsed_millis559处；新旧160raw、精确prior请求/退出状态、源码恒同均接受。v5-independent-review-root-v1核11命令22raw与470/0/1逐行结果；该审查较早时的“replay未运行”描述仅属于其当时静态审查，实际执行及后续独立复核以后两个replay目录为准。
+
+修正产品81b0684d579a09e16f328f2840bcd2400338219c已推送，其自身CI39062097681已接受，见末节。p5-final-root-v3的八all-feature目标实际9命令18raw、104通过/0失败/5忽略、源码不变及exact clean。own-ci-acceptor-review-root-v1记录Luna对收集器的独立审查，native私有acceptor修正按单个测试组绑定精确target、强制固定双seed且加入原始TF3，共8关键门；静态脚本审查不冒称实际native或CI通过。
+
+## 修正产品的完整本地验收
+
+workspace-seed1-root-v2和workspace-seed2-root-v2均实际381targets/100批/3707通过/0失败/98忽略，默认栈、5GiB/1GiB/每秒守卫、来源前后恒同及exact clean通过；两轮412raw全部复核。workspace-acceptance-root-v3按实际stderr Running顺序重建逐target计数，来源/inventory/逐target计数两轮恒同，8关键门每seed各一次通过，target在验收时不存在。构建3037来源和两轮各4990来源逐文件SHA256/Git blob绑定精确产品81b0684d5。
+
+workspace-seed1-independent-review-root-v1保留Luna对206raw和381目标/逐测试结果的独立重建；其JSON来源数4990正确，README误写focused的3037，已在workspace-seed1-independent-review-root-v2明确更正并按准确target复核8类/9条关键记录。同名pre-cancel分别归属两个test目标，不能用全局出现数代替目标身份。runner的embedded observed_counts采用artifact顺序标签，与实际Running顺序不是同一概念；最终接受器明确使用raw重建，不以该标签配对作为结果。
+
+workspace-acceptance-root-v2-checker-failed保留私有验收器误把两个合法同名pre-cancel合并后要求一次的失败；产品所有测试均已通过，该失败不要求改产品。v3仅在收集结果前按精确target筛选，并保留metadata目标唯一及单次结果要求，随后真实执行通过。上述失败和修正脚本均保留，未放宽关键测试门。
+
+## 产品自身CI
+
+产品81b0684d579a09e16f328f2840bcd2400338219c自身[CI39062097681](https://github.com/LordCasser/jarde/actions/runs/39062097681)实际4jobs/52展开API步骤全部成功。两固定seed各381目标、3707通过/0失败/98忽略、18关键测试按真实Cargo target各一次通过；root额外执行parity校验，两个完整target_summaries列表逐项恒同。完整4job日志、46条收集命令及92原始stream、15产品来源文件和26个manifest class、collector/verifier/parity脚本及接受报告见own-product-ci-root-v1。额外JDK25/Java8/functional-constructor等对照、层级依赖、fuzz与供应链检查均按实际workflow/API和日志接受。
+
+最终文档提交只关闭任务与归档证据，不冒称文档head自身运行过上述产品CI。关闭前strict与主线检查收据见final-delivery-root-v1；关闭提交后的最终HEAD、remote/clean/source恒同与target absent另留外置final-head收据，避免自引用提交。
+
+final-delivery-root-v1保留交付后处理的一次计数假设失败及修正：构建3037与native4990的来源并集实际4997，额外7项是仅构建来源闭包覆盖的Java/说明文件；并非来源不一致。原五条命令均成功、strict367/0，修正审查直接复开原raw并逐文件核并集，没有重跑已通过检查。
