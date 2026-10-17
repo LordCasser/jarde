@@ -13,7 +13,7 @@
 ## 3. 最终产品验收
 
 - [x] 3.1 最终冻结CLI对两独立完整类原样恢复/重编、未改driver rebuilt-only双JVM对照及原FX/FY/FO/JADX重筛，WAR真实加载根复核。验收：原始流/工具/source/CLI绑定独审，多输入oracle逐字等，不修Java/删方法/混原classpath，不把不可观察handler事实或JADX失败当成功。
-- [ ] 3.2 CallReturn先完成正常main交付后rebase，执行fmt/CI同参数Clippy、指纹/reader/原P5及相关finally/loop/typedcatch兼容、MSRV、两版strict、最终head自身双seed CI与独审。验收：实际非空门/源码Git blob和mode/冻结CLI一致，默认stack/5GiB free/1GiB target/exact clean，不借父CI、不调整旧P5基线。
+- [x] 3.2 CallReturn先完成正常main交付后rebase，执行fmt/CI同参数Clippy、指纹/reader/原P5及相关finally/loop/typedcatch兼容、MSRV、两版strict、最终head自身双seed CI与独审。验收：实际非空门/源码Git blob和mode/冻结CLI一致，默认stack/5GiB free/1GiB target/exact clean，不借父CI、不调整旧P5基线。
 
 ## Workflow follow-up
 
