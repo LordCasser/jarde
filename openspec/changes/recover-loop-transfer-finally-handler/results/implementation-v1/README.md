@@ -9,6 +9,8 @@
 
 保留失败：first-projection-native-v1测试7pass，但build-cli错误使用bin jarde，整体failed/CLI None；atomic-native-v1重复Cargo参数，解析期失败，无产品测试；format-v1曾因生成测试lifetime拼写失败。修正后的新快照/收据另存，失败不计通过。
 
-cache打包v1遗漏NUL原始流，不交付；交付v2纳入完整37689610B Git raw，143 payload +1 manifest成员。成员位于payload/，清单path相对payload；包内外MANIFEST逐字同，archive hash在独立summary。root重开tar对每项与原cache字节/hash回验。绝对路径仅为原始provenance，按上述路径重映射。这是证据包，非全仓离线构建环境。
+cache打包v1遗漏NUL原始流，不交付；v2补入完整37689610B Git raw；最终交付v3再补入早期失败批次的两份历史源码与重建说明，共146 payload +1 manifest成员。成员位于payload/，清单path相对payload；包内外MANIFEST逐字同，archive hash在独立summary。root重开tar对每项与原cache字节/hash回验。绝对路径仅为原始provenance，按上述路径重映射。这是证据包，非全仓离线构建环境。
 
 本包仅实现/本地门；最终JAR/WAR/父样例/JADX与产品自身CI另列，不代替父计划验收。
+
+早期first-projection源码闭合：build.rs为1925298B/SHA cb875bec4caac4202614ea87119ffaa672e25771df10a2883e86b95a465b1a06，report.rs为701348B/SHA16232705bd7feee7c529f4bd27a5066fc18085ca575c0ec65ef5c0f6680fff80，完整字节及重建操作说明入包，分别从可达1e7c2818c的build加三行私有模块声明、从atomic report去除较晚新增测试得到，均严格匹配该失败批次原始4945源manifest。其它4943行与atomic逐行同，不用较晚AST/证据测试冒充早期7pass。cache v1/v2与原失败收据保留；修正仅证据，不改30afa产品源码/CLI/CI。
