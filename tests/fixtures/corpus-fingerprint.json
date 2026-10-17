@@ -11851,6 +11851,161 @@
       "path": "tests/fixtures/recover-postfix-old-value-snapshot/v8/SR.class"
     },
     {
+      "blake3": "1f6a668643f9d9ec1a243aff76a278dda97d41adc331fed5fb28012f40ac3523",
+      "bytes": 2175,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/original/copy-manifest.json"
+    },
+    {
+      "blake3": "35203acef809f5f60aeccdd6e74098ac463865c12dd2e3355e6cd21a91d34f87",
+      "bytes": 1323,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/original/debug/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class"
+    },
+    {
+      "blake3": "221c35e92a76f8c2416e04af2ced915ef215795b3bae71785f9faf60ab4c1989",
+      "bytes": 1157,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/original/debug/jadx/tests/integration/loops/TestNestedLoops3.class"
+    },
+    {
+      "blake3": "32e926b96e5c9403dfcaa6c53da124cda4f95bccb652d45cedfc2435c2a480ca",
+      "bytes": 890,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/original/no-debug/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class"
+    },
+    {
+      "blake3": "b32db6061af602275c975b986774a9d6b13a60adb7f86c8c3324299b0cfce300",
+      "bytes": 944,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/original/no-debug/jadx/tests/integration/loops/TestNestedLoops3.class"
+    },
+    {
+      "blake3": "1e5c12389ab37f82d9e3d6922be435aa3f042d19e12c093d5b02fea9d9b3d8be",
+      "bytes": 1061,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/original/source/TestNestedLoops3.java"
+    },
+    {
+      "blake3": "242a039c0c5682e413abdf894dd0ff9475387248bab700ef3b2cdf055eb9ac8d",
+      "bytes": 4387,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/copy-manifest.json"
+    },
+    {
+      "blake3": "19cf04de3029422ccbe592ba86c59f276350b1ef2ab72f488d700f492fd7163d",
+      "bytes": 2517,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac23/debug/PrefixRetryCatchOuter.class"
+    },
+    {
+      "blake3": "5fb20b9a56ebef780a69be3527c86e0789a8597a4824206c2fdce51b06b1bdec",
+      "bytes": 2539,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac23/debug/PrefixRetryEffectfulLatch.class"
+    },
+    {
+      "blake3": "876294144baeaf67c2d48dc44504c53f13f0a993b49a6286c7b82a03ebaf3d3b",
+      "bytes": 1766,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac23/no-debug/PrefixRetryCatchOuter.class"
+    },
+    {
+      "blake3": "97119dd0f3db4a628ee412a63373651ac59f90376212ce5f537d792e8bde54a6",
+      "bytes": 1776,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac23/no-debug/PrefixRetryEffectfulLatch.class"
+    },
+    {
+      "blake3": "f51ce798e49448a1e4d0f3a69a3c5a7e8168dd9875763bf42e15dc93e6304df1",
+      "bytes": 2520,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac8/debug/PrefixRetryCatchOuter.class"
+    },
+    {
+      "blake3": "d91a3a63a7f67760bf654dd33f28b4ddb7d45d4e4b4cd333d050eeb3260bc4ad",
+      "bytes": 2542,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac8/debug/PrefixRetryEffectfulLatch.class"
+    },
+    {
+      "blake3": "ecb0a67f5e4a250943e649148f69931f89ec4442dd184d76025e201559ae76a0",
+      "bytes": 1769,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac8/no-debug/PrefixRetryCatchOuter.class"
+    },
+    {
+      "blake3": "fb2e187c5de8fc250d8ace0a21b18603b1aa328753712594330f5a03bcebad52",
+      "bytes": 1779,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac8/no-debug/PrefixRetryEffectfulLatch.class"
+    },
+    {
+      "blake3": "a61c81f557bf572bd175629c24757004837ba39249a261850843cd3393e6cebb",
+      "bytes": 2647,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/source/alpha/PrefixRetryEffectfulLatch.java"
+    },
+    {
+      "blake3": "f74dd98fe580101585bccdba2d8d3141460b2580adf41ed697e7caabee7a6f2b",
+      "bytes": 2652,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/source/beta/PrefixRetryCatchOuter.java"
+    },
+    {
+      "blake3": "c4ddd44b21b782bbbb15ceb50125d11b17b0047f7acdeea11c73865b93ac8908",
+      "bytes": 6515,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/source/driver/RetryFixtureDriver.java"
+    },
+    {
+      "blake3": "59d7aaff1293fedaf19b26d6b7c6388eaeb0422ff373540d1c4c95585b2b863d",
+      "bytes": 4732,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/copy-manifest.json"
+    },
+    {
+      "blake3": "5cb3ec6be170ca1f119727222ec707494f8313802b9e4e83e4be8a2d25464de7",
+      "bytes": 2502,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac23/debug/PrefixRetryAlpha.class"
+    },
+    {
+      "blake3": "56b39d09da6af9e3ecce7cde09c3df6993dae1cb259de626eb15d98555dec68a",
+      "bytes": 2517,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac23/debug/RetryPrefixBeta.class"
+    },
+    {
+      "blake3": "a587c15282180f2895d8302480eade621d31a5ae92fe0ec1b1cdc394e2124222",
+      "bytes": 1761,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac23/no-debug/PrefixRetryAlpha.class"
+    },
+    {
+      "blake3": "648348613b69d7f9132ba4573003b604727a1ba4129cb96d210b4b54cdd90852",
+      "bytes": 1763,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac23/no-debug/RetryPrefixBeta.class"
+    },
+    {
+      "blake3": "f9e71247deae35fab7ba91772132e014c02dd36f4b1e25466e98f6a5ca4d529f",
+      "bytes": 2505,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac8/debug/PrefixRetryAlpha.class"
+    },
+    {
+      "blake3": "39979f72d562c720ecbc25cdf913fc5a9b1ee4856988dfebb1c26bcf5c00021b",
+      "bytes": 2520,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac8/debug/RetryPrefixBeta.class"
+    },
+    {
+      "blake3": "099a594b95bf12f890a4d889bc5789d5ab17364fd2afc2d8e33d0b7f66b7427e",
+      "bytes": 1764,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac8/no-debug/PrefixRetryAlpha.class"
+    },
+    {
+      "blake3": "9bf4c2e1123f31517d5b8f1a42a0910e6845309ac7d790275e784bed38ed9ad1",
+      "bytes": 1766,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/javac8/no-debug/RetryPrefixBeta.class"
+    },
+    {
+      "blake3": "bacb32ccd94d518faf3d6554e1882c959b7d7e018893b6cda943ec91bba2b127",
+      "bytes": 929,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/source-manifest.json"
+    },
+    {
+      "blake3": "7e6af67614b434476504a3022c16bf348aed86699014e8a75f072ac79f5a218c",
+      "bytes": 2606,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/source/alpha/PrefixRetryAlpha.java"
+    },
+    {
+      "blake3": "6b0f77cd05339e9d57ffd8dc60ca789baf95c619af92ffc934f2f234d6eb4880",
+      "bytes": 2615,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/source/beta/RetryPrefixBeta.java"
+    },
+    {
+      "blake3": "c4ddd44b21b782bbbb15ceb50125d11b17b0047f7acdeea11c73865b93ac8908",
+      "bytes": 6515,
+      "path": "tests/fixtures/recover-prefixed-exceptional-retry-loops/supplemental/source/driver/RetryFixtureDriver.java"
+    },
+    {
       "blake3": "43f6aded70421d741fd808a46fea086217231120c616a754c74dc650a9f16fe0",
       "bytes": 898,
       "path": "tests/fixtures/recover-proved-nonnull-bound-receivers/BRN.java"

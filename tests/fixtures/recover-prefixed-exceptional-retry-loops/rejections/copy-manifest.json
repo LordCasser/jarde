@@ -1,0 +1,98 @@
+{
+  "status": "copied_after_root_accepted_legal_original_neighbor_review",
+  "classes": [
+    {
+      "path": "javac8/debug/PrefixRetryEffectfulLatch.class",
+      "bytes": 2542,
+      "sha256": "6361e1b19196804a3289a7e1b40169d3f1db1e5e35c2d1120a4959032115e114",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryEffectfulLatch/javac8/debug/PrefixRetryEffectfulLatch.class",
+        "bytes": 2542,
+        "sha256": "6361e1b19196804a3289a7e1b40169d3f1db1e5e35c2d1120a4959032115e114"
+      },
+      "compile_command": 2
+    },
+    {
+      "path": "javac8/no-debug/PrefixRetryEffectfulLatch.class",
+      "bytes": 1779,
+      "sha256": "aacc22d1a9419c094fe706abde5400e8f9c7a32cfaf34b54646cf8a9c8416a13",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryEffectfulLatch/javac8/no-debug/PrefixRetryEffectfulLatch.class",
+        "bytes": 1779,
+        "sha256": "aacc22d1a9419c094fe706abde5400e8f9c7a32cfaf34b54646cf8a9c8416a13"
+      },
+      "compile_command": 5
+    },
+    {
+      "path": "javac23/debug/PrefixRetryEffectfulLatch.class",
+      "bytes": 2539,
+      "sha256": "c55747ef66ce4d5084d44e173eab6e8b752cb31769b4b058d8420d101f625c9c",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryEffectfulLatch/javac23/debug/PrefixRetryEffectfulLatch.class",
+        "bytes": 2539,
+        "sha256": "c55747ef66ce4d5084d44e173eab6e8b752cb31769b4b058d8420d101f625c9c"
+      },
+      "compile_command": 8
+    },
+    {
+      "path": "javac23/no-debug/PrefixRetryEffectfulLatch.class",
+      "bytes": 1776,
+      "sha256": "cccd3ed799b8e96aaf1824f80c66d671c5f6a9738d0540a641191d175c09d80d",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryEffectfulLatch/javac23/no-debug/PrefixRetryEffectfulLatch.class",
+        "bytes": 1776,
+        "sha256": "cccd3ed799b8e96aaf1824f80c66d671c5f6a9738d0540a641191d175c09d80d"
+      },
+      "compile_command": 11
+    },
+    {
+      "path": "javac8/debug/PrefixRetryCatchOuter.class",
+      "bytes": 2520,
+      "sha256": "f7b0c9f8de68d4fe61e72da17b26c992b32ef4eb5d47d0fbbfc9cf6c6a0378a4",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryCatchOuter/javac8/debug/PrefixRetryCatchOuter.class",
+        "bytes": 2520,
+        "sha256": "f7b0c9f8de68d4fe61e72da17b26c992b32ef4eb5d47d0fbbfc9cf6c6a0378a4"
+      },
+      "compile_command": 14
+    },
+    {
+      "path": "javac8/no-debug/PrefixRetryCatchOuter.class",
+      "bytes": 1769,
+      "sha256": "e8b2f9b59c0cbf99c3e5833dc5277eb9bd4d9a65005ac0a382f0b9a86df2c9f7",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryCatchOuter/javac8/no-debug/PrefixRetryCatchOuter.class",
+        "bytes": 1769,
+        "sha256": "e8b2f9b59c0cbf99c3e5833dc5277eb9bd4d9a65005ac0a382f0b9a86df2c9f7"
+      },
+      "compile_command": 17
+    },
+    {
+      "path": "javac23/debug/PrefixRetryCatchOuter.class",
+      "bytes": 2517,
+      "sha256": "a22c2613224bd7b5f15e570ec6c7a2c1c73f51163830d798c688bccd81c5192c",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryCatchOuter/javac23/debug/PrefixRetryCatchOuter.class",
+        "bytes": 2517,
+        "sha256": "a22c2613224bd7b5f15e570ec6c7a2c1c73f51163830d798c688bccd81c5192c"
+      },
+      "compile_command": 20
+    },
+    {
+      "path": "javac23/no-debug/PrefixRetryCatchOuter.class",
+      "bytes": 1766,
+      "sha256": "d6164628170b6bdce5aa1c675e351adf73e9f5a9f0b9002ec2898c15f0623ff9",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/classes/PrefixRetryCatchOuter/javac23/no-debug/PrefixRetryCatchOuter.class",
+        "bytes": 1766,
+        "sha256": "d6164628170b6bdce5aa1c675e351adf73e9f5a9f0b9002ec2898c15f0623ff9"
+      },
+      "compile_command": 23
+    }
+  ],
+  "execution": {
+    "path": "/private/tmp/jarde-prefixed-retry-reject-originals-root-v1-20261018/execution.json",
+    "bytes": 2154726,
+    "sha256": "12d8325e7b62b36e91a152906a4d41b786eb0bc5727bf9a117697055b652a7b4"
+  }
+}

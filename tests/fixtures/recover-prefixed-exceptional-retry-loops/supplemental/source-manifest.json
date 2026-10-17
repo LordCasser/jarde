@@ -1,0 +1,31 @@
+{
+  "status": "source-only; not compiled or run",
+  "oracle": "not collected; root must use actual original JVM output",
+  "files": [
+    {
+      "path": "alpha/PrefixRetryAlpha.java",
+      "bytes": 2606,
+      "sha256": "06abede1e269823ebfe93e3be1096e9cfe99d91d80475f6397c8b97a8fadb794"
+    },
+    {
+      "path": "beta/RetryPrefixBeta.java",
+      "bytes": 2615,
+      "sha256": "bad3a641e3d4df7e032b5b385a45aa89486f361f6d053946ccb1c13d59b57204"
+    },
+    {
+      "path": "driver/RetryFixtureDriver.java",
+      "bytes": 6515,
+      "sha256": "ded7857f92ae180a8ce1b9c99702e7c6d917cb056c9675bcf72765bdf5e3d25c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2547,
+      "sha256": "3d92dafa72680b8d64470a377fb5671a819d5bea22befa019f2e0bda0da6f28b"
+    },
+    {
+      "path": "rust-test-suggestions.md",
+      "bytes": 4787,
+      "sha256": "f430ced9b370bb7a49978cccd2aa2a7bcb09c7778e70384d49c776b561364657"
+    }
+  ]
+}

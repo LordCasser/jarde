@@ -12294,7 +12294,10 @@ mod tests {
             // targets. Boundary controls add two catch-bearing compiler classes and one v49
             // jsr class: nine bodies, four handlers, nineteen targets and two subroutine calls.
             // Raw Code counts independently match the measured positive-fixture delta.
-            (1238, 5495, 606, 3641, 12),
+            // Prefixed exceptional retry adds 20 complete original/supplement/neighbor classes:
+            // 144 Code bodies, 18 handler rows and 206 targets; no jsr. Independent decoded
+            // Code counts agree with this walk, including both original outer classes.
+            (1258, 5639, 624, 3847, 12),
             "fixture population changed: re-measure these counts"
         );
     }

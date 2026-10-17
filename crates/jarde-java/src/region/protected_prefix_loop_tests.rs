@@ -4,7 +4,8 @@ use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, Limits};
+use jarde_reader::budget::{Budget, CancellationToken, Limits};
+use jarde_reader::classfile::ExceptionHandlerFact;
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -1071,4 +1072,539 @@ fn effect_suffix_inside_try_refuses_prefix_loop_and_restores_full_state() {
         actual.budget.usage().analysis_steps > expected.budget.usage().analysis_steps,
         "candidate scans remain charged after an ordinary refusal"
     );
+}
+
+const ORIGINAL_NESTED_RETRY: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-prefixed-exceptional-retry-loops/original/debug/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class"
+);
+
+fn nested_retry_analysis() -> jarde_jvm::method_ir::MethodIrAnalysis {
+    analyzed_method(ORIGINAL_NESTED_RETRY, b"test", b"(I)I")
+}
+
+fn collect_retry_transfers(region: &Region, out: &mut Vec<(u32, u32, bool)>) {
+    match region {
+        Region::Sequence { regions } => {
+            for region in regions {
+                collect_retry_transfers(region, out);
+            }
+        }
+        Region::Loop { body, .. } => {
+            for region in body {
+                collect_retry_transfers(region, out);
+            }
+        }
+        Region::If {
+            then_arm, else_arm, ..
+        }
+        | Region::CompoundIf {
+            then_arm, else_arm, ..
+        } => {
+            collect_retry_transfers(then_arm, out);
+            collect_retry_transfers(else_arm, out);
+        }
+        Region::Try { body, catches, .. } => {
+            collect_retry_transfers(body, out);
+            for catch in catches {
+                collect_retry_transfers(catch.body(), out);
+            }
+        }
+        Region::LoopBreak {
+            source_bci,
+            loop_header,
+        } => out.push((*source_bci, loop_header.bci(), false)),
+        Region::LoopContinue {
+            source_bci,
+            loop_header,
+        } => out.push((*source_bci, loop_header.bci(), true)),
+        _ => {}
+    }
+}
+
+fn with_nested_retry_walker<T>(
+    analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+    budget: &mut Budget,
+    run: impl FnOnce(&mut Walker<'_>, &CanonicalBlockId, &crate::normal_flow::NaturalLoop) -> T,
+) -> T {
+    let ir = analysis.ir();
+    let canonical = ir.canonical().expect("same-run canonical graph");
+    let code = ir.code().expect("test(I)I has decoded code");
+    let ssa = ir.ssa().expect("same-run SSA");
+    let operations = Operations::of(code, ir.constant_pool());
+    let chains = crate::concat::Plan::empty();
+    let sites = crate::init::Sites::empty();
+    let mut flow_budget = Budget::new(limits());
+    let view = NormalFlowView::build(canonical, &mut flow_budget)
+        .expect("same-run graph projects to normal flow");
+    let header = canonical
+        .blocks()
+        .iter()
+        .find(|block| block.id().bci() == 0)
+        .expect("fixture target starts at the outer loop")
+        .id();
+    let header_node = view.index_of(header).expect("outer header is in the view");
+    let natural = view
+        .loop_entered_at(header_node)
+        .expect("outer header has its natural loop")
+        .clone();
+    let mut walker = test_walker(
+        canonical,
+        &view,
+        ssa,
+        &operations,
+        ir.constant_pool(),
+        code,
+        &chains,
+        &sites,
+        budget,
+    );
+    run(&mut walker, header, &natural)
+}
+
+#[test]
+fn prefixed_exceptional_retry_uses_distinct_protected_and_handler_loop_edges() {
+    let analysis = nested_retry_analysis();
+    let mut budget = Budget::new(limits());
+    with_nested_retry_walker(&analysis, &mut budget, |walker, header, natural| {
+        let (regions, next) = walker
+            .prefixed_exceptional_retry_loop(header, 0, natural, &Frame::default())
+            .expect("the certified owner walk completes")
+            .expect("the complete original retry loop is structured");
+        assert_eq!(next.as_ref().map(CanonicalBlockId::bci), Some(40));
+        assert_eq!(regions.len(), 1);
+        assert!(regions[0].is_structured());
+        let mut transfers = Vec::new();
+        collect_retry_transfers(&regions[0], &mut transfers);
+        transfers.sort_unstable();
+        assert_eq!(
+            transfers,
+            vec![
+                (14, 0, false),
+                (26, 0, false),
+                (33, 6, false),
+                (37, 6, true)
+            ]
+        );
+    });
+}
+
+#[test]
+fn prefixed_exceptional_retry_late_budget_stop_restores_the_candidate_state() {
+    let analysis = nested_retry_analysis();
+    let mut full_budget = Budget::new(limits());
+    let exact_steps =
+        with_nested_retry_walker(&analysis, &mut full_budget, |walker, header, natural| {
+            assert!(
+                walker
+                    .prefixed_exceptional_retry_loop(header, 0, natural, &Frame::default())
+                    .expect("the reference proof completes")
+                    .is_some()
+            );
+            walker.budget.usage().analysis_steps
+        });
+    assert!(exact_steps > 1);
+
+    let mut constrained = limits();
+    constrained.analysis_steps = exact_steps - 1;
+    let mut budget = Budget::new(constrained);
+    with_nested_retry_walker(&analysis, &mut budget, |stopped, header, natural| {
+        let before = walker_state(stopped);
+        assert!(matches!(
+            stopped.prefixed_exceptional_retry_loop(header, 0, natural, &Frame::default()),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        assert_eq!(walker_state(stopped), before);
+    });
+}
+
+const EFFECTFUL_LATCH_RETRY: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac8/debug/PrefixRetryEffectfulLatch.class"
+);
+const OUTER_CATCH_RETRY: &[u8] = include_bytes!(
+    "../../../../tests/fixtures/recover-prefixed-exceptional-retry-loops/rejections/javac8/debug/PrefixRetryCatchOuter.class"
+);
+
+fn assert_retry_facts_refused(class: &[u8], outer_header_bci: u32) {
+    let analysis = analyzed_method(class, b"execute", b"(III)I");
+    let ir = analysis.ir();
+    let canonical = ir.canonical().expect("same-run canonical graph");
+    let code = ir.code().expect("execute has decoded code");
+    let ssa = ir.ssa().expect("same-run SSA");
+    let operations = Operations::of(code, ir.constant_pool());
+    let chains = crate::concat::Plan::empty();
+    let sites = crate::init::Sites::empty();
+    let mut flow_budget = Budget::new(limits());
+    let view = NormalFlowView::build(canonical, &mut flow_budget)
+        .expect("same-run graph projects to normal flow");
+    let outer_header = canonical
+        .blocks()
+        .iter()
+        .find(|block| block.id().bci() == outer_header_bci)
+        .expect("the frozen candidate header exists")
+        .id();
+    let outer_header_node = view
+        .index_of(outer_header)
+        .expect("the candidate header is in normal flow");
+    let natural = view
+        .loop_entered_at(outer_header_node)
+        .expect("the candidate has its natural outer loop")
+        .clone();
+    let mut budget = Budget::new(limits());
+    let mut walker = test_walker(
+        canonical,
+        &view,
+        ssa,
+        &operations,
+        ir.constant_pool(),
+        code,
+        &chains,
+        &sites,
+        &mut budget,
+    );
+    assert!(
+        walker
+            .prefixed_exceptional_retry_facts(outer_header, outer_header_node, &natural)
+            .expect("the valid neighboring class is read within budget")
+            .is_none()
+    );
+}
+
+#[test]
+fn effectful_normal_join_bridge_is_refused_by_the_retry_certificate() {
+    // This verified source has the right handler cycle, but its join block performs observable
+    // work before the outer back-edge, so it is not the certified pure bridge.
+    assert_retry_facts_refused(EFFECTFUL_LATCH_RETRY, 18);
+}
+
+#[test]
+fn catch_returning_to_the_outer_header_is_not_a_retry_continue() {
+    // This verified source routes the catch to the outer loop, not to the inner retry header.
+    assert_retry_facts_refused(OUTER_CATCH_RETRY, 18);
+}
+
+/// Runs the exact facts gate with a caller-supplied physical exception-table slice. The CFG, SSA,
+/// bytecode, and catch rows still come from one analyzed class; this only lets the test model a
+/// stale or mismatched physical-row view without altering the reader's canonical graph.
+fn retry_facts_attempt(
+    analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+    outer_header_bci: u32,
+    handlers: &[ExceptionHandlerFact],
+    budget: &mut Budget,
+) -> (
+    Result<Option<PrefixedExceptionalRetryFacts>, StopReason>,
+    WalkerState,
+    u64,
+) {
+    let ir = analysis.ir();
+    let canonical = ir.canonical().expect("same-run canonical graph");
+    let code = ir.code().expect("target method has decoded code");
+    let ssa = ir.ssa().expect("same-run SSA");
+    let operations = Operations::of(code, ir.constant_pool());
+    let chains = crate::concat::Plan::empty();
+    let sites = crate::init::Sites::empty();
+    let mut flow_budget = Budget::new(limits());
+    let view = NormalFlowView::build(canonical, &mut flow_budget)
+        .expect("same-run graph projects to normal flow");
+    let outer_header = canonical
+        .blocks()
+        .iter()
+        .find(|block| block.id().bci() == outer_header_bci)
+        .expect("outer header exists in the fixture")
+        .id();
+    let outer_header_node = view
+        .index_of(outer_header)
+        .expect("outer header exists in normal flow");
+    let natural = view
+        .loop_entered_at(outer_header_node)
+        .expect("outer header has its natural loop")
+        .clone();
+    let mut walker = test_walker(
+        canonical,
+        &view,
+        ssa,
+        &operations,
+        ir.constant_pool(),
+        code,
+        &chains,
+        &sites,
+        budget,
+    );
+    walker.handlers = handlers;
+    let attempt =
+        walker.prefixed_exceptional_retry_facts(outer_header, outer_header_node, &natural);
+    let state = walker_state(&walker);
+    let steps = walker.budget.usage().analysis_steps;
+    (attempt, state, steps)
+}
+
+#[test]
+fn retry_facts_require_the_physical_row_to_match_the_same_canonical_row() {
+    let analysis = nested_retry_analysis();
+    let exact = analysis
+        .ir()
+        .code()
+        .expect("target Code")
+        .exception_handlers
+        .clone();
+    let (positive, _, _) = retry_facts_attempt(&analysis, 0, &exact, &mut Budget::new(limits()));
+    assert!(positive.expect("the exact row proof completes").is_some());
+
+    let mut wrong_ordinal = exact.clone();
+    wrong_ordinal[0].ordinal += 1;
+    assert!(
+        retry_facts_attempt(&analysis, 0, &wrong_ordinal, &mut Budget::new(limits()),)
+            .0
+            .expect("ordinal mismatch is an ordinary proof refusal")
+            .is_none()
+    );
+
+    let mut wrong_start = exact.clone();
+    wrong_start[0].start_bci += 1;
+    assert!(
+        retry_facts_attempt(&analysis, 0, &wrong_start, &mut Budget::new(limits()),)
+            .0
+            .expect("range-start mismatch is an ordinary proof refusal")
+            .is_none()
+    );
+
+    let mut wrong_end = exact.clone();
+    wrong_end[0].end_bci -= 1;
+    assert!(
+        retry_facts_attempt(&analysis, 0, &wrong_end, &mut Budget::new(limits()),)
+            .0
+            .expect("range-end mismatch is an ordinary proof refusal")
+            .is_none()
+    );
+
+    let mut extra_shared = exact.clone();
+    let mut sibling = exact[0].clone();
+    sibling.ordinal += 1;
+    extra_shared.push(sibling);
+    assert!(
+        retry_facts_attempt(&analysis, 0, &extra_shared, &mut Budget::new(limits()))
+            .0
+            .expect("a second row is outside the one-row proof")
+            .is_none()
+    );
+    let mut wrong_type = exact.clone();
+    wrong_type[0].catch_type_index = None;
+    assert!(
+        retry_facts_attempt(&analysis, 0, &wrong_type, &mut Budget::new(limits()))
+            .0
+            .expect("catch-all cannot borrow the named row proof")
+            .is_none()
+    );
+    let mut wrong_handler = exact;
+    wrong_handler[0].handler_bci += 1;
+    assert!(
+        retry_facts_attempt(&analysis, 0, &wrong_handler, &mut Budget::new(limits()),)
+            .0
+            .expect("handler identity mismatch is an ordinary proof refusal")
+            .is_none()
+    );
+}
+
+#[test]
+fn retry_facts_preserve_the_full_reader_checkpoint_on_cancel_and_deadline() {
+    let analysis = nested_retry_analysis();
+    let handlers = analysis
+        .ir()
+        .code()
+        .expect("target Code")
+        .exception_handlers
+        .clone();
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(
+        Limits {
+            analysis_steps: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..limits()
+        },
+        token,
+    );
+    let (cancelled, cancelled_state, cancelled_steps) =
+        retry_facts_attempt(&analysis, 0, &handlers, &mut cancelled_budget);
+    assert!(matches!(
+        cancelled,
+        Err(StopReason::Cancelled { at: Some(0) })
+    ));
+    assert_eq!(cancelled_steps, 0);
+    assert_eq!(cancelled_state, initial_retry_walker_state());
+
+    let mut deadline_budget = Budget::new(Limits {
+        analysis_steps: u64::MAX,
+        elapsed_millis: 0,
+        ..limits()
+    });
+    let (deadline, deadline_state, _) =
+        retry_facts_attempt(&analysis, 0, &handlers, &mut deadline_budget);
+    assert!(matches!(
+        deadline,
+        Err(StopReason::Interrupted {
+            code: crate::stop::BUDGET_INTERRUPTED_CODE,
+            at: Some(0)
+        })
+    ));
+    assert_eq!(deadline_state, initial_retry_walker_state());
+}
+
+fn initial_retry_walker_state() -> WalkerState {
+    (
+        BTreeSet::new(),
+        Some(u32::MAX),
+        BTreeSet::from([(usize::MAX, usize::MAX)]),
+        vec![(
+            usize::MAX,
+            usize::MAX,
+            usize::MAX,
+            u32::MAX,
+            BTreeSet::new(),
+        )],
+        false,
+        None,
+        0,
+    )
+}
+
+#[test]
+fn retry_owner_edge_closure_rejects_each_unowned_edge_class() {
+    let analysis = nested_retry_analysis();
+    let mut budget = Budget::new(limits());
+    with_nested_retry_walker(&analysis, &mut budget, |walker, header, natural| {
+        let node = walker.view.index_of(header).expect("outer header");
+        let facts = walker
+            .prefixed_exceptional_retry_facts(header, node, natural)
+            .expect("same-run proof completes")
+            .expect("the original is a positive control");
+        let protected = walker
+            .view
+            .index_of(&facts.protected)
+            .expect("protected owner");
+        let context = RetryClosureContext {
+            owners: &facts.outer_nodes,
+            visited: &walker.visited,
+            outer_header: node,
+            protected,
+            handler: facts.handler_node,
+            row_ordinal: facts.row_ordinal,
+            outer_exit: facts.outer_exit_node,
+        };
+        let rows: Vec<_> = walker
+            .canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.from(), edge.kind(), edge.to()))
+            .collect();
+        let expected = rows
+            .iter()
+            .filter_map(|(from, kind, to)| {
+                (*kind == CanonicalEdgeKind::Normal && *to == &facts.outer_exit)
+                    .then(|| walker.view.index_of(from).expect("real exit source"))
+            })
+            .collect::<BTreeSet<_>>();
+        assert_eq!(
+            retry_owner_edges_closed(
+                rows.iter().copied(),
+                walker.view,
+                &context,
+                &mut Budget::new(limits())
+            )
+            .expect("original policy completes"),
+            Some(expected)
+        );
+
+        // These are direct policy metamorphisms of real rows, not rebuilt class graphs.
+        let mut extra_entry = rows.clone();
+        extra_entry.push((
+            &facts.outer_exit,
+            CanonicalEdgeKind::Normal,
+            &facts.inner_header,
+        ));
+        assert!(
+            retry_owner_edges_closed(
+                extra_entry,
+                walker.view,
+                &context,
+                &mut Budget::new(limits())
+            )
+            .expect("entry policy completes")
+            .is_none()
+        );
+
+        const LEGACY: &[u8] = include_bytes!(
+            "../../../../tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class"
+        );
+        let legacy = analyzed_method(LEGACY, b"method", b"()V");
+        let clone_id = legacy
+            .ir()
+            .canonical()
+            .expect("Reader canonical graph")
+            .blocks()
+            .iter()
+            .map(|block| block.id())
+            .find(|id| id.is_clone())
+            .expect("Reader produced a real clone");
+        let outside = legacy
+            .ir()
+            .canonical()
+            .expect("Reader graph")
+            .blocks()
+            .iter()
+            .map(|block| block.id())
+            .find(|id| !id.is_clone() && walker.view.index_of(id).is_none())
+            .expect("a real outside BCI absent from the retry owner graph");
+        let mut extra_exit = rows.clone();
+        extra_exit.push((&facts.inner_header, CanonicalEdgeKind::Normal, outside));
+        assert!(
+            retry_owner_edges_closed(
+                extra_exit,
+                walker.view,
+                &context,
+                &mut Budget::new(limits())
+            )
+            .expect("normal exit policy completes")
+            .is_none()
+        );
+
+        let mut clone_rows = rows.clone();
+        clone_rows.push((&facts.inner_header, CanonicalEdgeKind::Normal, clone_id));
+        assert!(
+            retry_owner_edges_closed(
+                clone_rows,
+                walker.view,
+                &context,
+                &mut Budget::new(limits())
+            )
+            .expect("clone policy completes")
+            .is_none()
+        );
+
+        let mut wrong_ordinal = rows;
+        let exception = wrong_ordinal
+            .iter_mut()
+            .find(|(from, kind, to)| {
+                *from == &facts.protected
+                    && *to == &facts.handler
+                    && matches!(kind, CanonicalEdgeKind::Exception { .. })
+            })
+            .expect("actual protected exceptional row");
+        exception.1 = CanonicalEdgeKind::Exception {
+            handler_ordinal: facts.row_ordinal + 1,
+        };
+        assert!(
+            retry_owner_edges_closed(
+                wrong_ordinal,
+                walker.view,
+                &context,
+                &mut Budget::new(limits())
+            )
+            .expect("ordinal policy completes")
+            .is_none()
+        );
+    });
 }
