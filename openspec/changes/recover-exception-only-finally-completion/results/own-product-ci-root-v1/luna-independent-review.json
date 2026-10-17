@@ -1,0 +1,309 @@
+{
+  "schema": "exception-only-fresh-own-ci-review-v1",
+  "status": "accepted_with_inventory_note",
+  "product_sha": "3fa506df0ccd7da3d38ab769bfd65235817508fe",
+  "run_id": "39051492999",
+  "api": {
+    "workflow": "CI",
+    "run_status": "completed",
+    "conclusion": "success",
+    "jobs": {
+      "stable / test and specification": {
+        "job_id": 117450831569,
+        "step_count": 26,
+        "all_steps_success": true
+      },
+      "fuzz smoke": {
+        "job_id": 117450831804,
+        "step_count": 12,
+        "all_steps_success": true
+      },
+      "MSRV 1.88.0": {
+        "job_id": 117450831923,
+        "step_count": 6,
+        "all_steps_success": true
+      },
+      "supply chain": {
+        "job_id": 117450831937,
+        "step_count": 8,
+        "all_steps_success": true
+      }
+    },
+    "job_count": 4,
+    "step_count": 52
+  },
+  "collection": {
+    "commands": 10,
+    "all_exit_zero": true,
+    "raw_stream_count": 20,
+    "all_raw_sha256_and_byte_counts_match": true
+  },
+  "workspace_tests": {
+    "seed_values": [
+      "5350648285461741569",
+      "5350648285461741570"
+    ],
+    "targets_per_seed": [
+      378,
+      378
+    ],
+    "named_outcomes_per_seed": [
+      3798,
+      3798
+    ],
+    "target_inventory_equal": true,
+    "per_target_count_rows_equal": true,
+    "per_target_rows_sha256": [
+      "717ca705af34dc069cd214de1334d8ed515d64b92837b27f5213ef74c91b1b28",
+      "717ca705af34dc069cd214de1334d8ed515d64b92837b27f5213ef74c91b1b28"
+    ],
+    "totals_per_seed": [
+      {
+        "passed": 3700,
+        "failed": 0,
+        "ignored": 98,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "passed": 3700,
+        "failed": 0,
+        "ignored": 98,
+        "measured": 0,
+        "filtered": 0
+      }
+    ],
+    "critical_test_count_per_seed": [
+      9,
+      9
+    ],
+    "critical_test_names": {
+      "public positive, independent source": "both_compilers_recover_the_independent_complete_source_with_all_physical_origins",
+      "public positive, sealed originals": "both_sealed_originals_recover_only_the_throwing_target_and_keep_all_seven_methods",
+      "public late budget stop": "public_late_analysis_stop_does_not_publish_a_partial_finally_body_or_map",
+      "public pre-cancel stop": "public_precancel_reports_no_class_text_or_target_method",
+      "guard canonical proof": "exception_only_finally_proves_independent_compilers_and_both_binding_row_boundaries",
+      "guard canonical neighbors": "exception_only_finally_refuses_only_complete_canonical_semantic_neighbors",
+      "guard budget cancel deadline": "exception_only_finally_stops_at_real_budget_cancel_and_deadline_checkpoints",
+      "guard eliminated entry parameter phi": "exception_only_finally_accepts_only_eliminated_entry_parameter_phis",
+      "Builder transaction rollback": "exception_only_finally_builder_restores_every_budget_stop"
+    }
+  },
+  "standalone_ignored_gates": {
+    "JDK 25 instruction-boundary oracle": {
+      "command": "cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection",
+      "tests_passed": [
+        "jdk25_instruction_boundaries_match_public_bytecode_inspection"
+      ],
+      "target_summaries": [
+        {
+          "named": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "filtered_total": 0
+    },
+    "P3 Java 8 comparison": {
+      "command": "cargo test --test p3_execution_comparison --locked -- --ignored",
+      "tests_passed": [
+        "the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour",
+        "the_corpus_is_read_the_same_way_by_every_legal_flag_set",
+        "the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies"
+      ],
+      "target_summaries": [
+        {
+          "named": 3,
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "filtered_total": 0
+    },
+    "functional constructor comparison": {
+      "command": "cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks",
+      "tests_passed": [
+        "functional_constructor_arguments_replay_the_complete_class_on_both_jdks"
+      ],
+      "target_summaries": [
+        {
+          "named": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 16
+        }
+      ],
+      "filtered_total": 16
+    },
+    "BigDecimal comparison": {
+      "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+      "tests_passed": [
+        "bigdecimal_number_argument_generated_source_matches_frozen_runtime",
+        "main_only_bigdecimal_generated_source_matches_frozen_original_runtime"
+      ],
+      "target_summaries": [
+        {
+          "named": 2,
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2
+        }
+      ],
+      "filtered_total": 2
+    },
+    "nested int array comparison": {
+      "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle",
+      "tests_passed": [
+        "nested_int_array_updates_match_the_frozen_runner_oracle"
+      ],
+      "target_summaries": [
+        {
+          "named": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 9
+        }
+      ],
+      "filtered_total": 9
+    },
+    "returned int array comparison": {
+      "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class",
+      "tests_passed": [
+        "returned_int_array_updates_compile_and_execute_as_a_complete_class"
+      ],
+      "target_summaries": [
+        {
+          "named": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 9
+        }
+      ],
+      "filtered_total": 9
+    }
+  },
+  "nonstable_logs": {
+    "msrv": {
+      "job_identity": "MSRV 1.88.0",
+      "workflow_run_step_labels": [
+        "Check workspace on MSRV"
+      ],
+      "all_present": true
+    },
+    "supply-chain": {
+      "job_identity": "supply chain",
+      "workflow_run_step_labels": [
+        "Check fuzz workspace advisories, licenses, bans, and sources",
+        "Check root workspace advisories, licenses, bans, and sources",
+        "Install cargo-deny 0.20.2"
+      ],
+      "all_present": true
+    },
+    "fuzz-smoke": {
+      "job_identity": "fuzz smoke",
+      "workflow_run_step_labels": [
+        "Check the committed corpus against the targets",
+        "Ensure the smoke runs left the tracked tree unchanged",
+        "Install cargo-fuzz 0.13.2",
+        "Prepare the C++ and sanitizer toolchain",
+        "Run the bounded artifact-tree smoke",
+        "Run the bounded method-analysis smoke",
+        "Run the bounded query smoke"
+      ],
+      "all_present": true
+    }
+  },
+  "product_source_binding": {
+    "five_sources": [
+      {
+        "path": ".github/workflows/ci.yml",
+        "bytes": 17361,
+        "sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "git_blob_sha1": "fbc1ef8ce05bf937d808bb4ff818ba68de8c52b9",
+        "workspace_binding_match": true,
+        "product_binding_match": false,
+        "current_checkout_match": true
+      },
+      {
+        "path": "crates/jarde-java/src/guard.rs",
+        "bytes": 898612,
+        "sha256": "09c06b4d21a9a139cba5d450397524abcd3261407617aeac228cb8be3a518a15",
+        "git_blob_sha1": "3db376867c9a16876e3179f3e795703102b3e936",
+        "workspace_binding_match": true,
+        "product_binding_match": true,
+        "current_checkout_match": true
+      },
+      {
+        "path": "crates/jarde-java/src/build.rs",
+        "bytes": 1955041,
+        "sha256": "76f3e5d64e97456aa4f15d2c6e3c85fd0336737f23100c2cc501b83fb798baf0",
+        "git_blob_sha1": "b161a25819395e309727f0b44d785dcb74d35d50",
+        "workspace_binding_match": true,
+        "product_binding_match": true,
+        "current_checkout_match": true
+      },
+      {
+        "path": "tests/recover_exception_only_finally_completion.rs",
+        "bytes": 9502,
+        "sha256": "80ec02d4b7b1298a59c8937005bdd1b1631501df63527ee6515c090a450971f6",
+        "git_blob_sha1": "3d242a11c66aead88ad77a681a5bd14b15c5f7c6",
+        "workspace_binding_match": true,
+        "product_binding_match": true,
+        "current_checkout_match": true
+      },
+      {
+        "path": "tests/recover_exception_only_finally_stops.rs",
+        "bytes": 8755,
+        "sha256": "f296ee058bfd1cb869ea9082269141fc129912a1e813438d90c6b21b27e35b88",
+        "git_blob_sha1": "0e55006f913413f50f5abfe698d225ac69cb86ae",
+        "workspace_binding_match": true,
+        "product_binding_match": true,
+        "current_checkout_match": true
+      }
+    ],
+    "source_pins_product_sha": "3fa506df0ccd7da3d38ab769bfd65235817508fe",
+    "product_binding_status": "accepted",
+    "product_binding_files": 3002,
+    "workspace_binding_status": "accepted",
+    "workspace_binding_files": 4955,
+    "workspace_seed": "5350648285461741569",
+    "git_tree_blob_rows": 193055,
+    "all_product_binding_blob_ids_present": true,
+    "product_entries_omitted_from_workspace_binding_but_currently_hash_match": [
+      "crates/jarde-java/tests/fixtures/cf16-region-depth/README.md",
+      "crates/jarde-java/tests/fixtures/cf16-region-depth/copy-manifest.json",
+      "crates/jarde-java/tests/fixtures/cf16-region-depth/source/BranchFinally.java",
+      "crates/jarde-java/tests/fixtures/cf16-region-depth/source/Runner.java",
+      "crates/jarde-java/tests/fixtures/em21-this-alias/ThisAliasRefusals.java",
+      "crates/jarde-java/tests/fixtures/p3-do-while-return/DWVariants.java",
+      "crates/jarde-query/tests/fixtures/OwnerRefs.java"
+    ]
+  },
+  "checker_review": {
+    "private_checker_path": "/private/tmp/jarde-exception-only-tests-prep-20261017/verify-own-ci.py",
+    "read_only_acceptance_checks_passed": true,
+    "no_workspace_test_failure_or_filter": true,
+    "standalone_gate_commands_confirm_expected_tests_ran": true,
+    "per_target_rows_recomputed_and_matched_root_acceptance": true
+  },
+  "limitations": [
+    "No network or live GitHub API verification was performed; the run JSON, collection, and logs are local captured evidence.",
+    "No Git command was run; supplied `git show` streams, product/workspace bindings, and raw tree blob identifiers are internally consistent, but remote provenance and commit-object resolution were not independently authenticated.",
+    "The 4,955-entry workspace binding omits seven entries in the 3,002-entry product binding; all seven currently exist and match the product binding by byte count, SHA-256, and Git blob SHA-1. The five required source files are all present in the workspace binding; four also appear in the product-source binding."
+  ],
+  "issues": []
+}

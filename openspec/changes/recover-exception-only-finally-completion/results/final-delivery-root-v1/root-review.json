@@ -1,0 +1,18 @@
+{
+  "archive_bytes": 12063,
+  "archive_sha256": "a75687a0dcdeced88236a0ed247fbc87b018555ed9c62f6110bd42e5e2ba663d",
+  "members_reopened": 16,
+  "status": "root accepted",
+  "clean_pushed_documentation_checkpoint": "86490caba7ced5b233e32b391898d6b6d949b388",
+  "product_sha": "3fa506df0ccd7da3d38ab769bfd65235817508fe",
+  "product_ci_run": 39051492999,
+  "tasks_complete": 11,
+  "strict_each": [
+    366,
+    0
+  ],
+  "source_pins_unchanged": 4955,
+  "target_absent": true,
+  "commands": 7,
+  "raw_streams": 14
+}

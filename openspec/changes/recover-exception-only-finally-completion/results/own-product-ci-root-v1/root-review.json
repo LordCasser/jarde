@@ -19,5 +19,7 @@
   "critical_tests_each_seed": 9,
   "command_raw_streams_verified": 20,
   "build_source_files_bound_to_product": 3002,
-  "native_source_files_bound_to_product": 4955
+  "native_source_files_bound_to_product": 4955,
+  "luna_independent_review_sha256": "0e689d6948c84e9ff2c4ca06abe0028a2c5f2d13ab9435c0821d053f7c3c0f31",
+  "pin_inventory_note": "build pins and workspace pins intentionally have different inventories; root independently bound every member of both to the same product Git tree and current bytes, including the seven build-only paths"
 }
