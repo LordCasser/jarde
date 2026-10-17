@@ -1,0 +1,46 @@
+{
+  "status": "copied_from_accepted_original_compilation",
+  "baseline_receipt": {
+    "path": "/private/tmp/jarde-nestedloops3-baseline-root-v1-20261018/execution.json",
+    "bytes": 2341303,
+    "sha256": "5a7d6572e600d19dc45d78030d0b12867bc742c4b014381fb5c7b059db171d35"
+  },
+  "source": {
+    "path": "source/TestNestedLoops3.java",
+    "bytes": 1061,
+    "sha256": "7152231b3aeb8419a6cfa5ecb9f639809386109233ce66af43143e0451b0ea72"
+  },
+  "compiler": "javac23 --release 8; untouched outer source, debug/no-debug; exact argv in original baseline archive",
+  "classes": [
+    {
+      "profile": "debug",
+      "path": "debug/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class",
+      "original_path": "/private/tmp/jarde-nestedloops3-baseline-root-v1-20261018/debug/classes/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class",
+      "bytes": 1323,
+      "sha256": "f8bf155376ec438208ab538ce89b74fc36d0c56b3fcbe9f2f9b849b48742c6df"
+    },
+    {
+      "profile": "debug",
+      "path": "debug/jadx/tests/integration/loops/TestNestedLoops3.class",
+      "original_path": "/private/tmp/jarde-nestedloops3-baseline-root-v1-20261018/debug/classes/jadx/tests/integration/loops/TestNestedLoops3.class",
+      "bytes": 1157,
+      "sha256": "47f013a3c937dd182fe550f4c45ddb914245be7db61a7fe9f58bca64388a5050"
+    },
+    {
+      "profile": "no-debug",
+      "path": "no-debug/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class",
+      "original_path": "/private/tmp/jarde-nestedloops3-baseline-root-v1-20261018/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops3$TestCls.class",
+      "bytes": 890,
+      "sha256": "eac91ecea7c9f3db3ce044cdb8f1f95068e926e15ffb23821484609541ad376a"
+    },
+    {
+      "profile": "no-debug",
+      "path": "no-debug/jadx/tests/integration/loops/TestNestedLoops3.class",
+      "original_path": "/private/tmp/jarde-nestedloops3-baseline-root-v1-20261018/no-debug/classes/jadx/tests/integration/loops/TestNestedLoops3.class",
+      "bytes": 944,
+      "sha256": "aeaed0be591436b9abbc7a93feafa92be8b645c7ea63936786dfc922f04fcc4e"
+    }
+  ],
+  "no_javac8_original_compile_claim": true,
+  "methods_not_removed": true
+}

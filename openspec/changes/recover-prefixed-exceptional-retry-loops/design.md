@@ -6,6 +6,8 @@
 
 已有 retry 只支持保护区起点等于重试头、handler 回到同一头的顶层形。不能把原 RetryLoopFacts 的 header 随意改为6再假装 protected29等于它。现有 prefix+protected-loop 路径要求 loop 位于保护区内，也不满足本形。
 
+补充两个完整合法类的51命令/102raw已实际采集（独立API/形状审查待完成）：双javac8/23、debug/no-debug的8class及双JVM16运行/160case，均同各自原oracle。catch有副作用时真实Code107B的normal completion为protected64的goto@69→join94，再由独立纯goto@94→outer header18；handler72的goto@91→inner36，gateway46/61→outerexit97。natural latch为94，不能把protected64硬当latch。本修订只允许这一个闭合纯bridge，不引入任意链或改图。首次补充collector误传`--evidence default`导致CLI参数失败，六命令原raw单列保留，未计通过。
+
 ## Goals / Non-Goals
 
 **Goals:** 在同次 canonical/code/SSA/effects 下证明一个局部复合循环，复用现有区域与正文生成；完整保留原类六方法、四边界与所有来源，并通过原样整类编译运行。
@@ -16,9 +18,9 @@
 
 ### 1. 在外层 loop 分类处先证明整个局部组合
 
-从当前 header、唯一普通 latch、物理表行及 handler 回跳推导外层入口、内层入口、保护区入口、正常续接和外层出口，禁止按 BCI、局部槽、方法名、常量池编号或源码文本匹配。入口前缀是一个已有可呈现的直线 canonical block；内层前缀是无环、单入口的有界普通子图，路径只到该 protected block 或经纯 Transfer gateway 到同一外层出口。
+从当前 header、唯一普通 latch、物理表行及 handler 回跳推导外层入口、内层入口、保护区入口、正常续接和外层出口，禁止按 BCI、局部槽、方法名、常量池编号或源码文本匹配。入口前缀是一个已有可呈现的直线 canonical block；内层前缀是无环、单入口的有界普通子图，路径只到该 protected block 或经纯 Transfer gateway 到同一外层出口。方法在outer header前可有独立直线初始化前缀，首次普通入口只能经该前缀到outer header，不能据原形从BCI0开始就禁止合法preheader。
 
-先核唯一具名物理 row 与 canonical row ordinal/范围/handler/throw sites，一条完整 protected block（允许 range-end goto 在保护区外），现有 CatchSite 的真实异常参数绑定，以及 protected 正常 successor 等于外层入口。handler 无普通前驱，只有一个真实 goto 回到内层入口；handler 自身未被本 row 保护，可能异常继续逃逸。
+先核唯一具名物理 row 与 canonical row ordinal/范围/handler/throw sites，一条完整 protected block（允许 range-end goto 在保护区外），现有 CatchSite 的真实异常参数绑定，以及 protected 正常 successor 等于Catches.join。join须为外层入口，或唯一无效果纯Transfer bridge，其唯一普通后继为外层入口且唯一前驱为protected。复用已有纯转移/闭合链原子证明，不把带效果、异常、clone或外来入口的块当桥。唯一natural latch须与实际直达protected或bridge对应，不假设两者总相同。handler 无普通前驱，只有一个真实 goto 回到内层入口；handler 自身未被本 row 保护，可能异常继续逃逸。
 
 逐边核外来入口、出口、call/return、异常、clone 与 owner 闭合。内层入口只接受外层前缀及本 handler，前缀内部只接受本子图；所有外层退出 gateway 为无额外效果、无异常边的纯 transfer。只接受同一个真实外层退出。自然 set 中的 handler 仍只由 CatchClause 拥有，gateway 纳入组合 owner 集；最终块集与 visited 增量必须精确一致且无重复。多余节点/边/表行或无法闭合路径拒绝。
 
@@ -26,11 +28,15 @@
 
 ### 2. 复用 Loop/Try/Frame，显式区分 protected 与 retry header
 
-输出为外层 Endless(header0) 的直线前缀后接内层 Endless(header6)。内层包含原分支、Try 和单 catch。到40的分支为外层 break；handler37→6为内层 continue；try33→0为内层 break，内层正常完成后外层尾部继续迭代。最后 return40 在外层循环后，只拥有一次。
+原形输出为外层 Endless(header0) 的直线前缀后接内层 Endless(header6)。内层包含原分支、Try 和单 catch。到40的分支为外层 break；handler block36 的 goto@37→6为内层 continue；protected block29 的 goto@33→0为内层 break，内层正常完成后外层尾部继续迭代。最后 return40 在外层循环后，只拥有一次。33/37是指令BCI，不是独立canonical block。
+
+有纯bridge时inner break target为真实normal join94，外层body在inner后拥有bridge94一次，再回到outer header18；goto@69与goto@94来源分别保留。protected、retry header、normal join、outer header及outer break target是独立角色，原形中的join==outer header只是已证别名关系，不成为证书普遍不变量。
 
 上述 BCI 仅解释冻结输入；产品从实际边与证书派生。保留 goto14/26/33/37 的真实来源和同一物理方法身份，隐式外层回跳不能吞掉33的归属。
 
 复用 guard::catches 与 try_level 的保护正文/参数/handler 构建，私有 retry seam 如需调整，只做必要的角色拆分：protected entry 与 retry header 不能混用，正常 exit 与外层 break target 不能混用。一个局部证书只存消费所需的边界和 owner，不复制 CFG/SSA。不得伪造一个违反原 RetryLoopFacts 不变量的值来绕过证明，也不得把本形插进现有顶层 retry 早拒中后整体放宽条件。
+
+实际运行确认：普通If reader在所有arm已经转移时仍返回外层出口作为residual join。因此只在受预算visitor核每条末端路径以LoopBreak/Continue闭合、全部真实转移三元组multiset精确一致，且完整owner/visited增量无缺失重复后，允许该返回值；inner Loop.exit仍为已证normal join。handler到Frame边界按现有契约可返回None，catch的Straight与Continue完整留在Sequence内。
 
 完整证明后才创建两个 loop frame。组合构建保留完整 checkpoint；任一 child fallback、owner不全、预算/取消/期限失败都恢复所有实际修改状态，原 StopReason 向上传递。最终整方法 coverage、overlapping-owner、效果和异常边门照常执行。
 

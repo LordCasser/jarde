@@ -11,6 +11,10 @@
 - **WHEN** 同构合法类改变名称、常量或前缀效果，且仍满足相同边界与完整证明
 - **THEN** 恢复 SHALL 保留每次重试及外层迭代的真实效果次数与顺序，不因命名或位置变化误拒或错码。
 
+#### Scenario: Normal completion through a pure outer latch bridge
+- **WHEN** try正常汇合点经一个闭合、无效果和额外入口的纯转移块返回外层入口，且其完整路径可证明
+- **THEN** 恢复 SHALL 保持相同正常与异常续接，分别保留保护块出口及桥块回跳的物理来源，不把二者误认成同一块。
+
 ### Requirement: Exceptional retry ownership and source integrity
 系统 SHALL 仅在具名异常表、实际可抛点、参数绑定、正常与异常入口、退出及物理身份均闭合时恢复此形；每个物理块 SHALL 只归属一次，所有已恢复指令 SHALL 有合法同方法来源，非局部转移 SHALL 保持真实目标和来源。
 

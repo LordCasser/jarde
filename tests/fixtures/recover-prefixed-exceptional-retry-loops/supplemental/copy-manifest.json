@@ -1,0 +1,113 @@
+{
+  "status": "copied_from_root_accepted_original_runtime_and_api_baseline",
+  "execution": {
+    "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/execution.json",
+    "bytes": 2201726,
+    "sha256": "cd6b089508b470cd7b03767fefe7895d57df0cba24033f22ff974f4ef25b19ce"
+  },
+  "classes": [
+    {
+      "path": "javac8/debug/PrefixRetryAlpha.class",
+      "bytes": 2505,
+      "sha256": "6ce7cafb21ed9c9a9aab467dd4dd111a03c763b4f17c59b2694757bfd5be919c",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/PrefixRetryAlpha/javac8/debug/PrefixRetryAlpha.class",
+        "bytes": 2505,
+        "sha256": "6ce7cafb21ed9c9a9aab467dd4dd111a03c763b4f17c59b2694757bfd5be919c"
+      },
+      "compile_command": 3
+    },
+    {
+      "path": "javac8/no-debug/PrefixRetryAlpha.class",
+      "bytes": 1764,
+      "sha256": "47f13d0791da0394f47d949f6e79b008cdd8fadd2ab1d8e016f4bec5455ec45e",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/PrefixRetryAlpha/javac8/no-debug/PrefixRetryAlpha.class",
+        "bytes": 1764,
+        "sha256": "47f13d0791da0394f47d949f6e79b008cdd8fadd2ab1d8e016f4bec5455ec45e"
+      },
+      "compile_command": 9
+    },
+    {
+      "path": "javac23/debug/PrefixRetryAlpha.class",
+      "bytes": 2502,
+      "sha256": "6d45eb95a251b033f6211bfc98ab50f5bb4ece48ecf4d0ef7c32abef5f052979",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/PrefixRetryAlpha/javac23/debug/PrefixRetryAlpha.class",
+        "bytes": 2502,
+        "sha256": "6d45eb95a251b033f6211bfc98ab50f5bb4ece48ecf4d0ef7c32abef5f052979"
+      },
+      "compile_command": 15
+    },
+    {
+      "path": "javac23/no-debug/PrefixRetryAlpha.class",
+      "bytes": 1761,
+      "sha256": "a14044687e9a9429666cb8e0a5cc2cb94b2ba2f6755c7f25f6031b7066cdc3e0",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/PrefixRetryAlpha/javac23/no-debug/PrefixRetryAlpha.class",
+        "bytes": 1761,
+        "sha256": "a14044687e9a9429666cb8e0a5cc2cb94b2ba2f6755c7f25f6031b7066cdc3e0"
+      },
+      "compile_command": 21
+    },
+    {
+      "path": "javac8/debug/RetryPrefixBeta.class",
+      "bytes": 2520,
+      "sha256": "5f6a3908a161a60b114f34312ce1186009a0e725251ed32c9673f345182a1332",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/RetryPrefixBeta/javac8/debug/RetryPrefixBeta.class",
+        "bytes": 2520,
+        "sha256": "5f6a3908a161a60b114f34312ce1186009a0e725251ed32c9673f345182a1332"
+      },
+      "compile_command": 27
+    },
+    {
+      "path": "javac8/no-debug/RetryPrefixBeta.class",
+      "bytes": 1766,
+      "sha256": "935755319cfc3eb09cb5c713a3953e46293f1451df45e299ede9d8101741d2fa",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/RetryPrefixBeta/javac8/no-debug/RetryPrefixBeta.class",
+        "bytes": 1766,
+        "sha256": "935755319cfc3eb09cb5c713a3953e46293f1451df45e299ede9d8101741d2fa"
+      },
+      "compile_command": 33
+    },
+    {
+      "path": "javac23/debug/RetryPrefixBeta.class",
+      "bytes": 2517,
+      "sha256": "b844c12b7bd782f6f3622912146692ada7a5f46d8242d7c5879642429b9d8565",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/RetryPrefixBeta/javac23/debug/RetryPrefixBeta.class",
+        "bytes": 2517,
+        "sha256": "b844c12b7bd782f6f3622912146692ada7a5f46d8242d7c5879642429b9d8565"
+      },
+      "compile_command": 39
+    },
+    {
+      "path": "javac23/no-debug/RetryPrefixBeta.class",
+      "bytes": 1763,
+      "sha256": "ea378d7bf025b38a95aff2a38ece0820dbecbb0a31faca9536fcb763acec29a8",
+      "original": {
+        "path": "/private/tmp/jarde-prefixed-retry-originals-root-v2-20261018/classes/RetryPrefixBeta/javac23/no-debug/RetryPrefixBeta.class",
+        "bytes": 1763,
+        "sha256": "ea378d7bf025b38a95aff2a38ece0820dbecbb0a31faca9536fcb763acec29a8"
+      },
+      "compile_command": 45
+    }
+  ],
+  "files": {
+    "source/alpha/PrefixRetryAlpha.java": {
+      "bytes": 2606,
+      "sha256": "06abede1e269823ebfe93e3be1096e9cfe99d91d80475f6397c8b97a8fadb794"
+    },
+    "source/beta/RetryPrefixBeta.java": {
+      "bytes": 2615,
+      "sha256": "bad3a641e3d4df7e032b5b385a45aa89486f361f6d053946ccb1c13d59b57204"
+    },
+    "source/driver/RetryFixtureDriver.java": {
+      "bytes": 6515,
+      "sha256": "ded7857f92ae180a8ce1b9c99702e7c6d917cb056c9675bcf72765bdf5e3d25c"
+    }
+  },
+  "root_review": "/private/tmp/jarde-prefixed-retry-independent-review-root-v2-20261018/review.json"
+}
