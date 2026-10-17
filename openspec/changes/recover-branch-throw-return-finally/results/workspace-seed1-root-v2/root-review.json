@@ -1,0 +1,23 @@
+{
+  "status": "root_accepted",
+  "seed": "5350648285461741569",
+  "targets": 375,
+  "batches": 98,
+  "tests": [
+    3686,
+    0,
+    98
+  ],
+  "source_pins": 4927,
+  "raw_streams_verified": 202,
+  "source_unchanged": true,
+  "exact_clean_target_absent": true,
+  "default_stack": true,
+  "peak_target_bytes": 833932357,
+  "per_target_counts": "independent acceptor uses actual stderr Running order; recorder artifact-order labels preserved as raw and not trusted as per-target counts",
+  "acceptor_sha256": "eab0f6f4c64003aff161cfd8d2313a0b024207c4e84c382ae801a9a2bb4993fe",
+  "archive": {
+    "bytes": 1350960,
+    "sha256": "d0a8409b3336835611888b37c73769313704a2f67bc66f7f44e684c5d06eec3c"
+  }
+}

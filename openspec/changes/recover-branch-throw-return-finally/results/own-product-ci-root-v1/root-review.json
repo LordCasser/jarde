@@ -1,0 +1,37 @@
+{
+  "status": "root accepted",
+  "product_sha": "6b32c708d1adea06558478fd0f339cc23885c581",
+  "url": "https://github.com/LordCasser/jarde/actions/runs/39037102727",
+  "jobs": 4,
+  "api_steps": 52,
+  "seed_totals": [
+    {
+      "failed": 0,
+      "filtered": 0,
+      "ignored": 98,
+      "measured": 0,
+      "passed": 3686
+    },
+    {
+      "failed": 0,
+      "filtered": 0,
+      "ignored": 98,
+      "measured": 0,
+      "passed": 3686
+    }
+  ],
+  "unique_targets_per_seed": 375,
+  "critical_tests_per_seed": 9,
+  "production_and_test_source_equal_product": true,
+  "target_absent": true,
+  "archive": {
+    "bytes": 494923,
+    "sha256": "255f3f696d99f501ad80e2a9a73c7ab4a511d08101018cf5c75f12d466f8a56b"
+  },
+  "limits": [
+    "GitHub masks some noncritical names as literal ***; preserved opaque, no unmasking.",
+    "Initial parser failure retained; final root verifier independently passed actual logs.",
+    "Workflow/test stream Running headers and summaries paired in actual occurrence order; exact unique inventory/counts checked.",
+    "Product CI is not a claim that a later documentation-only head ran CI."
+  ]
+}

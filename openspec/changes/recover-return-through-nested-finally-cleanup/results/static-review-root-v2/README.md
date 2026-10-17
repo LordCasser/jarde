@@ -1,0 +1,9 @@
+# 修正版静态审查，仍未作为产品验收
+
+Luna修正版已由root逐段审阅，并由另一Luna对抗审查。保留公开Finally/SavedReturn与既有Try AST；只增加Plan私有的两段指令区间。正常块中的outer body/inner try/inner cleanup不重复认领基本块，外层Plan一次拥有六块全图。
+
+相较初稿，现已独立比较全部四份out cleanup，显式证明每个in/divide的独有handler与每份out无handler，并绑定三条caught→store→reload→throw和保存返回值SSA链。root还发现并要求修正Builder未绑定nested变量，以及错误的34指令测试预期；封存EX实际35个指令起点已作为完整向量断言。所有行/边/副本及物理分区须实际测试通过后才算证明完成。
+
+附件是无损gzip私有草稿，不是共享实现。候选尚未编译；API、负变体（尤其新增第五行是否保持完整CFG）、晚预算/取消/deadline和Builder回滚都待实际执行。18组合完整类比较runner另在私有目录准备，不把脚本存在或静态审查当作运行证据。finThrow自身交付完成后才集成。
+
+本包仍为未执行草稿；root在首次集成前继续修订boundary片段，移除与已交付finThrow重复的CP helper和模块顶层断言，canonical完整性只在新negative helper内使用现有probe_descriptor核验。manifest固定的是去重后的当前草稿。

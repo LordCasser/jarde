@@ -33,3 +33,17 @@ canonical block0 同时包含外层 body `[0,5)`、inner body `[5,13)`、normal 
 决定保留外层公开 `Shape::Finally` 与 `SavedReturn`，先在既有私有 `Plan` 数据上增加只供 crate 内消费的可选有界 nested-cleanup 描述，供 Builder 构造现有嵌套 `StmtKind::Try`。描述只保存呈现必要的 inner-body/inner-finally 指令范围；异常副本、四行、goto/return、throw-site/effect、SSA identity、所有权与无额外边必须在私有 proof 中完整证明，保存在原 facts/origins 中。外层 Plan 一次认领全图，禁止重复 block owner；不创建通用递归 cleanup tree、公开 AST/Region/Shape variant 或新的 solver。新增遍历/分配须沿已有收费与停止通路。非结构化路径也必须建立完整 Builder checkpoint，任意 body/cleanup/return 失败原子恢复。
 
 本选择只允许有界两层落穿 cleanup；finally 自身 return/throw、exception-only、额外正常入口/出口、不匹配副本或缺失值证明均保留拒绝。实际实现若需要扩展此边界，先回到 root 审查，不得暗中放宽。
+
+## Root actual first refusal (2026-10-17)
+
+root在产品6b32源码上实际加最窄诊断并运行真实资源入口：候选顺序为[1,0]，outer row1先尝试；resources返回jre_guard_finally_copy@37。单块handler读法把正常suffix推成[25,28,30,33,34]，把handler cleanup推成[38,41,43,46,49]，首次拒绝是row.end5不等于normal_cleanup.start25。不能把范围守卫改松：这两段包含不同路径的内容，且handler实际经goto54连到70/71。
+
+同次探针逐一记录四条原始row的finally_copy_shape和generic proof，四者均None；这次才完成全部行的实际检查，原initial-facts仍只代表first row。root已核raw/hash、默认栈/资源守卫/最终clean，并恢复guard至产品原始SHA。见results/first-refusal-root-v1。由此关闭首拒取证任务，继续采用私有分段描述与完整嵌套路径证明；此步验收时为2/16，不把初稿当完成实现。
+
+## 原始运行与固定 JADX 对照
+
+双真实javac8/23各编译509B完整NestedFinally，Code72B/4行/35指令；原始独立类及源码编译EX的8次运行共144case全通过。root另直接运行封存EX原class4次/72case，与前述四个EX oracle的stdout/stderr SHA逐字相同。未来final runner已改为始终使用封存EX字节作EX运行oracle；这次补充与早期source-compiled控制分开保存，不把它冒称重跑整个矩阵。
+
+Jarde当前default/all完整类共12次原样重编失败（缺少返回语句），没有rebuilt运行。固定JADX1.5.6的三输入完整源码共6次重编成功，但12次运行均在第二个case n2/in0/out RuntimeException时得到IOIO，而正确为IO；每次先通过第一个正常case，随后failfast，不声称它运行了全部18组合。outer catch(Throwable)包住了正常cleanup导致再次执行in/out，这正是本证明要求四份out均无保护handler、按嵌套finally呈现而非外层catch的原因。见baseline-matrix-root-v2及sealed-class-oracle-root-v1。
+
+首次采集器只因日志空格解析失败，raw单独保存在baseline-collector-failure-root-v1；修复已用真实stdout核对，未改任何生成目标或原始源码。当前3/16，仅取证和JADX比较关闭，候选未集成、未作为正向产品验收。

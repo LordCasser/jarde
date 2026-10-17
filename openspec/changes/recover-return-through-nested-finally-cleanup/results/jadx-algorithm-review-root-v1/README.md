@@ -1,0 +1,9 @@
+# 本地 JADX 算法参考
+
+root实读本地MarkFinallyVisitor的入口/候选scope构造及算法说明，以及TestTryCatchFinally4；完整文件冻结供复核，不冒称逐行审查整个visitor，并固定检出HEAD、选中文件状态与字节。源码检出与实际运行的已安装JADX1.5.6必须区分，不能用读到的源码代替比较结果。
+
+可借鉴的是：先按try出口/handler的scope terminus确定候选，从出口反向比较各路径副本，只有control-flow和instructions均匹配后才标记重复指令供Region消费。visitor还会分离implicit handler，并在整体提取异常时undo。Jarde沿已有Facts/SSA/effects、预算和证书完成这些证明；本叶片不照搬JADX的可变全图标记或新增通用遍历框架。
+
+本例需要按指令区间比较和呈现，因为同一个canonical块含返回表达式及嵌套cleanup。采用私有有界区间仅补Builder所需切分，原有Try AST及外层SavedReturn保持一致；所有异常副本和边在发布前闭合。实际JADX输出是否正确由完整类运行判定，finThrow中已观察到的重复cleanup不能按finally提取成功忽略。
+
+TestTryCatchFinally4是finally内捕获IOException的相邻测试，只作为嵌套清理和错误传播的参考，不能冒称与EX.nestedFin同体，也不能代替本叶片18组合运行。

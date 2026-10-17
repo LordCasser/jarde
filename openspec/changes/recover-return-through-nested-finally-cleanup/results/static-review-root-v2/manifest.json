@@ -1,0 +1,25 @@
+{
+  "status": "static_review_only_not_applied_not_compiled",
+  "files": {
+    "candidate.patch": {
+      "bytes": 41081,
+      "sha256": "cc2bd511a1127b36ade6aeb1d022b13705fc2c5e843466aaccf1040e71e9962c"
+    },
+    "late-stop-test-snippet.rs": {
+      "bytes": 5470,
+      "sha256": "d3dd76c43498b8ec49d7a16c4b84c354201c4baa717cb42373709ebbdc0b364c"
+    },
+    "guard-boundary-insert.rs": {
+      "bytes": 9289,
+      "sha256": "a4b95883ba8cadaf891274801166922f47dc8a5cbd0fa467f48c5b54ccf1ea08"
+    },
+    "api-test-draft.rs": {
+      "bytes": 10540,
+      "sha256": "963bea1ac44baf8ab777f40bbffbfc982557c87fbd6865b85c8ac1b9ec206412"
+    },
+    "adversarial-review.md": {
+      "bytes": 3121,
+      "sha256": "71fe20d8138c6db360c0763014a74a116b77fc1db457c52570b45b03998f4682"
+    }
+  }
+}

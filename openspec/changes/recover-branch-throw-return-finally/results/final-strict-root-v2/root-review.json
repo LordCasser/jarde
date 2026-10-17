@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--no-interactive"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout.raw": {
+      "bytes": 16887,
+      "sha256": "f708d81f269ded14fec089f17e82467472e70e82d94129d633e71ae1d4a0bef2"
+    },
+    "stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

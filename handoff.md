@@ -2,15 +2,17 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-17 当前推进：finThrow 验收中，nestedFin 已独立派发
+## 2026-10-17 当前推进：finThrow 已验收交付，nestedFin 开始集成
 
 先从 GitHub 快进64个提交到 e5757b5a9920da5d2b86dc44d8c729c98caf1253，复核新交接与父 finally 真实4/7状态；旧本地 facade 草稿仅备份/stash，未应用。
 
-当前 `recover-branch-throw-return-finally` 为3/5：finThrow 的完整证明原本已有，缺口是纯比较入口无异常边，直到 throw 子分支才调用 guard。最小修复在单 catch-all row 起点、范围内 comparison、双正常 successor 入口提前调用既有 examine；不新增 proof/公开表示/Builder 机制。root已接受实际红基线、450 库单测/2 API测试、全 reader census、指纹与CI同款Clippy，以及最终 CLI 的4 profile/8次完整源码重编/16次隔离运行/144case 对照。JADX1.5.6 对同输入虽可编译，但清理抛异常会打印两次ft，真实失败原样保留。
+当前 `recover-branch-throw-return-finally` 为5/5：finThrow 的完整证明原本已有，缺口是纯比较入口无异常边，直到 throw 子分支才调用 guard。最小修复在单 catch-all row 起点、范围内 comparison、双正常 successor 入口提前调用既有 examine；不新增 proof/公开表示/Builder 机制。root已接受实际红基线、450 库单测/2 API测试、全 reader census、指纹与CI同款Clippy，以及最终 CLI 的4 profile/8次完整源码重编/16次隔离运行/144case 对照。JADX1.5.6 对同输入虽可编译，但清理抛异常会打印两次ft，真实失败原样保留。
 
-本条更新时 strict365/0及primitive finally旧预期更新后的P5 19/0/1已通过；fresh双seed工作区、精确产品自身CI和clean主线交接仍待完成，不能按完成接手。证据均在该change的results及root-review.json；父 `recover-return-through-effectful-finally` 仍4/7，71/612不增加。
+产品已提交推送6b32c708d1adea06558478fd0f339cc23885c581；strict365/0、primitive finally旧预期更新后的P5 19/0/1、双fresh seed各375targets/98batches/3686通过/0失败/98忽略均已独立接受。该产品自身[CI39037102727](https://github.com/LordCasser/jarde/actions/runs/39037102727)已由root独立接受：4jobs/52steps，两seed各375targets/3686通过/0失败/98忽略，9项关键门均通过；关闭文档后另核实际clean主线，文档head不冒称自身跑过产品CI。证据均在该change的results及root-review.json；父 `recover-return-through-effectful-finally` 仍4/7，71/612不增加。
 
-`recover-return-through-nested-finally-cleanup` 已严格校验，实际六块/四行 Facts/SSA/effects 只读探针已执行；Luna仅在私有目录准备实现。保留公开Finally/SavedReturn，Plan私有有界BCI描述负责fused块内嵌套cleanup。root初稿审查发现遗漏 `[46,54)` out副本等问题，未接受、未合入。原稿与审查记录在该change的results/draft-review-root-v1；修正版仍须实际编译和完整18组合对照。不要把静态草稿当恢复完成。
+`recover-return-through-nested-finally-cleanup` 当前3/16，实际六块/四行Facts、全部四行generic proof及首拒已确认：资源入口候选[1,0]，outer row1被RangeEnd5!=25拒绝。双509B完整独立class与完整EX红基线已采集；JADX1.5.6虽六次编译成功，十二次运行均在out抛错时出现IOIO，不能照搬其outer catch结构。原始source控制8次/144case，另封存EX字节4次/72case输出逐字相同。证据见该change的results/baseline-matrix-root-v2、sealed-class-oracle-root-v1及first-refusal-root-v1。
+
+Luna私有候选保留公开Finally/SavedReturn，Plan私有区间负责fused块内嵌套cleanup。root已审查四份out副本、显式handler集、返回/重抛SSA及Builder原子回滚，并修正未绑定变量、35指令预期和重复测试helper。候选仍未应用、未编译，完整正向对照及自身CI未完成；不能把静态稿或原始class运行当作恢复完成。durable草稿与工具在该change的results/static-review-root-v2及tools，原始错误稿亦单独保留。
 
 以下10月15日内容为历史记录，当前状态优先看本节与对应change实际任务、raw、源码/工具pin、自身CI。
 

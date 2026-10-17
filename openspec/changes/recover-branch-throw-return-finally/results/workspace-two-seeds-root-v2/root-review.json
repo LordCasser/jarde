@@ -1,0 +1,55 @@
+{
+  "status": "root_accepted_two_fresh_seeds",
+  "product": "6b32c708d1adea06558478fd0f339cc23885c581",
+  "acceptance": {
+    "seed": "5350648285461741569",
+    "status": "accepted_read_only",
+    "target_count": 375,
+    "batch_count": 98,
+    "workspace_summary_count": 375,
+    "workspace_totals": [
+      3686,
+      0,
+      98
+    ],
+    "source_pin_count": 4927,
+    "raw_streams_verified": 202,
+    "per_target_counts_bound_to_Running_order": true,
+    "recorded_artifact_order_labels_are_not_execution_counts": true,
+    "target_absent": true,
+    "second_seed": {
+      "seed": "5350648285461741570",
+      "status": "accepted_read_only",
+      "target_count": 375,
+      "batch_count": 98,
+      "workspace_summary_count": 375,
+      "workspace_totals": [
+        3686,
+        0,
+        98
+      ],
+      "source_pin_count": 4927,
+      "raw_streams_verified": 202,
+      "per_target_counts_bound_to_Running_order": true,
+      "recorded_artifact_order_labels_are_not_execution_counts": true,
+      "target_absent": true
+    },
+    "two_seed_totals_match": true
+  },
+  "combined_tests": [
+    7372,
+    0,
+    196
+  ],
+  "raw_streams_verified": 404,
+  "source_pins_each": 4927,
+  "source_and_inventory_equal": true,
+  "default_stack": true,
+  "exact_clean_target_absent": true,
+  "first_seed_archive": "../workspace-seed1-root-v2/capture.tar.gz",
+  "second_seed_archive": {
+    "bytes": 1350875,
+    "sha256": "1d3f8ba7da9a8f4a47a56497b2612499b103569aa847e9a76c993d1b1b94de9a"
+  },
+  "acceptor_sha256": "eab0f6f4c64003aff161cfd8d2313a0b024207c4e84c382ae801a9a2bb4993fe"
+}

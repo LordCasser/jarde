@@ -1,0 +1,11 @@
+{
+  "status": "collector_failure_not_product_failure",
+  "completed_commands": 12,
+  "original_driver_exit_code": 0,
+  "original_case_lines": 18,
+  "cause": "collector expected colon immediately before return/throw but actual driver emits colon-space; emitted target/source untouched",
+  "parser_fixed_against_actual_raw": true,
+  "archive_sha256": "5ae7df3247aff69da2a273d2e5ad52a5ea00e242978645b0ae394331e691a327",
+  "all_source_and_tools_unchanged": true,
+  "target_absent": true
+}

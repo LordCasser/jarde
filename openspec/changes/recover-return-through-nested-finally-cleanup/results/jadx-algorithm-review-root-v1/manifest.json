@@ -1,0 +1,15 @@
+{
+  "scope": "local-source-algorithm-reference_only_not_runtime_acceptance",
+  "head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "selected_status": "",
+  "files": {
+    "jadx-core/src/main/java/jadx/core/dex/visitors/finaly/MarkFinallyVisitor.java": {
+      "bytes": 19465,
+      "sha256": "9999700ad951b8a309c786bf8efbb3d5d169b1696b25a2682a584b6d6e6db63b"
+    },
+    "jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchFinally4.java": {
+      "bytes": 1104,
+      "sha256": "57b52e955fdf2db03a6949b02acc3ce9a096f939ed33c44a05c5fc36b8e0e846"
+    }
+  }
+}

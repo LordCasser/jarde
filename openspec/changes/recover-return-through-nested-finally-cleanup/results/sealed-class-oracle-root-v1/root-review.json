@@ -1,0 +1,16 @@
+{
+  "status": "root_accepted_sealed_EX_class_runtime",
+  "class_sha256": "e6f0eb1e029a2c883d3ee5df5e089eda17fea27833a9244297cede139cd61287",
+  "actual_sealed_class_runs": 4,
+  "cases": 72,
+  "same_output_as_all_four_source_compiled_EX_oracles": true,
+  "driver_target_absent": true,
+  "source_unchanged": true,
+  "target_absent": true,
+  "baseline_scope": "baseline-v2 EX oracles used source-compiled classes; this supplement directly executes actual sealed bytes and binds every prior oracle by exact stdout/stderr SHA; no fabricated rerun",
+  "final_runner": "now always uses actual sealed EX bytes as EX runtime target",
+  "archive": {
+    "bytes": 319219,
+    "sha256": "bc43724a957e44b014e34f1bfaa8e07cb5d618b1f0f6ce1a65e86c33b1c3d96f"
+  }
+}

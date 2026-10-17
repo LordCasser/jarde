@@ -1,0 +1,96 @@
+{
+  "status": "root_accepted_red_baseline",
+  "product_cli_sha256": "d238d76151ab40334e1957b763203b86ba475bca117a6a6df40f0ac9544512a3",
+  "commands": 63,
+  "raw_streams_verified": 126,
+  "original_runs": 8,
+  "original_cases": 144,
+  "jarde_fullclass_compile_failures": 12,
+  "jarde_rebuilt_runtime_runs": 0,
+  "profiles": [
+    {
+      "input": "javac8",
+      "mode": "default",
+      "physical_methods": 2,
+      "target_quality": "fallback",
+      "target_outcome": "produced",
+      "target_representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ]
+    },
+    {
+      "input": "javac8",
+      "mode": "all",
+      "physical_methods": 2,
+      "target_quality": "fallback",
+      "target_outcome": "produced",
+      "target_representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ]
+    },
+    {
+      "input": "javac23",
+      "mode": "default",
+      "physical_methods": 2,
+      "target_quality": "fallback",
+      "target_outcome": "produced",
+      "target_representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ]
+    },
+    {
+      "input": "javac23",
+      "mode": "all",
+      "physical_methods": 2,
+      "target_quality": "fallback",
+      "target_outcome": "produced",
+      "target_representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ]
+    },
+    {
+      "input": "sealed-ex",
+      "mode": "default",
+      "physical_methods": 6,
+      "target_quality": "fallback",
+      "target_outcome": "produced",
+      "target_representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ]
+    },
+    {
+      "input": "sealed-ex",
+      "mode": "all",
+      "physical_methods": 6,
+      "target_quality": "fallback",
+      "target_outcome": "produced",
+      "target_representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ]
+    }
+  ],
+  "JADX156": {
+    "untouched_compile_successes": 6,
+    "runtime_failures": 12,
+    "first_failure": "n2/in0/out RuntimeException -> events IOIO; each failfast run passed first normal case then failed; not all18 cases executed",
+    "profile": "rename-flags none; config none; no-res; one thread"
+  },
+  "source_and_tools_unchanged": true,
+  "target_absent": true,
+  "archive": {
+    "bytes": 717994,
+    "sha256": "d154b9c99a326da6f30843502d5edeb77a9be81cede65fa14ea46b773ee07e7a"
+  }
+}

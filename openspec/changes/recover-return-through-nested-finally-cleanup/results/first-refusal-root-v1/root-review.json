@@ -1,0 +1,25 @@
+{
+  "status": "root_accepted_instrumented_baseline_probe",
+  "product_base": "6b32c708d1adea06558478fd0f339cc23885c581",
+  "tests": [
+    1,
+    0,
+    0
+  ],
+  "filtered_out": 450,
+  "entry_candidates": [
+    1,
+    0
+  ],
+  "resources": "Refused jre_guard_finally_copy at37",
+  "first_outer_row_generic_rejection": "RangeEnd: row.end5 != inferred normal_cleanup.start25; handler single block ends54 Transfer rather than whole cleanup-chain terminus71",
+  "all_four_rows_individually_probed": true,
+  "original_guard_restored_sha256": "b35cf0968192b7a156809cc4d11184c251e7bf4ceec91ceff0ce52157b4eda0d",
+  "guard_matches_product_after_restore": true,
+  "default_stack": true,
+  "target_absent_after_exact_clean": true,
+  "archive": {
+    "bytes": 632947,
+    "sha256": "04a12e1e2d5b06e8365c070d79cceb403908918c25f1f8358968a59c28569b1c"
+  }
+}
