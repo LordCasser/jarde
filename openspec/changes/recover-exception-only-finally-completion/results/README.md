@@ -19,3 +19,5 @@
 所有capture按manifest逐成员复开，实际scope/归档SHA见各root-review。own-product-ci-root-v1实际4jobs/52API步骤通过，两seed各378targets/3700通过/0失败/98忽略，逐target结果相同，9关键测试各一次ok；20命令raw流及全部工作流步骤核验。FinallyCompletion.finallyReturns/finallyThrows仍是独立欠账；不删原方法，也不把本leaf推广成所有finally形态已恢复。
 
 - final-document-strict-root-v1：最终规划/交接/CF16增补后，实际1.11.0和1.14.0各366/0，4955产品来源未变。
+
+- final-delivery-root-v1：文档检查点86490caba与origin/main相同且工作区干净，target不存在；4955产品来源不变，完整11/11规划的两版strict各366/0；后续收据提交只补此记录。
