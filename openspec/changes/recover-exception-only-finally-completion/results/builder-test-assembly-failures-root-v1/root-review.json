@@ -1,0 +1,12 @@
+{
+  "archive_bytes": 986863,
+  "archive_sha256": "3fb221a1cca729af5bd8406c9d470aed91e3112c4e569d4dd3e666104aa4788d",
+  "members_reopened": 17,
+  "status": "root accepted historical failed executions only",
+  "failures": [
+    "final-focused-v1: 456 old/current tests pass; new Builder test uses empty field plan and cannot render original field throw",
+    "builder-diagnostic-v1: actual high-budget fallback records body original throw not preserved",
+    "final-focused-v2: real field proof/preparation fixes first fixture; extra Local fixture exposes exact phi-count refusal, not a Builder failure"
+  ],
+  "successful_builds_or_acceptance_claimed": false
+}

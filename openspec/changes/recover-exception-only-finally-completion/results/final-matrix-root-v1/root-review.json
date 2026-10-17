@@ -1,0 +1,63 @@
+{
+  "status": "root accepted",
+  "mode": "final",
+  "commands": 75,
+  "raw_streams_verified": 150,
+  "method_profiles_verified": 44,
+  "class_profiles": 8,
+  "physical_method_maps_BCIs_identity_UTF8": true,
+  "original_runs": 4,
+  "original_cases": 36,
+  "Jarde_rebuilt_runs": 16,
+  "JADX_compile_exits": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "JADX_runtime_observations": [
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    },
+    {
+      "exit_code": 1,
+      "stderr": "Exception in thread \"main\" java.lang.AssertionError: none/none: expected call order/count 78, got 8\n\tat ExceptionOnlyFinallyDriver.run(Unknown Source)\n\tat ExceptionOnlyFinallyDriver.main(Unknown Source)\n"
+    }
+  ],
+  "class_identity_binding": "independent standard corpus BLAKE3 plus physical input SHA",
+  "non_target_unchanged_from_actual_baseline": true,
+  "archive_bytes": 481584,
+  "archive_sha256": "21818aca4293031a47a472468b04e365964448e5370a093ac88d13460cc72489",
+  "archived_members": 235,
+  "rebuilt_cases": 144,
+  "cli": {
+    "path": "/private/tmp/jarde-exception-only-focused-root-v3-20261018/candidate-cli",
+    "bytes": 62788032,
+    "sha256": "342d8aec2a309cb9e031977fbba0168bb8407fa5841ad48093e5dfcc90ff7a7d"
+  }
+}

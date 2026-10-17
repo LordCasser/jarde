@@ -1,0 +1,12 @@
+{
+  "status": "root accepted JVM validity only; IR/proof acceptance pending",
+  "variants": 7,
+  "negative_candidates": 6,
+  "metamorphic_positive": "binding-unprotected.class",
+  "strict_JVM_verifications": 14,
+  "target_invocations": 0,
+  "actual_commands": 3,
+  "raw_streams_verified": 6,
+  "archive_bytes": 14375,
+  "archive_sha256": "03507456a495e2a23e699273ab2b9fb074d312c3558188b506653c3fa62ba613"
+}

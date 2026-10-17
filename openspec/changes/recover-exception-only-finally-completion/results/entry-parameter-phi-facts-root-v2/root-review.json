@@ -1,0 +1,11 @@
+{
+  "archive_bytes": 988535,
+  "archive_sha256": "0792cf5b1bc2b7d669beb2024ab5183ba86e655e7b7e91befc9656ba4ceb31a4",
+  "members_reopened": 11,
+  "status": "root accepted diagnostic facts; not a recovered positive",
+  "source_restored_sha256": "aabb4cb04bdc6ee58d50da0092be54792ff6722f6d5d9ebac850a7c09bafcb44",
+  "actual_first_refusal": "phis.len()!=1 at instrumented20131",
+  "handler_Local0_phi": "inputs[Value0,Value0], uses[], replaced_by Value0; Value0 is current Entry Local0",
+  "target_absent": true,
+  "source_unchanged_in_probe": true
+}

@@ -1,0 +1,24 @@
+{
+  "status": "root accepted",
+  "totals": [
+    531,
+    0,
+    8
+  ],
+  "commands": 31,
+  "raw_streams": 62,
+  "cli": {
+    "path": "/private/tmp/jarde-exception-only-local-gates-root-v1-20261018/candidate-cli",
+    "bytes": 62788032,
+    "sha256": "342d8aec2a309cb9e031977fbba0168bb8407fa5841ad48093e5dfcc90ff7a7d"
+  },
+  "source_unchanged": true,
+  "target_absent": true,
+  "archive_bytes": 451103,
+  "archive_sha256": "556917c6b4553702d1ad6d6e0f74d78598bb9ea8c833c4ed615cc2c6dc2da15e",
+  "members_reopened": 66,
+  "strict_versions": {
+    "1.11.0": "366/0",
+    "1.14.0": "366/0"
+  }
+}

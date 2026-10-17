@@ -1,0 +1,34 @@
+{
+  "status": "root accepted frozen real compiler inputs",
+  "commands": 8,
+  "raw_streams_verified": 16,
+  "independent_class_bytes_each": 682,
+  "sealed_class_bytes_each": 907,
+  "sealed_original_source_recompiled_byte_identical": true,
+  "method_code_bytes": 19,
+  "method_BCIs": [
+    0,
+    2,
+    5,
+    6,
+    9,
+    10,
+    11,
+    13,
+    16,
+    17,
+    18
+  ],
+  "rows": [
+    [
+      0,
+      11,
+      10,
+      0
+    ]
+  ],
+  "runtime_runs": 0,
+  "product_recovery_claim": false,
+  "archive_bytes": 12695,
+  "archive_sha256": "0c569c1da518ecaa6bd0fa0bb8ca23cff4bd48a14b525123956be8462f1e4445"
+}

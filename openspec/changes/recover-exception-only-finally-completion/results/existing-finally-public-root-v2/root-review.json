@@ -1,0 +1,20 @@
+{
+  "archive_bytes": 763839,
+  "archive_sha256": "3ea1c14ff4dd1885069eb29e2b5e5e8fc3070f4979242a852a5f9dc8702093b1",
+  "members_reopened": 123,
+  "status": "root accepted",
+  "cli": {
+    "path": "/private/tmp/jarde-exception-only-final-focused-root-v3-20261018/candidate-cli",
+    "bytes": 62788432,
+    "sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8"
+  },
+  "classes": 15,
+  "commands": 60,
+  "raw_streams": 120,
+  "method_profiles": 236,
+  "whole_class_and_method_text_maps_quality_representation_content_fallbacks_identical_before_after": true,
+  "physical_BCIs_identity_UTF8": true,
+  "default_all_identical": true,
+  "source_unchanged": true,
+  "target_absent": true
+}

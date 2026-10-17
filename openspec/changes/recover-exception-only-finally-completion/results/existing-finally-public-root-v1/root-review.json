@@ -1,0 +1,14 @@
+{
+  "archive_bytes": 764238,
+  "archive_sha256": "cb77c79d50f648085f807c5010e0e87e1619622db86c976a400c3ad855c08f73",
+  "members_reopened": 123,
+  "status": "root accepted",
+  "commands": 60,
+  "raw_streams": 120,
+  "input_classes": 15,
+  "method_profiles": 236,
+  "complete_text_maps_quality_fallbacks_identical_before_after": true,
+  "physical_BCIs_identity_UTF8": true,
+  "target_absent": true,
+  "source_unchanged": true
+}

@@ -1,0 +1,7 @@
+# 当前产品完整红基线
+
+冻结4811eea2 CLI实际51命令/102raw；原两编译器完整独立class双JVM四次运行全部九组合、共36case通过。四独立default/all配置的八次原样重编均因目标missing return失败、0 rebuilt runtime；封存完整七方法原类四配置八次重编均保留finallyReturns/finallyThrows/tryThrows三处missing return。所有44个方法配置逐项核物理index/identity、完整BCI集合、来源UTF-8界限及default/all正文一致。
+
+固定JADX1.5.6两输入四次完整编译成功，八次双JVM运行均在第一个none/none场景得到events8而非78；未执行到后续组合，不声称运行全部九case。它漏掉try内mark7副作用，真实源码/raw完整保留，不修外部输出。
+
+本收据是功能恢复前的实际红基线。输入/工具/当时来源不变，target不存在。class身份由实际CLI输入SHA与raw内部完整物理identity绑定；新输入的独立BLAKE3 corpus gate在最终回归再核，不把当前内部一致性冒称独立digest计算。root-v2只读接受器较Luna初稿补齐完整方法/BCI/identity/UTF-8和实际raw判定；没有重新执行工具链。

@@ -1,0 +1,3 @@
+# Builder测试装配的真实失败
+
+三次failed执行的完整receipt/raw/source pins均保留：v1空field plan无法呈现TRY_FAILURE读取，诊断AST确认whole Fallback；v2补真实字段证明和生产preparation后第一输入的所有事务断言通过，但参数输入没有Guard，后由实际SSA probe定位已消去Local phi被总数门误拒。不是修改断言或绕过source-local测试凑通过。最终结果另记final-focused；本目录不声称任何失败轮次通过。

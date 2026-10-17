@@ -2,6 +2,18 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-18 接续：仅异常完成 finally 已通过对照，待完整工作区与自身CI
+
+`recover-exception-only-finally-completion` 当前9/11。root集成并审查Luna实现：复用FinallyCompletion::Throws、Shape::Finally.cleanup和既有Try AST，完整checkpoint覆盖declare/body/cleanup/push；仅放行已消去、unused且每输入同一Entry参数的冗余handler Local phi，不增solver。真实SSA首拒、失败轮次及恢复收据均保留。
+
+最终冻结CLI SHA **7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8**，62788432B，构建收据 `/private/tmp/jarde-exception-only-final-focused-root-v3-20261018/execution.json`。最终focused实际458库、181reader、2公共正例、2停止、1指纹再生、5指纹检查，共649 passing appearances/0失败/1忽略，fmt及CI同款Clippy通过；指纹新增19文件，原2256条目不变。reader实际1201/5368/598/3496/10，MSRV1.88全workspace/all-targets check通过，资源守卫及exact clean通过。
+
+final-matrix-root-v2：最终CLI的75命令/150raw、44方法配置核全物理身份/BCI/UTF8，8次完整独立类原样重编、16次运行144case等4原始运行36case。原完整七方法仅tryThrows改善；finallyReturns/finallyThrows仍有两处missing return，8次编译红项保留，无sealed runtime。JADX四编译成功、八运行首case漏mark7得8，未称完成全部九组合。
+
+local-runtime-root-v1另核入口参数：default/all×两javac×双JVM共8运行24case等4原始运行12case，null传播NPE、非null传播同一异常对象，trace78一次；6方法配置来源完整。JADX两编译成功、四运行首case trace8失败。neighbor-public-root-v2七完整拒绝类184方法配置、existing-finally-public-root-v2旧15class236方法配置，正文/map/质量/fallback同旧4811CLI；这是源码/来源对照，不冒称重跑旧576runtime。所有结果归档在本change/results，逐成员复开。
+
+两版OpenSpec strict当前均366/0。4.2尚待完整workspace双fresh seed，4.3尚待精确产品提交推送及自身CI、最终来源恒同与clean-main。当前target不存在。原finThrow/nestedFin/父finally已验收状态见下节。本leaf不增加71/612，显式finally return/throw仍是独立欠账；后续CF16 profile审计必须冻结JADX实际commit并执行独立输入/运行对照，不能仅凭NYI注解删除总账或称已覆盖。
+
 ## 2026-10-17 当前推进：finThrow 与 nestedFin 已通过产品验收
 
 先从 GitHub 快进64个提交到 e5757b5a9920da5d2b86dc44d8c729c98caf1253，复核新交接与父 finally 真实4/7状态；旧本地 facade 草稿仅备份/stash，未应用。

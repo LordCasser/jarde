@@ -1,0 +1,22 @@
+{
+  "archive_bytes": 5257,
+  "archive_sha256": "16719d262a96425e5dc530bce0c2174f6d05bf8ddecd8f089ebb263fca96a9cc",
+  "members_reopened": 15,
+  "status": "root accepted input compilation and strict JVM loading only",
+  "commands": 4,
+  "raw_streams": 8,
+  "strict_JVM_loads": 2,
+  "target_invocations": 0,
+  "code_census_addition": [
+    1,
+    3,
+    1,
+    0,
+    0
+  ],
+  "classfile": {
+    "path": "/private/tmp/jarde-exception-only-local-fixture-root-v1-20261018/classes/ExceptionOnlyLocal.class",
+    "bytes": 367,
+    "sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73"
+  }
+}

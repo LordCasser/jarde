@@ -1,0 +1,21 @@
+{
+  "archive_bytes": 215805,
+  "archive_sha256": "89a2c9555d0230ae8b89c17153bc1d145d45e8ae1467d4303ec34f5cf93f3818",
+  "members_reopened": 96,
+  "status": "root accepted",
+  "commands": 34,
+  "raw_streams": 68,
+  "original_runs": 4,
+  "original_cases": 12,
+  "rebuilt_runs": 8,
+  "rebuilt_cases": 24,
+  "method_profiles": 6,
+  "physical_identity_index_bcis_utf8": true,
+  "default_all_text_maps_quality_equal": true,
+  "jadx_compiles": 2,
+  "jadx_runs": 4,
+  "jadx_first_case_failed": "null trace=8, expected78",
+  "source_unchanged": true,
+  "target_absent": true,
+  "cli_sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8"
+}

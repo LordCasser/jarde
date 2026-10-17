@@ -1,0 +1,79 @@
+{
+  "status": "root accepted read-only probe",
+  "baseline_product": "4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5",
+  "baseline_main": "0cf8eb77d16a89c2421d08bac35ffbed4ca1e612",
+  "sealed_inputs": 2,
+  "test_totals": [
+    1,
+    0,
+    0
+  ],
+  "canonical": "Complete",
+  "blocks": [
+    [
+      0,
+      10
+    ],
+    [
+      10,
+      19
+    ]
+  ],
+  "rows": [
+    [
+      0,
+      11,
+      10,
+      null
+    ]
+  ],
+  "edges": [
+    [
+      "exception",
+      0,
+      10,
+      0
+    ]
+  ],
+  "physical_BCIs": [
+    0,
+    2,
+    5,
+    6,
+    9,
+    10,
+    11,
+    13,
+    16,
+    17,
+    18
+  ],
+  "throw_sites": {
+    "2": [
+      0
+    ],
+    "6": [
+      0
+    ],
+    "9": [
+      0
+    ],
+    "13": [],
+    "18": []
+  },
+  "handler_caught_phi_inputs": [
+    2,
+    6,
+    9
+  ],
+  "handler_identity_chain": "caught phi Value0 -> store10 Local7 -> load17 Stack10 -> rethrow18; field6 Stack6 -> body throw9",
+  "first_generic_refusal": "before_handler [0,2,5,6,9]; handler_cleanup [11,13,16]; cleanup_start0 => save.checked_sub(1)=None",
+  "ordinary_cleanup_grammar": false,
+  "resource_and_examine": "jre_guard_finally_copy@10",
+  "temporary_production_source_restored": true,
+  "raw_streams_verified": 4,
+  "default_stack": true,
+  "exact_clean_target_absent": true,
+  "archive_bytes": 660643,
+  "archive_sha256": "6c0812fa2e65b223f600dabf45861155ed48aaee0012d45950237d634c485862"
+}

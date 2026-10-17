@@ -1,0 +1,38 @@
+{
+  "status": "root accepted",
+  "test_appearances": 647,
+  "commands": 8,
+  "raw_streams": 16,
+  "source_change": "standard fingerprint regeneration: fifteen new fixture files only; all prior entries and metadata unchanged",
+  "added_fingerprint_paths": [
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/binding-unprotected.class",
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/cleanup-protected.class",
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/competing-row.class",
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/extra-normal-handler-entry.class",
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/finally-explicit-return.class",
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/row-shrunk.class",
+    "tests/fixtures/recover-exception-only-finally-completion/neighbors/wrong-rethrow-value.class",
+    "tests/fixtures/recover-exception-only-finally-completion/sealed/javac23/FinallyCompletion.class",
+    "tests/fixtures/recover-exception-only-finally-completion/sealed/javac8/FinallyCompletion.class",
+    "tests/fixtures/recover-exception-only-finally-completion/sealed/source/FinallyCompletion.java",
+    "tests/fixtures/recover-exception-only-finally-completion/sealed/source/FinallyCompletionRunner.java",
+    "tests/fixtures/recover-exception-only-finally-completion/source/ExceptionOnlyFinally.java",
+    "tests/fixtures/recover-exception-only-finally-completion/source/ExceptionOnlyFinallyDriver.java",
+    "tests/fixtures/recover-exception-only-finally-completion/v8-javac8/ExceptionOnlyFinally.class",
+    "tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyFinally.class"
+  ],
+  "cli": {
+    "path": "/private/tmp/jarde-exception-only-focused-root-v3-20261018/candidate-cli",
+    "bytes": 62788032,
+    "sha256": "342d8aec2a309cb9e031977fbba0168bb8407fa5841ad48093e5dfcc90ff7a7d"
+  },
+  "default_stack": true,
+  "target_absent": true,
+  "archive_bytes": 1991001,
+  "archive_sha256": "883c7cea9a6b6ef0e8a67605b432a2c27ec944614da21645acb1cfc65393d0be",
+  "archived_members": 39,
+  "failures_preserved": [
+    "v1 public-test missing borrow compile error",
+    "v2 new tests assumed nonthrow effects carried origin; all old453 tests passed"
+  ]
+}

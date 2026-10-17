@@ -1,0 +1,16 @@
+{
+  "status": "root accepted",
+  "commands": 24,
+  "raw_streams_verified": 48,
+  "neighbors": 6,
+  "method_profiles": 168,
+  "all_complete_source_and_method_text_maps_quality_fallbacks_identical_to_old_product": true,
+  "default_all_identical": true,
+  "all_physical_BCIs_identity_UTF8": true,
+  "target_fallback_retained": true,
+  "source_unchanged": true,
+  "target_absent": true,
+  "archive_bytes": 562639,
+  "archive_sha256": "12c96bc6f3d4929e425ba3e6b2438a75c5d98012b1fedce951ad48ece6824652",
+  "members_reopened": 51
+}

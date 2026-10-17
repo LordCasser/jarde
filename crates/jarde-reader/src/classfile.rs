@@ -12280,7 +12280,14 @@ mod tests {
             // three bodies, two handlers and two targets; actual javap and Code facts agree.
             // Nested finally adds two complete compiler classes: four Code bodies,
             // eight catch-all rows and four goto targets (21/54 per leg); no jsr.
-            (1188, 5290, 557, 3495, 10),
+            // Exception-only finally adds eleven complete classes: 71 Code bodies, 39 handler
+            // records and one goto target, with no jsr. Independently measured from all Code
+            // arrays (including original seven-method neighbors), then checked by this walk.
+            // The separate local-read rollback control adds one complete javac23 release8 class,
+            // three Code bodies and one handler, with no branch target or subroutine.
+            // A separately compiled parameter-reassignment refusal adds one class, four Code
+            // bodies and one handler; its actual Code has no branch target or subroutine.
+            (1201, 5368, 598, 3496, 10),
             "fixture population changed: re-measure these counts"
         );
     }

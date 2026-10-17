@@ -10302,6 +10302,7 @@ struct NestedPairBraces {
 }
 
 /// State that a speculative structured finally body may change before its enclosing Try exists.
+#[cfg_attr(test, derive(Debug))]
 struct FinallyCheckpoint {
     stmts: Vec<Stmt>,
     declared: BTreeSet<LocalVariable>,
@@ -19598,7 +19599,15 @@ impl Builder<'_> {
             return self.fallback(bcis, &reason, at);
         }
         let mut finally_checkpoint = matches!(region, Region::Guard { plan, body, .. }
-            if body.is_some() || plan.nested_finally().is_some())
+        if body.is_some()
+            || plan.nested_finally().is_some()
+            || matches!(
+                plan.shape(),
+                guard::Shape::Finally {
+                    completion: guard::FinallyCompletion::Throws { .. },
+                    ..
+                }
+            ))
         .then(|| self.finally_checkpoint());
         if let Err(stop) = self.declare_at(path) {
             if let Some(checkpoint) = finally_checkpoint.take() {
@@ -20971,7 +20980,7 @@ impl Builder<'_> {
                 pushed
             }
             guard::Shape::Finally {
-                normal_cleanup,
+                cleanup,
                 completion,
                 ..
             } => {
@@ -20982,11 +20991,41 @@ impl Builder<'_> {
                     // A void completion saves no stack value and joins no named catch:
                     // the body's own statements and the cleanup copy are the whole shape.
                     guard::FinallyCompletion::Joined { .. }
-                    | guard::FinallyCompletion::Void { .. } => None,
+                    | guard::FinallyCompletion::Void { .. }
+                    | guard::FinallyCompletion::Throws { .. } => None,
                 };
                 let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
                 let nested_cleanup = plan.nested_finally();
-                let body = if nested_cleanup.is_some() {
+                let body = if let guard::FinallyCompletion::Throws { throw_bci } = completion {
+                    let body = match self.body_range(plan.body()) {
+                        Ok(body) => body,
+                        Err(stop) => {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("exception-only finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                    };
+                    if !body.last().is_some_and(|statement| {
+                        matches!(&statement.kind, StmtKind::Throw { .. })
+                            && statement.origin.bcis().contains(throw_bci)
+                    }) {
+                        let bcis = self.region_quote(region, *throw_bci);
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("exception-only finally checkpoint"),
+                        );
+                        return self.fallback(
+                            bcis,
+                            "the exception-only finally body did not preserve its original throw",
+                            *throw_bci,
+                        );
+                    }
+                    body
+                } else if nested_cleanup.is_some() {
                     if structured_body.is_some() {
                         let bcis = self.region_quote(region, plan.body().0);
                         self.restore_finally(
@@ -21041,7 +21080,8 @@ impl Builder<'_> {
                     self.finally_catch_pop = match completion {
                         guard::FinallyCompletion::Joined { catch_pop, .. } => Some(*catch_pop),
                         guard::FinallyCompletion::SavedReturn { .. }
-                        | guard::FinallyCompletion::Void { .. } => None,
+                        | guard::FinallyCompletion::Void { .. }
+                        | guard::FinallyCompletion::Throws { .. } => None,
                     };
                     let walked = self.region(inner, &child(path, 0));
                     self.body_span = None;
@@ -21119,7 +21159,7 @@ impl Builder<'_> {
                     );
                     vec![statement]
                 } else {
-                    match self.body_range(*normal_cleanup) {
+                    match self.body_range(*cleanup) {
                         Ok(body) => body,
                         Err(stop) => {
                             if let Some(checkpoint) = finally_checkpoint.take() {
@@ -21131,6 +21171,7 @@ impl Builder<'_> {
                 };
                 let nested_complete = saved_return.is_some()
                     || matches!(completion, guard::FinallyCompletion::Void { .. })
+                    || matches!(completion, guard::FinallyCompletion::Throws { .. })
                     || body.iter().any(|statement| {
                         matches!(&statement.kind, StmtKind::Try { catches, .. } if catches.len() == 1)
                     });
@@ -21159,7 +21200,9 @@ impl Builder<'_> {
                     },
                     origin,
                 );
-                if (structured_body.is_some() || nested_cleanup.is_some())
+                if (structured_body.is_some()
+                    || nested_cleanup.is_some()
+                    || matches!(completion, guard::FinallyCompletion::Throws { .. }))
                     && (undeclared_local(&statement, &self.undeclared).is_some()
                         || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
                             self.stmts[checkpoint.stmts.len()..]
@@ -41779,11 +41822,12 @@ mod tests {
         field_copies: &'a FieldCopies,
         prologues: &'a crate::init::Prologues,
         enums: &'a crate::enumswitch::Plan,
+        parameters: u16,
+        return_type: Option<Type>,
+        declaring_class: Option<&'a str>,
         setup_budget: &mut Budget,
         budget: &'a mut Budget,
     ) -> Builder<'a> {
-        let parameters = 5;
-        let return_type = Some(Type::Reference("java.lang.String".to_owned()));
         let mut declarations = declarations(
             regions,
             canonical,
@@ -41793,7 +41837,7 @@ mod tests {
             reuse,
             parameters,
             false,
-            Some("CompoundStatementConditions"),
+            declaring_class,
             parameter_types,
             return_type.as_ref(),
             fields,
@@ -41850,7 +41894,7 @@ mod tests {
             outer_super_calls: &[],
             nested_class_members: &[],
             pool_spelled_members: false,
-            declaring_class: Some("CompoundStatementConditions"),
+            declaring_class,
             direct_super_class,
             direct_interfaces,
             class_methods,
@@ -41949,6 +41993,290 @@ mod tests {
             builder.compound_refused_producers,
             builder.nested_pair.as_ref().map(|pair| pair.engaged_once),
         )
+    }
+
+    #[test]
+    fn exception_only_finally_builder_restores_every_budget_stop() {
+        for (class, method_name, descriptor, local_parameter) in [
+            (
+                include_bytes!(
+                    "../../../tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyFinally.class"
+                )
+                .as_slice(),
+                "tryThrowsFinallyRuns",
+                "()I",
+                false,
+            ),
+            (
+                include_bytes!(
+                    "../../../tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyLocal.class"
+                )
+                .as_slice(),
+                "run",
+                "(Ljava/lang/RuntimeException;)I",
+                true,
+            ),
+        ] {
+            let (header_analysis, _) = analyze_test_method(class, method_name, descriptor, 8);
+            let class_fields = header_analysis.ir().class_fields();
+            fixture_value_attempts_with_tree_observing(
+                class,
+                method_name,
+                descriptor,
+                None,
+                None,
+                |recovered,
+             canonical,
+             ssa,
+             operations,
+             code,
+             pool,
+             bootstrap,
+             direct_super_class,
+             direct_interfaces,
+             class_methods,
+             chains,
+             _| {
+                let guards: Vec<_> = recovered
+                    .regions
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, region)| {
+                        matches!(region, Region::Guard { plan, .. }
+                            if matches!(plan.shape(), guard::Shape::Finally {
+                                completion: guard::FinallyCompletion::Throws { .. }, ..
+                            }))
+                    })
+                    .collect();
+                assert_eq!(guards.len(), 1, "the physical method owns one Throws guard");
+                let (guard_index, region) = guards[0];
+                let path = child(&[], u32::try_from(guard_index).unwrap());
+
+                let parameters = if local_parameter { 1 } else { 0 };
+                let method = crate::facts::MethodFacts::new(
+                    method_name,
+                    descriptor,
+                    parameters,
+                )
+                .with_access_flags(0x0009);
+                let parameter_types = method.parameter_types();
+                let mut setup = compound_test_budget(1 << 25);
+                let owner = if local_parameter { "ExceptionOnlyLocal" } else { "ExceptionOnlyFinally" };
+                let declaring = crate::facts::DeclaringClass::new(owner, 0x0021);
+                let fields = field::plan(
+                    ssa, operations, &|_| None, Some(&declaring), method_name,
+                    descriptor, class_fields, &[], &mut setup,
+                ).expect("the actual fixture field accesses are proved");
+                let field_copies = FieldCopies::default();
+                let prologues = crate::init::Prologues::none();
+                let enums = crate::enumswitch::Plan::empty();
+                let mut arrays = ArrayInitializers::prove_with_composition(
+                    ssa,
+                    operations,
+                    &fields,
+                    None,
+                    &mut setup,
+                )
+                .unwrap();
+                let sites = crate::init::sites_after_array_composition(
+                    ssa,
+                    operations,
+                    chains,
+                    chains.owned(),
+                    &fields,
+                    &mut arrays,
+                    8,
+                    &[],
+                    &method,
+                    code,
+                    &mut setup,
+                )
+                .unwrap();
+                let resources = resource_slots(&recovered.regions);
+                let reuse = crate::reuse::plan(
+                    ssa,
+                    canonical,
+                    operations,
+                    &recovered.regions,
+                    code.max_locals,
+                    parameters,
+                    &[],
+                    &resources,
+                    &mut setup,
+                )
+                .unwrap();
+                let names = NameTable::build(parameters, code.max_locals, reuse.evidence());
+
+                macro_rules! builder_with {
+                    ($budget:expr) => {{
+                        let mut builder = compound_test_builder(
+                            canonical,
+                            ssa,
+                            code,
+                            operations,
+                            pool,
+                            bootstrap,
+                            direct_super_class,
+                            direct_interfaces,
+                            class_methods,
+                            chains,
+                            &recovered.regions,
+                            &names,
+                            &reuse,
+                            &parameter_types,
+                            &sites,
+                            &fields,
+                            &field_copies,
+                            &prologues,
+                            &enums,
+                            parameters,
+                            Some(Type::Int),
+                            Some(if local_parameter {
+                                "ExceptionOnlyLocal"
+                            } else {
+                                "ExceptionOnlyFinally"
+                            }),
+                            &mut setup,
+                            $budget,
+                        );
+                        builder.prepare_conditional_regions(&recovered.regions).unwrap();
+                        builder.prepare_deferred_bindings().unwrap();
+                        builder.declare_at(&[]).unwrap();
+                        builder
+                    }};
+                }
+
+                let mut successful_budget = compound_test_budget(1 << 25);
+                let mut successful = builder_with!(&mut successful_budget);
+                successful.region(region, &path).unwrap();
+                let try_statement = successful.stmts.last().expect("the guard emits a Try");
+                let StmtKind::Try {
+                    body,
+                    finally_body: Some(cleanup),
+                    ..
+                } = &try_statement.kind
+                else {
+                    panic!("{method_name}: the Throws guard emits the original body and cleanup, got {:#?}", successful.stmts);
+                };
+                assert!(matches!(
+                    body.last().map(|statement| &statement.kind),
+                    Some(StmtKind::Throw { .. })
+                ));
+                assert!(!body.is_empty());
+                assert!(!cleanup.is_empty());
+                let body_pushes = body.len() as u64;
+                let cleanup_pushes = cleanup.len() as u64;
+                let expected_ats = [
+                    body.first().unwrap().origin.primary().bci(),
+                    cleanup.first().unwrap().origin.primary().bci(),
+                    try_statement.origin.primary().bci(),
+                ];
+                drop(successful);
+
+                for (ir_items, expected_at) in [
+                    (0, expected_ats[0]),
+                    (body_pushes, expected_ats[1]),
+                    (body_pushes + cleanup_pushes, expected_ats[2]),
+                ] {
+                    let mut budget = compound_test_budget(1 << 25);
+                    let mut builder = builder_with!(&mut budget);
+                    let before = format!("{:?}", builder.finally_checkpoint());
+                    let mut limits = builder.budget.limits().clone();
+                    limits.ir_items = ir_items;
+                    *builder.budget = Budget::new(limits);
+                    let stop = builder.region(region, &path).unwrap_err();
+                    assert!(matches!(
+                        &stop,
+                        StopReason::Budget {
+                            dimension: CountedBudgetDimension::IrItems,
+                            at: Some(at),
+                            ..
+                        } if *at == expected_at
+                    ), "ir_items={ir_items}, expected BCI {expected_at}: {stop:?}");
+                    assert_eq!(
+                        format!("{:?}", builder.finally_checkpoint()),
+                        before,
+                        "all finally checkpoint state returns to its pre-trial value at BCI {expected_at}"
+                    );
+                    assert!(builder.body_span.is_none());
+                    assert!(builder.finally_return.is_none());
+                    assert!(builder.multi_return_finally.is_none());
+                    assert!(builder.segmented_null_lead.is_none());
+                    assert!(builder.finally_catch_pop.is_none());
+                    assert!(builder.shared_finally.is_none());
+                }
+
+                // Inject one declaration only to exercise the real declare_at push/failure
+                // boundary. Declaration analysis is not under test.
+                let mut budget = compound_test_budget(1 << 25);
+                let mut builder = builder_with!(&mut budget);
+                let variable = (0..code.max_locals)
+                    .map(LocalVariable::whole)
+                    .find(|variable| builder.names.text(*variable).is_some())
+                    .expect("the handler's captured slot has a rendered local name");
+                let anchor = match region {
+                    Region::Guard { plan, .. } => plan.body().0,
+                    _ => unreachable!(),
+                };
+                builder
+                    .declarations
+                    .at_region
+                    .entry(path.clone())
+                    .or_default()
+                    .push(HoistedDeclaration {
+                        variable,
+                        ty: Type::Int,
+                        at: anchor,
+                    });
+                let before = format!("{:?}", builder.finally_checkpoint());
+                let mut limits = builder.budget.limits().clone();
+                limits.ir_items = 0;
+                *builder.budget = Budget::new(limits);
+                assert!(matches!(
+                    builder.region(region, &path),
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::IrItems,
+                        at: Some(_),
+                        ..
+                    })
+                ));
+                assert_eq!(format!("{:?}", builder.finally_checkpoint()), before);
+
+                if local_parameter {
+                    let mut budget = compound_test_budget(1 << 25);
+                    let mut builder = builder_with!(&mut budget);
+                    let parameter = LocalVariable::whole(0);
+                    let parameter_name = builder
+                        .names
+                        .text(parameter)
+                        .expect("the parameter has a source-rendered name")
+                        .to_owned();
+                    builder.undeclared.insert(parameter_name);
+                    let before = builder.finally_checkpoint();
+                    builder.region(region, &path).unwrap();
+                    assert!(builder.ragged);
+                    assert_eq!(builder.stmts.len(), 1);
+                    assert!(matches!(
+                        builder.stmts[0].kind,
+                        StmtKind::Fallback { .. }
+                    ));
+                    assert!(!builder.stmts.iter().any(|statement| matches!(
+                        statement.kind,
+                        StmtKind::Try { .. }
+                    )));
+                    let mut expected = before;
+                    expected.ragged = true;
+                    expected.statements += 1;
+                    expected.stmts.push(builder.stmts[0].clone());
+                    assert_eq!(
+                        format!("{:?}", builder.finally_checkpoint()),
+                        format!("{expected:?}"),
+                        "the injected undeclared parameter refuses the whole Throws guard after rollback"
+                    );
+                }
+            },
+        );
+        }
     }
 
     #[test]
@@ -42093,6 +42421,9 @@ mod tests {
                         &field_copies,
                         &prologues,
                         &enums,
+                        5,
+                        Some(Type::Reference("java.lang.String".to_owned())),
+                        Some("CompoundStatementConditions"),
                         &mut setup,
                         &mut budget,
                     );
@@ -42171,6 +42502,9 @@ mod tests {
                         &field_copies,
                         &prologues,
                         &enums,
+                        5,
+                        Some(Type::Reference("java.lang.String".to_owned())),
+                        Some("CompoundStatementConditions"),
                         &mut setup,
                         &mut budget,
                     );
@@ -42423,6 +42757,9 @@ mod tests {
                     &field_copies,
                     &prologues,
                     &enums,
+                    5,
+                    Some(Type::Reference("java.lang.String".to_owned())),
+                    Some("CompoundStatementConditions"),
                     &mut high_setup,
                     &mut high_budget,
                 );
@@ -42473,6 +42810,9 @@ mod tests {
                     &field_copies,
                     &prologues,
                     &enums,
+                    5,
+                    Some(Type::Reference("java.lang.String".to_owned())),
+                    Some("CompoundStatementConditions"),
                     &mut proof_setup,
                     &mut proof_budget,
                 );
@@ -42521,6 +42861,9 @@ mod tests {
                     &field_copies,
                     &prologues,
                     &enums,
+                    5,
+                    Some(Type::Reference("java.lang.String".to_owned())),
+                    Some("CompoundStatementConditions"),
                     &mut emission_setup,
                     &mut emission_budget,
                 );
@@ -42587,6 +42930,9 @@ mod tests {
                     &field_copies,
                     &prologues,
                     &enums,
+                    5,
+                    Some(Type::Reference("java.lang.String".to_owned())),
+                    Some("CompoundStatementConditions"),
                     &mut stopped_emission_setup,
                     &mut stopped_emission_budget,
                 );
@@ -42645,6 +42991,9 @@ mod tests {
                     &field_copies,
                     &prologues,
                     &enums,
+                    5,
+                    Some(Type::Reference("java.lang.String".to_owned())),
+                    Some("CompoundStatementConditions"),
                     &mut cancel_setup,
                     &mut cancel_budget,
                 );
