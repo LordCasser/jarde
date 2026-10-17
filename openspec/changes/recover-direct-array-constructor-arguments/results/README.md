@@ -46,3 +46,17 @@ focused-root-v1-failed保留三个漏更新调用点编译错误；focused-root-
 reverse-originals-root-v1-failed保留首次将CLI4误作采集失败的收据；control-provenance-baseline-root-v1-failed保留默认未请求news导致StopIteration的第一次raw，该collector未及时保存命令row，不能当作完整命令收据，v2重新完整采集。Luna实现、reader和receiver私有补丁、JADX源码算法对照、对抗性审查初步意见与撤回结论均单独归档；静态草稿不当作运行通过。
 
 独立架构债务见[separate-architecture-debt.md](separate-architecture-debt.md)。本片不增加71/612完成数；未关闭持续goal。
+
+## 重复遍历修正与交付中检查点
+
+首产品550b7ff922e32fa4ce5d4326d8c7d22bd8fa30a3已推送。其fresh seed1第65批实际P5失败：flat-mixed IrItems2497→2501、完整direct/shared35654→35687，其余计量维度及正文不变；收据保留在workspace-seed1-root-v1-failed，63批通过不能拼成完整回归成功，seed2未启动。该产品CI39060504198由root主动取消，四job真实日志及精确旧产品来源见cancelled-own-ci-550b7-root-v1；不冒称CI独立复现本地失败或成功。
+
+Luna私有补丁经root审查，仅init.rs的12行变动：保留选中调用时已读取的operands，在既有producer循环统计物理参数次数，删除两次重复遍历；原P5表值/预算/语义断言全部未改。最终候选CLI62815152B / SHA605fdd1b2b0cc077bb9440a02b7f995ca33dded37b7527cc306f65a77bdf4c0c。final-gates-root-v5实际11命令22raw、470通过出现/0失败/1忽略（461库、P5 bulk5、四公共门），fmt/当前Clippy/MSRV1.88及构建通过，3037来源前后恒同，exact clean。后续完整native和新产品自身CI仍待完成，tasks3.3保持未勾。
+
+output-replay-root-v1实际40命令80raw，覆盖原始TestFinally3、完整通用数组、同owner、反序、后置维度重排、fallback来源对照及完整char/String家族。所有完整源码字节及非usage报告恒同已接受矩阵；root另核实际全部差异仅usage内ir_items/elapsed_millis，不能把脚本递归忽略usage当作任意计量变化许可。本次未重新执行JDK矩阵；此前真实原样整类重编/隔离运行证据按相同源码字节复用。
+
+补充char-string-originals-root-v1为8命令16raw、4原运行28cases；char-string-matrix-root-v1为42命令84raw、40物理方法配置全BCI/UTF8/身份，Jarde8原样整类重编16运行112cases，JADX4编译8运行56cases。覆盖String([C)、String([CII)、存储身份、普通CharSink、两个元素生产者异常及次序；实际矩阵使用e01 CLI，经上述精确输出重放绑定最终605 CLI。
+
+p5-final-root-v1-collector-failed的首命令四target实际58通过/0失败/4忽略，但通用单target收集器要求恰好一个测试binary，因获得四个而停止并clean；不能把它当八target全门成功。改为八条单target命令重新执行，未更改产品或测试。
+
+p5-final-root-v2-feature-missing前四target仍58/0/4，第五definition_read_reuse因未启用test-support实际运行0测试，收集器如实拒绝并clean；v3全部使用--all-features重新执行，未降低“必须实际运行测试”的门。output-replay-independent-review-root-v1独立逐值重算1255差异，只有整数ir_items696处与elapsed_millis559处；新旧160raw、精确prior请求/退出状态、源码恒同均接受。v5-independent-review-root-v1核11命令22raw与470/0/1逐行结果；该审查较早时的“replay未运行”描述仅属于其当时静态审查，实际执行及后续独立复核以后两个replay目录为准。
