@@ -1,0 +1,76 @@
+{
+  "changeName": "recover-loop-transfer-finally-handler",
+  "changeDir": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/proposal.md"
+    ],
+    "specs": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/design.md"
+    ],
+    "tasks": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 6,
+    "complete": 6,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 固化两真实编译器独立完整fixture、未改driver、多输入/溢出/null oracle与当前最终CLI红基线，并更新实际指纹/reader census及说明。验收：仅外类名变化，保留原FX完整6方法；原class四次运行逐字等，生成源码/handler45 fallback按实记录，不伪称受保护异常动态已覆盖。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "line": 5
+    },
+    {
+      "id": "2",
+      "description": "1.2 保存实际canonical/frames/SSA/effects/Region probe和独立矩阵。验收：两方法各61B Code/35物理指令、三rows/转移31目标、所有真实边/值/phi/uses与nonthrowing假设逐项核对；明确证书采取保留Finally或已证明不可达handler的现有表示路径，缺证保留拒绝，修订设计不得跳过本门。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "line": 6
+    },
+    {
+      "id": "3",
+      "description": "2.1 实现本组有界paid proof及正例/真实class近邻/停止测试和文档。验收：全部操作、三份清理、局部值、真实handler保存/重抛、保护范围、循环continue/break闭合；新增throw/不同copy/值alias/正常handler入口不得被本规则认领；真实证明期晚预算/取消/期限不发布证书且保留原因usage。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "line": 10
+    },
+    {
+      "id": "4",
+      "description": "2.2 最小接入既有region/Builder/source map并增加公库/CLI测试说明。验收：两方法完整Java/Structured/无fallback，全部35BCI和物理方法来源，continue与break目标不混、数组读取保持try外；失败/停止ownership和正文原子性不变，旧named-catch对catch-all拒绝保持。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "line": 11
+    },
+    {
+      "id": "5",
+      "description": "3.1 最终冻结CLI对两独立完整类原样恢复/重编、未改driver rebuilt-only双JVM对照及原FX/FY/FO/JADX重筛，WAR真实加载根复核。验收：原始流/工具/source/CLI绑定独审，多输入oracle逐字等，不修Java/删方法/混原classpath，不把不可观察handler事实或JADX失败当成功。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "line": 15
+    },
+    {
+      "id": "6",
+      "description": "3.2 CallReturn先完成正常main交付后rebase，执行fmt/CI同参数Clippy、指纹/reader/原P5及相关finally/loop/typedcatch兼容、MSRV、两版strict、最终head自身双seed CI与独审。验收：实际非空门/源码Git blob和mode/冻结CLI一致，默认stack/5GiB free/1GiB target/exact clean，不借父CI、不调整旧P5基线。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-loop-transfer-finally-handler/tasks.md",
+      "line": 16
+    }
+  ],
+  "taskTrackingConfigured": true,
+  "state": "all_done",
+  "instruction": "All tracked tasks are complete.\nReview or verify the change as appropriate before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "source": "nearest"
+  }
+}

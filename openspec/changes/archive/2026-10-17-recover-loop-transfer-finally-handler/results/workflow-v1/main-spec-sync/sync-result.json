@@ -1,0 +1,12 @@
+{
+  "status": "applied_one_added_requirement_eight_scenarios_old_bytes_prefix_preserved",
+  "old_sha256": "6ed57651c0fa7f1591997c8c51edc0454a651d89b394c588de42771f3f2dd54c",
+  "new_sha256": "c310000e15a8743e6154725e32919c15169abe3b145fce99b8949dfc1df2b47d",
+  "old_requirements": 23,
+  "new_requirements": 24,
+  "old_scenarios": 156,
+  "new_scenarios": 164,
+  "analysis_contracts_sha256": "668af66f52a79c199abc188834995c5d197453ac9d5659eadd6a1e688c211684",
+  "task_count": 6,
+  "script_sha256": "da155b782a03862a5806a35ddd9f9c3e7b385bf688bff5f85df87f5549db808a"
+}
