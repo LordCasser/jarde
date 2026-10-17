@@ -2,6 +2,16 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-18 当前：原始 TestNestedLoops3 基线已确认，局部循环组合实现中
+
+finThrow5/5、nestedFin16/16、父finally7/7及后续switch7/7已交付，见下方历史产品记录。当前新change `recover-prefixed-exceptional-retry-loops` 已strict校验并进入apply，**2/7**：只完成问题与首拒取证，未实施生产修复。Luna在私有目录准备region候选、补充Java/driver和对抗审查；root独占共享编辑、Git及工具链。
+
+原始JADX TestNestedLoops3全源码debug/no-debug目标Code同为42B/21指令，六方法保留。24命令/48raw原基线和37命令/74raw整类重编已root接受：Jarde16次编译均因test缺返回失败，无rebuilt runtime；JADX六编译成功、12隔离运行84case同七行原oracle，另两次fullbundle javac8因既有harness major55失败单列。原类4次双JVM运行共28观察行，不能混算rebuilt case。default/all及五控制方法稳定，40已结构化方法配置全BCI，八test fallback各缺13BCI；BLAKE3 owner未独立重算的限制原样保留。
+
+临时stderr诊断实际重放八请求，递归去usage后完整JSON同基线；源码及完整closure已恢复、exact clean、target不存在。首拒已确认在header0：catch join36→6通过、irreducible空，四loop classifier全部None，尚未进入Try。natural set实际{0,6,17,29,36}，含handler36；不要沿用旧四块假设。设计复用现有Loop/Try/Frame，在外层入口证明带前缀异常重试内环，区分protected29、retryhead6、normalexit0与outerexit40，不重载原RetryLoopFacts角色、不放宽Builder或normal-flow异常边。
+
+证据见本change `results/README.md`：三个归档共238成员已root独立逐字复开，collector/checker/driver/probe源码快照保留；诊断二进制不是产品。下一步按2.1/2.2审查私有实现后root集成，原样完整类双JDK、来源/负例/停止与workspace/自身CI全部通过才交付。本片不增加CF11或71/612整体计数，TestNestedLoops5仍独立后续。
+
 ## 2026-10-18 最新接续：switch 已完成产品验收（7/7）
 
 用户要求的 **finThrow 5/5、nestedFin 16/16、父 finally 7/7** 已完成并验收；同一 nested 最终 CLI 的完整对照为 nested 432 + finThrow 144 = 576 rebuilt case。历史产品自身 CI、原始/JADX 失败及当前复核见下方 finally 节及 `openspec/evidence/java-syntax-2026-10-18/finally-leaves-recheck-root-v1`，不冒称这些旧矩阵在当前 head 重跑。后续 exception-only 11/11、直接数组构造参数 7/7 也已交付。
