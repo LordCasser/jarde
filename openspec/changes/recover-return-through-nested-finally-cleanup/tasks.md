@@ -3,7 +3,7 @@
 ## 1. Establish the actual shape
 
 - [x] 为封存的 `EX.nestedFin(I)I` 增加只读 Facts probe；记录 canonical 完整性、精确 rows/edges/throw sites、blocks、SSA values/phis、println effects/handler ownership，以及返回值和 rethrow identity 链。不改生产代码。
-- [ ] 记录当前 guard/region/builder 路径的首个拒绝。之后再决定现有 shape/Region/Builder 接缝是否足够，或是否必须增加最窄的 structured-cleanup tree。实现前记录判断及负边界。
+- [x] 记录当前 guard/region/builder 路径的首个拒绝。之后再决定现有 shape/Region/Builder 接缝是否足够，或是否必须增加最窄的 structured-cleanup tree。实现前记录判断及负边界。
 
 ## 2. Implement the bounded recovery
 
@@ -19,7 +19,7 @@
 - [ ] 增加 guard 与 resource 回归门，确保本证书不放宽无关接受范围。
 - [ ] 用 javac 8 与 javac 23 `--release 8` 编译同一独立源文件并保留完整目标类。运行 compiler × JVM (8,23) × profile (`default`,`all`) 的 2×2×2 矩阵；执行精确 source/BCI/static ownership 检查、完整生成源码原样编译和 rebuilt-only runtime。
 - [ ] 运行完整矩阵 `n ∈ {2,0}`、`in ∈ {none, RuntimeException, Error}`、`out ∈ {none, RuntimeException, Error}`。断言 `IO` 恰好一次、正常时返回保存值、除零时 ArithmeticException 类型/消息正确、cleanup 异常的注入对象 identity 与覆盖优先级正确。不要声称运行时观察到原除零对象 identity；该 identity 由静态 SSA 证明。
-- [ ] 运行并固定 JADX 对照，保留其真实输出与编译/运行失败；不修改生成文本来制造一致。
+- [x] 运行并固定 JADX 对照，保留其真实输出与编译/运行失败；不修改生成文本来制造一致。
 - [ ] 不删除无关方法，复核原完整 EX class 与双编译器完整 fixture；保留既有 finally-return/finally-throw 拒绝控制。
 
 ## 4. Exact-product and parent handoff

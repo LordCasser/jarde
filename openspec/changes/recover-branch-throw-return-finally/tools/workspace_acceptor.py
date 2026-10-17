@@ -183,7 +183,7 @@ def verify(execution: dict, metadata: dict, out: Path, seed: str) -> dict:
         need(row.get('exit_code') == 0 and row.get('guard_stop') is None, f'batch {row.get("index")} failed or hit guard')
         check_resources(row, f'batch {row.get("index")}')
         stdout = verify_stream(out, row['streams']['stdout'])
-        verify_stream(out, row['streams']['stderr'])
+        stderr = verify_stream(out, row['streams']['stderr'])
         test_artifacts = artifacts(stdout)
         actual = [(x['package_id'], x['name'], x['kind']) for x in test_artifacts]
         need(len(actual) == len(set(actual)) and sorted(actual) == sorted(spec['planned_targets']),
@@ -191,8 +191,20 @@ def verify(execution: dict, metadata: dict, out: Path, seed: str) -> dict:
         counts = [list(map(int, x)) for x in SUMMARY_RE.findall(stdout.decode('utf-8', errors='replace'))]
         need(len(counts) == len(actual) and bool(counts) and all(x[1] == 0 for x in counts),
              f'batch {row["index"]} summaries do not bind one successful suite per artifact')
-        observed = [{'target': list(target), 'counts': counts[i]} for i, target in enumerate(actual)]
-        need(row.get('observed_counts') == observed, f'batch {row["index"]} saved summary counts differ from raw output')
+        # The historical recorder zipped compiler-artifact order with execution summaries.
+        # Cargo builds and executes targets in different orders. Keep that raw record intact,
+        # but bind accepted per-target counts to the actual stderr Running executable order.
+        recorded = [{'target': list(target), 'counts': counts[i]} for i, target in enumerate(actual)]
+        need(row.get('observed_counts') == recorded, f'batch {row["index"]} saved summary counts differ from raw output')
+        plain_stderr = re.sub(r'\x1b\[[0-9;]*m', '', stderr.decode('utf-8', errors='replace'))
+        running_paths = re.findall(r'^\s*Running[^\n]*\(([^()\n]+)\)\s*$', plain_stderr, re.MULTILINE)
+        by_executable = {str(Path(item['executable']).resolve()): item for item in test_artifacts}
+        executed_paths = [str((ROOT / path).resolve()) for path in running_paths]
+        need(len(executed_paths) == len(counts) and len(set(executed_paths)) == len(executed_paths)
+             and set(executed_paths) == set(by_executable),
+             f'batch {row["index"]} Running paths do not execute the exact artifact inventory once')
+        observed = [{'target': [by_executable[path][key] for key in ('package_id', 'name', 'kind')],
+                     'counts': counts[i]} for i, path in enumerate(executed_paths)]
         need(row.get('executed_targets') == [list(x) for x in actual], f'batch {row["index"]} target record differs from raw artifacts')
         need(row.get('test_total') == [sum(x[i] for x in counts) for i in range(3)], f'batch {row["index"]} totals mismatch')
         removed = row.get('removed_test_executables', [])
@@ -273,7 +285,8 @@ def verify(execution: dict, metadata: dict, out: Path, seed: str) -> dict:
     return {'seed': seed, 'status': 'accepted_read_only', 'target_count': len(inventory),
             'batch_count': len(batches), 'workspace_summary_count': len(all_observed),
             'workspace_totals': totals, 'source_pin_count': len(pins),
-            'raw_streams_verified': 2 * len(rows) + 6, 'target_absent': True}
+            'raw_streams_verified': 2 * len(rows) + 6, 'per_target_counts_bound_to_Running_order': True,
+            'recorded_artifact_order_labels_are_not_execution_counts': True, 'target_absent': True}
 
 
 def main() -> int:

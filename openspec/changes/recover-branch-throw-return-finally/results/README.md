@@ -11,4 +11,10 @@
 - precise-neighbor-gates-root-v1：仅更新上述测试预期后，2 precise、19 P5、fmt/Clippy通过；重建 CLI 与最终矩阵逐字相同，明确复用该矩阵而非声称重跑。
 - strict-all-root-v1：365 项严格校验通过。
 
-当前仍须完成全量 fresh 双 seed 工作区、精确产品自身 CI 及 clean-main 交接。父 finally 仍4/7，71/612计数不增加。
+- workspace-seed1-root-v2：完整375targets/98batches、3686/0/98、4927来源、202raw；独立验收按实际Running顺序重建每target结果，保留历史recorder编译顺序标签但不把它当执行顺序。
+
+- workspace-two-seeds-root-v2：双seed完整验收，各375targets/3686通过/0失败/98忽略，合计7372/0/196、404raw、相同4927来源。
+
+- own-product-ci-root-v1：精确产品6b32自身CI39037102727，4jobs/52steps；两seed各375targets/3686通过/0失败/98忽略，root独立接受。
+
+finThrow当前5/5，生产/测试源码与已验收产品一致；关闭文档提交后另核实际clean main。父 finally 仍4/7，71/612计数不增加。
