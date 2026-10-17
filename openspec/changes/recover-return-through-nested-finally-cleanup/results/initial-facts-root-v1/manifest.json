@@ -1,0 +1,8 @@
+{
+  "status": "actual read-only Facts/SSA/effects probe; no implementation acceptance",
+  "base_product": "e5757b5a9920da5d2b86dc44d8c729c98caf1253",
+  "capture_bytes": 630638,
+  "sha256": "4f8b6af43fac91c2580fa5a1483f69c6528ade224eb74a825360d1d6eceef547",
+  "generic_copy_note": "helper selected row0 only; None does not prove all rows were examined",
+  "pending": "first exact proof failure and smallest representation decision"
+}

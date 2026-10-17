@@ -4800,29 +4800,48 @@ impl Walker<'_> {
                     self.handlers,
                     &current,
                 );
-            let mut guard_verdict =
-                if (leaving.is_some() || monitor_entry || loop_call_finally_entry)
-                    && frame.own_finally.is_none()
-                    && self.own_monitor.is_none()
-                    && !self.visited.contains(&node)
-                    && !(frame.own_try == Some(node)
-                        && self.handlers.len() == 1
-                        && self.handlers[0].catch_type_index.is_none())
-                {
-                    Some(crate::guard::examine(
-                        self.canonical,
-                        self.view,
-                        self.ssa,
-                        self.operations,
-                        self.handlers,
-                        self.sites,
-                        self.profile,
-                        &current,
-                        self.budget,
-                    )?)
-                } else {
-                    None
-                };
+            // A one-row catch-all can own a conditional protected body even when the only
+            // exceptional exit sits in one branch. Ask the existing guard proof at the row's
+            // entry before walking either arm; waiting for the throw block would start the
+            // resource/finally examination inside the already-proved protected range.
+            let row_anchored_branch_finally_entry = self.handlers.len() == 1
+                && self.handlers.first().is_some_and(|row| {
+                    row.catch_type_index.is_none()
+                        && row.start_bci == current.bci()
+                        && self.terminal_bci(&current).is_some_and(|test| {
+                            test < row.end_bci
+                                && matches!(
+                                    self.operations.get(test),
+                                    Some(Operation::Comparison { .. })
+                                )
+                        })
+                        && self.view.successor_ids(&current).len() == 2
+                });
+            let mut guard_verdict = if (leaving.is_some()
+                || monitor_entry
+                || loop_call_finally_entry
+                || row_anchored_branch_finally_entry)
+                && frame.own_finally.is_none()
+                && self.own_monitor.is_none()
+                && !self.visited.contains(&node)
+                && !(frame.own_try == Some(node)
+                    && self.handlers.len() == 1
+                    && self.handlers[0].catch_type_index.is_none())
+            {
+                Some(crate::guard::examine(
+                    self.canonical,
+                    self.view,
+                    self.ssa,
+                    self.operations,
+                    self.handlers,
+                    self.sites,
+                    self.profile,
+                    &current,
+                    self.budget,
+                )?)
+            } else {
+                None
+            };
             // A finally certificate with control flow needs the same pre-visited recursive entry
             // as a named try. Nothing is claimed until the child has covered the exact protected
             // block set and every edge has been accounted for.

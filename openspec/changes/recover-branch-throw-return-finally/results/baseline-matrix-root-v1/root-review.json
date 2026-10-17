@@ -1,0 +1,31 @@
+{
+  "root_review": "accepted as red baseline; not implementation acceptance",
+  "commands": 53,
+  "raw_streams_verified": 106,
+  "originals": {
+    "compiler_legs": 2,
+    "runtimes": 2,
+    "cases_per_run": 9,
+    "target_bytes_reproduced": true
+  },
+  "old_jarde": {
+    "full_source_profiles": 4,
+    "untouched_compile_failures": 8,
+    "runtime": "no-runtime: complete independent class has missing return"
+  },
+  "jadx156": {
+    "profile": "config none, rename-flags none, no-res, one thread",
+    "untouched_compile_successes": 4,
+    "independent_runtime_failures": 8,
+    "first_failure": "cleanup-runtime: calls [ft, ft]; normal cleanup wrongly inside catch(Throwable)",
+    "sealed_EX_compile_successes": 2,
+    "sealed_EX_runtime": "not executed: standalone driver is for independent class only"
+  },
+  "EX_jarde_fullclass_compile_failures": 4,
+  "archive": {
+    "bytes": 379933,
+    "sha256": "077bec440b5d960caf4415dcc50f2bc995013c3770e927d4052a5cac0da6b96e"
+  },
+  "base_cli_sha256": "d779d4dee8056d30166284eda2b6560d5235e5ad250ced2ae0fd0bfd2a42fa27",
+  "source_tool_inputs_unchanged": true
+}

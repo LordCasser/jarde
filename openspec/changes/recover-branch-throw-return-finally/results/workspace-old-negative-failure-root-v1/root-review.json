@@ -1,0 +1,16 @@
+{
+  "status": "failed; never reused as a successful fresh seed",
+  "reason": "old unsupported anyFinally expectation contradicts now-proved primitive branch-throw/saved-return finally",
+  "command_index": 51,
+  "test": "p3_precise_rethrow::catch_all_and_non_parameter_throw_controls_keep_their_own_shapes",
+  "successful_batches_before_stop": 49,
+  "actual_failed_test_count_in_raw": 1,
+  "resolution": "retain no-user-catch check; require Structured/no-fallback/finally/log and preserve all other assertions; rerun fresh entire seeds",
+  "production_change_for_resolution": false,
+  "target_absent": true,
+  "pins_unchanged": true,
+  "archive": {
+    "bytes": 1035362,
+    "sha256": "ba9fc9c69e766c4f0c37b4d201135e5718c9f998d3df93b5e6a00e8ebdebec81"
+  }
+}

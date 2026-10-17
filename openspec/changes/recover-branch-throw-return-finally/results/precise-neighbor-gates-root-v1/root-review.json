@@ -1,0 +1,34 @@
+{
+  "status": "root_accepted",
+  "tests": {
+    "p3_precise_rethrow": [
+      2,
+      0,
+      0
+    ],
+    "p5_benchmark": [
+      19,
+      0,
+      1
+    ]
+  },
+  "fmt": true,
+  "CI_exact_Clippy": true,
+  "cli": {
+    "path": "/private/tmp/jarde-finthrow-precise-neighbor-gates-root-v1-20261017/candidate-cli",
+    "bytes": 62420016,
+    "sha256": "d238d76151ab40334e1957b763203b86ba475bca117a6a6df40f0ac9544512a3"
+  },
+  "raw_streams_verified": 12,
+  "source_unchanged": true,
+  "source_difference_from_accepted_final_matrix_build": [
+    "tests/p3_precise_rethrow.rs"
+  ],
+  "matrix_binding": "rebuild is byte-identical d238d761; test-only change; accepted 144-case matrix reused explicitly, not claimed rerun",
+  "default_stack": true,
+  "target_absent_after_exact_clean": true,
+  "archive": {
+    "bytes": 330617,
+    "sha256": "af720c5f7db2285a9184c3f49b799114a95ad3e4017cb547478368672bb86a19"
+  }
+}

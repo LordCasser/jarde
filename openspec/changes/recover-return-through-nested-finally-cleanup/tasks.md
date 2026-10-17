@@ -1,0 +1,31 @@
+# Tasks
+
+## 1. Establish the actual shape
+
+- [x] 为封存的 `EX.nestedFin(I)I` 增加只读 Facts probe；记录 canonical 完整性、精确 rows/edges/throw sites、blocks、SSA values/phis、println effects/handler ownership，以及返回值和 rethrow identity 链。不改生产代码。
+- [ ] 记录当前 guard/region/builder 路径的首个拒绝。之后再决定现有 shape/Region/Builder 接缝是否足够，或是否必须增加最窄的 structured-cleanup tree。实现前记录判断及负边界。
+
+## 2. Implement the bounded recovery
+
+- [ ] 使用实际 BCI/SSA/effect 证据实现最小 proof；证明保存的返回值、嵌套 cleanup 顺序、throwable store/reload、异常覆盖路径、完整 ownership 和 stop 行为。
+- [ ] 尽可能复用现有 SavedReturn 与 Try/finally 呈现。只有 task 1 证明扁平 `normal_cleanup` 无法表达已证明 tree 时，才增加私有 structured cleanup tree。
+- [ ] Builder 只有在正常及异常 cleanup tree 均完整呈现且 source origins 精确后，才原子 claim/publish。任何 unmatched edge、额外前驱、finally 非局部完成或无法呈现的操作均保留 fallback。
+
+## 3. Pin positive behavior and adversarial boundaries
+
+- [ ] 为封存 EX 与独立完整 class fixture 增加永久 Facts/SSA/effects 与 full-source 正例。fixture target 只能有 constructor 和与 EX 同体的 `nestedFin`；注入只放在独立 recording-PrintStream driver。
+- [ ] 为缺失/变更异常 row、错误异常 reload identity、cleanup 顺序改变、无归属/额外 cleanup 入口和 ownership 不完整增加负变体；均须拒绝。
+- [ ] 增加 early/late budget、cancellation、deadline-stop 检查；确认停止时 Builder 不会部分发布，usage 计量保持正确。
+- [ ] 增加 guard 与 resource 回归门，确保本证书不放宽无关接受范围。
+- [ ] 用 javac 8 与 javac 23 `--release 8` 编译同一独立源文件并保留完整目标类。运行 compiler × JVM (8,23) × profile (`default`,`all`) 的 2×2×2 矩阵；执行精确 source/BCI/static ownership 检查、完整生成源码原样编译和 rebuilt-only runtime。
+- [ ] 运行完整矩阵 `n ∈ {2,0}`、`in ∈ {none, RuntimeException, Error}`、`out ∈ {none, RuntimeException, Error}`。断言 `IO` 恰好一次、正常时返回保存值、除零时 ArithmeticException 类型/消息正确、cleanup 异常的注入对象 identity 与覆盖优先级正确。不要声称运行时观察到原除零对象 identity；该 identity 由静态 SSA 证明。
+- [ ] 运行并固定 JADX 对照，保留其真实输出与编译/运行失败；不修改生成文本来制造一致。
+- [ ] 不删除无关方法，复核原完整 EX class 与双编译器完整 fixture；保留既有 finally-return/finally-throw 拒绝控制。
+
+## 4. Exact-product and parent handoff
+
+- [ ] 记录精确实现 product commit SHA，核对它自己的 CI 收据确实对应该源码；覆盖 default/all、full-source、CLI/public entry、guard/resource、source/BCI 与项目要求的检查。不得用另一 product 或仅文档 head 的结果替代。
+- [ ] root 已创建 shared OpenSpec change；root 可以现在完成校验并派发 Luna implementation，无需等 `finThrow` 才创建。`finThrow` 稳定后再集成本叶片；交接时提供精确 product SHA、自身 CI 结果和完整证据路径。
+- [ ] 仅在叶片证据完整后更新 parent remaining-positive matrix。集成后再运行 parent-wide final source/CLI/CI gates；exception-only 与 finally 自身 return/throw 继续留在范围外。
+
+Root 已实际运行并审读只读探针，记录见 results/initial-facts-root-v1；表示选择与准确的首拒记录见 design 的 root review。其它任务仍需实际实现、验收与自身 CI。

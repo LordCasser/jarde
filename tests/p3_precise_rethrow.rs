@@ -120,13 +120,20 @@ fn catch_all_and_non_parameter_throw_controls_keep_their_own_shapes() {
         "a catch_type == 0 finally copy must not become a user catch:\n{}",
         finally.text
     );
+    let ClassSourceOutcome::Recovered { report: body, .. } = &finally.outcome else {
+        panic!("the branch-throw/saved-return finally was not recovered");
+    };
+    // This remains outside the named-rethrow rule, but the complete finally certificate now
+    // handles its primitive saved return through the same entry as the String-return fixture.
+    assert_eq!(body.quality, jarde_jvm::ir::Quality::Structured);
+    assert!(body.fallbacks.is_empty(), "{}", finally.text);
+    assert!(finally.text.contains("finally {"), "{}", finally.text);
     assert!(
-        finally
-            .text
-            .contains("copy javac emits for a `finally` clause"),
-        "the intentionally unsupported any-row shape keeps its refusal:\n{}",
+        finally.text.contains("log(\"finally\");"),
+        "{}",
         finally.text
     );
+    assert!(!finally.text.contains("@bytecode"), "{}", finally.text);
 
     let multi = method(&report, "multiCatch");
     assert!(

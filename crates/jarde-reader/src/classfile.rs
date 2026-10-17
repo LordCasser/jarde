@@ -12275,7 +12275,10 @@ mod tests {
             // Call-return loop finally adds two frozen independent classes, six Code bodies,
             // four handler rows and eight targets (125, 59, 119, 7 per compiler leg).
             // Both finReturn methods keep all 127 Code bytes; no jsr.
-            (1183, 5279, 545, 3487, 10),
+            // Branch-throw/return finally: two independent compiler classes, four bodies,
+            // two handlers and two targets. Its javac23 extra-exit neighbor adds one class,
+            // three bodies, two handlers and two targets; actual javap and Code facts agree.
+            (1186, 5286, 549, 3491, 10),
             "fixture population changed: re-measure these counts"
         );
     }

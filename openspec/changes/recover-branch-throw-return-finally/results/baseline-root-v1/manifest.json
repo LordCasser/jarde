@@ -1,0 +1,21 @@
+{
+  "state": "actual baseline observations; not final acceptance",
+  "base_product": "e5757b5a9920da5d2b86dc44d8c729c98caf1253",
+  "cli_sha256": "d779d4dee8056d30166284eda2b6560d5235e5ad250ced2ae0fd0bfd2a42fa27",
+  "cli_source_note": "production e575 unchanged; cfg(test)-only copy probe present during build; receipt preserves exact source list",
+  "archive": {
+    "bytes": 1356143,
+    "sha256": "377519d890238d63baee130ea3082730a6b1fb4eb84adc9b2b1cb7cb7806d95f"
+  },
+  "actual_findings": [
+    "two original compilers, both Java runtimes, nine cases each passed",
+    "existing copy proof Some for both independent classes and sealed EX",
+    "direct resources(entry0) Claimed structured Finally; actual Region never invokes finally_body",
+    "entry0 has no leaving edge; early shared candidate filter declines; late throw-arm resources starts4>protected0 refuses",
+    "current complete independent class and EX finThrow fallback; original EX other methods retained"
+  ],
+  "pending": [
+    "JADX and old-source compile comparison",
+    "final candidate proof/static boundaries and full runtime gates"
+  ]
+}

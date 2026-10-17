@@ -1,0 +1,34 @@
+{
+  "status": "root accepted focused behavior and valid boundary tests; final gates/matrix pending",
+  "success_v3": {
+    "guard_tests": 4,
+    "public_tests": 2,
+    "failed": 0,
+    "source_unchanged": true,
+    "target_absent": true
+  },
+  "actual_failures_preserved": [
+    "v1 invalid System.err Class cp#50 ref caused canonical=None; range23 also cut invoke",
+    "v2 confirmed handler receiver malformed; changed to Class#48; rowend25 valid boundary"
+  ],
+  "valid_controls": [
+    "changed handler string",
+    "changed System.err receiver",
+    "normal invoke covered by catch-all",
+    "return null differs saved String",
+    "athrow null differs caught identity",
+    "real javac extra normal return (singlecompletion proof rejected; no global refusal claim)"
+  ],
+  "extra_predecessor_regression": "existing conditional_return_rejects_analyzed_copy_value_handler_and_edge_neighbors requires complete canonical and refuses foreign edge; final full guard suite must rerun",
+  "late_stops": [
+    "resource paid budget one short",
+    "cancel observer at charge10",
+    "real elapsed deadline after charge10 delay",
+    "public recover one short final analysis budget: no partial source or maps"
+  ],
+  "provenance": "both independent classes + sealed EX essential/all equal source, structured/no fallback; all physical instructions mapped; direct CLI confirms exactly20 BCIs",
+  "archive": {
+    "bytes": 1286198,
+    "sha256": "6c060a5a6e1ffb5ad9dc566b0286f436ca428f355b30f3a5554e4dc676d710fc"
+  }
+}

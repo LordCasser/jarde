@@ -1,0 +1,83 @@
+{
+  "status": "root_accepted_fullclass_finThrow",
+  "cli": {
+    "path": "/private/tmp/jarde-finthrow-final-gates-run1-20261017/candidate-cli",
+    "bytes": 62420016,
+    "sha256": "d238d76151ab40334e1957b763203b86ba475bca117a6a6df40f0ac9544512a3"
+  },
+  "raw_streams_verified": 154,
+  "jarde_profiles": [
+    {
+      "input": "javac8",
+      "mode": "default",
+      "methods": 2,
+      "target_instruction_bcis": 20,
+      "recompile_successes": 2,
+      "runtime_successes": 4,
+      "cases_per_runtime": 9
+    },
+    {
+      "input": "javac8",
+      "mode": "all",
+      "methods": 2,
+      "target_instruction_bcis": 20,
+      "recompile_successes": 2,
+      "runtime_successes": 4,
+      "cases_per_runtime": 9
+    },
+    {
+      "input": "javac23",
+      "mode": "default",
+      "methods": 2,
+      "target_instruction_bcis": 20,
+      "recompile_successes": 2,
+      "runtime_successes": 4,
+      "cases_per_runtime": 9
+    },
+    {
+      "input": "javac23",
+      "mode": "all",
+      "methods": 2,
+      "target_instruction_bcis": 20,
+      "recompile_successes": 2,
+      "runtime_successes": 4,
+      "cases_per_runtime": 9
+    }
+  ],
+  "rebuilt_only_runtime_runs": 16,
+  "runtime_case_executions": 144,
+  "same_runtime_type_message_trace_identity": true,
+  "isolated_classpaths": "argv uses rebuilt target + original-compiled separate driver; no original target path",
+  "source_method_identity_and_all_BCIs_verified": true,
+  "original_compiler_bytes_reproduced": true,
+  "EX": [
+    {
+      "mode": "default",
+      "physical_methods_retained": 6,
+      "finThrow": "structured/java",
+      "wholeclass_compile": "failed (remaining nestedFin body retained)"
+    },
+    {
+      "mode": "all",
+      "physical_methods_retained": 6,
+      "finThrow": "structured/java",
+      "wholeclass_compile": "failed (remaining nestedFin body retained)"
+    }
+  ],
+  "JADX156": {
+    "independent_compile_successes": 4,
+    "runtime_failures": 8,
+    "cause": "cleanup-runtime repeats ft because cleanup is inside catch(Throwable)",
+    "scope": "fixed1.5.6 rename-none profile; no claim about all versions"
+  },
+  "parent": "remains4/7; nestedFin/parent final gates not complete",
+  "archive": {
+    "bytes": 397728,
+    "sha256": "20b1839bbc51fe111c13e56d2b467361d1d4e7fac0a55dee1a3bf9f5cc3493e1"
+  },
+  "driver_directories_target_absent": true,
+  "physical_member_ordinals_exact": [
+    0,
+    1
+  ]
+}
