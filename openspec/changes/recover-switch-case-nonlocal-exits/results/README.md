@@ -1,6 +1,10 @@
 # switch 非局部出口实际证据
 
-## 2026-10-18 当前产品红基线
+当前 **7/7，产品cf857abaabc4fcff82689812226f9906b8d932b2已推送并通过自身CI39072531393**；最终矩阵、本地双fresh seed、CI原始日志与关闭strict均已root独立接受，详见本文件末尾的“最终产品验收：7/7”。最终Git主线检查见handoff所列外置终态收据。
+
+下文按执行顺序保留历史检查点；2/7、6/7及pending描述仅属于对应阶段，不覆盖最终验收状态。失败raw与旧候选来源限制继续保留。
+
+## 2026-10-18 旧产品红基线（历史）
 
 `baseline-root-v1` 使用已验收产品81b0684d5的605 CLI，新编译原封不动的SN/SM/SL/LD：四完整源×javac8/23，八class均major52；双JVM共16原始oracle。137命令/274原始流逐份核字节与SHA，工具/输入/源码前后不变，target不存在。完整源码从Jarde JSON或JADX输出原样重编，未删除或修补任何方法。
 
@@ -47,7 +51,7 @@ root重核全部raw pins、重编源码与原API/JADX文本相等、class/driver
 
 异常边的首个真实Reader测试已通过。jsr的整loop测试因NormalFlowView没有相应自然循环而失败，原464/1结果保留在`clone-test-precondition-failure-root-v1`；新测试仅核真实clone边身份，不伪造Frame，不固定缺失能力，独立问题见`separate-architecture-debt.md`。第二轮gates的Clippy/MSRV通过，reader180/1仅夹具census需刷新，见`reader-census-before-refresh-root-v2`。新11个class的独立原始Code增量为49 bodies/4 handlers/139 targets/2 jsr，预期总量1238/5495/606/3641/12；已更新人口快照，尚待最终Rust walk复核。P5旧性能表和预算未改动。
 
-## 最终实现与三方矩阵已接受：6/7，产品交付门仍待完成
+## 实现与三方矩阵检查点（历史6/7）
 
 `final-focused-root-v5`：修正Closed frame后，root实际通过465库、181reader、九返回叶/标签/停止、12旧switch控制、一公开request停止，共668项。reader完整walk已确认1238/5495/606/3641/12，与独立Code增量相同。两编译器异常边均直接匹配canonical Exception端点，clone同/异上下文边证书正负测试通过。默认栈、来源不变、exact clean/target absent；CLI62908496B，SHA `10a73d1ee30a3820a018a2461cc3c3b3028b02bf658588bc74c4ec3ba2eb1620`。实际源码快照及全部raw在归档，30成员已重开。
 
@@ -60,3 +64,19 @@ root重核全部raw pins、重编源码与原API/JADX文本相等、class/driver
 `final-gates-root-v3`现已实际整门通过：fmt/当前CI同款Clippy、MSRV1.88全workspace/all-targets check、181reader、标准指纹再生/检查及七P5目标、CLI构建。共286 passing appearances/0失败/5忽略，其中常规八个P5目标为104/0/5；P5旧表与预算未改。指纹2305旧项完全不变，仅增20项至2325。源码仅该指纹JSON按预期改变，CLI逐字同10a73矩阵，默认栈/守卫/finally exact clean、target absent，35归档成员重开通过。
 
 `final-strict-root-v2`已接受OpenSpec1.11.0严格367/0及4raw pins。两个fresh workspace与精确产品自身CI仍待验收；当前启动seed1于`/private/tmp/jarde-switch-workspace-seed1-root-v1-20261018`，不能提前当作通过。交付任务保持未勾选。
+
+## 产品与本地双 seed 已接受，自身 CI 收尾中
+
+产品 `cf857abaabc4fcff82689812226f9906b8d932b2` 已推送 main。`workspace-acceptance-root-v1` 已由 root 独立接受：两 fresh seed 各382 targets/100批/3716通过/0失败/98忽略，412 raw 全复核；逐target计数及5016来源完全相同，九个新增关键门每seed在精确target下唯一通过。默认stack、5GiB余量/target1GiB每秒守卫、最终exact clean与target absent通过。最终CLI3063构建来源和5016 workspace来源的5023文件并集逐字/按mode绑定产品Git tree。
+
+归档10240458B / SHA `1e8a89f2f50daedbe7aa619dcb0fee0a08f9b4edb829f2146fafb75f1a652674`，434成员逐字重开；源码绑定只证明来源，不替代实际测试成功。产品自身CI39072531393仍待完成原始日志核验；3.2保持未勾选。
+
+## 最终产品验收：7/7
+
+产品 `cf857abaabc4fcff82689812226f9906b8d932b2` 自身[CI39072531393](https://github.com/LordCasser/jarde/actions/runs/39072531393)已由root独立接受。实际4jobs/52API步骤全部成功，两seed各382targets/3716通过/0失败/98忽略，完整逐target计数一致，27关键门在精确target下每seed唯一ok。四原始job日志、run/jobs/steps JSON、74命令/148raw pins、69个git-show/current来源绑定及实际collector/verifier均保存在`own-product-ci-root-v1`；160成员逐字重开，archive1758013B / SHA `de9a05a85634cae7998e4f68d7cc93c2059dbb958eb9b02cb97a55564596166e`。
+
+本地两fresh seed已接受，见前述`workspace-acceptance-root-v1`；该捕获中的“CI pending”只是当时检查点，不覆盖本节新的CI实际验收。本change7/7，不增加71/612整体完成数。原始红基线、早期测试/采集失败和c6e来源缺口全部保留。
+
+后续关闭提交只含文档与验收证据，不能冒称它自身跑过产品CI。最终实际HEAD/remote一致、clean、仅main/辅助worktree detached且clean/ancestor、target absent及5023来源恒同检查，将保存在`/private/tmp/jarde-switch-final-head-root-v1-20261018/execution.json`，必须以该终态收据和当前Git状态为准。
+
+关闭后的`closing-strict-root-v1`实际OpenSpec1.11.0 apply为all_done/7-of-7，strict367通过/0失败，6raw pins、target absent；9归档成员已逐字重开（9546B / SHA `2eaa9d1e8f98cb9a1045c99752969a784706c8dbcee678b1abd27f3f8bfc125b`）。

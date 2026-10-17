@@ -9,4 +9,4 @@
 
 ## 3. 验证
 - [x] 3.1 最终10a73 CLI三方完整源码矩阵已root接受：225命令/450raw，Jarde32次整类原样重编、64 driver运行1744case及64 main全等原oracle；javac8 source/target8与javac23 --release8，双JVM -Xverify:all与CodeSource/双root隔离。含SN四锚、LD {9,1,5}→10、SL {1,2,4,3}→124及各边界；JADX SL四编译失败、SN/LD各八ledgerBreak driver失败、LD八main9≠10均原样保留，后续未执行case不计。见final-matrix-root-v2；原始driver另436case，不混算为rebuilt。
-- [ ] 3.2 最终生产源码fmt/CI同款Clippy/MSRV、必要focused/reader/P5、两fresh seed workspace与strict通过，5GiB/target1GiB每秒守卫/default stack/finally exact clean；精确产品提交推送并独立接受其自身CI、更新handoff和clean main后关闭，不增计71/612。
+- [x] 3.2 最终生产源码fmt/CI同款Clippy/MSRV、必要focused/reader/P5、两fresh seed workspace与strict通过，5GiB/target1GiB每秒守卫/default stack/finally exact clean；精确产品cf857abaabc4fcff82689812226f9906b8d932b2已推送；自身CI39072531393由root实际148raw/69来源pin核验，4jobs/52步骤成功、两seed各382targets/3716通过/0失败/98忽略、27关键门各一次通过；本地两fresh seed同计数/逐target/5016来源及九新门，证据见workspace-acceptance-root-v1与own-product-ci-root-v1。交接与文档收尾后的最终clean-main外置收据见handoff，不增计71/612。
