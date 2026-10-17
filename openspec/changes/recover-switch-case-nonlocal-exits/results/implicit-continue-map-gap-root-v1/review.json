@@ -1,0 +1,2544 @@
+{
+  "status": "actual source-map gap found after semantic matrix passed",
+  "cli": {
+    "path": "/private/tmp/jarde-switch-combined-focused-root-v1-20261018/candidate-cli",
+    "bytes": 62908496,
+    "sha256": "c6ea7b9159be9a358de2e3d8c64506781a1a8d112103de0199e459e4413a6869"
+  },
+  "frozen_api_archive_sha256": "7b08158d77a28b1677374fc4d35db8e63b54b1d16b0f17a71f8ee5486e0eaa1a",
+  "target_method_configurations": 24,
+  "with_missing_control_bci": 8,
+  "observations": [
+    {
+      "class": "SN",
+      "input": "javac8",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          78,
+          111,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        61
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        60,
+        61
+      ],
+      "missing_bcis": [
+        57
+      ],
+      "missing_opcodes": {
+        "57": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac8",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        63,
+        64
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        63,
+        64
+      ],
+      "missing_bcis": [
+        60
+      ],
+      "missing_opcodes": {
+        "60": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac8",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SN",
+      "input": "javac8",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          78,
+          111,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        61
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        60,
+        61
+      ],
+      "missing_bcis": [
+        57
+      ],
+      "missing_opcodes": {
+        "57": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac8",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        63,
+        64
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        63,
+        64
+      ],
+      "missing_bcis": [
+        60
+      ],
+      "missing_opcodes": {
+        "60": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac8",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SN",
+      "input": "javac23",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          78,
+          111,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        61
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        60,
+        61
+      ],
+      "missing_bcis": [
+        57
+      ],
+      "missing_opcodes": {
+        "57": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac23",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        63,
+        64
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        63,
+        64
+      ],
+      "missing_bcis": [
+        60
+      ],
+      "missing_opcodes": {
+        "60": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac23",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SN",
+      "input": "javac23",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          78,
+          111,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        61
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        60,
+        61
+      ],
+      "missing_bcis": [
+        57
+      ],
+      "missing_opcodes": {
+        "57": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac23",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          114,
+          101,
+          116,
+          73,
+          110,
+          83,
+          119,
+          105,
+          116,
+          99,
+          104,
+          84,
+          97,
+          105,
+          108
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        60,
+        63,
+        64
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        45,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        57,
+        63,
+        64
+      ],
+      "missing_bcis": [
+        60
+      ],
+      "missing_opcodes": {
+        "60": 167
+      }
+    },
+    {
+      "class": "SN",
+      "input": "javac23",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+            "length": 1634
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac8",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          109,
+          105,
+          120,
+          101,
+          100
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac8",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          101,
+          108,
+          101,
+          100,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac8",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          109,
+          105,
+          120,
+          101,
+          100
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac8",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          101,
+          108,
+          101,
+          100,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac23",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          109,
+          105,
+          120,
+          101,
+          100
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac23",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          101,
+          108,
+          101,
+          100,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac23",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          109,
+          105,
+          120,
+          101,
+          100
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        52,
+        55,
+        58,
+        59,
+        61,
+        62,
+        63,
+        64,
+        66,
+        67,
+        68,
+        71,
+        74,
+        77,
+        78
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "SL",
+      "input": "javac23",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98,
+          101,
+          108,
+          101,
+          100,
+          66,
+          114,
+          101,
+          97,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803",
+            "length": 1290
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "LD",
+      "input": "javac8",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "22ab3d89821604cfdf13b8a1de7a78ec85e180bb88f777be34bcae684f823ef6",
+            "length": 726
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "22ab3d89821604cfdf13b8a1de7a78ec85e180bb88f777be34bcae684f823ef6"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "LD",
+      "input": "javac8",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "22ab3d89821604cfdf13b8a1de7a78ec85e180bb88f777be34bcae684f823ef6",
+            "length": 726
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "22ab3d89821604cfdf13b8a1de7a78ec85e180bb88f777be34bcae684f823ef6"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "LD",
+      "input": "javac23",
+      "evidence": "default",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "244d610780705279972e70262301bad3692b353657caa6adfaaf77706ad50d18",
+            "length": 726
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "244d610780705279972e70262301bad3692b353657caa6adfaaf77706ad50d18"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    },
+    {
+      "class": "LD",
+      "input": "javac23",
+      "evidence": "all",
+      "method_identity": {
+        "descriptor": [
+          40,
+          91,
+          73,
+          41,
+          73
+        ],
+        "name": [
+          108,
+          97,
+          98
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "244d610780705279972e70262301bad3692b353657caa6adfaaf77706ad50d18",
+            "length": 726
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "244d610780705279972e70262301bad3692b353657caa6adfaaf77706ad50d18"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "quality": "structured",
+      "all_physical_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        16,
+        17,
+        19,
+        20,
+        22,
+        24,
+        44,
+        47,
+        48,
+        50,
+        51,
+        52,
+        55,
+        58,
+        59
+      ],
+      "missing_bcis": [],
+      "missing_opcodes": {}
+    }
+  ],
+  "cause": "Closed(no local join) and no postdom both None select ordinary arm frame, dropping certified switch_continue. Existing implicit latch attribution accepts Straight/If, not this switch tail.",
+  "decision": "Use existing switch_arm/LoopContinue for proved Closed completion; no new latch mechanism.",
+  "limitations": "No new CLI execution here; analysis of the pinned actual 16-request capture, not an extrapolated rebuilt result."
+}

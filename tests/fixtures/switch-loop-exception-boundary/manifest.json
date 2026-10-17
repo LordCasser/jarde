@@ -1,0 +1,733 @@
+{
+  "source": {
+    "path": "/private/tmp/jarde-switch-exception-clone-control-luna-v2-20261018/SwitchLoopExceptionBoundary.java",
+    "bytes": 1103,
+    "sha256": "641cddf39b3123cf61a3ee2e33cbe7233b553e64fa5dbf4db114128899d461b4"
+  },
+  "classes": [
+    {
+      "compiler": "javac8",
+      "class": {
+        "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac8/SwitchLoopExceptionBoundary.class",
+        "bytes": 1573,
+        "sha256": "5b646cd6453a64078e62a4e90a398b25a0d4f3ae419803117b8ad3010a5e0146"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac8/SwitchLoopExceptionBoundary.class",
+        "bytes": 1573,
+        "sha256": "5b646cd6453a64078e62a4e90a398b25a0d4f3ae419803117b8ad3010a5e0146",
+        "minor": 0,
+        "major": 52,
+        "class_name": "SwitchLoopExceptionBoundary",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 2,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70001b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "selector",
+            "descriptor": "(I)I",
+            "access": 10,
+            "code": {
+              "max_stack": 3,
+              "max_locals": 1,
+              "code_length": 18,
+              "code_hex": "1a1063a0000dbb0002591203b70004bf1aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                3,
+                6,
+                9,
+                10,
+                12,
+                15,
+                16,
+                17
+              ]
+            }
+          },
+          {
+            "index": 2,
+            "name": "run",
+            "descriptor": "([I)I",
+            "access": 8,
+            "code": {
+              "max_stack": 3,
+              "max_locals": 3,
+              "code_length": 61,
+              "code_hex": "033c033d1c2abea200302a1c2eb80005ab000000000000180000000100000003000000141b1c60ac1b2a1c2eb80005603c840201a7ffd01bac4d10f9ac",
+              "rows": [
+                [
+                  2,
+                  39,
+                  57,
+                  6
+                ],
+                [
+                  40,
+                  56,
+                  57,
+                  6
+                ]
+              ],
+              "bcis": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                10,
+                11,
+                12,
+                13,
+                16,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                47,
+                48,
+                49,
+                52,
+                55,
+                56,
+                57,
+                58,
+                60
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "name": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "access": 9,
+            "code": {
+              "max_stack": 6,
+              "max_locals": 1,
+              "code_length": 186,
+              "code_hex": "b20007bb000859b70009120ab6000b03bc0ab8000cb6000db6000eb6000fb20007bb000859b700091210b6000b06bc0a5903044f5904054f5905074fb8000cb6000db6000eb6000fb20007bb000859b700091211b6000b06bc0a5903044f5904064f5905074fb8000cb6000db6000eb6000fb20007bb000859b700091212b6000b06bc0a5903044f590410634f5905074fb8000cb6000db6000eb6000fb20007bb000859b700091213b6000b01b8000cb6000db6000eb6000fb1",
+              "rows": [],
+              "bcis": [
+                0,
+                3,
+                6,
+                7,
+                10,
+                12,
+                15,
+                16,
+                18,
+                21,
+                24,
+                27,
+                30,
+                33,
+                36,
+                37,
+                40,
+                42,
+                45,
+                46,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                63,
+                66,
+                69,
+                72,
+                75,
+                78,
+                79,
+                82,
+                84,
+                87,
+                88,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95,
+                96,
+                97,
+                98,
+                99,
+                100,
+                101,
+                102,
+                105,
+                108,
+                111,
+                114,
+                117,
+                120,
+                121,
+                124,
+                126,
+                129,
+                130,
+                132,
+                133,
+                134,
+                135,
+                136,
+                137,
+                138,
+                140,
+                141,
+                142,
+                143,
+                144,
+                145,
+                148,
+                151,
+                154,
+                157,
+                160,
+                163,
+                164,
+                167,
+                169,
+                172,
+                173,
+                176,
+                179,
+                182,
+                185
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    },
+    {
+      "compiler": "javac23",
+      "class": {
+        "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac23/SwitchLoopExceptionBoundary.class",
+        "bytes": 1570,
+        "sha256": "b09918edf7205edfabd5ce1019f2185bb246c7a4cd3d5824a634728c3d3c94cf"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac23/SwitchLoopExceptionBoundary.class",
+        "bytes": 1570,
+        "sha256": "b09918edf7205edfabd5ce1019f2185bb246c7a4cd3d5824a634728c3d3c94cf",
+        "minor": 0,
+        "major": 52,
+        "class_name": "SwitchLoopExceptionBoundary",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 2,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70001b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "selector",
+            "descriptor": "(I)I",
+            "access": 10,
+            "code": {
+              "max_stack": 3,
+              "max_locals": 1,
+              "code_length": 18,
+              "code_hex": "1a1063a0000dbb0007591209b7000bbf1aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                3,
+                6,
+                9,
+                10,
+                12,
+                15,
+                16,
+                17
+              ]
+            }
+          },
+          {
+            "index": 2,
+            "name": "run",
+            "descriptor": "([I)I",
+            "access": 8,
+            "code": {
+              "max_stack": 3,
+              "max_locals": 3,
+              "code_length": 61,
+              "code_hex": "033c033d1c2abea200302a1c2eb8000eab000000000000180000000100000003000000141b1c60ac1b2a1c2eb8000e603c840201a7ffd01bac4d10f9ac",
+              "rows": [
+                [
+                  2,
+                  39,
+                  57,
+                  20
+                ],
+                [
+                  40,
+                  56,
+                  57,
+                  20
+                ]
+              ],
+              "bcis": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                10,
+                11,
+                12,
+                13,
+                16,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                47,
+                48,
+                49,
+                52,
+                55,
+                56,
+                57,
+                58,
+                60
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "name": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "access": 9,
+            "code": {
+              "max_stack": 6,
+              "max_locals": 1,
+              "code_length": 186,
+              "code_hex": "b20016bb001c59b7001e121fb6002103bc0ab80025b60029b6002cb60030b20016bb001c59b7001e1235b6002106bc0a5903044f5904054f5905074fb80025b60029b6002cb60030b20016bb001c59b7001e1237b6002106bc0a5903044f5904064f5905074fb80025b60029b6002cb60030b20016bb001c59b7001e1239b6002106bc0a5903044f590410634f5905074fb80025b60029b6002cb60030b20016bb001c59b7001e123bb6002101b80025b60029b6002cb60030b1",
+              "rows": [],
+              "bcis": [
+                0,
+                3,
+                6,
+                7,
+                10,
+                12,
+                15,
+                16,
+                18,
+                21,
+                24,
+                27,
+                30,
+                33,
+                36,
+                37,
+                40,
+                42,
+                45,
+                46,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                63,
+                66,
+                69,
+                72,
+                75,
+                78,
+                79,
+                82,
+                84,
+                87,
+                88,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95,
+                96,
+                97,
+                98,
+                99,
+                100,
+                101,
+                102,
+                105,
+                108,
+                111,
+                114,
+                117,
+                120,
+                121,
+                124,
+                126,
+                129,
+                130,
+                132,
+                133,
+                134,
+                135,
+                136,
+                137,
+                138,
+                140,
+                141,
+                142,
+                143,
+                144,
+                145,
+                148,
+                151,
+                154,
+                157,
+                160,
+                163,
+                164,
+                167,
+                169,
+                172,
+                173,
+                176,
+                179,
+                182,
+                185
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    }
+  ],
+  "original_execution_receipt": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/execution.json",
+  "commands": [
+    {
+      "index": 1,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/empty-cp-javac8",
+        "-sourcepath",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/empty-sp-javac8",
+        "-d",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac8",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/SwitchLoopExceptionBoundary.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-17T21:28:17.892483+00:00",
+      "duration_seconds": 1.0131858329987153,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 1547953352704,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac8",
+        "SwitchLoopExceptionBoundary"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-17T21:28:18.909270+00:00",
+      "duration_seconds": 1.0158693340054015,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 1547953299456,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/2.stdout.raw",
+          "bytes": 49,
+          "sha256": "c7c3c1f276696a5a94098df18bcdb583446136c93dfc2a12b86a9a730f591be8"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac8",
+        "SwitchLoopExceptionBoundary"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-17T21:28:19.936281+00:00",
+      "duration_seconds": 1.0191750420053722,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 1547953287168,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/3.stdout.raw",
+          "bytes": 49,
+          "sha256": "c7c3c1f276696a5a94098df18bcdb583446136c93dfc2a12b86a9a730f591be8"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/empty-cp-javac23",
+        "-sourcepath",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/empty-sp-javac23",
+        "-d",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac23",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/SwitchLoopExceptionBoundary.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-17T21:28:20.968183+00:00",
+      "duration_seconds": 1.019601917003456,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 1547953123328,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/4.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac23",
+        "SwitchLoopExceptionBoundary"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-17T21:28:21.995456+00:00",
+      "duration_seconds": 1.01312291600334,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 1547952922624,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/5.stdout.raw",
+          "bytes": 49,
+          "sha256": "c7c3c1f276696a5a94098df18bcdb583446136c93dfc2a12b86a9a730f591be8"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-switch-exception-original-root-v1-20261018/classes/javac23",
+        "SwitchLoopExceptionBoundary"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-17T21:28:23.013875+00:00",
+      "duration_seconds": 1.0125109579967102,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 1547952615424,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/6.stdout.raw",
+          "bytes": 49,
+          "sha256": "c7c3c1f276696a5a94098df18bcdb583446136c93dfc2a12b86a9a730f591be8"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-switch-exception-original-root-v1-20261018/raw/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "purpose": "Actual exception row incident to a loop switch; private strict proof refusal, not blanket public Try rejection."
+}

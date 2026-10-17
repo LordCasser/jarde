@@ -2,15 +2,23 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-18 最新接续：finally已交付，switch非局部出口取证2/7
+## 2026-10-18 最新接续：finally已交付，switch实现/完整对照已验收6/7，交付门进行中
 
 用户要求的finThrow/nestedFin已在后续工作完成，并非当前未实现：分别5/5和16/16，父finally7/7；同一nested最终CLI的完整对照为nested432 + finThrow144 = 576 rebuilt case，原始源码/目标/JADX失败均保留。本轮重新读取OpenSpec并逐字核两历史产品自身CI归档的38payload、24raw pin，各4jobs/52steps成功，见`openspec/evidence/java-syntax-2026-10-18/finally-leaves-recheck-root-v1`。这是复核旧验收，不冒称重跑矩阵或当前head新CI。后续exception-only已11/11，显式finally return/throw仍单列；当前最新产品仍为下节81b0684d5，不把旧finally检查点写成最新产品。
 
-继续已有`recover-switch-case-nonlocal-exits`，当前**2/7，仅红基线/首拒完成**。root正式605 CLI对四个原封完整SN/SM/SL/LD双javac8/23输入执行137命令/274raw、16原oracle；Jarde SM八重编/16运行匹配，其余24整类重编失败/no-runtime，明确fallback。JADX SN/SM通过，SL四编译失败，LD四编译成功却八运行输出9而原为10；全部真实失败保留。default/all八对全文/方法quality/fallback/map同，报告evidence扩展不可按整非usage相等比较。基线已归档`results/baseline-root-v1`。
+本次接续已有`recover-switch-case-nonlocal-exits`的起点为**2/7，仅红基线/首拒完成**；最终进展见本节末尾的6/7检查点。root正式605 CLI对四个原封完整SN/SM/SL/LD双javac8/23输入执行137命令/274raw、16原oracle；Jarde SM八重编/16运行匹配，其余24整类重编失败/no-runtime，明确fallback。JADX SN/SM通过，SL四编译失败，LD四编译成功却八运行输出9而原为10；全部真实失败保留。default/all八对全文/方法quality/fallback/map同，报告evidence扩展不可按整非usage相等比较。基线已归档`results/baseline-root-v1`。
 
 同次IR诊断已root接受：一次守卫构建39.34s/峰值372076204B、exact clean，八all请求的整个非usage JSON同正式基线；40方法按Code spans/方法顺序核canonical/SSA/Region，26raw pin复核，两源精确恢复、完整产品来源同基线、target absent。SN返回44不在loop scope，label-break在无局部join时拒绝，SL混合形重复认领尾71；后置local1门与local-scope相同但上游原因不同。不能放宽声明门。细节、证据限制和root设计见该change `instrumentation.md`、`design.md`、`results/first-refusal-root-v1`；SL forward-join内部未日志的具体条件不冒称已知。
 
-OpenSpec已ready，按root设计派两个Luna在私有目录准备实现：`/private/tmp/jarde-switch-return-impl-luna-v1-20261018`（返回叶，SN及SL四分派）与`/private/tmp/jarde-switch-join-impl-luna-v1-20261018`（break outer/mixed，join68与continue71分开）。另一个Luna准备外部完整行为driver于`/private/tmp/jarde-switch-nonlocal-runtime-driver-luna-v1-20261018`。这些均**尚未共享集成/构建/验收**，不按私有补丁关闭任务。允许原私有LoopTarget携带同一已证return叶集合供join分类，避免重证或仅相信Return opcode；不新增公共AST/solver。root继续审查后统一复制基线八class至`tests/fixtures/p3-switch-nonlocal-exits/{javac8,javac23}`并记录原编译来源，再串行集成、对抗性测试、完整三方重编/双JVM与自身产品CI。暂未创建永久fixture，不把已有baseline当未来产品验收。71/612不变。
+root已集成两个Luna候选并修正声明身份、真实BLAKE3及终端switch的停止BCI。返回叶复用原证明，join v4复用一份candidate DFS和既有LoopBreak/Continue/SwitchBreak；私有LoopTarget只携带同一已证return集合，无新公共AST/solver。八个完整class及四原源码已原样放入`tests/fixtures/p3-switch-nonlocal-exits`并有编译来源manifest。产品代码尚未提交，不能当作main已交付。
+
+return MVP已有持久证据：`results/original-driver-root-v1`新编原始八class字节同红基线，25命令/50raw、16双JVM运行共436个输入调用；`return-focused-root-v1`六测试与CLI构建通过；`return-api-root-v1`16公开请求核80方法身份、1640 map区间/2520 BCI引用，只有预期8个return配置改变，其余72投影不变。均已root独立审查并重开tar；原始driver阶段不冒称Jarde rebuilt验收，MVP也不冒称完整leaf完成。
+
+组合构建`/private/tmp/jarde-switch-combined-focused-root-v1-20261018`通过461库、7返回叶、8fallthrough、2boundary、2scope共480测试；CLI 62908496B / SHA `c6ea7b9159be9a358de2e3d8c64506781a1a8d112103de0199e459e4413a6869`，源码不变、默认栈、峰值495170620B、exact clean。`/private/tmp/jarde-switch-combined-api-root-v1-20261018`16请求已独立接受：六目标方法的24配置由fallback变structured，其余56稳定投影同605；2144区间/3016 BCI来源合法。该c6e组合矩阵已实际接受：225命令/450raw，Jarde32整类重编、64driver运行1744case、64main全匹配；JADX SL四编译失败、SN/LD各八driver在ledgerBreak失败、LD八main仍9≠10，真实失败均保留，见results/combined-matrix-root-v1。公开停止测试及463库通过，九返回叶/标签/停止与一公开request late-budget也通过；c6e CLI字节相同。随后root全BCI差集发现SN遗漏goto57/60（8配置），不是语义失败但尚未满足来源闭合。已按OpenSpec接入Luna一行Closed case-frame修复，复用原LoopContinue；不能把旧c6e矩阵说成新源码最终验收。
+
+边界材料新增两编译器异常类和一个完整v49/jsr类，原始双JVM已真实校验并归档；exception Reader单测通过。jsr整loop测试因NormalFlowView无该自然loop失败（464/1原结果保留），已收窄成真实同方法clone边正/负绑定测试，独立债务见本change separate-architecture-debt.md，不虚构Frame、不增机制。Clippy/MSRV第二轮已通过，reader180/1因新增夹具人口快照需刷新而中止；独立Code计数预期1238/5495/606/3641/12已写入待复核，不改P5旧表。最终`final-focused-root-v5`已668项通过（465库/181reader/九返回叶停止/12switch/一公开request stop），reader人口1238/5495/606/3641/12核同独立Code计数。最终CLI62908496B / SHA `10a73d1ee30a3820a018a2461cc3c3b3028b02bf658588bc74c4ec3ba2eb1620`。`final-api-root-v2`16请求独立接受，六目标24配置700物理BCI覆盖、缺失0，56非目标同605，2152map区间/3024来源合法。`final-matrix-root-v2`也已root接受并归档：225命令/450raw，32完整Jarde重编、64driver1744case、64main全匹配；javac23明确使用--release8。JADX四SL编译失败及SN/LD各八driver失败/LD八main9≠10保留。OpenSpec实现及矩阵关闭，当前6/7，71/612不变。
+
+最终`final-gates-root-v3`已整门286通过/0失败/5忽略（常规八P5为104/0/5），fmt/CI同款Clippy/MSRV/181reader/指纹再生检查/CLI全部通过；只更新corpus-fingerprint.json，2305旧项不变、新20项，CLI逐字同10a73，exact clean/target absent。strict367/0归档final-strict-root-v2。root正在`/private/tmp/jarde-switch-workspace-seed1-root-v1-20261018`执行第一个fresh seed（会话55978），完成后还要seed2与独立acceptor；只能串行Cargo。当前实现/证据已准备产品提交推送，随后须接受精确head自身CI、clean main才能关闭3.2。main提交前仍be092571；最终产品SHA以git/后续receipt为准。不要重复启动活动runner。
 
 ## 2026-10-18 当前：原始 TestFinally3 与直接数组构造参数
 

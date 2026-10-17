@@ -1,0 +1,1 @@
+public class LD { static int lab(int[] xs){ int s=0; outer: for(int x: xs){ switch(x){ case 5: break outer; default: s+=x; } } return s; } public static void main(String[] a){ System.out.println(lab(new int[]{9,1,5})); } }

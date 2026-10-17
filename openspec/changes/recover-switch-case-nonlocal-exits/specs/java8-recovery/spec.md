@@ -23,3 +23,7 @@
 #### Scenario: 不可证明时维持拒绝
 - **WHEN** 出口归属或局部 def-use 无法在同一词法结构内闭合
 - **THEN** 系统 MUST 保持整方法响亮拒绝与可定位诊断；晚预算、取消或期限停止不得发布部分正文或source map，保持原停止原因与已发生usage
+
+#### Scenario: 无局部join的循环回跳来源
+- **WHEN** SN的case-return形已证明一个arm返回、另一arm回到当前循环，局部join与postdom均为空
+- **THEN** 系统 SHALL 保留该arm的精确continue目标，goto57/60等物理回跳BCI须有可定位source map，不能仅因输出行为正确而省略来源；沿用既有loop transfer表示

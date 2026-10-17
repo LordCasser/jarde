@@ -7396,6 +7396,21 @@
       "path": "tests/fixtures/p3-switch-fallthrough/v8/TableswitchFallthrough.class"
     },
     {
+      "blake3": "0438233844a11ed4cf08ae241d9bdfae43bf04426ee8d6c54d35c8088ccc2ecd",
+      "bytes": 1521,
+      "path": "tests/fixtures/p3-switch-jsr-clones/SwitchLoopJsrCloneDriver.java"
+    },
+    {
+      "blake3": "64cf675f5791bd00920b078e9c524f0ce9fb4b837a3d210e9edb4b46004083a3",
+      "bytes": 7905,
+      "path": "tests/fixtures/p3-switch-jsr-clones/manifest.json"
+    },
+    {
+      "blake3": "b41f7060961515926d7b88a6de2eb69532aa877ed80981eee4dc31a05a88a89b",
+      "bytes": 187,
+      "path": "tests/fixtures/p3-switch-jsr-clones/v49/SwitchLoopJsrClone.class"
+    },
+    {
       "blake3": "428f184ae02d333921297551cbfa2eb6051fbb13a3377e6c3cb09cd87fae1a20",
       "bytes": 674,
       "path": "tests/fixtures/p3-switch-loop-exits/SwitchLoopAdjacent.java"
@@ -7414,6 +7429,71 @@
       "blake3": "4ee6147f034d7df04c5548b4695f294572c746f885f43cc0079abad67477b845",
       "bytes": 1255,
       "path": "tests/fixtures/p3-switch-loop-exits/v8/SwitchLoopLocalBoundaries.class"
+    },
+    {
+      "blake3": "244d610780705279972e70262301bad3692b353657caa6adfaaf77706ad50d18",
+      "bytes": 726,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac23/LD.class"
+    },
+    {
+      "blake3": "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803",
+      "bytes": 1290,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac23/SL.class"
+    },
+    {
+      "blake3": "a1d62cdec50cad113f108b35540f28c00f36838e5d427aa3663db5ff5a338cab",
+      "bytes": 1840,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac23/SM.class"
+    },
+    {
+      "blake3": "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+      "bytes": 1634,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac23/SN.class"
+    },
+    {
+      "blake3": "22ab3d89821604cfdf13b8a1de7a78ec85e180bb88f777be34bcae684f823ef6",
+      "bytes": 726,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac8/LD.class"
+    },
+    {
+      "blake3": "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff",
+      "bytes": 1290,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac8/SL.class"
+    },
+    {
+      "blake3": "134a88f1c08f372de81638d7b503af709e95a4c15e9bdd49e8c13ba13babca63",
+      "bytes": 1840,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac8/SM.class"
+    },
+    {
+      "blake3": "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+      "bytes": 1634,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/javac8/SN.class"
+    },
+    {
+      "blake3": "1534200624385ad2b8c59806befa2041ff5f3d5bc4b23e4b7d54605c97da74d9",
+      "bytes": 63045,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/manifest.json"
+    },
+    {
+      "blake3": "0133d63f1733c3fd20ab03a95aedb364cd7dec98b0eb0bb69e48782b91e3dd11",
+      "bytes": 223,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/source/LD.java"
+    },
+    {
+      "blake3": "63fbea9322c3000149514ddc64172c38c1371972bc57ee887bff36ed09e43f38",
+      "bytes": 1205,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/source/SL.java"
+    },
+    {
+      "blake3": "75abe9fce9b76f33a129066215d3c354e7b89566b37f37cd3c951b24291f727f",
+      "bytes": 1186,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/source/SM.java"
+    },
+    {
+      "blake3": "b639bd647dde4a08e07733205baebc2ad4733579b9706d7735ab32400cb4a28f",
+      "bytes": 930,
+      "path": "tests/fixtures/p3-switch-nonlocal-exits/source/SN.java"
     },
     {
       "blake3": "a050c4457e0043a065aa5ca51943471adda341c3512810c9269e67acccc6c6dc",
@@ -12419,6 +12499,26 @@
       "blake3": "d8ba00e217f530fe4148fe099323f7887bfd2b952c49689a32b6fca134e935ba",
       "bytes": 1777,
       "path": "tests/fixtures/shared-latch-nested-loops/ThreeLevel.java"
+    },
+    {
+      "blake3": "ef711bb7b7d5425adf435bcca71f33943c205ba69d31ddb233c55c57d3e2ab7e",
+      "bytes": 1103,
+      "path": "tests/fixtures/switch-loop-exception-boundary/SwitchLoopExceptionBoundary.java"
+    },
+    {
+      "blake3": "1b12ffce41742df76321a58bacaf6a17b8a8f653ffe885ecfe5ed92fac38c072",
+      "bytes": 1570,
+      "path": "tests/fixtures/switch-loop-exception-boundary/javac23/SwitchLoopExceptionBoundary.class"
+    },
+    {
+      "blake3": "d62f12b5bbcc24529d4b9adf7c0c622053eae5402ead5aac90b1af2987c7fba3",
+      "bytes": 1573,
+      "path": "tests/fixtures/switch-loop-exception-boundary/javac8/SwitchLoopExceptionBoundary.class"
+    },
+    {
+      "blake3": "414d5055dd82b14e4d065370dc7e91068a2f41977867a52dc7fd192a3961f558",
+      "bytes": 21459,
+      "path": "tests/fixtures/switch-loop-exception-boundary/manifest.json"
     }
   ],
   "known_gaps": [

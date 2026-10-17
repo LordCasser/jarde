@@ -3781,6 +3781,9 @@ struct LoopTarget {
     exits: BTreeSet<usize>,
     break_target: Option<usize>,
     continue_target: usize,
+    /// Return leaves certified for this loop body. Keeping the proof on its owner lets nested
+    /// switch classification distinguish a decoded return from an arbitrary terminal block.
+    terminal_returns: Arc<BTreeSet<usize>>,
 }
 
 /// The nested synchronized body a frame is the walk of: every block the enclosing monitor plan
@@ -3884,11 +3887,18 @@ fn nested_side_exit_edge_rows_proved<'a>(
 
 /// Where a switch inside a loop meets, decided by [`Walker::switch_loop_join`].
 enum SwitchLoopJoin {
-    /// One proved in-loop join the arms' own routes share.
-    Local(usize),
+    /// One proved in-loop join the arms' own routes share, plus an exact continue destination
+    /// reached by another arm when the switch has a mixed completion shape.
+    Local {
+        join: usize,
+        continue_target: Option<usize>,
+    },
     /// No block inside the loop is met by two arms: every arm's route ends at the current
     /// loop's continue target, so that target is the join and the arms fall out of the switch.
     ContinueTarget,
+    /// Every arm route was proved to end at a loop transfer or a loop-owned terminal return, with
+    /// no shared local join. The arm frame must still know which exact target is a continue.
+    Closed { continue_target: Option<usize> },
     /// The arm routes cannot be classified, or they share an in-loop block this proof cannot
     /// elect as the one join. The switch is refused.
     Refused,
@@ -3960,6 +3970,7 @@ impl Frame {
                     exits,
                     break_target,
                     continue_target,
+                    terminal_returns: Arc::new(terminal_returns.clone()),
                 });
                 targets
             },
@@ -17900,7 +17911,8 @@ impl Walker<'_> {
     }
 
     /// A terminal return leaf can belong to a loop despite having no back edge. Its only entry
-    /// must be one comparison in the natural loop, and its only exit must return from this
+    /// must be one decoded conditional or switch source in the natural loop, and its only exit
+    /// must return from this
     /// method (`do { if (…) return …; … } while (false);` compiles to exactly that: the constant
     /// false test leaves no loop, so the body's statement set — the conditional return's leaf
     /// included — is what the region has to own). The leaf's terminal instruction is checked
@@ -17926,15 +17938,25 @@ impl Walker<'_> {
                 Some(source_id.bci()),
             )?;
             let successors = self.view.successors(*source);
-            if successors.len() != 2
-                || !self
-                    .terminal_bci(source_id)
-                    .and_then(|bci| self.operations.get(bci))
-                    .is_some_and(|operation| operation.comparison().is_some())
-            {
+            let Some(operation) = self
+                .terminal_bci(source_id)
+                .and_then(|bci| self.operations.get(bci))
+            else {
+                continue;
+            };
+            let switch_targets = operation.switch();
+            let switch_source = switch_targets.is_some();
+            let successor_count = successors.len();
+            let source_is_candidate = if successors.len() == 2 && operation.comparison().is_some() {
+                true
+            } else {
+                successors.len() >= 2 && switch_source
+            };
+            if !source_is_candidate {
                 continue;
             }
-            for candidate in successors {
+            let mut switch_targets_match = None;
+            for candidate in successors.iter().copied() {
                 if blocks.contains(&candidate)
                     || Some(candidate) == normal_exit
                     || frame
@@ -17948,6 +17970,9 @@ impl Walker<'_> {
                 let Some(id) = self.view.id_of(candidate) else {
                     continue;
                 };
+                if switch_source && id.path() != source_id.path() {
+                    continue;
+                }
                 charge(
                     self.budget,
                     CountedBudgetDimension::AnalysisSteps,
@@ -17992,6 +18017,39 @@ impl Walker<'_> {
                 }) {
                     continue;
                 }
+                if let Some((cases, default)) = switch_targets {
+                    let targets_match = match switch_targets_match {
+                        Some(targets_match) => targets_match,
+                        None => {
+                            let work = u64::try_from(cases.len().saturating_add(successor_count))
+                                .unwrap_or(u64::MAX);
+                            poll(self.budget, Some(source_id.bci()))?;
+                            charge(
+                                self.budget,
+                                CountedBudgetDimension::AnalysisSteps,
+                                work,
+                                Some(source_id.bci()),
+                            )?;
+                            let mut decoded_targets: BTreeSet<u32> =
+                                cases.iter().map(|(_, target)| *target).collect();
+                            decoded_targets.insert(default);
+                            let graph_targets: Option<BTreeSet<u32>> = successors
+                                .iter()
+                                .map(|successor| {
+                                    self.view.id_of(*successor).map(CanonicalBlockId::bci)
+                                })
+                                .collect();
+                            let matches = graph_targets.as_ref().is_some_and(|targets| {
+                                targets.len() == successor_count && targets == &decoded_targets
+                            });
+                            switch_targets_match = Some(matches);
+                            matches
+                        }
+                    };
+                    if !targets_match {
+                        continue;
+                    }
+                }
                 leaves.insert(candidate);
             }
         }
@@ -18010,14 +18068,195 @@ impl Walker<'_> {
         expected.iter().all(|node| self.visited.contains(node))
     }
 
-    /// Find the one join of switch paths that stay in the current loop. An arm may instead end
-    /// at an exact, already proved loop break target, or end at the loop's own continue target
-    /// while its other route still completes at the shared join (the arm's `if (…) continue;`).
-    /// For the current loop's update, a case must end in its own explicit transfer; a normal
-    /// path through the shared join is not a continue. When no block inside the loop is met by
-    /// two arms' own routes, every arm's meeting point is the continue target itself, and the
-    /// answer says so ([`SwitchLoopJoin::ContinueTarget`]). This bounded proof does not claim
-    /// blocks or change the normal-flow graph.
+    /// Return every node incident to an exception or jsr-context edge. The strict switch
+    /// completion path is the only caller; proved postdominator paths pay no scan.
+    fn switch_non_normal_nodes(&mut self, at: u32) -> Result<Option<BTreeSet<usize>>, StopReason> {
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        let mut nodes = BTreeSet::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(at))?;
+            if matches!(
+                edge.kind(),
+                CanonicalEdgeKind::Exception { .. }
+                    | CanonicalEdgeKind::Call { .. }
+                    | CanonicalEdgeKind::Return { .. }
+            ) {
+                let (Some(from), Some(to)) = (
+                    self.view.index_of(edge.from()),
+                    self.view.index_of(edge.to()),
+                ) else {
+                    return Ok(None);
+                };
+                nodes.insert(from);
+                nodes.insert(to);
+            }
+        }
+        Ok(Some(nodes))
+    }
+
+    /// Check that every normal predecessor of each owned interior node is the dispatch edge
+    /// into a real case target or another node owned by the same arm.
+    fn switch_owned_arm_edges_closed(
+        &mut self,
+        branch: usize,
+        entries: &BTreeSet<usize>,
+        owners: &BTreeMap<usize, usize>,
+        terminal_returns: &BTreeSet<usize>,
+        exceptional_nodes: &BTreeSet<usize>,
+        at: u32,
+    ) -> Result<bool, StopReason> {
+        let Some(branch_id) = self.view.id_of(branch) else {
+            return Ok(false);
+        };
+        let branch_path = branch_id.path().to_vec();
+        for (owned, arm) in owners {
+            if terminal_returns.contains(owned) {
+                continue;
+            }
+            if !self.view.dominates(branch, *owned) {
+                return Ok(false);
+            }
+            let predecessors = self.view.predecessors(*owned);
+            for predecessor in predecessors {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                let dispatch_entry = predecessor == branch
+                    && entries.contains(owned)
+                    && !exceptional_nodes.contains(&branch)
+                    && self.view.successors(branch).contains(owned)
+                    && self
+                        .view
+                        .id_of(*owned)
+                        .is_some_and(|id| id.path() == branch_path.as_slice())
+                    && self
+                        .view
+                        .id_of(branch)
+                        .and_then(|id| self.terminal_bci(id))
+                        .and_then(|bci| self.operations.get(bci))
+                        .is_some_and(|operation| operation.switch().is_some());
+                if !dispatch_entry && owners.get(&predecessor) != Some(arm) {
+                    return Ok(false);
+                }
+            }
+        }
+        Ok(true)
+    }
+
+    /// A local join is a common owner boundary: every normal predecessor comes from an arm
+    /// already walked, and at least two distinct arms enter it.
+    fn switch_join_incoming_owned(
+        &mut self,
+        candidate: usize,
+        owners: &BTreeMap<usize, usize>,
+        at: u32,
+    ) -> Result<bool, StopReason> {
+        let predecessors = self.view.predecessors(candidate);
+        if predecessors.is_empty() {
+            return Ok(false);
+        }
+        let mut incoming_arms = BTreeSet::new();
+        for predecessor in predecessors {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            let Some(arm) = owners.get(&predecessor) else {
+                return Ok(false);
+            };
+            incoming_arms.insert(*arm);
+        }
+        Ok(incoming_arms.len() >= 2)
+    }
+
+    /// A return leaf is usable only when the owning loop already certified it, it is in the
+    /// current scope, has no normal successor, and belongs to the switch's clone path.
+    fn switch_return_leaf(
+        &self,
+        current: usize,
+        branch: usize,
+        scope: &BTreeSet<usize>,
+        terminal_returns: &BTreeSet<usize>,
+    ) -> bool {
+        terminal_returns.contains(&current)
+            && scope.contains(&current)
+            && self.view.successors(current).is_empty()
+            && self
+                .view
+                .id_of(current)
+                .zip(self.view.id_of(branch))
+                .is_some_and(|(id, branch_id)| id.path() == branch_id.path())
+            && self
+                .view
+                .id_of(current)
+                .and_then(|id| self.ssa.block(id))
+                .and_then(|block| block.instructions().last())
+                .is_some_and(|instruction| {
+                    matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Return)
+                    )
+                })
+    }
+
+    /// Whether an arm reaches an exact switch-target completion directly, or through one
+    /// decoded transfer block. Destination membership in the active loop targets stays with the
+    /// caller so this helper only certifies the edge shape.
+    fn switch_completion_edge(
+        &self,
+        branch: usize,
+        entry: usize,
+        current: usize,
+        predecessor: Option<usize>,
+        exceptional_nodes: &BTreeSet<usize>,
+    ) -> bool {
+        let direct = predecessor.is_none()
+            && entry == current
+            && !exceptional_nodes.contains(&branch)
+            && self.view.successors(branch).contains(&current)
+            && self
+                .view
+                .id_of(current)
+                .zip(self.view.id_of(branch))
+                .is_some_and(|(target, source)| target.path() == source.path())
+            && self
+                .view
+                .id_of(branch)
+                .and_then(|id| self.terminal_bci(id))
+                .and_then(|bci| self.operations.get(bci))
+                .is_some_and(|operation| operation.switch().is_some());
+        let transfer = predecessor.is_some_and(|source| {
+            self.view.successors(source) == [current]
+                && !exceptional_nodes.contains(&source)
+                && self
+                    .view
+                    .id_of(source)
+                    .zip(self.view.id_of(current))
+                    .is_some_and(|(from, to)| from.path() == to.path())
+                && self
+                    .view
+                    .id_of(source)
+                    .and_then(|id| self.terminal_bci(id))
+                    .and_then(|bci| self.operations.get(bci))
+                    .is_some_and(|operation| matches!(operation, Operation::Transfer))
+        });
+        direct || transfer
+    }
+
+    /// Find a local join for a loop switch. Existing postdominator shapes use their original
+    /// candidate rules; only the unresolved no-postdominator shapes use the stricter certificate.
     fn switch_loop_join(
         &mut self,
         branch: usize,
@@ -18025,6 +18264,7 @@ impl Walker<'_> {
         frame: &Frame,
         at: u32,
         continue_target: Option<usize>,
+        post_is_loop_exit: bool,
     ) -> Result<SwitchLoopJoin, StopReason> {
         let Some(scope) = &frame.scope else {
             return Ok(SwitchLoopJoin::Refused);
@@ -18036,116 +18276,368 @@ impl Walker<'_> {
         if entries.len() != successors.len() {
             return Ok(SwitchLoopJoin::Refused);
         }
+        let Some(branch_path) = self.view.id_of(branch).map(|id| id.path().to_vec()) else {
+            return Ok(SwitchLoopJoin::Refused);
+        };
         let exits: BTreeSet<usize> = frame
             .loop_targets
             .iter()
             .filter_map(|target| target.break_target)
             .collect();
-        let mut proved = Vec::new();
-        // Whether any block inside the loop is met by two or more arms' own routes. When no such
-        // block exists and no local join was proved, every arm's meeting point is the loop's own
-        // continue target, and that target is the join (the arms fall out of the switch into it).
-        let mut shared_tail = false;
-        for candidate in scope {
-            if *candidate == branch
-                || entries.contains(candidate)
-                || continue_target == Some(*candidate)
-                || frame.boundary == Some(*candidate)
-                || self.view.predecessors(*candidate).len() < 2
-                || !self.view.dominates(branch, *candidate)
-                || (continue_target.is_some()
-                    && !self.forward_join_predecessors(branch, *candidate))
-            {
-                continue;
+        let continue_targets: BTreeSet<usize> = frame
+            .loop_targets
+            .iter()
+            .map(|target| target.continue_target)
+            .collect();
+        let current_continue = frame
+            .loop_targets
+            .last()
+            .map(|target| target.continue_target);
+        let strict_candidates = !post_is_loop_exit;
+        if strict_candidates
+            && continue_target.is_some_and(|target| !continue_targets.contains(&target))
+        {
+            return Ok(SwitchLoopJoin::Refused);
+        }
+        let no_terminal_returns = BTreeSet::new();
+        let terminal_returns = frame
+            .loop_targets
+            .last()
+            .map(|target| target.terminal_returns.as_ref())
+            .unwrap_or(&no_terminal_returns);
+        let mut exceptional_nodes = if strict_candidates {
+            let Some(nodes) = self.switch_non_normal_nodes(at)? else {
+                return Ok(SwitchLoopJoin::Refused);
+            };
+            nodes
+        } else {
+            BTreeSet::new()
+        };
+        if strict_candidates {
+            let mut unique_targets = BTreeSet::new();
+            if frame.loop_targets.iter().any(|target| {
+                target
+                    .break_target
+                    .is_some_and(|destination| !unique_targets.insert(destination))
+                    || !unique_targets.insert(target.continue_target)
+            }) {
+                return Ok(SwitchLoopJoin::Refused);
             }
-            let mut normal_arms = 0;
-            let mut continue_arms = 0;
-            let mut valid = true;
-            for entry in &entries {
-                let mut seen = BTreeSet::new();
-                let mut work = vec![(*entry, None)];
-                let mut reaches_join = false;
-                let mut reaches_continue = false;
-                let mut arm_valid = true;
-                while let Some((current, predecessor)) = work.pop() {
-                    poll(self.budget, Some(at))?;
-                    charge(
-                        self.budget,
-                        CountedBudgetDimension::AnalysisSteps,
-                        1,
-                        Some(at),
-                    )?;
-                    if current == *candidate {
-                        reaches_join = true;
-                        continue;
-                    }
-                    if continue_target == Some(current) {
-                        let explicit_transfer = predecessor.is_some_and(|source| {
-                            self.view.successors(source) == [current]
+            if exceptional_nodes.contains(&branch) {
+                return Ok(SwitchLoopJoin::Refused);
+            }
+        }
+
+        let (proved, shared_tail) = {
+            let mut proved = Vec::new();
+            let mut shared_tail = false;
+            for candidate in scope {
+                if *candidate == branch
+                    || entries.contains(candidate)
+                    || frame.boundary == Some(*candidate)
+                    || self.view.predecessors(*candidate).len() < 2
+                    || !self.view.dominates(branch, *candidate)
+                    || (strict_candidates
+                        && (continue_targets.contains(candidate)
+                            || exits.contains(candidate)
+                            || terminal_returns.contains(candidate)
+                            || exceptional_nodes.contains(candidate)
+                            || self
+                                .view
+                                .id_of(*candidate)
+                                .is_none_or(|id| id.path() != branch_path.as_slice())))
+                    || (post_is_loop_exit && continue_target == Some(*candidate))
+                    || (continue_target.is_some()
+                        && !self.forward_join_predecessors(branch, *candidate))
+                {
+                    continue;
+                }
+                let mut normal_arms = 0;
+                let mut continue_arms = 0;
+                let mut valid = true;
+                let mut owners = BTreeMap::new();
+                for (arm, entry) in entries.iter().enumerate() {
+                    let mut seen = BTreeSet::new();
+                    let mut work = vec![(*entry, None)];
+                    let mut reaches_join = false;
+                    let mut reaches_continue = false;
+                    let mut arm_valid = true;
+                    while let Some((current, predecessor)) = work.pop() {
+                        poll(self.budget, Some(at))?;
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(at),
+                        )?;
+                        if current == *candidate {
+                            reaches_join = true;
+                            continue;
+                        }
+                        if strict_candidates
+                            && (continue_targets.contains(&current) || exits.contains(&current))
+                        {
+                            if !self.switch_completion_edge(
+                                branch,
+                                *entry,
+                                current,
+                                predecessor,
+                                &exceptional_nodes,
+                            ) {
+                                arm_valid = false;
+                                break;
+                            }
+                            reaches_continue |= Some(current) == current_continue;
+                            continue;
+                        }
+                        if post_is_loop_exit && continue_target == Some(current) {
+                            let explicit_transfer = predecessor.is_some_and(|source| {
+                                self.view.successors(source) == [current]
+                                    && self
+                                        .view
+                                        .id_of(source)
+                                        .and_then(|block| self.terminal_bci(block))
+                                        .and_then(|bci| self.operations.get(bci))
+                                        .is_some_and(|operation| {
+                                            matches!(operation, Operation::Transfer)
+                                        })
+                            });
+                            if !explicit_transfer {
+                                arm_valid = false;
+                                break;
+                            }
+                            reaches_continue = true;
+                            continue;
+                        }
+                        if post_is_loop_exit && exits.contains(&current) {
+                            continue;
+                        }
+                        if strict_candidates
+                            && self.switch_return_leaf(current, branch, scope, terminal_returns)
+                        {
+                            if owners
+                                .insert(current, arm)
+                                .is_some_and(|owner| owner != arm)
+                            {
+                                arm_valid = false;
+                                break;
+                            }
+                            continue;
+                        }
+                        if (strict_candidates
+                            && (exceptional_nodes.contains(&current)
+                                || self
+                                    .view
+                                    .id_of(current)
+                                    .is_none_or(|id| id.path() != branch_path.as_slice())))
+                            || !scope.contains(&current)
+                            || frame.boundary == Some(current)
+                            || (current != *entry && entries.contains(&current))
+                            || ((strict_candidates || continue_target.is_some())
                                 && self
                                     .view
-                                    .id_of(source)
-                                    .and_then(|block| self.terminal_bci(block))
+                                    .id_of(current)
+                                    .and_then(|id| self.terminal_bci(id))
                                     .and_then(|bci| self.operations.get(bci))
-                                    .is_some_and(|operation| {
-                                        matches!(operation, Operation::Transfer)
-                                    })
-                        });
-                        if !explicit_transfer {
+                                    .is_some_and(|operation| operation.switch().is_some()))
+                            || (strict_candidates
+                                && owners
+                                    .insert(current, arm)
+                                    .is_some_and(|owner| owner != arm))
+                            || !seen.insert(current)
+                        {
                             arm_valid = false;
                             break;
                         }
-                        reaches_continue = true;
+                        let next = self.view.successors(current);
+                        if next.is_empty() {
+                            arm_valid = false;
+                            break;
+                        }
+                        work.extend(next.into_iter().map(|successor| (successor, Some(current))));
+                    }
+                    if !arm_valid {
+                        valid = false;
                         continue;
                     }
-                    if exits.contains(&current) {
-                        continue;
-                    }
-                    if !scope.contains(&current)
-                        || frame.boundary == Some(current)
-                        || (current != *entry && entries.contains(&current))
-                        || (continue_target.is_some()
-                            && self
-                                .view
-                                .id_of(current)
-                                .and_then(|block| self.terminal_bci(block))
-                                .and_then(|bci| self.operations.get(bci))
-                                .is_some_and(|operation| operation.switch().is_some()))
-                        || !seen.insert(current)
-                    {
-                        arm_valid = false;
-                        break;
-                    }
-                    let next = self.view.successors(current);
-                    if next.is_empty() {
-                        arm_valid = false;
-                        break;
-                    }
-                    work.extend(next.into_iter().map(|successor| (successor, Some(current))));
+                    normal_arms += usize::from(reaches_join);
+                    continue_arms += usize::from(reaches_continue);
                 }
-                // One arm's unclassifiable route (across another case entry, out of the scope)
-                // keeps this candidate from being *proved*, but the other arms still say whether
-                // the candidate is a real meeting point of the switch — which is what decides
-                // between refusing and letting the loop's own continue target be the join.
-                if !arm_valid {
+                if strict_candidates
+                    && valid
+                    && (!self.switch_owned_arm_edges_closed(
+                        branch,
+                        &entries,
+                        &owners,
+                        terminal_returns,
+                        &exceptional_nodes,
+                        at,
+                    )? || !self.switch_join_incoming_owned(*candidate, &owners, at)?)
+                {
                     valid = false;
-                    continue;
                 }
-                normal_arms += usize::from(reaches_join);
-                continue_arms += usize::from(reaches_continue);
+                shared_tail |= normal_arms >= 2;
+                if valid
+                    && normal_arms >= 2
+                    && (!post_is_loop_exit || continue_target.is_none() || continue_arms > 0)
+                {
+                    proved.push((
+                        *candidate,
+                        if strict_candidates && continue_arms > 0 {
+                            current_continue
+                        } else {
+                            None
+                        },
+                    ));
+                }
             }
-            shared_tail |= normal_arms >= 2;
-            if valid && normal_arms >= 2 && (continue_target.is_none() || continue_arms > 0) {
-                proved.push(*candidate);
+            (proved, shared_tail)
+        };
+
+        if proved.len() == 1 {
+            let (join, continue_target) = proved[0];
+            return Ok(SwitchLoopJoin::Local {
+                join,
+                continue_target,
+            });
+        }
+        if !proved.is_empty() || shared_tail {
+            return Ok(SwitchLoopJoin::Refused);
+        }
+        if post_is_loop_exit && continue_target.is_some() {
+            return Ok(SwitchLoopJoin::ContinueTarget);
+        }
+
+        // A postdominator shape reaches strict classification only when the old candidate search
+        // found no shared local tail and had no usable current-loop continue. The unresolved new
+        // path reaches here after its single strict candidate search.
+        if post_is_loop_exit {
+            let Some(nodes) = self.switch_non_normal_nodes(at)? else {
+                return Ok(SwitchLoopJoin::Refused);
+            };
+            exceptional_nodes = nodes;
+            if exceptional_nodes.contains(&branch) {
+                return Ok(SwitchLoopJoin::Refused);
+            }
+            let mut unique_targets = BTreeSet::new();
+            if frame.loop_targets.iter().any(|target| {
+                target
+                    .break_target
+                    .is_some_and(|destination| !unique_targets.insert(destination))
+                    || !unique_targets.insert(target.continue_target)
+            }) {
+                return Ok(SwitchLoopJoin::Refused);
             }
         }
-        Ok(if proved.len() == 1 {
-            SwitchLoopJoin::Local(proved.first().copied().expect("one proved candidate"))
-        } else if proved.is_empty() && !shared_tail {
-            SwitchLoopJoin::ContinueTarget
+
+        let mut closed = true;
+        let mut all_continue_only = true;
+        let mut any_current_continue = false;
+        let mut owners = BTreeMap::new();
+        for (arm, entry) in entries.iter().enumerate() {
+            let mut seen = BTreeSet::new();
+            let mut work = vec![(*entry, None)];
+            let mut reached_completion = false;
+            let mut reached_continue = false;
+            let mut reached_other = false;
+            while let Some((current, predecessor)) = work.pop() {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                if continue_targets.contains(&current) || exits.contains(&current) {
+                    if !self.switch_completion_edge(
+                        branch,
+                        *entry,
+                        current,
+                        predecessor,
+                        &exceptional_nodes,
+                    ) {
+                        closed = false;
+                        break;
+                    }
+                    reached_completion = true;
+                    if Some(current) == current_continue {
+                        reached_continue = true;
+                    } else {
+                        reached_other = true;
+                    }
+                    continue;
+                }
+                if self.switch_return_leaf(current, branch, scope, terminal_returns) {
+                    if owners
+                        .insert(current, arm)
+                        .is_some_and(|owner| owner != arm)
+                    {
+                        closed = false;
+                        break;
+                    }
+                    reached_completion = true;
+                    reached_other = true;
+                    continue;
+                }
+                if exceptional_nodes.contains(&current)
+                    || self
+                        .view
+                        .id_of(current)
+                        .is_none_or(|id| id.path() != branch_path.as_slice())
+                    || !scope.contains(&current)
+                    || frame.boundary == Some(current)
+                    || (current != *entry && entries.contains(&current))
+                    || self
+                        .view
+                        .id_of(current)
+                        .and_then(|id| self.terminal_bci(id))
+                        .and_then(|bci| self.operations.get(bci))
+                        .is_some_and(|operation| operation.switch().is_some())
+                    || owners
+                        .insert(current, arm)
+                        .is_some_and(|owner| owner != arm)
+                    || !seen.insert(current)
+                {
+                    closed = false;
+                    break;
+                }
+                let next = self.view.successors(current);
+                if next.is_empty() {
+                    closed = false;
+                    break;
+                }
+                work.extend(next.into_iter().map(|successor| (successor, Some(current))));
+            }
+            if !closed || !reached_completion {
+                closed = false;
+                break;
+            }
+            any_current_continue |= reached_continue;
+            all_continue_only &= reached_continue && !reached_other;
+        }
+        if !closed
+            || !self.switch_owned_arm_edges_closed(
+                branch,
+                &entries,
+                &owners,
+                terminal_returns,
+                &exceptional_nodes,
+                at,
+            )?
+        {
+            return Ok(SwitchLoopJoin::Refused);
+        }
+        if all_continue_only && any_current_continue {
+            Ok(SwitchLoopJoin::ContinueTarget)
         } else {
-            SwitchLoopJoin::Refused
-        })
+            Ok(SwitchLoopJoin::Closed {
+                continue_target: if any_current_continue {
+                    current_continue
+                } else {
+                    None
+                },
+            })
+        }
     }
 
     /// The region of one block whose terminal instruction is a decoded `switch`.
@@ -18212,29 +18704,63 @@ impl Walker<'_> {
                 .iter()
                 .any(|target| target.break_target == Some(join))
         });
-        let switch_continue = post_join.filter(|join| {
+        let post_is_loop_continue = post_join.is_some_and(|join| {
+            frame
+                .loop_targets
+                .iter()
+                .any(|target| target.continue_target == join)
+        });
+        let mut switch_continue = post_join.filter(|join| {
             frame
                 .loop_targets
                 .last()
                 .is_some_and(|target| target.continue_target == *join)
         });
-        let post_is_loop_exit = post_is_loop_break || switch_continue.is_some();
+        let post_is_loop_exit = post_is_loop_break || post_is_loop_continue;
         let (forward_join, candidate_fallthroughs) = if !post_is_loop_exit && post_join.is_none() {
             self.switch_forward_join(node, successors, cases, default, frame, branch.bci())?
         } else {
             (None, None)
         };
-        let join_node = if post_is_loop_exit {
-            match self.switch_loop_join(node, successors, frame, branch_bci, switch_continue)? {
-                SwitchLoopJoin::Local(local_join) => Some(local_join),
+        let try_switch_loop_join = !frame.loop_targets.is_empty()
+            && frame.scope.is_some()
+            && (post_is_loop_exit || (post_join.is_none() && forward_join.is_none()));
+        let mut switch_loop_proved = false;
+        let mut closed_without_local_join = false;
+        let join_node = if try_switch_loop_join {
+            switch_loop_proved = true;
+            match self.switch_loop_join(
+                node,
+                successors,
+                frame,
+                branch_bci,
+                switch_continue,
+                post_is_loop_exit,
+            )? {
+                SwitchLoopJoin::Local {
+                    join: local_join,
+                    continue_target,
+                } => {
+                    switch_continue = continue_target.or(switch_continue);
+                    Some(local_join)
+                }
                 // Every arm's route ends at the loop's own continue target: the join is that
-                // target and the arms fall out of the switch into it. `switch_continue` is
-                // `Some` exactly when the post-dominator *is* that target, so a switch whose
-                // post-dominator is a loop break still refuses below.
-                SwitchLoopJoin::ContinueTarget => switch_continue,
+                // target and the arms fall out of the switch into it.
+                SwitchLoopJoin::ContinueTarget => {
+                    switch_continue = switch_continue.or_else(|| {
+                        frame
+                            .loop_targets
+                            .last()
+                            .map(|target| target.continue_target)
+                    });
+                    switch_continue
+                }
+                SwitchLoopJoin::Closed { continue_target } => {
+                    closed_without_local_join = true;
+                    switch_continue = continue_target.or(switch_continue);
+                    None
+                }
                 SwitchLoopJoin::Refused => {
-                    // An enclosing loop exit cannot stand in for a switch's local join. Without a
-                    // unique in-loop meeting point the arm ownership remains unproved.
                     return Ok(quoted(
                         &[],
                         FallbackReason::SwitchShape {
@@ -18246,7 +18772,7 @@ impl Walker<'_> {
         } else {
             post_join.or(forward_join)
         };
-        if post_is_loop_exit && join_node.is_none() {
+        if post_is_loop_exit && join_node.is_none() && !closed_without_local_join {
             return Ok(quoted(
                 &[],
                 FallbackReason::SwitchShape {
@@ -18392,8 +18918,9 @@ impl Walker<'_> {
             let proven_fallthrough = fall_throughs
                 .as_ref()
                 .is_some_and(|fall_throughs| !fall_throughs.is_empty());
-            let local_loop_join = post_is_loop_exit && join_node != post_join;
-            let case_frame = if proven_fallthrough || local_loop_join {
+            let proved_loop_arms =
+                switch_loop_proved && (join_node != post_join || closed_without_local_join);
+            let case_frame = if proven_fallthrough || proved_loop_arms {
                 let current = self.view.index_of(&start);
                 let mut other_entries = case_entries.clone();
                 if let Some(current) = current {
@@ -20115,6 +20642,7 @@ mod tests {
                 exits: BTreeSet::new(),
                 break_target: None,
                 continue_target: 2,
+                terminal_returns: Arc::new(BTreeSet::new()),
             }],
             ..Frame::default()
         };
@@ -20129,6 +20657,7 @@ mod tests {
                 exits: BTreeSet::new(),
                 break_target: None,
                 continue_target: header,
+                terminal_returns: Arc::new(BTreeSet::new()),
             }],
             ..Frame::default()
         };
@@ -24898,6 +25427,7 @@ mod tests {
             continue_target: view
                 .index_of(block(56))
                 .expect("real parent continue target"),
+            terminal_returns: Arc::new(BTreeSet::new()),
         });
         let chains = crate::concat::Plan::empty();
         let sites = crate::init::Sites::empty();
@@ -25612,3 +26142,7 @@ mod finite_loop_catch_tests;
 #[cfg(test)]
 #[path = "region/protected_prefix_loop_tests.rs"]
 mod protected_prefix_loop_tests;
+
+#[cfg(test)]
+#[path = "region/switch_nonlocal_completion_tests.rs"]
+mod switch_nonlocal_completion_tests;
