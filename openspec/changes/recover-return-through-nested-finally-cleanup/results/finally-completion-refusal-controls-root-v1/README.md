@@ -1,0 +1,5 @@
+# 最终CLI的完整 FinallyCompletion 拒绝控制
+
+两份907B冻结class直接绑定原归档成员；同一4811eea2 CLI的default/all四配置保留七方法，完整生成文本均4114B，finallyReturns/finallyThrows维持拒绝。tryThrowsFinallyRuns仍是待独立实现的正向欠账，不能称负控制或已恢复。8次真实javac8/23原样整类编译均恰好在47/58/69行缺失返回，无重建类、无runtime。
+
+12命令/24raw逐字核SHA；source、工具及输入不变。首次只读接受器只识别英文，原中文诊断保留，root-v2仅补精确中文分类后接受；没有重跑工具链或修改生成文本。控制过程没有Cargo调用，也没有清理活动target。

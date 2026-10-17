@@ -2,17 +2,21 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-17 当前推进：finThrow 已验收交付，nestedFin 开始集成
+## 2026-10-17 当前推进：finThrow 与 nestedFin 已通过产品验收
 
 先从 GitHub 快进64个提交到 e5757b5a9920da5d2b86dc44d8c729c98caf1253，复核新交接与父 finally 真实4/7状态；旧本地 facade 草稿仅备份/stash，未应用。
 
 当前 `recover-branch-throw-return-finally` 为5/5：finThrow 的完整证明原本已有，缺口是纯比较入口无异常边，直到 throw 子分支才调用 guard。最小修复在单 catch-all row 起点、范围内 comparison、双正常 successor 入口提前调用既有 examine；不新增 proof/公开表示/Builder 机制。root已接受实际红基线、450 库单测/2 API测试、全 reader census、指纹与CI同款Clippy，以及最终 CLI 的4 profile/8次完整源码重编/16次隔离运行/144case 对照。JADX1.5.6 对同输入虽可编译，但清理抛异常会打印两次ft，真实失败原样保留。
 
-产品已提交推送6b32c708d1adea06558478fd0f339cc23885c581；strict365/0、primitive finally旧预期更新后的P5 19/0/1、双fresh seed各375targets/98batches/3686通过/0失败/98忽略均已独立接受。该产品自身[CI39037102727](https://github.com/LordCasser/jarde/actions/runs/39037102727)已由root独立接受：4jobs/52steps，两seed各375targets/3686通过/0失败/98忽略，9项关键门均通过；关闭文档后另核实际clean主线，文档head不冒称自身跑过产品CI。证据均在该change的results及root-review.json；父 `recover-return-through-effectful-finally` 仍4/7，71/612不增加。
+产品已提交推送6b32c708d1adea06558478fd0f339cc23885c581；strict365/0、primitive finally旧预期更新后的P5 19/0/1、双fresh seed各375targets/98batches/3686通过/0失败/98忽略均已独立接受。该产品自身[CI39037102727](https://github.com/LordCasser/jarde/actions/runs/39037102727)已由root独立接受：4jobs/52steps，两seed各375targets/3686通过/0失败/98忽略，9项关键门均通过；关闭文档后另核实际clean主线，文档head不冒称自身跑过产品CI。证据均在该change的results及root-review.json；该finThrow单独交付阶段父 `recover-return-through-effectful-finally` 为4/7；最终组合验收状态见下文，71/612不增加。
 
-`recover-return-through-nested-finally-cleanup` 当前13/16，实际六块/四行Facts、全部四行generic proof及首拒已确认：资源入口候选[1,0]，outer row1被RangeEnd5!=25拒绝。双509B完整独立class与完整EX红基线已采集；JADX1.5.6虽六次编译成功，十二次运行均在out抛错时出现IOIO，不能照搬其outer catch结构。原始source控制8次/144case，另封存EX字节4次/72case输出逐字相同。证据见该change的results/baseline-matrix-root-v2、sealed-class-oracle-root-v1及first-refusal-root-v1。
+`recover-return-through-nested-finally-cleanup` 的实现产品 **4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5** 已提交推送。root按OpenSpec取实际六块/四行Facts及全部generic首拒后派发Luna，保留公开Finally/SavedReturn与Try AST，私有Plan只存两个呈现区间并一次拥有六块；root修正SSA local/stack身份链、核四份out副本和全部异常归属、Builder完整回滚。15真实canonical邻变体拒绝并通过双JVM30次验证，late预算/取消/期限不发布部分正文/映射，453库/2API与当前CI Clippy通过。原编译与首拒失败raw保留。
 
-Luna私有候选保留公开Finally/SavedReturn，Plan私有区间负责fused块内嵌套cleanup。root已审查四份out副本、显式handler集、返回/重抛SSA及Builder原子回滚，并修正未绑定变量、35指令预期和重复测试helper。候选已集成并通过实际focused-v3的25库测试/2公库API，包含15邻变体、晚proof stop及三来源文本/映射/35BCI。root修复了切片API和SSA local/stack身份误比，失败raw保留；最终CLI 4811eea2…已通过453库/2API/CI同款Clippy及nested432个重建场景；完整EX4次原样重编、8次nested driver运行通过，六方法/20个方法配置的全部BCI与映射身份已核，非nested文本同基线。该CLI另重验finThrow144case通过。精确产品自身CI、父wide最终门及交付仍待完成，不能提前关闭叶片。durable草稿与工具在该change的results/static-review-root-v2及tools，原始错误稿亦单独保留。
+同一冻结CLI **4811eea2d7f52d4c1b818c86acc1d961c91e3d7fe9d5adaa2c53131f84140f8e** 完成nested432及finThrow144个rebuilt case，共576；完整封存EX六方法保留、4次原样整类重编和8次nested driver运行通过，20个方法配置全部BCI/映射/身份接受，非nested文本同旧基线，finReturn仍fallback。FY/FX/FO父矩阵6完整类32方法同基线，6原样编译/12 rebuilt-only main等固定原oracle。FinallyCompletion完整七方法四配置保持三fallback，8次原样编译仍各三处missing return，无runtime；没有删方法凑绿。
+
+产品自身[CI39042611463](https://github.com/LordCasser/jarde/actions/runs/39042611463)已独立接受：4jobs/52steps，两seed各376targets、3691通过/0失败/98忽略，14关键门各一次通过；两个native seed也各376targets/98批/3691/0/98，4933来源/inventory/每target计数相同，404raw接受，默认栈/5GiB/1GiB/每秒守卫及最终exact clean，target不存在。父29本地门131 passing appearances/127不同FQN、双strict365/0、本地MSRV1.88通过，两轮实际运行及最初MSRV启动失败分别保留。证据全部在该nested change的results索引与root-review，产品CI不冒称后续文档head自身CI。叶片16/16、父7/7，更新计划后OpenSpec1.11.0/1.14.0 strict均365/0。实现验收完成，尚未同步/移动归档；后续提交与clean-main收据见nested结果的final-delivery-root-v1。
+
+JADX1.5.6的nested两次cleanup导致IOIO真实失败、父FX两次undefined-th编译失败均保留，不把它当正确oracle。下一独立欠账是 **FinallyCompletion.tryThrowsFinallyRuns()I**：没有正常return，不能冒用Void；只有exceptional cleanup而无normal copy，需先做实际Facts/SSA/effects/guard首拒probe后再定最小机制。普通cleanup调用抛错必须覆盖pending primary，是正向语义；finally自身显式return/throw继续范围外。静态备忘在父results/exception-only-next-analysis-root-v1，未运行probe、未实现、不计完成。
 
 以下10月15日内容为历史记录，当前状态优先看本节与对应change实际任务、raw、源码/工具pin、自身CI。
 

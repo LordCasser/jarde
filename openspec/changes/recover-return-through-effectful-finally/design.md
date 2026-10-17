@@ -24,7 +24,7 @@
 
 有界扫描使用既有账本，预算/取消/期限必须按既有原因和usage返回。缺证保留原fallback、生产者、来源与拒绝。Builder成功后才允许原子投影；真实For节点、ownership和最后一次付费poll全部通过才修改正文与Region。正常边不改，handler来源不冒充循环gateway。完整证据与essential模式正文须相同。
 
-### 当前对照基线和验收范围
+### 历史30afa对照基线和验收范围
 
 原patrol是历史，不改写其原始输出。父级当前矩阵写入本change；当前05e CLI对6整类32方法的24命令重筛、固定JADX的21命令、叶片JAR/WAR与独立driver均引用真实归档。纯Python独立解析32个Code/724个物理指令实例，核来源无缺失/多余且方法身份正确。前一b4a6 CLI至当前05e的28个非transfer方法记录文本不变；transfer4记录允许预期去fallback。EX.finReturn前后文本相同且仍fallback，FinallyCompletion两完整4114B输出各3个missing return，均是红项，不计新行为成功。
 
@@ -32,7 +32,7 @@
 
 - [固定main和有界driver只观察部分输入] → 明确记录观察集合，语义要求另由SSA、effects与负控制支撑；不宣称动态覆盖不可观察handler或所有异常。
 - [历史将fallback内if/else叫作已恢复] → 同时记录报告质量、完整类javac结果与是否真正运行rebuilt产物。
-- [叶片不同源码/CLI或父CI混记] → 使用产品30afa的实际4945源码Git blob/mode、冻结CLI、独立本地/CI收据；后续文档head只通过相同源码绑定，不称再次执行了产品CI。
+- [叶片不同源码/CLI或父CI混记] → 历史产品30afa以其4945项源码Git blob/mode绑定；最终4c6852以4933项当前源码pins、冻结4811eea2 CLI及自身本地/CI收据绑定；后续文档head只通过相同源码绑定，不称再次执行了产品CI。
 - [未来改动破坏对照] → 以当前产品固定的原始class、文本、oracle与真实双javac重编为基线；未证明形保留具体拒绝，不以删方法或修生成Java通过门禁。
 
 ## Migration Plan
@@ -41,4 +41,10 @@
 
 ## Remaining positive shapes
 
-固定三锚成功不穷尽原父范围。EX.finThrow的分支try抛错、EX.nestedFin的嵌套落穿cleanup保留本父正向实现待办；FinallyCompletion.tryThrowsFinallyRuns仅异常完成记录为相邻正向欠账，后续独立变更须先定义自己的正向规格，不由本父return场景授权实现；先对已封class取得真实Facts/SSA、异常边/值身份和出口覆盖，再决定既有Finally/Continuation接缝。finally自身return/throw边界独立保留。不得把固定fixture范围的文档验收当作这些形已实现，也不得删除原整类中的其它红方法凑完整编译。
+固定三锚成功不穷尽原父范围。EX.finThrow的分支try抛错、EX.nestedFin的嵌套落穿cleanup已在最终产品4c6852中按独立有界叶片实现并验收；FinallyCompletion.tryThrowsFinallyRuns仅异常完成记录为相邻正向欠账，后续独立变更须先定义自己的正向规格，不由本父return场景授权实现；先对已封class取得真实Facts/SSA、异常边/值身份和出口覆盖，再决定既有Finally/Continuation接缝。finally自身return/throw边界独立保留。不得把固定fixture范围的文档验收当作这些形已实现，也不得删除原整类中的其它红方法凑完整编译。
+
+## Final architecture review
+
+finThrow缺口仅为纯比较入口未调用既有guard：在有界catch-all row起点提前examine，证明与公共表示保持不变。nestedFin的canonical块融合主体与两段cleanup，不能由重复认领块的普通Region子树表达；私有Plan仅增加inner-body/inner-finally两个区间，外层Plan一次拥有全部六块，Builder复用两层Try AST与SavedReturn并完整checkpoint。四行异常路由、所有副本、may-throw sites、保存/重抛SSA值链及物理分区均由付费proof核完，未放宽通用copy guard，未新增公开Shape/AST/solver。15个canonical完整邻变体拒绝且通过30次双JVM严格验证；late budget/cancel/deadline不发布部分源码或映射。
+
+最终组合CLI对完整EX及双编译器独立类做原样编译/运行，nested432、finThrow144 case通过；JADX的重复清理错码和FX编译失败原样保留。FinallyCompletion七方法与三个fallback完整复验，8次原样整类编译各三处missing return；其中仅异常完成是独立正向欠账，显式finally return/throw仍拒绝。本父不扩大为任意finally，也不因局部完成增加71/612总账。
