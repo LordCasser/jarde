@@ -1,0 +1,286 @@
+{
+  "status": "passed_with_scope_note",
+  "scope": "Read-only quick audit of current scope correction; no Git/native/network/toolchain operations.",
+  "files": {
+    "proposal.md": {
+      "bytes": 3315,
+      "sha256": "e45c711c134785868bc0475fb1ba862df566028d7421d1021ab719b4ad6dc915"
+    },
+    "design.md": {
+      "bytes": 4906,
+      "sha256": "6b297b3030b40b7cc59aa9ba59e539c874069f5c599544f6bfbbd29f3a032ac4"
+    },
+    "instrumentation.md": {
+      "bytes": 8979,
+      "sha256": "891c301ff2547f064a2e680e4c566beae4f1dfeb6dbcb6d7599978e305bfde5d"
+    },
+    "specs/java8-recovery/spec.md": {
+      "bytes": 1785,
+      "sha256": "9ff6e32b5b340cf6b6ca2711ae839c84ca69c28d5603b5554a6941d7d4f0c72b"
+    },
+    "tasks.md": {
+      "bytes": 3556,
+      "sha256": "4cb9b87407be4c5912cc5fbed29930f87137fc431b78a8e911d80b5f89d53c55"
+    },
+    "results/remaining-controls-v1/README.md": {
+      "bytes": 2630,
+      "sha256": "a9b3b9c137b627a07b26065cfd0d17e3df3f20026dc36ccb74e2f8b4e6a64eb7"
+    },
+    "results/workflow-v1/README.md": {
+      "bytes": 1185,
+      "sha256": "82b5147087bf377f518cc272b9991647cd4cb5e52673da67b2f8937e71b4a529"
+    },
+    "results/workflow-v1/scope-correction-current-state.json": {
+      "bytes": 730,
+      "sha256": "79a5036c5f750542d59536d0a58675414a3fe82333c6552bd70aa67139577658"
+    }
+  },
+  "checks": {
+    "current_tasks_4of7_ids_consistent": true,
+    "superseded_seven_of_seven_explicit": true,
+    "main_still_active_unmodified_and_unsynced": true,
+    "EX_other_positive_debts_separate_from_negative_boundary": true,
+    "task_21_and_31_32_pending": true,
+    "corrected_strict_receipts_363_0": true,
+    "product_source_bytes_match_4945_frozen_rows": true,
+    "old_seven_receipt_preserved_as_historical": true
+  },
+  "open_spec_state": {
+    "progress": {
+      "total": 7,
+      "complete": 4,
+      "remaining": 3
+    },
+    "pending_ids": [
+      "3",
+      "6",
+      "7"
+    ],
+    "parent_active": true,
+    "spec_synced": false,
+    "archived": false,
+    "main_spec_bytes": 89354,
+    "main_spec_sha256": "c310000e15a8743e6154725e32919c15169abe3b145fce99b8949dfc1df2b47d",
+    "requirements_scenarios": {
+      "requirements": 24,
+      "scenarios": 164
+    }
+  },
+  "workflow_receipts": {
+    "parent-seven-status": {
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "status",
+        "--change",
+        "recover-return-through-effectful-finally",
+        "--json"
+      ],
+      "stdout_stream_hash_ok": true,
+      "stderr_stream_hash_ok": true,
+      "artifacts": {
+        "proposal": "done",
+        "specs": "done",
+        "design": "done",
+        "tasks": "done"
+      }
+    },
+    "parent-seven-apply": {
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "recover-return-through-effectful-finally",
+        "--json"
+      ],
+      "stdout_stream_hash_ok": true,
+      "stderr_stream_hash_ok": true,
+      "progress": {
+        "total": 7,
+        "complete": 7,
+        "remaining": 0
+      },
+      "done_ids": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "pending_ids": []
+    },
+    "parent-scope-corrected-status": {
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "status",
+        "--change",
+        "recover-return-through-effectful-finally",
+        "--json"
+      ],
+      "stdout_stream_hash_ok": true,
+      "stderr_stream_hash_ok": true,
+      "artifacts": {
+        "proposal": "done",
+        "specs": "done",
+        "design": "done",
+        "tasks": "done"
+      }
+    },
+    "parent-scope-corrected-apply": {
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "recover-return-through-effectful-finally",
+        "--json"
+      ],
+      "stdout_stream_hash_ok": true,
+      "stderr_stream_hash_ok": true,
+      "progress": {
+        "total": 7,
+        "complete": 4,
+        "remaining": 3
+      },
+      "done_ids": [
+        "1",
+        "2",
+        "4",
+        "5"
+      ],
+      "pending_ids": [
+        "3",
+        "6",
+        "7"
+      ]
+    },
+    "parent-scope-corrected-strict111": {
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+        "validate",
+        "--all",
+        "--strict"
+      ],
+      "stdout_stream_hash_ok": true,
+      "stderr_stream_hash_ok": true,
+      "strict_363_0": true
+    },
+    "parent-scope-corrected-strict114": {
+      "exit_code": 0,
+      "argv": [
+        "/home/lordcasser/.local/bin/openspec",
+        "validate",
+        "--all",
+        "--strict"
+      ],
+      "stdout_stream_hash_ok": true,
+      "stderr_stream_hash_ok": true,
+      "strict_363_0": true
+    }
+  },
+  "source_binding": {
+    "source_rows": 4945,
+    "missing_paths": [],
+    "mismatched_paths": [],
+    "current_source_bytes_match_frozen_receipt": true
+  },
+  "remaining_controls_package": {
+    "audit_status": "accepted_parent_remaining_controls_portable_evidence",
+    "checks": 325,
+    "errors": []
+  },
+  "local_links": {
+    "proposal.md": [
+      {
+        "target": "../../evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/README.md",
+        "exists": true
+      },
+      {
+        "target": "instrumentation.md",
+        "exists": true
+      }
+    ],
+    "design.md": [
+      {
+        "target": "proposal.md",
+        "exists": true
+      },
+      {
+        "target": "instrumentation.md",
+        "exists": true
+      }
+    ],
+    "instrumentation.md": [
+      {
+        "target": "../archive/2026-10-16-recover-conditional-return-finally-copies/instrumentation.md",
+        "exists": true
+      },
+      {
+        "target": "../archive/2026-10-16-recover-local-increment-loop-finally/design.md",
+        "exists": true
+      },
+      {
+        "target": "../archive/2026-10-16-recover-call-return-loop-finally/design.md",
+        "exists": true
+      },
+      {
+        "target": "../archive/2026-10-16-recover-static-field-prefix-return/results/fixed-recovery-v1/README.md",
+        "exists": true
+      },
+      {
+        "target": "../archive/2026-10-17-recover-loop-transfer-finally-handler/design.md",
+        "exists": true
+      },
+      {
+        "target": "../archive/2026-10-17-recover-loop-transfer-finally-handler/results/final-runtime-v1/README.md",
+        "exists": true
+      },
+      {
+        "target": "results/remaining-controls-v1/README.md",
+        "exists": true
+      }
+    ],
+    "specs/java8-recovery/spec.md": [],
+    "tasks.md": [],
+    "results/remaining-controls-v1/README.md": [],
+    "results/workflow-v1/README.md": []
+  },
+  "scope_note": "The factual correction is consistent: the new finThrow/nestedFin/tryThrowsFinallyRuns shapes are identified as positive implementation debts, while finally-owned return/throw remain refusal controls, and the old 7/7 status is explicitly historical. One contract gap remains: the active delta spec still names only the fixed FO/FY/FX return examples and generic refusal cases; it has no positive scenario for the newly added exception-only FinallyCompletion.tryThrowsFinallyRuns debt (the try throws, finally completes normally). Before those expanded tasks are treated as spec-governed acceptance, add a narrowly scoped scenario or clearly assign that shape to a separate future change. This is not a reason to alter main spec now; main remains 24/164 and unsynced.",
+  "blockers": [],
+  "task_ids": {
+    "complete": [
+      "1.1",
+      "1.2",
+      "2.2",
+      "2.3"
+    ],
+    "pending": [
+      "2.1",
+      "3.1",
+      "3.2"
+    ]
+  },
+  "historical_scope_stage_check": {
+    "status": "correctly marked superseded",
+    "original_7of7_receipts_preserved": true,
+    "current_receipt_progress": "4/7",
+    "current_scope_corrected_apply_receipt": "parent-scope-corrected-apply"
+  },
+  "spec_contract_note": {
+    "status": "needs_scope_alignment_before_acceptance",
+    "reason": "The newly owned FinallyCompletion.tryThrowsFinallyRuns case is an exception-only completion (try throws, finally falls through); the active delta contains only a return-through-finally requirement and has no explicit positive scenario for this exception-only case. If this remains in 2.1, add a narrow acceptance scenario; otherwise move it to a separate future change. EX.finThrow/nestedFin are listed in proposal/design/instrumentation/tasks as positive debt, but are not separately named in the delta scenarios."
+  },
+  "findings": [
+    {
+      "status": "needs_scope_alignment_before_acceptance",
+      "reason": "The newly owned FinallyCompletion.tryThrowsFinallyRuns case is an exception-only completion (try throws, finally falls through); the active delta contains only a return-through-finally requirement and has no explicit positive scenario for this exception-only case. If this remains in 2.1, add a narrow acceptance scenario; otherwise move it to a separate future change. EX.finThrow/nestedFin are listed in proposal/design/instrumentation/tasks as positive debt, but are not separately named in the delta scenarios."
+    }
+  ]
+}

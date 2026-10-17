@@ -1,0 +1,31 @@
+{
+  "scope": "Planning-only correction; no new implementation/JVM/CI",
+  "parent_progress": {
+    "total": 7,
+    "complete": 4,
+    "remaining": 3
+  },
+  "pending_task_ids": [
+    "3",
+    "6",
+    "7"
+  ],
+  "parent_active": true,
+  "parent_spec_synced": false,
+  "parent_archived": false,
+  "main_java8_bytes": 89354,
+  "main_java8_sha256": "c310000e15a8743e6154725e32919c15169abe3b145fce99b8949dfc1df2b47d",
+  "main_requirements": 24,
+  "main_scenarios": 164,
+  "transient_seven_of_seven_superseded": true,
+  "reason": "Full current EX report has finThrow/nestedFin positive-family debt. Previous assessment only tested narrowed fixed-fixture wording; preserve prior reports without using them for whole-parent completion.",
+  "final_apply_label": "parent-final-scope-apply",
+  "exception_only_future_change": true,
+  "parent_pending_positive_shapes": [
+    "EX.finThrow",
+    "EX.nestedFin"
+  ],
+  "adjacent_positive_debt_outside_return_scenario": [
+    "FinallyCompletion.tryThrowsFinallyRuns"
+  ]
+}

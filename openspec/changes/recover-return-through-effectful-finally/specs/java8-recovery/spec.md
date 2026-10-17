@@ -19,3 +19,7 @@
 #### Scenario: 不可证明时维持拒绝
 - **WHEN** 多 return 出口竞争同一 finally、finally 自含非局部出口、或求值序不可证（副作用与 return 表达式交织）
 - **THEN** 系统 MUST 保持整方法响亮拒绝与可定位诊断
+
+#### Scenario: 相邻的 try 分支抛错与嵌套落穿清理
+- **WHEN** 恢复固定EX.finThrow的分支try抛错/返回形，或EX.nestedFin的算术返回/嵌套落穿finally形，使用各自冻结的独立完整Java 8输入类进行源码重编和运行
+- **THEN** 完整生成源码 SHALL 原样通过真实javac8及javac23的Java8目标编译，正常返回、try抛错、内外清理抛错的有界对照 SHALL 保持返回快照、异常对象身份、清理次数与副作用顺序，所有物理方法/指令来源 MUST 保留；原完整EX含其它未证明形时 MUST 保留其实际红项与所有方法，不得删方法或修文本制造整类成功

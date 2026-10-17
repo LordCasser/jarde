@@ -43,3 +43,13 @@
 FinallyCompletion两真实Java8 class各907B，各有7个Code方法（旧文档写6有误）。完整生成文本各4114B，真实javac8和23各3处missing return：line47/58/69分别对应finallyReturns、finallyThrows、tryThrowsFinallyRuns。normalReturn/mark/构造器/clinit已有结构，其余保留fallback和具体诊断。两次编译都失败，0 rebuilt运行；原source/Runner/215B oracle由历史pins复核未变，但本轮没有新原始JVM replay。原oracle记录normal 1:12、return覆盖4:34、finally异常56、try异常78是历史基准，不计本轮成功。
 
 三种红项中，finallyReturns和finallyThrows的finally自身return/throw超出本父非覆盖型清理边界；`tryThrowsFinallyRuns`的try主动抛原异常、finally正常完成是下一有界调查候选。先核真实Facts/SSA/保护区和异常身份，不能直接复用死handler证明或忽略另外两红方法使整类编译过关。父全锚/对照/全门验收仍按tasks逐项完成，不借新包自动勾选。
+
+## 补充：EX的其它非覆盖型正向欠账
+
+本轮完整EX的actual当前JSON（remaining-controls包`return-controls/run-v1/2.stdout.raw`）还保留finThrow与nestedFin，二者均quality=fallback。finThrow诊断含两次jre_guard_finally_copy、uncovered blocks及未呈现字段；nestedFin含finally_copy、uncovered及未呈现字段。它们不能只因不在固定FY/FX/FO名单就排除出父的其它未证明正向形。
+
+已封EX.class是本轮真实输入，原EX.java不在该轮inputseal，故源码描述只作定位：finThrow为try内分支抛错或返回、finally println；nestedFin为try算术返回、finally内再嵌套finally打印。物理Code/异常表和实际SSA/Facts需分别核实，不能从当前源码文本假定相同。尚未对EX完整生成源码重编或运行；不报告它们新行为成功。
+
+最后三项曾按收窄后的固定fixture文字得到足够证据、短暂勾成7/7并生成status/apply收据；随后root重审完整EX发现原父范围协调过窄，在任何规格同步或归档前纠正。2.1与最终3.1/3.2恢复待办，已通过的固定对照2.3保留，当前4/7。原7/7与窄范围assessment不删除，均为历史阶段输入，不是父最终验收。下一片必须分清try主动抛错、嵌套cleanup与finally自身非局部完成，保持所有原完整类和红项。
+
+规格边界决定：本父2.1继续覆盖具有try返回路径的EX.finThrow/nestedFin，并新增对应窄验收scenario。FinallyCompletion.tryThrowsFinallyRuns没有正常return路径，保留为正向相邻欠账但转后续独立变更先定义规格；当前不把它当负控制，也不把它的实现算成本父return场景已授权完成。

@@ -1,0 +1,314 @@
+{
+  "status": "passed",
+  "scope": "Read-only consistency audit of revised parent finally planning, instrumentation, delta and remaining-controls README; no Git/native/network/toolchain actions.",
+  "documents": {
+    "proposal.md": {
+      "bytes": 2914,
+      "sha256": "9ac86d74e1507ffc0e442e212ee52b45fa572fbcbd8c91932a3fad325f1c3393"
+    },
+    "design.md": {
+      "bytes": 4379,
+      "sha256": "d03835e4357033e5a614ee2bdbec9658056a0b94217127dbc6bff04bbdbf56c7"
+    },
+    "instrumentation.md": {
+      "bytes": 7587,
+      "sha256": "9c6d303a5fc73d9830d93863c7d2243f3a562a3bd13f01ee8b333ad527de1164"
+    },
+    "specs/java8-recovery/spec.md": {
+      "bytes": 1785,
+      "sha256": "9ff6e32b5b340cf6b6ca2711ae839c84ca69c28d5603b5554a6941d7d4f0c72b"
+    },
+    "tasks.md": {
+      "bytes": 2647,
+      "sha256": "3730e10f4060db09a3cec938ecc2dfe68faa061ef730376bd6356958d17e03e2"
+    },
+    "results/remaining-controls-v1/README.md": {
+      "bytes": 1735,
+      "sha256": "acf00c699e48c21c2ee1820f81e78273435678cc188c7df2c5e10b5cd669ef05"
+    }
+  },
+  "task_status": {
+    "checked_count": 4,
+    "pending_count": 3,
+    "checked_lines": [
+      "- [x] 1.1 复跑patrol完整FY/FX/FO并单列当前矩阵，不改历史README：最终24命令保留两编译器来源6完整类/32方法，全Java/Structured无fallback，6次原样重编0与12次rebuilt-only main逐字等原oracle；见leaf final-runtime-v1及独审。",
+      "- [x] 1.2 补齐instrumentation.md：历史Q-i对应loopless实际首拒16!=25与融合尾48/49，Q-ii分别对应noCall真实iinc/handler phi与CallReturn保存调用结果/cleanup异常链，区分transfer不可达handler与可抛调用；逐项引用已归档事实，登记新finally返回覆盖/主动抛异常红项。",
+      "- [x] 2.1 单return穿副作用finally叶片已交付：noCall产品02de294f7、CallReturn产品464543594及后续transfer产品30afa各有私有证明、真实负控制/停止、公库/CLI/完整源码与自身CI；复用既有Finally/SavedReturn，判据不放宽。父范围为FY.noCall/loopless与FX.finReturn，finally自身非局部完成保留拒绝。",
+      "- [x] 2.2 FO求值序判别测试入测试集（1/100）：recover_static_field_prefix_return三项永久测试与已归档完整源码/driver证明先保存再finally；历史target为3 passed，最终父矩阵再核FO两编译器/双JVM固定main。后续若测试入口改变，必须核实际selector覆盖这三项。"
+    ],
+    "pending_lines": [
+      "- [ ] 2.3 完成对照验收独审：emptyFin及28个非transfer方法文本相同，continue/break按授权去fallback并以原oracle/完整来源约束，未来固定30afa为完整基线；EX.finReturn相同fallback和FinallyCompletion三处missing return按具体形保留红项，不冒称健康finally-return对照。",
+      "- [ ] 3.1 汇总并独审FY/FX全锚与FO判别：两编译器全部物理方法/BCI/身份、完整原样重编、原始与rebuilt-only固定oracle、独立driver观察边界；JADX21命令须保留两次FX真实编译失败与0 FX rebuilt运行，不要求修工具输出制造可执行三方一致。",
+      "- [ ] 3.2 父最终源码/CLI/CI闭合：核29本地门（124pass appearances/120不同passing FQN）与30afa自身双seed CI每seed3680/0/98、MSRV、fmt/CI同参数Clippy、原P5/reader与两版strict，区分产品head和父文档head；父计划更新后再次strict并独审，符合范围后才同步/正常归档。"
+    ],
+    "matches_four_done_three_pending": true
+  },
+  "portable_remaining_controls_audit": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/independent-package-audit-v2.json",
+    "status": "accepted_parent_remaining_controls_portable_evidence",
+    "checks": 325,
+    "errors": [],
+    "scope": "Parent instrumentation package only. All member bytes reopened against manifest, staged payload and original_path; source/runner/oracle originals preserved. Six-command red compilation evidence plus static32-method origin inventory and historical reviews are not new runtime, whole-parent completion, or a complete offline repository/toolchain. Prior leaf runtime remains referenced, not re-executed. Historical review planning source_path fields describe their original observation; they are not compared with later live parent planning edits."
+  },
+  "consistency_checks": {
+    "proposal_product_and_frozen_cli_are_pinned": true,
+    "five_completed_leaf_areas_named": true,
+    "six_full_classes_32_methods_724_instruction_instances": true,
+    "12_runtime_mains_and_jadx_failure_scope_named": true,
+    "transfer_change_exemption_and_28_other_methods_protected": true,
+    "current_30afa_complete_output_is_future_baseline": true,
+    "remaining_finally_return_throw_red_cases_retained": true,
+    "six_command_controls_are_compile_red_not_runtime": true,
+    "docs_do_not_claim_arbitrary_finally_or_parent_done": true
+  },
+  "scope_assessment": "The revised planning has coherent OpenSpec instructions and records 4/7 implementation tasks complete, with 2.3, 3.1 and 3.2 pending. Current product source bytes still match all 4,945 frozen native rows; source check does not bind later parent prose. The transfer methods may lose their previous fallback while the 28 non-target methods remain text-identical; 30afa is explicitly the new baseline. Full-class/JADX observations are separated, and the six-command EX/FinallyCompletion evidence is red compilation control only, with zero rebuilt runtime. No artifact says the parent work is complete.",
+  "findings": [],
+  "blockers": [],
+  "workflow_evidence": {
+    "README": "# 父计划补齐工作流\n\n先读actual status/apply与design instructions，再创建此前缺失的design.md，补齐instrumentation并协调proposal/spec/tasks。当前status仅表示planning artifacts完整；actual apply是4/7，三验收未完成，父项未同步或归档。两版validate --all --strict均363/0，1.14已有INFO按原始stderr保留。actual argv/cwd/exit和原始stdout/stderr相邻，未伪造额外产品运行。4945当前生产源码字节仍等native，见current-product-source-check；产品CI保持30afa本身。\n",
+    "current_product_source_check": {
+      "status": "all_4945_current_source_bytes_equal_frozen_native_manifest",
+      "source_count": 4945,
+      "native_receipt_sha256": "af07b8528dc3bf41893d3ebdbcc0c424fb2870b2dbccd282220572456b4b283f",
+      "cli": {
+        "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/jarde-cli-loop-transfer-complete-local-native-v1",
+        "bytes": 60514880,
+        "sha256": "05e0272eb8cbc65acb87418cecda6d15571ddaea84c041d30436c1238e60b89d",
+        "mode": "0555",
+        "built_from": "target/debug/jarde-cli"
+      },
+      "scope": "No new compilation or CI; this check excludes parent prose and preserves existing product binding."
+    },
+    "workflow_records": {
+      "parent-design-current": {
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "instructions",
+          "design",
+          "--change",
+          "recover-return-through-effectful-finally",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true
+      },
+      "parent-current-status": {
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "status",
+          "--change",
+          "recover-return-through-effectful-finally",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true,
+        "artifacts": {
+          "proposal": "done",
+          "specs": "done",
+          "design": "ready",
+          "tasks": "done"
+        }
+      },
+      "parent-coherent-status": {
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "status",
+          "--change",
+          "recover-return-through-effectful-finally",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true,
+        "artifacts": {
+          "proposal": "done",
+          "specs": "done",
+          "design": "done",
+          "tasks": "done"
+        }
+      },
+      "parent-apply-current": {
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "instructions",
+          "apply",
+          "--change",
+          "recover-return-through-effectful-finally",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true,
+        "progress": {
+          "total": 7,
+          "complete": 1,
+          "remaining": 6
+        },
+        "done_task_ids": [
+          "4"
+        ],
+        "pending_task_ids": [
+          "1",
+          "2",
+          "3",
+          "5",
+          "6",
+          "7"
+        ]
+      },
+      "parent-coherent-apply": {
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "instructions",
+          "apply",
+          "--change",
+          "recover-return-through-effectful-finally",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true,
+        "progress": {
+          "total": 7,
+          "complete": 4,
+          "remaining": 3
+        },
+        "done_task_ids": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "pending_task_ids": [
+          "5",
+          "6",
+          "7"
+        ]
+      },
+      "parent-coherent-strict111": {
+        "argv": [
+          "/home/lordcasser/.cache/jarde-validation/ordinary-try-list-20261014/tools/openspec-ci/node_modules/.bin/openspec",
+          "validate",
+          "--all",
+          "--strict"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true,
+        "strict_totals": true
+      },
+      "parent-coherent-strict114": {
+        "argv": [
+          "/home/lordcasser/.local/bin/openspec",
+          "validate",
+          "--all",
+          "--strict"
+        ],
+        "exit_code": 0,
+        "stdout_stream_matches": true,
+        "stderr_stream_matches": true,
+        "strict_totals": true
+      }
+    },
+    "source_manifest_row_count": 4945,
+    "current_source_missing": [],
+    "current_source_mismatches": [],
+    "all_current_production_sources_match_frozen_native_manifest": true,
+    "scope_note": "The source comparison uses the checkout root and compares product source bytes only; parent prose is outside the production-source binding."
+  },
+  "remaining_controls_pack_review": {
+    "v1_status": "rejected_independent_package_review",
+    "v1_errors": [
+      "embedded manifest byte-identical external",
+      "62payload exact allowlist"
+    ],
+    "v2_status": "accepted_parent_remaining_controls_portable_evidence",
+    "v2_checks": 325,
+    "v2_errors": [],
+    "adaptation": {
+      "status": "actual_embedded_manifest_filename_adapter_only",
+      "v1_result": "independent-package-audit-v1.json",
+      "actual_archive_embedded_manifest": "manifest.json",
+      "v1_wrong_assumption": "MANIFEST.json",
+      "byte_observation": "actual manifest.json member is exactly22894B and byte-identical to external manifest.json",
+      "v2_change": "Only embedded manifest literal and new report filename. All safety/hash/original-source/input/raw/scope checks retained. First report preserved; two v1 errors were decoder filename assumption, not corrupt payload."
+    },
+    "README_says_v2_325_checks": false,
+    "v1_v2_scope_accurate": true
+  },
+  "local_reference_checks": {
+    "proposal.md": {
+      "links": [
+        {
+          "target": "../../evidence/java-syntax-2026-10-05/return-effectful-finally-patrol/README.md",
+          "resolves": true
+        },
+        {
+          "target": "instrumentation.md",
+          "resolves": true
+        }
+      ],
+      "all_local_links_resolve": true
+    },
+    "design.md": {
+      "links": [
+        {
+          "target": "proposal.md",
+          "resolves": true
+        },
+        {
+          "target": "instrumentation.md",
+          "resolves": true
+        }
+      ],
+      "all_local_links_resolve": true
+    },
+    "instrumentation.md": {
+      "links": [
+        {
+          "target": "../archive/2026-10-16-recover-conditional-return-finally-copies/instrumentation.md",
+          "resolves": true
+        },
+        {
+          "target": "../archive/2026-10-16-recover-local-increment-loop-finally/design.md",
+          "resolves": true
+        },
+        {
+          "target": "../archive/2026-10-16-recover-call-return-loop-finally/design.md",
+          "resolves": true
+        },
+        {
+          "target": "../archive/2026-10-16-recover-static-field-prefix-return/results/fixed-recovery-v1/README.md",
+          "resolves": true
+        },
+        {
+          "target": "../archive/2026-10-17-recover-loop-transfer-finally-handler/design.md",
+          "resolves": true
+        },
+        {
+          "target": "../archive/2026-10-17-recover-loop-transfer-finally-handler/results/final-runtime-v1/README.md",
+          "resolves": true
+        },
+        {
+          "target": "results/remaining-controls-v1/README.md",
+          "resolves": true
+        }
+      ],
+      "all_local_links_resolve": true
+    },
+    "specs/java8-recovery/spec.md": {
+      "links": [],
+      "all_local_links_resolve": true
+    },
+    "tasks.md": {
+      "links": [],
+      "all_local_links_resolve": true
+    },
+    "results/remaining-controls-v1/README.md": {
+      "links": [],
+      "all_local_links_resolve": true
+    }
+  }
+}

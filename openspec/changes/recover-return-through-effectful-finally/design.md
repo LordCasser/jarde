@@ -38,3 +38,7 @@
 ## Migration Plan
 
 父级先提交设计、instrumentation与新红项便携证据；已交付功能仍由各叶片归档定义。父剩余验收逐项独审后才勾选、同步唯一delta、正常归档。后续主动抛异常/覆盖完成需独立有界取证与变更，不借本父项扩权；发现不满足证明时保持既有拒绝并保留失败raw。
+
+## Remaining positive shapes
+
+固定三锚成功不穷尽原父范围。EX.finThrow的分支try抛错、EX.nestedFin的嵌套落穿cleanup保留本父正向实现待办；FinallyCompletion.tryThrowsFinallyRuns仅异常完成记录为相邻正向欠账，后续独立变更须先定义自己的正向规格，不由本父return场景授权实现；先对已封class取得真实Facts/SSA、异常边/值身份和出口覆盖，再决定既有Finally/Continuation接缝。finally自身return/throw边界独立保留。不得把固定fixture范围的文档验收当作这些形已实现，也不得删除原整类中的其它红方法凑完整编译。

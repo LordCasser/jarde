@@ -1,0 +1,1739 @@
+{
+  "status": "corrected_file_hash_metadata_read_only_observation",
+  "scope": "Pure Python/read-only cache. No repository edits, Git, native commands, or network. Instructions are classfile decoding only; no inferred CFG or SSA.",
+  "current_finallycompletion_raws": {
+    "3.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/run-v1/3.stdout.raw",
+      "bytes": 92840,
+      "sha256": "a3d888b506f2f053368ff01334fb43bf8ec1445b4bf08f04c587be1ac91c81bd",
+      "class": {
+        "class_bytes": {
+          "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+          "length": 907
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "method_identity": "tryThrowsFinallyRuns()I",
+      "quality": "fallback",
+      "representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ],
+      "regions": [
+        {
+          "bci": 0,
+          "blocks": [
+            0
+          ],
+          "code": "jre_guard_finally_copy",
+          "message": "BCI 10: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+          "rule": null,
+          "structured": false
+        },
+        {
+          "bci": 10,
+          "blocks": [
+            10
+          ],
+          "code": "jre_region_uncovered_blocks",
+          "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [10]",
+          "rule": null,
+          "structured": false
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "jre_guard_finally_copy",
+          "message": "BCI 10: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_region_uncovered_blocks",
+          "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [10]",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_recovery_produced",
+          "message": "2 region(s), 2 statement(s), 2 segment(s), 594 byte(s) written from 2 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_not_emitted",
+          "message": "the field access at BCI 6 passed field identity proof, but no matching Java field operation was emitted by the final body",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "source_map_segments": [
+        {
+          "end": 463,
+          "origin": {
+            "derived": [
+              {
+                "bci": 2,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 5,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 6,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 9,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              }
+            ],
+            "primary": {
+              "bci": 0,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  73
+                ],
+                "name": [
+                  116,
+                  114,
+                  121,
+                  84,
+                  104,
+                  114,
+                  111,
+                  119,
+                  115,
+                  70,
+                  105,
+                  110,
+                  97,
+                  108,
+                  108,
+                  121,
+                  82,
+                  117,
+                  110,
+                  115
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                    "length": 907
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Direct"
+            }
+          },
+          "start": 180
+        },
+        {
+          "end": 592,
+          "origin": {
+            "derived": [
+              {
+                "bci": 11,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 13,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 16,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 17,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 18,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              }
+            ],
+            "primary": {
+              "bci": 10,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  73
+                ],
+                "name": [
+                  116,
+                  114,
+                  121,
+                  84,
+                  104,
+                  114,
+                  111,
+                  119,
+                  115,
+                  70,
+                  105,
+                  110,
+                  97,
+                  108,
+                  108,
+                  121,
+                  82,
+                  117,
+                  110,
+                  115
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+                    "length": 907
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Direct"
+            }
+          },
+          "start": 463
+        }
+      ],
+      "text": "// @method tryThrowsFinallyRuns()I\n// @declaration a static method of `FinallyCompletion`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 2 5 6 9\n    // BCI 10: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`\n    // @bytecode 10 11 13 16 17 18\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [10]\n}\n",
+      "engine_class_bytes_digest_from_raw": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115"
+    },
+    "5.stdout.raw": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/run-v1/5.stdout.raw",
+      "bytes": 92840,
+      "sha256": "0e4fa8037d8a129171d8ba502d06d55fce46633a022f935328e63d992bc7ff3c",
+      "class": {
+        "class_bytes": {
+          "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+          "length": 907
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "method_identity": "tryThrowsFinallyRuns()I",
+      "quality": "fallback",
+      "representation": "mixed",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ],
+      "regions": [
+        {
+          "bci": 0,
+          "blocks": [
+            0
+          ],
+          "code": "jre_guard_finally_copy",
+          "message": "BCI 10: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+          "rule": null,
+          "structured": false
+        },
+        {
+          "bci": 10,
+          "blocks": [
+            10
+          ],
+          "code": "jre_region_uncovered_blocks",
+          "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [10]",
+          "rule": null,
+          "structured": false
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "jre_guard_finally_copy",
+          "message": "BCI 10: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_region_uncovered_blocks",
+          "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [10]",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_recovery_produced",
+          "message": "2 region(s), 2 statement(s), 2 segment(s), 594 byte(s) written from 2 canonical block(s)",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_field_not_emitted",
+          "message": "the field access at BCI 6 passed field identity proof, but no matching Java field operation was emitted by the final body",
+          "provenance": null,
+          "severity": "warning"
+        },
+        {
+          "code": "jre_field_accesses",
+          "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+          "provenance": null,
+          "severity": "info"
+        },
+        {
+          "code": "jre_declaration",
+          "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+          "provenance": null,
+          "severity": "info"
+        }
+      ],
+      "source_map_segments": [
+        {
+          "end": 463,
+          "origin": {
+            "derived": [
+              {
+                "bci": 2,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 5,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 6,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 9,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              }
+            ],
+            "primary": {
+              "bci": 0,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  73
+                ],
+                "name": [
+                  116,
+                  114,
+                  121,
+                  84,
+                  104,
+                  114,
+                  111,
+                  119,
+                  115,
+                  70,
+                  105,
+                  110,
+                  97,
+                  108,
+                  108,
+                  121,
+                  82,
+                  117,
+                  110,
+                  115
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                    "length": 907
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Direct"
+            }
+          },
+          "start": 180
+        },
+        {
+          "end": 592,
+          "origin": {
+            "derived": [
+              {
+                "bci": 11,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 13,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 16,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 17,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              },
+              {
+                "bci": 18,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    73
+                  ],
+                  "name": [
+                    116,
+                    114,
+                    121,
+                    84,
+                    104,
+                    114,
+                    111,
+                    119,
+                    115,
+                    70,
+                    105,
+                    110,
+                    97,
+                    108,
+                    108,
+                    121,
+                    82,
+                    117,
+                    110,
+                    115
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                      "length": 907
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Derived"
+              }
+            ],
+            "primary": {
+              "bci": 10,
+              "cp": null,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  73
+                ],
+                "name": [
+                  116,
+                  114,
+                  121,
+                  84,
+                  104,
+                  114,
+                  111,
+                  119,
+                  115,
+                  70,
+                  105,
+                  110,
+                  97,
+                  108,
+                  108,
+                  121,
+                  82,
+                  117,
+                  110,
+                  115
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+                    "length": 907
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "provenance": "Direct"
+            }
+          },
+          "start": 463
+        }
+      ],
+      "text": "// @method tryThrowsFinallyRuns()I\n// @declaration a static method of `FinallyCompletion`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 2 5 6 9\n    // BCI 10: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`\n    // @bytecode 10 11 13 16 17 18\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [10]\n}\n",
+      "engine_class_bytes_digest_from_raw": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1"
+    }
+  },
+  "sealed_EX": {
+    "class_path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/payload/original-classes/openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class",
+    "class_bytes": 1632,
+    "physical_methods": {
+      "finThrow(I)Ljava/lang/String;": {
+        "Code_bytes": 38,
+        "Code_sha256": "2b79a5675af0c13eacedd543b9c4d1a56fe11b589d9ac346b9f96538770292b4",
+        "max_stack": 3,
+        "max_locals": 3,
+        "instructions": [
+          "0 iload_0",
+          "1 ifge +13 -> 14",
+          "4 new java.lang.RuntimeException",
+          "7 dup",
+          "8 ldc \"neg\"",
+          "10 invokespecial RuntimeException.<init>(String)",
+          "13 athrow",
+          "14 ldc \"ok\"",
+          "16 astore_1",
+          "17 getstatic System.out",
+          "20 ldc \"ft\"",
+          "22 invokevirtual PrintStream.println(String)",
+          "25 aload_1",
+          "26 areturn",
+          "27 astore_2",
+          "28 getstatic System.out",
+          "31 ldc \"ft\"",
+          "33 invokevirtual PrintStream.println(String)",
+          "36 aload_2",
+          "37 athrow"
+        ],
+        "exception_table": [
+          {
+            "start": 0,
+            "end_exclusive": 17,
+            "handler": 27,
+            "catch_type_index": 0
+          }
+        ]
+      },
+      "nestedFin(I)I": {
+        "Code_bytes": 72,
+        "Code_sha256": "ea22c96eebcc05166227a6c7a090b45e807a2ece050811f620d7986ca7ab6c51",
+        "max_stack": 2,
+        "max_locals": 5,
+        "instructions": [
+          "0 bipush 10",
+          "2 iload_0",
+          "3 idiv",
+          "4 istore_1",
+          "5 getstatic System.out",
+          "8 ldc \"in\"",
+          "10 invokevirtual PrintStream.println(String)",
+          "13 getstatic System.out",
+          "16 ldc \"out\"",
+          "18 invokevirtual PrintStream.println(String)",
+          "21 goto +14 -> 35",
+          "24 astore_2",
+          "25 getstatic System.out",
+          "28 ldc \"out\"",
+          "30 invokevirtual PrintStream.println(String)",
+          "33 aload_2",
+          "34 athrow",
+          "35 iload_1",
+          "36 ireturn",
+          "37 astore_3",
+          "38 getstatic System.out",
+          "41 ldc \"in\"",
+          "43 invokevirtual PrintStream.println(String)",
+          "46 getstatic System.out",
+          "49 ldc \"out\"",
+          "51 invokevirtual PrintStream.println(String)",
+          "54 goto +16 -> 70",
+          "57 astore 4",
+          "59 getstatic System.out",
+          "62 ldc \"out\"",
+          "64 invokevirtual PrintStream.println(String)",
+          "67 aload 4",
+          "69 athrow",
+          "70 aload_3",
+          "71 athrow"
+        ],
+        "exception_table": [
+          {
+            "start": 5,
+            "end_exclusive": 13,
+            "handler": 24,
+            "catch_type_index": 0
+          },
+          {
+            "start": 0,
+            "end_exclusive": 5,
+            "handler": 37,
+            "catch_type_index": 0
+          },
+          {
+            "start": 38,
+            "end_exclusive": 46,
+            "handler": 57,
+            "catch_type_index": 0
+          },
+          {
+            "start": 57,
+            "end_exclusive": 59,
+            "handler": 57,
+            "catch_type_index": 0
+          }
+        ]
+      }
+    },
+    "interpretation_limit": "Physical bytecode establishes concrete instructions, CP symbols, BCI ranges and catch-all rows only. It does not establish canonical CFG edges, exception reachability, block ownership, SSA/source value flow, or sound finally equivalence.",
+    "file_sha256": "e6f0eb1e029a2c883d3ee5df5e089eda17fea27833a9244297cede139cd61287",
+    "engine_class_bytes_digest_from_raw2": "dcb1097a6592ce96da77cbec9e9b68a363b11bc38657d6d6a33a74ca9c62c1e6",
+    "engine_digest_note": "The `class_bytes.digest` field in the raw report is an engine-provided content identifier; its hashing algorithm is not established here and it is not labeled as SHA-256."
+  },
+  "EX_current_raw2_method_reports": {
+    "finThrow": {
+      "descriptor": "(I)Ljava/lang/String;",
+      "body_content_span": {
+        "length": 83,
+        "start": 1234
+      },
+      "report": {
+        "quality": "fallback",
+        "representation": "mixed",
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_guard_finally_copy",
+          "jre_region_uncovered_blocks"
+        ],
+        "regions": [
+          {
+            "bci": 0,
+            "blocks": [
+              0,
+              4,
+              14
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": {
+              "rule": "if",
+              "version": "1"
+            },
+            "structured": false
+          },
+          {
+            "bci": 27,
+            "blocks": [
+              27
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [27]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_region_uncovered_blocks",
+            "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [27]",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_recovery_produced",
+            "message": "2 region(s), 4 statement(s), 7 segment(s), 936 byte(s) written from 4 canonical block(s)",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_new_sites",
+            "message": "1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 17 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 28 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_accesses",
+            "message": "2 field instruction(s) read under field@1: 0 presented, 2 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_declaration",
+            "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            "provenance": null,
+            "severity": "info"
+          }
+        ],
+        "source_map_segments": [
+          {
+            "source_span": [
+              179,
+              183
+            ],
+            "mapped_bcis": [
+              0
+            ]
+          },
+          {
+            "source_span": [
+              186,
+              187
+            ],
+            "mapped_bcis": [
+              1
+            ]
+          },
+          {
+            "source_span": [
+              179,
+              187
+            ],
+            "mapped_bcis": [
+              0,
+              1
+            ]
+          },
+          {
+            "source_span": [
+              191,
+              484
+            ],
+            "mapped_bcis": [
+              4,
+              7,
+              8,
+              10,
+              13
+            ]
+          },
+          {
+            "source_span": [
+              497,
+              799
+            ],
+            "mapped_bcis": [
+              14,
+              16,
+              17,
+              20,
+              22,
+              25,
+              26
+            ]
+          },
+          {
+            "source_span": [
+              171,
+              805
+            ],
+            "mapped_bcis": [
+              1
+            ]
+          },
+          {
+            "source_span": [
+              805,
+              934
+            ],
+            "mapped_bcis": [
+              27,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          }
+        ],
+        "text": "// @method finThrow(I)Ljava/lang/String;\n// @declaration a static method of `EX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg0 < 0) {\n        // @bytecode 4 7 8 10 13\n        // BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`\n    } else {\n        // @bytecode 14 16 17 20 22 25 26\n        // BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`\n    }\n    // @bytecode 27 28 31 33 36 37\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [27]\n}\n"
+      }
+    },
+    "nestedFin": {
+      "descriptor": "(I)I",
+      "body_content_span": {
+        "length": 177,
+        "start": 1331
+      },
+      "report": {
+        "quality": "fallback",
+        "representation": "mixed",
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_region_uncovered_blocks"
+        ],
+        "regions": [
+          {
+            "bci": 0,
+            "blocks": [
+              0
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 37: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 35,
+            "blocks": [
+              35,
+              24,
+              37,
+              70,
+              57
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "5 live block(s) are reachable only through edges the normal-flow view leaves out: [35, 24, 37, 70, 57]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 37: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_region_uncovered_blocks",
+            "message": "5 live block(s) are reachable only through edges the normal-flow view leaves out: [35, 24, 37, 70, 57]",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_recovery_produced",
+            "message": "2 region(s), 1 statement(s), 1 segment(s), 334 byte(s) written from 6 canonical block(s)",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 5 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 13 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 25 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 38 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 46 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 59 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_accesses",
+            "message": "6 field instruction(s) read under field@1: 0 presented, 6 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_declaration",
+            "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            "provenance": null,
+            "severity": "info"
+          }
+        ],
+        "source_map_segments": [
+          {
+            "source_span": [
+              155,
+              332
+            ],
+            "mapped_bcis": [
+              0,
+              24,
+              35,
+              37,
+              57,
+              70
+            ]
+          }
+        ],
+        "text": "// @method nestedFin(I)I\n// @declaration a static method of `EX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 24 35 37 57 70\n    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n"
+      }
+    },
+    "raw_source": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/run-v1/2.stdout.raw",
+      "bytes": 113525,
+      "sha256": "035dc4cb678c48d1a53b46694f7f646ca09e518a6bdab76f3c399107f63c2a29"
+    }
+  },
+  "older_report_provenance": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/payload/original-sources/openspec/evidence/java-syntax-2026-09-22/finally-completion/jarde-report.txt",
+    "note": "Historical FinallyCompletion report only; not the current 05e report. Do not cite it for current findings."
+  },
+  "current_raw_provenance": {
+    "EX_raw": "effectful-finally-parent-return-controls-v1/run-v1/2.stdout.raw",
+    "FinallyCompletion_raws": [
+      "effectful-finally-parent-return-controls-v1/run-v1/3.stdout.raw",
+      "effectful-finally-parent-return-controls-v1/run-v1/5.stdout.raw"
+    ]
+  },
+  "integrity_recheck_v3": {
+    "inputs_rehashed": {
+      "EX_raw2": {
+        "bytes": 113525,
+        "sha256": "035dc4cb678c48d1a53b46694f7f646ca09e518a6bdab76f3c399107f63c2a29"
+      },
+      "3.stdout.raw": {
+        "bytes": 92840,
+        "sha256": "a3d888b506f2f053368ff01334fb43bf8ec1445b4bf08f04c587be1ac91c81bd"
+      },
+      "5.stdout.raw": {
+        "bytes": 92840,
+        "sha256": "0e4fa8037d8a129171d8ba502d06d55fce46633a022f935328e63d992bc7ff3c"
+      }
+    },
+    "class_files": {
+      "EX": {
+        "bytes": 1632,
+        "file_sha256": "e6f0eb1e029a2c883d3ee5df5e089eda17fea27833a9244297cede139cd61287",
+        "finThrow_Code_sha256": "2b79a5675af0c13eacedd543b9c4d1a56fe11b589d9ac346b9f96538770292b4",
+        "nestedFin_Code_sha256": "ea22c96eebcc05166227a6c7a090b45e807a2ece050811f620d7986ca7ab6c51"
+      },
+      "FinallyCompletion_variants": [
+        {
+          "variant": "javac8",
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/payload/original-classes/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac8-source/classes/FinallyCompletion.class",
+          "bytes": 907,
+          "file_sha256": "49e649478c3d45ba6486029778a8415239caafdd93234a1d5956f5ccf3031393",
+          "tryThrowsFinallyRuns_Code_bytes": 19,
+          "tryThrowsFinallyRuns_Code_sha256": "203dc82caf76e6ad5c022413d8bc424593b51e27bf4aaa75e41fe7c17a97a7d1"
+        },
+        {
+          "variant": "javac23",
+          "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/payload/original-classes/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac23-source/classes/FinallyCompletion.class",
+          "bytes": 907,
+          "file_sha256": "2b8902d998065d2d1747abaeba386e006cdf5ff7f1311abb28506e8d8dc0cc94",
+          "tryThrowsFinallyRuns_Code_bytes": 19,
+          "tryThrowsFinallyRuns_Code_sha256": "8e57e4c33c413043d2d4d74bda593de2edef9eef7cad27855d31b88389d18430"
+        }
+      ]
+    },
+    "report_digest_semantics": "All report-provided class_bytes.digest strings are retained only as engine identifiers. Their algorithm was not independently verified; none is asserted to be SHA-256."
+  },
+  "adaptation_from_v2": {
+    "source_memo": "finallycompletion-current-05e-and-sealed-ex-memo-v2.json",
+    "source_memo_bytes": 55251,
+    "source_memo_sha256": "78db1de12506a4b9f744c24cdc6a20ef12f779a24bb54efc10caa7d1e5df2744",
+    "reason": "Independent review found v2 mislabeled EX raw report class_bytes.digest dcb109… as the sealed EX.class file SHA-256. Recomputed the actual file SHA from the sealed class bytes; relabeled engine-provided report digests without changing any Facts, bytecode interpretation, or findings. Freshly rehashed all raw evidence inputs and both FinallyCompletion class files; verified target Code hashes from the classfile bytes."
+  }
+}

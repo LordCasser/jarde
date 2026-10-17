@@ -1,0 +1,83 @@
+{
+  "changeName": "recover-return-through-effectful-finally",
+  "changeDir": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/proposal.md"
+    ],
+    "specs": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/design.md"
+    ],
+    "tasks": [
+      "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 7,
+    "complete": 7,
+    "remaining": 0
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 复跑patrol完整FY/FX/FO并单列当前矩阵，不改历史README：最终24命令保留两编译器来源6完整类/32方法，全Java/Structured无fallback，6次原样重编0与12次rebuilt-only main逐字等原oracle；见leaf final-runtime-v1及独审。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 9
+    },
+    {
+      "id": "2",
+      "description": "1.2 补齐instrumentation.md：历史Q-i对应loopless实际首拒16!=25与融合尾48/49，Q-ii分别对应noCall真实iinc/handler phi与CallReturn保存调用结果/cleanup异常链，区分transfer不可达handler与可抛调用；逐项引用已归档事实，登记新finally返回覆盖/主动抛异常红项。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 10
+    },
+    {
+      "id": "3",
+      "description": "2.1 单return穿副作用finally叶片已交付：noCall产品02de294f7、CallReturn产品464543594及后续transfer产品30afa各有私有证明、真实负控制/停止、公库/CLI/完整源码与自身CI；复用既有Finally/SavedReturn，判据不放宽。父范围为FY.noCall/loopless与FX.finReturn，finally自身非局部完成保留拒绝。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 14
+    },
+    {
+      "id": "4",
+      "description": "2.2 FO求值序判别测试入测试集（1/100）：recover_static_field_prefix_return三项永久测试与已归档完整源码/driver证明先保存再finally；历史target为3 passed，最终父矩阵再核FO两编译器/双JVM固定main。后续若测试入口改变，必须核实际selector覆盖这三项。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 15
+    },
+    {
+      "id": "5",
+      "description": "2.3 完成对照验收独审：emptyFin及28个非transfer方法文本相同，continue/break按授权去fallback并以原oracle/完整来源约束，未来固定30afa为完整基线；EX.finReturn相同fallback和FinallyCompletion三处missing return按具体形保留红项，不冒称健康finally-return对照。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 16
+    },
+    {
+      "id": "6",
+      "description": "3.1 汇总并独审FY/FX全锚与FO判别：两编译器全部物理方法/BCI/身份、完整原样重编、原始与rebuilt-only固定oracle、独立driver观察边界；JADX21命令须保留两次FX真实编译失败与0 FX rebuilt运行，不要求修工具输出制造可执行三方一致。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 20
+    },
+    {
+      "id": "7",
+      "description": "3.2 父最终源码/CLI/CI闭合：核29本地门（124pass appearances/120不同passing FQN）与30afa自身双seed CI每seed3680/0/98、MSRV、fmt/CI同参数Clippy、原P5/reader与两版strict，区分产品head和父文档head；父计划更新后再次strict并独审，符合范围后才同步/正常归档。",
+      "done": true,
+      "sourcePath": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "line": 21
+    }
+  ],
+  "taskTrackingConfigured": true,
+  "state": "all_done",
+  "instruction": "All tracked tasks are complete.\nReview or verify the change as appropriate before archiving.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde",
+    "source": "nearest"
+  }
+}

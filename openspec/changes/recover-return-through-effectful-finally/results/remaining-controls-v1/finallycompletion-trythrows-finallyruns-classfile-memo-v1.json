@@ -1,0 +1,115 @@
+{
+  "status": "read_only_classfile_and_existing_report_observation",
+  "scope": "No repository edits, Git, native tools, network, or semantic CFG/SSA inference.",
+  "class_files": [
+    {
+      "variant": "javac8",
+      "relative": "payload/original-classes/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac8-source/classes/FinallyCompletion.class",
+      "bytes": 907,
+      "sha256": "49e649478c3d45ba6486029778a8415239caafdd93234a1d5956f5ccf3031393",
+      "method_code_sha256": "203dc82caf76e6ad5c022413d8bc424593b51e27bf4aaa75e41fe7c17a97a7d1"
+    },
+    {
+      "variant": "javac23",
+      "relative": "payload/original-classes/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac23-source/classes/FinallyCompletion.class",
+      "bytes": 907,
+      "sha256": "2b8902d998065d2d1747abaeba386e006cdf5ff7f1311abb28506e8d8dc0cc94",
+      "method_code_sha256": "8e57e4c33c413043d2d4d74bda593de2edef9eef7cad27855d31b88389d18430"
+    }
+  ],
+  "method": {
+    "owner": "FinallyCompletion",
+    "name": "tryThrowsFinallyRuns",
+    "descriptor": "()I",
+    "code_bytes": 19,
+    "max_stack": 1,
+    "max_locals": 1,
+    "exception_table": [
+      {
+        "start_bci": 0,
+        "end_bci_exclusive": 11,
+        "handler_bci": 10,
+        "catch_type_index": 0,
+        "catch_type": "any/catch-all"
+      }
+    ],
+    "instructions": [
+      {
+        "bci": 0,
+        "opcode": "bipush",
+        "operand": 7
+      },
+      {
+        "bci": 2,
+        "opcode": "invokestatic",
+        "target": "mark:(I)I"
+      },
+      {
+        "bci": 5,
+        "opcode": "pop"
+      },
+      {
+        "bci": 6,
+        "opcode": "getstatic",
+        "field": "TRY_FAILURE:Ljava/lang/RuntimeException;"
+      },
+      {
+        "bci": 9,
+        "opcode": "athrow"
+      },
+      {
+        "bci": 10,
+        "opcode": "astore_0"
+      },
+      {
+        "bci": 11,
+        "opcode": "bipush",
+        "operand": 8
+      },
+      {
+        "bci": 13,
+        "opcode": "invokestatic",
+        "target": "mark:(I)I"
+      },
+      {
+        "bci": 16,
+        "opcode": "pop"
+      },
+      {
+        "bci": 17,
+        "opcode": "aload_0"
+      },
+      {
+        "bci": 18,
+        "opcode": "athrow"
+      }
+    ]
+  },
+  "classfile_proves": [
+    "Both 907-byte variants contain 19-byte Code with the same operation sequence and exception table; constant-pool indexes differ.",
+    "The normal path invokes mark(7), loads static TRY_FAILURE and throws. The catch-all target stores the pending throwable, invokes mark(8), reloads the saved throwable and throws it.",
+    "The exception table covers bytecode offsets [0,11), target 10, catch_type_index 0."
+  ],
+  "existing_report": {
+    "source": "payload/original-sources/openspec/evidence/java-syntax-2026-09-22/finally-completion/jarde-report.txt",
+    "method_identity": "methods.5, class_bytes digest ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1, body content span start=803 length=51, ordinal=5",
+    "outcome_kind": "recovered (analysis)",
+    "presentation": "whole-class method wrapper says not recovered: produced no statement; explanation-only body",
+    "report_quality": "fallback",
+    "regions": [],
+    "fallbacks": [
+      "jre_guard_finally_copy",
+      "jre_region_uncovered_blocks"
+    ],
+    "warnings": [
+      "jre_guard_finally_copy at BCI 10: exceptional path repeats code also run on normal path; copies not proven equal for merging into finally.",
+      "jre_region_uncovered_blocks: one live block reachable only through edges normal-flow view leaves out: [10]."
+    ],
+    "recovery_info": "2 regions, 2 statements, 2 segments, 572 bytes from 2 canonical blocks; this is report text, not CFG/SSA semantic proof."
+  },
+  "not_established": [
+    "No CFG blocks, canonical exception-edge handling, SSA values, or source-anchor proof should be inferred from the disassembly/report summary. Root needs actual Facts/SSA probe to establish those.",
+    "This class does not imply finallyReturns()I or finallyThrows()I are recoverable; both still report refusal/fallbacks in the current whole-class report. Do not remove methods or edit source to make the class green."
+  ],
+  "additional_reference": "payload/original-sources/openspec/evidence/java-syntax-2026-09-22/finally-completion/javap.txt (disassembly); analysis.md (prior source-only audit and runtime/JADX observations)."
+}

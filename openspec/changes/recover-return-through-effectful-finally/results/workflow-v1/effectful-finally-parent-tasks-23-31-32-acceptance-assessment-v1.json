@@ -1,0 +1,422 @@
+{
+  "status": "sufficient_for_current_written_fixed_fixture_tasks_2_3_3_1_3_2_with_limits",
+  "planning_pins": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "bytes": 2647,
+      "sha256": "3730e10f4060db09a3cec938ecc2dfe68faa061ef730376bd6356958d17e03e2"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/proposal.md",
+      "bytes": 2914,
+      "sha256": "9ac86d74e1507ffc0e442e212ee52b45fa572fbcbd8c91932a3fad325f1c3393"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/design.md",
+      "bytes": 4379,
+      "sha256": "d03835e4357033e5a614ee2bdbec9658056a0b94217127dbc6bff04bbdbf56c7"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/specs/java8-recovery/spec.md",
+      "bytes": 1785,
+      "sha256": "9ff6e32b5b340cf6b6ca2711ae839c84ca69c28d5603b5554a6941d7d4f0c72b"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/instrumentation.md",
+      "bytes": 7623,
+      "sha256": "3ab4c40fee010a53d81193cd8ee4f63ea1a1531c1cf2fe51df2ed2cd505bf7f8"
+    }
+  ],
+  "evidence_pins": {
+    "current": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-final-loop-transfer-screen-v1/run-v1/execution.json",
+      "bytes": 2350625,
+      "sha256": "0624d27baada6dee0c8a3f337ed6585f7347b6a95c2d1016d355a5f674013b82"
+    },
+    "prior": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-final-call-return-screen-v1/run-v1/execution.json",
+      "bytes": 2348540,
+      "sha256": "f2da37c4848dc54d5b8e8e6c637c0071eb0004ed65c9cc96e556e965059fd4ee"
+    },
+    "jadx": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-jadx-final-loop-transfer-comparison-v1/run-v1/execution.json",
+      "bytes": 2222116,
+      "sha256": "5142534603573c72244714cead01fdadada41e04ca445410fa2d4d0e5e4c7380"
+    },
+    "native": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-complete-local-native-v1/execution.json",
+      "bytes": 2235528,
+      "sha256": "af07b8528dc3bf41893d3ebdbcc0c424fb2870b2dbccd282220572456b4b283f"
+    },
+    "native_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-complete-local-native-v1/independent-wide-audit-v1.json",
+      "bytes": 40232,
+      "sha256": "3d3ad9389e0980a435f74ca7bca47728b743c819ae4347b57158c09553aa59df"
+    },
+    "parent_runtime_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-final-loop-transfer-independent-audit-v1.json",
+      "bytes": 1374926,
+      "sha256": "4b42fedea2e25b234e954fef3b6e5f65ffb620f6cc21d4bb3575e2b4d2e2383b"
+    },
+    "physical_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-physical-origin-independent-review-v1.json",
+      "bytes": 32466,
+      "sha256": "c5bf6667e54f12c8374245e9e59c2dec3a3d077b4ad2c7666efc4bbce8ec84ac"
+    },
+    "JAR_WAR_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-final-jar-war-independent-audit-v1.json",
+      "bytes": 18008,
+      "sha256": "273b905ce99659845c790205ce0018633736fd0ee996c07ad21f2207d8a71987"
+    },
+    "red_controls_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/independent-audit-v1.json",
+      "bytes": 18891,
+      "sha256": "215bf0e447925c30facc4679888635e70e7fd8f109f8fc3a8f0ce127a9d6f507"
+    },
+    "red_controls_package_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-controls-pack-v1/independent-package-audit-v2.json",
+      "bytes": 35429,
+      "sha256": "f9314f0e2250438b5a122150772ff48576d71fd3d3f7e5b6273467cae3ea11bd"
+    },
+    "CI_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/own-ci-loop-transfer-finally-independent-audit-prepared-v1/audit-result-v3.json",
+      "bytes": 480397,
+      "sha256": "c61203dde86b0a55b3d2cd1f7c21c36363f644b5285353fbf9666b95bc4709a0"
+    },
+    "CI_root": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-own-ci-root-acceptance-v1.json",
+      "bytes": 11318,
+      "sha256": "0b588f19ec32fbb524facd77e1b2dba55c66b06848e69b02ec471e8dfe652329"
+    },
+    "CI_package_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-own-ci-package-independent-audit-v2.json",
+      "bytes": 116982,
+      "sha256": "2947adc9c9c81efb1a807935a27d69bcc1cfe053882a1a96daa89306e2fe2183"
+    },
+    "main_delivery_review": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/loop-transfer-finally-final-main-binding-independent-audit-v1.json",
+      "bytes": 978336,
+      "sha256": "c5ab8f61db6af4690b54105197c8d3004fadb20c54edc052235b069ebf07ab53"
+    }
+  },
+  "parent_updated_strict_receipts": [
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/results/workflow-v1/parent-coherent-strict111.execution.json",
+      "bytes": 873,
+      "sha256": "59c375a2121bea8762ce5d7992c0e1b04d388c0a4fcde6c5ad59cca11128f2f7"
+    },
+    {
+      "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/changes/recover-return-through-effectful-finally/results/workflow-v1/parent-coherent-strict114.execution.json",
+      "bytes": 799,
+      "sha256": "b0743385909663e80ec3615984bb06f56889daea390949db0c72c56836850a21"
+    }
+  ],
+  "recomputed_facts": {
+    "classes": 6,
+    "method_records": 32,
+    "nontransfer_text_equal": 28,
+    "authorized_transfer_records": 4,
+    "parent_commands_all0": 24,
+    "whole_compiles": 6,
+    "rebuilt_fixed_main_runs": 12,
+    "JADX_commands": 21,
+    "JADX_successes": 19,
+    "JADX_FX_compile_failures": 2,
+    "JADX_FX_rebuilt_runs": 0,
+    "local_commands_all0": 29,
+    "native_raw_pins_reopened": 58,
+    "passing_appearances": 124,
+    "different_package_target_FQNs": 120,
+    "distinct_bare_names": 117,
+    "current_compiled_sources_equal_frozen_native": 4945
+  },
+  "method_comparison": [
+    {
+      "case": "javac23/FY",
+      "name": "<init>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FY",
+      "name": "emptyFin",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FY",
+      "name": "noCall",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FY",
+      "name": "loopless",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FY",
+      "name": "main",
+      "descriptor": "([Ljava/lang/String;)V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FX",
+      "name": "<init>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FX",
+      "name": "finContinue",
+      "descriptor": "([I)I",
+      "transfer_target": true,
+      "text_equal": false
+    },
+    {
+      "case": "javac23/FX",
+      "name": "finReturn",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FX",
+      "name": "c0",
+      "descriptor": "(I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FX",
+      "name": "finBreak",
+      "descriptor": "([I)I",
+      "transfer_target": true,
+      "text_equal": false
+    },
+    {
+      "case": "javac23/FX",
+      "name": "main",
+      "descriptor": "([Ljava/lang/String;)V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FO",
+      "name": "<init>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FO",
+      "name": "bump",
+      "descriptor": "()I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FO",
+      "name": "evalThenFin",
+      "descriptor": "()I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FO",
+      "name": "main",
+      "descriptor": "([Ljava/lang/String;)V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac23/FO",
+      "name": "<clinit>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FY",
+      "name": "<init>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FY",
+      "name": "emptyFin",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FY",
+      "name": "noCall",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FY",
+      "name": "loopless",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FY",
+      "name": "main",
+      "descriptor": "([Ljava/lang/String;)V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FX",
+      "name": "<init>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FX",
+      "name": "finContinue",
+      "descriptor": "([I)I",
+      "transfer_target": true,
+      "text_equal": false
+    },
+    {
+      "case": "javac8/FX",
+      "name": "finReturn",
+      "descriptor": "([I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FX",
+      "name": "c0",
+      "descriptor": "(I)I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FX",
+      "name": "finBreak",
+      "descriptor": "([I)I",
+      "transfer_target": true,
+      "text_equal": false
+    },
+    {
+      "case": "javac8/FX",
+      "name": "main",
+      "descriptor": "([Ljava/lang/String;)V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FO",
+      "name": "<init>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FO",
+      "name": "bump",
+      "descriptor": "()I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FO",
+      "name": "evalThenFin",
+      "descriptor": "()I",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FO",
+      "name": "main",
+      "descriptor": "([Ljava/lang/String;)V",
+      "transfer_target": false,
+      "text_equal": true
+    },
+    {
+      "case": "javac8/FO",
+      "name": "<clinit>",
+      "descriptor": "()V",
+      "transfer_target": false,
+      "text_equal": true
+    }
+  ],
+  "clauses": [
+    {
+      "task": "2.3",
+      "criterion": "emptyFin and28nontransfer method records remain text-identical",
+      "sufficient": true,
+      "basis": "Direct comparison of same JAR pin and exact physical method name/descriptor table against previous CallReturn screen:28/28 equal, including both emptyFin records."
+    },
+    {
+      "task": "2.3",
+      "criterion": "authorized continue/break improvement with behavior/origin bounds",
+      "sufficient": true,
+      "basis": "Four target records are Java/Structured with nofallback. Actual final parent main oracle and separate final JAR/WAR independent driver/35BCI source mapping support bounded effect; retaining the former fallback text is expressly not required for this authorized improvement."
+    },
+    {
+      "task": "2.3",
+      "criterion": "finally-return refusal controls and future30afa baseline",
+      "sufficient": true,
+      "basis": "Six-command independent79/0: EX.finReturn remains same uncovered-block fallback; FinallyCompletion seven methods/4114B wholetext each,3missingreturn each,zero rebuilt runtime. These remain red controls, not healthy recovery. Original input/text/runtime evidence frozen under30afa is available for future comparisons."
+    },
+    {
+      "task": "3.1",
+      "criterion": "two compiler legs whole FY/FX/FO, physical all anchors and FO discriminator",
+      "sufficient": true,
+      "basis": "24actualcommands6wholeclasses32methods;6unmodifiedwholejavac0;12rebuilt-onlyfixed-main equal saved original oracle. Independent209/0 reconstructs32Code methods724physical instruction instances with no missing/extra BCIs and correct PhysicalMethodId. This provenance check does not itself execute Java."
+    },
+    {
+      "task": "3.1",
+      "criterion": "separate independent driver scope and static proof duties",
+      "sufficient": true,
+      "basis": "Archived Loopless/NoCall/CallReturn/FO/transfer drivers preserve specific observed inputs. Transfer11 observations are distinct from fixedmain. CallReturn c0 count/timing and protected exception not claimed dynamically; SSA/effects/consumer/exception identities and real negative/stop controls remain the proof basis."
+    },
+    {
+      "task": "3.1",
+      "criterion": "JADX comparison with real failure preserved",
+      "sufficient": true,
+      "basis": "Current explicit clause requires recorded comparison, not fixed external output or three-way executable parity. Actual21commands19success+2FXjavac1(undefined th,line56);FY/FO8main matches;FX0runtime. This is sufficient as comparison record, insufficient for executable three-party FX parity, which current text explicitly does not require."
+    },
+    {
+      "task": "3.2",
+      "criterion": "local gates/sourceCLI/productCI closure",
+      "sufficient": true,
+      "basis": "Actual29native all0,58rawpins reopened,124pass appearances120distinct package/target/FQN identities. All4945 current compiled-source bytes equal frozen native. Exact30afa/run38928643131 independent1868/0,root172,package1388/0;eachseed374suites3680/0/98. MSRV1.88,fmt/workflowClippy/P5reader/strict actual gates preserved by native and CI reviews. CIstable1.99.1 and local1.99.0 remain separate actual facts."
+    },
+    {
+      "task": "3.2",
+      "criterion": "updated parent strict and independent review",
+      "sufficient": true,
+      "basis": "workflow-v1 actual1.11/1.14 strict each363/0 rawpins reread; current-source closure excludes parent prose. Current tasks/spec/design/instrumentation coherently restrict claims to fixed fixtures, red controls and actual comparison. This assessment supplies requested independent clause review; it does not execute OpenSpec or edit checkbox."
+    }
+  ],
+  "insufficient_or_outside_current_acceptance": [
+    "Arbitrary inputs/JARs/WARs, all possible exception paths, full dynamic call-count/order coverage, or generic finally nonlocal completion are not established. This fixed fixture acceptance cannot expand to those claims.",
+    "There is no FX JADX rebuilt runtime or three-tool executable parity, and EX/FinallyCompletion red controls are not repaired or behavior-validated by the new six commands.",
+    "Historical original oracles and independent leaf drivers are linked by exact unchanged original class pins. They are not new original JVM executions in the six-command capture.",
+    "Snapshot planning reviews retain historical source_path provenance; later live parent document edits are not retroactive corruption."
+  ],
+  "workflow_remaining": [
+    "The root may accept2.3/3.1/3.2 on this evidence as currently worded. No additional native/CI is expressly required merely because parent docs changed while all4945 compiled inputs remain identical.",
+    "Checkbox edits, synchronization of the unique delta, normal archive/delivery and strict checks required by subsequent planning/spec edits remain actual root workflow actions. This report does not claim future sync/archive already completed.",
+    "If any product input changes, unchanged-source reuse no longer suffices; reassess and run relevant product gates. Later parent documentation head must not be described as the commit executed by30afaCI."
+  ],
+  "decision": "No current evidence blocker to the three specified written tasks within their fixed fixture scope. Preserve all stated limits, expected red controls and original external-tool failures.",
+  "execution_scope": "Read-only Python; no repository mutation,Git,native,network or checkbox changes."
+}

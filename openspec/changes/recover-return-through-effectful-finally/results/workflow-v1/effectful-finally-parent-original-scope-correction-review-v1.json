@@ -1,0 +1,165 @@
+{
+  "status": "original_parent_positive_scope_remains_open_prior_narrow_close_assessment_superseded",
+  "original_planning_exact_pins": [
+    {
+      "path": "/home/lordcasser/workspace/projects/jarde/openspec/changes/recover-return-through-effectful-finally/proposal.md",
+      "bytes": 3334,
+      "sha256": "201e95c22fa83a66916e8700825f035c416b783b2073a91aa4959df1a8b7472c"
+    },
+    {
+      "path": "/home/lordcasser/workspace/projects/jarde/openspec/changes/recover-return-through-effectful-finally/tasks.md",
+      "bytes": 2302,
+      "sha256": "3d5ff173546fb8cad06101e991ff6f3b346b2dd969100451cdba1a8ff6400a07"
+    },
+    {
+      "path": "/home/lordcasser/workspace/projects/jarde/openspec/changes/recover-return-through-effectful-finally/specs/java8-recovery/spec.md",
+      "bytes": 1405,
+      "sha256": "813f25c5cab46edd5da0c5f6c3669a76c4c892bae4b2e66ea262390d1ce84a42"
+    }
+  ],
+  "original_planning_review": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-remaining-acceptance-review-v1.json",
+    "bytes": 7656,
+    "sha256": "439bc3477446c9d45ae72e63d0862d41669d8cb4ce6947c383b7afa44e6116c1"
+  },
+  "receipt": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/run-v1/execution.json",
+    "bytes": 2728785,
+    "sha256": "69ab2adae70d1a2b569c2080822330a78ccd6dafa274ee77e8b4dbacb2070d5d"
+  },
+  "current_JSON": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-return-controls-v1/run-v1/2.stdout.raw",
+    "bytes": 113525,
+    "sha256": "035dc4cb678c48d1a53b46694f7f646ca09e518a6bdab76f3c399107f63c2a29"
+  },
+  "before_after_pinned_EX_class": {
+    "path": "/home/lordcasser/.codex/worktrees/core-integrity/jarde/openspec/evidence/java-syntax-2026-10-05/exception-shape-family-patrol/fixture/EX.class",
+    "bytes": 1632,
+    "sha256": "e6f0eb1e029a2c883d3ee5df5e089eda17fea27833a9244297cede139cd61287"
+  },
+  "independent_physical_method_reader": {
+    "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/audit_parent_return_controls_independent_v1.py",
+    "bytes": 10023,
+    "sha256": "4391a81dd59bdd30fa15e3949e2ade96db6918841d4032fb67597503f6a700a3"
+  },
+  "actual_original_class_owner": "EX",
+  "actual_selected_Code_methods": [
+    {
+      "name": "finThrow",
+      "descriptor": "(I)Ljava/lang/String;",
+      "flags": 8,
+      "Code": {
+        "bytes": 38,
+        "sha256": "2b79a5675af0c13eacedd543b9c4d1a56fe11b589d9ac346b9f96538770292b4"
+      }
+    },
+    {
+      "name": "nestedFin",
+      "descriptor": "(I)I",
+      "flags": 8,
+      "Code": {
+        "bytes": 72,
+        "sha256": "ea22c96eebcc05166227a6c7a090b45e807a2ece050811f620d7986ca7ab6c51"
+      }
+    }
+  ],
+  "actual_method_reports": [
+    {
+      "name": "finThrow",
+      "descriptor": "(I)Ljava/lang/String;",
+      "representation": "mixed",
+      "quality": "fallback",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ],
+      "text": "// @method finThrow(I)Ljava/lang/String;\n// @declaration a static method of `EX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg0 < 0) {\n        // @bytecode 4 7 8 10 13\n        // BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`\n    } else {\n        // @bytecode 14 16 17 20 22 25 26\n        // BCI 27: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`\n    }\n    // @bytecode 27 28 31 33 36 37\n    // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [27]\n}\n",
+      "text_sha256": "7b7ccbaab8db7b8b9f22e1573f0bcdd08c856a1a1487f5216443f7ad9c9d7671"
+    },
+    {
+      "name": "nestedFin",
+      "descriptor": "(I)I",
+      "representation": "mixed",
+      "quality": "fallback",
+      "fallbacks": [
+        "jre_guard_finally_copy",
+        "jre_region_uncovered_blocks"
+      ],
+      "text": "// @method nestedFin(I)I\n// @declaration a static method of `EX`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 24 35 37 57 70\n    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+      "text_sha256": "4f4c043083c2cd75bb65179c080712f4b2ffefdc5467730a3d424998a8638ea4"
+    }
+  ],
+  "original_scope": {
+    "exact_proposal_quote": "父范围仍包含FX.finReturn、其它未证明形与完整JADX/零回退验收。固定FY/FO的完整成功不代表所有finally或父计划已经完成。",
+    "proposal_SHA": "201e95c22fa83a66916e8700825f035c416b783b2073a91aa4959df1a8b7472c",
+    "interpretation": "FY/FX/FO are necessary concrete acceptance anchors; retained other-unproved-forms scope was not discharged by editing tasks to just those anchors. Original rejection boundary concerns finally-origin nonlocal completion, competing returns, or unproved effect/value semantics; it does not automatically classify protected try throw or nested fallthrough cleanup as intentionally excluded negative controls."
+  },
+  "remaining_positive_debt": [
+    {
+      "method": "EX.finThrow(I)Ljava/lang/String;",
+      "decision": "retain_positive_investigation_debt",
+      "basis": "Actual38BCode and same sealed report retain fallback. Try-origin throw with normal finally cleanup is distinct from finally itself return/throw. The report quotes BCI27 cleanup-copy proof failure on both branch arms. This requires bounded value/copy/exception proof, not reclassification as healthy negative control."
+    },
+    {
+      "method": "EX.nestedFin(I)I",
+      "decision": "retain_positive_investigation_debt",
+      "basis": "Actual72BCode and sealed report retain cleanup-copy refusal atBCI37 plus uncoveredblocks24/35/37/57/70 and local1crossesfallback. Nested fallthrough cleanup with synthetic handler rethrows is not itself proof of source-level explicit nonlocal finally completion. Keep as positive investigation debt pending actual Facts/SSA/exception-priority proof."
+    },
+    {
+      "method": "FinallyCompletion.tryThrowsFinallyRuns()I",
+      "decision": "retain_positive_investigation_debt",
+      "basis": "Try-origin exception and normally completing cleanup remain distinct from finally-origin return/throw. Current raw3/5 are fallback, so this is another positive investigation candidate."
+    }
+  ],
+  "negative_controls_still_valid": [
+    "EX.finReturn finally-origin conditional return",
+    "FinallyCompletion.finallyReturns finally-origin return",
+    "FinallyCompletion.finallyThrows finally-origin explicit throw"
+  ],
+  "task_reconciliation": {
+    "2.1": "Open: five delivered leaves remain valid partial results but retained positive debt is unresolved.",
+    "2.3": "Fixed comparison acceptance remains valid:28nontransfer equal/four authorized improvements/refusal controls; it is not whole original-parent completion.",
+    "3.1": "Open at original-parent coverage level; existing32methods724BCI/24commands12main and recordedJADXfailure remain valid fixed evidence, not final coverage of remaining positive forms.",
+    "3.2": "Open for final parent closure. Existing30afa source/native/CI/docs-source binding remains valid historical evidence. Gate final product again as appropriate after positive work or explicitly authorized scope resolution.",
+    "transient7of7": "Preserve real transient7/7receipts and previous assessment bytes as historical/superseded; do not sync/archive now."
+  },
+  "prior_assessment_correction": {
+    "previous": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/effectful-finally-parent-tasks-23-31-32-acceptance-assessment-v2.json",
+      "bytes": 19291,
+      "sha256": "d4d1a3a55e98e4445e977f33e86f03bcf9cd5f7969e5d9b39d1afc7b0e043f3e"
+    },
+    "finding": "Its fixed recomputations remain true, but it answered narrowed edited tasks without reconciling original3334Bproposal and without checking all remainingEXmethods in the same raw. Its recommendation cannot support original-parent closure and is withdrawn for that purpose.",
+    "responsibility": "This was my missing original-scope check, not a product/native/CI failure."
+  },
+  "memo_digest_correction": {
+    "memo": {
+      "path": "/home/lordcasser/.cache/jarde-validation/core-integrity-20261015/CORE/finallycompletion-current-05e-and-sealed-ex-memo-v2.json",
+      "bytes": 55251,
+      "sha256": "78db1de12506a4b9f744c24cdc6a20ef12f779a24bb54efc10caa7d1e5df2744"
+    },
+    "claimed_EX_SHA256": "dcb1097a6592ce96da77cbec9e9b68a363b11bc38657d6d6a33a74ca9c62c1e6",
+    "actual_EX_SHA256": "e6f0eb1e029a2c883d3ee5df5e089eda17fea27833a9244297cede139cd61287",
+    "whole_class_digest_matches": false,
+    "Code_hash_independent_comparison": [
+      {
+        "name": "finThrow",
+        "Code_bytes_equal": true,
+        "Code_sha256_equal": true
+      },
+      {
+        "name": "nestedFin",
+        "Code_bytes_equal": true,
+        "Code_sha256_equal": true
+      }
+    ],
+    "impact": "Do not propagate dcb109 as SHA256 of this sealedEX.class. Actual1632B/e6f0...61287 matches original receipt and portable manifest. Physical method Code bytes/hash independently reread by the existing bounded purePython reader."
+  },
+  "limits": [
+    "No EX.java dynamic before/after claim: evidence is actual sealedEX.class and rawJSON.",
+    "Physical classfile method/code hashes and report facts are not native canonicalCFG/SSA/Facts proof or runtime execution.",
+    "Keep parent open. Next bounded proof needs actual Facts/SSA/Region investigation; no generic resolver/framework or implementation proposed."
+  ],
+  "execution": "PurePython/read-only repo/cache; no Git/native/network; no old report or checkbox modified."
+}
