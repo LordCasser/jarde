@@ -2,6 +2,16 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-18 最新接续：finally已交付，switch非局部出口取证2/7
+
+用户要求的finThrow/nestedFin已在后续工作完成，并非当前未实现：分别5/5和16/16，父finally7/7；同一nested最终CLI的完整对照为nested432 + finThrow144 = 576 rebuilt case，原始源码/目标/JADX失败均保留。本轮重新读取OpenSpec并逐字核两历史产品自身CI归档的38payload、24raw pin，各4jobs/52steps成功，见`openspec/evidence/java-syntax-2026-10-18/finally-leaves-recheck-root-v1`。这是复核旧验收，不冒称重跑矩阵或当前head新CI。后续exception-only已11/11，显式finally return/throw仍单列；当前最新产品仍为下节81b0684d5，不把旧finally检查点写成最新产品。
+
+继续已有`recover-switch-case-nonlocal-exits`，当前**2/7，仅红基线/首拒完成**。root正式605 CLI对四个原封完整SN/SM/SL/LD双javac8/23输入执行137命令/274raw、16原oracle；Jarde SM八重编/16运行匹配，其余24整类重编失败/no-runtime，明确fallback。JADX SN/SM通过，SL四编译失败，LD四编译成功却八运行输出9而原为10；全部真实失败保留。default/all八对全文/方法quality/fallback/map同，报告evidence扩展不可按整非usage相等比较。基线已归档`results/baseline-root-v1`。
+
+同次IR诊断已root接受：一次守卫构建39.34s/峰值372076204B、exact clean，八all请求的整个非usage JSON同正式基线；40方法按Code spans/方法顺序核canonical/SSA/Region，26raw pin复核，两源精确恢复、完整产品来源同基线、target absent。SN返回44不在loop scope，label-break在无局部join时拒绝，SL混合形重复认领尾71；后置local1门与local-scope相同但上游原因不同。不能放宽声明门。细节、证据限制和root设计见该change `instrumentation.md`、`design.md`、`results/first-refusal-root-v1`；SL forward-join内部未日志的具体条件不冒称已知。
+
+OpenSpec已ready，按root设计派两个Luna在私有目录准备实现：`/private/tmp/jarde-switch-return-impl-luna-v1-20261018`（返回叶，SN及SL四分派）与`/private/tmp/jarde-switch-join-impl-luna-v1-20261018`（break outer/mixed，join68与continue71分开）。另一个Luna准备外部完整行为driver于`/private/tmp/jarde-switch-nonlocal-runtime-driver-luna-v1-20261018`。这些均**尚未共享集成/构建/验收**，不按私有补丁关闭任务。允许原私有LoopTarget携带同一已证return叶集合供join分类，避免重证或仅相信Return opcode；不新增公共AST/solver。root继续审查后统一复制基线八class至`tests/fixtures/p3-switch-nonlocal-exits/{javac8,javac23}`并记录原编译来源，再串行集成、对抗性测试、完整三方重编/双JVM与自身产品CI。暂未创建永久fixture，不把已有baseline当未来产品验收。71/612不变。
+
 ## 2026-10-18 当前：原始 TestFinally3 与直接数组构造参数
 
 `recover-direct-array-constructor-arguments` 已7/7，产品81b0684d579a09e16f328f2840bcd2400338219c已推送并通过自身CI。首产品550b7ff922e32fa4ce5d4326d8c7d22bd8fa30a3的完整seed1曾发现P5重复遍历计量失败，root取消旧CI39060504198，原失败/取消日志均保留，不能当作成功。Luna补丁经root审查，仅init.rs复用已读取operands并将物理参数次数并入原有已计费循环，删除重复工作，未改P5旧表值或预算。原finThrow/nestedFin/exception-only验收与旧产品CI见下面历史区。本轮复用完整数组证明，精确匹配constructor物理final ValueId，替换String窄特判，闭合后置实参reader且不吸收sibling所有权；同owner调用按receiver SSA选取，无新solver/pass/carrier。

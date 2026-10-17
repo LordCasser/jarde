@@ -6,10 +6,11 @@
 
 ## What Changes
 
-- MVP 先行：**case 内 return**——呈现层归因（局部值跨引注区）复用既有出口/汇合证明；插桩先行（实现者改动前回答，落盘 change 目录）：
+- MVP 先行：**case 内 return**——复用loop_terminal_returns的直接返回叶证明，将已解码switch来源纳入同一scope/coverage；局部值跨引注是后置拒绝，保持声明门。插桩先行（已实际回答，见instrumentation.md）：
   - **Q-i**：`retInSwitchNoTail` 的引注触发链——为何 if 版同构恢复而 switch 版拒（tableswitch 的哪条结构事实使局部 1 的 def-use 切片无法词法绑定）；
   - **Q-ii**：与 local-scope 片（preserve-local-scope-across-exception-regions）的落点关系——同一呈现门的不同入口（合并实现）或独立门；本形无任何异常结构。
 - 第二步：**case 内 break outer**——需要标签重建等价证明（jarde 在纯循环位已支持 break-outer 标签保留，patrol-labeled-block 实证）；jadx 自己在此形行为错码，验收以行为逐行一致为准（含 `{9,1,5}`→10 判别输入）。
+- SL既有mixed锚同时覆盖break/continue/return：局部汇合点与循环continue目标分别证明、按原Frame消费，共享尾不得重复归属。当前探针已证其首个arm进入共享尾，第二arm重入后发生overlap；不能按case-return单点通过关闭本片。
 - 拒绝边界保持：出口结构不可证明时整方法响亮拒绝。
 
 ## Capabilities
@@ -24,4 +25,4 @@
 
 ## Impact
 
-主要涉及 `jarde-java` 呈现层（局部 def-use 词法绑定）与 switch/循环出口汇合证明；验收 fixture：[switch-nonlocal-exit-patrol](../../evidence/java-syntax-2026-10-05/switch-nonlocal-exit-patrol/) 的 SN.java（四锚）+ SM.java 五对照零回退 + SL.java mixed 终极形。
+主要涉及 `jarde-java/src/region.rs` 已有返回叶、switch/循环出口汇合与Frame消费；`build.rs`声明门保持。验收 fixture：[switch-nonlocal-exit-patrol](../../evidence/java-syntax-2026-10-05/switch-nonlocal-exit-patrol/) 的 SN.java（四锚）+ SM.java 五对照零回退 + SL.java mixed + LD.java判别输入。新增独立driver覆盖原main未执行的case-return与多次迭代后break；不改目标源码，不新增依赖或公共表示。2026-10-18红基线为137命令/274raw，证据见results索引；本片不代表CF13或71/612整体完成。

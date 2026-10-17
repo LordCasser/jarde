@@ -1,0 +1,9 @@
+# finThrow / nestedFin 接续复核
+
+2026-10-18重新读取handoff、两份OpenSpec apply上下文和实际收据：finThrow 5/5、nestedFin 16/16、父finally 7/7均已关闭。这里复核既有验收，没有重复实现，也没有冒称本次重跑历史编译/JVM/native/CI矩阵。
+
+root逐字复开finThrow产品6b32c708d1adea06558478fd0f339cc23885c581自身CI39037102727、nestedFin产品4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5自身CI39042611463的两个归档，SHA与原root-review一致；38个payload成员及24份collection原始流pin均复核。每份run.json的headSha对应各自产品，4jobs/52API步骤成功。历史归档schema不同，前三次审计脚本假设错误均在接受前退出；最终按真实schema复核成功，尝试记录在review.json，不把解析失败当产品失败或验收通过。
+
+同一最终nested CLI已实际验收nested432与finThrow144个rebuilt case，共576；此数量沿用其原记录。后续exception-only也已11/11，tryThrowsFinallyRuns不再是当前待办；显式finallyReturns/finallyThrows仍是独立债务。当前工作区基于更新的81b0684d5直接数组产品及3deab286e文档检查点，本次复核的两个历史产品CI不冒称是当前head的CI。
+
+Luna只读交叉核任务/结果索引；其memo中的“当前”限定于所审finally检查点，主线最新状态以上述说明和handoff为准。持续目标active，71单元/612文件不增计数。下一项是已存在的recover-switch-case-nonlocal-exits，先跑当前产品红基线及同次IR探针，再定设计。

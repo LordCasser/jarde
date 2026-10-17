@@ -16,6 +16,10 @@
 - **WHEN** 输入为 `SM` 五对照形（break/continue/混用/空尾/if 版）
 - **THEN** 既有恢复 SHALL 逐字节不变
 
+#### Scenario: 混合出口共享循环尾
+- **WHEN** 完整SL的mixed方法包含switch break、loop continue、method return与default累积，独立driver传入`{1,2,4,3}`
+- **THEN** 输出 SHALL 为124，continue路径不得执行循环尾，break/default路径各执行一次循环尾，return后不再执行尾；局部join与continue目标保持不同身份，物理块不得重复认领
+
 #### Scenario: 不可证明时维持拒绝
 - **WHEN** 出口归属或局部 def-use 无法在同一词法结构内闭合
-- **THEN** 系统 MUST 保持整方法响亮拒绝与可定位诊断
+- **THEN** 系统 MUST 保持整方法响亮拒绝与可定位诊断；晚预算、取消或期限停止不得发布部分正文或source map，保持原停止原因与已发生usage
