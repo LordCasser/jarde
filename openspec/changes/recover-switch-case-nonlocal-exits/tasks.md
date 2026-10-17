@@ -3,10 +3,10 @@
 - [x] 1.2 回答 Q-i/Q-ii；root实际临时构建/八all请求取得同次canonical/SSA与Region，40方法配置核Code区间与顺序，26raw pin、整个非usage JSON同605基线，恢复源码/target absent；真实原因和同一声明门的不同上游见instrumentation.md、results/first-refusal-root-v1。SL forward-join内部未日志的具体拒绝条件不冒称已知。
 
 ## 2. 实现
-- [ ] 2.1 MVP：复用现有返回叶证明恢复case内return；真实SN双编译器公库/default-all/CLI须Structured、全部BCI/身份/map闭合，错误入口/出口/row/clone等邻变体拒绝，晚budget/cancel/deadline无部分发布，root运行测试后关闭。
-- [ ] 2.2 第二步：沿现有switch_loop_join与Frame证明case内break outer及SL mixed；证明无局部join时所有路径闭合、局部join和continue不同身份、块恰好一次，真实正例/错边/外来入口/跨case/异常边与停止测试通过后关闭，不新增公共AST/solver。
-- [ ] 2.3 对照零回退：最终CLI对八个原始class的default/all完整方法正文与当前基线比较；SM五对照形及非目标方法逐字节不变，来源/质量/fallback均按实际范围核对。
+- [x] 2.1 MVP：复用现有返回叶证明恢复case内return；root final-focused-v5通过668项，final-api-v2的24目标配置全部700物理BCI覆盖、身份/UTF8/map闭合，SN57/60来源缺口经原switch-arm/LoopContinue修正。真实外来入口、证书缺失/错target/歧义target、异常边、clone edge身份及晚AnalysisSteps/分析后取消/期限入口通过；公开请求late stop无部分发布。clone仅边证书，不冒称整历史loop恢复，见独立债务。
+- [x] 2.2 第二步：沿现有switch_loop_join与Frame恢复break outer及SL mixed；root接受单candidate遍历与严格全arm closure，join68/continue71分离；465库、九return/label/stop、12既有switch边界和一公开request停止通过。双编译器label三方法与SL mixed整类原样重编/双JVM driver通过，无新公共AST/solver；异常类两leg均由真实Reader行验证拒绝，所有权和停止边界见final-focused-v5。
+- [x] 2.3 对照零回退：最终10a73 CLI实际16请求，六目标的24配置fallback→structured，其余56稳定方法投影同605基线；SM五形全部正文/质量/fallback/map不变，default/all全文/map同，完整80方法的声明顺序、flags、owner及2152区间/3024来源引用复核，见final-api-root-v2。
 
 ## 3. 验证
-- [ ] 3.1 三方完整源码原样双javac重编、双JVM rebuilt-only运行：SN四锚、LD判别输入{9,1,5}→10、SL独立driver {1,2,4,3}→124及空数组/重复迭代/各出口，核CodeSource隔离、效果次数与结果；JADX实际错码/编译失败原样保留，不删方法或修源码凑绿。
+- [x] 3.1 最终10a73 CLI三方完整源码矩阵已root接受：225命令/450raw，Jarde32次整类原样重编、64 driver运行1744case及64 main全等原oracle；javac8 source/target8与javac23 --release8，双JVM -Xverify:all与CodeSource/双root隔离。含SN四锚、LD {9,1,5}→10、SL {1,2,4,3}→124及各边界；JADX SL四编译失败、SN/LD各八ledgerBreak driver失败、LD八main9≠10均原样保留，后续未执行case不计。见final-matrix-root-v2；原始driver另436case，不混算为rebuilt。
 - [ ] 3.2 最终生产源码fmt/CI同款Clippy/MSRV、必要focused/reader/P5、两fresh seed workspace与strict通过，5GiB/target1GiB每秒守卫/default stack/finally exact clean；精确产品提交推送并独立接受其自身CI、更新handoff和clean main后关闭，不增计71/612。

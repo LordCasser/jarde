@@ -1,0 +1,3 @@
+# Loop switch jsr clone context
+
+Standard-library Python classfile generator emits one complete v49 class, run(I)I with two jsr calls into the same subroutine, a real loop, lookupswitch and ret. Root corrected candidate opcode 0xaa to actual lookupswitch 0xab before generation; this is fixture preparation, not a product change. Major49 needs no modern StackMapTable. Both Java8 and Java23 -Xverify:all runs load this exact class through an isolated URLClassLoader, verify CodeSource, and produce run(0)=0 / run(3)=12. This is a generated class, not a javac output. Test mutation substitutes the other real same-method clone successors; it does not modify class bytes or claim JVM execution of a malformed graph.

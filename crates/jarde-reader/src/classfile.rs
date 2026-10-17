@@ -12290,7 +12290,11 @@ mod tests {
             // Direct-array constructor arguments add 26 complete frozen classes: 78 Code
             // bodies, four handler rows and six branch targets; no jsr. The new population
             // was measured by this full reader walk before updating the expected tuple.
-            (1227, 5446, 602, 3502, 10),
+            // Switch nonlocal exits add eight complete javac8/23 classes: 40 bodies and 120
+            // targets. Boundary controls add two catch-bearing compiler classes and one v49
+            // jsr class: nine bodies, four handlers, nineteen targets and two subroutine calls.
+            // Raw Code counts independently match the measured positive-fixture delta.
+            (1238, 5495, 606, 3641, 12),
             "fixture population changed: re-measure these counts"
         );
     }

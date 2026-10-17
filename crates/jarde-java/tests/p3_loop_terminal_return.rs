@@ -6,7 +6,7 @@ use jarde_java::{
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
-use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
 use jarde_reader::model::{
@@ -26,6 +26,18 @@ const NEGATIVES: &[u8] =
 // creates a second normal entry to the inner leaf; the class passes `java -Xverify:all`.
 const EXTRA_ENTRY: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class");
+const SWITCH_SN_JAVAC8: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-switch-nonlocal-exits/javac8/SN.class");
+const SWITCH_SN_JAVAC23: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-switch-nonlocal-exits/javac23/SN.class");
+const SWITCH_SL_JAVAC8: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-switch-nonlocal-exits/javac8/SL.class");
+const SWITCH_SL_JAVAC23: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-switch-nonlocal-exits/javac23/SL.class");
+const SWITCH_LD_JAVAC8: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-switch-nonlocal-exits/javac8/LD.class");
+const SWITCH_LD_JAVAC23: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-switch-nonlocal-exits/javac23/LD.class");
 
 fn limits() -> Limits {
     Limits {
@@ -135,10 +147,27 @@ fn recover_class_method_with_budget(
         &mut budget,
     )
     .expect("fixture method analysis completes");
+    let declaration = analysis
+        .ir()
+        .declaration()
+        .expect("reader states the exact method declaration");
+    let declaration_name = String::from_utf8_lossy(&declaration.name().0).into_owned();
+    let declaration_descriptor = String::from_utf8_lossy(&declaration.descriptor().0).into_owned();
+    let declaration_owner = String::from_utf8_lossy(&declaration.class_name().0).into_owned();
+    assert_eq!(declaration_name, name);
+    assert_eq!(declaration_descriptor, descriptor);
+    assert_eq!(declaration_owner, owner);
     let facts = RecoveryFacts::new(
-        MethodFacts::new(name, descriptor, 4)
-            .with_access_flags(0x0008)
-            .with_declaring_class(DeclaringClass::new(owner, 0x0031)),
+        MethodFacts::new(
+            declaration_name,
+            declaration_descriptor,
+            declaration.parameter_slots(),
+        )
+        .with_access_flags(declaration.access_flags())
+        .with_declaring_class(DeclaringClass::new(
+            declaration_owner,
+            declaration.class_access_flags(),
+        )),
     );
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
@@ -254,6 +283,278 @@ fn cf07_computed_terminal_returns_recover() {
             report.text
         );
     }
+}
+
+#[test]
+fn decoded_switch_case_returns_are_loop_terminal_leaves() {
+    for (class, digest) in [
+        (
+            SWITCH_SN_JAVAC8,
+            "157d10b85e894aca95e95390fc5ee819659ee3e209f09300f82caeed83a97aab",
+        ),
+        (
+            SWITCH_SN_JAVAC23,
+            "1a989d509d52a95127e2d56f2df471e754358e4c6df43b019ba3f2471629b7ff",
+        ),
+    ] {
+        assert_eq!(blake3::hash(class).to_hex().to_string(), digest);
+        for (method, transfer_bci) in [("retInSwitchNoTail", 57), ("retInSwitchTail", 60)] {
+            let report = recover_class_method_with_budget(
+                class,
+                "SN",
+                method,
+                "([I)I",
+                RecoveryEvidenceRequest::all(),
+                None,
+            );
+            assert!(report.produced(), "{method}: {:?}", report.outcome);
+            assert!(
+                !report.text.contains("@bytecode"),
+                "{method}: {}",
+                report.text
+            );
+            assert!(report.text.contains("case 3:"), "{method}: {}", report.text);
+            let case = report.text.find("case 3:").expect("case-return arm");
+            let default = report.text[case..]
+                .find("default:")
+                .map(|offset| case + offset)
+                .expect("default arm follows the return arm");
+            assert!(
+                report.text[case..default].contains("return "),
+                "the return remains in case 3: {}",
+                report.text
+            );
+            assert!(
+                !report.source_map.of_bci(44).is_empty(),
+                "{method} return-leaf source is retained"
+            );
+            assert!(
+                !report.source_map.of_bci(transfer_bci).is_empty(),
+                "{method} back-edge goto BCI {transfer_bci} must retain its source"
+            );
+            let owners: Vec<_> = report
+                .regions
+                .iter()
+                .filter(|region| region.structured && region.blocks.contains(&44))
+                .collect();
+            assert_eq!(
+                owners.len(),
+                1,
+                "{method} leaf ownership: {:?}",
+                report.regions
+            );
+            assert!(owners[0].rule.is_some_and(|rule| rule.rule() == "loop"));
+        }
+
+        let if_control = recover_class_method_with_budget(
+            class,
+            "SN",
+            "retAfterTail",
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            None,
+        );
+        assert!(
+            if_control.produced(),
+            "if control: {:?}",
+            if_control.outcome
+        );
+        assert!(
+            !if_control.text.contains("@bytecode"),
+            "{}",
+            if_control.text
+        );
+    }
+}
+
+#[test]
+fn four_way_switch_return_leaf_has_one_owner() {
+    for (class, digest) in [
+        (
+            SWITCH_SL_JAVAC8,
+            "c70528de7c76a1fb68f86c060c74149b85cb7e61589516f32b7044bb166969ff",
+        ),
+        (
+            SWITCH_SL_JAVAC23,
+            "e53178ff745dd8a1c2d68a4fa83f28895bfab910aa42677cfd9373f404a3e803",
+        ),
+    ] {
+        assert_eq!(blake3::hash(class).to_hex().to_string(), digest);
+        let report = recover_class_method_with_budget(
+            class,
+            "SL",
+            "mixed",
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            None,
+        );
+        assert!(report.produced(), "SL mixed: {:?}", report.outcome);
+        assert!(!report.text.contains("@bytecode"), "{}", report.text);
+        assert!(report.text.contains("case 3:"), "{}", report.text);
+        assert!(
+            !report.source_map.of_bci(58).is_empty(),
+            "four-successor switch return leaf source is retained"
+        );
+        let owners: Vec<_> = report
+            .regions
+            .iter()
+            .filter(|region| region.structured && region.blocks.contains(&58))
+            .collect();
+        assert_eq!(
+            owners.len(),
+            1,
+            "SL return-leaf ownership: {:?}",
+            report.regions
+        );
+        assert!(owners[0].rule.is_some_and(|rule| rule.rule() == "loop"));
+    }
+}
+
+#[test]
+fn switch_outer_breaks_keep_loop_owner_and_transfer_source() {
+    for (class, owner, method) in [
+        (SWITCH_SN_JAVAC8, "SN", "labBreak"),
+        (SWITCH_SN_JAVAC23, "SN", "labBreak"),
+        (SWITCH_SL_JAVAC8, "SL", "labeledBreak"),
+        (SWITCH_SL_JAVAC23, "SL", "labeledBreak"),
+        (SWITCH_LD_JAVAC8, "LD", "lab"),
+        (SWITCH_LD_JAVAC23, "LD", "lab"),
+    ] {
+        let report = recover_class_method_with_budget(
+            class,
+            owner,
+            method,
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            None,
+        );
+        assert!(report.produced(), "{owner}.{method}: {:?}", report.outcome);
+        assert_eq!(
+            report.quality,
+            Quality::Structured,
+            "{owner}.{method}: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("@bytecode"),
+            "{owner}.{method}: {}",
+            report.text
+        );
+        let loop_owners: Vec<_> = report
+            .regions
+            .iter()
+            .filter(|region| {
+                region.structured && region.rule.is_some_and(|rule| rule.rule() == "loop")
+            })
+            .collect();
+        assert_eq!(
+            loop_owners.len(),
+            1,
+            "{owner}.{method} must have exactly one structured loop owner: {:?}",
+            report.regions
+        );
+        assert!(
+            report.text.contains("loop:") && report.text.contains("break loop;"),
+            "{owner}.{method} must present the switch exit as a break to its loop: {}",
+            report.text
+        );
+        assert!(
+            !report.source_map.of_bci(44).is_empty(),
+            "{owner}.{method} lost transfer BCI 44: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn switch_loop_join_late_budget_cancel_and_deadline_publish_no_partial_source() {
+    use jarde_java::StopReason;
+    use jarde_reader::model::ExecutionReport;
+
+    for (class, owner, method) in [
+        (SWITCH_SN_JAVAC8, "SN", "retInSwitchNoTail"),
+        (SWITCH_SL_JAVAC8, "SL", "mixed"),
+    ] {
+        let full = recover_class_method_with_budget(
+            class,
+            owner,
+            method,
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            Some(Budget::new(limits())),
+        );
+        assert!(full.produced(), "{owner}.{method}: {:?}", full.outcome);
+        assert_eq!(
+            full.quality,
+            Quality::Structured,
+            "{owner}.{method}: {}",
+            full.text
+        );
+        let ExecutionReport::Complete { usage } = &full.execution else {
+            panic!(
+                "{owner}.{method} full recovery did not complete: {:?}",
+                full.execution
+            );
+        };
+        assert!(usage.analysis_steps > 0);
+
+        let mut short_limits = limits();
+        short_limits.analysis_steps = usage.analysis_steps - 1;
+        let stopped = recover_class_method_with_budget(
+            class,
+            owner,
+            method,
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            Some(Budget::new(short_limits)),
+        );
+        assert!(
+            !stopped.produced(),
+            "{owner}.{method}: {:?}",
+            stopped.outcome
+        );
+        assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+        assert!(matches!(
+            stopped.stop(),
+            Some(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+    }
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_class_method_with_budget(
+        SWITCH_SN_JAVAC8,
+        "SN",
+        "retInSwitchNoTail",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+
+    let mut deadline_limits = limits();
+    deadline_limits.elapsed_millis = 1;
+    let deadline = Budget::new(deadline_limits);
+    std::thread::sleep(std::time::Duration::from_millis(2));
+    let expired = recover_class_method_with_budget(
+        SWITCH_SN_JAVAC8,
+        "SN",
+        "retInSwitchNoTail",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(deadline),
+    );
+    assert!(!expired.produced());
+    assert!(expired.text.is_empty() && expired.source_map.is_empty());
+    assert!(matches!(
+        expired.stop(),
+        Some(StopReason::Interrupted { code, .. }) if *code == "jre_budget_interrupted"
+    ));
 }
 
 #[test]
