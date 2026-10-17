@@ -9463,6 +9463,9 @@ impl Walker<'_> {
             // A void body has neither a saved return nor a named catch row; the bounded walker
             // owns it, so this reader is not its walk.
             crate::guard::FinallyCompletion::Void { .. } => return Ok(None),
+            // The exception-only body is rendered from its certified straight range; it must not
+            // pass through the saved-return-oriented structured-finally walker.
+            crate::guard::FinallyCompletion::Throws { .. } => return Ok(None),
         };
         let named_span = nested_row.and_then(|ordinal| {
             self.handlers

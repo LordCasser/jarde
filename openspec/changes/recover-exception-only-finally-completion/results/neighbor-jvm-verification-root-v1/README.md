@@ -1,0 +1,5 @@
+# 真实完整邻变体的双JVM严格验证
+
+root从完整封存javac8类生成六负向候选与一个等价正向候选。原私有generator把row-shrunk写成end10，root纠正成end9以真正漏掉body throw；end10另列binding-unprotected正向等价控制。所有七class已用Java8/23 -Xverify:all、parent=null独立URLClassLoader加载并反射全部方法/构造器，14次全部通过，未调用目标方法。
+
+3实际命令/6raw与七份class SHA均核验；root更正generator与原draft、验证器、实际输出一起保留。方法反射数5不含constructor/clinit，原七Code方法未删。此步只证明JVM有效；还须实际reader/IR Complete及guard接受/拒绝测试，不能提前关闭负边界任务。

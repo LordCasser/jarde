@@ -52,7 +52,7 @@
 //!   or two rows that both cover it, is refused: partial coverage is exactly the case where writing
 //!   the `try` would drop a close.
 //!
-//! # A narrow `finally` copy can be claimed
+//! # A narrow `finally` shape can be claimed
 //!
 //! A `finally` clause is not a region with a handler: javac **copies** its code onto every exit path
 //! of the `try` (the fixture's `fin()` shows the two copies of `tail()`, one on the normal path and
@@ -60,7 +60,11 @@
 //! the source only if the copies are provably the same code and every exit runs exactly one copy.
 //! The narrow `finally@1` rule claims matching straight copies only when its protected body has
 //! no branch or transfer, the half-open exception range excludes both copies, and every owned
-//! instruction belongs to the proof. A candidate outside that slice remains **refused** and stated
+//! instruction belongs to the proof. It also claims the exception-only completion when one
+//! straight protected body ends in a throw and the catch-all handler binds that same caught value,
+//! runs one unprotected cleanup, and rethrows the binding. Both forms require a complete instruction,
+//! effect, edge, and value-flow partition; every owned instruction belongs to the proof. A candidate
+//! outside that slice remains **refused** and stated
 //! ([`Unproven::FinallyCopy`], reported under `jre_guard_finally_copy` with the copy's own BCI).
 //!
 //! # The boundary this module does not cross
@@ -355,9 +359,9 @@ pub enum Shape {
         else_exit_bci: u32,
         else_return_bci: u32,
     },
-    /// One protected body with two proved cleanup copies and an exclusive completion form.
+    /// One protected body with a proved cleanup and an exclusive completion form.
     Finally {
-        normal_cleanup: (u32, u32),
+        cleanup: (u32, u32),
         completion: FinallyCompletion,
         row_ordinal: u32,
         structured: bool,
@@ -608,6 +612,11 @@ pub enum FinallyCompletion {
         binding_row: u32,
         /// The `return` the normal completion ends in, after the cleanup copy.
         final_return: u32,
+    },
+    /// The protected body ends by throwing its own value; the handler proves it binds and
+    /// rethrows the caught value after one unprotected cleanup copy.
+    Throws {
+        throw_bci: u32,
     },
 }
 
@@ -3494,7 +3503,7 @@ fn prove_call_return_loop_finally(
     poll(facts.budget, Some(126))?;
     Ok(Some(Plan {
         shape: Shape::Finally {
-            normal_cleanup: (30, 56),
+            cleanup: (30, 56),
             completion: FinallyCompletion::SavedReturn {
                 save: 28,
                 returns: 58,
@@ -4021,7 +4030,7 @@ fn prove_local_increment_loop_finally(
     poll(facts.budget, Some(61))?;
     Ok(Some(Plan {
         shape: Shape::Finally {
-            normal_cleanup: (34, 37),
+            cleanup: (34, 37),
             completion: FinallyCompletion::SavedReturn {
                 save: 32,
                 returns: 39,
@@ -5410,7 +5419,7 @@ fn prove_nested_return_finally(
     poll(facts.budget, Some(end))?;
     Ok(Some(Plan {
         shape: Shape::Finally {
-            normal_cleanup: (outer.end_bci, *normal_transfer),
+            cleanup: (outer.end_bci, *normal_transfer),
             completion: FinallyCompletion::SavedReturn {
                 save,
                 returns: return_bci,
@@ -10424,7 +10433,7 @@ fn prove_nested_join_finally(
     let owned = facts.blocks_in((start, handler_end));
     Ok(Some(Plan {
         shape: Shape::Finally {
-            normal_cleanup: (normal_start, facts.span_end(normal_pop)),
+            cleanup: (normal_start, facts.span_end(normal_pop)),
             completion: FinallyCompletion::Joined {
                 transfer,
                 continuation,
@@ -13045,7 +13054,7 @@ fn prove_void_loop_finally(
     }
     Ok(Some(Plan {
         shape: Shape::Finally {
-            normal_cleanup: (153, 157),
+            cleanup: (153, 157),
             completion: FinallyCompletion::Void {
                 binding_row: binding_row.ordinal,
                 final_return: 169,
@@ -13542,7 +13551,7 @@ mod finally_copy_tests {
                             save: 16,
                             returns: 26,
                         },
-                        normal_cleanup: (17, 25),
+                        cleanup: (17, 25),
                         row_ordinal: 0,
                         structured: true,
                     }
@@ -14580,7 +14589,7 @@ mod finally_copy_tests {
                 assert!(matches!(
                     plan.shape(),
                     Shape::Finally {
-                        normal_cleanup: (30, 56),
+                        cleanup: (30, 56),
                         completion: FinallyCompletion::SavedReturn {
                             save: 28,
                             returns: 58
@@ -15571,7 +15580,7 @@ mod finally_copy_tests {
         assert_eq!(plan.lead(), (0, 2));
         assert_eq!(plan.body(), (2, 25));
         let Shape::Finally {
-            normal_cleanup,
+            cleanup: normal_cleanup,
             completion,
             row_ordinal,
             structured,
@@ -15964,7 +15973,7 @@ mod finally_copy_tests {
             panic!("the complete nested saved-return finally is claimed");
         };
         let Shape::Finally {
-            normal_cleanup,
+            cleanup: normal_cleanup,
             completion,
             row_ordinal,
             structured,
@@ -16392,7 +16401,7 @@ mod finally_copy_tests {
                 .unwrap()
                 .expect("the two-copy joined finally is proved");
             let Shape::Finally {
-                normal_cleanup,
+                cleanup: normal_cleanup,
                 completion,
                 row_ordinal,
                 structured,
@@ -17157,6 +17166,512 @@ mod finally_copy_tests {
             ),
             Err(StopReason::Cancelled { .. })
         ));
+    }
+    // Canonical source and JVM-verified neighbors exercise the private proof on complete IR.
+
+    const EXCEPTION_ONLY_BCIS: &[u32] = &[0, 2, 5, 6, 9, 10, 11, 13, 16, 17, 18];
+    const EXCEPTION_ONLY_THROW_SITES: &[u32] = &[2, 6, 9, 13, 18];
+    const EXTRA_ENTRY_BCIS: &[u32] = &[0, 2, 5, 6, 7, 10, 11, 13, 16, 17, 18];
+
+    const CANONICAL_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/sealed/javac8/FinallyCompletion.class"
+    );
+    const CANONICAL_JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/sealed/javac23/FinallyCompletion.class"
+    );
+    const INDEPENDENT_JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyFinally.class"
+    );
+    const INDEPENDENT_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/v8-javac8/ExceptionOnlyFinally.class"
+    );
+    const BINDING_UNPROTECTED: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/binding-unprotected.class"
+    );
+    const ROW_SHRUNK: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/row-shrunk.class"
+    );
+    const CLEANUP_PROTECTED: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/cleanup-protected.class"
+    );
+    const COMPETING_ROW: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/competing-row.class"
+    );
+    const WRONG_RETHROW_VALUE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/wrong-rethrow-value.class"
+    );
+    const EXTRA_NORMAL_HANDLER_ENTRY: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/extra-normal-handler-entry.class"
+    );
+    const FINALLY_EXPLICIT_RETURN: &[u8] = include_bytes!(
+        "../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/finally-explicit-return.class"
+    );
+
+    fn assert_exception_only_complete_facts(facts: &Facts<'_>, expected_bcis: &[u32]) {
+        use jarde_reader::model::OriginMember;
+
+        assert!(facts.canonical.completeness().is_complete());
+        assert_eq!(facts.order, expected_bcis);
+        let effects = facts.ssa.effects().instructions();
+        assert_eq!(effects.len(), expected_bcis.len());
+        assert_eq!(
+            effects
+                .iter()
+                .map(|instruction| instruction.bci())
+                .collect::<Vec<_>>(),
+            expected_bcis
+        );
+
+        // Only may-throw effects carry an instruction origin in SSA; the complete physical
+        // instruction inventory is checked independently above and again in the public source map.
+        let mut method_identity = None;
+        for instruction in effects {
+            if !instruction.may_throw() {
+                assert!(instruction.origin().members.is_empty());
+                continue;
+            }
+            assert_eq!(instruction.origin().members.len(), 1);
+            let OriginMember::MethodPoint { method, bci } = &instruction.origin().members[0] else {
+                panic!("the throw site keeps its exact physical method origin");
+            };
+            assert_eq!(instruction.bci(), *bci);
+            assert_eq!(method.name.0, b"tryThrowsFinallyRuns");
+            assert_eq!(method.descriptor.0, b"()I");
+            if let Some(expected) = method_identity {
+                assert_eq!(expected, method);
+            } else {
+                method_identity = Some(method);
+            }
+        }
+        assert!(method_identity.is_some());
+    }
+
+    fn assert_exception_only_plan(plan: &Plan) {
+        let Shape::Finally {
+            cleanup,
+            completion,
+            row_ordinal,
+            structured,
+        } = plan.shape()
+        else {
+            panic!(
+                "the exception-only lowering keeps the existing Finally shape: {:?}",
+                plan.shape()
+            );
+        };
+        assert_eq!(*row_ordinal, 0);
+        assert!(!*structured);
+        assert_eq!(*cleanup, (11, 17));
+        assert!(matches!(
+            completion,
+            FinallyCompletion::Throws { throw_bci: 9 }
+        ));
+
+        // The certificate owns the entry and catch-copy handler blocks. Its complete physical bytecode
+        // support is the sorted fact set; canonical block IDs do not pretend to enumerate their members.
+        let mut owned_starts: Vec<u32> = plan.owned().iter().map(CanonicalBlockId::bci).collect();
+        owned_starts.sort_unstable();
+        assert_eq!(owned_starts, [0, 10]);
+        let mut plan_facts = plan.facts().to_vec();
+        plan_facts.sort_unstable();
+        plan_facts.dedup();
+        assert_eq!(plan_facts, EXCEPTION_ONLY_BCIS);
+    }
+
+    #[test]
+    fn exception_only_finally_proves_independent_compilers_and_both_binding_row_boundaries() {
+        for (label, class, binding_protected) in [
+            ("independent javac23", INDEPENDENT_JAVAC23, true),
+            ("independent javac8", INDEPENDENT_JAVAC8, true),
+            ("sealed javac8", CANONICAL_JAVAC8, true),
+            ("sealed javac23", CANONICAL_JAVAC23, true),
+            ("binding-unprotected", BINDING_UNPROTECTED, false),
+        ] {
+            probe_descriptor(
+                class,
+                "tryThrowsFinallyRuns",
+                b"()I",
+                false,
+                None,
+                |facts| {
+                    assert_exception_only_complete_facts(facts, EXCEPTION_ONLY_BCIS);
+                    assert_eq!(facts.handlers.len(), 1);
+                    let row = &facts.handlers[0];
+                    assert_eq!(
+                        (row.ordinal, row.start_bci, row.end_bci, row.handler_bci),
+                        (0, 0, if binding_protected { 11 } else { 10 }, 10)
+                    );
+                    assert_eq!(row.catch_type_index, None);
+                    assert_eq!(
+                        facts
+                            .canonical
+                            .throw_sites()
+                            .iter()
+                            .map(|site| site.bci())
+                            .collect::<Vec<_>>(),
+                        EXCEPTION_ONLY_THROW_SITES,
+                    );
+                    assert_eq!(
+                        facts
+                            .ssa
+                            .effects()
+                            .instructions()
+                            .iter()
+                            .filter(|instruction| instruction.may_throw())
+                            .map(|instruction| instruction.bci())
+                            .collect::<Vec<_>>(),
+                        EXCEPTION_ONLY_THROW_SITES,
+                    );
+                    for bci in [2, 6, 9] {
+                        assert_eq!(
+                            facts
+                                .canonical
+                                .throw_sites()
+                                .iter()
+                                .find(|site| site.bci() == bci)
+                                .unwrap()
+                                .handlers(),
+                            &[0]
+                        );
+                    }
+                    for bci in [13, 18] {
+                        assert_eq!(
+                            facts
+                                .canonical
+                                .throw_sites()
+                                .iter()
+                                .find(|site| site.bci() == bci)
+                                .unwrap()
+                                .handlers(),
+                            &[]
+                        );
+                    }
+                    let entry = facts.canonical.blocks()[0].id().clone();
+                    assert_eq!(entry.bci(), 0);
+                    let plan = prove_exception_only_finally(facts, &entry)
+                        .unwrap_or_else(|stop| {
+                            panic!("{label}: complete proof does not stop: {stop:?}")
+                        })
+                        .unwrap_or_else(|| panic!("{label}: complete semantic match is claimed"));
+                    assert_exception_only_plan(&plan);
+                },
+            )
+            .unwrap_or_else(|stop| panic!("{label}: helper completes: {stop:?}"));
+        }
+    }
+
+    #[test]
+    fn exception_only_finally_refuses_only_complete_canonical_semantic_neighbors() {
+        for (label, class) in [
+            ("row shrunk before explicit throw BCI 9", ROW_SHRUNK),
+            ("cleanup call protected by own catch-all", CLEANUP_PROTECTED),
+            ("competing typed Throwable row", COMPETING_ROW),
+            ("wrong rethrow value", WRONG_RETHROW_VALUE),
+            ("extra normal handler entry", EXTRA_NORMAL_HANDLER_ENTRY),
+            ("explicit return from finally", FINALLY_EXPLICIT_RETURN),
+        ] {
+            probe_descriptor(
+                class,
+                "tryThrowsFinallyRuns",
+                b"()I",
+                false,
+                None,
+                |facts| {
+                    // Completeness and the neighbor's actual decoded/table property are asserted
+                    // before calling the semantic proof. These are not parser-invalid stop controls.
+                    let expected_bcis = if label == "extra normal handler entry" {
+                        EXTRA_ENTRY_BCIS
+                    } else {
+                        EXCEPTION_ONLY_BCIS
+                    };
+                    assert_exception_only_complete_facts(facts, expected_bcis);
+                    match label {
+                        "row shrunk before explicit throw BCI 9" => {
+                            assert_eq!(facts.handlers[0].end_bci, 9);
+                            assert_eq!(
+                                facts
+                                    .canonical
+                                    .throw_sites()
+                                    .iter()
+                                    .find(|site| site.bci() == 9)
+                                    .unwrap()
+                                    .handlers(),
+                                &[]
+                            );
+                        }
+                        "cleanup call protected by own catch-all" => assert_eq!(
+                            facts
+                                .canonical
+                                .throw_sites()
+                                .iter()
+                                .find(|site| site.bci() == 13)
+                                .unwrap()
+                                .handlers(),
+                            &[0]
+                        ),
+                        "competing typed Throwable row" => {
+                            assert_eq!(facts.handlers.len(), 2);
+                            assert!(facts.handlers[0].catch_type_index.is_some());
+                            assert_eq!(facts.handlers[0].start_bci, 0);
+                            assert_eq!(facts.handlers[0].end_bci, 11);
+                            assert_eq!(facts.handlers[0].handler_bci, 10);
+                            assert_eq!(facts.handlers[0].ordinal, 0);
+                            assert_eq!(facts.handlers[1].catch_type_index, None);
+                            assert_eq!(facts.handlers[1].handler_bci, 10);
+                            assert!(
+                                facts
+                                    .canonical
+                                    .throw_sites()
+                                    .iter()
+                                    .filter(|site| matches!(site.bci(), 2 | 6 | 9))
+                                    .all(|site| site.handlers() == [0, 1])
+                            );
+                        }
+                        "wrong rethrow value" => assert_eq!(
+                            facts
+                                .ssa
+                                .effects()
+                                .instructions()
+                                .iter()
+                                .find(|instruction| instruction.bci() == 17)
+                                .unwrap()
+                                .opcode(),
+                            0x01,
+                        ),
+                        "extra normal handler entry" => {
+                            assert!(
+                                facts
+                                    .canonical
+                                    .throw_sites()
+                                    .iter()
+                                    .all(|site| site.bci() != 6)
+                            );
+                            let source = facts
+                                .block_of(7)
+                                .expect("the new goto instruction has a block");
+                            let handler = facts
+                                .block_of(10)
+                                .expect("the catch-copy binding has a block");
+                            assert!(facts.canonical.edges().iter().any(|edge| {
+                                edge.from() == source
+                                    && edge.to() == handler
+                                    && edge.kind()
+                                        == jarde_jvm::method_ir::CanonicalEdgeKind::Normal
+                            }));
+                        }
+                        "explicit return from finally" => {
+                            assert!(
+                                facts
+                                    .canonical
+                                    .throw_sites()
+                                    .iter()
+                                    .all(|site| site.bci() != 18)
+                            );
+                            let effects = facts.ssa.effects().instructions();
+                            assert_eq!(
+                                effects
+                                    .iter()
+                                    .find(|instruction| instruction.bci() == 17)
+                                    .unwrap()
+                                    .opcode(),
+                                0x03
+                            );
+                            assert_eq!(
+                                effects
+                                    .iter()
+                                    .find(|instruction| instruction.bci() == 18)
+                                    .unwrap()
+                                    .opcode(),
+                                0xac
+                            );
+                        }
+                        _ => unreachable!(),
+                    }
+                    let entry = facts.canonical.blocks()[0].id().clone();
+                    assert!(
+                        matches!(prove_exception_only_finally(facts, &entry), Ok(None)),
+                        "{label}: complete but semantically different lowering must refuse"
+                    );
+                },
+            )
+            .unwrap_or_else(|stop| {
+                panic!("{label}: complete canonical analysis must not stop: {stop:?}")
+            });
+        }
+    }
+
+    #[test]
+    fn exception_only_finally_stops_at_real_budget_cancel_and_deadline_checkpoints() {
+        use jarde_reader::budget::{CancellationToken, CountedBudgetDimension};
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        use std::time::Duration;
+
+        #[derive(Debug)]
+        struct Observer {
+            charges: AtomicUsize,
+            cancel_at: Option<usize>,
+            delay_at: Option<usize>,
+            token: CancellationToken,
+        }
+        impl LedgerObserver for Observer {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if !matches!(site, LedgerSite::Charge(_)) {
+                    return;
+                }
+                let count = self.charges.fetch_add(1, Ordering::SeqCst) + 1;
+                if self.cancel_at == Some(count) {
+                    self.token.cancel();
+                }
+                if self.delay_at == Some(count) {
+                    std::thread::sleep(Duration::from_millis(150));
+                }
+            }
+
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+
+        probe_descriptor(
+            CANONICAL_JAVAC8,
+            "tryThrowsFinallyRuns",
+            b"()I",
+            false,
+            None,
+            |facts| {
+                let entry = facts.canonical.blocks()[0].id().clone();
+                assert_exception_only_complete_facts(facts, EXCEPTION_ONLY_BCIS);
+                assert_eq!(facts.handlers.len(), 1);
+                assert_eq!(facts.handlers[0].end_bci, 11);
+
+                *facts.budget = Budget::new(limits());
+                let baseline_observer = Arc::new(Observer {
+                    charges: AtomicUsize::new(0),
+                    cancel_at: None,
+                    delay_at: None,
+                    token: CancellationToken::new(),
+                });
+                let ledger =
+                    OperationLedger::new(facts.budget).with_observer(baseline_observer.clone());
+                facts.budget.with_ledger(ledger, UsageOwner::Methods);
+                let plan = prove_exception_only_finally(facts, &entry)
+                    .expect("complete proof does not stop")
+                    .expect("canonical exception-only finally is proved");
+                assert_exception_only_plan(&plan);
+                let paid = facts.budget.usage().analysis_steps;
+                let charges = baseline_observer.charges.load(Ordering::SeqCst);
+                assert!(paid > 10 && charges > 10);
+                assert_eq!(paid, u64::try_from(charges).unwrap());
+
+                // Refuse before the first proof charge.
+                let mut early_limits = limits();
+                early_limits.analysis_steps = 0;
+                *facts.budget = Budget::new(early_limits);
+                assert!(matches!(
+                    prove_exception_only_finally(facts, &entry),
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        ..
+                    })
+                ));
+                assert_eq!(facts.budget.usage().analysis_steps, 0);
+
+                // Admit every measured charge but the last one; no partially assembled plan escapes.
+                let mut late_limits = limits();
+                late_limits.analysis_steps = paid - 1;
+                *facts.budget = Budget::new(late_limits);
+                assert!(matches!(
+                    prove_exception_only_finally(facts, &entry),
+                    Err(StopReason::Budget {
+                        dimension: CountedBudgetDimension::AnalysisSteps,
+                        ..
+                    })
+                ));
+                assert_eq!(facts.budget.usage().analysis_steps, paid - 1);
+
+                // Cancellation is triggered from a real ledger charge, including near the final one.
+                for cancel_at in [1, charges - 1] {
+                    let token = CancellationToken::new();
+                    *facts.budget = Budget::with_cancellation_token(limits(), token.clone());
+                    let observer = Arc::new(Observer {
+                        charges: AtomicUsize::new(0),
+                        cancel_at: Some(cancel_at),
+                        delay_at: None,
+                        token: token.clone(),
+                    });
+                    let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+                    facts.budget.with_ledger(ledger, UsageOwner::Methods);
+                    assert!(matches!(
+                        prove_exception_only_finally(facts, &entry),
+                        Err(StopReason::Cancelled { .. })
+                    ));
+                    assert_eq!(observer.charges.load(Ordering::SeqCst), cancel_at);
+                    assert_eq!(facts.budget.usage().analysis_steps, cancel_at as u64);
+                }
+
+                // A real elapsed deadline expires after proof entry: first at its first charge, then
+                // close to the measured final charge. The 150 ms observer delay exceeds the 100 ms cap.
+                for delay_at in [1, charges - 1] {
+                    let mut deadline_limits = limits();
+                    deadline_limits.elapsed_millis = 100;
+                    let token = CancellationToken::new();
+                    *facts.budget = Budget::with_cancellation_token(deadline_limits, token.clone());
+                    let observer = Arc::new(Observer {
+                        charges: AtomicUsize::new(0),
+                        cancel_at: None,
+                        delay_at: Some(delay_at),
+                        token,
+                    });
+                    let ledger = OperationLedger::new(facts.budget).with_observer(observer.clone());
+                    facts.budget.with_ledger(ledger, UsageOwner::Methods);
+                    assert!(matches!(
+                        prove_exception_only_finally(facts, &entry),
+                        Err(StopReason::Interrupted {
+                            code: "jre_budget_interrupted",
+                            ..
+                        })
+                    ));
+                    assert_eq!(observer.charges.load(Ordering::SeqCst), delay_at);
+                    assert_eq!(facts.budget.usage().analysis_steps, delay_at as u64);
+                    assert!(facts.budget.usage().elapsed_millis >= 100);
+                }
+
+                // The enclosing legacy probe executes after this closure and needs its own open budget.
+                *facts.budget = Budget::new(limits());
+            },
+        )
+        .expect("the target helper analysis completes before proof-specific stops");
+    }
+
+    #[test]
+    fn exception_only_finally_accepts_only_eliminated_entry_parameter_phis() {
+        for (class, admitted) in [
+            (include_bytes!("../../../tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyLocal.class").as_slice(), true),
+            (include_bytes!("../../../tests/fixtures/recover-exception-only-finally-completion/neighbors/parameter-reassigned.class").as_slice(), false),
+        ] {
+            probe_descriptor(class, "run", b"(Ljava/lang/RuntimeException;)I", false, None, |facts| {
+                assert!(facts.canonical.completeness().is_complete());
+                assert!(facts.canonical.unreachable().is_empty());
+                assert_eq!(facts.canonical.blocks().len(), 2);
+                assert_eq!(facts.ssa.phis().len(), 2);
+                let phi = facts.ssa.phis().iter().find(|phi| phi.slot() == Slot::Local(0)).unwrap();
+                assert!(facts.ssa.value(phi.value()).uses().is_empty());
+                assert_eq!(facts.ssa.value(phi.value()).replaced_by().is_some(), admitted);
+                let entry = facts.canonical.blocks()[0].id().clone();
+                let plan = prove_exception_only_finally(facts, &entry).unwrap();
+                assert_eq!(plan.is_some(), admitted);
+                if let Some(plan) = plan {
+                    assert!(matches!(plan.shape(), Shape::Finally { completion: FinallyCompletion::Throws { .. }, structured: false, .. }));
+                    assert_eq!(plan.facts(), facts.order);
+                    assert_eq!(plan.owned().len(), 2);
+                    assert!(plan.join().is_none());
+                }
+            }).unwrap();
+        }
     }
 }
 
@@ -19337,6 +19852,349 @@ fn monitor_branches(
     }))
 }
 
+/// Proves the straight exception-only `finally` completion before the generic copy proof runs.
+fn prove_exception_only_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    // The finite gate precedes every range scan. This shape has one catch-all table row and two
+    // canonical blocks; larger methods keep the existing generic refusal without a linear read.
+    if facts.handlers.len() != 1
+        || !facts.canonical.completeness().is_complete()
+        || !facts.canonical.unreachable().is_empty()
+        || facts.canonical.blocks().len() != 2
+        || facts.ssa.blocks().len() != 2
+        || facts.ssa.phis().len() > 4
+        || facts.ssa.values().len() > 32
+        || facts.order.len() > 32
+        || facts.canonical.handler_rows().len() != 1
+    {
+        return Ok(None);
+    }
+    let Some(row) = facts
+        .handlers
+        .first()
+        .filter(|row| row.catch_type_index.is_none() && row.start_bci == current.bci())
+        .cloned()
+    else {
+        return Ok(None);
+    };
+    if facts.order.first().copied() != Some(row.start_bci) {
+        return Ok(None);
+    }
+    let Some(handler) = facts.row_handler(&row) else {
+        return Ok(None);
+    };
+    let canonical_blocks = facts.canonical.blocks();
+    if handler.bci() == current.bci()
+        || canonical_blocks[0].id() != current
+        || canonical_blocks[1].id() != &handler
+    {
+        return Ok(None);
+    }
+    let body_last = facts.in_block(current).last().map(SsaInstruction::bci);
+    let handler_last = facts.in_block(&handler).last().map(SsaInstruction::bci);
+    if !body_last.is_some_and(|bci| facts.op(bci) == Some(&Operation::Throw))
+        || !handler_last.is_some_and(|bci| facts.op(bci) == Some(&Operation::Throw))
+    {
+        return Ok(None);
+    }
+    for bci in facts.order.clone() {
+        facts.charge(bci)?;
+    }
+    let body_bcis = facts.bcis((row.start_bci, handler.bci()));
+    let handler_bcis = facts.bcis((handler.bci(), facts.end_of(&handler)));
+    let (Some(&body_throw), Some(&binding), Some(&rethrow)) =
+        (body_bcis.last(), handler_bcis.first(), handler_bcis.last())
+    else {
+        return Ok(None);
+    };
+    if facts.op(body_throw) != Some(&Operation::Throw)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || !matches!(facts.op(binding), Some(Operation::Store { .. }))
+        || handler_bcis.first() != Some(&binding)
+        || body_bcis
+            .iter()
+            .chain(&handler_bcis)
+            .copied()
+            .collect::<Vec<_>>()
+            .as_slice()
+            != facts.order.as_slice()
+        || body_bcis
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(current))
+        || handler_bcis
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&handler))
+        || !facts.statement_free_with_discarded_calls((row.start_bci, body_throw))
+        || (row.end_bci != binding && row.end_bci != facts.span_end(binding))
+        || body_bcis.iter().any(|bci| {
+            facts
+                .covering(*bci)
+                .iter()
+                .map(|entry| entry.ordinal)
+                .collect::<Vec<_>>()
+                != [row.ordinal]
+        })
+        || !handler_binding(facts, binding)
+    {
+        return Ok(None);
+    }
+    let Some((load_index, &load)) = handler_bcis
+        .iter()
+        .enumerate()
+        .rev()
+        .skip(1)
+        .find(|(_, bci)| matches!(facts.op(**bci), Some(Operation::Load { .. })))
+    else {
+        return Ok(None);
+    };
+    let cleanup = &handler_bcis[1..load_index];
+    let binding_coverage = facts.covering(binding);
+    if cleanup.is_empty()
+        || load_index + 2 != handler_bcis.len()
+        || binding_coverage.len() != usize::from(row.end_bci > binding)
+        || binding_coverage
+            .iter()
+            .any(|covered| covered.ordinal != row.ordinal)
+        || handler_bcis[1..]
+            .iter()
+            .any(|bci| !facts.covering(*bci).is_empty())
+        || !caught_value_rethrown(facts, binding, load, rethrow)
+        || cleanup_sequence(facts, cleanup, false).is_none()
+    {
+        return Ok(None);
+    }
+    let (Some(Operation::Store { slot: local }), Some(store_step), Some(load_step)) =
+        (facts.op(binding), facts.step(binding), facts.step(load))
+    else {
+        return Ok(None);
+    };
+    let stored_values = store_step
+        .instruction
+        .writes()
+        .iter()
+        .filter(|(slot, _)| *slot == Slot::Local(*local))
+        .map(|(_, value)| *value)
+        .collect::<Vec<_>>();
+    let loaded_values = load_step
+        .instruction
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .map(|(_, value)| *value)
+        .collect::<Vec<_>>();
+    if stored_values.len() != 1
+        || loaded_values.len() != 1
+        || facts.ssa.value(stored_values[0]).uses().len() != 1
+        || facts.ssa.value(stored_values[0]).uses()[0].block() != &handler
+        || facts.ssa.value(stored_values[0]).uses()[0].bci() != Some(load)
+        || facts.ssa.value(loaded_values[0]).uses().len() != 1
+        || facts.ssa.value(loaded_values[0]).uses()[0].block() != &handler
+        || facts.ssa.value(loaded_values[0]).uses()[0].bci() != Some(rethrow)
+    {
+        return Ok(None);
+    }
+    let Some(thrown) = facts.step(body_throw) else {
+        return Ok(None);
+    };
+    let thrown_operands = stack_operands(thrown.instruction);
+    if thrown_operands.len() != 1
+        || facts.ssa.value(thrown_operands[0].1).uses().len() != 1
+        || facts.ssa.value(thrown_operands[0].1).uses()[0].block() != current
+        || facts.ssa.value(thrown_operands[0].1).uses()[0].bci() != Some(body_throw)
+        || !body_bcis[..body_bcis.len() - 1].iter().any(|bci| {
+            facts.step(*bci).is_some_and(|step| {
+                step.instruction.writes().iter().any(|(slot, value)| {
+                    matches!(slot, Slot::Stack(_)) && facts.same(*value, thrown_operands[0].1)
+                })
+            })
+        })
+    {
+        return Ok(None);
+    }
+    let edges = facts.canonical.edges();
+    for edge in edges {
+        facts.charge(edge.from().bci())?;
+    }
+    if edges.len() != 1
+        || edges[0].kind()
+            != (CanonicalEdgeKind::Exception {
+                handler_ordinal: row.ordinal,
+            })
+        || edges[0].from() != current
+        || edges[0].to() != &handler
+    {
+        return Ok(None);
+    }
+    let effects = facts.ssa.effects().instructions();
+    if effects.len() != facts.order.len() {
+        return Ok(None);
+    }
+    let mut effect_sites = BTreeSet::new();
+    let mut effects_by_bci = BTreeMap::new();
+    let effect_order = facts.order.clone();
+    for (bci, effect) in effect_order.iter().zip(effects) {
+        facts.charge(*bci)?;
+        let expected_block = facts.block_of(*bci);
+        let Some(step) = facts.step(*bci) else {
+            return Ok(None);
+        };
+        if facts.op(*bci).is_none()
+            || effect.bci() != *bci
+            || effect.opcode() != step.instruction.opcode()
+            || expected_block != Some(effect.block())
+            || (!effect.may_throw() && !effect.handlers().is_empty())
+            || (effect.may_throw() && !effect_sites.insert(effect.bci()))
+            || effects_by_bci.insert(effect.bci(), effect).is_some()
+        {
+            return Ok(None);
+        }
+        let expected_handlers = facts
+            .covering(*bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>();
+        if effect.may_throw() && effect.handlers() != expected_handlers {
+            return Ok(None);
+        }
+    }
+    let sites = facts.canonical.throw_sites();
+    if sites.is_empty() || sites.len() != effect_sites.len() {
+        return Ok(None);
+    }
+    let mut body_throw_sites = BTreeSet::new();
+    let mut seen_sites = BTreeSet::new();
+    for site in sites {
+        facts.charge(site.bci())?;
+        let Some(effect) = effects_by_bci.get(&site.bci()) else {
+            return Ok(None);
+        };
+        let in_body = body_bcis.contains(&site.bci());
+        if !effect.may_throw()
+            || site.handlers() != effect.handlers()
+            || facts.block_of(site.bci()) != Some(site.block())
+            || !seen_sites.insert(site.bci())
+            || (in_body && (site.block() != current || site.handlers() != [row.ordinal]))
+            || (!in_body && (site.block() != &handler || !site.handlers().is_empty()))
+            || site.bci() == binding
+        {
+            return Ok(None);
+        }
+        if in_body {
+            body_throw_sites.insert(site.bci());
+        }
+    }
+    if seen_sites != effect_sites {
+        return Ok(None);
+    }
+    let phi_work = facts
+        .ssa
+        .phis()
+        .iter()
+        .map(|phi| (phi.block().bci(), phi.inputs().len().saturating_add(1)))
+        .collect::<Vec<_>>();
+    for (bci, work) in phi_work {
+        for _ in 0..work {
+            facts.charge(bci)?;
+        }
+    }
+    let value_count = facts.ssa.values().len();
+    for _ in 0..value_count {
+        facts.charge(row.start_bci)?;
+    }
+    let handler_phi = facts
+        .ssa
+        .phis()
+        .iter()
+        .find(|phi| phi.block() == &handler && phi.slot() == Slot::Stack(0));
+    let Some(handler_phi) = handler_phi else {
+        return Ok(None);
+    };
+    if handler_phi.inputs().len() != body_throw_sites.len()
+        || facts.ssa.value(handler_phi.value()).uses().len() != 1
+        || facts.ssa.value(handler_phi.value()).uses()[0].block() != &handler
+        || facts.ssa.value(handler_phi.value()).uses()[0].bci() != Some(binding)
+    {
+        return Ok(None);
+    }
+    for phi in facts.ssa.phis() {
+        if phi.value() == handler_phi.value() {
+            continue;
+        }
+        let entry = facts.resolve(phi.value());
+        if phi.block() != &handler
+            || !matches!(phi.slot(), Slot::Local(_))
+            || facts.ssa.value(phi.value()).replaced_by().is_none()
+            || !facts.ssa.value(phi.value()).uses().is_empty()
+            || !matches!(facts.ssa.value(entry).def(), Definition::Entry { block, slot }
+                if block == current && *slot == phi.slot())
+            || phi.inputs().len() != body_throw_sites.len()
+            || phi.inputs().iter().any(|input| {
+                let PhiInput::Value(value) = input else {
+                    return true;
+                };
+                !facts.same(*value, entry)
+            })
+        {
+            return Ok(None);
+        }
+    }
+    let mut caught_sites = BTreeSet::new();
+    for input in handler_phi.inputs() {
+        let PhiInput::Value(value) = input else {
+            return Ok(None);
+        };
+        let Definition::Caught { block, bci } = facts.ssa.value(*value).def() else {
+            return Ok(None);
+        };
+        if block != current
+            || !body_throw_sites.contains(bci)
+            || !caught_sites.insert(*bci)
+            || facts.ssa.value(*value).uses().len() != 1
+            || facts.ssa.value(*value).uses()[0].block() != &handler
+            || facts.ssa.value(*value).uses()[0].bci().is_some()
+        {
+            return Ok(None);
+        }
+    }
+    if caught_sites != body_throw_sites {
+        return Ok(None);
+    }
+    let cleanup_range = (cleanup[0], load);
+    let body_range = (row.start_bci, facts.span_end(body_throw));
+    let end = facts.span_end(rethrow);
+    let pieces = [
+        body_range,
+        (body_range.1, facts.span_end(binding)),
+        cleanup_range,
+        (load, facts.span_end(load)),
+        (rethrow, end),
+    ];
+    if explained(facts, row.start_bci, end, &pieces).is_err() {
+        return Ok(None);
+    }
+    poll(facts.budget, Some(row.start_bci))?;
+    Ok(Some(Plan {
+        shape: Shape::Finally {
+            cleanup: cleanup_range,
+            completion: FinallyCompletion::Throws {
+                throw_bci: body_throw,
+            },
+            row_ordinal: row.ordinal,
+            structured: false,
+        },
+        lead: (row.start_bci, row.start_bci),
+        body: body_range,
+        owned: vec![current.clone(), handler],
+        join: None,
+        enclosing: None,
+        finally_fallthrough: None,
+        nested_finally: None,
+        facts: facts.order.clone(),
+    }))
+}
+
 /// The `try`-with-resources shape.
 fn resources(
     facts: &mut Facts<'_>,
@@ -19366,6 +20224,11 @@ fn resources(
             .iter()
             .all(|row| row.catch_type_index.is_none())
         && let Some(plan) = prove_nested_return_finally(facts, current)?
+    {
+        return Ok(Verdict::Claimed(plan));
+    }
+    if FINALLY.admits(profile)
+        && let Some(plan) = prove_exception_only_finally(facts, current)?
     {
         return Ok(Verdict::Claimed(plan));
     }
@@ -19464,7 +20327,7 @@ fn resources(
             {
                 return Ok(Verdict::Claimed(Plan {
                     shape: Shape::Finally {
-                        normal_cleanup: proof.normal_cleanup,
+                        cleanup: proof.normal_cleanup,
                         completion: FinallyCompletion::SavedReturn {
                             save: proof.saved_return.0,
                             returns: proof.saved_return.1,

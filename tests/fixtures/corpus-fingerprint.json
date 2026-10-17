@@ -10371,6 +10371,101 @@
       "path": "tests/fixtures/recover-enum-argument-widening/v8/ENX.class"
     },
     {
+      "blake3": "e9aa6181fb42c57a4cf85fa865a6eae455af845cc0611098f3b2e7460cde8e33",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/binding-unprotected.class"
+    },
+    {
+      "blake3": "e437180090a72d22ec7f25042ddf0ba77e38d7d97b619730b004722ed837c768",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/cleanup-protected.class"
+    },
+    {
+      "blake3": "1f9abc089c06e5520c550e3fb71d5ea4df8c0955f6e31f2ad889ec57f7281d9b",
+      "bytes": 915,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/competing-row.class"
+    },
+    {
+      "blake3": "c309e8421b66dc1e623690c22e81108855a2dbefbb2d1caafea2bbeab613008d",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/extra-normal-handler-entry.class"
+    },
+    {
+      "blake3": "60fadad0566af89f1a1b2887ea7239e99ca4532e9da39d90e39bb4fbc11c4112",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/finally-explicit-return.class"
+    },
+    {
+      "blake3": "111a619b55bb01821db51190eca0776a9aae35bac61c1884907a5aa91a4507d5",
+      "bytes": 565,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/parameter-reassigned.class"
+    },
+    {
+      "blake3": "b469f6bc933df57d4af1a5286f7d23847111d2c15e8eeab4435451f6c771050b",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/row-shrunk.class"
+    },
+    {
+      "blake3": "dacb66ae16a0853c41c7394bcc4ac35cfdebcba6094acad26d4adb39d9303060",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/neighbors/wrong-rethrow-value.class"
+    },
+    {
+      "blake3": "ad1f39284dc91517c00767c3718e12237218ae706ac88599a387ba13c9633cd1",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/sealed/javac23/FinallyCompletion.class"
+    },
+    {
+      "blake3": "f739bd9720043b9e08b4d502289f604fe7efaea35728ec37a89e99d2edaa9115",
+      "bytes": 907,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/sealed/javac8/FinallyCompletion.class"
+    },
+    {
+      "blake3": "bd484609d4e26de20229827e5d06c836450efac9768851e6eceb7bd98629e0bc",
+      "bytes": 992,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/sealed/source/FinallyCompletion.java"
+    },
+    {
+      "blake3": "6691a8bbed4befd01487315c417ddcf995e40bd58b7f8a5871fd26a71cea2ff7",
+      "bytes": 1136,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/sealed/source/FinallyCompletionRunner.java"
+    },
+    {
+      "blake3": "78bab55670f48f90506754df07ca57bd677b66f2425132cce5c3498b866ad06e",
+      "bytes": 516,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/source/ExceptionOnlyFinally.java"
+    },
+    {
+      "blake3": "cb422ee7f164fbed55fd1b5998b3be9495aa720bbd76191ae8d9cd27b8c4508c",
+      "bytes": 3364,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/source/ExceptionOnlyFinallyDriver.java"
+    },
+    {
+      "blake3": "c60d3c4ecf3cb2b9f3d0b40a62ce13c5f30db589377d21297b003258bab43afc",
+      "bytes": 365,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/source/ExceptionOnlyLocal.java"
+    },
+    {
+      "blake3": "1d8d6312dddf1befd00dd4196d3440b9bcb5be4fc6cd0adde1aa317225800b0f",
+      "bytes": 444,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/source/ExceptionOnlyLocalChanged.java"
+    },
+    {
+      "blake3": "040835bb6453bb89815a0c85820dd8c5daa2db2b0a2492e8a3b3310583d8ce4c",
+      "bytes": 682,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/v8-javac8/ExceptionOnlyFinally.class"
+    },
+    {
+      "blake3": "e093c7d94ebea55d065ebed534cea518344a584735b2bf87938698ad9e2a9554",
+      "bytes": 682,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyFinally.class"
+    },
+    {
+      "blake3": "056bc107dbe30b3e9a042f18ebd85f364790b83cf27f7b422b125de7997bcc64",
+      "bytes": 367,
+      "path": "tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyLocal.class"
+    },
+    {
       "blake3": "c9bfe2ed7bbc0afaa7e1f6d247cf293e939c3ec5a7e263543ea24ee43255ba98",
       "bytes": 569,
       "path": "tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Generic.class"
