@@ -1,0 +1,35 @@
+{
+  "status": "root accepted final documentation closure",
+  "product_sha": "4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5",
+  "strict_versions": [
+    "1.11.0",
+    "1.14.0"
+  ],
+  "strict_each": [
+    365,
+    0
+  ],
+  "actual_final_commands": 9,
+  "source_pins_equal": 4933,
+  "target_absent": true,
+  "progress": {
+    "finThrow": [
+      5,
+      5
+    ],
+    "nestedFin": [
+      16,
+      16
+    ],
+    "parent": [
+      7,
+      7
+    ]
+  },
+  "archive_count_reopened": 9,
+  "payload_files_reopened": 1254,
+  "archive_bytes": 20629,
+  "archive_sha256": "f04a28523d3f17cd61fbf47be889cc2e05d109b5685833554315ef9926d7a6b1",
+  "global_goal_active": true,
+  "final_commit_clean_receipt_external": "/private/tmp/jarde-nested-final-clean-main-root-v1-20261017/execution.json"
+}

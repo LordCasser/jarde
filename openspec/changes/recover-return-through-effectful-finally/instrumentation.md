@@ -20,7 +20,7 @@
 
 [transfer归档](../archive/2026-10-17-recover-loop-transfer-finally-handler/design.md)核两个方法61B/35指令，continue31→53、break31→59；rows `[22,28)→45`、`[34,39)→45`、`[45,47)→45`。保守canonical异常边16/34/45→45保留，实际throw-sites仅5/19/52且handlers均空，所有保护操作nonthrowing。证明handler保存/重抛链和phi后，Builder成功才原子移除fallback45并独立认领该块。真实AST是For13，派生来源含42/56/45/47/50/52，不冒充gateway。永久正证明`loop_transfer_dead_handler_proves_actual_nonthrowing_ranges_and_distinct_targets`；原baseline refusal probe不计正证明。fixture `tests/fixtures/recover-loop-transfer-finally-handler`的11观察driver只证明实际输入结果，不声称动态触发不可达handler。
 
-## 当前完整源码矩阵
+## 历史30afa完整源码矩阵
 
 产品`30afa7c9ab2818f41959f9ea6a8ca6f896714dc1`，冻结CLI SHA256 `05e0272eb8cbc65acb87418cecda6d15571ddaea84c041d30436c1238e60b89d`。4945项源码与native/实际Git blob和mode绑定；叶片正常归档提交`4be31d03bf77880496a9b586f4f8193e3ff0b2fe`已快进交付main，后续父文档不是另一产品CI。
 
@@ -36,7 +36,7 @@
 
 上面最终运行和独审原始材料在[leaf final-runtime-v1](../archive/2026-10-17-recover-loop-transfer-finally-handler/results/final-runtime-v1/README.md)，默认stack、资源与本地29门/120个不同passing FQN、双seed自身CI每seed3680/0/98在该叶片相邻implementation-v1和own-ci-v1。124次本地pass appearances含4次重复FQN，不能写124个不同测试；CI是产品30afa，stable1.99.1与本地1.99.0明确区分。
 
-## 当前仍红的finally返回或显式抛异常
+## 历史30afa阶段的finally返回或显式抛异常
 
 新增[remaining-controls-v1](results/remaining-controls-v1/README.md)保存6命令、12raw、原始类、原样生成文本、物理来源核对和独审。EX.finReturn(I)I（`try{return n;}finally{if(n==0)return -1;}`）前一b4a6/当前05e方法文本逐字同，仍`jre_region_uncovered_blocks`；未重编EX整类、未重建运行，不能沿用旧“if/else已恢复”说法。
 
@@ -44,7 +44,7 @@ FinallyCompletion两真实Java8 class各907B，各有7个Code方法（旧文档�
 
 三种红项中，finallyReturns和finallyThrows的finally自身return/throw超出本父非覆盖型清理边界；`tryThrowsFinallyRuns`的try主动抛原异常、finally正常完成是下一有界调查候选。先核真实Facts/SSA/保护区和异常身份，不能直接复用死handler证明或忽略另外两红方法使整类编译过关。父全锚/对照/全门验收仍按tasks逐项完成，不借新包自动勾选。
 
-## 补充：EX的其它非覆盖型正向欠账
+## 历史范围纠正：EX的其它非覆盖型正向欠账
 
 本轮完整EX的actual当前JSON（remaining-controls包`return-controls/run-v1/2.stdout.raw`）还保留finThrow与nestedFin，二者均quality=fallback。finThrow诊断含两次jre_guard_finally_copy、uncovered blocks及未呈现字段；nestedFin含finally_copy、uncovered及未呈现字段。它们不能只因不在固定FY/FX/FO名单就排除出父的其它未证明正向形。
 
@@ -53,3 +53,24 @@ FinallyCompletion两真实Java8 class各907B，各有7个Code方法（旧文档�
 最后三项曾按收窄后的固定fixture文字得到足够证据、短暂勾成7/7并生成status/apply收据；随后root重审完整EX发现原父范围协调过窄，在任何规格同步或归档前纠正。2.1与最终3.1/3.2恢复待办，已通过的固定对照2.3保留，当前4/7。原7/7与窄范围assessment不删除，均为历史阶段输入，不是父最终验收。下一片必须分清try主动抛错、嵌套cleanup与finally自身非局部完成，保持所有原完整类和红项。
 
 规格边界决定：本父2.1继续覆盖具有try返回路径的EX.finThrow/nestedFin，并新增对应窄验收scenario。FinallyCompletion.tryThrowsFinallyRuns没有正常return路径，保留为正向相邻欠账但转后续独立变更先定义规格；当前不把它当负控制，也不把它的实现算成本父return场景已授权完成。
+
+
+## 最终4c6852组合产品与父级验收
+
+产品 `4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5` 已推送；冻结CLI 62697056B、SHA256 `4811eea2d7f52d4c1b818c86acc1d961c91e3d7fe9d5adaa2c53131f84140f8e`。以下均为root实际执行和独立审读；本文件前述30afa矩阵与4/7范围纠正是历史，不替代本节证据。
+
+| 实际范围 | 结果 | 收据（nested叶片results） |
+| --- | --- | --- |
+| FY/FX/FO两编译器完整6类/32方法 | 32方法全Java/Structured、文本同旧基线，完整BCI/映射/身份接受；6原样编译/12 rebuilt-only main逐字等固定历史原oracle | parent-fixed-matrix-root-v1 |
+| nestedFin独立双编译器类及完整封存EX | 12原样编译、24 rebuilt-only运行、432case全匹配；20方法配置全BCI、EX六方法完整，非nested文本同旧基线 | final-matrix-root-v1 |
+| 同一最终CLI的finThrow回归 | 4配置/8原样编译/16 rebuilt-only运行、144case全匹配 | finthrow-regression-final-cli-root-v1 |
+| FinallyCompletion双907B完整class/default-all | 7方法保留；4份4114B源码、8原样编译均仅三处missing return，无runtime | finally-completion-refusal-controls-root-v1 |
+| 父29本地门 | 131 passing appearances/127不同合格FQN、双strict365/0、MSRV1.88、CI同款Clippy；分两轮实际完成，初次直接cargo +toolchain启动失败保留 | parent-final-gates-root-v1 |
+| native完整workspace双seed | 各376targets/98批/3691通过/0失败/98忽略，完整4933来源和inventory及每target计数相同；404raw核验、默认栈/资源守卫/最终exact clean，target不存在 | workspace-seed1-root-v1、workspace-seed2-root-v1 |
+| 产品自身CI39042611463 | 4jobs/52 API steps，两seed各376targets/3691/0/98，14项关键门各一次通过；MSRV/JDK额外对照/层级/supply chain/fuzz通过 | own-product-ci-root-v1 |
+
+JADX父矩阵仍21命令19成功/2 FX编译失败、0 FX runtime；nested另6编译成功/12运行在out异常时首错IOIO，原始失败保留。原JADX outer catch包住正常cleanup的做法会重复执行清理，因此实现复用Java嵌套finally语义并以四份out的真实无handler归属证明，不照搬其结构。
+
+完整EX现已原样编译成功，但finReturn仍是相同fallback，不冒称恢复finally自身return；FinallyCompletion的finallyReturns/finallyThrows仍拒绝，tryThrowsFinallyRuns仍是下一独立正向欠账。该欠账只读备忘见results/exception-only-next-analysis-root-v1，尚未做实际Facts/SSA probe或选择新机制。
+
+29门的两轮执行和MSRV启动失败不拼接成未发生的一轮；中文javac诊断的原英文分类器失败亦保留，root只修只读接受器，不重写生成源码。产品CI属于4c6852，后续文档提交只按生产源码恒同绑定。最终父文档更新后两版本strict365/0，父7/7、nested16/16，见tasks及nested的final-delivery-root-v1；不增加71/612总账，也不自动声称本父或两叶片已同步归档。

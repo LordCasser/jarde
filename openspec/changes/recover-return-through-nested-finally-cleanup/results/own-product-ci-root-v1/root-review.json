@@ -1,0 +1,19 @@
+{
+  "status": "root accepted",
+  "product_sha": "4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5",
+  "ci_run_id": 39042611463,
+  "jobs": 4,
+  "expanded_API_steps": 52,
+  "each_workspace_seed": {
+    "targets": 376,
+    "passed": 3691,
+    "failed": 0,
+    "ignored": 98,
+    "filtered": 0,
+    "critical_tests_once": 14
+  },
+  "raw_streams_verified": 12,
+  "source_equal_product": true,
+  "archive_bytes": 486256,
+  "archive_sha256": "e12f67704dfb23ee7ee54b83392c66e9da596d87b267de3e4e73dd1411061c52"
+}

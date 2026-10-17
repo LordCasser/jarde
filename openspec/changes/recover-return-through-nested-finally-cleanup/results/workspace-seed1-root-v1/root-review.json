@@ -1,0 +1,42 @@
+{
+  "status": "root accepted",
+  "product_sha": "4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5",
+  "seed": "5350648285461741569",
+  "targets": 376,
+  "batches": 98,
+  "tests": [
+    3691,
+    0,
+    98
+  ],
+  "source_pins": 4933,
+  "source_equal_product": true,
+  "default_stack": true,
+  "target_absent_at_finish_and_independent_acceptance": true,
+  "new_critical_tests_each_pass_once": [
+    "nested_saved_return_is_complete_for_both_compilers_and_sealed_ex",
+    "nested_saved_return_late_budget_publishes_no_partial_source_or_map",
+    "nested_finally_rejects_complete_verifier_valid_classfile_neighbors",
+    "nested_saved_return_finally_stops_after_most_paid_proof_charges",
+    "nested_finally_saved_return_claims_the_complete_four_row_lowering"
+  ],
+  "acceptance": {
+    "seed": "5350648285461741569",
+    "status": "accepted_read_only",
+    "target_count": 376,
+    "batch_count": 98,
+    "workspace_summary_count": 376,
+    "workspace_totals": [
+      3691,
+      0,
+      98
+    ],
+    "source_pin_count": 4933,
+    "raw_streams_verified": 202,
+    "per_target_counts_bound_to_Running_order": true,
+    "recorded_artifact_order_labels_are_not_execution_counts": true,
+    "target_absent": true
+  },
+  "archive_bytes": 1355664,
+  "archive_sha256": "19b36a4d8accf56791a28e4a1f947331041c10e4835d8500564ecadfbc19e390"
+}

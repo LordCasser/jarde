@@ -1,0 +1,26 @@
+{
+  "status": "root accepted",
+  "product_sha": "4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5",
+  "raw_streams_verified": 90,
+  "scope": {
+    "raw_stream_count": 90,
+    "jarde_sources": 6,
+    "jarde_physical_method_rows": 32,
+    "jarde_compile_successes": 6,
+    "jarde_rebuilt_runtime_oracle_matches": 12,
+    "jarde_report_text_identical": 32,
+    "jarde_report_text_changed": 0,
+    "source_map_checks_passed": true,
+    "status": "accepted"
+  },
+  "JADX": {
+    "total_commands": 21,
+    "successes": 19,
+    "FX_compile_failures": 2,
+    "FX_rebuilt_runs": 0,
+    "localized_diagnostic": "line56 throw th; undefined variable th, Chinese raw retained"
+  },
+  "collector_limit": "Initial portable wrapper recognized only English compiler diagnostics; independent root acceptor accepts the actual exact localized undefined-th errors. Original mismatch report/raw preserved. Initial Match JSON serialization error corrected in read-only acceptor; no toolchain rerun.",
+  "archive_bytes": 253487,
+  "archive_sha256": "f86cc9909ceed623163a966323fbaa5135875ce956b2805e2a36c261bb8558c1"
+}

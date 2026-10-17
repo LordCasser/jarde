@@ -1,0 +1,5 @@
+# 第二组完整本地workspace独立验收
+
+最终产品4c6852同源，seed5350648285461741570从空target运行98批/376 targets，3691通过/0失败/98忽略；4933来源pins不变，默认Rust栈/5GiB余量/1GiB target/每秒进程组守卫/最终exact clean通过。只读接受器以实际Running顺序绑定汇总，202raw逐字核大小与SHA；不采用历史recorder artifact顺序的错误计数标签。
+
+独立接受器同次重验第一seed并确认完整inventory、来源和每target计数一致。两seed共7382通过/0失败/196忽略、404raw；新五项nested关键测试各seed各一次通过。验收时target不存在，当前源码与4c6852相同。

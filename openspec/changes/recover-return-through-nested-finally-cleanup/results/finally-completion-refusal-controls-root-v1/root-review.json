@@ -1,0 +1,28 @@
+{
+  "status": "root accepted",
+  "product_sha": "4c6852ac8c4ab9ce88f0716f4d2bd702e15684c5",
+  "cli_sha256": "4811eea2d7f52d4c1b818c86acc1d961c91e3d7fe9d5adaa2c53131f84140f8e",
+  "commands": 12,
+  "raw_streams_verified": 24,
+  "class_profiles": 4,
+  "methods_per_class": 7,
+  "fallbacks_each": [
+    "finallyReturns()I",
+    "finallyThrows()I",
+    "tryThrowsFinallyRuns()I"
+  ],
+  "source_bytes_each": 4114,
+  "unchanged_full_source_compile_failures": 8,
+  "errors_each": [
+    "finallyReturns missing return line47",
+    "finallyThrows missing return line58",
+    "tryThrowsFinallyRuns missing return line69"
+  ],
+  "runtime_runs": 0,
+  "input_bytes_bound_to_original_archive": true,
+  "source_equal_product": true,
+  "target_not_cleaned_by_control": true,
+  "original_english_only_acceptor_failure_preserved": true,
+  "archive_bytes": 363701,
+  "archive_sha256": "1dc96c7edcc946cdbb6c02580af6919f49819c30f706543aba4d3457182418ad"
+}

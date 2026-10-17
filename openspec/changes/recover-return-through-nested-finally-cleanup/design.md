@@ -22,7 +22,7 @@
 
 以封存的完整 EX class 和独立完整类 fixture 验证；后者分别由 javac 8 与 javac 23 `--release 8` 编译。两 compiler leg 都保留完整类源码及所有方法。生成的完整源码原样重编，只运行重建产物；对照返回值/异常类型与消息、注入对象身份和精确打印 trace 与原 fixture oracle。覆盖 compiler × runtime JVM (8,23) × profile (`default`,`all`) 的 2×2×2 矩阵、固定 JADX 对照、静态 source/BCI 与 full-source 检查；保留真实 JADX 输出和失败。
 
-所有 Rust 执行保留至少 5 GiB 磁盘余量、仓库 target 不超过 1 GiB、每秒检查并中止超限进程组、默认 Rust stack，并在 finally 路径执行 exact cargo clean。Java cleanup 必须恰好一次并保持顺序。精确固定实现 product commit，并只附该 product 自身 CI 收据。覆盖 early/late budget、cancellation、deadline stop、guard/resource regression、CLI/public entry 与项目要求的本地验证。shared OpenSpec change 已由 root 创建；root 可现在验证并派发 implementation，集成仍须等待 `finThrow` 稳定。parent-wide final gates 在集成后运行。
+所有 Rust 执行保留至少 5 GiB 磁盘余量、仓库 target 不超过 1 GiB、每秒检查并中止超限进程组、默认 Rust stack，并在 finally 路径执行 exact cargo clean。Java cleanup 必须恰好一次并保持顺序。精确固定实现 product commit，并只附该 product 自身 CI 收据。覆盖 early/late budget、cancellation、deadline stop、guard/resource regression、CLI/public entry 与项目要求的本地验证。shared OpenSpec已先由root创建并取证，Luna私有实现经root审查后在finThrow稳定的b7db检查点上集成；parent-wide final gates已在组合实现后实际运行并独立接受，最终证据见results/README.md。
 
 ## Root review: 已执行探针与最小机制选择
 
@@ -53,3 +53,7 @@ Jarde当前default/all完整类共12次原样重编失败（缺少返回语句�
 候选已在finThrow clean checkpoint b7db5c875之后接入。实际focused-v3为25库/2公库测试全部通过；初稿slice API编译失败与SSA首次拒绝raw分别保留。SSA保存返回的三段必须分开：divide写stack→store读stack、store写local→load读local、load写stack→return读stack；load产生新Stack Value31不能与原Local Value18直接比较。修复绑定确切单值链，不放松身份检查。
 
 15个邻变体先经真实reader/canonical/SSA完整性及资源入口拒绝测试，root再用Java8/23 -Xverify:all独立URLClassLoader反射检查全部30次通过，未调用目标。JVM有效性收据见neighbor-jvm-verification-root-v1。公开Finally/SavedReturn、Try AST及原证书所有权保持不变，新增描述仅两个半开BCI区间。最终完整源码/运行与自身CI仍须实际执行，不能按本节静态审查关闭叶片。
+
+## Final product evidence
+
+产品4c6852已按上述架构落地，完整nested432与同一CLI finThrow144个rebuilt case通过，FY/FX/FO父级32方法和固定oracle不变。15邻变体、30次JVM验证、late停止及公库来源边界均已接受。自身CI39042611463四jobs/52steps、两seed各376targets/3691/0/98通过；native两seed同样通过且4933来源一致、target已清空。Final FinallyCompletion七方法未删，finally own return/throw仍fallback；exception-only保持独立正向欠账。最终收据索引见results/README.md，不能用本节替代逐项raw。前述3/16与集成待验描述均是当时阶段记录。
