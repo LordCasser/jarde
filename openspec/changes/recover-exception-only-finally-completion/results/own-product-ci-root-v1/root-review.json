@@ -1,0 +1,23 @@
+{
+  "archive_bytes": 1070675,
+  "archive_sha256": "7856d70c0108d7fbbb209d1736ef4d54f813d5689ca46cfb87adef8b9302b024",
+  "members_reopened": 28,
+  "status": "root accepted",
+  "product_sha": "3fa506df0ccd7da3d38ab769bfd65235817508fe",
+  "run_id": 39051492999,
+  "jobs": 4,
+  "api_steps": 52,
+  "each_seed_targets": 378,
+  "each_seed_counts": {
+    "passed": 3700,
+    "failed": 0,
+    "ignored": 98,
+    "filtered": 0,
+    "measured": 0
+  },
+  "per_target_counts_equal": true,
+  "critical_tests_each_seed": 9,
+  "command_raw_streams_verified": 20,
+  "build_source_files_bound_to_product": 3002,
+  "native_source_files_bound_to_product": 4955
+}

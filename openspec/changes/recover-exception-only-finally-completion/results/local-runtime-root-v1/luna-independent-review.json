@@ -1,0 +1,385 @@
+{
+  "schema": "root-independent-local-review-v1",
+  "evidence_dir": "/private/tmp/jarde-exception-only-local-runtime-root-v1-20261018",
+  "review": "accepted_with_scoped_findings",
+  "independent_checks": {
+    "command_count": 34,
+    "raw_streams_verified": 68,
+    "raw_files": 68,
+    "all_raw_streams_match_manifest": true,
+    "resource_pins": {
+      "input_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyLocal.class",
+        "bytes": 367,
+        "sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73",
+        "matches_receipt": true
+      },
+      "cli": {
+        "path": "/private/tmp/jarde-exception-only-final-focused-root-v3-20261018/candidate-cli",
+        "bytes": 62788432,
+        "sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8",
+        "matches_receipt": true
+      },
+      "cli_receipt": {
+        "path": "/private/tmp/jarde-exception-only-final-focused-root-v3-20261018/execution.json",
+        "bytes": 1541732,
+        "sha256": "7e603d712358cba3db2662e83e2f229052c2b0d73a6391fc2732c7e24989a524",
+        "matches_receipt": true
+      },
+      "jadx": {
+        "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "bytes": 160,
+        "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+        "matches_receipt": true
+      },
+      "jadx_jar": {
+        "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+        "bytes": 78266806,
+        "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+        "matches_receipt": true
+      },
+      "jdk_manifest": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+        "bytes": 23113,
+        "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+        "matches_receipt": true
+      },
+      "guard": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+        "bytes": 23507,
+        "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+        "matches_receipt": true
+      },
+      "scanner": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+        "bytes": 471,
+        "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+        "matches_receipt": true
+      },
+      "driver_source": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-exception-only-finally-completion/tools/ExceptionOnlyLocalDriver.java",
+        "bytes": 1325,
+        "sha256": "b021f32bbdea6d929a956eaea5d585c3d9068d63c65efb0f4aa48ad889242848",
+        "matches_receipt": true
+      },
+      "jdk_manifest_record": {
+        "bytes": 23113,
+        "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+        "matches_receipt": true
+      },
+      "javac8.java": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "bytes": 152096,
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "matches_receipt": true
+      },
+      "javac8.javac": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "bytes": 152128,
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "matches_receipt": true
+      },
+      "javac8.javap": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "bytes": 152128,
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+        "matches_receipt": true
+      },
+      "javac23.java": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "bytes": 69952,
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "matches_receipt": true
+      },
+      "javac23.javac": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "bytes": 69872,
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "matches_receipt": true
+      },
+      "javac23.javap": {
+        "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "bytes": 69872,
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+        "matches_receipt": true
+      }
+    },
+    "input_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-exception-only-finally-completion/v8/ExceptionOnlyLocal.class",
+      "bytes": 367,
+      "sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73"
+    },
+    "source_closure": {
+      "captured_file_count": 3078,
+      "current_file_count": 3085,
+      "receipt_source_unchanged_claim": true,
+      "current_changed_paths": [
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/README.md",
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/capture-review.json",
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/capture.tar.gz",
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/root-review.json",
+        "openspec/changes/recover-exception-only-finally-completion/results/strict-root-v1/README.md",
+        "openspec/changes/recover-exception-only-finally-completion/results/strict-root-v1/openspec111.json",
+        "openspec/changes/recover-exception-only-finally-completion/results/strict-root-v1/openspec114.json"
+      ],
+      "non_result_source_differences": [],
+      "result_evidence_paths_added_or_changed_since_capture": [
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/README.md",
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/capture-review.json",
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/capture.tar.gz",
+        "openspec/changes/recover-exception-only-finally-completion/results/local-runtime-root-v1/root-review.json",
+        "openspec/changes/recover-exception-only-finally-completion/results/strict-root-v1/README.md",
+        "openspec/changes/recover-exception-only-finally-completion/results/strict-root-v1/openspec111.json",
+        "openspec/changes/recover-exception-only-finally-completion/results/strict-root-v1/openspec114.json"
+      ]
+    },
+    "target_absent_claim": {
+      "collector_reported_absent_at_capture_end": true,
+      "currently_exists": true,
+      "root_followup_confirmation": "Root reports having checked absence after collector completion and before subsequent workspace builds; current presence is later build output, not a failed historical check."
+    },
+    "jarde_json_profiles": [
+      {
+        "profile": "default",
+        "status": "complete",
+        "coverage": "complete_within_schema",
+        "methods": 3,
+        "all_methods_have_expected_physical_origins": true,
+        "origins": {
+          "<init>()V": [
+            0,
+            1,
+            4
+          ],
+          "mark(I)V": [
+            0,
+            3,
+            5,
+            6,
+            7,
+            8,
+            11
+          ],
+          "run(Ljava/lang/RuntimeException;)I": [
+            0,
+            2,
+            5,
+            6,
+            7,
+            8,
+            10,
+            13,
+            14
+          ]
+        }
+      },
+      {
+        "profile": "all",
+        "status": "complete",
+        "coverage": "complete_within_schema",
+        "methods": 3,
+        "all_methods_have_expected_physical_origins": true,
+        "origins": {
+          "<init>()V": [
+            0,
+            1,
+            4
+          ],
+          "mark(I)V": [
+            0,
+            3,
+            5,
+            6,
+            7,
+            8,
+            11
+          ],
+          "run(Ljava/lang/RuntimeException;)I": [
+            0,
+            2,
+            5,
+            6,
+            7,
+            8,
+            10,
+            13,
+            14
+          ]
+        }
+      }
+    ],
+    "jarde_source_sha256": [
+      "56dc0e01f6ffbb9f4362b3f93a4908cd4ae1a7ac024ed7a20a7ac9110a1c8544",
+      "56dc0e01f6ffbb9f4362b3f93a4908cd4ae1a7ac024ed7a20a7ac9110a1c8544"
+    ],
+    "compiled_jarde_copies": [
+      {
+        "profile": "default",
+        "compiler": "javac8",
+        "bytes": 367,
+        "sha256": "7545aba449862eb4112d4974560b7175559fca3c29e9560848b0c96f02e24aa8",
+        "matches_receipt": true,
+        "method_layout_matches_frozen_input": true,
+        "same_compiler_profile_byte_identity": true
+      },
+      {
+        "profile": "default",
+        "compiler": "javac23",
+        "bytes": 367,
+        "sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73",
+        "matches_receipt": true,
+        "method_layout_matches_frozen_input": true,
+        "same_compiler_profile_byte_identity": true
+      },
+      {
+        "profile": "all",
+        "compiler": "javac8",
+        "bytes": 367,
+        "sha256": "7545aba449862eb4112d4974560b7175559fca3c29e9560848b0c96f02e24aa8",
+        "matches_receipt": true,
+        "method_layout_matches_frozen_input": true,
+        "same_compiler_profile_byte_identity": true
+      },
+      {
+        "profile": "all",
+        "compiler": "javac23",
+        "bytes": 367,
+        "sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73",
+        "matches_receipt": true,
+        "method_layout_matches_frozen_input": true,
+        "same_compiler_profile_byte_identity": true
+      }
+    ],
+    "oracle_runs": [
+      {
+        "runtime": "javac8",
+        "command": 2,
+        "valid": true,
+        "stdout_sha256": "4b414b9eb41848401690da1c10c9d02a186f3bb3d2ae5d0c59b2dc517e8e6740"
+      },
+      {
+        "runtime": "javac23",
+        "command": 3,
+        "valid": true,
+        "stdout_sha256": "4b414b9eb41848401690da1c10c9d02a186f3bb3d2ae5d0c59b2dc517e8e6740"
+      },
+      {
+        "runtime": "javac8",
+        "command": 5,
+        "valid": true,
+        "stdout_sha256": "4b414b9eb41848401690da1c10c9d02a186f3bb3d2ae5d0c59b2dc517e8e6740"
+      },
+      {
+        "runtime": "javac23",
+        "command": 6,
+        "valid": true,
+        "stdout_sha256": "4b414b9eb41848401690da1c10c9d02a186f3bb3d2ae5d0c59b2dc517e8e6740"
+      }
+    ],
+    "runtime_case_count": 24,
+    "jadx": {
+      "source_sha256": "eb7c1fd48535ef0ef9fd4acee750bc88751cee6618fb05ad42ee6b0f743c3e9e",
+      "source_compile_legs": 2,
+      "run_attempts": [
+        {
+          "compiler": "javac8",
+          "runtime": "javac8",
+          "exit_code": 1,
+          "stderr_sha256": "66b81d9cd069699c3c862de19514952e711f103ede4594b57660049d0f0a37ad",
+          "failure_is_expected_semantic_difference": true
+        },
+        {
+          "compiler": "javac8",
+          "runtime": "javac23",
+          "exit_code": 1,
+          "stderr_sha256": "66b81d9cd069699c3c862de19514952e711f103ede4594b57660049d0f0a37ad",
+          "failure_is_expected_semantic_difference": true
+        },
+        {
+          "compiler": "javac23",
+          "runtime": "javac8",
+          "exit_code": 1,
+          "stderr_sha256": "66b81d9cd069699c3c862de19514952e711f103ede4594b57660049d0f0a37ad",
+          "failure_is_expected_semantic_difference": true
+        },
+        {
+          "compiler": "javac23",
+          "runtime": "javac23",
+          "exit_code": 1,
+          "stderr_sha256": "66b81d9cd069699c3c862de19514952e711f103ede4594b57660049d0f0a37ad",
+          "failure_is_expected_semantic_difference": true
+        }
+      ],
+      "semantic_failure": "JADX-derived full class loses the observable mark(7) effect: driver reports trace=8; expected oracle trace is 78."
+    },
+    "source_text": "default and all profiles return the same complete 1422-byte source text; methods are constructor, mark(I)V, run(RuntimeException)I.",
+    "physical_identity": {
+      "input_sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73",
+      "input_blake3": "056bc107dbe30b3e9a042f18ebd85f364790b83cf27f7b422b125de7997bcc64",
+      "input_bytes": 367,
+      "owner_digest_algorithm": "The artifact schema uses BLAKE3 for owner.class_bytes.digest; SHA-256 is independently checked for the class file pin.",
+      "check": "Validated each of the three method identity owners and every primary/derived source-map origin against input_class_facts.blake3 and length 367; the receipt input SHA-256 was independently verified against the frozen fixture.",
+      "verified": true,
+      "method_owner_blake3": "056bc107dbe30b3e9a042f18ebd85f364790b83cf27f7b422b125de7997bcc64"
+    },
+    "raw_manifest": {
+      "commands": 34,
+      "streams_checked": 68,
+      "disk_raw_files": 68,
+      "all_stream_bytes_sha256_match": true
+    },
+    "cli_receipt_binding": {
+      "receipt_path": "/private/tmp/jarde-exception-only-final-focused-root-v3-20261018/execution.json",
+      "receipt_sha256": "7e603d712358cba3db2662e83e2f229052c2b0d73a6391fc2732c7e24989a524",
+      "recorded_cli": {
+        "path": "/private/tmp/jarde-exception-only-final-focused-root-v3-20261018/candidate-cli",
+        "bytes": 62788432,
+        "sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8"
+      },
+      "matches_runtime_cli_pin": true
+    },
+    "oracle_input_copy": {
+      "path": "/private/tmp/jarde-exception-only-local-runtime-root-v1-20261018/original/target/ExceptionOnlyLocal.class",
+      "bytes": 367,
+      "sha256": "c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73",
+      "matches_frozen_input": true
+    }
+  },
+  "findings": [
+    {
+      "severity": "note",
+      "claim": "Jarde default/all are complete, text-identical, physically tied to the frozen 367-byte class bytes and preserve every instruction BCI for all three code methods.",
+      "evidence": "Both JSON profiles report complete execution/structural coverage; independently decoded source-map origins match each method identity, and each origin owner digest/length equals input BLAKE3/367."
+    },
+    {
+      "severity": "note",
+      "claim": "Each javac compiler produces the same class bytes for default/all; javac8 and javac23 classfiles differ in bytes (as expected) while all four preserve the frozen Java 8 method/BCI layout. All eight JVM launches (24 driver cases) match their same-JVM original oracles.",
+      "evidence": "javac8 output SHA-256 is 7545aba449862eb4112d4974560b7175559fca3c29e9560848b0c96f02e24aa8 for both profiles; javac23 output SHA-256 is c5c1680de3820dd022b29a5a4aad8b13f0c877a65cabaecf4702606a81b8bc73 for both profiles. All four classfiles are 367 bytes; decoded major/method/BCI facts match."
+    },
+    {
+      "severity": "finding",
+      "claim": "JADX outputs compile on both compilers but fail all four runtime attempts on an observed semantic mismatch.",
+      "evidence": "Each launch exits 1 with the same captured AssertionError and trace=8; expected original/Jarde trace is 78."
+    },
+    {
+      "severity": "limitation",
+      "claim": "Current repo closure differs from the collector-time snapshot in seven paths, all under results/local-runtime-root-v1 or results/strict-root-v1; no non-results path differs.",
+      "evidence": "Independent current re-hash over same source-closure path set; artifacts are added after collection. This confirms no present production-source divergence but means byte-for-byte current full closure cannot independently substantiate the collector-time source_unchanged flag."
+    },
+    {
+      "severity": "limitation",
+      "claim": "CI has not been independently accepted in this task.",
+      "evidence": "No fresh target-commit CI run.json or four job logs were supplied in the private review directory; the prior nested-finally receipt is not a substitute."
+    },
+    {
+      "severity": "limitation",
+      "claim": "The repository target directory exists at review time, following the root-confirmed capture transition.",
+      "evidence": "Collector recorded absence at capture end; root reports independent observation of absence before later workspace builds. Current presence is consistent with those subsequent builds."
+    }
+  ],
+  "issues": [],
+  "missing_evidence": [
+    "No fresh own-commit CI run.json and four complete per-job logs/source-pins pack was supplied; do not claim GitHub CI success.",
+    "The current full source-closure differs in seven results evidence files from the runtime capture-time pin map; all production/source paths still match, but the capture-time full-closure bit is not independently reproducible from current files."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "archive_bytes": 1378425,
+  "archive_sha256": "07fcea7ea63c3755fbc78883ce463596414819a3f14a813e42c231c123483c9f",
+  "members_reopened": 215,
+  "seed": "5350648285461741570",
+  "status": "accepted_read_only",
+  "target_count": 378,
+  "batch_count": 99,
+  "workspace_summary_count": 378,
+  "workspace_totals": [
+    3700,
+    0,
+    98
+  ],
+  "source_pin_count": 4955,
+  "raw_streams_verified": 204,
+  "per_target_counts_bound_to_Running_order": true,
+  "recorded_artifact_order_labels_are_not_execution_counts": true,
+  "target_absent": true,
+  "two_seed_source_inventory_and_per_target_counts_equal": true,
+  "critical_tests_per_seed": 9,
+  "default_stack": true,
+  "source_count": 4955,
+  "product_sha": "3fa506df0ccd7da3d38ab769bfd65235817508fe",
+  "supplemental_parser_first_failure_preserved": true
+}

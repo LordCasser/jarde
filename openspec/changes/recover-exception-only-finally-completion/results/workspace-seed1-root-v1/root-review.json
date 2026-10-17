@@ -1,0 +1,20 @@
+{
+  "archive_bytes": 1370475,
+  "archive_sha256": "accc6945914d54e21a8b18fc998962cb406cdad6f42b4a7ad98e8f2ed5aa202b",
+  "members_reopened": 211,
+  "seed": "5350648285461741569",
+  "status": "accepted_read_only",
+  "target_count": 378,
+  "batch_count": 99,
+  "workspace_summary_count": 378,
+  "workspace_totals": [
+    3700,
+    0,
+    98
+  ],
+  "source_pin_count": 4955,
+  "raw_streams_verified": 204,
+  "per_target_counts_bound_to_Running_order": true,
+  "recorded_artifact_order_labels_are_not_execution_counts": true,
+  "target_absent": true
+}

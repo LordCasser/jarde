@@ -1,0 +1,3 @@
+第二个fresh native seed5350648285461741570：378 targets/99批，3700/0/98，204raw接受。与首seed的4955来源、inventory及每target五项计数均一致；九个新关键测试每seed各一次ok，总7400通过/0失败/196忽略。默认栈、每秒5GiB/1GiB守卫、开始空target和最终exact clean成立。
+
+既有完整workspace接受器两轮首次执行即通过。Luna补充的逐target/关键测试接受器首次因SUMMARY缺re.MULTILINE而拒绝；root修复私有parser后完整通过，失败脚本及实际错误另保留；未修改生产源码或减弱断言。capture含两份独立接受输出、脚本与失败资料，逐成员复开。

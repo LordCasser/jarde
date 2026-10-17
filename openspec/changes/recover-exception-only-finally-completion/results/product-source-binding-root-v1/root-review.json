@@ -1,0 +1,12 @@
+{
+  "archive_bytes": 3820322,
+  "archive_sha256": "b4aabececfb7314a28dd8ed31bf372de9db5154aec1a5cf1b925294bb87b434c",
+  "members_reopened": 4,
+  "status": "root accepted",
+  "product_sha": "3fa506df0ccd7da3d38ab769bfd65235817508fe",
+  "frozen_cli_sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8",
+  "build_source_files": 3002,
+  "workspace_source_files": 4955,
+  "method": "each current source hash checked against execution receipt SHA256 and product git-ls-tree blob OID; complete fixed product tree archived",
+  "all_pinned_files_tracked_in_product": true
+}

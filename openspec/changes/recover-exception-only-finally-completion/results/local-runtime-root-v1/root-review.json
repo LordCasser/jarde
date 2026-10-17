@@ -17,5 +17,6 @@
   "jadx_first_case_failed": "null trace=8, expected78",
   "source_unchanged": true,
   "target_absent": true,
-  "cli_sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8"
+  "cli_sha256": "7287e856c5ce256c127fc6b33bcc3c663b058e913bf50de5d82ed9c9373b95c8",
+  "independent_review": "luna-independent-review.json; later results-only closure writes and active workspace target distinguished from capture-time state"
 }

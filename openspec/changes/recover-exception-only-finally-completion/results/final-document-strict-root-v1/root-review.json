@@ -1,0 +1,17 @@
+{
+  "archive_bytes": 11160,
+  "archive_sha256": "1dfe4883e71b5a6f6fb279c57d0623dcdcdc012719c0e19fb9e0f243e3caae56",
+  "members_reopened": 10,
+  "status": "root accepted",
+  "versions": [
+    "1.11.0",
+    "1.14.0"
+  ],
+  "items_each": 366,
+  "passed_each": 366,
+  "failed_each": 0,
+  "commands": 4,
+  "raw_streams": 8,
+  "product_source_pins_unchanged": 4955,
+  "target_absent": true
+}

@@ -1,0 +1,1 @@
+首个fresh native seed5350648285461741569：实际378 targets/99批，3700通过/0失败/98忽略，204raw独立复核。4955来源恒同并逐文件绑定产品3fa506df0；默认栈、5GiB/1GiB/每秒守卫，开始与结束target均不存在。此收据只证明首seed，双seed逐target与9关键测试补充验收另存。逐成员复开及SHA见root-review.json。

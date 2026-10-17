@@ -18,5 +18,5 @@
 ## 4. Accept the complete product
 
 - [x] 4.1 最终冻结CLI执行两输入compiler × default/all × 两重编compiler × 双JVM的完整独立类矩阵，九组合逐字等原始oracle并核注入对象身份、78恰好一次、异常类型/message及覆盖；JADX固定同输入新输出与真实失败单独保存。
-- [ ] 4.2 实际运行reader/corpus fingerprint/P5、旧CF16与finally邻接回归、fmt/当前CI同款Clippy/MSRV和完整workspace双seed；默认栈/5GiB/1GiB/每秒守卫/最终exact clean全部通过；不无条件更新预算或文本基线。
-- [ ] 4.3 形成并推送精确产品提交，独立验收该提交自身CI及最终来源恒同；root复核计划范围、完整raw与双版本strict后更新handoff和CF16叶片记录，不增加71/612总账，也不把未覆盖显式finally完成称为已恢复。
+- [x] 4.2 实际运行reader/corpus fingerprint/P5、旧CF16与finally邻接回归、fmt/当前CI同款Clippy/MSRV和完整workspace双seed；默认栈/5GiB/1GiB/每秒守卫/最终exact clean全部通过；不无条件更新预算或文本基线。
+- [x] 4.3 形成并推送精确产品提交，独立验收该提交自身CI及最终来源恒同；root复核计划范围、完整raw与双版本strict后更新handoff和CF16叶片记录，不增加71/612总账，也不把未覆盖显式finally完成称为已恢复。
