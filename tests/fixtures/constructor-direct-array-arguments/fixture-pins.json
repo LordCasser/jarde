@@ -1,0 +1,109 @@
+{
+  "scope": "frozen real javac inputs only; no recovery acceptance claim",
+  "classes": [
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$ByteSink.class",
+      "sha256": "81517035d539136bcc3edbdf476e1ee1c55a95715898a8fac62ab2cd3e08b2bb"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$CharSink.class",
+      "sha256": "fe030dfb1463ac5c42d8626f1be4bb102c3796d572dc84f257a5f91186dbe271"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$Element.class",
+      "sha256": "7c8454a79e7433cc14c2114218e79ac9701510e044db5ef6e37f9fbb5fda7560"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$ElementSink.class",
+      "sha256": "28bbc131e8b2bc9176da4108f82ab4eff9887b42b7ed3641551d2700cebc38d1"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$IntSink.class",
+      "sha256": "ea270e29b0b53aa0cfca5aa1f4b457bafb45b01ac3d14f44b469743769225abf"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$MatrixSink.class",
+      "sha256": "8e8872733d93594129dde42d96aa325d86d51b611c5a01fc2a2441b62ccd614c"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$PairSink.class",
+      "sha256": "bff1788412f8c4f5d725bac64a64e4fe16c881e53af925850584f25a19548320"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$ReferenceSink.class",
+      "sha256": "e5eca608ea96c643a5892254cba0608220bf47596468f6e9b9e716ffea9d6654"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments.class",
+      "sha256": "2b1a26337f3c0ea82c666234744b8806d8cf69fad890d60bf39796c021892bf6"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$ByteSink.class",
+      "sha256": "a3472af86d11b4cdda282654416c9a9122e7415017a9126d43bbe7e9b75e19f1"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$CharSink.class",
+      "sha256": "d7f5776f367a37b34d56ca382c94dda4b6c7abe3b85b3b1b5abaffb4a17fdb80"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$Element.class",
+      "sha256": "727940a3d2d28abdf7089c3796dc70b538d2be6f4bcad0cc1c212ecb026822fd"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$ElementSink.class",
+      "sha256": "646c357c5e5ce931017c4a0b0db62be260c4579a8be250524ea1a92312a1f92b"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$IntSink.class",
+      "sha256": "717f6dedbc94d0a453340857f49fc70be1463d9c066eba1bd7bce25a6f8749db"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$MatrixSink.class",
+      "sha256": "cce9472a4d8fa3d65bcdb200702f8690eaf3643ac3c5a2ab12f02210c5b6172a"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$PairSink.class",
+      "sha256": "d97f155ece9efd9d9b3361b4cc6e8419a37cf6efc146d28ddc22c5e06c74c267"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$ReferenceSink.class",
+      "sha256": "155fe34bddc901bd7b4168592510e325ae4f9ac796223f5cd04dc3cbc3b937d0"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments.class",
+      "sha256": "f8af3f28a16049a41b13eb963e02ed57464ff4f2794fecf34c17baab34332a8b"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac23/natural/ReverseArrayOrder.class",
+      "sha256": "5239fdd521631e4c4159db01536d3978b003327b1096c5de612068dccce28d58"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac23/swapped/ReverseArrayOrder.class",
+      "sha256": "b7f5642c8d11571f56b3930907e1f166b948ca372ec5e4eb12a3efb2e1722c8f"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac8/natural/ReverseArrayOrder.class",
+      "sha256": "7012cfc1d34efadad4615a0e215a65598c3fa158d6ab547febb4d4b67a6aeaa1"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac8/swapped/ReverseArrayOrder.class",
+      "sha256": "7fea22dee500f9f0f157fe9a18549125083c42b1c1ae48a3137475a577abd6f1"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/same-owner/javac23/SameOwnerArrayArguments.class",
+      "sha256": "30ad686f3f79ba3d24843a3f07a75468b2e6b60491d94cc1265781b199cc1863"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/same-owner/javac8/SameOwnerArrayArguments.class",
+      "sha256": "bc2932078abeec591e78841ed7db6d8de70890ea3eaefc402caf2b6b4ca2731d"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/tf3-debug/TestFinally3$TestCls.class",
+      "sha256": "99ce8003bdcbf68d1b706288f3447c18b6322f8c4a73f70a5a53d7cd3a194800"
+    },
+    {
+      "path": "tests/fixtures/constructor-direct-array-arguments/tf3-no-debug/TestFinally3$TestCls.class",
+      "sha256": "1d4d68c4416d5f3c9115452e51e6e8dd43a045845fd636dfd64fd656a5aadce4"
+    }
+  ]
+}

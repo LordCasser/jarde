@@ -1,0 +1,26 @@
+{
+  "status": "accepted architecture probe scope",
+  "profiles": 2,
+  "methods_per_profile": 12,
+  "diagnostic_tests": 1,
+  "raw_streams_reopened": 4,
+  "source_restored": true,
+  "target_absent": true,
+  "findings": [
+    "all general outer array candidates fail at NewArray interleaved_effect; no final constructor in parameter producer dependencies",
+    "nonempty primitive/reference, nested child, constructed elements have complete existing ArrayInitializer candidates",
+    "bare dynamic and multianewarray need no initialization stores",
+    "constructed element sites already enter pending handoff; ordinary recursion does not accept their arraystore consumer",
+    "exact constant Java8 String(char[]) accepted; effectful exact String remains independent refusal",
+    "twoArrayArguments diagnostic method has unrelated AssertionError/StringBuilder nested-construction refusal too; whole diagnostic source must remain unchanged and may remain red"
+  ],
+  "limits": [
+    "no product implementation or Builder acceptance from this diagnostic test",
+    "private diagnostics were restored before product build; not a product source binding"
+  ],
+  "followup_measured_findings": [
+    "Initial String([CII)V candidate was false; the first of two array arguments also had no candidate, while second did. Original raw retained; no complete-certificate claim for these cases.",
+    "Library candidate-v3:457 pass/2 fail at these two reader cases; changes remain pending acceptance.",
+    "SameOwnerArrayArguments head0 incorrectly selects child ctor15; child10/21 sites succeeded. This is an actual candidate CLI refusal, not inferred acceptance."
+  ]
+}

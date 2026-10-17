@@ -172,7 +172,6 @@ struct ConstructionFacts<'a> {
     reserved: &'a BTreeSet<u32>,
     fields: &'a field::Plan,
     arrays: &'a crate::build::ChildArrayFacts<'a>,
-    java_release: u16,
     member_targets: &'a [ProvedMemberInnerTarget],
     method: Option<&'a crate::facts::MethodFacts>,
     code: &'a MethodCodeFacts,
@@ -184,7 +183,6 @@ struct ConstructionFacts<'a> {
 pub(crate) struct ArrayCompositionContext<'a> {
     pub(crate) chains: &'a crate::concat::Plan,
     pub(crate) reserved: &'a BTreeSet<u32>,
-    pub(crate) java_release: u16,
     pub(crate) member_targets: &'a [ProvedMemberInnerTarget],
     pub(crate) method: &'a crate::facts::MethodFacts,
     pub(crate) code: &'a MethodCodeFacts,
@@ -257,7 +255,6 @@ pub(crate) fn verify_array_store(
         reserved: context.reserved,
         fields,
         arrays,
-        java_release: context.java_release,
         member_targets: context.member_targets,
         method: Some(context.method),
         code: context.code,
@@ -547,7 +544,6 @@ pub(crate) fn sites(
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
     arrays: &crate::build::ArrayInitializers,
-    java_release: u16,
     member_targets: &[ProvedMemberInnerTarget],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
@@ -561,7 +557,6 @@ pub(crate) fn sites(
         fields,
         arrays,
         BTreeMap::new(),
-        java_release,
         member_targets,
         method,
         code,
@@ -579,7 +574,6 @@ pub(crate) fn sites_after_array_composition(
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
     arrays: &mut crate::build::ArrayInitializers,
-    java_release: u16,
     member_targets: &[ProvedMemberInnerTarget],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
@@ -597,7 +591,6 @@ pub(crate) fn sites_after_array_composition(
         fields,
         arrays,
         pending_sites,
-        java_release,
         member_targets,
         method,
         code,
@@ -614,7 +607,6 @@ fn sites_with_pending_array_composition(
     fields: &field::Plan,
     arrays: &crate::build::ArrayInitializers,
     mut pending_sites: BTreeMap<u32, Site>,
-    java_release: u16,
     member_targets: &[ProvedMemberInnerTarget],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
@@ -628,7 +620,6 @@ fn sites_with_pending_array_composition(
         reserved,
         fields,
         arrays: &array_facts,
-        java_release,
         member_targets,
         method: Some(method),
         code,
@@ -760,7 +751,6 @@ fn verify_metered(
         reserved,
         fields,
         arrays,
-        java_release,
         member_targets,
         ..
     } = *facts;
@@ -841,7 +831,12 @@ fn verify_metered(
             operations.get(bci),
             Some(Operation::Invoke(target)) if target.owner() == ty && target.name() == "<init>"
         ) {
-            break Some(instruction);
+            let operands = stack_operands_metered(instruction, bci, meter)?;
+            if operands.first().is_some_and(|(_, receiver)| {
+                is_the_instance(ssa, *receiver, &[head, dup.bci(), bci])
+            }) {
+                break Some(instruction);
+            }
         }
         scan += 1;
     };
@@ -961,7 +956,6 @@ fn verify_metered(
     let mut embedded_concat = false;
     let mut embedded_dynamic = false;
     let mut embedded_primitive_conversion = false;
-    let mut embedded_array = BTreeSet::new();
     let mut inline_arrays = BTreeSet::new();
     let arguments = if let Some(member) = &member {
         for argument in &member.arguments {
@@ -998,79 +992,64 @@ fn verify_metered(
             operands.iter().skip(1).map(|(_, value)| *value),
             meter,
         )?;
-        // The restricted Java 8 `String(char[])` shape keeps its own slice: its argument run's
-        // inline `char[]` chains — direct or through an intervening call — are embedded only under
-        // that slice's exact conditions, and the general inline array acceptance below never
-        // applies to this constructor.
-        let string_char_array_ctor = java_release == 8
-            && ty == "java/lang/String"
-            && matches!(operations.get(at), Some(Operation::Invoke(call)) if call.descriptor() == "([C)V")
-            && operands.len() == 2;
-        if string_char_array_ctor {
-            embedded_array = arrays
-                .inline_char_argument_bcis_metered(
-                    ssa,
-                    operations,
-                    block,
-                    operands[1].1,
+        // The complete array proof supplies its element production, closed source interval,
+        // final SSA value and single-use judgement. An intermediate factory consumer still has to
+        // occur in this constructor's argument dependency walk. When this constructor itself is the
+        // consumer, it must be the exact value in one physical non-receiver constructor operand;
+        // repeated values cannot claim more than one position. Bare allocations use the same exact
+        // consumer test, including for `String(char[])`.
+        let mut physical_argument_counts = BTreeMap::new();
+        for (_, value) in operands.iter().skip(1) {
+            meter.charge(CountedBudgetDimension::IrItems, Some(at))?;
+            *physical_argument_counts.entry(*value).or_insert(0usize) += 1;
+        }
+        let array_serves_argument = |consumer: u32, value: ValueId| {
+            matches!(operations.get(consumer), Some(Operation::Invoke(_)))
+                && if consumer == at {
+                    physical_argument_counts.get(&value) == Some(&1)
+                } else {
+                    argument_dependencies.contains(&consumer)
+                }
+        };
+        for instruction in block.iter().skip(index + 2) {
+            if instruction.bci() >= at {
+                break;
+            }
+            meter.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                Some(instruction.bci()),
+            )?;
+            let bci = instruction.bci();
+            if let Some(members) = arrays
+                .inline_argument_chain_bcis_metered(
+                    bci,
                     dup.bci(),
                     at,
+                    array_serves_argument,
                     meter,
                 )
                 .map_err(VerifyFailure::Stop)?
-                .unwrap_or_default();
-        }
-        // The inline anonymous array chains of this construction's argument run — the varargs
-        // lowering `new T; dup; …; anewarray; [dup; index; value; aastore]×n; invoke` that a
-        // collection-copy constructor reads through a factory call such as `Arrays.asList(…)`.
-        // The chain's own proof (element production, closed interval, single use of every value) is
-        // `array@1`'s, read here rather than restated: a construction accepts the chain only when
-        // its sole consumer is an invocation this call's own argument dependency walk reaches, so
-        // the initializer is written exactly where the bytecode evaluated it and serves exactly
-        // this argument. A bare `new T[n]` allocation with no element stores (the empty varargs
-        // call) is its own complete chain under the same consumer judgement. A chain the
-        // constructor consumes directly is not this shape: `new@1` embeds it only for the
-        // `String(char[])` slice, and every other owner keeps the refusal that slice froze.
-        let array_serves_argument = |consumer: u32| {
-            matches!(operations.get(consumer), Some(Operation::Invoke(_)))
-                && argument_dependencies.contains(&consumer)
-        };
-        if !string_char_array_ctor {
-            for instruction in block.iter().skip(index + 2) {
-                if instruction.bci() >= at {
-                    break;
+            {
+                inline_arrays.extend(members);
+                continue;
+            }
+            if matches!(operations.get(bci), Some(Operation::NewArray { .. }))
+                && let Some((Slot::Stack(_), value)) = instruction.writes().first().copied()
+            {
+                let uses = ssa.value(value).uses();
+                for use_site in uses {
+                    meter.charge(CountedBudgetDimension::IrItems, use_site.bci())?;
                 }
-                meter.charge(
-                    CountedBudgetDimension::AnalysisSteps,
-                    Some(instruction.bci()),
-                )?;
-                let bci = instruction.bci();
-                if let Some(members) = arrays
-                    .inline_argument_chain_bcis_metered(
-                        bci,
-                        dup.bci(),
-                        at,
-                        array_serves_argument,
-                        meter,
+                if let [use_site] = uses
+                    && let Some(consumer) = use_site.bci()
+                    && matches!(
+                        ssa.value(value).def(),
+                        Definition::Instruction { block: def_block, bci: def_bci }
+                            if *def_bci == bci && def_block == use_site.block()
                     )
-                    .map_err(VerifyFailure::Stop)?
+                    && array_serves_argument(consumer, value)
                 {
-                    inline_arrays.extend(members);
-                    continue;
-                }
-                if matches!(operations.get(bci), Some(Operation::NewArray { .. }))
-                    && let Some((Slot::Stack(_), value)) = instruction.writes().first().copied()
-                {
-                    let uses = ssa.value(value).uses();
-                    for use_site in uses {
-                        meter.charge(CountedBudgetDimension::IrItems, use_site.bci())?;
-                    }
-                    if let [use_site] = uses
-                        && let Some(consumer) = use_site.bci()
-                        && array_serves_argument(consumer)
-                    {
-                        inline_arrays.insert(bci);
-                    }
+                    inline_arrays.insert(bci);
                 }
             }
         }
@@ -1099,7 +1078,6 @@ fn verify_metered(
             match operations.get(instruction.bci()) {
                 Some(_) if nested_expression.contains(&instruction.bci()) => {}
                 Some(_) if nested_concat.contains(&instruction.bci()) => {}
-                Some(_) if embedded_array.contains(&instruction.bci()) => {}
                 Some(_) if inline_arrays.contains(&instruction.bci()) => {}
                 Some(
                     Operation::Push(_)
@@ -1271,28 +1249,15 @@ fn verify_metered(
     }
     let constructor_index =
         constructor_index.expect("the selected constructor belongs to this block");
-    if !embedded_array.is_empty()
-        && (block.get(constructor_index + 1).map(SsaInstruction::bci) != Some(written[0])
-            || !matches!(operations.get(written[0]), Some(Operation::Return { .. })))
-    {
-        return Err(Refusal::shape(
-            "jre_new_inline_char_array_return",
-            format!(
-                "the String(char[]) construction at BCI {head} does not directly return its sole constructed value"
-            ),
-        )
-        .into());
-    }
     if embedded_concat
         || embedded_dynamic
         || embedded_primitive_conversion
-        || !embedded_array.is_empty()
         || !inline_arrays.is_empty()
         || !nested_expression.is_empty()
     {
         // A Java expression runs under one exception region. Moving a proved inner run — a
-        // concatenation chain, a dynamic functional argument, an inline char[] initializer, an
-        // inline array argument chain, a nested construction — into the outer construction is
+        // concatenation chain, a dynamic functional argument, an inline array argument chain, or
+        // a nested construction — into the outer construction is
         // sound only when every instruction in the construction and its sole consumer has the same
         // handler coverage as the outer allocation.
         let mut expected = Vec::new();
@@ -1335,11 +1300,6 @@ fn verify_metered(
                 )
             } else if embedded_concat {
                 ("jre_new_concat_exception_boundary", "concatenation")
-            } else if !embedded_array.is_empty() {
-                (
-                    "jre_new_inline_char_array_exception_boundary",
-                    "inline char[]",
-                )
             } else if !inline_arrays.is_empty() {
                 ("jre_new_inline_array_exception_boundary", "inline array")
             } else if embedded_primitive_conversion {
@@ -1374,10 +1334,6 @@ fn verify_metered(
             meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
             single_use_atoms.insert(*bci);
         }
-    }
-    for bci in &embedded_array {
-        meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
-        single_use_atoms.insert(*bci);
     }
     for bci in &inline_arrays {
         meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
@@ -3381,6 +3337,18 @@ mod tests {
     );
     const INLINE_CHAR_ARRAY: &[u8] =
         include_bytes!("../../../tests/fixtures/em27-inline-string/em27/Probe.class");
+    const DIRECT_ARRAY_ARGUMENTS_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments.class"
+    );
+    const DIRECT_ARRAY_ARGUMENTS_JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments.class"
+    );
+    const SAME_OWNER_ARRAY_ARGUMENTS_JAVAC8: &[u8] = include_bytes!(
+        "../../../tests/fixtures/constructor-direct-array-arguments/same-owner/javac8/SameOwnerArrayArguments.class"
+    );
+    const SAME_OWNER_ARRAY_ARGUMENTS_JAVAC23: &[u8] = include_bytes!(
+        "../../../tests/fixtures/constructor-direct-array-arguments/same-owner/javac23/SameOwnerArrayArguments.class"
+    );
     const VARARGS_CTOR_W3: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/fixture/W3.class"
     );
@@ -3429,12 +3397,7 @@ mod tests {
         "../../../tests/fixtures/p3-constructor-primitive-conversion-controls-v1/javac23/classes/ConstructorPrimitiveHandlerControls.class"
     );
 
-    fn inline_char_sites(
-        name: &str,
-        descriptor: &str,
-        java_release: u16,
-        handler_range: Option<(u32, u32)>,
-    ) -> Sites {
+    fn inline_char_sites(name: &str, descriptor: &str, handler_range: Option<(u32, u32)>) -> Sites {
         let (analysis, _) = analyzed_caller(INLINE_CHAR_ARRAY, name, descriptor);
         let ir = analysis.ir();
         let ssa = ir.ssa().expect("ssa");
@@ -3463,16 +3426,246 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            java_release,
             &[],
             &method_facts,
             &code,
         )
     }
 
+    fn direct_array_argument_sites(class: &[u8], name: &str, descriptor: &str) -> Sites {
+        let (analysis, _) = analyzed_caller(class, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let chains = crate::concat::Plan::empty();
+        let method = crate::facts::MethodFacts::new(name, descriptor, 0);
+        let context = ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            member_targets: &[],
+            method: &method,
+            code,
+        };
+        let mut budget = proof_budget();
+        let mut arrays = crate::build::ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&context),
+            &mut budget,
+        )
+        .expect("array proof completes");
+        sites_after_array_composition(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &mut arrays,
+            &[],
+            &method,
+            code,
+            &mut budget,
+        )
+        .expect("site composition completes")
+    }
+
     #[test]
-    fn only_the_complete_direct_java8_string_char_array_is_embedded() {
-        let direct = inline_char_sites("direct", "()Ljava/lang/String;", 8, None);
+    fn direct_array_constructor_arguments_are_composed_for_both_javac_legs() {
+        let cases = [
+            (
+                "barePrimitive",
+                "(I)LDirectArrayConstructorArguments$ByteSink;",
+                "$ByteSink",
+                1,
+                0,
+            ),
+            (
+                "bareReference",
+                "(I)LDirectArrayConstructorArguments$ReferenceSink;",
+                "$ReferenceSink",
+                1,
+                0,
+            ),
+            (
+                "initializedPrimitive",
+                "()LDirectArrayConstructorArguments$IntSink;",
+                "$IntSink",
+                1,
+                0,
+            ),
+            (
+                "initializedReference",
+                "()LDirectArrayConstructorArguments$ReferenceSink;",
+                "$ReferenceSink",
+                1,
+                0,
+            ),
+            (
+                "nestedChildren",
+                "()LDirectArrayConstructorArguments$MatrixSink;",
+                "$MatrixSink",
+                1,
+                0,
+            ),
+            (
+                "bareMultianewarray",
+                "(II)LDirectArrayConstructorArguments$MatrixSink;",
+                "$MatrixSink",
+                1,
+                0,
+            ),
+            (
+                "constructedElements",
+                "()LDirectArrayConstructorArguments$ElementSink;",
+                "$ElementSink",
+                1,
+                2,
+            ),
+            (
+                "twoArrayArguments",
+                "()LDirectArrayConstructorArguments$PairSink;",
+                "$PairSink",
+                2,
+                1,
+            ),
+            (
+                "directOtherCharArrayOwner",
+                "()LDirectArrayConstructorArguments$CharSink;",
+                "$CharSink",
+                1,
+                0,
+            ),
+            (
+                "directStringCharArray",
+                "()Ljava/lang/String;",
+                "java/lang/String",
+                1,
+                0,
+            ),
+            (
+                "directStringCharArrayEffectful",
+                "()Ljava/lang/String;",
+                "java/lang/String",
+                1,
+                0,
+            ),
+            (
+                "stringOtherDescriptor",
+                "()Ljava/lang/String;",
+                "java/lang/String",
+                3,
+                0,
+            ),
+        ];
+        for (compiler, class) in [
+            ("javac8", DIRECT_ARRAY_ARGUMENTS_JAVAC8),
+            ("javac23", DIRECT_ARRAY_ARGUMENTS_JAVAC23),
+        ] {
+            for (name, descriptor, owner_suffix, argument_count, element_sites) in cases {
+                let plan = direct_array_argument_sites(class, name, descriptor);
+                let accepted: Vec<_> = plan
+                    .sites
+                    .iter()
+                    .filter(|site| site.class.ends_with(owner_suffix))
+                    .collect();
+                assert_eq!(accepted.len(), 1, "{compiler}/{name}: direct outer site");
+                assert_eq!(
+                    accepted[0].arguments.len(),
+                    argument_count,
+                    "{compiler}/{name}: physical argument count"
+                );
+                assert!(
+                    accepted[0]
+                        .arguments
+                        .windows(2)
+                        .all(|pair| pair[0] < pair[1]),
+                    "{compiler}/{name}: constructor arguments retain source evaluation order"
+                );
+                assert!(
+                    accepted[0].expression.contains(&accepted[0].constructor),
+                    "{compiler}/{name}: constructor remains in the composed expression"
+                );
+                let actual_element_sites = plan
+                    .sites
+                    .iter()
+                    .filter(|site| site.class.ends_with("$Element"))
+                    .count();
+                assert_eq!(
+                    actual_element_sites, element_sites,
+                    "{compiler}/{name}: pending constructed elements commit once"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn same_owner_nested_constructors_select_the_matching_receiver() {
+        for (compiler, class) in [
+            ("javac8", SAME_OWNER_ARRAY_ARGUMENTS_JAVAC8),
+            ("javac23", SAME_OWNER_ARRAY_ARGUMENTS_JAVAC23),
+        ] {
+            let plan = direct_array_argument_sites(class, "build", "()LSameOwnerArrayArguments;");
+            let mut accepted: Vec<_> = plan
+                .sites
+                .iter()
+                .map(|site| (site.head, site.constructor, site.class.as_str()))
+                .filter(|(_, _, ty)| *ty == "SameOwnerArrayArguments")
+                .collect();
+            accepted.sort_by_key(|(head, _, _)| *head);
+            assert_eq!(
+                accepted,
+                [
+                    (0, 30, "SameOwnerArrayArguments"),
+                    (10, 15, "SameOwnerArrayArguments"),
+                    (21, 26, "SameOwnerArrayArguments"),
+                ],
+                "{compiler}: each same-owner constructor belongs to its receiver allocation"
+            );
+            let outer = plan
+                .site_at_head(0)
+                .expect("outer array-consuming constructor");
+            assert_eq!(outer.constructor, 30, "{compiler}: outer constructor BCI");
+            assert_eq!(
+                plan.sites
+                    .iter()
+                    .filter(|site| site.class == "SameOwnerArrayArguments")
+                    .count(),
+                3,
+                "{compiler}: pending element constructor sites commit once"
+            );
+        }
+    }
+
+    #[test]
+    fn verified_swap_does_not_reorder_effectful_direct_array_arguments() {
+        for (compiler, natural, swapped) in [
+            (
+                "javac8",
+                include_bytes!("../../../tests/fixtures/constructor-direct-array-arguments/reverse-order/javac8/natural/ReverseArrayOrder.class").as_slice(),
+                include_bytes!("../../../tests/fixtures/constructor-direct-array-arguments/reverse-order/javac8/swapped/ReverseArrayOrder.class").as_slice(),
+            ),
+            (
+                "javac23",
+                include_bytes!("../../../tests/fixtures/constructor-direct-array-arguments/reverse-order/javac23/natural/ReverseArrayOrder.class").as_slice(),
+                include_bytes!("../../../tests/fixtures/constructor-direct-array-arguments/reverse-order/javac23/swapped/ReverseArrayOrder.class").as_slice(),
+            ),
+        ] {
+            let natural = direct_array_argument_sites(natural, "make", "()LReverseArrayOrder;");
+            assert!(natural.site_at_head(0).is_some(), "{compiler}: natural argument order");
+            let swapped = direct_array_argument_sites(swapped, "make", "()LReverseArrayOrder;");
+            assert!(swapped.site_at_head(0).is_none(), "{compiler}: swapping arguments must not swap their effects");
+            assert!(swapped.refusals.iter().any(|site| {
+                site.head == 0 && site.refusal.code() == "jre_new_interleaved_effect"
+            }));
+        }
+    }
+
+    #[test]
+    fn complete_string_char_arrays_use_the_general_array_proof() {
+        let direct = inline_char_sites("direct", "()Ljava/lang/String;", None);
         let site = direct.site_at_head(0).expect("direct char[] String site");
         assert_eq!((site.head, site.dup, site.constructor), (0, 3, 22));
         assert_eq!(site.arguments, [17]);
@@ -3481,7 +3674,7 @@ mod tests {
         assert!(site.expression.contains(&5) && site.expression.contains(&21));
         assert!(site.owned.contains(&0) && site.owned.contains(&3) && site.owned.contains(&22));
 
-        let stored = inline_char_sites("stored", "()Ljava/lang/String;", 8, None);
+        let stored = inline_char_sites("stored", "()Ljava/lang/String;", None);
         assert_eq!(
             stored
                 .site_at_head(19)
@@ -3489,7 +3682,7 @@ mod tests {
                 .constructor,
             24
         );
-        let written = inline_char_sites("extraWrite", "()Ljava/lang/String;", 8, None);
+        let written = inline_char_sites("extraWrite", "()Ljava/lang/String;", None);
         assert_eq!(
             written
                 .site_at_head(24)
@@ -3497,7 +3690,7 @@ mod tests {
                 .constructor,
             29
         );
-        let read = inline_char_sites("secondConsumer", "()Ljava/lang/String;", 8, None);
+        let read = inline_char_sites("secondConsumer", "()Ljava/lang/String;", None);
         assert_eq!(
             read.site_at_head(23)
                 .expect("separate read control")
@@ -3505,27 +3698,36 @@ mod tests {
             28
         );
 
-        for (name, descriptor) in [
-            ("wrongDescriptor", "()Ljava/lang/String;"),
-            ("wrongOwner", "()Lem27/Probe$Holder;"),
-            ("effectful", "()Ljava/lang/String;"),
-            ("extraReader", "()Ljava/lang/String;"),
-        ] {
-            let refused = inline_char_sites(name, descriptor, 8, None);
-            assert!(refused.site_at_head(0).is_none(), "{name} must not embed");
-            assert_eq!(
-                refused
-                    .refusals(&field::CommittedPresentations::empty())
-                    .next()
-                    .expect("physical refusal")
-                    .code(),
-                "jre_new_interleaved_effect",
-                "{name}"
-            );
-        }
-        let old_profile = inline_char_sites("direct", "()Ljava/lang/String;", 7, None);
-        assert!(old_profile.site_at_head(0).is_none());
-        let crossed = inline_char_sites("direct", "()Ljava/lang/String;", 8, Some((5, 22)));
+        // A fully proved char[] passed directly to another owner's constructor uses the same
+        // exact-operand certificate as the String constructor.
+        let other_owner = inline_char_sites("wrongOwner", "()Lem27/Probe$Holder;", None);
+        let other_owner_site = other_owner
+            .site_at_head(0)
+            .expect("complete direct char[] argument to another owner");
+        assert_eq!(other_owner_site.class, "em27/Probe$Holder");
+        assert_eq!(other_owner_site.arguments.len(), 1);
+
+        let effectful = inline_char_sites("effectful", "()Ljava/lang/String;", None);
+        let effectful_site = effectful
+            .site_at_head(0)
+            .expect("complete effectful char[] initializer uses the general array proof");
+        assert_eq!(effectful_site.class, "java/lang/String");
+        assert_eq!(effectful_site.arguments.len(), 1);
+
+        let other_descriptor = inline_char_sites("wrongDescriptor", "()Ljava/lang/String;", None);
+        let descriptor_site = other_descriptor
+            .site_at_head(0)
+            .expect("complete char[] is the exact first operand of String(char[], int, int)");
+        assert_eq!(descriptor_site.class, "java/lang/String");
+        assert_eq!(descriptor_site.arguments.len(), 3);
+
+        let factory_consumer = inline_char_sites("extraReader", "()Ljava/lang/String;", None);
+        let factory_site = factory_consumer
+            .site_at_head(0)
+            .expect("array consumed once by a factory in the constructor argument dependency");
+        assert_eq!(factory_site.class, "java/lang/String");
+        assert_eq!(factory_site.arguments.len(), 1);
+        let crossed = inline_char_sites("direct", "()Ljava/lang/String;", Some((5, 22)));
         assert!(crossed.site_at_head(0).is_none());
         assert_eq!(
             crossed
@@ -3533,7 +3735,7 @@ mod tests {
                 .next()
                 .expect("handler refusal")
                 .code(),
-            "jre_new_inline_char_array_exception_boundary"
+            "jre_new_inline_array_exception_boundary"
         );
     }
 
@@ -3621,7 +3823,6 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            8,
             &[],
             &method,
             code,
@@ -3707,7 +3908,6 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            8,
             &[],
             &crate::facts::MethodFacts::new(name, descriptor, 0),
             code,
@@ -3743,7 +3943,6 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            8,
             &[],
             &crate::facts::MethodFacts::new(name, descriptor, 0),
             &code,
@@ -3811,7 +4010,6 @@ mod tests {
                 chains.owned(),
                 &fields,
                 &mut arrays,
-                8,
                 &[],
                 &method,
                 code,
@@ -3857,7 +4055,6 @@ mod tests {
                     chains.owned(),
                     &fields,
                     &mut arrays,
-                    8,
                     &[],
                     &method,
                     code,
@@ -3881,7 +4078,6 @@ mod tests {
                     chains.owned(),
                     &fields,
                     &mut arrays,
-                    8,
                     &[],
                     &method,
                     code,
@@ -4105,7 +4301,6 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            8,
             &[],
             &crate::facts::MethodFacts::new(name, descriptor, 0),
             code,
@@ -4160,7 +4355,6 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            8,
             &[],
             &crate::facts::MethodFacts::new(name, descriptor, 0),
             code,
@@ -4244,7 +4438,6 @@ mod tests {
                 chains.owned(),
                 &fields,
                 &arrays,
-                8,
                 &[],
                 &crate::facts::MethodFacts::new(name, descriptor, 0),
                 method_code,
@@ -4385,7 +4578,7 @@ mod tests {
     }
 
     #[test]
-    fn inline_char_array_proof_obeys_shared_budget_and_cancellation() {
+    fn direct_array_proof_obeys_shared_budget_and_cancellation() {
         let (analysis, _) = analyzed_caller(INLINE_CHAR_ARRAY, "direct", "()Ljava/lang/String;");
         let ir = analysis.ir();
         let ssa = ir.ssa().expect("ssa");
@@ -4417,7 +4610,7 @@ mod tests {
     }
 
     #[test]
-    fn inline_char_certificate_requires_the_exact_parent_interval_and_consumer() {
+    fn direct_array_certificate_uses_the_exact_physical_consumer_and_interval() {
         let (analysis, _) = analyzed_caller(INLINE_CHAR_ARRAY, "direct", "()Ljava/lang/String;");
         let ir = analysis.ir();
         let ssa = ir.ssa().expect("ssa");
@@ -4435,20 +4628,38 @@ mod tests {
             .find(|instruction| instruction.bci() == 22)
             .expect("constructor");
         let argument = stack_operands(constructor)[1].1;
+        let exact_direct = |consumer, value| consumer == 22 && value == argument;
         assert!(
             arrays
-                .inline_char_argument_bcis(ssa, &operations, block, argument, 3, 22)
+                .inline_argument_chain_bcis(5, 3, 22, exact_direct)
                 .is_some()
         );
-        assert!(
-            arrays
-                .inline_char_argument_bcis(ssa, &operations, block, argument, 5, 22)
-                .is_none()
+        let receiver = stack_operands(constructor)[0].1;
+        assert_ne!(
+            receiver, argument,
+            "receiver and array argument are distinct SSA values"
         );
         assert!(
             arrays
-                .inline_char_argument_bcis(ssa, &operations, block, argument, 3, 25)
-                .is_none()
+                .inline_argument_chain_bcis(5, 3, 22, |consumer, value| {
+                    consumer == 22 && value == receiver
+                })
+                .is_none(),
+            "the same constructor cannot claim a different final SSA value"
+        );
+        assert!(
+            arrays
+                .inline_argument_chain_bcis(5, 5, 22, exact_direct)
+                .is_none(),
+            "a shorter interval omitting the allocation cannot state the array expression"
+        );
+        assert!(
+            arrays
+                .inline_argument_chain_bcis(5, 3, 25, |consumer, value| {
+                    consumer == 25 && value == argument
+                })
+                .is_none(),
+            "a different invocation cannot claim the array's physical consumer"
         );
     }
 
@@ -4867,7 +5078,6 @@ mod tests {
         let context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code,
@@ -5021,7 +5231,6 @@ mod tests {
         let context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code,
@@ -5067,7 +5276,6 @@ mod tests {
             chains.owned(),
             &fields,
             &mut arrays,
-            8,
             &[],
             &method,
             code,
@@ -5102,7 +5310,6 @@ mod tests {
         let context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code,
@@ -5123,7 +5330,6 @@ mod tests {
             chains.owned(),
             &fields,
             &mut arrays,
-            8,
             &[],
             &method,
             code,
@@ -5218,7 +5424,6 @@ mod tests {
         let context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code,
@@ -5372,7 +5577,6 @@ mod tests {
         let context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code,
@@ -5519,7 +5723,6 @@ mod tests {
         let context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code,
@@ -5617,7 +5820,6 @@ mod tests {
         let patched_context = ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method,
             code: patched_code,
@@ -5699,7 +5901,6 @@ mod tests {
                 let context = ArrayCompositionContext {
                     chains: &chains,
                     reserved: chains.owned(),
-                    java_release: 8,
                     member_targets: &[],
                     method: &method,
                     code,
@@ -5945,7 +6146,6 @@ mod tests {
             let context = ArrayCompositionContext {
                 chains: &chains,
                 reserved: chains.owned(),
-                java_release: 8,
                 member_targets: &[],
                 method: &method,
                 code,
@@ -6119,7 +6319,6 @@ mod tests {
                 let context = ArrayCompositionContext {
                     chains: &chains,
                     reserved: chains.owned(),
-                    java_release: 8,
                     member_targets: &[],
                     method: &method,
                     code,
@@ -6229,7 +6428,6 @@ mod tests {
             reserved: &reserved,
             fields: &fields,
             arrays: &array_facts,
-            java_release: 8,
             member_targets: &targets,
             method: None,
             code: &code,
@@ -6371,7 +6569,6 @@ mod tests {
                 chains.owned(),
                 &fields,
                 &arrays,
-                8,
                 &[],
                 &method_facts,
                 code,
@@ -6388,7 +6585,6 @@ mod tests {
                 chains.owned(),
                 &fields,
                 &arrays,
-                8,
                 &[],
                 &method_facts,
                 code,
@@ -6498,7 +6694,6 @@ mod tests {
                 reserved: chains.owned(),
                 fields: &fields,
                 arrays: &array_facts,
-                java_release: 8,
                 member_targets: &[],
                 method: None,
                 code: &boundary_code,
@@ -6552,7 +6747,6 @@ mod tests {
             chains.owned(),
             &fields,
             &crate::build::ArrayInitializers::default(),
-            8,
             &[],
             &method_facts,
             &code,
@@ -6596,7 +6790,6 @@ mod tests {
             chains.owned(),
             &fields,
             &arrays,
-            8,
             &[],
             &method_facts,
             &code,
@@ -6951,27 +7144,27 @@ mod tests {
         let serves = |consumer: u32| dependencies.contains(&consumer);
         assert!(
             arrays
-                .inline_argument_chain_bcis(5, 3, 32, serves)
+                .inline_argument_chain_bcis(5, 3, 32, |consumer, _value| serves(consumer))
                 .is_some()
         );
         // The factory call is the chain's consumer: a judgement that does not reach it states no
         // argument chain.
         assert!(
             arrays
-                .inline_argument_chain_bcis(5, 3, 32, |consumer| consumer == 32)
+                .inline_argument_chain_bcis(5, 3, 32, |consumer, _value| consumer == 32)
                 .is_none()
         );
         // The length push at BCI 4 belongs to the chain: an interval that starts after it is not
         // the closed run the proof stated.
         assert!(
             arrays
-                .inline_argument_chain_bcis(5, 5, 32, serves)
+                .inline_argument_chain_bcis(5, 5, 32, |consumer, _value| serves(consumer))
                 .is_none()
         );
-        // A constructor bound at the chain's own consumer leaves the invocation outside the run.
+        // A constructor bound before the chain's factory consumer leaves it outside the run.
         assert!(
             arrays
-                .inline_argument_chain_bcis(5, 3, 29, serves)
+                .inline_argument_chain_bcis(5, 3, 28, |consumer, _value| serves(consumer))
                 .is_none()
         );
     }

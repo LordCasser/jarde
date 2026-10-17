@@ -14569,47 +14569,20 @@ impl ArrayInitializers {
         }
     }
 
-    /// The complete physical interval of a proved inline `char[]` argument. This deliberately
-    /// accepts only constant element producers and the exact sole constructor consumer; general
-    /// array initializers remain the builder's concern.
-    #[cfg(test)]
-    pub(crate) fn inline_char_argument_bcis(
-        &self,
-        ssa: &SsaTable,
-        operations: &Operations,
-        block: &[SsaInstruction],
-        value: ValueId,
-        dup: u32,
-        constructor: u32,
-    ) -> Option<BTreeSet<u32>> {
-        self.child_facts().inline_char_argument_bcis(
-            ssa,
-            operations,
-            block,
-            value,
-            dup,
-            constructor,
-        )
-    }
-
     /// The complete physical interval of a proved inline array initializer whose sole consumer is
-    /// an invocation inside a construction's argument run — the varargs lowering
-    /// `anewarray; [dup; index; value; aastore]×n; invoke` whose result (directly or through
-    /// further argument production) the constructor call reads. The element production, the closed
-    /// interval and the single-use judgements are the ones this plan already proved; this accessor
-    /// only states the chain's BCIs, and the caller decides which consumers its construction
-    /// accepts. The consumer and every source must sit between the construction's copy and its
-    /// call, so the initializer is written exactly where the bytecode evaluated it. A chain the
-    /// constructor itself consumes directly stays its own slice's boundary (`new@1` embeds it only
-    /// for the Java 8 `String(char[])` shape), and multi-dimensional chains (proved children) and
-    /// local postfix elements are not argument-position shapes.
+    /// an invocation in this construction's argument run, including the constructor call itself
+    /// when the initializer's final value is the exact physical argument. The element production,
+    /// closed interval and single-use judgements are the ones this plan already proved; this
+    /// accessor only states the chain's BCIs and final value, while the caller checks the actual
+    /// operand identity. Every source other than the consumer must sit between the construction's
+    /// copy and call, so the initializer is written where the bytecode evaluated it.
     #[cfg(test)]
     pub(crate) fn inline_argument_chain_bcis(
         &self,
         allocation: u32,
         dup: u32,
         constructor: u32,
-        serves_argument: impl Fn(u32) -> bool,
+        serves_argument: impl Fn(u32, ValueId) -> bool,
     ) -> Option<BTreeSet<u32>> {
         self.child_facts()
             .inline_argument_chain_bcis(allocation, dup, constructor, serves_argument)
@@ -14826,98 +14799,42 @@ impl ArrayInitializers {
 }
 
 impl ChildArrayFacts<'_> {
-    #[cfg(test)]
-    pub(crate) fn inline_char_argument_bcis(
+    /// The source interval of a later, already-proved array argument consumed by one reader.
+    /// Its candidate proof owns the element/value/use checks; this view only states where the
+    /// sibling initializer sits so an earlier array can close the constructor's remaining run.
+    fn sibling_argument_sources(
         &self,
-        ssa: &SsaTable,
-        operations: &Operations,
-        block: &[SsaInstruction],
         value: ValueId,
-        dup: u32,
-        constructor: u32,
-    ) -> Option<BTreeSet<u32>> {
-        let mut meter = crate::init::VerifyMeter::unmetered();
-        self.inline_char_argument_bcis_metered(
-            ssa,
-            operations,
-            block,
-            value,
-            dup,
-            constructor,
-            &mut meter,
-        )
-        .expect("an unmetered child-array lookup cannot stop")
-    }
-
-    pub(crate) fn inline_char_argument_bcis_metered(
-        &self,
-        ssa: &SsaTable,
-        operations: &Operations,
-        block: &[SsaInstruction],
-        value: ValueId,
-        dup: u32,
-        constructor: u32,
-        meter: &mut crate::init::VerifyMeter<'_>,
+        consumer: u32,
+        after: u32,
+        budget: &mut Budget,
     ) -> Result<Option<BTreeSet<u32>>, StopReason> {
-        let committed = self.committed;
-        let allocation_value = committed.aliases.get(&value).copied();
-        let Some(allocation) = allocation_value
-            .and_then(|value| match ssa.value(value).def() {
-                Definition::Instruction { bci, .. } => Some(*bci),
-                _ => None,
-            })
-            .or_else(|| {
-                self.candidates
-                    .and_then(|(_, candidate_values)| candidate_values.get(&value).copied())
-            })
-        else {
+        poll(budget, Some(consumer))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(consumer))?;
+        let Some((candidates, candidate_values)) = self.candidates else {
             return Ok(None);
         };
-        let Some(initializer) = committed.allocations.get(&allocation).or_else(|| {
-            self.candidates
-                .and_then(|(candidates, _)| candidates.get(&allocation))
-        }) else {
+        let Some(allocation) = candidate_values.get(&value) else {
             return Ok(None);
         };
-        if initializer.final_value != value
-            || initializer.consumer != constructor
-            || !matches!(
-                operations.get(allocation),
-                Some(Operation::NewArray {
-                    element: Type::Char,
-                    dimensions: 1,
-                    total_dimensions: 1,
-                })
-            )
-            || !initializer.children.is_empty()
-            || !initializer.local_postfix.is_empty()
-        {
+        let Some(initializer) = candidates.get(allocation) else {
             return Ok(None);
-        }
-        for bci in &initializer.element_sources {
-            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
-            if !matches!(operations.get(*bci), Some(Operation::Push(_))) {
-                return Ok(None);
-            }
-        }
-        let mut members = BTreeSet::new();
-        for instruction in block {
-            meter.charge(
-                CountedBudgetDimension::AnalysisSteps,
-                Some(instruction.bci()),
-            )?;
-            if dup < instruction.bci() && instruction.bci() < constructor {
-                members.insert(instruction.bci());
-            }
+        };
+        if initializer.final_value != value || initializer.consumer != consumer {
+            return Ok(None);
         }
         let mut sources = BTreeSet::new();
         for bci in &initializer.sources {
-            meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
-            if *bci != constructor {
-                sources.insert(*bci);
+            poll(budget, Some(*bci))?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(*bci))?;
+            if *bci == consumer {
+                continue;
+            }
+            if *bci <= after || !sources.insert(*bci) {
+                return Ok(None);
             }
         }
-        Ok((sources == members && sources.contains(&allocation)).then_some(members))
+        Ok(Some(sources))
     }
 
     #[cfg(test)]
@@ -14926,7 +14843,7 @@ impl ChildArrayFacts<'_> {
         allocation: u32,
         dup: u32,
         constructor: u32,
-        serves_argument: impl Fn(u32) -> bool,
+        serves_argument: impl Fn(u32, ValueId) -> bool,
     ) -> Option<BTreeSet<u32>> {
         let mut meter = crate::init::VerifyMeter::unmetered();
         self.inline_argument_chain_bcis_metered(
@@ -14944,7 +14861,7 @@ impl ChildArrayFacts<'_> {
         allocation: u32,
         dup: u32,
         constructor: u32,
-        serves_argument: impl Fn(u32) -> bool,
+        serves_argument: impl Fn(u32, ValueId) -> bool,
         meter: &mut crate::init::VerifyMeter<'_>,
     ) -> Result<Option<BTreeSet<u32>>, StopReason> {
         let Some(initializer) = self.committed.allocations.get(&allocation).or_else(|| {
@@ -14955,7 +14872,9 @@ impl ChildArrayFacts<'_> {
         };
         let consumer = initializer.consumer;
         let within = |bci: u32| dup < bci && bci < constructor;
-        if !within(consumer) || !serves_argument(consumer) {
+        let consumer_is_argument = (within(consumer) || consumer == constructor)
+            && serves_argument(consumer, initializer.final_value);
+        if !consumer_is_argument {
             return Ok(None);
         }
         let mut sources = BTreeSet::new();
@@ -15388,7 +15307,16 @@ fn prove_array_initializer(
 
         if expected_index + 1 == i64::try_from(length).unwrap_or(i64::MAX) {
             let Some(reader) = array_initializer_reader(
-                ssa, operations, fields, block, store_pos, retained, budget,
+                ssa,
+                operations,
+                fields,
+                child_facts,
+                effects,
+                expected_handlers,
+                block,
+                store_pos,
+                retained,
+                budget,
             )?
             else {
                 return Ok(None);
@@ -15646,6 +15574,9 @@ fn array_initializer_reader(
     ssa: &SsaTable,
     operations: &Operations,
     fields: &field::Plan,
+    child_facts: &ChildArrayFacts<'_>,
+    effects: &BTreeMap<u32, &jarde_jvm::method_ir::CanonicalInstructionEffect>,
+    expected_handlers: &[u32],
     block: &jarde_jvm::method_ir::SsaBlock,
     store_pos: usize,
     retained: ValueId,
@@ -15654,7 +15585,14 @@ fn array_initializer_reader(
     let Some(next) = block.instructions().get(store_pos + 1) else {
         return Ok(None);
     };
-    if single_use_at_with_budget(ssa, retained, block.block(), next.bci(), budget)? {
+    let next_is_constructor = matches!(
+        operations.get(next.bci()),
+        Some(Operation::Invoke(call))
+            if call.kind() == InvokeKind::Special && call.name() == "<init>"
+    );
+    if single_use_at_with_budget(ssa, retained, block.block(), next.bci(), budget)?
+        && !next_is_constructor
+    {
         return Ok(Some(store_pos + 1));
     }
     let uses = ssa.value(retained).uses();
@@ -15688,26 +15626,149 @@ fn array_initializer_reader(
         start: store_pos + 1,
         end: reader_pos,
     };
+    let operands = stack_operands(instruction);
+    let constructor = matches!(
+        operations.get(reader),
+        Some(Operation::Invoke(call))
+            if call.kind() == InvokeKind::Special && call.name() == "<init>"
+    );
     let mut dependencies = BTreeSet::new();
+    let mut sibling_sources = BTreeSet::new();
     let mut seen = BTreeSet::new();
-    for (_, operand) in stack_operands(instruction) {
-        if operand == retained {
-            continue;
+    if constructor {
+        let mut retained_position = None;
+        let mut operand_counts = BTreeMap::new();
+        for (position, (_, value)) in operands.iter().enumerate() {
+            poll(budget, Some(reader))?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(reader))?;
+            *operand_counts.entry(*value).or_insert(0usize) += 1;
+            if *value == retained && retained_position.replace(position).is_some() {
+                return Ok(None);
+            }
         }
-        if !collect_expression_bcis(&context, operand, &mut dependencies, &mut seen, budget, 0)? {
+        let Some(retained_position) = retained_position else {
+            return Ok(None);
+        };
+        if retained_position == 0 || operand_counts.get(&retained) != Some(&1) {
             return Ok(None);
         }
+        // Prefix operands have already run before the current initializer's last store. Entry
+        // values and this block's entry phis are available from block entry; an instruction value
+        // must be produced earlier in this same block. Other definitions cannot justify skipping
+        // their producer interval.
+        for (_, value) in operands.iter().take(retained_position) {
+            poll(budget, Some(reader))?;
+            charge(budget, CountedBudgetDimension::IrItems, 1, Some(reader))?;
+            let available_before_store = match ssa.value(*value).def() {
+                Definition::Entry { .. } => true,
+                Definition::Phi {
+                    block: definition_block,
+                    ..
+                } => definition_block == block.block(),
+                Definition::Instruction {
+                    block: definition_block,
+                    bci,
+                } => {
+                    let mut before_store = false;
+                    if definition_block == block.block() {
+                        for earlier in block.instructions().iter().take(store_pos) {
+                            poll(budget, Some(earlier.bci()))?;
+                            charge(
+                                budget,
+                                CountedBudgetDimension::AnalysisSteps,
+                                1,
+                                Some(earlier.bci()),
+                            )?;
+                            if earlier.bci() == *bci {
+                                before_store = true;
+                                break;
+                            }
+                        }
+                    }
+                    before_store
+                }
+                Definition::Caught { .. } => false,
+            };
+            if !available_before_store {
+                return Ok(None);
+            }
+        }
+        // Java evaluates the receiver and earlier arguments before this array expression. The
+        // definition checks above prove their values are already available before the store; only
+        // later physical operands close this reader's remaining run.
+        for (_, operand) in operands.iter().skip(retained_position + 1) {
+            let is_sibling_array = child_facts.sibling_argument_sources(
+                *operand,
+                reader,
+                block.instructions()[store_pos].bci(),
+                budget,
+            )?;
+            if let Some(sources) = is_sibling_array {
+                if operand_counts.get(operand) != Some(&1) {
+                    return Ok(None);
+                }
+                for source in sources {
+                    if !sibling_sources.insert(source) {
+                        return Ok(None);
+                    }
+                }
+            } else if !collect_expression_bcis(
+                &context,
+                *operand,
+                &mut dependencies,
+                &mut seen,
+                budget,
+                0,
+            )? {
+                return Ok(None);
+            }
+        }
+    } else {
+        for (_, operand) in operands {
+            if operand == retained {
+                continue;
+            }
+            if !collect_expression_bcis(&context, operand, &mut dependencies, &mut seen, budget, 0)?
+            {
+                return Ok(None);
+            }
+        }
     }
-    // The run must be exactly that production: an instruction in between that no operand of the
-    // reader reads is an effect this initializer does not own, and the initializer stays unproved.
+    // The run must be exactly the later argument productions: earlier physical operands were
+    // evaluated before this initializer, while a sibling array contributes only its already
+    // proved source interval and remains outside this initializer's own source/ownership set.
     let interval: BTreeSet<u32> = block.instructions()[store_pos + 1..reader_pos]
         .iter()
         .map(SsaInstruction::bci)
         .collect();
-    if interval != dependencies
+    if sibling_sources
+        .iter()
+        .any(|source| dependencies.contains(source))
+    {
+        return Ok(None);
+    }
+    let accounted: BTreeSet<u32> = dependencies
+        .iter()
+        .chain(sibling_sources.iter())
+        .copied()
+        .collect();
+    if interval != accounted
         || !dependency_uses_stay_within(ssa, block, &dependencies, reader, budget)?
     {
         return Ok(None);
+    }
+    // Every effect in the suffix is evaluated as part of the same constructor expression. Its
+    // exception edge must agree with the array element run, including sources certified by a
+    // sibling initializer; those sibling sources remain outside this array's own ownership.
+    for source in accounted {
+        poll(budget, Some(source))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(source))?;
+        let Some(effect) = effects.get(&source) else {
+            return Ok(None);
+        };
+        if effect.may_throw() && effect.handlers() != expected_handlers {
+            return Ok(None);
+        }
     }
     Ok(Some(reader_pos))
 }
@@ -38587,7 +38648,6 @@ mod tests {
 
     fn prove_own_grid(
         analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
-        java_release: u16,
         budget: &mut Budget,
     ) -> Result<ArrayInitializers, crate::stop::StopReason> {
         let ir = analysis.ir();
@@ -38599,7 +38659,6 @@ mod tests {
         let composition = crate::init::ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release,
             member_targets: &[],
             method: &method,
             code,
@@ -38616,7 +38675,6 @@ mod tests {
     fn build_own_grid(
         analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
         physical_method: &jarde_reader::model::PhysicalMethodId,
-        java_release: u16,
         widenings: &[crate::report::ProvedSnapshotHierarchyWidening],
         budget: &mut Budget,
         cancel_before_build: bool,
@@ -38636,7 +38694,6 @@ mod tests {
             Some(&crate::init::ArrayCompositionContext {
                 chains: &chains,
                 reserved: chains.owned(),
-                java_release,
                 member_targets: &[],
                 method: &method,
                 code,
@@ -38650,7 +38707,6 @@ mod tests {
             chains.owned(),
             &fields,
             &mut arrays,
-            java_release,
             &[],
             &method,
             code,
@@ -39187,7 +39243,7 @@ mod tests {
             let (analysis, _) = analyze_own_grid(original, release);
             let ssa = analysis.ir().ssa().expect("SSA");
             let mut budget = child_array_test_budget();
-            let arrays = prove_own_grid(&analysis, release, &mut budget)
+            let arrays = prove_own_grid(&analysis, &mut budget)
                 .expect("complete parent/child and construction proof");
             assert_own_grid_structure(&arrays, ssa);
 
@@ -39201,7 +39257,7 @@ mod tests {
             ] {
                 let (analysis, _) = analyze_own_grid(&variant, release);
                 let mut budget = child_array_test_budget();
-                let arrays = prove_own_grid(&analysis, release, &mut budget)
+                let arrays = prove_own_grid(&analysis, &mut budget)
                     .expect("negative structural controls are bounded refusals");
                 assert!(
                     arrays.allocations.is_empty(),
@@ -39220,7 +39276,7 @@ mod tests {
             let (analysis, _) = analyze_own_grid(&variant, release);
             let ssa = analysis.ir().ssa().expect("Object child SSA");
             let mut budget = child_array_test_budget();
-            let arrays = prove_own_grid(&analysis, release, &mut budget)
+            let arrays = prove_own_grid(&analysis, &mut budget)
                 .expect("Object[] child has a closed structural chain");
             assert_own_grid_structure(&arrays, ssa);
             assert!(matches!(
@@ -39253,7 +39309,7 @@ mod tests {
             limits.ir_items = before_child_dup;
             let mut child_limited = Budget::new(limits);
             assert!(matches!(
-                prove_own_grid(&analysis, release, &mut child_limited),
+                prove_own_grid(&analysis, &mut child_limited),
                 Err(crate::stop::StopReason::Budget {
                     dimension: CountedBudgetDimension::IrItems,
                     at: Some(31),
@@ -39267,7 +39323,7 @@ mod tests {
             limits.analysis_steps = 0;
             let mut limited = Budget::new(limits);
             assert!(matches!(
-                prove_own_grid(&analysis, release, &mut limited),
+                prove_own_grid(&analysis, &mut limited),
                 Err(crate::stop::StopReason::Budget {
                     dimension: CountedBudgetDimension::AnalysisSteps,
                     at: Some(37),
@@ -39283,7 +39339,7 @@ mod tests {
                 .expect("the array method has effects")
                 .bci();
             assert!(matches!(
-                prove_own_grid(&analysis, release, &mut cancelled),
+                prove_own_grid(&analysis, &mut cancelled),
                 Err(crate::stop::StopReason::Cancelled { at: Some(at) })
                     if at == first_effect
             ));
@@ -39317,7 +39373,6 @@ mod tests {
             let program = build_own_grid(
                 &analysis,
                 &physical_method,
-                release,
                 &exact_widenings,
                 &mut budget,
                 false,
@@ -39362,15 +39417,9 @@ mod tests {
             ];
             for (case, widenings) in missing_or_mismatched_types {
                 let mut budget = child_array_test_budget();
-                let program = build_own_grid(
-                    &analysis,
-                    &physical_method,
-                    release,
-                    &widenings,
-                    &mut budget,
-                    false,
-                )
-                .expect("missing or mismatched type facts are presentation refusals");
+                let program =
+                    build_own_grid(&analysis, &physical_method, &widenings, &mut budget, false)
+                        .expect("missing or mismatched type facts are presentation refusals");
                 assert!(program.ragged, "{case} cannot justify store BCI 24");
             }
 
@@ -39380,7 +39429,6 @@ mod tests {
             let program = build_own_grid(
                 &analysis,
                 &physical_method,
-                release,
                 &wrong_store,
                 &mut budget,
                 false,
@@ -39398,7 +39446,6 @@ mod tests {
                 build_own_grid(
                     &analysis,
                     &physical_method,
-                    release,
                     &exact_widenings,
                     &mut limited,
                     false,
@@ -39415,7 +39462,6 @@ mod tests {
                 build_own_grid(
                     &analysis,
                     &physical_method,
-                    release,
                     &exact_widenings,
                     &mut cancelled,
                     true,
@@ -42085,7 +42131,6 @@ mod tests {
                     chains.owned(),
                     &fields,
                     &mut arrays,
-                    8,
                     &[],
                     &method,
                     code,
@@ -42346,7 +42391,6 @@ mod tests {
                     chains.owned(),
                     &fields,
                     &mut arrays,
-                    8,
                     &[],
                     &method,
                     code,
@@ -42691,7 +42735,6 @@ mod tests {
                 let array_context = crate::init::ArrayCompositionContext {
                     chains,
                     reserved: chains.owned(),
-                    java_release: 8,
                     member_targets: &[],
                     method: &method,
                     code,
@@ -42712,7 +42755,6 @@ mod tests {
                     chains.owned(),
                     &fields,
                     &mut arrays,
-                    8,
                     &[],
                     &method,
                     code,
@@ -45136,7 +45178,6 @@ mod tests {
         let array_context = crate::init::ArrayCompositionContext {
             chains: &chains,
             reserved: chains.owned(),
-            java_release: 8,
             member_targets: &[],
             method: &method_facts,
             code,
@@ -45156,7 +45197,6 @@ mod tests {
             chains.owned(),
             &fields,
             &mut array_initializers,
-            8,
             &[],
             &method_facts,
             code,

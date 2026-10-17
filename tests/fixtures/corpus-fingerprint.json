@@ -1491,6 +1491,156 @@
       "path": "tests/fixtures/class-annotation-uses/v8/VisibleTarget.class"
     },
     {
+      "blake3": "5882db1f18da065e23a28c6e7245082d6860fce31a198006922e17a1bd41b786",
+      "bytes": 4562,
+      "path": "tests/fixtures/constructor-direct-array-arguments/DirectArrayConstructorArguments.java"
+    },
+    {
+      "blake3": "d1db94a8ed6b935f7a2c5c670bf906ad5a52418b4895645bcdf53f2c9059963b",
+      "bytes": 5845,
+      "path": "tests/fixtures/constructor-direct-array-arguments/fixture-pins.json"
+    },
+    {
+      "blake3": "2e5273105597b5c510c19460d1bfdb898f32f030781c01f0a2c9a2ec46eda3bf",
+      "bytes": 278,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$ByteSink.class"
+    },
+    {
+      "blake3": "8248aae6142e0f5f8563c35b9b20700cd8b8fa0d36f3bc71b66a173401dbe18a",
+      "bytes": 278,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$CharSink.class"
+    },
+    {
+      "blake3": "3988402428d310f78236aebc3c8932b594f71e6167ed257a1e0ff209ef7bb176",
+      "bytes": 274,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$Element.class"
+    },
+    {
+      "blake3": "c30226ecaccc8d40c936eee391f8e53213322d8638033ea9a6d712f414114743",
+      "bytes": 427,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$ElementSink.class"
+    },
+    {
+      "blake3": "afbae6b3fd36c7ffeb0e9747df986dc55af656f9f3d3850bb2140f07eb2fff5c",
+      "bytes": 276,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$IntSink.class"
+    },
+    {
+      "blake3": "7df16beafec4f4b05b1e59ebf78a7e81c515400550455628c333b20d486aed10",
+      "bytes": 284,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$MatrixSink.class"
+    },
+    {
+      "blake3": "c548afe574dd908dbcaa8e4decdbf82c4161b2a0b4b7499dc30ef394d6b797bc",
+      "bytes": 352,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$PairSink.class"
+    },
+    {
+      "blake3": "7151810e8bee0f0d889052a7ba747ded28ce3efc3ce76261d98e4083ff199311",
+      "bytes": 322,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments$ReferenceSink.class"
+    },
+    {
+      "blake3": "e0c4ad9e4daf5bcd73e9e63af05af99fa4d83ef1857c73cc750d9ae56444ad12",
+      "bytes": 2846,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac23/classes/DirectArrayConstructorArguments.class"
+    },
+    {
+      "blake3": "2edbcd408f775064d3b9be33e5caa8d9aef2f14493b2567689d52210d3515340",
+      "bytes": 278,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$ByteSink.class"
+    },
+    {
+      "blake3": "b24ee9a43955f92537924aebcb5d37e0c72e59275bff79b8ffe51400d4309968",
+      "bytes": 278,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$CharSink.class"
+    },
+    {
+      "blake3": "70c3b010ac162c27dc562d29e759752d5a862d18ef2203b1a6925d69f5349f31",
+      "bytes": 274,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$Element.class"
+    },
+    {
+      "blake3": "ba2198f0d1efe5a8335750e580bba4e2fd97e782265e589b4e96098dfdab0f50",
+      "bytes": 427,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$ElementSink.class"
+    },
+    {
+      "blake3": "db4712b9c7aa2b7371a8491544d9defea4a7fe9965003b2d4071bcde14b8383e",
+      "bytes": 276,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$IntSink.class"
+    },
+    {
+      "blake3": "ec98790c172004bb97e8bce867b0ca62c7fcc6e204fdc592418cd135918ad4ea",
+      "bytes": 284,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$MatrixSink.class"
+    },
+    {
+      "blake3": "0602dff1e633acdeb955a7cf8b0500e397f1564369a84920d5274b521f039fc9",
+      "bytes": 352,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$PairSink.class"
+    },
+    {
+      "blake3": "36ade18ef0d6a3f711dc42d8c5afb193e03ce8a2efdf2beca518e691a7fc71a3",
+      "bytes": 322,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments$ReferenceSink.class"
+    },
+    {
+      "blake3": "80d9d85aa8f9d2a064a0e418e035e69e619c77e388a1618946cbb7177a1dba4f",
+      "bytes": 2849,
+      "path": "tests/fixtures/constructor-direct-array-arguments/javac8/classes/DirectArrayConstructorArguments.class"
+    },
+    {
+      "blake3": "fc4894f3d12ae4a06bf1b382a7f0b4f1f562666b61d596bf233746c284f26181",
+      "bytes": 484,
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/ReverseArrayOrder.java"
+    },
+    {
+      "blake3": "7902ae9b5952cd5152cd4e1c304b57d4f91d794cc42032dc3da921463d944bfe",
+      "bytes": 388,
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac23/natural/ReverseArrayOrder.class"
+    },
+    {
+      "blake3": "879ba823d234df3dc05a2b42a197dece239d992f6cfea3f68459a516f96db6ad",
+      "bytes": 389,
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac23/swapped/ReverseArrayOrder.class"
+    },
+    {
+      "blake3": "5f3fc92a25ce1e49d9df4987ccb8a8d0144adbdaa399a95e754d23e8e747a842",
+      "bytes": 388,
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac8/natural/ReverseArrayOrder.class"
+    },
+    {
+      "blake3": "82bf24d116a144b6d0eaee59432874c06f907f19d25203d4a9d98a1883bbf3c3",
+      "bytes": 389,
+      "path": "tests/fixtures/constructor-direct-array-arguments/reverse-order/javac8/swapped/ReverseArrayOrder.class"
+    },
+    {
+      "blake3": "989776344b4697c2dec511974442bd2908f5bd6a2c5a740b9d331acd16ddc655",
+      "bytes": 620,
+      "path": "tests/fixtures/constructor-direct-array-arguments/same-owner/SameOwnerArrayArguments.java"
+    },
+    {
+      "blake3": "ef11ef16c9bb09df2fc5117ac8c9db124843390d5d823ee869982302f4e48e0e",
+      "bytes": 470,
+      "path": "tests/fixtures/constructor-direct-array-arguments/same-owner/javac23/SameOwnerArrayArguments.class"
+    },
+    {
+      "blake3": "5fa36c364fadef6e40d63c66ccd8402613f6cb72c100e61fe91b8134cfd7cac1",
+      "bytes": 470,
+      "path": "tests/fixtures/constructor-direct-array-arguments/same-owner/javac8/SameOwnerArrayArguments.class"
+    },
+    {
+      "blake3": "74f6bf89bd4c0990a671031ef1e7df1a14d641a979af52a2a38c83a626543b73",
+      "bytes": 1461,
+      "path": "tests/fixtures/constructor-direct-array-arguments/tf3-debug/TestFinally3$TestCls.class"
+    },
+    {
+      "blake3": "7cbdd0fef8ce0cad3cbea45ef8f10af12ebe7c42c41ade40a1f68643b1f1e008",
+      "bytes": 981,
+      "path": "tests/fixtures/constructor-direct-array-arguments/tf3-no-debug/TestFinally3$TestCls.class"
+    },
+    {
       "blake3": "665e803b39422f8a8f120e116e9bb95ef28221f09d212ccf3f01b37e1b172cfd",
       "bytes": 197,
       "path": "tests/fixtures/dt22-nested-annotation/Dollar$A.class"
