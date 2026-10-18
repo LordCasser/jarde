@@ -330,6 +330,7 @@ fn collect_loop_regions<'a>(region: &'a Region, out: &mut Vec<&'a Region>) {
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. }
         | Region::SwitchBreak { .. }
+        | Region::EntrySplitLoop { .. }
         | Region::Fallback { .. } => {}
     }
 }

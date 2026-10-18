@@ -2100,7 +2100,8 @@ fn short_circuit_local_booleans(
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. }
-            | Region::SwitchBreak { .. } => {}
+            | Region::SwitchBreak { .. }
+            | Region::EntrySplitLoop { .. } => {}
         }
     }
     Ok(proved)
@@ -3858,7 +3859,8 @@ fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
         | Region::Fallback { .. }
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. }
-        | Region::SwitchBreak { .. } => {}
+        | Region::SwitchBreak { .. }
+        | Region::EntrySplitLoop { .. } => {}
     }
 }
 
@@ -3960,7 +3962,8 @@ fn guard_return_ownership(
             | Region::Fallback { .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. }
-            | Region::SwitchBreak { .. } => {}
+            | Region::SwitchBreak { .. }
+            | Region::EntrySplitLoop { .. } => {}
             Region::ShortCircuitValue { tail, .. } => pending.extend(tail),
         }
     }
@@ -5073,7 +5076,8 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. }
-        | Region::SwitchBreak { .. } => {}
+        | Region::SwitchBreak { .. }
+        | Region::EntrySplitLoop { .. } => {}
         // A composed continuation is this region's own statement sequence, so its blocks stand
         // at the same lexical path: the declaration the store consumer anchors and the reads the
         // continuation makes share one region path, which is what keeps a local's Boolean
@@ -5194,6 +5198,7 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
             Vec::new()
         }
         Region::Fallback { blocks, .. } => blocks.clone(),
+        Region::EntrySplitLoop { .. } => region.blocks().into_iter().cloned().collect(),
         Region::ShortCircuitValue {
             prefix,
             tests,
@@ -5314,7 +5319,8 @@ fn unaccounted_region_bcis(region: &Region) -> Vec<u32> {
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. }
-        | Region::SwitchBreak { .. } => {}
+        | Region::SwitchBreak { .. }
+        | Region::EntrySplitLoop { .. } => {}
     }
     bcis
 }
@@ -18898,7 +18904,8 @@ impl Builder<'_> {
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. }
-            | Region::SwitchBreak { .. } => {}
+            | Region::SwitchBreak { .. }
+            | Region::EntrySplitLoop { .. } => {}
         }
         Ok(())
     }
@@ -20465,6 +20472,7 @@ impl Builder<'_> {
             return Err(stop);
         }
         match region {
+            Region::EntrySplitLoop { .. } => self.entry_split_loop_region(region),
             Region::Sequence { regions } => {
                 for (index, region) in regions.iter().enumerate() {
                     self.region(
@@ -21094,6 +21102,335 @@ impl Builder<'_> {
                 bcis.dedup();
                 let at = bcis.first().copied().unwrap_or(0);
                 self.fallback(bcis, reason.message(), at)
+            }
+        }
+    }
+
+    fn entry_split_loop_fallback(
+        &mut self,
+        region: &Region,
+        reason: &str,
+        at: u32,
+    ) -> Result<(), StopReason> {
+        poll(self.budget, Some(at))?;
+        charge(self.budget, CountedBudgetDimension::IrItems, 5, Some(at))?;
+        let mut bcis = Vec::new();
+        for block in region.blocks() {
+            bcis.extend(self.fallback_instruction_bcis(block)?);
+        }
+        bcis.sort_unstable();
+        bcis.dedup();
+        self.fallback(bcis, reason, at)
+    }
+
+    fn entry_split_loop_region(&mut self, region: &Region) -> Result<(), StopReason> {
+        let Region::EntrySplitLoop {
+            entry: _,
+            prefix: _,
+            header: _,
+            latch: _,
+            exit,
+            entry_test_bci,
+            entry_prefix_taken,
+            prefix_update_bci,
+            prefix_transfer_bci,
+            header_test_bci,
+            header_continue_taken,
+            latch_update_bci,
+            latch_transfer_bci,
+            return_bci,
+            test_slot,
+            prefix_slot,
+            count_slot,
+        } = region
+        else {
+            unreachable!("entry_split_loop_region is dispatched only for its proved region")
+        };
+        let at = *entry_test_bci;
+        let refuse = |builder: &mut Builder<'_>, reason: &str| {
+            builder.entry_split_loop_fallback(region, reason, at)
+        };
+        poll(self.budget, Some(at))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            8,
+            Some(at),
+        )?;
+        if self.return_type != Some(Type::Int) {
+            return refuse(
+                self,
+                "the entry-split loop does not return a descriptor-proved int",
+            );
+        }
+        let Some(test_variable) = self.reuse.variable_at(*test_slot, at) else {
+            return refuse(
+                self,
+                "the entry-split loop test has no proved local binding",
+            );
+        };
+        let Some(prefix_variable) = self.reuse.variable_at(*prefix_slot, *prefix_update_bci) else {
+            return refuse(
+                self,
+                "the entry-split loop prefix update has no proved local binding",
+            );
+        };
+        let Some(prefix_exit_variable) = self.reuse.variable_at(*prefix_slot, exit.bci()) else {
+            return refuse(
+                self,
+                "the entry-split loop return load has no proved local binding",
+            );
+        };
+        let Some(count_variable) = self.reuse.variable_at(*count_slot, *header_test_bci) else {
+            return refuse(
+                self,
+                "the entry-split loop count test has no proved local binding",
+            );
+        };
+        let Some(count_update_variable) = self.reuse.variable_at(*count_slot, *latch_update_bci)
+        else {
+            return refuse(
+                self,
+                "the entry-split loop count update has no proved local binding",
+            );
+        };
+        let test_type = self.decided_type(test_variable);
+        let prefix_type = self.decided_type(prefix_variable);
+        let prefix_exit_type = self.decided_type(prefix_exit_variable);
+        let count_type = self.decided_type(count_variable);
+        let count_update_type = self.decided_type(count_update_variable);
+        if !matches!(test_type, Some(Type::Boolean | Type::Int))
+            || prefix_variable != prefix_exit_variable
+            || prefix_type != Some(Type::Int)
+            || prefix_exit_type != Some(Type::Int)
+            || count_variable != count_update_variable
+            || count_variable == prefix_variable
+            || count_variable == test_variable
+            || prefix_variable == test_variable
+            || count_type != Some(Type::Int)
+            || count_update_type != Some(Type::Int)
+        {
+            return refuse(
+                self,
+                "the entry-split loop does not have three distinct source-proved local types",
+            );
+        }
+
+        // This proof owns the whole five-block method and its exact instruction vocabulary has
+        // no calls, arrays, nested regions, or preceding statements. Refuse if another staged
+        // construct has left deep AST/string state here; that keeps the existing complete
+        // checkpoint's clone bounded to local IDs and scalar side tables.
+        if !self.stmts.is_empty()
+            || !self.declared.is_empty()
+            || !self.chained_firsts.is_empty()
+            || !self.undeclared.is_empty()
+            || !self.lambdas.is_empty()
+            || !self.array_constructor_sites.is_empty()
+            || !self.lambda_params.is_empty()
+            || !self.accessors.is_empty()
+            || !self.deferred.is_empty()
+            || !self.bindings.is_empty()
+            || !self.binding_refused.is_empty()
+            || !self.synthetic_names.is_empty()
+            || !self.lambda_refusals.is_empty()
+            || !self.accessor_refusals.is_empty()
+            || !self.clause_parameters.is_empty()
+            || !self.settled.is_empty()
+            || !self.loop_headers.is_empty()
+            || !self.labeled_loop_headers.is_empty()
+            || !self.loop_labels.is_empty()
+            || !self.switch_break_targets.is_empty()
+            || !self.snapshots_rendered.is_empty()
+            || !self.snapshot_quote.is_empty()
+            || !self.assignment_presentations.is_empty()
+            || !self.field_chain_refused.is_empty()
+            || !self.iterator_declaration_consumers.is_empty()
+            || self.body_span.is_some()
+            || self.finally_return.is_some()
+            || self.multi_return_finally.is_some()
+            || self.segmented_null_lead.is_some()
+            || self.finally_catch_pop.is_some()
+            || self.shared_finally.is_some()
+            || self.nested_pair.is_some()
+        {
+            return refuse(
+                self,
+                "the entry-split loop cannot checkpoint an already staged structured body",
+            );
+        }
+        // All cloned checkpoint collections above are empty. Poll before taking the existing
+        // bounded snapshot; emitted statements and the repeated prefix are charged below.
+        poll(self.budget, Some(at))?;
+        let checkpoint = self.compound_if_checkpoint();
+        let attempt = (|| -> Result<(), ValueRenderFailure> {
+            let entry_cond = self
+                .test_expr(*entry_test_bci, *entry_prefix_taken)?
+                .derived_from(*entry_test_bci);
+            let header_cond = self
+                .test_expr(*header_test_bci, *header_continue_taken)?
+                .derived_from(*header_test_bci);
+            if entry_cond.presented != Some(Type::Boolean)
+                || header_cond.presented != Some(Type::Boolean)
+            {
+                return Err("an entry-split loop branch does not present a Java boolean".into());
+            }
+            let Some(prefix_instruction) = self.instructions.get(prefix_update_bci).copied() else {
+                return Err("the entry-split loop prefix update has no SSA instruction".into());
+            };
+            let Some(latch_instruction) = self.instructions.get(latch_update_bci).copied() else {
+                return Err("the entry-split loop count update has no SSA instruction".into());
+            };
+            let Some(return_instruction) = self.instructions.get(return_bci).copied() else {
+                return Err("the entry-split loop return has no SSA instruction".into());
+            };
+            let prefix_outer = std::mem::take(&mut self.stmts);
+            let prefix_result = self.instruction(prefix_instruction);
+            let mut prefix_stmts = std::mem::replace(&mut self.stmts, prefix_outer);
+            prefix_result?;
+            let Some(prefix_stmt) = prefix_stmts.pop() else {
+                return Err("the prefix increment did not produce one assignment".into());
+            };
+            if !prefix_stmts.is_empty()
+                || contains_fallback(std::slice::from_ref(&prefix_stmt))
+                || !matches!(&prefix_stmt.kind, StmtKind::Assign { .. })
+            {
+                return Err(
+                    "the prefix increment did not produce one structured assignment".into(),
+                );
+            }
+            self.statements = self.statements.saturating_sub(1);
+            let StmtKind::Assign {
+                name: prefix_name, ..
+            } = &prefix_stmt.kind
+            else {
+                unreachable!("prefix assignment shape checked")
+            };
+
+            let latch_outer = std::mem::take(&mut self.stmts);
+            let latch_result = self.instruction(latch_instruction);
+            let mut latch_stmts = std::mem::replace(&mut self.stmts, latch_outer);
+            latch_result?;
+            let Some(latch_stmt) = latch_stmts.pop() else {
+                return Err("the latch increment did not produce one assignment".into());
+            };
+            if !latch_stmts.is_empty()
+                || contains_fallback(std::slice::from_ref(&latch_stmt))
+                || !matches!(&latch_stmt.kind, StmtKind::Assign { .. })
+            {
+                return Err("the latch increment did not produce one structured assignment".into());
+            }
+            self.statements = self.statements.saturating_sub(1);
+            let StmtKind::Assign {
+                name: latch_name, ..
+            } = &latch_stmt.kind
+            else {
+                unreachable!("latch assignment shape checked")
+            };
+            if prefix_name == latch_name {
+                return Err("the entry-split loop updates do not name distinct locals".into());
+            }
+
+            let return_outer = std::mem::take(&mut self.stmts);
+            let return_result = self.instruction(return_instruction);
+            let return_stmts = std::mem::replace(&mut self.stmts, return_outer);
+            return_result?;
+            if return_stmts.len() != 1
+                || contains_fallback(&return_stmts)
+                || !matches!(return_stmts.first().map(|stmt| &stmt.kind), Some(StmtKind::Return { value: Some(value) }) if value.presented == Some(Type::Int))
+            {
+                return Err("the entry-split loop return did not produce one int return".into());
+            }
+            self.statements = self.statements.saturating_sub(1);
+            let return_stmt = return_stmts.into_iter().next().unwrap();
+
+            // The source increment node is copied once for the second presentation. Charge its
+            // AST and source-name storage before cloning; the emitter will charge both text spans.
+            // The cloned `Assign(Binary(Local, Integer))` carries four AST nodes, four one-origin
+            // OriginSets, and a second copy each of the assignment target and Local name.
+            let node_cost = 8u64;
+            let name_bytes = u64::try_from(prefix_name.len())
+                .unwrap_or(u64::MAX)
+                .saturating_mul(2);
+            charge(
+                self.budget,
+                CountedBudgetDimension::IrItems,
+                node_cost,
+                Some(*prefix_update_bci),
+            )?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::OutputBytes,
+                name_bytes,
+                Some(*prefix_update_bci),
+            )?;
+            poll(self.budget, Some(*prefix_update_bci))?;
+            let repeated_prefix = prefix_stmt.clone();
+
+            let mut if_body = Vec::new();
+            self.push_into(&mut if_body, prefix_stmt)?;
+            let mut while_body = Vec::new();
+            self.push_into(&mut while_body, latch_stmt)?;
+            self.push_into(&mut while_body, repeated_prefix)?;
+            let mut if_origin = OriginSet::new(Origin::direct(*entry_test_bci));
+            if let Some(transfer_bci) = prefix_transfer_bci {
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(*transfer_bci),
+                )?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(*transfer_bci),
+                )?;
+                if_origin = if_origin.plus_derived(Origin::derived(*transfer_bci));
+            }
+            let if_stmt = Stmt::new(
+                StmtKind::If {
+                    cond: entry_cond,
+                    then_body: if_body,
+                    else_body: Vec::new(),
+                },
+                if_origin,
+            );
+            let mut while_origin = OriginSet::new(Origin::direct(*header_test_bci));
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(*latch_update_bci),
+            )?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(*latch_update_bci),
+            )?;
+            while_origin = while_origin.plus_derived(Origin::derived(*latch_transfer_bci));
+            let while_stmt = Stmt::new(
+                StmtKind::While {
+                    label: None,
+                    cond: header_cond,
+                    body: while_body,
+                },
+                while_origin,
+            );
+            self.push(if_stmt)?;
+            self.push(while_stmt)?;
+            self.push(return_stmt)?;
+            Ok(())
+        })();
+        match attempt {
+            Ok(()) => Ok(()),
+            Err(ValueRenderFailure::Refusal(reason)) => {
+                self.restore_compound_if(checkpoint);
+                refuse(self, &reason)
+            }
+            Err(ValueRenderFailure::Stop(stop)) => {
+                self.restore_compound_if(checkpoint);
+                Err(stop)
             }
         }
     }
@@ -46615,7 +46952,8 @@ mod tests {
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. }
             | Region::SwitchBreak { .. }
-            | Region::Fallback { .. } => None,
+            | Region::Fallback { .. }
+            | Region::EntrySplitLoop { .. } => None,
         }
     }
 
@@ -46773,7 +47111,8 @@ mod tests {
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. }
             | Region::SwitchBreak { .. }
-            | Region::Fallback { .. } => false,
+            | Region::Fallback { .. }
+            | Region::EntrySplitLoop { .. } => false,
         }
     }
 

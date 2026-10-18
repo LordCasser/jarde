@@ -1,0 +1,218 @@
+{
+  "external_binary_policy": "Cargo/Rust/JDK/CLI and dependency installations are not copied; command receipts retain tool paths and pins.",
+  "member_count": 33,
+  "members": [
+    {
+      "bytes": 2924,
+      "mode": 420,
+      "path": "archive-preparation/README.md",
+      "sha256": "729b4049e4fb1ddfb9adf08cd6e4c7e6fc3cd85a885622e8cffa8819399c5cd9"
+    },
+    {
+      "bytes": 7926,
+      "mode": 420,
+      "path": "archive-preparation/openspec/design.md",
+      "sha256": "f7545fae597db046be46443719dd69503b67de4440e89c237d745ad70bbc1779"
+    },
+    {
+      "bytes": 4140,
+      "mode": 420,
+      "path": "archive-preparation/openspec/java8-recovery-spec.md",
+      "sha256": "170121889f7e247e5a946e1d4deaa6425bbdaf8dd8e3a6ca840a799dc3923116"
+    },
+    {
+      "bytes": 1751,
+      "mode": 420,
+      "path": "archive-preparation/openspec/proposal.md",
+      "sha256": "884c91a992d407983a19b8d25b80d21f7d99234159f251c40976c6230275d15b"
+    },
+    {
+      "bytes": 2041,
+      "mode": 420,
+      "path": "archive-preparation/openspec/tasks.md",
+      "sha256": "c2fd356167a61c3a32e99547b509db96f92c11569ff0e85411ce131852c93e7e"
+    },
+    {
+      "bytes": 11751,
+      "mode": 420,
+      "path": "archive-preparation/pack.py",
+      "sha256": "75dcdbb3156cef33f038e240e6d9647ae4e822ceff767ab83d2c23db7ba33cfa"
+    },
+    {
+      "bytes": 5963,
+      "mode": 420,
+      "path": "archive-preparation/pins.json",
+      "sha256": "6df333efeb7282f4e23135fa0ca3e7c2b0a0ac789ceaae84bd2627b697473580"
+    },
+    {
+      "bytes": 10217,
+      "mode": 420,
+      "path": "archive-preparation/v1-v2.diff",
+      "sha256": "466f5909b2348f9b755e0ffafa804c27f6578889b85913a132a7f7478b3052ea"
+    },
+    {
+      "bytes": 2126,
+      "mode": 420,
+      "path": "evidence/original-probe-prep/README.md",
+      "sha256": "9cfb0b00711b6efcbc76849b1e663cc7fde18fe94729570bba02d99c92d6ac97"
+    },
+    {
+      "bytes": 308,
+      "mode": 420,
+      "path": "evidence/original-probe-prep/changes.patch",
+      "sha256": "7cfbb57b01ecdd06d86a521d905685230c34c361fa504a94b3bf0dc4f6e95057"
+    },
+    {
+      "bytes": 7254,
+      "mode": 420,
+      "path": "evidence/original-probe-prep/entry_split_loop_probe_tests.rs",
+      "sha256": "0c170b4c590e2e3d28bc8eb717a8ec23b32e7fef8b0be5dae5a0b2c0d0cc1b50"
+    },
+    {
+      "bytes": 524,
+      "mode": 420,
+      "path": "evidence/original-probe-prep/pins.sha256",
+      "sha256": "4bb4b915fe6b32812a00c4c2e1efa5cb4ed890168b78421abbc6a467ecc5593d"
+    },
+    {
+      "bytes": 271,
+      "mode": 420,
+      "path": "evidence/original-probe-prep/tests/fixtures/recover-proved-entry-split-int-loops/MultiEntryCounter.class",
+      "sha256": "fe1a87ea523c10649ea3141d89b9ce04a2c2cfb6e8c31e70479193794311e2fb"
+    },
+    {
+      "bytes": 271,
+      "mode": 420,
+      "path": "evidence/probe-result/MultiEntryCounter.class",
+      "sha256": "fe1a87ea523c10649ea3141d89b9ce04a2c2cfb6e8c31e70479193794311e2fb"
+    },
+    {
+      "bytes": 1913,
+      "mode": 420,
+      "path": "evidence/probe-result/architecture-review.json",
+      "sha256": "a06941d2be25b239158627698c88e6faf882d52fcc5a4b67e8ef833fb5006f30"
+    },
+    {
+      "bytes": 1567855,
+      "mode": 420,
+      "path": "evidence/probe-result/build/execution.json",
+      "sha256": "1cff4069bbac826560f921455e68b9467b92c832ce3afab72f841662550f5e0b"
+    },
+    {
+      "bytes": 37694,
+      "mode": 420,
+      "path": "evidence/probe-result/build/raw/1.stderr.raw",
+      "sha256": "f75fbe9783f9627697f3b8332180c5672cb20ab900f6edefca4499bde97cbfa0"
+    },
+    {
+      "bytes": 205,
+      "mode": 420,
+      "path": "evidence/probe-result/build/raw/1.stdout.raw",
+      "sha256": "b309f19a04d6c56c77be0e31eec6bff51f19e99aea8e3a569166feb4c1039c1e"
+    },
+    {
+      "bytes": 39,
+      "mode": 420,
+      "path": "evidence/probe-result/build/raw/2.stderr.raw",
+      "sha256": "d8b993a4f0ff22869a67681ddaf722f86fa4f7c3436e7a59cd3481b7647fe54f"
+    },
+    {
+      "bytes": 0,
+      "mode": 420,
+      "path": "evidence/probe-result/build/raw/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 163,
+      "mode": 420,
+      "path": "evidence/probe-result/commands.json",
+      "sha256": "d0e03d78a595a80f9143da6a90d5ed13cc4731fb36edb8de263e72fcc6308f40"
+    },
+    {
+      "bytes": 7254,
+      "mode": 420,
+      "path": "evidence/probe-result/entry_split_loop_probe_tests.rs",
+      "sha256": "0c170b4c590e2e3d28bc8eb717a8ec23b32e7fef8b0be5dae5a0b2c0d0cc1b50"
+    },
+    {
+      "bytes": 4373,
+      "mode": 420,
+      "path": "evidence/probe-result/execution.json",
+      "sha256": "998950251afc9f8bb4b758720da7ce6b0a9743437d92cd8758295abe255105f4"
+    },
+    {
+      "bytes": 0,
+      "mode": 420,
+      "path": "evidence/probe-result/raw/guarded-probe.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 138,
+      "mode": 420,
+      "path": "evidence/probe-result/raw/guarded-probe.stdout.raw",
+      "sha256": "d44bc6062a69d5c0f360590eaee2fa2ed3afa256305acf3723c54930bab07264"
+    },
+    {
+      "bytes": 0,
+      "mode": 420,
+      "path": "evidence/probe-result/raw/patch-apply.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "mode": 420,
+      "path": "evidence/probe-result/raw/patch-apply.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "mode": 420,
+      "path": "evidence/probe-result/raw/patch-check.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "mode": 420,
+      "path": "evidence/probe-result/raw/patch-check.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1172294,
+      "mode": 420,
+      "path": "evidence/probe-result/region.rs.original",
+      "sha256": "9e27c9bee263a9fa2d09c1860e6cfcb45605b16b92e524c92009d156f18b59ea"
+    },
+    {
+      "bytes": 1172393,
+      "mode": 420,
+      "path": "evidence/probe-result/region.rs.with-probe",
+      "sha256": "995f80a9d8d78b493a995ce0624b42dfa5a11c9c9a5bbea598584bc966c6c57d"
+    },
+    {
+      "bytes": 257,
+      "mode": 420,
+      "path": "evidence/probe-result/root-review.json",
+      "sha256": "9c3a4f8e4bf8b7333d4f3924c223eea0bccf86a5ee5d3a68ff3366df26cf6faa"
+    },
+    {
+      "bytes": 3675,
+      "mode": 420,
+      "path": "evidence/runner/run.py",
+      "sha256": "43386273eb9f3a12e521f2bf14b93a1bf7a7050b8efb994a378db95f199cede0"
+    }
+  ],
+  "review_summary": {
+    "build_commands": 2,
+    "build_receipt_sha256": "1cff4069bbac826560f921455e68b9467b92c832ce3afab72f841662550f5e0b",
+    "probe_stdout_stderr_bytes": 37899,
+    "receipt_sha256": "998950251afc9f8bb4b758720da7ce6b0a9743437d92cd8758295abe255105f4",
+    "receipt_status": "captured_pending_architect_review",
+    "root_review_sha256": "a06941d2be25b239158627698c88e6faf882d52fcc5a4b67e8ef833fb5006f30",
+    "source_inventory_entries": 3215,
+    "source_restored": true,
+    "target_absent": true
+  },
+  "schema": "recover-proved-entry-split-int-loop-ir-probe-archive-v1",
+  "scope": "Task 1.2 same-run IR facts probe only; not implementation, behavioral loop execution, or feature acceptance.",
+  "status": "root-reviewed-probe-evidence"
+}

@@ -1,0 +1,13 @@
+{
+  "status": "root_independently_reopened_probe_archive",
+  "archive_sha256": "17c73978213971950c5739b6b795a92f132d460310898d3dbcd33694502238ef",
+  "inventory_sha256": "f84ab4f4a0b9070e27c5b597c5df22787ed7b7280bc6e43657b6190e4368eee8",
+  "payload_members": 33,
+  "total_members": 34,
+  "all_archive_members_and_live_or_original_prep_bytes_modes_reopened": true,
+  "scope": "Same-run IR facts only. Permanent regression fixtures and implementation remain pending.",
+  "notes": [
+    "Private prep README says six pinned preparation files; actual pins contain seven (including v1-v2.diff), plus pins.json: 25 evidence +8 preparation +1 embedded inventory =34 total. No members omitted.",
+    "Original baseline class writer and behavior provenance remain in cf08-multientry-prefix-baseline-root-v1 durable evidence; this probe does not run Java loop behavior."
+  ]
+}

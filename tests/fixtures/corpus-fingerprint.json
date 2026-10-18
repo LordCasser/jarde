@@ -1153,6 +1153,66 @@
       "path": "tests/fixtures/cf08-constructor-predicate/cf08/VerifierRunner.java"
     },
     {
+      "blake3": "0a5b350cbe17e74175d8a53c853b0ccc809c1c2c1de9b65d78a0dbca85454671",
+      "bytes": 11951,
+      "path": "tests/fixtures/cf08-entry-split/EntrySplitFixtureWriter.java"
+    },
+    {
+      "blake3": "ad92eb3d544e5beb0bd7b3c7e39d9280c70ea9ff4acf5c60653881b92e5011f2",
+      "bytes": 7243,
+      "path": "tests/fixtures/cf08-entry-split/EntrySplitOracleDriver.java"
+    },
+    {
+      "blake3": "f039e89990d9e1d153f4e928ff9153ab4d1dafae267065181093eccaabd76702",
+      "bytes": 5282,
+      "path": "tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesDriver.java"
+    },
+    {
+      "blake3": "e7d41931daf626d2a7edb9d8370a4a0f0b2768a9d72e12e2ade5013304d079b8",
+      "bytes": 5237,
+      "path": "tests/fixtures/cf08-entry-split/EntrySplitSlotCounterCasesWriter.java"
+    },
+    {
+      "blake3": "8363aa3eb8d3f4d1a40af795d1af5b16c8ffd69e22458740ac4bbdf240a0a67f",
+      "bytes": 577,
+      "path": "tests/fixtures/cf08-entry-split/cf08/EntrySplitCases.class"
+    },
+    {
+      "blake3": "79bb92dce85d31315cc96fe9fcc4568d8b858c779bdade3405122edf3c6c2eeb",
+      "bytes": 414,
+      "path": "tests/fixtures/cf08-entry-split/cf08/EntrySplitExceptionRefusal.class"
+    },
+    {
+      "blake3": "15abf3f9f8347db05edd38d3542e3a5fcdb21b5b427bfec5ff66d123f541c3ba",
+      "bytes": 373,
+      "path": "tests/fixtures/cf08-entry-split/cf08/EntrySplitLegacyCases.class"
+    },
+    {
+      "blake3": "ab4d4db3b25bc2dc994b016a70cbd926619fbb0dbad5e78c79d36be847c2c7e5",
+      "bytes": 606,
+      "path": "tests/fixtures/cf08-entry-split/cf08/EntrySplitRefusals.class"
+    },
+    {
+      "blake3": "3e8a34174edc48ca743db67bc873799dabc2afa0f5f7cf63736665bb2f64979f",
+      "bytes": 374,
+      "path": "tests/fixtures/cf08-entry-split/cf08/EntrySplitSlotCounterCases.class"
+    },
+    {
+      "blake3": "c08dcb0fd8844a288cb043f0a94a1eb7d4aecafc56934f8da2ea13aa630cb7df",
+      "bytes": 625,
+      "path": "tests/fixtures/cf08-entry-split/cf08/EntrySplitTopologyRefusals.class"
+    },
+    {
+      "blake3": "a59e63576490db64aee4a9d309a0dbea4d422df72eee6280e593f4c968a2e475",
+      "bytes": 3065,
+      "path": "tests/fixtures/cf08-entry-split/generalized-manifest.json"
+    },
+    {
+      "blake3": "6957bc74bda18fb794b62a64890d259603cba5b7cde8e35261dc9fcd01cb4b35",
+      "bytes": 15843,
+      "path": "tests/fixtures/cf08-entry-split/manifest.json"
+    },
+    {
       "blake3": "c680045c6f7b0e3a59494e661e4981145f8dbc0a040f8760b6c9c66e6179ac94",
       "bytes": 379,
       "path": "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class"

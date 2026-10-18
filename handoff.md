@@ -1,3 +1,29 @@
+## 2026-10-19 当前推进：CF08 双入口循环 4/6，完整对照待独立终审
+
+本节优先，下方历史不重做。finThrow5/5、nestedFin16/16已交付，持续goal active。main起点1a0dacdbc89da8855a9de4e42e1128e68d9ee7ce；本轮生产/六fixture/测试/证据尚未提交。当前冻结候选CLI `/private/tmp/jarde-entry-split-focused-root-v4-20261019/candidate-cli`，63955664B/SHA eb11645e741d944a349080fbd12f18e2e5c70bdc5809f4bdb51a6e3cdec6fb50，生产实现后未再改变。
+
+`recover-proved-entry-split-int-loops` 已4/6。窄Region拥有五角色一次、Builder展示prefix两次，Frame logical predecessor顺序核phi，严格源码Int，复用完整性门/checkpoint/AST/SourceMap，不改CFG/canonical/jsr/public协议。首轮公共7/0、java lib507/0、Reader/fingerprint/fmt/CLI构建已独立接受并归档 `results/focused-root-v1`；全部真实失败保留。另加非零prefix槽及counter+1原始有效class，六fixture累计6class/22Code/1handler/57target/2jsr；当前Reader全语料1317/5827/631/4171/16。
+
+真实stop续跑已接受：v1 9公共通过/1失败（output搜索先耗尽577B class read），map cut limit445交10/21完整node；v2仅修测试下界并续未过门，两个真实prefix cut分别limit780/span187..212/written195及limit862/span267..292/written275，均BCI4、正文/映射不发布、usage不退款。Reader1/0、fingerprint5/0/1旧ignored、fmt通过，精确clean、target absent。收据 `/private/tmp/jarde-entry-split-stops-root-v2-20261019/execution.json` SHA91c972e2defd5a935e50fd787af5c42029af98c5658fa7c533fc21ae0a9cca48；root接受 `/private/tmp/jarde-entry-split-stops-review-root-v1-20261019/review.json`。
+
+最终完整三方采集148命令已结束、待root独立终审：24API、48Jarde整类编译，其中16成功/32VM1728case一致，32负向失败不运行；6JADX输入，EntrySplitCases.inverted生成未初始化i3且丢prefix，整类两编译均失败，不裁剪前三方法；SlotCounter两编译/4VM144case成功，legacy另4VM仅构造库存。JADX异常/拓扑退出3及其它失败保留。原始216观察绑定复用，不冒称新跑。入口 `/private/tmp/jarde-entry-split-final-matrix-root-v1-20261019/execution.json`。矩阵后只有test预算下界/注释修正，旧test快照逆变更重建且SHA0a06b66f…与矩阵pin相符，生产不变。
+
+下一：root读审Luna矩阵reviewer并实际终审；归档新增generalized gate、stops和完整矩阵；按private native/ownCI prep跑fresh全workspace与精确产品自身CI后同步主spec/勾3.2。不可把当前focused或旧CI当本产品完整验收。3.1仍未勾；CF08/71/612整项仍partial。Luna只私有/只读，root独占共享/Git/网络/工具链，Python-B。无Cargo/target/JDK待续；Cargo5GiB/target1GiB/defaultstack/每秒guard/finally清理，期间禁止其它共享写/Gitmutation/network/manualJDK/CLI。
+
+## 2026-10-19 当前推进：CF08 双入口循环 OpenSpec 2/6，root审实现中
+
+本节优先。finThrow5/5、nestedFin16/16已交付，勿重做；持续goal active。当前产品仍ef4fbef5/CLI96e534b0，起点main==origin/main为1a0dacdb；当前共享改动是新fixture/测试草稿、reader census与证据/任务记录，生产恢复候选尚未集成。接续先核实际Git，不把此文当提交/CI成功证据。
+
+`recover-proved-entry-split-int-loops` apply实际2/6（1.1/1.2完成）。同次真实IR exact probe已root执行接受1/0/506filtered，guard/精确clean/源码恢复，归档33payload+inventory全部逐字复开，SHA17c73978213971950c5739b6b795a92f132d460310898d3dbcd33694502238ef，入口 `results/same-run-ir-probe-root-v1`。实际phi族不同ValueId，必须逐前驱证明，frame Int不能当源码Int。
+
+完整五fixture原始gate已root实际17命令并独立审计3396pinpaths/2物理parser：双VM144正向观察及每VM四负类构造/库存、两错根拒绝全部接受；十负方法从不调用。收据f6ebb66119875977e181d7e1d0aac126114024c9cae46d804bc310d47bc3bd2c，97payload+inventory归档全部逐字复开，SHA77e26c9f74ba377e4d34ed03a708e21563c76ce934cae2d9754de8f39c3b94d1，入口 `results/fixture-original-gate-root-v1`。5完整class与writer/driver/manifest已逐字装入 `tests/fixtures/cf08-entry-split`；增量5class/19Code/1handler/51target/2jsr，reader census已静态更新，**corpus-fingerprint待首次受守卫Cargo显式regenerate**，未声称reader/native已跑。
+
+Luna typed_foreach_impl私有实现正在按root审查修复：可选P goto、未用额外参数、prefix_slot非固定0、按前驱phi、Walker预算借用、先便宜五角色拒绝再计费，不建通用clone/solver。尚未冻结patch/集成/执行，2.1未勾。nl_baseline_audit v4公库草稿已root读审装入tests（root修SourceMap span usize），实际断言尚未运行；真实阶段预算cut仍待补，2.2未勾。legacy原有quality=fallback/representation=mixed，包含两SubroutineEntry/一UncoveredBlocks和局部If，不能因当前用例改为整方法quote。
+
+typed_foreach_api_tests正在私有准备最终单profile完整collector：五class各child/bundle-child×default/all=20APIcell、最多40Jarde重编；5JADX树/最多10重编。手写target无LVT，writer debug标志不改变target，不制造两profile重复。正类4方法72case，负类仅库存/构造；原始gate oracle应绑定复用，最终CLI后仅执行缺少的生成对照。
+
+两个当前证据归档/原始输入验收不等于生产恢复完成。主spec窄例外尚未同步，CF08/71/612保持partial。无Cargo/target/JDK待续；root独占共享/Git/网络/工具链，Luna只私有，所有Python-B。首次Cargo前核实际进程，5GiB/target1GiB/defaultstack/每秒guard/finally清理，期间禁止其它共享写/Gitmutation/network/JDK/CLI。
+
 ## 2026-10-19 当前推进：CF08 两个原始Java接受，双入口循环OpenSpec 1/6
 
 本节优先。finThrow5/5、nestedFin16/16、indexed List6/6、条件赋值扩大转换6/6均已交付，勿重做；持续goal active。生产仍ef4fbef5/CLI96e534b0，当前只增加证据与新计划，无生产代码改动。NotIndexed已随6dd3b8d2d推main；本轮新增Endless与双入口实际基线及OpenSpec，需核最终Git收据。

@@ -1,0 +1,13 @@
+{
+  "status": "root_reopened_all_focused_archive_members",
+  "payload_members": 125,
+  "total_members": 126,
+  "archive_sha256": "0f1627e7e851248824fe81249e3ac3673d36756d86596b974012c5106b3da643",
+  "cli": {
+    "path": "/private/tmp/jarde-entry-split-focused-root-v4-20261019/candidate-cli",
+    "bytes": 63955664,
+    "sha256": "eb11645e741d944a349080fbd12f18e2e5c70bdc5809f4bdb51a6e3cdec6fb50"
+  },
+  "full_root_review_sha256": "aa395608a1f5b7db8ab8cb6ba619af4f465d84e557010484cf813994ae057633",
+  "target_absent": true
+}

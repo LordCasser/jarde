@@ -20,13 +20,13 @@
 
 Region负责拓扑、Operation和SSA角色；frame的Int只证明JVM类别，不等于源码Type::Int。严格局部类型及return descriptor的最终门放在Builder既有类型决定上，在任何AST提交前通过；不能把参数descriptor重复塞进IR或把窄/布尔类型宽化来满足证书。Builder拒绝仍quote完整候选。
 
-SSA中的头部phi/回边允许承担同一源码局部，不要求每轮同一个ValueId；须证明每条输入与实际槽、宽度、局部身份一致，不能以同槽号猜跨作用域同名局部。任意额外读写、stack逃逸/交汇、冲突或不完整事实拒绝整个候选。先增加只读事实测试记录真实布局，再实现判断。
+SSA中的头部phi/回边允许承担同一源码局部，不要求每轮同一个ValueId；须证明每条输入与实际槽、宽度、局部身份一致，不能以同槽号猜跨作用域同名局部。同次真实探针与首次正向失败进一步确认：phi输入按Frame的logical input顺序（源CanonicalBlockId、异常ordinal、throw site）保存；本候选已证明只有plain normal边，故将真实前驱ID按源身份排序后逐边核对。NormalFlowView的petgraph incoming枚举顺序不能直接用作phi顺序，不改其图事实或全局API。任意额外读写、stack逃逸/交汇、冲突或不完整事实拒绝整个候选。先增加只读事实测试记录真实布局，再实现判断。
 
 ### 2. 一份物理所有权，两处受证展示
 
 新增一个窄的区域角色（建议 `Region::EntrySplitLoop`），仅保存上述已证角色、测试BCI/sense及必要更新站点；不增中间CFG或虚拟节点身份。现有Region无法同时表达这个共享前缀的两个源码位置，新增角色是为表达真实来源所有权所必需。不要把P作为两个兄弟 Region 再放宽 overlap 检查，也不要挪用只表示jsr调用栈的CanonicalBlockId.path。
 
-在不可约整方法拒绝前尝试该完整证书。命中后使用一个候选区域及原X尾段，仍进入既有最终 uncovered、overlapping_owner、unaccounted_instructions 检查；不能通过早返回跳过这些门。未命中保留原 whole-method Irreducible 原因和物理块。区域遍历/结构化判定/统计/来源读取按新角色闭合，不能用通用set去重掩盖真实重复所有者。
+在不可约整方法拒绝前尝试该完整证书。命中后由一个候选区域统一拥有五角色及原X返回尾段，仍进入既有最终 uncovered、overlapping_owner、unaccounted_instructions 检查；不能通过早返回跳过这些门。未命中保留原 whole-method Irreducible 原因和物理块。区域遍历/结构化判定/统计/来源读取按新角色闭合，不能用通用set去重掩盖真实重复所有者。
 
 Builder用既有test_expr、局部命名/类型决定和int Increment语义形成：`if (takePrefix) { updateA; } while (continueTest) { updateB; updateA; } return A;`。没有新Java AST语法。先完整证明两次展示使用同一已决定的Java局部，prefix的Assign AST在局部候选中构造一次，受证复制到两个位置；不能在第二次经过SSA读取时重算为错误的初始值或借助合成状态变量。
 
@@ -34,7 +34,7 @@ Builder用既有test_expr、局部命名/类型决定和int Increment语义形�
 
 ### 3. 完整提交与停止
 
-图/SSA/边和集合读取先计费/poll再分配或保留；候选证明失败不改变原图/visited/所有权。Builder沿用既有完整结构试写 checkpoint（现有 compound_if_checkpoint/restore 可覆盖相同触碰集），不复制第三套大型状态表、不顺便重构finally状态。核实实际触碰字段均可恢复；试写后普通拒绝恢复状态并quote整个原候选，Stop恢复后原样传播Err，使用量不回滚。没有前缀成功而尾段失败的partial AST，也不借一次后置SourceMap停止掩盖前置漏费。
+图/SSA/边和集合读取先计费/poll再分配或保留；候选证明失败不改变原图/visited/所有权。Builder沿用既有完整结构试写 checkpoint（现有 compound_if_checkpoint/restore 可覆盖相同触碰集），不复制第三套大型状态表、不顺便重构finally状态。核实实际触碰字段均可恢复；试写后普通拒绝恢复状态并quote整个原候选，Stop恢复后原样传播Err，使用量不回滚。没有前缀成功而尾段失败的partial AST，也不借一次后置SourceMap停止掩盖前置漏费。正文emit提交前的停止不交付文本或映射；正文已完整提交后的可选SourceMap replay沿用现有EvidencePhase契约：保留正文，只交完整节点的可靠段表前缀，Materialized/执行/诊断明示Partial或None和原Stop/usage，不发布半个node或把证据前缀标为Complete。不为本片新增映射全局事务或改变公共协议。
 
 固定上限是五个闭合图角色及已列出的指令合同，不搜索任意路径或枚举循环迭代。输入解析、恢复、证据请求、JVM verification和受控行为运行分别报告。
 

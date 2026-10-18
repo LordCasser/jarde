@@ -1,0 +1,10 @@
+{
+  "status": "root_reopened_all_archive_member_bytes_and_modes",
+  "payload_members": 98,
+  "archive_sha256": "c47609b7a2f91e12c83fa062a849176540646e74b520d407f29aae68f7032a81",
+  "notes": [
+    "Root excludes previously archived five-fixture gate and focused reviews to avoid duplicate payload.",
+    "Root stop review and all actual failures preserved; no CLI/Rust binary included.",
+    "Initial archive verifier exec missed __file__; fixed verifier context only, no collection/test rerun."
+  ]
+}

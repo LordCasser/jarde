@@ -1,0 +1,112 @@
+{
+  "schema": "cf08-entry-split-generalized-fixture-v1",
+  "receipt_sha256": "284a270cfa0a40c51fa5d5e1aef427daa3f798e6843bfb1ac910934da6c3cb2d",
+  "receipt_path": "/private/tmp/jarde-entry-split-generalized-gate-root-v1-20261019/execution.json",
+  "class": {
+    "pin": {
+      "path": "/private/tmp/jarde-entry-split-generalized-gate-root-v1-20261019/original-classes/cf08/EntrySplitSlotCounterCases.class",
+      "bytes": 374,
+      "sha256": "4d3fc911c9a74a76a21f1f6306ce5909225b3797956ddc3f6c4b3e2d12f2fc4d"
+    },
+    "facts": {
+      "path": "/private/tmp/jarde-entry-split-generalized-gate-root-v1-20261019/original-classes/cf08/EntrySplitSlotCounterCases.class",
+      "bytes": 374,
+      "sha256": "4d3fc911c9a74a76a21f1f6306ce5909225b3797956ddc3f6c4b3e2d12f2fc4d",
+      "minor": 0,
+      "major": 52,
+      "class_name": "cf08/EntrySplitSlotCounterCases",
+      "fields": [],
+      "methods": [
+        {
+          "index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code": {
+            "max_stack": 1,
+            "max_locals": 1,
+            "code_length": 5,
+            "code_hex": "2ab70008b1",
+            "rows": [],
+            "bcis": [
+              0,
+              1,
+              4
+            ]
+          }
+        },
+        {
+          "index": 1,
+          "name": "permuted",
+          "descriptor": "(ZII)I",
+          "access": 9,
+          "code": {
+            "max_stack": 1,
+            "max_locals": 3,
+            "code_length": 19,
+            "code_hex": "1a9a00068402071b9900098401ffa7fff61cac",
+            "rows": [],
+            "bcis": [
+              0,
+              1,
+              4,
+              7,
+              8,
+              11,
+              14,
+              17,
+              18
+            ]
+          }
+        },
+        {
+          "index": 2,
+          "name": "countUp",
+          "descriptor": "(IZI)I",
+          "access": 9,
+          "code": {
+            "max_stack": 1,
+            "max_locals": 3,
+            "code_length": 19,
+            "code_hex": "1b9a00068400031c990009840201a7fff61aac",
+            "rows": [],
+            "bcis": [
+              0,
+              1,
+              4,
+              7,
+              8,
+              11,
+              14,
+              17,
+              18
+            ]
+          }
+        }
+      ],
+      "attributes": [
+        "SourceFile"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "file": "EntrySplitSlotCounterCasesWriter.java",
+      "bytes": 5237,
+      "sha256": "6921087439e2f2905f5b3621dcaaeded5e5b26c7230f16df9c6a809add593137"
+    },
+    {
+      "file": "EntrySplitSlotCounterCasesDriver.java",
+      "bytes": 5282,
+      "sha256": "38073411b841ccfdd6e6cd6c92bbc863ad87c59e822aaec09b63e568a7c3fa51"
+    }
+  ],
+  "census_delta": {
+    "classes": 1,
+    "code_bodies": 3,
+    "handlers": 0,
+    "branch_targets": 6,
+    "jsr": 0
+  },
+  "verification": "actual dual JVM72 finite rows+2wrongroots;candidate default/all structured with complete maps;generated source runtime pending"
+}

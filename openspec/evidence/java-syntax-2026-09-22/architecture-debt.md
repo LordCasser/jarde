@@ -23,3 +23,7 @@
 2026-09-25 的接口 `super` 独立验收运行 `cargo test -p jarde-reader --lib --locked`：176 项通过，`repository_class_fixtures_validate_without_false_target_rejections` 一项因 fixture 人数断言失败，实测 `(310,1645,144,880,8)`，旧钉值 `(164,1152,98,381,8)`。其中三类、三个 Code 来自本次新增的多父 default 冲突控制，新增前实测为 `(307,1642,144,880,8)`；其余漂移不能通过修改接口语法代码来掩盖。应先按 fixture 来源核对新增人口与指纹登记，再单独更新 census 断言。
 
 同轮 `cargo clippy -p jarde --lib --locked` 以警告模式可完成，除上述 17 项 jarde-java 共享告警外还显示 jarde 的 11 项旧告警：`class_source.rs` 四个参数过多，`facade.rs` 一处可合并 `if`、三处复杂返回类型及三处参数过多。新增接口闭包/目标证明所在的 `facade.rs` 约 4132–4600 行没有可归因 Clippy 告警。严格 `-D warnings` 因共享告警失败；独立清偿时应按函数归属处理，不把这些重构混入接口 `super` 合法性修复。
+
+## NormalFlow前驱枚举与SSA逻辑输入顺序
+
+2026-10-19双入口循环首次真实正向测试发现，`NormalFlowView::predecessors`的petgraph incoming邻接枚举不能直接作为SSA phi输入顺序；Frame的logical inputs明确按源CanonicalBlockId、异常ordinal、throw site排序。当前窄形已证明无异常/clone，仅在局部证书对真实前驱按源身份排序再逐边核对；同次IR原始phi及真实失败保留于 `recover-proved-entry-split-int-loops/results`。后续独立审计该方法“canonical graph edge order”文档及其它依赖位置序的调用者，决定文档澄清或统一只读排序约定；本片不改NormalFlow全局API、CFG或SSA身份，也不把其它消费者清理混入。

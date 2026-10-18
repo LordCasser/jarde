@@ -1,0 +1,16 @@
+{
+  "status": "root_packed_and_independently_reopened_all_members",
+  "archive_sha256": "77e26c9f74ba377e4d34ed03a708e21563c76ce934cae2d9754de8f39c3b94d1",
+  "payload_members": 97,
+  "total_members": 98,
+  "gate_receipt_sha256": "f6ebb66119875977e181d7e1d0aac126114024c9cae46d804bc310d47bc3bd2c",
+  "source_bytes_and_modes_match": true,
+  "permanent_fixture_copies_match": true,
+  "census_delta": {
+    "classes": 5,
+    "code_bodies": 19,
+    "handlers": 1,
+    "branch_targets": 51,
+    "jsr": 2
+  }
+}

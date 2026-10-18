@@ -1,0 +1,591 @@
+{
+  "schema": "cf08-entry-split-original-fixture-provenance-v1",
+  "gate_receipt_sha256": "f6ebb66119875977e181d7e1d0aac126114024c9cae46d804bc310d47bc3bd2c",
+  "gate_review": "/private/tmp/jarde-entry-split-fixture-gate-review-root-v1-20261019/review.json",
+  "class_files": {
+    "cf08/EntrySplitCases.class": {
+      "pin": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitCases.class",
+        "bytes": 577,
+        "sha256": "d557c48e39bca63d43d7355da47e342d7ff0955aa90597cc18f674b5f946c18b"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitCases.class",
+        "bytes": 577,
+        "sha256": "d557c48e39bca63d43d7355da47e342d7ff0955aa90597cc18f674b5f946c18b",
+        "minor": 0,
+        "major": 52,
+        "class_name": "cf08/EntrySplitCases",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70008b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "test",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 19,
+              "code_hex": "1b9a00068400031c9900098402ffa7fff61aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                17,
+                18
+              ]
+            }
+          },
+          {
+            "index": 2,
+            "name": "signed",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 19,
+              "code_hex": "1b9a00068400fb1c9900098402ffa7fff61aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                17,
+                18
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "name": "shifted",
+            "descriptor": "(IIIZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 5,
+              "code_length": 20,
+              "code_hex": "1d9a000684000515049900098404ffa7fff51aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                9,
+                12,
+                15,
+                18,
+                19
+              ]
+            }
+          },
+          {
+            "index": 4,
+            "name": "inverted",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 22,
+              "code_hex": "1b99000d1c99000f8402ffa700038400fea7fff31aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                5,
+                8,
+                11,
+                14,
+                17,
+                20,
+                21
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    },
+    "cf08/EntrySplitExceptionRefusal.class": {
+      "pin": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitExceptionRefusal.class",
+        "bytes": 414,
+        "sha256": "1380ddbb5e7a10c9b6a3090e12a31789dc889f41a8ac6bd2fe37901f819c60fe"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitExceptionRefusal.class",
+        "bytes": 414,
+        "sha256": "1380ddbb5e7a10c9b6a3090e12a31789dc889f41a8ac6bd2fe37901f819c60fe",
+        "minor": 0,
+        "major": 52,
+        "class_name": "cf08/EntrySplitExceptionRefusal",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70008b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "exceptionPrefix",
+            "descriptor": "(IZII)I",
+            "access": 9,
+            "code": {
+              "max_stack": 2,
+              "max_locals": 4,
+              "code_length": 24,
+              "code_hex": "1b9a00071a1d6c3b1c9900098402ffa7fff51aac571063ac",
+              "rows": [
+                [
+                  4,
+                  8,
+                  20,
+                  22
+                ]
+              ],
+              "bcis": [
+                0,
+                1,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                12,
+                15,
+                18,
+                19,
+                20,
+                21,
+                23
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    },
+    "cf08/EntrySplitLegacyCases.class": {
+      "pin": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitLegacyCases.class",
+        "bytes": 373,
+        "sha256": "0c42cb9bfe9373ee9145a9333dc50f2f2c2faeee17a35d0bd0de3146d9e3e9a8"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitLegacyCases.class",
+        "bytes": 373,
+        "sha256": "0c42cb9bfe9373ee9145a9333dc50f2f2c2faeee17a35d0bd0de3146d9e3e9a8",
+        "minor": 0,
+        "major": 49,
+        "class_name": "cf08/EntrySplitLegacyCases",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70008b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "legacy",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 4,
+              "code_length": 31,
+              "code_hex": "1b9a0009a80015a700031c99000c8402ffa80008a7fff61aac4e840003a903",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                10,
+                11,
+                14,
+                17,
+                20,
+                23,
+                24,
+                25,
+                26,
+                29
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    },
+    "cf08/EntrySplitRefusals.class": {
+      "pin": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitRefusals.class",
+        "bytes": 606,
+        "sha256": "b46d28b31ec78121d6da2b6e2ed253a83086d6695fae59a37b50920e22b178a9"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitRefusals.class",
+        "bytes": 606,
+        "sha256": "b46d28b31ec78121d6da2b6e2ed253a83086d6695fae59a37b50920e22b178a9",
+        "minor": 0,
+        "major": 52,
+        "class_name": "cf08/EntrySplitRefusals",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70008b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "booleanPrefix",
+            "descriptor": "(ZZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 19,
+              "code_hex": "1b9a00068400011c9900098402ffa7fff61aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                17,
+                18
+              ]
+            }
+          },
+          {
+            "index": 2,
+            "name": "bytePrefix",
+            "descriptor": "(BZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 19,
+              "code_hex": "1b9a00068400051c9900098402ffa7fff61aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                17,
+                18
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "name": "alias",
+            "descriptor": "(IZ)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 2,
+              "code_length": 19,
+              "code_hex": "1b9a00068400011a9900098400ffa7fff61aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                17,
+                18
+              ]
+            }
+          },
+          {
+            "index": 4,
+            "name": "callPrefix",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 21,
+              "code_hex": "1b9a00081ab8001a3b1c9900098402ffa7fff41aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                5,
+                8,
+                9,
+                10,
+                13,
+                16,
+                19,
+                20
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    },
+    "cf08/EntrySplitTopologyRefusals.class": {
+      "pin": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitTopologyRefusals.class",
+        "bytes": 625,
+        "sha256": "d2e1ae9e3a67c85bcd4f4371dd58318a83e0e4c12945f2ab0bd5ff94496520e1"
+      },
+      "facts": {
+        "path": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitTopologyRefusals.class",
+        "bytes": 625,
+        "sha256": "d2e1ae9e3a67c85bcd4f4371dd58318a83e0e4c12945f2ab0bd5ff94496520e1",
+        "minor": 0,
+        "major": 52,
+        "class_name": "cf08/EntrySplitTopologyRefusals",
+        "fields": [],
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "access": 1,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 1,
+              "code_length": 5,
+              "code_hex": "2ab70008b1",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "name": "extraEntry",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 26,
+              "code_hex": "1b99000a1c990009a7000a8400031c9900098402ffa7fff61aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                5,
+                8,
+                11,
+                14,
+                15,
+                18,
+                21,
+                24,
+                25
+              ]
+            }
+          },
+          {
+            "index": 2,
+            "name": "extraExit",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 3,
+              "code_length": 25,
+              "code_hex": "1b9a00068400031c99000f8402ff1c990006a7fff21aac1aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                15,
+                18,
+                21,
+                22,
+                23,
+                24
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "name": "extraLive",
+            "descriptor": "(IZZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 1,
+              "max_locals": 4,
+              "code_length": 29,
+              "code_hex": "1b9a00068400031d9900098403ffa7fff61c9a0009840001a700031aac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                4,
+                7,
+                8,
+                11,
+                14,
+                17,
+                18,
+                21,
+                24,
+                27,
+                28
+              ]
+            }
+          },
+          {
+            "index": 4,
+            "name": "stackEscape",
+            "descriptor": "(IZI)I",
+            "access": 9,
+            "code": {
+              "max_stack": 2,
+              "max_locals": 3,
+              "code_length": 18,
+              "code_hex": "1a1b9a000506601c9900098402ffa7fff7ac",
+              "rows": [],
+              "bcis": [
+                0,
+                1,
+                2,
+                5,
+                6,
+                7,
+                8,
+                11,
+                14,
+                17
+              ]
+            }
+          }
+        ],
+        "attributes": [
+          "SourceFile"
+        ]
+      }
+    }
+  },
+  "source_files": [
+    {
+      "path": "EntrySplitFixtureWriter.java",
+      "bytes": 11951,
+      "sha256": "51ac8ce7f3ad8d76bdc0fe5b86ff3bd95c80d2b186fe8d69f335de9e633bfa06"
+    },
+    {
+      "path": "EntrySplitOracleDriver.java",
+      "bytes": 7243,
+      "sha256": "ca5da31f84a8a6f16cd85bb4e903438af6b5e4968bf1e65ebb8198511e82f4dc"
+    }
+  ],
+  "reader_census_delta": {
+    "classes": 5,
+    "code_bodies": 19,
+    "handlers": 1,
+    "branch_targets": 51,
+    "jsr": 2
+  },
+  "verification": "Two actual -Xverify:all JVMs,72 positive cases each;10 negative methods never invoked;4 negative classes constructed per JVM. Major49 only for legacy;others52."
+}

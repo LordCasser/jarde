@@ -1,0 +1,685 @@
+{
+  "schema": "entry-split-fixture-original-gate-evidence-v1",
+  "payload_members": 97,
+  "members": [
+    {
+      "path": "gate/EntrySplitCases.baseline.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/EntrySplitCases.baseline.java",
+      "bytes": 3212,
+      "sha256": "23f30aa5b04c63b00805c83977431aa7a4cb131bca85f8c28ca183d157e4dde7",
+      "mode": 420
+    },
+    {
+      "path": "gate/EntrySplitExceptionRefusal.baseline.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/EntrySplitExceptionRefusal.baseline.java",
+      "bytes": 1425,
+      "sha256": "457668068327b27b539cf746aac6949e42ebdccf64a85eed865bd3dbf67508cb",
+      "mode": 420
+    },
+    {
+      "path": "gate/EntrySplitLegacyCases.baseline.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/EntrySplitLegacyCases.baseline.java",
+      "bytes": 1499,
+      "sha256": "0df595a6276f2e57d0d6c1e40ef31b8b1d7eb6752a908e57d9b65c6cd609b6e0",
+      "mode": 420
+    },
+    {
+      "path": "gate/EntrySplitRefusals.baseline.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/EntrySplitRefusals.baseline.java",
+      "bytes": 3246,
+      "sha256": "ee6032303c63fe80e04541c2d33cd48735ebe39f106864b0478314922788f481",
+      "mode": 420
+    },
+    {
+      "path": "gate/EntrySplitTopologyRefusals.baseline.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/EntrySplitTopologyRefusals.baseline.java",
+      "bytes": 3371,
+      "sha256": "4e2444ca388ac36500f61e0c40ca9f54c96cfae31965349abcefbff1bfd2c8e8",
+      "mode": 420
+    },
+    {
+      "path": "gate/driver/EntrySplitOracleDriver.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/driver/EntrySplitOracleDriver.class",
+      "bytes": 8038,
+      "sha256": "7c9e54c096506a72214e9d39bf0ab4e785e028708427fbf7e190c1e83354efe2",
+      "mode": 420
+    },
+    {
+      "path": "gate/execution.json",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/execution.json",
+      "bytes": 2683404,
+      "sha256": "f6ebb66119875977e181d7e1d0aac126114024c9cae46d804bc310d47bc3bd2c",
+      "mode": 420
+    },
+    {
+      "path": "gate/inputs/EntrySplitFixtureWriter.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/inputs/EntrySplitFixtureWriter.java",
+      "bytes": 11951,
+      "sha256": "51ac8ce7f3ad8d76bdc0fe5b86ff3bd95c80d2b186fe8d69f335de9e633bfa06",
+      "mode": 420
+    },
+    {
+      "path": "gate/inputs/EntrySplitOracleDriver.java",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/inputs/EntrySplitOracleDriver.java",
+      "bytes": 7243,
+      "sha256": "ca5da31f84a8a6f16cd85bb4e903438af6b5e4968bf1e65ebb8198511e82f4dc",
+      "mode": 420
+    },
+    {
+      "path": "gate/original-classes/cf08/EntrySplitCases.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitCases.class",
+      "bytes": 577,
+      "sha256": "d557c48e39bca63d43d7355da47e342d7ff0955aa90597cc18f674b5f946c18b",
+      "mode": 420
+    },
+    {
+      "path": "gate/original-classes/cf08/EntrySplitExceptionRefusal.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitExceptionRefusal.class",
+      "bytes": 414,
+      "sha256": "1380ddbb5e7a10c9b6a3090e12a31789dc889f41a8ac6bd2fe37901f819c60fe",
+      "mode": 420
+    },
+    {
+      "path": "gate/original-classes/cf08/EntrySplitLegacyCases.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitLegacyCases.class",
+      "bytes": 373,
+      "sha256": "0c42cb9bfe9373ee9145a9333dc50f2f2c2faeee17a35d0bd0de3146d9e3e9a8",
+      "mode": 420
+    },
+    {
+      "path": "gate/original-classes/cf08/EntrySplitRefusals.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitRefusals.class",
+      "bytes": 606,
+      "sha256": "b46d28b31ec78121d6da2b6e2ed253a83086d6695fae59a37b50920e22b178a9",
+      "mode": 420
+    },
+    {
+      "path": "gate/original-classes/cf08/EntrySplitTopologyRefusals.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/original-classes/cf08/EntrySplitTopologyRefusals.class",
+      "bytes": 625,
+      "sha256": "d2e1ae9e3a67c85bcd4f4371dd58318a83e0e4c12945f2ab0bd5ff94496520e1",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 6471,
+      "sha256": "c71a03d1e6789aef0704ae9bde888805ec5e01e3270eb9c379d034bd09fc6cfc",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 280,
+      "sha256": "b08cee7af7eb2a4455c6c6485213fd207babaf7d7dddb11557796be00e79967b",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 280,
+      "sha256": "b08cee7af7eb2a4455c6c6485213fd207babaf7d7dddb11557796be00e79967b",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 51676,
+      "sha256": "6b6e70e2adefdac1344f309f811260e39a86c4c1ac81aaea9ec4f493106061e0",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 24135,
+      "sha256": "5d2353d0b12c3496c67d4f3246e57c9f1da8e0761ca3acbb424f5ec9befff6b9",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 26057,
+      "sha256": "1e9c59f4382e7b4ddc869dcf39cc5a3e0c436851624a1d2f1c2310363ade3d9e",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 52617,
+      "sha256": "0782d76a8297a8ad314e9156ea79071d18b124910f505bba59b0e1d35fd0ba60",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 57110,
+      "sha256": "8650afd650b597d647fc4602691243121e4dc6eea82bf3c0b97fa97fb9ece468",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 4082,
+      "sha256": "a48c50365a92b20ffa729991358a123495de1e4dabb5134909045a58ab57da9c",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 2796,
+      "sha256": "8c650125dfb19b44bc074606cf728c08c3bfb7d1ded0adcc90f75b2e1b4cd26a",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 2337,
+      "sha256": "2bb66a096863cfd897323d18b3840e9965a514d35ea33411ee6ab84ddda44b79",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 4235,
+      "sha256": "c52c21285ad5fb390edd6e68d322ad3970b457c8e76bd827842a49461ad11063",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 4651,
+      "sha256": "f2b2a6274782d1a38b3ff3bc65b31a55b7ebd8f85b4c12b3587f993801de3f8a",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "path": "gate/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 6471,
+      "sha256": "c71a03d1e6789aef0704ae9bde888805ec5e01e3270eb9c379d034bd09fc6cfc",
+      "mode": 420
+    },
+    {
+      "path": "gate/root-review.json",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/root-review.json",
+      "bytes": 260,
+      "sha256": "883cb523263f6983d7b3a54374e0b58b8e2be9765f35d51bc84b42fe55293b03",
+      "mode": 420
+    },
+    {
+      "path": "gate/writer/EntrySplitFixtureWriter$1.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/writer/EntrySplitFixtureWriter$1.class",
+      "bytes": 165,
+      "sha256": "31a3ad1813d17b8a2ba2ab29d570d5d8125f4924c86fbe2133379e81df7ab168",
+      "mode": 420
+    },
+    {
+      "path": "gate/writer/EntrySplitFixtureWriter$MethodSpec.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/writer/EntrySplitFixtureWriter$MethodSpec.class",
+      "bytes": 664,
+      "sha256": "cf6b4efb948ce6eed4ff9ba8297018ba7461dfd506d6a097a98d564d9ab0d87a",
+      "mode": 420
+    },
+    {
+      "path": "gate/writer/EntrySplitFixtureWriter$Pool.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/writer/EntrySplitFixtureWriter$Pool.class",
+      "bytes": 2457,
+      "sha256": "054aabcda82447043a461a09ff9e468fa09648e8ba85a42eec061f60b3865e5d",
+      "mode": 420
+    },
+    {
+      "path": "gate/writer/EntrySplitFixtureWriter.class",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-root-v1-20261019/writer/EntrySplitFixtureWriter.class",
+      "bytes": 7849,
+      "sha256": "9a05ed9dddb2580a0506e337220844462e11f6952d0bf44c132baafc48a96091",
+      "mode": 420
+    },
+    {
+      "path": "root-review/review.json",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-review-root-v1-20261019/review.json",
+      "bytes": 4924,
+      "sha256": "868fc7bdbdbd42757f6618d3b568d20f1b170cc389e7d6ac404b5a231bf34152",
+      "mode": 420
+    },
+    {
+      "path": "root-review/review.py",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-review-root-v1-20261019/review.py",
+      "bytes": 6129,
+      "sha256": "1d974d2b2022bf901eb0f964f68d3d2da0cc1bf899e122388e4bf0d0d272480d",
+      "mode": 420
+    },
+    {
+      "path": "runner/run.py",
+      "source": "/private/tmp/jarde-entry-split-fixture-gate-runner-root-v1-20261019/run.py",
+      "bytes": 6417,
+      "sha256": "a27c3ae8f1c8b13903896fe2fdee0a8ef20934b22ac0991b4677b90df9054007",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/README.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/README.md",
+      "bytes": 3704,
+      "sha256": "22bffdf9c84e68deca7259fd0ca10dab020dc7eb12845a3bae5b1dc0326099c9",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/classwriter/EntrySplitFixtureWriter.java",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/classwriter/EntrySplitFixtureWriter.java",
+      "bytes": 7277,
+      "sha256": "668b16048ff9337fa1f1f8d71fad8b6ef9f30920e1b4c5f03dd300895d66e9cc",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/design.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/design.md",
+      "bytes": 7926,
+      "sha256": "f7545fae597db046be46443719dd69503b67de4440e89c237d745ad70bbc1779",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/driver/EntrySplitOracleDriver.java",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/driver/EntrySplitOracleDriver.java",
+      "bytes": 3946,
+      "sha256": "c6b4e3683edbde9eacd0b1ad9df4b03f8ab2753e629bcdc4cc98936fb4a099d7",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/p3_entry_split_int_loops.rs",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/p3_entry_split_int_loops.rs",
+      "bytes": 8997,
+      "sha256": "72e233a4be21b55d9f6b985d82ee8565131950d535e8f726d9b47cf40fbc6f37",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/pins.json",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/pins.json",
+      "bytes": 3718,
+      "sha256": "f7b261daa35861c500bad39ffdf6ece64fa38d7ba7fe168e7f2c4fc715cf1af2",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/prepared.patch",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/prepared.patch",
+      "bytes": 20767,
+      "sha256": "5245043ffd9ca764142f67d0c9d971f8ad703c10bd2ee08cc25c8a30ae72d7cd",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/proposal.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/proposal.md",
+      "bytes": 1751,
+      "sha256": "884c91a992d407983a19b8d25b80d21f7d99234159f251c40976c6230275d15b",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/spec.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/spec.md",
+      "bytes": 4140,
+      "sha256": "170121889f7e247e5a946e1d4deaa6425bbdaf8dd8e3a6ca840a799dc3923116",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v1/tasks.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v1-20261019/tasks.md",
+      "bytes": 2041,
+      "sha256": "c2fd356167a61c3a32e99547b509db96f92c11569ff0e85411ce131852c93e7e",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/README-v2.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/README-v2.md",
+      "bytes": 4775,
+      "sha256": "d75d01a97a4d4c8e33f94d3ea2390b468c70e8209a9ec8f4d4053777dd47d153",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/README.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/README.md",
+      "bytes": 3704,
+      "sha256": "22bffdf9c84e68deca7259fd0ca10dab020dc7eb12845a3bae5b1dc0326099c9",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/classwriter/EntrySplitFixtureWriter.java",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/classwriter/EntrySplitFixtureWriter.java",
+      "bytes": 9803,
+      "sha256": "3f25a8a2c7334f480d14c9e5300b974e5f36df309b2736340a5a2799b5d16656",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/design.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/design.md",
+      "bytes": 7926,
+      "sha256": "f7545fae597db046be46443719dd69503b67de4440e89c237d745ad70bbc1779",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/driver/EntrySplitOracleDriver.java",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/driver/EntrySplitOracleDriver.java",
+      "bytes": 6976,
+      "sha256": "dedee0cbf0cb8077ce37ee082bd612b72413e0ca1c2bea0bdfbf8fe2dd52298a",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/p3_entry_split_int_loops.rs",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/p3_entry_split_int_loops.rs",
+      "bytes": 8997,
+      "sha256": "72e233a4be21b55d9f6b985d82ee8565131950d535e8f726d9b47cf40fbc6f37",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/p3_entry_split_v2_additions.rs.txt",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/p3_entry_split_v2_additions.rs.txt",
+      "bytes": 2000,
+      "sha256": "b2ef05bd47a19c30be2bba7495b407057097b68de8cb7ee9f3ee197eaead89e0",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/pins-v2.json",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/pins-v2.json",
+      "bytes": 783,
+      "sha256": "910979c87163b320499e314d5205d03057bb19e25a029618b90bbb365159b614",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/pins.json",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/pins.json",
+      "bytes": 3718,
+      "sha256": "f7b261daa35861c500bad39ffdf6ece64fa38d7ba7fe168e7f2c4fc715cf1af2",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/prepared.patch",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/prepared.patch",
+      "bytes": 20767,
+      "sha256": "5245043ffd9ca764142f67d0c9d971f8ad703c10bd2ee08cc25c8a30ae72d7cd",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/proposal.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/proposal.md",
+      "bytes": 1751,
+      "sha256": "884c91a992d407983a19b8d25b80d21f7d99234159f251c40976c6230275d15b",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/spec.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/spec.md",
+      "bytes": 4140,
+      "sha256": "170121889f7e247e5a946e1d4deaa6425bbdaf8dd8e3a6ca840a799dc3923116",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/tasks.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/tasks.md",
+      "bytes": 2041,
+      "sha256": "c2fd356167a61c3a32e99547b509db96f92c11569ff0e85411ce131852c93e7e",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v2/v1-to-v2.patch",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v2-20261019/v1-to-v2.patch",
+      "bytes": 11825,
+      "sha256": "0ac9afc4691c88f68a9af109085891332339b573654b929ed3cd7cfabdc9f2c8",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/README-v2.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/README-v2.md",
+      "bytes": 4775,
+      "sha256": "d75d01a97a4d4c8e33f94d3ea2390b468c70e8209a9ec8f4d4053777dd47d153",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/README-v3.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/README-v3.md",
+      "bytes": 5338,
+      "sha256": "357ab1c318b4ed4d30fc708f4117784c13f08f9083fdda1ae0d48faa794e3fd2",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/README.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/README.md",
+      "bytes": 3704,
+      "sha256": "22bffdf9c84e68deca7259fd0ca10dab020dc7eb12845a3bae5b1dc0326099c9",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/classwriter/EntrySplitFixtureWriter.java",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/classwriter/EntrySplitFixtureWriter.java",
+      "bytes": 11951,
+      "sha256": "51ac8ce7f3ad8d76bdc0fe5b86ff3bd95c80d2b186fe8d69f335de9e633bfa06",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/design.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/design.md",
+      "bytes": 7926,
+      "sha256": "f7545fae597db046be46443719dd69503b67de4440e89c237d745ad70bbc1779",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/driver/EntrySplitOracleDriver.java",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/driver/EntrySplitOracleDriver.java",
+      "bytes": 7243,
+      "sha256": "ca5da31f84a8a6f16cd85bb4e903438af6b5e4968bf1e65ebb8198511e82f4dc",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/p3_entry_split_int_loops.rs",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/p3_entry_split_int_loops.rs",
+      "bytes": 8997,
+      "sha256": "72e233a4be21b55d9f6b985d82ee8565131950d535e8f726d9b47cf40fbc6f37",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/p3_entry_split_v2_additions.rs.txt",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/p3_entry_split_v2_additions.rs.txt",
+      "bytes": 6042,
+      "sha256": "913dc68de0029eca7db313d2d37d88a7979f5fa0f1b051cae3d79463ec910716",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/pins-v2.json",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/pins-v2.json",
+      "bytes": 783,
+      "sha256": "910979c87163b320499e314d5205d03057bb19e25a029618b90bbb365159b614",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/pins-v3.json",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/pins-v3.json",
+      "bytes": 877,
+      "sha256": "9500a5dcb13a55f1dd89cd32dd1dc75b93b94e830e0e556f8dc01b1bf8ec665f",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/pins.json",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/pins.json",
+      "bytes": 3718,
+      "sha256": "f7b261daa35861c500bad39ffdf6ece64fa38d7ba7fe168e7f2c4fc715cf1af2",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/prepared.patch",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/prepared.patch",
+      "bytes": 20767,
+      "sha256": "5245043ffd9ca764142f67d0c9d971f8ad703c10bd2ee08cc25c8a30ae72d7cd",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/proposal.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/proposal.md",
+      "bytes": 1751,
+      "sha256": "884c91a992d407983a19b8d25b80d21f7d99234159f251c40976c6230275d15b",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/spec.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/spec.md",
+      "bytes": 4140,
+      "sha256": "170121889f7e247e5a946e1d4deaa6425bbdaf8dd8e3a6ca840a799dc3923116",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/tasks.md",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/tasks.md",
+      "bytes": 2041,
+      "sha256": "c2fd356167a61c3a32e99547b509db96f92c11569ff0e85411ce131852c93e7e",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/v1-to-v2.patch",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/v1-to-v2.patch",
+      "bytes": 11825,
+      "sha256": "0ac9afc4691c88f68a9af109085891332339b573654b929ed3cd7cfabdc9f2c8",
+      "mode": 420
+    },
+    {
+      "path": "preparation/v3/v2-to-v3.patch",
+      "source": "/private/tmp/jarde-entry-split-tests-prep-luna-v3-20261019/v2-to-v3.patch",
+      "bytes": 15394,
+      "sha256": "38427c5a3549482ba6bb430061adafe3c3945ed19e29557416c78bc2234c2922",
+      "mode": 420
+    }
+  ]
+}
