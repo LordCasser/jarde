@@ -51,3 +51,7 @@ CLI 为63386112B / SHA256 `d1304ad2c3acca940a744eb3023bea0f77f62d279afc675aff84a
 root实际以新CLI重放20个旧argv请求（原始8+控制12），40raw，3301来源/全部冻结报告、class、源码、CLI及矩阵产物前后不变；独立review-v3逐格接受。递归只去usage键后其余JSON全部相等，包括limits.elapsed_millis、执行状态、物理身份、诊断、evidence、whole/projected/raw文本及全部map，不任意strip时间/来源。故精确相同的完整Java与输入绑定原始final生成矩阵36JVM/288case和controls final Jarde48JVM/912case；本次只重跑API，没有重跑JDK或声称新JADX runtime。原JADX 8个类型不匹配整类编译失败与2个outer框架javac8边界原样保留。
 
 replay-v2在发出任何CLI前因full class facts含额外字段而误当纯pin拒绝；v3仅投影path/bytes/SHA后核pin，原物理事实仍由冻结收据SHA绑定。checker-v2在任何JSON比较前误把source_closure dict当pin list；v3核dict.values并保留完整live closure相等。两个工具失败均保留，没有转记为Java语义失败。hardened-api-replay-root-v1含实际收据、全20报告/源码/40raw、root-review与修正工具/失败记录。task3.1恢复勾选；两fresh native/实际产品自身CI仍未完成，不声称7/7。
+
+## 独立bulk阻断修复后的最终候选
+
+b78候选第一native实际在既有bulk生命周期门失败，未计成功seed。根因及最小guard位置修复另见 `align-bulk-class-task-execution-interval`，没有混入typed算法；旧失败保持。修复后CLI为63405424B/SHA256 `85ca6e7d36c0edeb72f7f6a3c33c405f203028fb21d128522f0b0a3a92e1cf78`，额外bulk16门+4精确重叠复跑及原全部广门共822/0/6通过，20同argv API重新接受全部非usage JSON/完整Java/raw maps逐字相等。对应独立change的broad-final-root-v4/final-api-replay-root-v2闭合源码3301/构建3190与全部产物，task3.1再次勾选；本片仍5/7，待两fresh native及新产品自身CI。
