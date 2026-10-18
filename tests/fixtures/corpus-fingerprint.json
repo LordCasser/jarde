@@ -658,6 +658,18 @@
       "carriers": [
         {
           "kind": "file",
+          "path": "tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class"
+        },
+        {
+          "kind": "record",
+          "path": "tests/fixtures/foreach-local-bindings/README.md"
+        },
+        {
+          "kind": "file",
           "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.class"
         },
         {
@@ -1804,6 +1816,21 @@
       "blake3": "a73e73de23549d38a1f978282a8452847aa5c95c8ac10edf460b503097b6f118",
       "bytes": 65,
       "path": "tests/fixtures/enum-string-field-name/original-behavior.txt"
+    },
+    {
+      "blake3": "4090729a4a7cf521456ee665fa4275b07b395c82f316fd2ba929e24678e36a5e",
+      "bytes": 1356,
+      "path": "tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class"
+    },
+    {
+      "blake3": "8e58d6c1adbd30d0d421b56bdab482de11b2be4638d39313437f8234d41477e4",
+      "bytes": 917,
+      "path": "tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class"
+    },
+    {
+      "blake3": "002a07e0541605a7f7b90a4c6e57d4239487176419664f4fc4b5bfcd1c232dc4",
+      "bytes": 876,
+      "path": "tests/fixtures/foreach-local-bindings/source/TestNestedLoops.java"
     },
     {
       "blake3": "70f99ad8d66116b1326bfaa63e32750f6c1339bbce9662ca2bd003421f645630",

@@ -13052,6 +13052,498 @@ fn generic_list_parameter_types(
     Ok(Some(selected))
 }
 
+/// Closes an optional AST binding-fold fact to the already retained same-run local slot facts.
+fn generic_list_foreach_binding_slot_closed(
+    binding: &jarde_java::report::ClassSourceTypedForEachBindingEdit,
+    store: &class_source::SameClassBodyValueSite,
+    body_values: &[class_source::SameClassBodyValueSite],
+    caller: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<bool> {
+    use jarde_jvm::method_ir::Definition;
+
+    let [(slot, written)] = store.local_writes.as_slice() else {
+        return Ok(false);
+    };
+    if !matches!(written.definition, Definition::Instruction { bci, .. } if bci == binding.first_binding_bci)
+        || written.replaced_by.is_some()
+    {
+        return Ok(false);
+    }
+    let target_count = binding.target_reads.len();
+    let bounded = body_values
+        .len()
+        .saturating_add(target_count)
+        .saturating_add(1);
+    let use_count = written.uses.len();
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            bounded
+                .saturating_mul(bounded)
+                .saturating_mul(2)
+                .saturating_add(use_count.saturating_mul(2)),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(target_count.saturating_add(1)).unwrap_or(u64::MAX),
+    )?;
+    let mut nested_facts = 0usize;
+    for site in body_values {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let site_facts = site
+            .local_reads
+            .len()
+            .saturating_add(site.local_writes.len())
+            .saturating_add(site.stack_reads.len())
+            .saturating_add(site.stack_writes.len());
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(site_facts).unwrap_or(u64::MAX),
+        )?;
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            u64::try_from(site_facts).unwrap_or(u64::MAX),
+        )?;
+        nested_facts = nested_facts.saturating_add(site_facts);
+        for (_, fact) in &site.local_reads {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(fact.uses.len()).unwrap_or(u64::MAX),
+            )?;
+            budget.charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(fact.uses.len()).unwrap_or(u64::MAX),
+            )?;
+        }
+    }
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(nested_facts).unwrap_or(u64::MAX),
+    )?;
+    let mut target_bcis = Vec::with_capacity(target_count);
+    for origins in &binding.target_reads {
+        budget.poll()?;
+        if !jarde_java::report::class_source_origin_set_belongs_to_method(origins, caller, budget)
+            .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "foreach target read origin",
+                "generic_call_ast_missing",
+            )
+        })? {
+            return Ok(false);
+        }
+        target_bcis.push(origins.primary().bci());
+    }
+    target_bcis.sort_unstable();
+    if target_bcis.windows(2).any(|pair| pair[0] == pair[1]) {
+        return Ok(false);
+    }
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(nested_facts.saturating_mul(2)).unwrap_or(u64::MAX),
+    )?;
+    let mut physical_reads = Vec::with_capacity(nested_facts);
+    let mut physical_writes = Vec::with_capacity(nested_facts);
+    for site in body_values {
+        budget.poll()?;
+        let site_facts = site
+            .local_reads
+            .len()
+            .saturating_add(site.local_writes.len())
+            .saturating_add(site.stack_reads.len())
+            .saturating_add(site.stack_writes.len());
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(site_facts).unwrap_or(u64::MAX),
+        )?;
+        for (local_slot, fact) in &site.local_writes {
+            if *local_slot == *slot {
+                physical_writes.push((site.bci, fact));
+            }
+        }
+        for (local_slot, fact) in &site.local_reads {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(fact.uses.len()).unwrap_or(u64::MAX),
+            )?;
+            if *local_slot == *slot {
+                let [loaded] = site.stack_writes.as_slice() else {
+                    return Ok(false);
+                };
+                if !matches!(site.opcode, 0x19 | 0x2a..=0x2d)
+                    || site.local_reads.len() != 1
+                    || !site.local_writes.is_empty()
+                    || !site.stack_reads.is_empty()
+                    || !matches!(loaded.definition, Definition::Instruction { bci, .. } if bci == site.bci)
+                    || loaded.replaced_by.is_some()
+                    || !fact.uses.contains(&Some(site.bci))
+                    || fact.value != written.value
+                    || fact.definition != written.definition
+                    || fact.replaced_by.is_some()
+                {
+                    return Ok(false);
+                }
+                physical_reads.push(site.bci);
+            }
+        }
+    }
+    physical_writes.sort_by_key(|(bci, _)| *bci);
+    if physical_writes.len() != 1
+        || physical_writes[0].0 != binding.first_binding_bci
+        || physical_writes[0].1 != written
+    {
+        return Ok(false);
+    }
+    physical_reads.sort_unstable();
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(use_count).unwrap_or(u64::MAX),
+    )?;
+    let mut stored_uses = Vec::with_capacity(use_count);
+    stored_uses.extend(written.uses.iter().flatten().copied());
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(use_count)
+            .unwrap_or(u64::MAX)
+            .saturating_mul(u64::from(use_count.checked_ilog2().unwrap_or(0)).saturating_add(2)),
+    )?;
+    stored_uses.sort_unstable();
+    Ok(physical_reads == target_bcis && physical_reads == stored_uses)
+}
+
+#[cfg(test)]
+mod generic_list_foreach_binding_slot_closed_tests {
+    use super::*;
+    use crate::class_source::ClassSourceRequest;
+    use jarde_java::source_map::{Origin, OriginSet};
+    use jarde_jvm::method_ir::Definition;
+
+    const FIXTURE: &[u8] = include_bytes!(
+        "../tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class"
+    );
+
+    struct Evidence {
+        binding: jarde_java::report::ClassSourceTypedForEachBindingEdit,
+        store: class_source::SameClassBodyValueSite,
+        body_values: Vec<class_source::SameClassBodyValueSite>,
+        caller: PhysicalMethodId,
+    }
+
+    fn evidence() -> Evidence {
+        let engine = Engine::new();
+        let mut budget = task_budget(&[]).unwrap();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(FIXTURE.to_vec()), &mut budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let source = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(
+                            "jadx/tests/integration/loops/TestNestedLoops$TestCls",
+                        ),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap();
+        let OperationOutcome::Performed(source) = source else {
+            panic!("fixture source completes")
+        };
+        let member = source
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"test")
+            .unwrap();
+        let caller = member.item.identity.clone();
+        let request = crate::ir::MethodAnalysisRequest {
+            environment: environment.build(std::slice::from_ref(&snapshot)).unwrap(),
+            method: caller.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        };
+        let analyzed =
+            jarde_jvm::analyze_method_ir(std::slice::from_ref(&snapshot), &request, &mut budget)
+                .unwrap();
+        let scan = scan_member_uses(analyzed.ir(), false, true, &mut budget)
+            .unwrap()
+            .unwrap();
+        let body_values = scan.body_values;
+        let store = body_values
+            .iter()
+            .find(|site| site.bci == 25)
+            .unwrap()
+            .clone();
+        let [(slot, written)] = store.local_writes.as_slice() else {
+            panic!("BCI 25 is the s1 binding store")
+        };
+        assert!(matches!(
+            written.definition,
+            Definition::Instruction { bci: 25, .. }
+        ));
+        let reads = [57_u32, 67, 77]
+            .into_iter()
+            .map(|bci| {
+                assert!(body_values.iter().any(|site| {
+                    site.bci == bci
+                        && site
+                            .local_reads
+                            .iter()
+                            .any(|(read_slot, _)| read_slot == slot)
+                }));
+                OriginSet::new(Origin::direct(bci).in_method(&caller))
+            })
+            .collect();
+        Evidence {
+            binding: jarde_java::report::ClassSourceTypedForEachBindingEdit {
+                first_binding_bci: 25,
+                first_binding_origin: OriginSet::new(Origin::direct(25).in_method(&caller)),
+                target_name: "s1".to_owned(),
+                declaration_binding: false,
+                blank_declaration: None,
+                target_reads: reads,
+            },
+            store,
+            body_values,
+            caller,
+        }
+    }
+
+    fn closes(
+        evidence: &Evidence,
+        binding: &jarde_java::report::ClassSourceTypedForEachBindingEdit,
+        store: &class_source::SameClassBodyValueSite,
+        body_values: &[class_source::SameClassBodyValueSite],
+    ) -> bool {
+        generic_list_foreach_binding_slot_closed(
+            binding,
+            store,
+            body_values,
+            &evidence.caller,
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn generic_list_foreach_binding_closes_actual_ssa_and_refuses_mutated_facts() {
+        let evidence = evidence();
+        // The real SSA fact includes None phi operands; its actual Some(BCI) reads still close exactly.
+        assert!(
+            closes(
+                &evidence,
+                &evidence.binding,
+                &evidence.store,
+                &evidence.body_values
+            ),
+            "actual SSA closure failed; store={:#?}; body={:#?}",
+            evidence.store,
+            evidence.body_values
+        );
+
+        let mut extra_write = evidence.body_values.clone();
+        let mut write = evidence.store.clone();
+        write.bci = 1000;
+        extra_write.push(write);
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &evidence.store,
+            &extra_write
+        ));
+
+        let mut missing_load = evidence.body_values.clone();
+        missing_load.retain(|site| site.bci != 57);
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &evidence.store,
+            &missing_load
+        ));
+
+        let mut extra_read = evidence.body_values.clone();
+        let target = extra_read.iter_mut().find(|site| site.bci == 57).unwrap();
+        target.local_reads.push(target.local_reads[0].clone());
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &evidence.store,
+            &extra_read
+        ));
+
+        // These malformed internal facts keep the target slot's BCI set unchanged.
+        let mut other_slot_read = evidence.body_values.clone();
+        let target = other_slot_read
+            .iter_mut()
+            .find(|site| site.bci == 57)
+            .unwrap();
+        let (target_slot, target_fact) = target.local_reads[0].clone();
+        target
+            .local_reads
+            .push((target_slot.wrapping_add(1), target_fact));
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &evidence.store,
+            &other_slot_read
+        ));
+
+        let mut foreign_slot_write = evidence.body_values.clone();
+        let target = foreign_slot_write
+            .iter_mut()
+            .find(|site| site.bci == 57)
+            .unwrap();
+        let (target_slot, target_fact) = target.local_reads[0].clone();
+        target
+            .local_writes
+            .push((target_slot.wrapping_add(1), target_fact));
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &evidence.store,
+            &foreign_slot_write
+        ));
+
+        let mut replaced = evidence.store.clone();
+        replaced.local_writes[0].1.replaced_by = Some(replaced.local_writes[0].1.value);
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &replaced,
+            &evidence.body_values
+        ));
+
+        let mut phi = evidence.store.clone();
+        let block = match &phi.local_writes[0].1.definition {
+            Definition::Instruction { block, .. } => block.clone(),
+            _ => unreachable!(),
+        };
+        phi.local_writes[0].1.definition = Definition::Phi {
+            block,
+            slot: jarde_jvm::method_ir::Slot::Local(evidence.store.local_writes[0].0),
+        };
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &phi,
+            &evidence.body_values
+        ));
+
+        // Internal malformed-fact mutation only; this is not legal-JVM evidence.
+        let mut read_phi = evidence.body_values.clone();
+        let target = read_phi.iter_mut().find(|site| site.bci == 57).unwrap();
+        let (slot, fact) = &mut target.local_reads[0];
+        let block = match &fact.definition {
+            Definition::Instruction { block, .. } => block.clone(),
+            _ => unreachable!(),
+        };
+        fact.definition = Definition::Phi {
+            block,
+            slot: jarde_jvm::method_ir::Slot::Local(*slot),
+        };
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &evidence.store,
+            &read_phi
+        ));
+
+        let mut missing_stored_use = evidence.store.clone();
+        let Some(missing_use) = missing_stored_use.local_writes[0]
+            .1
+            .uses
+            .iter()
+            .position(|use_bci| *use_bci == Some(57))
+        else {
+            panic!("fixture has the BCI 57 use")
+        };
+        missing_stored_use.local_writes[0]
+            .1
+            .uses
+            .remove(missing_use);
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &missing_stored_use,
+            &evidence.body_values
+        ));
+        let mut duplicate_stored_use = evidence.store.clone();
+        duplicate_stored_use.local_writes[0].1.uses.push(Some(57));
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &duplicate_stored_use,
+            &evidence.body_values
+        ));
+        let mut unknown_stored_use = evidence.store.clone();
+        let Some(known_use) = unknown_stored_use.local_writes[0]
+            .1
+            .uses
+            .iter_mut()
+            .find(|use_bci| **use_bci == Some(57))
+        else {
+            panic!("fixture has the BCI 57 use")
+        };
+        *known_use = None;
+        assert!(!closes(
+            &evidence,
+            &evidence.binding,
+            &unknown_stored_use,
+            &evidence.body_values
+        ));
+
+        let mut duplicate_ast_read = evidence.binding.clone();
+        duplicate_ast_read
+            .target_reads
+            .push(duplicate_ast_read.target_reads[0].clone());
+        assert!(!closes(
+            &evidence,
+            &duplicate_ast_read,
+            &evidence.store,
+            &evidence.body_values
+        ));
+        let mut missing_ast_read = evidence.binding.clone();
+        missing_ast_read.target_reads.pop();
+        assert!(!closes(
+            &evidence,
+            &missing_ast_read,
+            &evidence.store,
+            &evidence.body_values
+        ));
+        let foreign = PhysicalMethodId {
+            name: JvmBytes(b"foreign".to_vec()),
+            ..evidence.caller.clone()
+        };
+        for origin in [Origin::direct(57), Origin::derived(57)] {
+            let mut foreign_ast_read = evidence.binding.clone();
+            foreign_ast_read.target_reads[0] = OriginSet::new(origin.in_method(&foreign));
+            assert!(!closes(
+                &evidence,
+                &foreign_ast_read,
+                &evidence.store,
+                &evidence.body_values,
+            ));
+        }
+    }
+}
+
 /// Produces only optional typed foreach edits whose source Signature, retained AST, and same-run
 /// next/checkcast/store facts all identify the same direct List formal and element type.
 fn prove_generic_list_typed_foreach_edits(
@@ -13319,12 +13811,41 @@ fn prove_generic_list_typed_foreach_edits(
             u64::try_from(cast_origin_items.saturating_mul(cast_identity_bytes))
                 .unwrap_or(u64::MAX),
         )?;
+        let mut binding = None;
+        if let Some(candidate_binding) =
+            jarde_java::report::class_source_typed_foreach_binding_site(
+                ast,
+                &jarde_java::report::ClassSourceTypedForEachEdit {
+                    statement_bci: site.statement_bci,
+                    cast_bci,
+                    ty: element_type.clone(),
+                    cast_origin: cast_origin.clone(),
+                    header_origin_count: site.origin_bcis.len(),
+                    binding: None,
+                },
+                budget,
+            )
+            .map_err(|stop| {
+                enum_projection_stop_error(stop, "foreach binding site", "generic_call_ast_missing")
+            })?
+        {
+            if generic_list_foreach_binding_slot_closed(
+                &candidate_binding,
+                store,
+                body_values,
+                caller,
+                budget,
+            )? {
+                binding = Some(candidate_binding);
+            }
+        }
         result.push(jarde_java::report::ClassSourceTypedForEachEdit {
             statement_bci: site.statement_bci,
             cast_bci,
             ty: element_type.clone(),
             cast_origin: cast_origin.clone(),
             header_origin_count: site.origin_bcis.len(),
+            binding,
         });
     }
     result.sort_by_key(|edit| edit.statement_bci);
@@ -17337,8 +17858,41 @@ fn project_generic_call_components(
                                         "generic_call_ast_missing",
                                     )
                                 })?;
+                            let mut binding_work = 0usize;
+                            if let Some(binding) = edit.binding.as_ref() {
+                                budget.charge(
+                                    CountedBudgetDimension::AnalysisSteps,
+                                    u64::try_from(binding.target_reads.len().saturating_add(1))
+                                        .unwrap_or(u64::MAX),
+                                )?;
+                                let mut origins = binding
+                                    .first_binding_origin
+                                    .derived()
+                                    .len()
+                                    .saturating_add(1);
+                                for origin in &binding.target_reads {
+                                    budget.poll()?;
+                                    let origin_count = origin.derived().len().saturating_add(1);
+                                    budget.charge(
+                                        CountedBudgetDimension::AnalysisSteps,
+                                        u64::try_from(origin_count.saturating_mul(identity_bytes))
+                                            .unwrap_or(u64::MAX),
+                                    )?;
+                                    origins = origins.saturating_add(origin_count);
+                                }
+                                origins = origins.saturating_add(
+                                    binding.blank_declaration.as_ref().map_or(0, |(_, origin)| {
+                                        origin.derived().len().saturating_add(1)
+                                    }),
+                                );
+                                binding_work = origins
+                                    .saturating_mul(identity_bytes)
+                                    .saturating_add(binding.target_name.len())
+                                    .saturating_add(1);
+                            }
                             let comparison_work = identity_bytes
                                 .saturating_mul(edit.cast_origin.derived().len().saturating_add(1))
+                                .saturating_add(binding_work)
                                 .saturating_add(match &edit.ty {
                                     jarde_java::ast::Type::Reference(name) => name.len(),
                                     _ => 1,

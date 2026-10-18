@@ -1,12 +1,16 @@
-## 2026-10-18 当前工作：原名 foreach 绑定提升 OpenSpec 1/7
+## 2026-10-18 当前：foreach 原名绑定提升 5/7，完整对照接受，准备产品提交
 
-本节优先；下文是历史。finThrow5/5、nestedFin16/16、父finally7/7及typed7/7/bulk4/4均已交付，不重做。持续goal active。
+本节优先；finThrow5/5、nestedFin16/16、父finally7/7、typed7/7/bulk4/4已交付，勿重做。持续goal active，71单元/612测试及CF11整体计数不增。planning a31f32e35已推；新生产修改尚未提交，不丢弃。
 
-当前 `fold-proved-foreach-local-bindings`：planning已strict374/0，apply ready，root完成基线1.1（1/7）。主规范只同步已交付typed契约；新delta完整MODIFIED，尚未同步未实现fold。目标固定原始debug/none：受证后头名s1/s2或local4/local6，移除直接首copy及唯一可见空声明；其它Iterator/Object包装等不动。必须实际AST子块可见性+全方法slot/value/全部读闭合，未知phi和冲突只跳过fold，保留可靠typed；不加solver/pass/通用scope框架。
+`fold-proved-foreach-local-bindings`现5/7。复用typed事务/物理slot与canonical SSA/opaque AST窄证明；唯一首绑定与所有读写/真实词法可见性闭合才提升原名、删除首copy及无用空声明；缺证保留typed。SsaUse None按定义为phi操作数，只排除无BCI结构边，全部Some/物理/AST读取严格闭合，真实Phi读取仍拒绝。完整原始debug头s1/s2、none头local4/local6，初始化/前后观察控制保持原表示；不用类名白名单，不加IR/solver/pass。
 
-root已核85ca CLI、5150产品源/fixture、20API/40raw、3301源与1518保护pins；完整旧Java/每方法投影/raw report/map已冻结。旧全部六个验收文件与完整原始/控制收据pins不变，8 JADX编译失败与2 outer框架边界保留。此次只是读验旧基线，没有新CLI/JDK运行。持久基线新change/results/baseline-root-v2（222成员/152de0d3…），包括v1检查器仅去顶层usage误报的失败和v2修正。
+最终CLI `/private/tmp/jarde-foreach-fold-broad-root-v1-20261018/candidate-cli`，63586736B/SHA c688920cac70ee9e46681672ebaaba5df2948c5ef5b5f262d006548ca1f83ebe。广门实际808/0/6oldignored，18命令36raw；fmt/CI Clippy/MSRV1.88、Java500/Reader181/公开19等通过，3194构建来源不变，exactclean/target absent。Reader1303/5755/630/4066/14、fingerprint2432，全部旧2429记录不变。focused1..5真实失败、v6旧死helper Clippy失败与数据旧金值失败均保留，不冒称whole-product通过。
 
-Luna并行私有准备：typed_foreach_impl生产/内部测试；typed_foreach_api_tests公开测试和真实fixture；nl_baseline_audit完整对照工具。root尚未应用生产代码或运行新Rust。私有目录 `/private/tmp/jarde-foreach-fold-{impl,public-tests,comparison-prep}-luna-v1-20261018`。root审查后独占共享写/Git/Rust/JDK/CLI/网络；串行工具链，Rust期间不改源/网络，默认stack/至少5GiB/target1GiB每秒guard/finally exactclean。完整新候选对照、广门、两fresh native、自身CI、产品绑定/归档/干净main仍待，不能提前勾任务。
+本CLI完整三方Java已实际重跑并独立接受：原始20命令/8API/4原VM32case；生成20编译18成功2JADX outer框架边界，36VM288case、18wrongroot通过。19case控制137命令/8原VM152行/12API；24 Jarde编译及48VM912case同原，24wrongroot通过，8 JADX String→Integer整类编译失败原样保留。v4精确差分核20API只改受证头/copy/空声明，其它projected/raw text/map/quality/fallback不变。两套真实JDK、driver-only classpath、parentless目标及实际CodeSource都核实。
+
+证据在本change results：baseline/focused1..6/census/dataset/broad/original/generated/controls/projection-delta/preparation。checker-only错误和私有草稿都留存；main九场景MODIFIED规范已逐字同步，尚不能宣称整片交付。下一步提交推送实际产品→其自身CI，同时本地串行两fresh native（5350648285461741569/1570）；使用v2 own-CI prep61精确门/native16门，实际库存/具名结果动态derive，Git blob/bytes/mode绑定产品。工具准备 `/private/tmp/jarde-foreach-local-bindings-own-ci-prep-luna-v2-20261018`。native后才网络收完整CI/官方ZIP并独立接受，再strict/全归档复开/ledger/干净main交付。
+
+root独占共享写/Git/Cargo/JDK/CLI/网络，Luna私有或只读；本地工具串行，Cargo期间不改源/Gitmutation/网络，默认stack/至少5GiB/target1GiB每秒守卫/finally exactclean。14辅助checkout保持detached-clean-main祖先、无新worktree。其它Iterator空声明、equals/remove Object包装及既有AST预扫债务独立；projected add(E) wrapper本来已去除，不新造问题。
 
 ## 2026-10-18 最新交付：typed foreach 7/7、bulk 4/4，自身CI已完整接受
 

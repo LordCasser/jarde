@@ -194,6 +194,9 @@ What the oracle *prints* is generated at run time from a JDK the repository does
         label: "恢复",
         state: "pinned",
         carriers: &[
+            file("tests/fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class"),
+            file("tests/fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class"),
+            record("tests/fixtures/foreach-local-bindings/README.md"),
             file("tests/fixtures/java8/cf11/UpstreamNestedLoops4.class"),
             file("tests/fixtures/java8/cf11/UpstreamNestedLoops4.java"),
             file("tests/fixtures/java8/cf11/NestedLoopSideExitControls.class"),

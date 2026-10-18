@@ -458,3 +458,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-13 自身产品CI实际接受：产品7e93已推送，run38297425449的4jobs/52steps全部成功，逐项核两seed各364targets/3525-0-98、4854来源与本地一致。见[自身CI归档](../../changes/recover-ordered-field-concat-operands/results/own-product-ci-7e93-root-v1/README.md)。父7/8、子5/6仅余真实HEAD主线交付。后续引用LVT与外层try两个变更各1/6：原17场景、同次header异常拒绝trace及独立10场景边界基线均已归档，候选尚未应用/接受。CF11/CF18/71/612完成数保持不变。
 
 2026-10-13 循环/字段交付闭合：产品7e93自身CI已接受，已推送检查点6bfc44833真实clean-main审计通过（4854来源恒同、only main、14aux detached/clean/ancestor/no-target），父8/8、子6/6。见[检查点](../../changes/recover-ordered-field-concat-operands/results/clean-main-checkpoint-root-v1/README.md)。关闭文档提交之后仍由root外置审计实际最终HEAD；整CF11/CF18/71/612计数不增。
+
+2026-10-18 foreach原名绑定提升当前5/7：最终c688 CLI广门808/0/6oldignore、3194构建来源恒同、fmt/CI Clippy/MSRV通过。实际完整原始双JDK对照20编译18成功/2JADX框架边界、36VM288case；19case控制24Jarde编译/48VM912case与原一致、8JADX String→Integer编译失败保留。精确20API差分只允许受证头/copy/空声明，raw text/map/quality/fallback不变。复用窄slot/SSA/词法证明，无新IR/solver/pass；main九场景契约已同步。两fresh native、实际产品自身CI/源Git绑定/clean-main待，整CF11/71/612不增计数，见本片results与handoff。

@@ -1516,12 +1516,24 @@ pub struct ClassSourceAstForEachIterable {
 /// One typed foreach edit whose physical next/cast/store chain was closed by the caller.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceTypedForEachBindingEdit {
+    pub first_binding_bci: u32,
+    pub first_binding_origin: crate::source_map::OriginSet,
+    pub target_name: String,
+    pub declaration_binding: bool,
+    pub blank_declaration: Option<(u32, crate::source_map::OriginSet)>,
+    pub target_reads: Vec<crate::source_map::OriginSet>,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClassSourceTypedForEachEdit {
     pub statement_bci: u32,
     pub cast_bci: u32,
     pub ty: crate::ast::Type,
     pub cast_origin: crate::source_map::OriginSet,
     pub header_origin_count: usize,
+    pub binding: Option<ClassSourceTypedForEachBindingEdit>,
 }
 
 /// A retained formal's emitted name tied to its physical JVM local slot.
@@ -3113,17 +3125,102 @@ pub fn project_class_source_generic_edits(
         }
     }
 
+    let mut binding_by_bci = std::collections::BTreeMap::new();
+    if !foreach_edits.is_empty() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(foreach_edits.len()).unwrap_or(u64::MAX),
+            first_edit_bci,
+        )?;
+        for edit in foreach_edits {
+            crate::stop::poll(budget, Some(edit.statement_bci))?;
+            let Some(expected) = edit.binding.as_ref() else {
+                continue;
+            };
+            let Some(rebuilt) = class_source_typed_foreach_binding_site(ast, edit, budget)? else {
+                continue;
+            };
+            let identity_bytes = class_source_method_identity_work(&ast.projection.member, budget)?;
+            let mut comparison_work = expected
+                .first_binding_origin
+                .derived()
+                .len()
+                .saturating_add(1)
+                .saturating_add(rebuilt.first_binding_origin.derived().len())
+                .saturating_add(1);
+            for plan in [expected, &rebuilt] {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(plan.target_reads.len()).unwrap_or(u64::MAX),
+                    Some(edit.statement_bci),
+                )?;
+                for origin in &plan.target_reads {
+                    crate::stop::poll(budget, Some(edit.statement_bci))?;
+                    let count = origin.derived().len().saturating_add(1);
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(count.saturating_mul(identity_bytes)).unwrap_or(u64::MAX),
+                        Some(edit.statement_bci),
+                    )?;
+                    comparison_work = comparison_work.saturating_add(count);
+                }
+                comparison_work = comparison_work.saturating_add(
+                    plan.blank_declaration
+                        .as_ref()
+                        .map_or(0, |(_, origin)| origin.derived().len().saturating_add(1)),
+                );
+            }
+            let comparison_work = comparison_work
+                .saturating_mul(identity_bytes)
+                .saturating_add(expected.target_name.len())
+                .saturating_add(rebuilt.target_name.len())
+                .saturating_add(2);
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(comparison_work).unwrap_or(u64::MAX),
+                Some(edit.statement_bci),
+            )?;
+            if &rebuilt == expected {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(edit.statement_bci),
+                )?;
+                binding_by_bci.insert(edit.statement_bci, expected);
+            }
+        }
+    }
+
     if !foreach_edits.is_empty() {
         let mut cast_origin_items = 0usize;
         let mut origin_merge_work = 0usize;
         for edit in foreach_edits {
             crate::stop::poll(budget, Some(edit.cast_bci))?;
             let cast_count = edit.cast_origin.derived().len().saturating_add(1);
-            cast_origin_items = cast_origin_items.saturating_add(cast_count);
+            let binding_count = edit.binding.as_ref().map_or(0, |binding| {
+                binding
+                    .first_binding_origin
+                    .derived()
+                    .len()
+                    .saturating_add(1)
+                    .saturating_add(
+                        binding
+                            .blank_declaration
+                            .as_ref()
+                            .map_or(0, |(_, origin)| origin.derived().len().saturating_add(1)),
+                    )
+            });
+            let merged_count = cast_count.saturating_add(binding_count);
+            cast_origin_items = cast_origin_items.saturating_add(merged_count);
             origin_merge_work = origin_merge_work.saturating_add(
                 edit.header_origin_count
-                    .saturating_add(cast_count)
-                    .saturating_mul(cast_count),
+                    .saturating_add(merged_count)
+                    .saturating_mul(merged_count),
             );
         }
         crate::stop::charge(
@@ -3304,7 +3401,9 @@ pub fn project_class_source_generic_edits(
     fn apply_foreach_edits(
         statements: &mut [crate::ast::Stmt],
         edits: &std::collections::BTreeMap<u32, &ClassSourceTypedForEachEdit>,
+        bindings: &std::collections::BTreeMap<u32, &ClassSourceTypedForEachBindingEdit>,
         matched: &mut std::collections::BTreeMap<u32, usize>,
+        folded: &mut std::collections::BTreeSet<u32>,
         member: &PhysicalMethodId,
         budget: &mut Budget,
     ) -> Result<(), crate::stop::StopReason> {
@@ -3391,6 +3490,96 @@ pub fn project_class_source_generic_edits(
                                         unwrapped.presented = Some(edit.ty.clone());
                                         *value = unwrapped;
                                         *ty = edit.ty.clone();
+                                        if let Some(binding) = bindings.get(&bci) {
+                                            if binding.first_binding_origin == first.origin
+                                                && binding.first_binding_bci
+                                                    == first.origin.primary().bci()
+                                                && matches!(&first.kind,
+                                                    StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. }
+                                                        if name == &binding.target_name)
+                                            {
+                                                let identity_bytes =
+                                                    class_source_method_identity_work(
+                                                        member, budget,
+                                                    )?;
+                                                let origins = binding
+                                                    .first_binding_origin
+                                                    .derived()
+                                                    .len()
+                                                    .saturating_add(1);
+                                                charge_class_source_metadata(
+                                                    budget,
+                                                    origins.saturating_mul(identity_bytes),
+                                                    Some(bci),
+                                                )?;
+                                                for origin in std::iter::once(
+                                                    binding.first_binding_origin.primary(),
+                                                )
+                                                .chain(
+                                                    binding.first_binding_origin.derived().iter(),
+                                                ) {
+                                                    crate::stop::poll(budget, Some(origin.bci()))?;
+                                                    let mut derived =
+                                                        crate::source_map::Origin::derived(
+                                                            origin.bci(),
+                                                        );
+                                                    if let Some(origin_method) = origin.method() {
+                                                        derived = derived.in_method(origin_method);
+                                                    }
+                                                    if let Some(cp) = origin.cp() {
+                                                        derived = derived.with_cp(cp);
+                                                    }
+                                                    statement_origin =
+                                                        statement_origin.plus_derived(derived);
+                                                }
+                                                if let Some((blank_bci, blank_origin)) =
+                                                    &binding.blank_declaration
+                                                {
+                                                    let blank_count = blank_origin
+                                                        .derived()
+                                                        .len()
+                                                        .saturating_add(1);
+                                                    charge_class_source_metadata(
+                                                        budget,
+                                                        blank_count.saturating_mul(identity_bytes),
+                                                        Some(*blank_bci),
+                                                    )?;
+                                                    for origin in
+                                                        std::iter::once(blank_origin.primary())
+                                                            .chain(blank_origin.derived().iter())
+                                                    {
+                                                        crate::stop::poll(
+                                                            budget,
+                                                            Some(origin.bci()),
+                                                        )?;
+                                                        let mut derived =
+                                                            crate::source_map::Origin::derived(
+                                                                origin.bci(),
+                                                            );
+                                                        if let Some(origin_method) = origin.method()
+                                                        {
+                                                            derived =
+                                                                derived.in_method(origin_method);
+                                                        }
+                                                        if let Some(cp) = origin.cp() {
+                                                            derived = derived.with_cp(cp);
+                                                        }
+                                                        statement_origin =
+                                                            statement_origin.plus_derived(derived);
+                                                    }
+                                                }
+                                                charge_class_source_metadata(
+                                                    budget,
+                                                    binding.target_name.len(),
+                                                    Some(bci),
+                                                )?;
+                                                crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::OutputBytes,
+                                                    u64::try_from(binding.target_name.len()).unwrap_or(u64::MAX), Some(bci))?;
+                                                *name = binding.target_name.clone();
+                                                body.remove(0);
+                                                folded.insert(bci);
+                                            }
+                                        }
                                         statement.origin = statement_origin;
                                         *matched.entry(bci).or_default() += 1;
                                     }
@@ -3406,14 +3595,18 @@ pub fn project_class_source_generic_edits(
                     else_body,
                     ..
                 } => {
-                    apply_foreach_edits(then_body, edits, matched, member, budget)?;
-                    apply_foreach_edits(else_body, edits, matched, member, budget)?;
+                    apply_foreach_edits(
+                        then_body, edits, bindings, matched, folded, member, budget,
+                    )?;
+                    apply_foreach_edits(
+                        else_body, edits, bindings, matched, folded, member, budget,
+                    )?;
                 }
                 StmtKind::While { body, .. }
                 | StmtKind::DoWhile { body, .. }
                 | StmtKind::Synchronized { body, .. }
                 | StmtKind::ForEach { body, .. } => {
-                    apply_foreach_edits(body, edits, matched, member, budget)?;
+                    apply_foreach_edits(body, edits, bindings, matched, folded, member, budget)?;
                 }
                 StmtKind::For {
                     init, update, body, ..
@@ -3421,22 +3614,34 @@ pub fn project_class_source_generic_edits(
                     apply_foreach_edits(
                         std::slice::from_mut(init.as_mut()),
                         edits,
+                        bindings,
                         matched,
+                        folded,
                         member,
                         budget,
                     )?;
                     apply_foreach_edits(
                         std::slice::from_mut(update.as_mut()),
                         edits,
+                        bindings,
                         matched,
+                        folded,
                         member,
                         budget,
                     )?;
-                    apply_foreach_edits(body, edits, matched, member, budget)?;
+                    apply_foreach_edits(body, edits, bindings, matched, folded, member, budget)?;
                 }
                 StmtKind::Switch { arms, .. } => {
                     for arm in arms {
-                        apply_foreach_edits(&mut arm.body, edits, matched, member, budget)?;
+                        apply_foreach_edits(
+                            &mut arm.body,
+                            edits,
+                            bindings,
+                            matched,
+                            folded,
+                            member,
+                            budget,
+                        )?;
                     }
                 }
                 StmtKind::Try {
@@ -3445,12 +3650,28 @@ pub fn project_class_source_generic_edits(
                     finally_body,
                     ..
                 } => {
-                    apply_foreach_edits(body, edits, matched, member, budget)?;
+                    apply_foreach_edits(body, edits, bindings, matched, folded, member, budget)?;
                     for catch in catches {
-                        apply_foreach_edits(&mut catch.body, edits, matched, member, budget)?;
+                        apply_foreach_edits(
+                            &mut catch.body,
+                            edits,
+                            bindings,
+                            matched,
+                            folded,
+                            member,
+                            budget,
+                        )?;
                     }
                     if let Some(finally_body) = finally_body {
-                        apply_foreach_edits(finally_body, edits, matched, member, budget)?;
+                        apply_foreach_edits(
+                            finally_body,
+                            edits,
+                            bindings,
+                            matched,
+                            folded,
+                            member,
+                            budget,
+                        )?;
                     }
                 }
                 _ => {}
@@ -3459,13 +3680,151 @@ pub fn project_class_source_generic_edits(
         Ok(())
     }
     if !foreach_edits.is_empty() {
+        let mut folded = std::collections::BTreeSet::new();
         apply_foreach_edits(
             &mut program.stmts,
             &foreach_by_bci,
+            &binding_by_bci,
             &mut foreach_matched,
+            &mut folded,
             &ast.projection.member,
             budget,
         )?;
+        for (bci, binding) in &binding_by_bci {
+            if !folded.contains(bci) {
+                continue;
+            }
+            let Some((blank_bci, blank_origin)) = &binding.blank_declaration else {
+                continue;
+            };
+            fn remove_selected_blank(
+                statements: &mut Vec<crate::ast::Stmt>,
+                blank_bci: u32,
+                blank_origin: &crate::source_map::OriginSet,
+                target_name: &str,
+                budget: &mut Budget,
+            ) -> Result<bool, crate::stop::StopReason> {
+                let mut index = 0;
+                while index < statements.len() {
+                    let statement = &mut statements[index];
+                    let bci = statement.origin.primary().bci();
+                    charge_class_source_metadata(budget, 1, Some(bci))?;
+                    if bci == blank_bci
+                        && statement.origin == *blank_origin
+                        && matches!(&statement.kind, crate::ast::StmtKind::Declare { name, value: None, .. } if name == target_name)
+                    {
+                        statements.remove(index);
+                        return Ok(true);
+                    }
+                    let found = match &mut statement.kind {
+                        crate::ast::StmtKind::If {
+                            then_body,
+                            else_body,
+                            ..
+                        } => {
+                            remove_selected_blank(
+                                then_body,
+                                blank_bci,
+                                blank_origin,
+                                target_name,
+                                budget,
+                            )? || remove_selected_blank(
+                                else_body,
+                                blank_bci,
+                                blank_origin,
+                                target_name,
+                                budget,
+                            )?
+                        }
+                        crate::ast::StmtKind::While { body, .. }
+                        | crate::ast::StmtKind::DoWhile { body, .. }
+                        | crate::ast::StmtKind::Synchronized { body, .. }
+                        | crate::ast::StmtKind::ForEach { body, .. } => remove_selected_blank(
+                            body,
+                            blank_bci,
+                            blank_origin,
+                            target_name,
+                            budget,
+                        )?,
+                        crate::ast::StmtKind::For { body, .. } => remove_selected_blank(
+                            body,
+                            blank_bci,
+                            blank_origin,
+                            target_name,
+                            budget,
+                        )?,
+                        crate::ast::StmtKind::Switch { arms, .. } => {
+                            let mut found = false;
+                            for arm in arms {
+                                if remove_selected_blank(
+                                    &mut arm.body,
+                                    blank_bci,
+                                    blank_origin,
+                                    target_name,
+                                    budget,
+                                )? {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            found
+                        }
+                        crate::ast::StmtKind::Try {
+                            body,
+                            catches,
+                            finally_body,
+                            ..
+                        } => {
+                            let mut found = remove_selected_blank(
+                                body,
+                                blank_bci,
+                                blank_origin,
+                                target_name,
+                                budget,
+                            )?;
+                            for catch in catches {
+                                if !found {
+                                    found = remove_selected_blank(
+                                        &mut catch.body,
+                                        blank_bci,
+                                        blank_origin,
+                                        target_name,
+                                        budget,
+                                    )?;
+                                }
+                            }
+                            if !found {
+                                if let Some(body) = finally_body {
+                                    found = remove_selected_blank(
+                                        body,
+                                        blank_bci,
+                                        blank_origin,
+                                        target_name,
+                                        budget,
+                                    )?;
+                                }
+                            }
+                            found
+                        }
+                        _ => false,
+                    };
+                    if found {
+                        return Ok(true);
+                    }
+                    index += 1;
+                }
+                Ok(false)
+            }
+            if !remove_selected_blank(
+                &mut program.stmts,
+                *blank_bci,
+                blank_origin,
+                &binding.target_name,
+                budget,
+            )? {
+                return Ok(None);
+            }
+        }
     }
     if matched.iter().any(|count| *count != 1) || removed.iter().any(|count| *count != 1) {
         return Ok(None);
@@ -4022,6 +4381,989 @@ pub fn class_source_for_each_local_iterables(
         }
     }
     Ok(Some(result))
+}
+
+/// One exact local-binding fold selected from an opaque same-run AST.
+#[doc(hidden)]
+pub fn class_source_typed_foreach_binding_site<'a>(
+    ast: &'a ClassSourceMethodAst,
+    edit: &ClassSourceTypedForEachEdit,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceTypedForEachBindingEdit>, crate::stop::StopReason> {
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind, Type};
+
+    if !ast.projection.complete_code
+        || ast.projection.instruction_bcis.len() != ast.projection.instruction_count
+    {
+        return Ok(None);
+    }
+    let member = &ast.projection.member;
+    let identity_bytes = class_source_method_identity_work(member, budget)?;
+    fn reference_type_name(ty: &Type) -> Option<&str> {
+        match ty {
+            Type::Reference(name) => Some(name.as_str()),
+            _ => None,
+        }
+    }
+    let Some(edit_type_name) = reference_type_name(&edit.ty) else {
+        return Ok(None);
+    };
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        None,
+    )?;
+    let mut pending = vec![(
+        &ast.projection.program.stmts[..],
+        0usize,
+        Vec::<&crate::ast::Stmt>::new(),
+    )];
+    let mut selected: Option<(
+        crate::source_map::OriginSet,
+        crate::source_map::OriginSet,
+        String,
+        bool,
+        Option<(u32, crate::source_map::OriginSet)>,
+        crate::source_map::OriginSet,
+        String,
+    )> = None;
+    let mut selected_count = 0usize;
+    while let Some((statements, index, visible)) = pending.pop() {
+        if index >= statements.len() {
+            continue;
+        }
+        let statement = &statements[index];
+        let bci = statement.origin.primary().bci();
+        crate::stop::poll(budget, Some(bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        let adds_blank = matches!(&statement.kind, StmtKind::Declare { value: None, .. });
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(
+                visible
+                    .len()
+                    .saturating_add(if adds_blank { 1 } else { 0 })
+                    .saturating_add(1),
+            )
+            .unwrap_or(u64::MAX),
+            Some(bci),
+        )?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(visible.len()).unwrap_or(u64::MAX),
+            Some(bci),
+        )?;
+        let mut next_visible = visible.clone();
+        if adds_blank {
+            next_visible.push(statement);
+        }
+        pending.push((statements, index + 1, next_visible));
+        if bci == edit.statement_bci
+            && statement.origin.derived().len().saturating_add(1) == edit.header_origin_count
+            && class_source_origin_set_belongs_to_method(&statement.origin, member, budget)?
+        {
+            if let StmtKind::ForEach {
+                name: header_name,
+                ty,
+                body,
+                ..
+            } = &statement.kind
+            {
+                let Some(header_type_name) = reference_type_name(ty) else {
+                    return Ok(None);
+                };
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(
+                        header_type_name
+                            .len()
+                            .saturating_add("java.lang.Object".len()),
+                    )
+                    .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                if header_type_name == "java.lang.Object" {
+                    selected_count = selected_count.saturating_add(1);
+                    if selected_count > 1 {
+                        return Ok(None);
+                    }
+                    let Some(first) = body.first() else {
+                        return Ok(None);
+                    };
+                    let (target_name, declaration_binding) = match &first.kind {
+                        StmtKind::Declare {
+                            name,
+                            ty,
+                            value: Some(_),
+                            ..
+                        } => {
+                            let Some(first_type_name) = reference_type_name(ty) else {
+                                return Ok(None);
+                            };
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(
+                                    first_type_name.len().saturating_add(edit_type_name.len()),
+                                )
+                                .unwrap_or(u64::MAX),
+                                Some(bci),
+                            )?;
+                            if first_type_name != edit_type_name {
+                                return Ok(None);
+                            }
+                            (name, true)
+                        }
+                        StmtKind::Assign { name, .. } => (name, false),
+                        _ => return Ok(None),
+                    };
+                    let value = match &first.kind {
+                        StmtKind::Declare {
+                            value: Some(value), ..
+                        }
+                        | StmtKind::Assign { value, .. } => value,
+                        _ => return Ok(None),
+                    };
+                    let ExprKind::Cast {
+                        ty: cast_ty,
+                        value: child,
+                    } = &value.kind
+                    else {
+                        return Ok(None);
+                    };
+                    let ExprKind::Local(synthetic_name) = &child.kind else {
+                        return Ok(None);
+                    };
+                    let Some(cast_type_name) = reference_type_name(cast_ty) else {
+                        return Ok(None);
+                    };
+                    let cast_origin_bytes = value
+                        .origin
+                        .derived()
+                        .len()
+                        .saturating_add(1)
+                        .saturating_add(edit.cast_origin.derived().len())
+                        .saturating_add(1)
+                        .saturating_mul(identity_bytes);
+                    charge_class_source_metadata(
+                        budget,
+                        cast_origin_bytes,
+                        Some(value.origin.primary().bci()),
+                    )?;
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(
+                            cast_type_name
+                                .len()
+                                .saturating_add(edit_type_name.len())
+                                .saturating_add(synthetic_name.len())
+                                .saturating_add(header_name.len()),
+                        )
+                        .unwrap_or(u64::MAX),
+                        Some(bci),
+                    )?;
+                    if cast_type_name != edit_type_name
+                        || &value.origin != &edit.cast_origin
+                        || header_name == target_name
+                        || synthetic_name != header_name
+                        || !class_source_origin_set_belongs_to_method(
+                            &first.origin,
+                            member,
+                            budget,
+                        )?
+                        || !class_source_origin_set_belongs_to_method(
+                            &value.origin,
+                            member,
+                            budget,
+                        )?
+                        || !class_source_origin_set_belongs_to_method(
+                            &child.origin,
+                            member,
+                            budget,
+                        )?
+                    {
+                        return Ok(None);
+                    }
+                    let blank = if declaration_binding {
+                        None
+                    } else {
+                        let visible_scan = visible.len().saturating_mul(
+                            target_name
+                                .len()
+                                .saturating_add(edit_type_name.len())
+                                .saturating_add(identity_bytes),
+                        );
+                        charge_class_source_metadata(budget, visible_scan, Some(bci))?;
+                        let mut blank = None;
+                        let mut ambiguous = false;
+                        for prior in &visible {
+                            crate::stop::poll(budget, Some(bci))?;
+                            let StmtKind::Declare {
+                                name,
+                                ty,
+                                value: None,
+                                ..
+                            } = &prior.kind
+                            else {
+                                continue;
+                            };
+                            let Some(prior_type_name) = reference_type_name(ty) else {
+                                continue;
+                            };
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(
+                                    name.len()
+                                        .saturating_add(target_name.len())
+                                        .saturating_add(prior_type_name.len())
+                                        .saturating_add(edit_type_name.len()),
+                                )
+                                .unwrap_or(u64::MAX),
+                                Some(bci),
+                            )?;
+                            if name == target_name && prior_type_name == edit_type_name {
+                                if blank.is_some() {
+                                    ambiguous = true;
+                                } else {
+                                    blank = Some(*prior);
+                                }
+                            }
+                        }
+                        let Some(blank) = blank else {
+                            return Ok(None);
+                        };
+                        if ambiguous
+                            || !class_source_origin_set_belongs_to_method(
+                                &blank.origin,
+                                member,
+                                budget,
+                            )?
+                        {
+                            return Ok(None);
+                        }
+                        Some((blank.origin.primary().bci(), &blank.origin))
+                    };
+                    for origins in [
+                        &statement.origin,
+                        &first.origin,
+                        &value.origin,
+                        &child.origin,
+                    ] {
+                        let count = origins.derived().len().saturating_add(1);
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            u64::try_from(count).unwrap_or(u64::MAX),
+                            Some(bci),
+                        )?;
+                        charge_class_source_metadata(
+                            budget,
+                            count.saturating_mul(identity_bytes),
+                            Some(bci),
+                        )?;
+                    }
+                    if let Some((blank_bci, origins)) = &blank {
+                        let count = origins.derived().len().saturating_add(1);
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            u64::try_from(count).unwrap_or(u64::MAX),
+                            Some(*blank_bci),
+                        )?;
+                        charge_class_source_metadata(
+                            budget,
+                            count.saturating_mul(identity_bytes),
+                            Some(*blank_bci),
+                        )?;
+                    }
+                    let name_bytes = target_name.len().saturating_add(header_name.len());
+                    charge_class_source_metadata(budget, name_bytes, Some(bci))?;
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::OutputBytes,
+                        u64::try_from(name_bytes).unwrap_or(u64::MAX),
+                        Some(bci),
+                    )?;
+                    selected = Some((
+                        statement.origin.clone(),
+                        first.origin.clone(),
+                        target_name.clone(),
+                        declaration_binding,
+                        blank.map(|(blank_bci, origins)| (blank_bci, origins.clone())),
+                        child.origin.clone(),
+                        header_name.clone(),
+                    ));
+                }
+            }
+        }
+        match &statement.kind {
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(visible.len().saturating_mul(2).saturating_add(2))
+                        .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(visible.len().saturating_mul(2)).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                pending.push((else_body, 0, visible.clone()));
+                pending.push((then_body, 0, visible));
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::ForEach { body, .. }
+            | StmtKind::Synchronized { body, .. } => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(visible.len().saturating_add(1)).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                pending.push((body, 0, visible));
+            }
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(visible.len().saturating_mul(3).saturating_add(3))
+                        .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(visible.len().saturating_mul(2)).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                pending.push((body, 0, visible.clone()));
+                pending.push((std::slice::from_ref(update), 0, visible.clone()));
+                pending.push((std::slice::from_ref(init), 0, visible));
+            }
+            StmtKind::Switch { arms, .. } => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(arms.len().saturating_mul(visible.len().saturating_add(1)))
+                        .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(arms.len().saturating_mul(visible.len())).unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                for arm in arms.iter().rev() {
+                    pending.push((&arm.body, 0, visible.clone()));
+                }
+            }
+            StmtKind::Try {
+                body,
+                catches,
+                finally_body,
+                ..
+            } => {
+                let containers = 1usize
+                    .saturating_add(catches.len())
+                    .saturating_add(if finally_body.is_some() { 1 } else { 0 });
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(containers.saturating_mul(visible.len().saturating_add(1)))
+                        .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(containers.saturating_sub(1).saturating_mul(visible.len()))
+                        .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                if let Some(finally_body) = finally_body {
+                    pending.push((finally_body, 0, visible.clone()));
+                }
+                for catch in catches.iter().rev() {
+                    pending.push((&catch.body, 0, visible.clone()));
+                }
+                pending.push((body, 0, visible));
+            }
+            _ => {}
+        }
+    }
+    if selected_count != 1 {
+        return Ok(None);
+    }
+    let Some((
+        header_origin,
+        first_origin,
+        target_name,
+        declaration_binding,
+        blank,
+        synthetic_origin,
+        header_name,
+    )) = selected
+    else {
+        return Ok(None);
+    };
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(ast.projection.parameter_names.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    for name in ast.projection.parameter_names.iter().flatten() {
+        crate::stop::poll(budget, None)?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                name.len()
+                    .saturating_add(target_name.len())
+                    .saturating_add(header_name.len()),
+            )
+            .unwrap_or(u64::MAX),
+            None,
+        )?;
+        if name == &target_name || name == &header_name {
+            return Ok(None);
+        }
+    }
+
+    enum Walk<'a> {
+        Statement(&'a Stmt, bool),
+        Expression(&'a Expr, bool, bool, bool, bool), // in target loop, synthetic-child path, lambda, write-target
+    }
+    let mut work = Vec::new();
+    for statement in ast.projection.program.stmts.iter().rev() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(statement.origin.primary().bci()),
+        )?;
+        work.push(Walk::Statement(statement, false));
+    }
+    let mut target_reads = Vec::new();
+    let mut target_declarations = 0usize;
+    let mut target_assignments = 0usize;
+    let mut synthetic_uses = 0usize;
+    let mut synthetic_headers = 0usize;
+    let mut bad = false;
+    while let Some(item) = work.pop() {
+        match item {
+            Walk::Statement(statement, in_loop) => {
+                let bci = statement.origin.primary().bci();
+                crate::stop::poll(budget, Some(bci))?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(bci),
+                )?;
+                let identity_bytes = class_source_method_identity_work(member, budget)?;
+                let origin_count = statement.origin.derived().len().saturating_add(1);
+                let expected_count = header_origin
+                    .derived()
+                    .len()
+                    .saturating_add(1)
+                    .saturating_add(first_origin.derived().len())
+                    .saturating_add(1)
+                    .saturating_add(
+                        blank
+                            .as_ref()
+                            .map_or(0, |(_, origin)| origin.derived().len().saturating_add(1)),
+                    );
+                charge_class_source_metadata(
+                    budget,
+                    origin_count
+                        .saturating_add(expected_count)
+                        .saturating_mul(identity_bytes),
+                    Some(bci),
+                )?;
+                let selected_loop = statement.origin == header_origin
+                    && matches!(&statement.kind, StmtKind::ForEach { name, .. } if name == &header_name);
+                let selected_binding = statement.origin == first_origin
+                    && matches!(&statement.kind,
+                    StmtKind::Declare { name, value: Some(_), .. } | StmtKind::Assign { name, .. } if name == &target_name);
+                let selected_blank = blank.as_ref().is_some_and(|(_, origin)| &statement.origin == origin
+                    && matches!(&statement.kind, StmtKind::Declare { name, value: None, .. } if name == &target_name));
+                let push_statements = |nodes: &'a [Stmt],
+                                       active: bool,
+                                       work: &mut Vec<Walk<'a>>,
+                                       budget: &mut Budget|
+                 -> Result<(), crate::stop::StopReason> {
+                    for node in nodes.iter().rev() {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            1,
+                            Some(node.origin.primary().bci()),
+                        )?;
+                        work.push(Walk::Statement(node, active));
+                    }
+                    Ok(())
+                };
+                let push_expr = |value: &'a Expr,
+                                 active: bool,
+                                 allow_synthetic: bool,
+                                 lambda: bool,
+                                 write_target: bool,
+                                 work: &mut Vec<Walk<'a>>,
+                                 budget: &mut Budget|
+                 -> Result<(), crate::stop::StopReason> {
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::IrItems,
+                        1,
+                        Some(value.origin.primary().bci()),
+                    )?;
+                    work.push(Walk::Expression(
+                        value,
+                        active,
+                        allow_synthetic,
+                        lambda,
+                        write_target,
+                    ));
+                    Ok(())
+                };
+                let active_body = in_loop || selected_loop;
+                let charge_name =
+                    |name: &str, budget: &mut Budget| -> Result<(), crate::stop::StopReason> {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(
+                                name.len()
+                                    .saturating_add(target_name.len())
+                                    .saturating_add(header_name.len()),
+                            )
+                            .unwrap_or(u64::MAX),
+                            Some(bci),
+                        )
+                    };
+                match &statement.kind {
+                    StmtKind::Declare { name, value, .. } => {
+                        charge_name(name, budget)?;
+                        if name == &target_name {
+                            if !(selected_binding && declaration_binding) && !selected_blank {
+                                bad = true;
+                            } else {
+                                target_declarations += 1;
+                            }
+                        }
+                        if name == &header_name {
+                            bad = true;
+                        }
+                        if let Some(value) = value {
+                            push_expr(
+                                value,
+                                in_loop,
+                                selected_binding,
+                                false,
+                                false,
+                                &mut work,
+                                budget,
+                            )?;
+                        }
+                    }
+                    StmtKind::Assign { name, value } => {
+                        charge_name(name, budget)?;
+                        if name == &target_name {
+                            target_assignments = target_assignments.saturating_add(1);
+                            if !(selected_binding && !declaration_binding) {
+                                bad = true;
+                            }
+                        }
+                        if name == &header_name {
+                            bad = true;
+                        }
+                        push_expr(
+                            value,
+                            in_loop,
+                            selected_binding,
+                            false,
+                            false,
+                            &mut work,
+                            budget,
+                        )?;
+                    }
+                    StmtKind::Expr(value) | StmtKind::Throw { value } => {
+                        push_expr(value, in_loop, false, false, false, &mut work, budget)?
+                    }
+                    StmtKind::Return { value: Some(value) } => {
+                        push_expr(value, in_loop, false, false, false, &mut work, budget)?
+                    }
+                    StmtKind::Fallback { .. } => bad = true,
+                    StmtKind::Return { value: None }
+                    | StmtKind::Break { .. }
+                    | StmtKind::Continue { .. } => {}
+                    StmtKind::Assert { cond, message } => {
+                        push_expr(cond, in_loop, false, false, false, &mut work, budget)?;
+                        if let Some(value) = message {
+                            push_expr(value, in_loop, false, false, false, &mut work, budget)?;
+                        }
+                    }
+                    StmtKind::FieldAssign {
+                        receiver, value, ..
+                    } => {
+                        if let Some(value) = receiver {
+                            push_expr(value, in_loop, false, false, false, &mut work, budget)?;
+                        }
+                        push_expr(value, in_loop, false, false, false, &mut work, budget)?;
+                    }
+                    StmtKind::IndexAssign {
+                        array,
+                        index,
+                        value,
+                        ..
+                    } => {
+                        push_expr(array, in_loop, false, false, false, &mut work, budget)?;
+                        push_expr(index, in_loop, false, false, false, &mut work, budget)?;
+                        push_expr(value, in_loop, false, false, false, &mut work, budget)?;
+                    }
+                    StmtKind::ConstructorCall { args, .. } => {
+                        for arg in args {
+                            push_expr(arg, in_loop, false, false, false, &mut work, budget)?;
+                        }
+                    }
+                    StmtKind::If {
+                        cond,
+                        then_body,
+                        else_body,
+                    } => {
+                        push_expr(cond, in_loop, false, false, false, &mut work, budget)?;
+                        push_statements(else_body, in_loop, &mut work, budget)?;
+                        push_statements(then_body, in_loop, &mut work, budget)?;
+                    }
+                    StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                        push_expr(cond, in_loop, false, false, false, &mut work, budget)?;
+                        push_statements(body, in_loop, &mut work, budget)?;
+                    }
+                    StmtKind::For {
+                        init,
+                        cond,
+                        update,
+                        body,
+                        ..
+                    } => {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            2,
+                            Some(bci),
+                        )?;
+                        work.push(Walk::Statement(update, in_loop));
+                        work.push(Walk::Statement(init, in_loop));
+                        push_expr(cond, in_loop, false, false, false, &mut work, budget)?;
+                        push_statements(body, in_loop, &mut work, budget)?;
+                    }
+                    StmtKind::ForEach {
+                        name,
+                        iterable,
+                        body,
+                        ..
+                    } => {
+                        charge_name(name, budget)?;
+                        if name == &target_name || (name == &header_name && !selected_loop) {
+                            bad = true;
+                        }
+                        if name == &header_name && selected_loop {
+                            synthetic_headers += 1;
+                        }
+                        push_expr(iterable, in_loop, false, false, false, &mut work, budget)?;
+                        push_statements(body, active_body, &mut work, budget)?;
+                    }
+                    StmtKind::Switch { value, arms } => {
+                        push_expr(value, in_loop, false, false, false, &mut work, budget)?;
+                        for arm in arms.iter().rev() {
+                            push_statements(&arm.body, in_loop, &mut work, budget)?;
+                        }
+                    }
+                    StmtKind::Try {
+                        resources,
+                        catches,
+                        body,
+                        finally_body,
+                    } => {
+                        for resource in resources {
+                            charge_name(&resource.name, budget)?;
+                            if resource.name == target_name || resource.name == header_name {
+                                bad = true;
+                            }
+                            push_expr(
+                                &resource.value,
+                                in_loop,
+                                false,
+                                false,
+                                false,
+                                &mut work,
+                                budget,
+                            )?;
+                        }
+                        for catch in catches.iter().rev() {
+                            charge_name(&catch.name, budget)?;
+                            if catch.name == target_name || catch.name == header_name {
+                                bad = true;
+                            }
+                            push_statements(&catch.body, in_loop, &mut work, budget)?;
+                        }
+                        if let Some(body) = finally_body {
+                            push_statements(body, in_loop, &mut work, budget)?;
+                        }
+                        push_statements(body, in_loop, &mut work, budget)?;
+                    }
+                    StmtKind::Synchronized { lock, body } => {
+                        push_expr(lock, in_loop, false, false, false, &mut work, budget)?;
+                        push_statements(body, in_loop, &mut work, budget)?;
+                    }
+                }
+            }
+            Walk::Expression(expression, in_loop, allow_synthetic, in_lambda, write_target) => {
+                let bci = expression.origin.primary().bci();
+                crate::stop::poll(budget, Some(bci))?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(bci),
+                )?;
+                let push = |child: &'a Expr,
+                            synthetic_path: bool,
+                            lambda: bool,
+                            write: bool,
+                            work: &mut Vec<Walk<'a>>,
+                            budget: &mut Budget|
+                 -> Result<(), crate::stop::StopReason> {
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::IrItems,
+                        1,
+                        Some(child.origin.primary().bci()),
+                    )?;
+                    work.push(Walk::Expression(
+                        child,
+                        in_loop,
+                        synthetic_path,
+                        lambda,
+                        write,
+                    ));
+                    Ok(())
+                };
+                match &expression.kind {
+                    ExprKind::Local(name) => {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(
+                                name.len()
+                                    .saturating_add(target_name.len())
+                                    .saturating_add(header_name.len()),
+                            )
+                            .unwrap_or(u64::MAX),
+                            Some(bci),
+                        )?;
+                        if name == &target_name {
+                            if !in_loop || in_lambda || write_target {
+                                bad = true;
+                            } else {
+                                if !class_source_origin_set_belongs_to_method(
+                                    &expression.origin,
+                                    member,
+                                    budget,
+                                )? {
+                                    bad = true;
+                                } else {
+                                    let count = expression.origin.derived().len().saturating_add(1);
+                                    crate::stop::charge(
+                                        budget,
+                                        jarde_reader::budget::CountedBudgetDimension::IrItems,
+                                        u64::try_from(count).unwrap_or(u64::MAX),
+                                        Some(bci),
+                                    )?;
+                                    let identity_bytes =
+                                        class_source_method_identity_work(member, budget)?;
+                                    charge_class_source_metadata(
+                                        budget,
+                                        count.saturating_mul(identity_bytes),
+                                        Some(bci),
+                                    )?;
+                                    target_reads.push(expression.origin.clone());
+                                }
+                            }
+                        }
+                        if name == &header_name {
+                            if allow_synthetic
+                                && expression.origin == synthetic_origin
+                                && !in_lambda
+                                && !write_target
+                            {
+                                synthetic_uses += 1;
+                            } else {
+                                bad = true;
+                            }
+                        }
+                    }
+                    ExprKind::LocalAssign { name, value, .. } => {
+                        if name == &target_name || name == &header_name {
+                            bad = true;
+                        }
+                        push(value, false, in_lambda, false, &mut work, budget)?;
+                    }
+                    ExprKind::ArrayAssign { target, value, .. } => {
+                        push(value, false, in_lambda, false, &mut work, budget)?;
+                        push(target, false, in_lambda, false, &mut work, budget)?;
+                    }
+                    ExprKind::InstanceOf { value, .. }
+                    | ExprKind::Cast { value, .. }
+                    | ExprKind::Not { value }
+                    | ExprKind::Neg { value }
+                    | ExprKind::ArrayLength { array: value } => {
+                        let synthetic_child =
+                            allow_synthetic && matches!(&expression.kind, ExprKind::Cast { .. });
+                        push(value, synthetic_child, in_lambda, false, &mut work, budget)?;
+                    }
+                    ExprKind::Call { receiver, args, .. } => {
+                        for arg in args.iter().rev() {
+                            push(arg, false, in_lambda, false, &mut work, budget)?;
+                        }
+                        if let Some(receiver) = receiver {
+                            push(receiver, false, in_lambda, false, &mut work, budget)?;
+                        }
+                    }
+                    ExprKind::New {
+                        qualifier, args, ..
+                    } => {
+                        for arg in args.iter().rev() {
+                            push(arg, false, in_lambda, false, &mut work, budget)?;
+                        }
+                        if let Some(value) = qualifier {
+                            push(value, false, in_lambda, false, &mut work, budget)?;
+                        }
+                    }
+                    ExprKind::Lambda { params, body } => {
+                        for param in params {
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(
+                                    param
+                                        .name
+                                        .len()
+                                        .saturating_add(target_name.len())
+                                        .saturating_add(header_name.len()),
+                                )
+                                .unwrap_or(u64::MAX),
+                                Some(bci),
+                            )?;
+                            if param.name == target_name || param.name == header_name {
+                                bad = true;
+                            }
+                        }
+                        push(body, false, true, false, &mut work, budget)?;
+                    }
+                    ExprKind::MethodReference { qualifier, .. }
+                    | ExprKind::Field {
+                        receiver: qualifier,
+                        ..
+                    } => push(qualifier, false, in_lambda, false, &mut work, budget)?,
+                    ExprKind::Index { array, index } => {
+                        push(index, false, in_lambda, false, &mut work, budget)?;
+                        push(array, false, in_lambda, false, &mut work, budget)?;
+                    }
+                    ExprKind::PostfixUpdate { target, .. }
+                    | ExprKind::PrefixUpdate { target, .. } => {
+                        push(target, false, in_lambda, true, &mut work, budget)?
+                    }
+                    ExprKind::NewArray {
+                        lengths,
+                        initializers,
+                        ..
+                    } => {
+                        if let Some(values) = initializers {
+                            for value in values.iter().rev() {
+                                push(value, false, in_lambda, false, &mut work, budget)?;
+                            }
+                        }
+                        for value in lengths.iter().rev() {
+                            push(value, false, in_lambda, false, &mut work, budget)?;
+                        }
+                    }
+                    ExprKind::Binary { left, right, .. } => {
+                        push(right, false, in_lambda, false, &mut work, budget)?;
+                        push(left, false, in_lambda, false, &mut work, budget)?;
+                    }
+                    ExprKind::Conditional {
+                        test,
+                        when_true,
+                        when_false,
+                    } => {
+                        push(when_false, false, in_lambda, false, &mut work, budget)?;
+                        push(when_true, false, in_lambda, false, &mut work, budget)?;
+                        push(test, false, in_lambda, false, &mut work, budget)?;
+                    }
+                    ExprKind::Concat { parts } => {
+                        for part in parts.iter().rev() {
+                            push(&part.value, false, in_lambda, false, &mut work, budget)?;
+                        }
+                    }
+                    ExprKind::Integer(_)
+                    | ExprKind::IntegerConstantName { .. }
+                    | ExprKind::Boolean(_)
+                    | ExprKind::Long(_)
+                    | ExprKind::Float(_)
+                    | ExprKind::Double(_)
+                    | ExprKind::Str(_)
+                    | ExprKind::Null
+                    | ExprKind::ClassLiteral { .. }
+                    | ExprKind::Path(_)
+                    | ExprKind::QualifiedThis { .. }
+                    | ExprKind::Super { .. } => {}
+                }
+            }
+        }
+    }
+    if bad
+        || target_declarations
+            != (if declaration_binding { 1 } else { 0 }) + (if blank.is_some() { 1 } else { 0 })
+        || target_assignments != usize::from(!declaration_binding)
+        || synthetic_uses != 1
+        || synthetic_headers != 1
+    {
+        return Ok(None);
+    }
+    // Every target read is now inside the selected body; the caller closes this exact list to the
+    // same-run physical slot loads. Preserve complete origin sets for that bidirectional join.
+    Ok(Some(ClassSourceTypedForEachBindingEdit {
+        first_binding_bci: first_origin.primary().bci(),
+        first_binding_origin: first_origin,
+        target_name,
+        declaration_binding,
+        blank_declaration: blank,
+        target_reads,
+    }))
 }
 
 /// Returns only unambiguous emitted formal names with their physical local slots.
@@ -17213,6 +18555,7 @@ mod generic_call_ast_projection_tests {
                 ty: Type::Reference("java.lang.String".to_owned()),
                 cast_origin,
                 header_origin_count,
+                binding: None,
             },
         )
     }
@@ -17302,6 +18645,409 @@ mod generic_call_ast_projection_tests {
             && o.cp() == Some(9)));
         assert_eq!(ast, before);
     }
+    #[test]
+    fn typed_foreach_binding_fold_handles_inner_and_visible_outer_bindings() {
+        // Internal AST metamorphism only; this does not claim legal-JVM evidence.
+        let (ast, mut edit) = typed_foreach_ast();
+        let mut source = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut source.program.stmts[0].kind else {
+            panic!()
+        };
+        let StmtKind::Declare {
+            ty,
+            name,
+            value: Some(value),
+            ..
+        } = &body[0].kind
+        else {
+            panic!()
+        };
+        let target = name.clone();
+        let target_ty = ty.clone();
+        let cast_value = value.clone();
+        let first_origin = body[0].origin.clone();
+        body[0] = Stmt::new(
+            StmtKind::Assign {
+                name: target.clone(),
+                value: cast_value,
+            },
+            first_origin,
+        );
+        body.push(Stmt::new(
+            StmtKind::Expr(Expr::new(
+                ExprKind::Local(target.clone()),
+                OriginSet::new(crate::source_map::Origin::direct(6)),
+            )),
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        let blank_origin = OriginSet::new(crate::source_map::Origin::direct(5));
+        source.program.stmts.insert(
+            0,
+            Stmt::new(
+                StmtKind::Declare {
+                    ty: target_ty,
+                    source_type_name: None,
+                    name: target.clone(),
+                    value: None,
+                },
+                blank_origin.clone(),
+            ),
+        );
+        let ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        let site =
+            class_source_typed_foreach_binding_site(&ast, &edit, &mut typed_foreach_budget())
+                .unwrap()
+                .unwrap();
+        assert!(!site.declaration_binding);
+        assert_eq!(site.target_name, target);
+        assert_eq!(
+            site.blank_declaration.as_ref().map(|(_, origin)| origin),
+            Some(&blank_origin)
+        );
+        assert_eq!(site.target_reads.len(), 1);
+        edit.binding = Some(site);
+        let projected = project_class_source_generic_edits(
+            &ast,
+            &[],
+            &[],
+            std::slice::from_ref(&edit),
+            &mut typed_foreach_budget(),
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(projected.projection.program.stmts.len(), 1);
+        let StmtKind::ForEach { ty, name, body, .. } = &projected.projection.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        assert_eq!(name, &target);
+        assert_eq!(ty, &Type::Reference("java.lang.String".to_owned()));
+        assert_eq!(body.len(), 1);
+        assert!(
+            matches!(&body[0].kind, StmtKind::Expr(Expr { kind: ExprKind::Local(local), .. }) if local == &target)
+        );
+        assert!(
+            projected.projection.program.stmts[0]
+                .origin
+                .derived()
+                .iter()
+                .any(|origin| origin.bci() == blank_origin.primary().bci())
+        );
+        assert_eq!(ast.projection.program.stmts.len(), 2);
+        assert!(matches!(
+            &ast.projection.program.stmts[0].kind,
+            StmtKind::Declare { value: None, .. }
+        ));
+
+        // A sibling use makes the optional proof fail and leaves the independently typed plan usable.
+        let mut source = (*ast.projection).clone();
+        source.program.stmts.push(Stmt::new(
+            StmtKind::Expr(Expr::new(
+                ExprKind::Local(target),
+                OriginSet::new(crate::source_map::Origin::direct(7)),
+            )),
+            OriginSet::new(crate::source_map::Origin::direct(7)),
+        ));
+        let sibling = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        assert!(
+            class_source_typed_foreach_binding_site(&sibling, &edit, &mut typed_foreach_budget())
+                .unwrap()
+                .is_none()
+        );
+        let typed = project_class_source_generic_edits(
+            &sibling,
+            &[],
+            &[],
+            &[ClassSourceTypedForEachEdit {
+                binding: None,
+                ..edit.clone()
+            }],
+            &mut typed_foreach_budget(),
+        )
+        .unwrap()
+        .unwrap();
+        let StmtKind::ForEach { body, .. } = &typed.projection.program.stmts[1].kind else {
+            panic!()
+        };
+        assert!(matches!(&body[0].kind, StmtKind::Assign { .. }));
+
+        // A blank declaration in a sibling branch is not visible to the foreach branch.
+        let mut branch = (*ast.projection).clone();
+        let loop_stmt = branch.program.stmts.pop().unwrap();
+        let blank = branch.program.stmts.pop().unwrap();
+        branch.program.stmts.push(Stmt::new(
+            StmtKind::If {
+                cond: Expr::new(
+                    ExprKind::Boolean(true),
+                    OriginSet::new(crate::source_map::Origin::direct(8)),
+                ),
+                then_body: vec![blank],
+                else_body: vec![loop_stmt],
+            },
+            OriginSet::new(crate::source_map::Origin::direct(8)),
+        ));
+        let branch_ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(branch),
+        };
+        assert!(
+            class_source_typed_foreach_binding_site(
+                &branch_ast,
+                &edit,
+                &mut typed_foreach_budget()
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        // Same-origin duplicate target assignments remain distinct AST nodes and are rejected.
+        let mut duplicate = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut duplicate.program.stmts[1].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::Assign {
+                name: "saved".to_owned(),
+                value: Expr::new(
+                    ExprKind::Null,
+                    OriginSet::new(crate::source_map::Origin::direct(5)),
+                ),
+            },
+            body[0].origin.clone(),
+        ));
+        let duplicate_ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(duplicate),
+        };
+        assert!(
+            class_source_typed_foreach_binding_site(
+                &duplicate_ast,
+                &edit,
+                &mut typed_foreach_budget()
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn typed_foreach_binding_fold_promotes_direct_first_declaration() {
+        // Internal AST metamorphism only; this does not claim legal-JVM evidence.
+        let (base, mut edit) = typed_foreach_ast();
+        let mut source = (*base.projection).clone();
+        let target = "saved".to_owned();
+        let StmtKind::ForEach { body, .. } = &mut source.program.stmts[0].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::Expr(Expr::new(
+                ExprKind::Local(target.clone()),
+                OriginSet::new(crate::source_map::Origin::direct(6)),
+            )),
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        let ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        edit.binding =
+            class_source_typed_foreach_binding_site(&ast, &edit, &mut typed_foreach_budget())
+                .unwrap();
+        assert!(edit.binding.as_ref().is_some_and(
+            |binding| binding.declaration_binding && binding.blank_declaration.is_none()
+        ));
+        let projected = project_class_source_generic_edits(
+            &ast,
+            &[],
+            &[],
+            std::slice::from_ref(&edit),
+            &mut typed_foreach_budget(),
+        )
+        .unwrap()
+        .unwrap();
+        let StmtKind::ForEach { name, body, .. } = &projected.projection.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        assert_eq!(name, &target);
+        assert_eq!(body.len(), 1);
+        assert!(
+            matches!(&body[0].kind, StmtKind::Expr(Expr { kind: ExprKind::Local(local), .. }) if local == &target)
+        );
+    }
+
+    fn assert_optional_fold_refusal_keeps_typed_edit(
+        source: ClassSourceMethodAstSource,
+        edit: &ClassSourceTypedForEachEdit,
+    ) {
+        let ast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        };
+        assert!(
+            class_source_typed_foreach_binding_site(&ast, edit, &mut typed_foreach_budget(),)
+                .unwrap()
+                .is_none()
+        );
+        let typed_only = ClassSourceTypedForEachEdit {
+            binding: None,
+            ..edit.clone()
+        };
+        let projected = project_class_source_generic_edits(
+            &ast,
+            &[],
+            &[],
+            std::slice::from_ref(&typed_only),
+            &mut typed_foreach_budget(),
+        )
+        .unwrap()
+        .expect("optional fold refusal leaves independently proved typed edit available");
+        let StmtKind::ForEach { ty, body, .. } = &projected.projection.program.stmts[0].kind else {
+            panic!("typed foreach remains")
+        };
+        assert_eq!(ty, &Type::Reference("java.lang.String".to_owned()));
+        assert!(matches!(
+            &body[0].kind,
+            StmtKind::Declare { name, value: Some(Expr { kind: ExprKind::Local(_), .. }), .. }
+                if name == "saved"
+        ));
+    }
+
+    #[test]
+    fn typed_foreach_optional_fold_refuses_shadow_writes_captures_and_fallbacks() {
+        let (ast, edit) = typed_foreach_ast();
+
+        let mut formal = (*ast.projection).clone();
+        formal.parameter_names = vec![Some("saved".to_owned())];
+        formal.parameter_slots = vec![1];
+        assert_optional_fold_refusal_keeps_typed_edit(formal, &edit);
+
+        let mut nested = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut nested.program.stmts[0].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::ForEach {
+                label: None,
+                ty: Type::Reference("java.lang.String".to_owned()),
+                name: "saved".to_owned(),
+                iterable: Expr::direct(ExprKind::Local("input".to_owned()), 6),
+                body: Vec::new(),
+            },
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        assert_optional_fold_refusal_keeps_typed_edit(nested, &edit);
+
+        let mut lambda_capture = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut lambda_capture.program.stmts[0].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::Expr(Expr::direct(
+                ExprKind::Lambda {
+                    params: Vec::new(),
+                    body: Box::new(Expr::direct(ExprKind::Local("saved".to_owned()), 6)),
+                },
+                6,
+            )),
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        assert_optional_fold_refusal_keeps_typed_edit(lambda_capture, &edit);
+
+        let mut local_assign = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut local_assign.program.stmts[0].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::Expr(Expr::direct(
+                ExprKind::LocalAssign {
+                    name: "saved".to_owned(),
+                    value: Box::new(Expr::direct(ExprKind::Integer(1), 6)),
+                    ty: Type::Reference("java.lang.String".to_owned()),
+                },
+                6,
+            )),
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        assert_optional_fold_refusal_keeps_typed_edit(local_assign, &edit);
+
+        let mut prefix_update = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut prefix_update.program.stmts[0].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::Expr(Expr::direct(
+                ExprKind::PrefixUpdate {
+                    target: Box::new(Expr::direct(ExprKind::Local("saved".to_owned()), 6)),
+                    direction: crate::ast::PostfixDirection::Increment,
+                },
+                6,
+            )),
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        assert_optional_fold_refusal_keeps_typed_edit(prefix_update, &edit);
+
+        let mut fallback = (*ast.projection).clone();
+        let StmtKind::ForEach { body, .. } = &mut fallback.program.stmts[0].kind else {
+            panic!()
+        };
+        body.push(Stmt::new(
+            StmtKind::Fallback {
+                reason: "test boundary".to_owned(),
+                bcis: vec![6],
+            },
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        assert_optional_fold_refusal_keeps_typed_edit(fallback, &edit);
+
+        let mut foreign_derived_read = (*ast.projection).clone();
+        let foreign = PhysicalMethodId {
+            name: JvmBytes(b"foreign".to_vec()),
+            ..foreign_derived_read.member.clone()
+        };
+        let StmtKind::ForEach { body, .. } = &mut foreign_derived_read.program.stmts[0].kind else {
+            panic!()
+        };
+        let read = Expr::direct(ExprKind::Local("saved".to_owned()), 6);
+        let read = Expr::new(
+            read.kind,
+            read.origin
+                .plus_derived(crate::source_map::Origin::derived(7).in_method(&foreign)),
+        );
+        body.push(Stmt::new(
+            StmtKind::Expr(read),
+            OriginSet::new(crate::source_map::Origin::direct(6)),
+        ));
+        assert_optional_fold_refusal_keeps_typed_edit(foreign_derived_read, &edit);
+    }
+
+    #[test]
+    fn stale_optional_foreach_binding_plan_falls_back_to_typed_copy() {
+        let (ast, mut edit) = typed_foreach_ast();
+        let mut binding =
+            class_source_typed_foreach_binding_site(&ast, &edit, &mut typed_foreach_budget())
+                .unwrap()
+                .expect("fixture binding proof");
+        binding.target_name = "stale-target".to_owned();
+        edit.binding = Some(binding);
+        let projected = project_class_source_generic_edits(
+            &ast,
+            &[],
+            &[],
+            std::slice::from_ref(&edit),
+            &mut typed_foreach_budget(),
+        )
+        .unwrap()
+        .expect("stale optional plan falls back to typed projection");
+        let StmtKind::ForEach { ty, body, .. } = &projected.projection.program.stmts[0].kind else {
+            panic!("typed foreach remains")
+        };
+        assert_eq!(ty, &Type::Reference("java.lang.String".to_owned()));
+        assert!(
+            matches!(&body[0].kind, StmtKind::Declare { name, value: Some(_), .. } if name == "saved")
+        );
+    }
+
     #[test]
     fn typed_foreach_refuses_mismatched_or_foreign_site_plans_without_mutation() {
         let (ast, edit) = typed_foreach_ast();
