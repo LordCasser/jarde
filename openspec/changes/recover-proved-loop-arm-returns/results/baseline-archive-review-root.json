@@ -1,0 +1,71 @@
+{
+  "status": "passed",
+  "archives": [
+    {
+      "name": "first-refusal-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-proved-loop-arm-returns/results/first-refusal-root-v1/capture.tar.gz",
+        "bytes": 1257613,
+        "sha256": "564087ec09f53b39ded089fec47ff83c8a1c3cecc1ff46e0a9ba80fd199075b3",
+        "capture_review_path": "openspec/changes/recover-proved-loop-arm-returns/results/first-refusal-root-v1/capture-review.json",
+        "capture_review_members_reopened": 43
+      },
+      "tar_member_count": 43,
+      "manifest_entry_count": 42,
+      "manifest_sha256": "ffc8fed3aa942ab07a35d20da562ac15666c4ec77da21d7ec35b4bbbaa24225a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "original-baseline-matrix-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-matrix-root-v1/capture.tar.gz",
+        "bytes": 490333,
+        "sha256": "7ed8bfb27eb2bfe77342d30f8ed1bb4e172575df49ad7a79040794ef6c79a3e8",
+        "capture_review_path": "openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-matrix-root-v1/capture-review.json",
+        "capture_review_members_reopened": 112
+      },
+      "tar_member_count": 112,
+      "manifest_entry_count": 111,
+      "manifest_sha256": "4b8bfa0eb7c7297613508535e9e2e0458a44fcfbc12e5337ea6ad03cbb395df8",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "original-baseline-root-v3",
+      "archive": {
+        "path": "openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-root-v3/capture.tar.gz",
+        "bytes": 868355,
+        "sha256": "7700e8fbb3f27bccfaf8be73cd6e03f33c753487059369a7ce36f0044f376a4c",
+        "capture_review_path": "openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-root-v3/capture-review.json",
+        "capture_review_members_reopened": 129
+      },
+      "tar_member_count": 129,
+      "manifest_entry_count": 128,
+      "manifest_sha256": "b95799304ed8925c6c5eb81d716547daa54c853bbc58968e4ab8b45e8facbacf",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ],
+  "total_members": 284,
+  "tool_sha256": "238a90dc4cd1b903753f1b9dc033150ae219bf25b6333ae3e3faa4a56beb4c84",
+  "tool_source": "#!/usr/bin/env python3\n\"\"\"Read-only verification of capture.tar.gz archives against adjacent reviews/manifests.\"\"\"\nfrom __future__ import annotations\nimport hashlib\nimport json\nimport re\nimport sys\nimport tarfile\nfrom pathlib import Path, PurePosixPath\n\nsys.dont_write_bytecode = True\nRESULTS = Path('/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-exceptional-retry-loops/results')\nOUT = Path('/private/tmp/jarde-prefixed-retry-all-archives-luna-v1-20261018')\nHEX = re.compile(r'^[0-9a-f]{64}$')\n\nclass AuditError(Exception):\n    pass\n\ndef need(ok: bool, msg: str) -> None:\n    if not ok:\n        raise AuditError(msg)\n\ndef sha_bytes(data: bytes) -> str:\n    return hashlib.sha256(data).hexdigest()\n\ndef sha_member(tf: tarfile.TarFile, member: tarfile.TarInfo) -> tuple[int, str]:\n    stream = tf.extractfile(member)\n    need(stream is not None, f'{member.name}: cannot read regular member')\n    digest = hashlib.sha256()\n    size = 0\n    with stream:\n        while True:\n            block = stream.read(1024 * 1024)\n            if not block:\n                break\n            size += len(block)\n            digest.update(block)\n    return size, digest.hexdigest()\n\ndef safe_member_name(name: str) -> bool:\n    if not name or '\\x00' in name or '\\\\' in name or name.startswith('/'):\n        return False\n    if re.match(r'^[A-Za-z]:', name):\n        return False\n    parts = name.split('/')\n    if any(part in ('', '.', '..') for part in parts):\n        return False\n    path = PurePosixPath(name)\n    return not path.is_absolute() and path.as_posix() == name\n\ndef audit_one(archive: Path) -> dict:\n    review_path = archive.parent / 'capture-review.json'\n    need(review_path.is_file() and not review_path.is_symlink(), f'{archive.parent.name}: capture-review.json missing or symlink')\n    review = json.loads(review_path.read_text(encoding='utf-8'))\n    raw = archive.read_bytes()\n    archive_bytes, archive_sha = len(raw), sha_bytes(raw)\n    need(review.get('archive_bytes') == archive_bytes, f'{archive.parent.name}: archive byte count differs from capture-review')\n    need(review.get('archive_sha256') == archive_sha, f'{archive.parent.name}: archive SHA-256 differs from capture-review')\n    need(type(review.get('members_reopened')) is int, f'{archive.parent.name}: invalid members_reopened')\n\n    with tarfile.open(archive, mode='r:gz') as tf:\n        members = tf.getmembers()\n        names = [m.name for m in members]\n        need(len(names) == len(set(names)), f'{archive.parent.name}: duplicate tar member path')\n        for m in members:\n            need(safe_member_name(m.name), f'{archive.parent.name}: unsafe/noncanonical path {m.name!r}')\n            need(m.isfile() and not m.issym() and not m.islnk(), f'{archive.parent.name}: non-regular tar member {m.name!r}')\n            need(m.size >= 0, f'{archive.parent.name}: negative tar size for {m.name!r}')\n        need(review['members_reopened'] == len(members), f'{archive.parent.name}: member count differs from capture-review')\n        need('manifest.json' in names, f'{archive.parent.name}: embedded manifest missing')\n        manifest_member = next(m for m in members if m.name == 'manifest.json')\n        stream = tf.extractfile(manifest_member)\n        need(stream is not None, f'{archive.parent.name}: cannot read manifest')\n        with stream:\n            manifest_bytes = stream.read()\n        manifest = json.loads(manifest_bytes.decode('utf-8'))\n        need(isinstance(manifest, dict), f'{archive.parent.name}: manifest is not a member map')\n        expected_names = set(manifest)\n        actual_names = set(names) - {'manifest.json'}\n        need(expected_names == actual_names,\n             f'{archive.parent.name}: manifest/member set mismatch (missing={sorted(expected_names-actual_names)[:3]}, unlisted={sorted(actual_names-expected_names)[:3]})')\n        checked = []\n        for m in members:\n            if m.name == 'manifest.json':\n                continue\n            expected = manifest[m.name]\n            need(isinstance(expected, dict) and set(expected) == {'bytes', 'sha256'},\n                 f'{archive.parent.name}: malformed manifest entry for {m.name!r}')\n            need(type(expected['bytes']) is int and expected['bytes'] >= 0 and isinstance(expected['sha256'], str)\n                 and HEX.fullmatch(expected['sha256']) is not None,\n                 f'{archive.parent.name}: invalid manifest digest record for {m.name!r}')\n            actual_size, actual_sha = sha_member(tf, m)\n            need(m.size == actual_size == expected['bytes'], f'{archive.parent.name}: byte count mismatch for {m.name!r}')\n            need(actual_sha == expected['sha256'], f'{archive.parent.name}: SHA-256 mismatch for {m.name!r}')\n            checked.append({'path': m.name, 'bytes': actual_size, 'sha256': actual_sha})\n    return {\n        'name': archive.parent.name,\n        'archive': {'path': str(archive), 'bytes': archive_bytes, 'sha256': archive_sha,\n                    'capture_review_path': str(review_path), 'capture_review_members_reopened': review['members_reopened']},\n        'tar_member_count': len(names),\n        'manifest_entry_count': len(checked),\n        'manifest_sha256': sha_bytes(manifest_bytes),\n        'checks': {'archive_review_pin': 'passed', 'unique_paths': 'passed', 'safe_canonical_paths': 'passed',\n                   'regular_members_only': 'passed', 'manifest_set_exact': 'passed',\n                   'member_bytes_and_sha256': 'passed'},\n        'members': checked,\n    }\n\ndef main() -> int:\n    OUT.mkdir(parents=True, exist_ok=True)\n    archives = sorted(RESULTS.glob('*/capture.tar.gz'))\n    entries, errors = [], []\n    for archive in archives:\n        try:\n            entries.append(audit_one(archive))\n        except Exception as exc:\n            errors.append({'name': archive.parent.name, 'error': f'{type(exc).__name__}: {exc}'})\n    report = {\n        'schema': 'prefixed-retry-capture-archive-audit-v1',\n        'status': 'passed' if archives and not errors else 'failed',\n        'results_root': str(RESULTS),\n        'archive_count_discovered': len(archives),\n        'archive_count_verified': len(entries),\n        'error_count': len(errors),\n        'archives': entries,\n        'errors': errors,\n        'limitations': ['This audit covers only capture.tar.gz files discovered at execution time.',\n                       'The later final own-CI archive was not present in this audit and is not claimed as verified.',\n                       'No archive was extracted to disk; member bytes were streamed from tar readers.'],\n    }\n    output = OUT / 'archive-audit.json'\n    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')\n    print(json.dumps({'status': report['status'], 'archives': len(archives),\n                      'verified': len(entries), 'errors': len(errors), 'output': str(output)}, ensure_ascii=False))\n    return 0 if report['status'] == 'passed' else 1\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n"
+}

@@ -2,6 +2,18 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
+## 2026-10-18 当前：TestNestedLoops5 已定位，OpenSpec apply 2/8
+
+使用`recover-proved-loop-arm-returns`（spec-driven）；proposal/design/delta/tasks已生成、strict通过，原始基线及首拒三归档284成员已root独立复开。生产Rust当前仍同755fd产品，尚未集成候选。Luna在私有目录并行准备实现/内部对抗、公开API测试及补充独立验收，root独占共享编辑/Git/工具链。
+
+实际首拒已完成八请求，完整Code/canonical/normal/SSA/effects可查新change results/first-refusal-root-v1：branch9的forward join准确为37，prefix14闭合；child16已恢复完整Loop，natural{16,21,31}、return叶29、ForHeader init15/update31/slot3、gateway34、normal exit/next37均已证明。`loop_arm_join_source`返回None；按实际AST与当前源码，其仅容许joinSome分支、纯natural所有者、缺returnset的latch调用和无后继一律拒绝都不能消费已有return叶。最小修复复用loop_terminal_returns和implicit_tail_latch_origin，要求准确natural∪return owner/完整canonical边/唯一入口出口与既有scope/clone/claim/source边界，不新增公共AST/Frame字段/pass/solver。
+
+诊断目录`/private/tmp/jarde-testnestedloops5-first-refusal-root-v1-20261018`已root独立接受：八公开JSON非usage完全同基线，临时region源码完整恢复，target absent。诊断CLI只用于取证，不能当产品。Luna未执行草稿的offset@18/19与block9/terminal11 gate错误在root编译前修正，错误稿明确保留而非编造失败运行。
+
+补充A/B原始采集`/private/tmp/jarde-testnestedloops5-parameterized-baseline-run-root-v1-20261018`实际65命令/130raw：双javac8/23×debug/none的8target、16原VM48case各同A/B原oracle、16Jarde run fallback/constructor structured、8JADX提取成功。三调用均在同实例上先早返回0、正常完成10、再在已有尾部效果后返回0；效果trace与累计字段来自真实JVM，未手算期望。独立审查及全源码矩阵仍待，task1.3未勾。最终fixture计划布局在design/派发说明，尚未复制进共享tests以维持旧基线source closure可审。
+
+下一步：接受补充baseline与旧完整矩阵，复制精确class/Java fixtures、运行公开预期RED，再root审读集成Luna局部候选并做完整对照。全部收尾含fmt/Clippy/MSRV/reader/标准指纹/P5/双fresh workspace/自身CI；本片不增加CF-11/71/612整体计数。
+
 ## 2026-10-18 当前：TestNestedLoops3 已完成产品验收（7/7）
 
 finThrow5/5、nestedFin16/16、父finally7/7、exception-only11/11、直接数组构造7/7、switch7/7均已交付，勿重复实现。持续推进固定71/612账本；本片不增加CF-11或整体单元数。
