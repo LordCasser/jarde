@@ -1,16 +1,22 @@
-## 2026-10-18 当前验收：Object 参数包装 5/6，产品提交及自身 CI 待完成
+## 2026-10-18 最新交付：Object 参数包装 6/6，自身 CI 完整接受
 
-本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片均已交付，勿重做。当前 `remove-proved-list-object-argument-wrappers` 已集成 Luna v1/v2/v3，任务5/6；持续 goal active。下一步提交推送产品，再实际运行一个 fresh workspace seed5350648285461741569 和产品自身 CI；尚不能声称全部交付。
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片均已交付，勿重做。当前 `remove-proved-list-object-argument-wrappers` 6/6；持续 goal active，CF11整体及71单元/612测试不因本片增加完成数。
 
-最终 CLI `/private/tmp/jarde-object-argument-broad-root-v2-20261018/candidate-cli`，63624704B/SHA56a589ef9a170a1bb2911ed5597c20b2b4e06abf78da845f8fd3946099b2fa51。最终广门812通过/0失败/6旧忽略，fmt/CI Clippy/MSRV1.88 通过，3194来源不变、exactclean/target absent。
+产品 **096a764dce8bb29b2d7d79e86bef6bea880bc848** 已推，实际自身 **CI39138950945** root完整接受4jobs/52官方API步骤；官方ZIP全部52独立step日志齐全，无aggregate重建。两seed各385目标/3770通过/0失败/98旧忽略、65精确门各一次。采集24命令+1官方ZIP，13源码/5fixture绑定产品；root verifier完整stdout/stderr及argv另存。文档后继不冒称另跑产品CI。
 
-只复用现有元素 SSA/cast/store/load/唯一局部证明和 opaque AST 事务；可选精确 String.equals(Object)/List.remove(Object) 清除冗余 Object 展示包装。remove 参数不推断 E，Integer 引用保持 Object overload；可选缺证保留已有可靠泛型/typed foreach，Stop传播。v3逐唯一equals key核验，错key不抑制其它可靠清理，重复key不授权。未引入 IR/pass/solver/公开 API。旧“缺remove AST可撤回核心”的 blocker 已撤回，核心 receiver closure 不能为此放宽。
+最终CLI `/private/tmp/jarde-object-argument-broad-root-v2-20261018/candidate-cli`，63624704B/SHA56a589ef9a170a1bb2911ed5597c20b2b4e06abf78da845f8fd3946099b2fa51。最终广门812/0/6、fmt/CI Clippy/MSRV1.88通过；fresh本地workspace385目标/101批/3770-0-98、20精确门各一次，3194构建与5147native并集5154来源按Git blob/bytes/mode绑定096a。target absent，无待续Cargo/JDK/CLI。
 
-最终 String：原始4VM32case；完整生成20编译18成功、36VM288case、18wrong-root全接受，2次JADX outer/JDK8保留既有major55框架边界。Integer e22 CLI 实际10完整编译/20VM120case；最终56实际26API把Integer完整Java逐字绑定e22、24控制全部非usage JSON绑定旧26eb，不冒称56重跑这些VM。控制旧32整类编译失败仍未运行；成功40树/80VM224重建targetcase实际全同原。全部失败及更正证据持久于本change/results，主java8-recovery规范已同步、18/18 strict。
+复用既有元素SSA/cast/store/load/唯一局部证明与opaque AST事务；精确String.equals(Object)/List.remove(Object)只清除冗余Object展示包装，remove不推断E，Integer引用仍选Object重载，缺可选证明保留可靠泛型/typed，Stop传播。v3按唯一equals key分别证明，错key不阻塞其它可靠清理，重复key不授权；不加IR/pass/solver/公开API。
 
-固定CF11七测试均有冻结基线。TestSequentialLoops历史baseline已独立审查，不再说“待审基线”；当前56的8API已完成，等待root独立审查，不能按旧CLI fallback直接新增机制。当前片不增加CF11/71/612整项完成数。
+最终String原始4VM32case；完整生成20编译18成功/36VM288case/18wrong-root接受，2次JADXouter/JDK8保留major55框架边界。Integer e22实际10完整编译/20VM120case；最终56实际26API把Integer完整Java绑定e22、24控制非usage JSON绑定旧26eb，未冒称56重跑这些VM。控制旧32整类编译失败不运行，成功40树/80VM224重建targetcase实际同原。来源/raw/map与所有真实失败见本change/results。
 
-root独占共享/Git/工具链/网络；Luna只私有/只读。本地工具链串行，Cargo期间不改源/Git、不跑JDK/CLI/network；defaultstack、5GiB余量、target1GiB、每秒守卫、exactclean。当前无待续Cargo/JDK，target absent。准备checker在 `/private/tmp/jarde-current-change-one-seed-acceptance-prep-luna-v2-20261018`（继承18门+2新门），own-CI prep v2（继承63+2新门）待实际执行。
+下一固定SequentialLoops已有最终56完整验收：8API结构化无fallback/全部25BCI；70命令、24完整编译22成功、44VM264case同原、1wrong-root；Jarde16编译全成功，2JADXbundle/JDK8旧major55边界不运行。既有statementful header足够，无新机制。
+
+CF11其余固定输入最终56实际32API+clean，16对default/all文本/raw map一致，全部方法structured且物理BCI来源闭合；NL3/NL5旧baseline fallback是已交付历史，勿重做。NL2/NL4使用同SHA归档leaf目标class迁移旧临时路径，其余参数保留；这不冒称本轮重跑五组JDK或CF11整项验收。
+
+**下一明确缺口：NestedLoops2泛型Signature**。当前结构化循环仍输出raw List与真实String cast。只读架构memo已定位report/ordinary Signature只接受VoidBody、List合同缺get(I)Object两道门；现有result_value_fact可复用，不需新IR。后续先证明primitive/void返回与参数用途census分离，get结果唯一通往物理cast(E)/retained AST，保留真实cast，不凭Signature放开正文或推断E，再写新OpenSpec派Luna实现。尚无下一Spec/生产改动，勿混入已交付片。
+
+主java8-recovery规范已同步，最终strict376/0、apply all_done6/6，24归档/2025成员已root逐字复开（all-archives-root-review-v2.json）。最终关闭文档提交后的实际clean主线/远端HEAD以外置 `/private/tmp/jarde-object-argument-final-clean-main-root-v1-20261018/execution.json` 为准；接续先核Git再推进。root独占共享/Git/工具链/网络，Luna仅私有/只读；本地串行、defaultstack/5GiB/target1GiB/每秒守卫/exactclean，Cargo期间不改源/Git、不跑JDK/CLI/network。
 
 ## 2026-10-18 最新交付：祖先 Iterator 声明清理 7/7
 

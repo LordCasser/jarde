@@ -160,3 +160,7 @@ bafb 产品自身 CI 38119159950 已实际独立验收四job/52step、双seed各
 固定 TestNestedLoops 的精确 String.equals(Object)/List.remove(Object) 冗余展示包装已用既有SSA与投影事务恢复，当前change `remove-proved-list-object-argument-wrappers` 5/6，完整原始/生成JVM对照及812/0/6广门接受；产品提交、自身CI与fresh workspace待完成。Integer引用实际保持remove(Object)，remove不参与E推断。所有编译失败单列，不计运行通过。CF11仍partial，不增加71单元/612测试完成数。
 
 下一固定TestSequentialLoops的冻结基线原已独立接受；不能再按旧缺基线说明重做。最终56 CLI的debug/none、child/bundle、default/all共8API已采集待review，先核现有statementful header恢复路径再决定是否需要新变更。
+
+2026-10-18续：固定TestSequentialLoops最新56 CLI已实际完整对照接受，8API结构化/25BCI全map，70命令/24编译22成功/44VM264case同原、1错根拒绝。Jarde16完整编译全成功；2JADXbundle/JDK8旧major55框架边界不运行。现有statementful loop header已解决旧fallback，无需新增机制。产品096a764dc本地workspace3770/0/98已接受，自身CI尚待，不增加CF11整项计数。
+
+2026-10-18交付：Object包装leaf6/6，产品096a764dc自身CI39138950945完整接受4jobs/52step、两seed各385目标/3770-0-98、65精确门；本地fresh3770/0/98及20门、源码并集5154绑定通过。其余五组固定输入当前56实际32API（NL2/NL4为同SHA归档leaf类）、16对default/all/全部方法BCI map闭合，无本轮新VM声明。当前真实下一缺口是NL2泛型声明：VoidBody返回门与List.get(I)Object合同缺失，仍raw List+物理String cast；已静态分析最小复用，无下一Spec/实现。CF11保持partial，不增加71/612整项数。最终证据入口remove-proved-list-object-argument-wrappers/results。

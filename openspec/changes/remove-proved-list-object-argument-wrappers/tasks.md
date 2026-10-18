@@ -11,4 +11,4 @@
 ## 3. Comparison and delivery
 
 - [x] 3.1 根实际比较原始完整 TestNestedLoops 与 Jarde/JADX 完整生成源码，javac8/23 重编译及双 VM oracle、CodeSource 错根控制、原始/投影事实差分均接受；对独立控制只统计成功完整类的真实运行，保留编译失败。
-- [ ] 3.2 根完成所需 workspace 回归并提交推送产品，验收实际产品自身 CI 全部 jobs/steps，绑定最终 CLI 和来源；同步主规范、账本及 handoff，strict 通过、清理 target、main 干净且与远端一致。
+- [x] 3.2 根完成所需 workspace 回归并提交推送产品，验收实际产品自身 CI 全部 jobs/steps，绑定最终 CLI 和来源；同步主规范、账本及 handoff，strict 通过、清理 target、main 干净且与远端一致。
