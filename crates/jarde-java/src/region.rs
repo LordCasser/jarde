@@ -45,7 +45,7 @@ use std::sync::Arc;
 
 use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, MethodIr, PhiInput, Slot,
-    SsaBlock, SsaInstruction, SsaTable, ValueId,
+    SsaBlock, SsaInstruction, SsaTable, Value, ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{CpEntryFacts, ExceptionHandlerFact, MethodCodeFacts};
@@ -721,6 +721,28 @@ pub enum Region {
         /// Hidden transfers represented by this loop's structure rather than a statement.
         gateway_origins: Vec<u32>,
     },
+    /// A complete, proved entry-split integer prefix loop. The five physical blocks remain one
+    /// owner each; the builder presents the prefix increment at the initial branch and once in
+    /// the recurring body, retaining the same physical source anchor for both statements.
+    EntrySplitLoop {
+        entry: CanonicalBlockId,
+        prefix: CanonicalBlockId,
+        header: CanonicalBlockId,
+        latch: CanonicalBlockId,
+        exit: CanonicalBlockId,
+        entry_test_bci: u32,
+        entry_prefix_taken: bool,
+        prefix_update_bci: u32,
+        prefix_transfer_bci: Option<u32>,
+        header_test_bci: u32,
+        header_continue_taken: bool,
+        latch_update_bci: u32,
+        latch_transfer_bci: u32,
+        return_bci: u32,
+        test_slot: u16,
+        prefix_slot: u16,
+        count_slot: u16,
+    },
     /// An edge in a loop body whose target is this loop's proved Java break destination.
     LoopBreak {
         /// The terminal instruction that transfers to the exit.
@@ -902,7 +924,8 @@ impl Region {
             | Self::LoopBreak { .. }
             | Self::LoopContinue { .. }
             | Self::SwitchBreak { .. }
-            | Self::Fallback { .. } => {}
+            | Self::Fallback { .. }
+            | Self::EntrySplitLoop { .. } => {}
             Self::ShortCircuitValue { tail, .. } => {
                 for region in tail {
                     region.elided_cleanup_bcis(out);
@@ -1060,6 +1083,16 @@ impl Region {
                 blocks
             }
             Self::Fallback { blocks, .. } => blocks.iter().collect(),
+            Self::EntrySplitLoop {
+                entry,
+                prefix,
+                header,
+                latch,
+                exit,
+                ..
+            } => {
+                vec![entry, prefix, header, latch, exit]
+            }
             Self::LoopBreak { .. } => Vec::new(),
             Self::LoopContinue { .. } => Vec::new(),
             Self::SwitchBreak { .. } => Vec::new(),
@@ -1119,6 +1152,7 @@ impl Region {
                 body.is_structured() && catches.iter().all(|clause| clause.body.is_structured())
             }
             Self::Fallback { .. } => false,
+            Self::EntrySplitLoop { .. } => true,
             Self::LoopBreak { .. } => true,
             Self::LoopContinue { .. } => true,
             Self::SwitchBreak { .. } => true,
@@ -1164,6 +1198,7 @@ impl Region {
                 reasons
             }
             Self::Fallback { reason, .. } => vec![reason.clone()],
+            Self::EntrySplitLoop { .. } => Vec::new(),
             Self::LoopBreak { .. } => Vec::new(),
             Self::LoopContinue { .. } => Vec::new(),
             Self::SwitchBreak { .. } => Vec::new(),
@@ -1196,6 +1231,7 @@ impl Region {
             // claim a proof that does not exist.
             Self::Try { .. } => None,
             Self::Fallback { reason, .. } => reason.pass().map(|pass| pass.rule()),
+            Self::EntrySplitLoop { .. } => None,
         }
     }
 }
@@ -1515,6 +1551,18 @@ fn candidate_direct_items<'a>(
             }
         }
         Region::Fallback { .. } | Region::Guard { .. } | Region::Try { .. } => return Ok(None),
+        Region::EntrySplitLoop {
+            entry,
+            prefix,
+            header,
+            latch,
+            exit,
+            ..
+        } => {
+            for block in [entry, prefix, header, latch, exit] {
+                own(&mut blocks, block, budget, charge_inventory)?;
+            }
+        }
         Region::LoopBreak { .. } | Region::LoopContinue { .. } | Region::SwitchBreak { .. } => {}
     }
     Ok(Some((blocks, children)))
@@ -2271,7 +2319,8 @@ pub(crate) fn project_string_switches(
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. }
-            | Region::SwitchBreak { .. } => {}
+            | Region::SwitchBreak { .. }
+            | Region::EntrySplitLoop { .. } => {}
         }
         Ok(())
     }
@@ -2391,6 +2440,656 @@ fn string_switch_pair(
     }))
 }
 
+/// Certifies the one bounded two-entry prefix loop before the ordinary irreducible refusal.
+/// This layer proves only the complete graph/operation/SSA roles; Builder additionally checks the
+/// source-level local decisions and exact `int` descriptor before it stages any statements.
+fn proved_entry_split_loop(
+    canonical: &CanonicalCfg,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &MethodCodeFacts,
+    method_synchronized: Option<bool>,
+    irreducible: &[usize],
+    budget: &mut Budget,
+) -> Result<Option<Region>, StopReason> {
+    let at = canonical.blocks().first().map(|block| block.id().bci());
+    poll(budget, at)?;
+    let blocks = canonical.blocks().len();
+    let edges = canonical.edges().len();
+    let phis = ssa.phis().len();
+    let instructions = code.instructions.len();
+    charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+    if blocks != 5
+        || view.len() != 5
+        || ssa.blocks().len() != 5
+        || edges != 6
+        || !(instructions == 9 || instructions == 10)
+        || ssa.effects().instructions().len() != instructions
+        || irreducible.len() != 3
+        || !canonical.unreachable().is_empty()
+        || !canonical.throw_sites().is_empty()
+        || !canonical.handler_rows().is_empty()
+        || !code.exception_handlers.is_empty()
+        || method_synchronized != Some(false)
+    {
+        return Ok(None);
+    }
+    // Only the narrow five-block candidate pays for its bounded topology and SSA census. This
+    // proof is an optional irreducible recovery: unrelated large irreducible methods must retain
+    // the old refusal without a quadratic speculative charge.
+    let work = u64::try_from(
+        edges
+            .saturating_mul(edges)
+            .saturating_mul(4)
+            .saturating_add(blocks.saturating_mul(blocks))
+            .saturating_add(phis.saturating_mul(8))
+            .saturating_add(instructions.saturating_mul(instructions).saturating_mul(4))
+            .saturating_add(64),
+    )
+    .unwrap_or(u64::MAX);
+    charge(budget, CountedBudgetDimension::AnalysisSteps, work, at)?;
+    for block in canonical.blocks() {
+        poll(budget, Some(block.id().bci()))?;
+        if block.id().is_clone()
+            || block.blocks().len() != 1
+            || !block.protected().is_empty()
+            || block.origin_bcis().len() != 1
+        {
+            return Ok(None);
+        }
+    }
+    if canonical
+        .edges()
+        .iter()
+        .any(|edge| edge.kind() != CanonicalEdgeKind::Normal)
+    {
+        return Ok(None);
+    }
+    let Some(entry) = canonical.blocks().first().map(|block| block.id()) else {
+        return Ok(None);
+    };
+    if irreducible.iter().any(|node| *node >= view.len()) {
+        return Ok(None);
+    }
+    let mut cycle = [None, None, None];
+    for (index, node) in irreducible.iter().copied().enumerate() {
+        cycle[index] = view.id_of(node);
+    }
+    if cycle.iter().any(Option::is_none) {
+        return Ok(None);
+    }
+    let cycle = [cycle[0].unwrap(), cycle[1].unwrap(), cycle[2].unwrap()];
+    if cycle.iter().any(|id| *id == entry) {
+        return Ok(None);
+    }
+    let mut outside = [None, None];
+    let mut outside_len = 0usize;
+    for block in canonical.blocks() {
+        poll(budget, Some(block.id().bci()))?;
+        if block.id() != entry && !cycle.contains(&block.id()) {
+            if outside_len >= outside.len() {
+                return Ok(None);
+            }
+            outside[outside_len] = Some(block.id());
+            outside_len += 1;
+        }
+    }
+    if outside_len != 1 || outside[0].is_none() {
+        return Ok(None);
+    }
+    let exit = outside[0].unwrap();
+
+    let edge_count = |from: &CanonicalBlockId, to: &CanonicalBlockId| {
+        canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == from && edge.to() == to)
+            .count()
+    };
+    let outdegree = |from: &CanonicalBlockId| {
+        canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == from)
+            .count()
+    };
+    if outdegree(exit) != 0 {
+        return Ok(None);
+    }
+    let mut header = None;
+    for candidate in cycle {
+        poll(budget, Some(candidate.bci()))?;
+        if edge_count(candidate, exit) == 1 {
+            if header.is_some() {
+                return Ok(None);
+            }
+            header = Some(candidate);
+        }
+    }
+    let Some(header) = header else {
+        return Ok(None);
+    };
+    let mut prefix = None;
+    for candidate in cycle {
+        poll(budget, Some(candidate.bci()))?;
+        if candidate != header && edge_count(entry, candidate) == 1 {
+            if prefix.is_some() {
+                return Ok(None);
+            }
+            prefix = Some(candidate);
+        }
+    }
+    let Some(prefix) = prefix else {
+        return Ok(None);
+    };
+    let Some(latch) = cycle
+        .iter()
+        .copied()
+        .find(|block| *block != header && *block != prefix)
+    else {
+        return Ok(None);
+    };
+    if outdegree(entry) != 2
+        || outdegree(prefix) != 1
+        || outdegree(header) != 2
+        || outdegree(latch) != 1
+        || edge_count(entry, prefix) != 1
+        || edge_count(entry, header) != 1
+        || edge_count(prefix, header) != 1
+        || edge_count(header, latch) != 1
+        || edge_count(latch, prefix) != 1
+        || edge_count(header, exit) != 1
+    {
+        return Ok(None);
+    }
+
+    let Some(entry_names) = ssa.block(entry) else {
+        return Ok(None);
+    };
+    let Some(prefix_names) = ssa.block(prefix) else {
+        return Ok(None);
+    };
+    let Some(header_names) = ssa.block(header) else {
+        return Ok(None);
+    };
+    let Some(latch_names) = ssa.block(latch) else {
+        return Ok(None);
+    };
+    let Some(exit_names) = ssa.block(exit) else {
+        return Ok(None);
+    };
+    let entry_records = ssa
+        .blocks()
+        .iter()
+        .map(|block| block.entry().len())
+        .sum::<usize>();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(entry_records.saturating_mul(40).saturating_add(5)).unwrap_or(u64::MAX),
+        Some(entry.bci()),
+    )?;
+    poll(budget, Some(entry.bci()))?;
+    let (e_instructions, p_instructions, h_instructions, l_instructions, x_instructions) = (
+        entry_names.instructions(),
+        prefix_names.instructions(),
+        header_names.instructions(),
+        latch_names.instructions(),
+        exit_names.instructions(),
+    );
+    if e_instructions.len() != 2
+        || !(p_instructions.len() == 1 || p_instructions.len() == 2)
+        || h_instructions.len() != 2
+        || l_instructions.len() != 2
+        || x_instructions.len() != 2
+        || [
+            entry_names,
+            prefix_names,
+            header_names,
+            latch_names,
+            exit_names,
+        ]
+        .iter()
+        .any(|block| {
+            block
+                .entry()
+                .iter()
+                .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        })
+    {
+        return Ok(None);
+    }
+    let (entry_load, entry_branch) = (&e_instructions[0], &e_instructions[1]);
+    let prefix_inc = &p_instructions[0];
+    let prefix_transfer_instruction = p_instructions.get(1);
+    let (header_load, header_branch) = (&h_instructions[0], &h_instructions[1]);
+    let (latch_inc, latch_transfer) = (&l_instructions[0], &l_instructions[1]);
+    let (exit_load, return_instruction) = (&x_instructions[0], &x_instructions[1]);
+    let (
+        Some(Operation::Load { slot: test_slot }),
+        Some(Operation::Comparison {
+            op: entry_op,
+            target: entry_target,
+        }),
+    ) = (
+        operations.get(entry_load.bci()),
+        operations.get(entry_branch.bci()),
+    )
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Increment {
+        slot: prefix_slot, ..
+    }) = operations.get(prefix_inc.bci())
+    else {
+        return Ok(None);
+    };
+    let prefix_transfer_bci = if let Some(instruction) = prefix_transfer_instruction {
+        if instruction.opcode() != 0xa7 && instruction.opcode() != 0xc8
+            || operations.get(instruction.bci()) != Some(&Operation::Transfer)
+        {
+            return Ok(None);
+        }
+        Some(instruction.bci())
+    } else {
+        None
+    };
+    let (
+        Some(Operation::Load { slot: count_slot }),
+        Some(Operation::Comparison {
+            op: header_op,
+            target: header_target,
+        }),
+    ) = (
+        operations.get(header_load.bci()),
+        operations.get(header_branch.bci()),
+    )
+    else {
+        return Ok(None);
+    };
+    let (
+        Some(Operation::Increment {
+            slot: latch_slot, ..
+        }),
+        Some(Operation::Transfer),
+    ) = (
+        operations.get(latch_inc.bci()),
+        operations.get(latch_transfer.bci()),
+    )
+    else {
+        return Ok(None);
+    };
+    if !matches!(operations.get(exit_load.bci()), Some(Operation::Load { slot }) if slot == prefix_slot)
+        || operations.get(return_instruction.bci()) != Some(&Operation::Return)
+        || *test_slot == *prefix_slot
+        || *test_slot == *count_slot
+        || *prefix_slot == *count_slot
+        || *latch_slot != *count_slot
+        || !matches!(entry_op, CompareOp::JumpIfZero | CompareOp::JumpIfNotZero)
+        || !matches!(header_op, CompareOp::JumpIfZero | CompareOp::JumpIfNotZero)
+        || !matches!(entry_load.opcode(), 0x15 | 0x1a..=0x1d)
+        || !matches!(header_load.opcode(), 0x15 | 0x1a..=0x1d)
+        || !matches!(exit_load.opcode(), 0x15 | 0x1a..=0x1d)
+        || !matches!(entry_branch.opcode(), 0x99 | 0x9a)
+        || !matches!(header_branch.opcode(), 0x99 | 0x9a)
+        || prefix_inc.opcode() != 0x84
+        || latch_inc.opcode() != 0x84
+        || !matches!(latch_transfer.opcode(), 0xa7 | 0xc8)
+        || return_instruction.opcode() != 0xac
+        || *entry_target != prefix.bci() && *entry_target != header.bci()
+        || *header_target != latch.bci() && *header_target != exit.bci()
+        || entry_op.reads_two()
+        || header_op.reads_two()
+    {
+        return Ok(None);
+    }
+    let entry_prefix_taken = *entry_target == prefix.bci();
+    let header_continue_taken = *header_target == latch.bci();
+
+    let local_entry = |block: &SsaBlock,
+                       slot: u16,
+                       at: u32,
+                       budget: &mut Budget|
+     -> Result<Option<ValueId>, StopReason> {
+        for (candidate, value) in block.entry() {
+            poll(budget, Some(at))?;
+            if *candidate == Slot::Local(slot) {
+                return Ok(Some(*value));
+            }
+        }
+        Ok(None)
+    };
+    let local_written = |instruction: &SsaInstruction, slot: u16| {
+        instruction
+            .writes()
+            .iter()
+            .find_map(|(candidate, value)| (*candidate == Slot::Local(slot)).then_some(*value))
+    };
+    let stack_written = |instruction: &SsaInstruction| {
+        instruction
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| (*slot == Slot::Stack(0)).then_some(*value))
+    };
+    let one_stack_read = |instruction: &SsaInstruction, expected: ValueId| {
+        instruction.reads() == [(Slot::Stack(0), expected)]
+    };
+    let (
+        Some(e0),
+        Some(e_test),
+        Some(e2),
+        Some(p0),
+        Some(p_test),
+        Some(p2),
+        Some(h0),
+        Some(h_test),
+        Some(h2),
+    ) = (
+        local_entry(entry_names, *prefix_slot, entry.bci(), budget)?,
+        local_entry(entry_names, *test_slot, entry.bci(), budget)?,
+        local_entry(entry_names, *count_slot, entry.bci(), budget)?,
+        local_entry(prefix_names, *prefix_slot, prefix.bci(), budget)?,
+        local_entry(prefix_names, *test_slot, prefix.bci(), budget)?,
+        local_entry(prefix_names, *count_slot, prefix.bci(), budget)?,
+        local_entry(header_names, *prefix_slot, header.bci(), budget)?,
+        local_entry(header_names, *test_slot, header.bci(), budget)?,
+        local_entry(header_names, *count_slot, header.bci(), budget)?,
+    )
+    else {
+        return Ok(None);
+    };
+    let (Some(e_stack), Some(h_stack), Some(x_stack), Some(prefix_out), Some(latch_out)) = (
+        stack_written(entry_load),
+        stack_written(header_load),
+        stack_written(exit_load),
+        local_written(prefix_inc, *prefix_slot),
+        local_written(latch_inc, *count_slot),
+    ) else {
+        return Ok(None);
+    };
+    if entry_load.reads() != [(Slot::Local(*test_slot), e_test)]
+        || header_load.reads() != [(Slot::Local(*count_slot), h2)]
+        || exit_load.reads() != [(Slot::Local(*prefix_slot), h0)]
+        || entry_load.writes().len() != 1
+        || header_load.writes().len() != 1
+        || exit_load.writes().len() != 1
+        || !one_stack_read(entry_branch, e_stack)
+        || !one_stack_read(header_branch, h_stack)
+        || !one_stack_read(return_instruction, x_stack)
+        || !entry_branch.writes().is_empty()
+        || !header_branch.writes().is_empty()
+        || !return_instruction.writes().is_empty()
+        || prefix_inc.reads() != [(Slot::Local(*prefix_slot), p0)]
+        || prefix_inc.writes().len() != 1
+        || prefix_transfer_instruction.is_some_and(|instruction| {
+            !instruction.reads().is_empty() || !instruction.writes().is_empty()
+        })
+        || latch_inc.reads() != [(Slot::Local(*count_slot), h2)]
+        || latch_inc.writes().len() != 1
+        || !latch_transfer.reads().is_empty()
+        || !latch_transfer.writes().is_empty()
+        || local_entry(prefix_names, *prefix_slot, prefix.bci(), budget)? != Some(p0)
+        || local_entry(prefix_names, *test_slot, prefix.bci(), budget)? != Some(p_test)
+        || local_entry(prefix_names, *count_slot, prefix.bci(), budget)? != Some(p2)
+        || local_entry(header_names, *prefix_slot, header.bci(), budget)? != Some(h0)
+        || local_entry(header_names, *test_slot, header.bci(), budget)? != Some(h_test)
+        || local_entry(latch_names, *prefix_slot, latch.bci(), budget)? != Some(h0)
+        || local_entry(latch_names, *test_slot, latch.bci(), budget)? != Some(h_test)
+        || local_entry(latch_names, *count_slot, latch.bci(), budget)? != Some(h2)
+        || local_entry(exit_names, *prefix_slot, exit.bci(), budget)? != Some(h0)
+    {
+        return Ok(None);
+    }
+    for (block, block_bci) in [
+        (entry_names, entry.bci()),
+        (prefix_names, prefix.bci()),
+        (header_names, header.bci()),
+        (latch_names, latch.bci()),
+        (exit_names, exit.bci()),
+    ] {
+        for (slot, _) in block.entry() {
+            poll(budget, Some(block_bci))?;
+            if matches!(slot, Slot::Stack(_)) {
+                return Ok(None);
+            }
+        }
+    }
+    let role_values = [
+        e0, e_test, e2, p0, p_test, p2, h0, h_test, h2, e_stack, h_stack, x_stack, prefix_out,
+        latch_out,
+    ];
+    for value in role_values {
+        poll(budget, Some(entry.bci()))?;
+        if !matches!(ssa.value(value).ty(), Value::Int) || ssa.value(value).replaced_by().is_some()
+        {
+            return Ok(None);
+        }
+    }
+    let instruction_definition = |value: ValueId, block: &CanonicalBlockId, bci: u32| matches!(ssa.value(value).def(), Definition::Instruction { block: def_block, bci: def_bci } if def_block == block && *def_bci == bci);
+    if !instruction_definition(e_stack, entry, entry_load.bci())
+        || !instruction_definition(h_stack, header, header_load.bci())
+        || !instruction_definition(x_stack, exit, exit_load.bci())
+        || !instruction_definition(prefix_out, prefix, prefix_inc.bci())
+        || !instruction_definition(latch_out, latch, latch_inc.bci())
+    {
+        return Ok(None);
+    }
+    let one_use = |value: ValueId, block: &CanonicalBlockId, bci: u32| {
+        let uses = ssa.value(value).uses();
+        uses.len() == 1 && uses[0].block() == block && uses[0].bci() == Some(bci)
+    };
+    if !one_use(e_stack, entry, entry_branch.bci())
+        || !one_use(h_stack, header, header_branch.bci())
+        || !one_use(x_stack, exit, return_instruction.bci())
+    {
+        return Ok(None);
+    }
+
+    let Some(prefix_node) = view.index_of(prefix) else {
+        return Ok(None);
+    };
+    let Some(header_node) = view.index_of(header) else {
+        return Ok(None);
+    };
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        6,
+        Some(prefix.bci()),
+    )?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        4,
+        Some(prefix.bci()),
+    )?;
+    poll(budget, Some(prefix.bci()))?;
+    // Phi inputs follow BlockFrame's logical-input order: source CanonicalBlockId first.
+    // This candidate has only plain normal edges, so sorting these proved predecessor IDs
+    // reproduces that order; petgraph's incoming-neighbour enumeration does not.
+    let mut prefix_predecessors = view.predecessors(prefix_node);
+    prefix_predecessors.sort_unstable_by(|left, right| view.id_of(*left).cmp(&view.id_of(*right)));
+    poll(budget, Some(header.bci()))?;
+    let mut header_predecessors = view.predecessors(header_node);
+    header_predecessors.sort_unstable_by(|left, right| view.id_of(*left).cmp(&view.id_of(*right)));
+    let phi_matches = |block: &CanonicalBlockId,
+                       predecessors: &[usize],
+                       slot: u16,
+                       expected: [(&CanonicalBlockId, ValueId); 2],
+                       budget: &mut Budget|
+     -> Result<bool, StopReason> {
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(phis.saturating_add(2)).unwrap_or(u64::MAX),
+            Some(block.bci()),
+        )?;
+        poll(budget, Some(block.bci()))?;
+        if predecessors.len() != expected.len() {
+            return Ok(false);
+        }
+        let mut found = false;
+        for phi in ssa.phis() {
+            poll(budget, Some(block.bci()))?;
+            if phi.block() == block && phi.slot() == Slot::Local(slot) {
+                if found || phi.inputs().len() != expected.len() {
+                    return Ok(false);
+                }
+                for (index, (predecessor, expected_value)) in expected.iter().enumerate() {
+                    let Some(actual_predecessor) = view.id_of(predecessors[index]) else {
+                        return Ok(false);
+                    };
+                    if actual_predecessor != *predecessor
+                        || phi.inputs().get(index) != Some(&PhiInput::Value(*expected_value))
+                    {
+                        return Ok(false);
+                    }
+                }
+                let Some(block_state) = ssa.block(block) else {
+                    return Ok(false);
+                };
+                if local_entry(block_state, slot, block.bci(), budget)? != Some(phi.value())
+                    || !matches!(ssa.value(phi.value()).def(), Definition::Phi { block: def_block, slot: Slot::Local(def_slot) } if def_block == block && *def_slot == slot)
+                    || ssa.value(phi.value()).replaced_by().is_some()
+                    || !matches!(ssa.value(phi.value()).ty(), Value::Int)
+                {
+                    return Ok(false);
+                }
+                found = true;
+            }
+        }
+        Ok(found)
+    };
+    if !phi_matches(
+        prefix,
+        &prefix_predecessors,
+        *prefix_slot,
+        [(entry, e0), (latch, h0)],
+        budget,
+    )? || !phi_matches(
+        prefix,
+        &prefix_predecessors,
+        *test_slot,
+        [(entry, e_test), (latch, h_test)],
+        budget,
+    )? || !phi_matches(
+        prefix,
+        &prefix_predecessors,
+        *count_slot,
+        [(entry, e2), (latch, latch_out)],
+        budget,
+    )? || !phi_matches(
+        header,
+        &header_predecessors,
+        *prefix_slot,
+        [(entry, e0), (prefix, prefix_out)],
+        budget,
+    )? || !phi_matches(
+        header,
+        &header_predecessors,
+        *test_slot,
+        [(entry, e_test), (prefix, p_test)],
+        budget,
+    )? || !phi_matches(
+        header,
+        &header_predecessors,
+        *count_slot,
+        [(entry, e2), (prefix, p2)],
+        budget,
+    )? {
+        return Ok(None);
+    }
+    for effect in ssa.effects().instructions() {
+        poll(budget, Some(effect.bci()))?;
+        if effect.may_throw() || !effect.handlers().is_empty() {
+            return Ok(None);
+        }
+    }
+    let expected_bcis = [
+        entry_load.bci(),
+        entry_branch.bci(),
+        prefix_inc.bci(),
+        header_load.bci(),
+        header_branch.bci(),
+        latch_inc.bci(),
+        latch_transfer.bci(),
+        exit_load.bci(),
+        return_instruction.bci(),
+    ];
+    let is_expected = |bci| expected_bcis.contains(&bci) || prefix_transfer_bci == Some(bci);
+    for (index, effect) in ssa.effects().instructions().iter().enumerate() {
+        poll(budget, Some(effect.bci()))?;
+        if !is_expected(effect.bci())
+            || ssa.effects().instructions()[..index]
+                .iter()
+                .any(|prior| prior.bci() == effect.bci())
+        {
+            return Ok(None);
+        }
+    }
+    for (index, instruction) in code.instructions.iter().enumerate() {
+        poll(budget, Some(instruction.bci))?;
+        if !is_expected(instruction.bci)
+            || operations.get(instruction.bci).is_none()
+            || code.instructions[..index]
+                .iter()
+                .any(|prior| prior.bci == instruction.bci)
+        {
+            return Ok(None);
+        }
+    }
+    if expected_bcis.iter().any(|bci| {
+        !code
+            .instructions
+            .iter()
+            .any(|instruction| instruction.bci == *bci)
+            || !ssa
+                .effects()
+                .instructions()
+                .iter()
+                .any(|effect| effect.bci() == *bci)
+    }) || prefix_transfer_bci.is_some_and(|bci| {
+        !code
+            .instructions
+            .iter()
+            .any(|instruction| instruction.bci == bci)
+            || !ssa
+                .effects()
+                .instructions()
+                .iter()
+                .any(|effect| effect.bci() == bci)
+    }) || code.instructions.len() != 9 + usize::from(prefix_transfer_bci.is_some())
+    {
+        return Ok(None);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        5,
+        Some(entry.bci()),
+    )?;
+    Ok(Some(Region::EntrySplitLoop {
+        entry: entry.clone(),
+        prefix: prefix.clone(),
+        header: header.clone(),
+        latch: latch.clone(),
+        exit: exit.clone(),
+        entry_test_bci: entry_branch.bci(),
+        entry_prefix_taken,
+        prefix_update_bci: prefix_inc.bci(),
+        prefix_transfer_bci,
+        header_test_bci: header_branch.bci(),
+        header_continue_taken,
+        latch_update_bci: latch_inc.bci(),
+        latch_transfer_bci: latch_transfer.bci(),
+        return_bci: return_instruction.bci(),
+        test_slot: *test_slot,
+        prefix_slot: *prefix_slot,
+        count_slot: *count_slot,
+    }))
+}
+
 /// Recovers the region tree of one method from the projection, the decoded operations and the
 /// decode facts the same read produced.
 ///
@@ -2453,7 +3152,21 @@ pub(crate) fn recover(
         .flat_map(|edge| [edge.from().clone(), edge.to().clone()])
         .collect();
     let irreducible = view.irreducible_blocks(&catch_joins);
-    if !irreducible.is_empty() {
+    let entry_split = if irreducible.is_empty() {
+        None
+    } else {
+        proved_entry_split_loop(
+            canonical,
+            view,
+            ssa,
+            operations,
+            code,
+            method_synchronized,
+            &irreducible,
+            budget,
+        )?
+    };
+    if !irreducible.is_empty() && entry_split.is_none() {
         let bcis = irreducible
             .iter()
             .filter_map(|node| view.id_of(*node).map(CanonicalBlockId::bci))
@@ -2557,9 +3270,53 @@ pub(crate) fn recover(
         unclosed_tail_at: None,
     };
     let mut regions = Vec::new();
-    // The canonical graph publishes the method entry first: the normalization creates a node for
-    // the entry and for every call site it enters, so index 0 is where the body starts.
-    let mut current = canonical.blocks().first().map(|block| block.id().clone());
+    let mut current = if let Some(region) = entry_split {
+        let Region::EntrySplitLoop {
+            entry,
+            prefix,
+            header,
+            latch,
+            exit,
+            ..
+        } = &region
+        else {
+            unreachable!("the entry-split proof returns its matching region")
+        };
+        charge(
+            &mut *walker.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            5,
+            Some(entry.bci()),
+        )?;
+        charge(
+            &mut *walker.budget,
+            CountedBudgetDimension::IrItems,
+            6,
+            Some(entry.bci()),
+        )?;
+        for block in [entry, prefix, header, latch, exit] {
+            poll(&mut *walker.budget, Some(block.bci()))?;
+            let Some(node) = walker.view.index_of(block) else {
+                return Ok(quoted_whole(
+                    live,
+                    FallbackReason::Irreducible {
+                        blocks: irreducible
+                            .iter()
+                            .filter_map(|node| walker.view.id_of(*node).map(CanonicalBlockId::bci))
+                            .collect(),
+                    },
+                    canonical,
+                ));
+            };
+            walker.visited.insert(node);
+        }
+        regions.push(region);
+        None
+    } else {
+        // The canonical graph publishes the method entry first: the normalization creates a node for
+        // the entry and for every call site it enters, so index 0 is where the body starts.
+        canonical.blocks().first().map(|block| block.id().clone())
+    };
     if current.is_some() && !canonical.unreachable().is_empty() {
         let entry = canonical.blocks()[0].id().clone();
         if canonical.unreachable().contains(&entry) {
@@ -6811,7 +7568,8 @@ impl Walker<'_> {
                 | Region::Guard { .. }
                 | Region::LoopBreak { .. }
                 | Region::LoopContinue { .. }
-                | Region::SwitchBreak { .. } => true,
+                | Region::SwitchBreak { .. }
+                | Region::EntrySplitLoop { .. } => true,
                 Region::If {
                     then_arm, else_arm, ..
                 }
@@ -28078,6 +28836,228 @@ mod tests {
             saw_proof_stop,
             "dynamic budget sweep found no in-proof Stop at BCI 23"
         );
+    }
+    #[test]
+    fn entry_split_region_proof_uses_real_ir_and_stops_before_publication() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::{CancellationToken, Limits};
+        use jarde_reader::classfile::MethodCodeFacts;
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const POSITIVE: &[u8] =
+            include_bytes!("../../../tests/fixtures/cf08-entry-split/cf08/EntrySplitCases.class");
+        const TOPOLOGY: &[u8] = include_bytes!(
+            "../../../tests/fixtures/cf08-entry-split/cf08/EntrySplitTopologyRefusals.class"
+        );
+
+        fn limits(analysis_steps: u64) -> Limits {
+            Limits {
+                input_bytes: 1 << 20,
+                archive_entries: 100,
+                entry_bytes: 1 << 20,
+                read_bytes: 1 << 20,
+                class_bytes: 1 << 20,
+                attribute_bytes: 1 << 20,
+                code_bytes: 1 << 20,
+                result_items: 1 << 20,
+                output_bytes: 1 << 20,
+                class_headers: 100,
+                method_bodies: 100,
+                ir_items: 1 << 20,
+                ir_edges: 1 << 20,
+                analysis_steps,
+                normalization_clones: 1 << 20,
+                nested_depth: 32,
+                dependency_depth: 32,
+                elapsed_millis: u64::MAX,
+            }
+        }
+
+        fn with_method_ir(
+            bytes: &[u8],
+            name: &str,
+            descriptor: &str,
+            inspect: impl FnOnce(
+                &CanonicalCfg,
+                &NormalFlowView,
+                &SsaTable,
+                &Operations,
+                &MethodCodeFacts,
+            ),
+        ) {
+            let mut analysis_budget = Budget::new(limits(1 << 20));
+            let snapshot =
+                ArtifactSnapshot::open(ArtifactInput::bytes(bytes.to_vec()), &mut analysis_budget)
+                    .expect("fixture class opens");
+            let definition = PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(bytes).to_hex().to_string()),
+                    length: u64::try_from(bytes.len()).expect("fixture length fits"),
+                },
+                variant: PhysicalVariant::Base,
+            };
+            let domain = LoadDomain {
+                loader: LoaderId("app".to_owned()),
+                parent_loader: None,
+                delegation: DelegationPolicy::ParentFirst,
+                roots: vec![LoadRoot::StandaloneClass {
+                    snapshot: snapshot.id().clone(),
+                }],
+                module_mode: ModuleMode::ClassPath,
+                external_override: RuntimeUncertainty::None,
+                runtime_transformation: RuntimeUncertainty::None,
+            };
+            let analysis = analyze_method_ir(
+                &[snapshot.clone()],
+                &MethodAnalysisRequest {
+                    environment: ResolutionEnvironment {
+                        runtime: RuntimeView {
+                            physical: PhysicalView {
+                                snapshot: snapshot.id().clone(),
+                                scope: PhysicalScope::SnapshotAll,
+                            },
+                            profile: RuntimeProfile {
+                                java_release: 8,
+                                multi_release: MultiReleasePolicy::Disabled,
+                                layout: LayoutMode::Generic,
+                            },
+                            load_domain: domain.clone(),
+                        },
+                        domains: vec![domain],
+                        providers: Vec::new(),
+                    },
+                    method: PhysicalMethodId {
+                        owner: definition,
+                        name: JvmBytes(name.as_bytes().to_vec()),
+                        descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+                    },
+                    stages: AnalysisStage::ALL.to_vec(),
+                },
+                &mut analysis_budget,
+            )
+            .expect("fixture method has all real IR stages");
+            let ir = analysis.ir();
+            let canonical = ir.canonical().expect("canonical CFG");
+            let ssa = ir.ssa().expect("SSA table");
+            let code = ir.code().expect("decoded method code");
+            let operations = Operations::of(code, ir.constant_pool());
+            let view = NormalFlowView::build(canonical, &mut analysis_budget)
+                .expect("normal-flow view builds");
+            inspect(canonical, &view, ssa, &operations, code);
+        }
+
+        let prove = |canonical: &CanonicalCfg,
+                     view: &NormalFlowView,
+                     ssa: &SsaTable,
+                     operations: &Operations,
+                     code: &MethodCodeFacts,
+                     budget: &mut Budget| {
+            let irreducible = view.irreducible_blocks(&BTreeSet::new());
+            proved_entry_split_loop(
+                canonical,
+                view,
+                ssa,
+                operations,
+                code,
+                Some(false),
+                &irreducible,
+                budget,
+            )
+        };
+
+        for (name, descriptor) in [
+            ("test", "(IZI)I"),
+            ("signed", "(IZI)I"),
+            ("shifted", "(IIIZI)I"),
+            ("inverted", "(IZI)I"),
+        ] {
+            with_method_ir(
+                POSITIVE,
+                name,
+                descriptor,
+                |canonical, view, ssa, operations, code| {
+                    let entry_bci = canonical.blocks().first().expect("entry block").id().bci();
+                    let mut proof_budget = Budget::new(limits(1 << 20));
+                    let region = prove(canonical, view, ssa, operations, code, &mut proof_budget)
+                        .expect("ample budget completes proof");
+                    assert!(
+                        matches!(region, Some(Region::EntrySplitLoop { .. })),
+                        "{name}"
+                    );
+                    let measured = proof_budget.usage();
+                    assert!(measured.analysis_steps > 1, "proof work was charged");
+                    assert_eq!(
+                        measured.ir_items, 11,
+                        "five owner records plus predecessor vectors"
+                    );
+
+                    if name == "test" {
+                        let mut short_budget = Budget::new(limits(1));
+                        let stopped =
+                            prove(canonical, view, ssa, operations, code, &mut short_budget);
+                        assert_eq!(
+                            stopped,
+                            Err(StopReason::Budget {
+                                dimension: CountedBudgetDimension::AnalysisSteps,
+                                written: 0,
+                                limit: 1,
+                                at: Some(entry_bci),
+                            })
+                        );
+                        assert_eq!(short_budget.usage().analysis_steps, 1);
+                        assert_eq!(short_budget.usage().ir_items, 0);
+
+                        let token = CancellationToken::new();
+                        token.cancel();
+                        let mut cancelled = Budget::with_cancellation_token(limits(1 << 20), token);
+                        assert_eq!(
+                            prove(canonical, view, ssa, operations, code, &mut cancelled),
+                            Err(StopReason::Cancelled {
+                                at: Some(entry_bci)
+                            })
+                        );
+                        assert_eq!(cancelled.usage().analysis_steps, 0);
+                        assert_eq!(cancelled.usage().ir_items, 0);
+                    }
+                },
+            );
+        }
+
+        for (name, descriptor) in [
+            ("extraEntry", "(IZI)I"),
+            ("extraExit", "(IZI)I"),
+            ("extraLive", "(IZZI)I"),
+            ("stackEscape", "(IZI)I"),
+        ] {
+            with_method_ir(
+                TOPOLOGY,
+                name,
+                descriptor,
+                |canonical, view, ssa, operations, code| {
+                    let mut proof_budget = Budget::new(limits(1 << 20));
+                    assert_eq!(
+                        prove(canonical, view, ssa, operations, code, &mut proof_budget)
+                            .expect("ample budget completes refusal"),
+                        None,
+                        "topology control {name} remains outside the exact proof"
+                    );
+                },
+            );
+        }
     }
 }
 

@@ -43,7 +43,7 @@
 #### Scenario: Budget and cancellation do not publish half a duplicated prefix
 
 - **WHEN** 候选拓扑/SSA证明、复制前缀、任一AST输出或来源物化遭遇真实预算拒付或取消
-- **THEN** 系统 MUST 原样传播停止原因和实际用量，未完成正文/映射不发布，不能回退成成功空代码、只留初始更新或仅留循环尾更新；重复展示的真实输出分别计费
+- **THEN** 系统 MUST 原样保留停止原因和实际用量；正文构建或提交前的停止不发布正文/映射，不能回退成成功空代码、只留初始更新或仅留循环尾更新，重复展示的真实输出分别计费；正文完整提交后的可选SourceMap物化停止 SHALL 沿用既有EvidencePhase契约，保留完整正文并仅交付完整节点的可靠映射前缀，显式标记Partial/None及原Stop，不发布半个节点或伪称完整映射
 
 #### Scenario: Complete comparison does not imply whole-family coverage
 

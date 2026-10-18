@@ -12317,7 +12317,12 @@ mod tests {
             // they add two classes, twenty bodies and thirty-six branch targets.
             // Assignment-condition widening adds six frozen classes: thirty Code bodies,
             // twelve direct branch targets, no handlers or subroutines (independent byte census).
-            (1311, 5805, 630, 4114, 14),
+            // Entry-split controls add five complete verified classes, nineteen Code bodies,
+            // one handler, fifty-one direct targets and two legacy jsr calls; raw-Code census
+            // agrees with both JVM verification legs and the frozen fixture manifest.
+            // Independent slot-permutation/counter-up control adds one verified class,
+            // three Code bodies and six direct targets, with no handler or jsr.
+            (1317, 5827, 631, 4171, 16),
             "fixture population changed: re-measure these counts"
         );
     }
