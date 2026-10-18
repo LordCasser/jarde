@@ -2520,7 +2520,7 @@ fn proved_entry_split_loop(
         return Ok(None);
     }
     let cycle = [cycle[0].unwrap(), cycle[1].unwrap(), cycle[2].unwrap()];
-    if cycle.iter().any(|id| *id == entry) {
+    if cycle.contains(&entry) {
         return Ok(None);
     }
     let mut outside = [None, None];
