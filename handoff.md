@@ -1,3 +1,31 @@
+## 2026-10-18 当前验收：祖先 Iterator 产品及自身CI通过，6/7待主线关闭
+
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片foreach均已交付，勿重做。当前 `prune-proved-ancestor-iterator-declarations` 6/7：实际产品 **ea2aaf042ba91572727abb48c4b6ae8db3ca93a8** 已推；自身 **CI39130065483** 已root完整接受4jobs/52官方step/63精确门，全部52独立ZIP step成员齐全，无aggregate补造。
+
+两fresh native实际各385目标/101批/3768通过/0失败/98旧忽略，18门每轮各一次，全3866具名结果逐target同；3194构建/5147native并集5154按Git blob/bytes/mode绑定ea2a。actual复核三命令 `/private/tmp/jarde-ancestor-iterator-workspace-acceptance-root-v1-20261018/execution.json`；target absent，无Cargo待续。最终CLI26eb321d0810a54328f7880483c6c5a5c2033c2ad747f7b177a51e723e96af52/63623984B，最终广门810/0/6，fmt/CI Clippy/MSRV1.88通过。新walk空容器计费缺口已Luna v8+root修正并全跑，无新IR/pass/公共API。
+
+完整Java与最终20同argv非usage精确重绑见results/README，明确26eb只重跑API，复用完整Java字节相同的60e1真实JDK矩阵，不伪称新JDK运行。原始4VM32case；生成20编译18成功/2JADX旧框架JDK8边界、36VM288case/18wrong-root；控制19case原8VM152case，24Jarde旧整类拒绝编译失败/零JardeVM，JADX16VM304case仅catch控制不匹配，失败边界不混称通过。
+
+剩余：strict/apply与全部归档复开、文档checkpoint提交推送/实际clean main和14aux detached-clean-ancestor核验后勾3.3，再关闭文档push及最终外置clean-head收据。当前文档HEAD是产品后继，不能称其跑过ea2a产品CI。持续goal active，不因叶子完成关闭。
+
+下一固定equals/remove Object包装仅静态分析及3个私有控制类准备，持久 `openspec/evidence/java-syntax-2026-10-18/cf11-object-argument-analysis-root-v1`（34成员/de450ebc…）。root定窄证明后才新OpenSpec派Luna实施：复用opaque AST exact wrapper/removals事务和已存在SSA元素cast→store→load证据；不能通用删Object cast，不能让可选清理缺证撤回可靠泛型/typed foreach；remove参数不推断List<E>。JADX重载显式保护算法可参考，Integer拆箱假反例已更正，primitive同入参/真实参数checkcast等控制未编译，需root实际javac8/23确定。add(E)已无包装，不重做；CF11/71/612计数不增加。
+
+## 2026-10-18 当前运行：fresh native seed1通过，seed2接续
+
+本节优先。实际产品ea2aaf042已推，自身CI39130065483尚未完整接受。seed1-root-v1真实终态exit0：385目标/101批/3768通过/0失败/98旧忽略、5147来源不变、exactclean/target absent。双轮独立具名验收仍待，不把collector旧顺序表当实际逐target计数。
+
+root即将/正在fresh seed2 `/private/tmp/jarde-ancestor-iterator-workspace-seed2-root-v1-20261018`，5350648285461741570。先核真实receipt/进程再接续，不覆盖重启。Cargo期间禁源码/Gitmutation/JDK/CLI/network；现有workspace_runner、defaultstack/5GiB/target1GiB每秒guard/exactclean。两轮后verify-native18门、全部具名比较、product binder绑定ea2a，实际CI官方ZIP/verify-own-ci63门，再strict/全归档/账本/handoff/干净main。任务仍5/7。
+
+下一Object包装仅静态分析和私有控制准备。root已否定通用String→Object assignability删cast，以及把kind1(add)直接扩kind2(remove)会让可选清理缺证撤回可靠泛型的做法；优先复用opaque AST removals和窄物理producer证据、失败保持原包装。Luna的Integer拆箱反例错误和控制v1非同实参/非argument-cast问题均已更正保留版本，尚无下一Spec/实现/新JDK运行。
+
+## 2026-10-18 当前运行：ea2aaf042 已推，fresh native seed1
+
+本节优先。祖先Iterator清理5/7，实际产品 **ea2aaf042ba91572727abb48c4b6ae8db3ca93a8** 已推main，自身CI **39130065483** 已in_progress，未接受。最终CLI26eb321d…和810/0/6广门、完整Java20API字节重绑已接受，详下节与results。
+
+root即将/正在运行seed1 `/private/tmp/jarde-ancestor-iterator-workspace-seed1-root-v1-20261018`、5350648285461741569，随后fresh seed2-root-v1 /5350648285461741570。先核真实进程/receipt，不重启覆盖。Cargo期间不源码/Gitmutation/JDK/CLI/network，默认stack/5GiB/target1GiB每秒guard及finally exactclean。两轮终态后用ci-prep-luna-v1 verify-native18门、review_named全具名、product binder绑定实际ea2a，再实际收CI官方ZIP/verify-own-ci63门/全部jobstep，两项任务未完成。
+
+root已复开此前17归档1402成员，native/CI未来包尚未验证。finThrow/nestedFin及已交付前片勿重做，持续goal active；下一两个Object参数包装仅固定黄金分析，不扩本片。
+
 ## 2026-10-18 当前推进：祖先 Iterator 空声明，5/7，产品待提交
 
 本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片foreach原名绑定7/7已交付，勿重做；当前 `prune-proved-ancestor-iterator-declarations` 5/7，持续goal active。生产/永久回归/完整对照已接受，实际产品提交、自身CI和两fresh native尚待。

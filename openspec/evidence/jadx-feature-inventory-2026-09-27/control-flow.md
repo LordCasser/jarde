@@ -1,5 +1,12 @@
 # JADX control-flow syntax inventory
 
+## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
+
+实际产品 `ea2aaf042` 已推main，[自身CI39130065483](https://github.com/LordCasser/jarde/actions/runs/39130065483) 已root完整接受4jobs/52官方步骤、双seed各385目标/3768-0-98/63精确门。复用既有foreach与checkpoint，只有完整物理变量用途和真实AST祖先唯一闭合才移除空Iterator声明；缺证保留可靠循环/声明，无新IR/pass。最终广门810/0/6、两fresh native全3866具名结果相等，5154来源绑定产品。完整原始Java/生成矩阵及19case控制的真实旧边界、最终CLI同字节重绑范围见 [验收入口](../../changes/prune-proved-ancestor-iterator-declarations/results/README.md)。
+
+下一固定 `TestNestedLoops` 的equals/remove两个Object包装已由最终CLI核实仍在，仅有[静态分析/控制准备](../java-syntax-2026-10-18/cf11-object-argument-analysis-root-v1/)，没有下一实现或新JDK运行。finThrow5/5、nestedFin16/16及已交付循环片不重做。**CF-11整体仍未关闭，71单元/612测试文件计数不变。**
+
+
 只读审计目标：`/Users/lordcasser/workspace/testzone/jadx`，HEAD `2fb1b16386941660fda07e9017285aec40fcb37f`。核对范围限定为 `jadx-core/src/test/java/jadx/tests/integration/{conditions,loops,trycatch,switches,synchronize}`：共 215 个 Java 测试文件，分组为 conditions 60、loops 56、trycatch 59、switches 33、synchronize 7。计数是该目录中的测试类文件数，不是方法数；一个文件可覆盖多种行为。下面每项“证据数”只数本行明确列出的代表测试路径，代表路径不等于该项全部覆盖，亦不据此声称测试已在 Jarde 实现。
 
 实现主链：字节码先经 block 构造与 `BlockProcessor`/`BlockSplitter`、`BlockFinisher`，再由 `RegionMakerVisitor` 调用 `RegionMaker` 与各 region maker 生成结构；区域后处理处理 switch break、try/catch 包装和 finally 标记/提取；`RegionGen`/`ConditionGen`/`InsnGen` 输出 Java。相关入口主要位于 `jadx-core/src/main/java/jadx/core/dex/visitors/blocks/`、`jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/`、`jadx-core/src/main/java/jadx/core/dex/visitors/regions/`、`jadx-core/src/main/java/jadx/core/dex/visitors/finaly/` 和 `jadx-core/src/main/java/jadx/core/codegen/`。

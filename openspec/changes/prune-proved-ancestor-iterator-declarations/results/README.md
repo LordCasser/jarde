@@ -36,3 +36,13 @@ root实际 `pre-meter-final-bind-root` 核上述完整采集8+12 API与已接受
 `pre-meter-preparations-root-v1` 和 `final-replay-preparations-root-v1` 保存私有实现/审查/checker版本和最终三源码副本。replay reviewer v1虚构schema、v2漏minimal cleanup row被root静态拒绝，v3实际拒绝成功cargo clean的标准stderr；v4要求精确Removed 0 files行、成功exit和target absent，其他判据保留。工具准备失败不是产品失败。主规范已同步；任务3.1按相同Java字节与实际矩阵完整绑定接受，3.2/3.3仍待。
 
 下一固定候选见 `next-fixed-ledger-analysis-luna-v1`；root最终26eb真实输出仍有equals/remove两个Object包装，add(E)已无包装，仅列下一分析，不扩本片或增加CF11/71/612完成数。
+
+## 完整产品验收（6/7，文档主线关闭待核）
+
+实际产品 **ea2aaf042ba91572727abb48c4b6ae8db3ca93a8** 已推main。`workspace-seed1-root-v1`、`workspace-seed2-root-v1` 为两fresh实际终态：各385目标/101批/**3768通过/0失败/98既有忽略**；默认stack、5GiB/target1GiB每秒guard、5147来源不变及exactclean/target absent。`workspace-acceptance-root-v1` 保存root实际三条独立命令：18精确门每轮各一次、全3866具名(name,status)逐目标恒同；构建3194/native各5147并集5154逐Git blob/bytes/mode绑定ea2a，最终26eb CLI不变。collector旧artifact顺序表的错配原样保留，依据实际串行Running/executable与harness绑定，不拿旧表充当逐target证明。
+
+`own-product-ci-root-v1` 是自身 **CI39130065483** 完整接受包：4jobs、**52全部官方API步骤成功**，官方ZIP全部52独立step成员齐全、零aggregate重建；CI双seed各385目标/3768-0-98/3866具名、**63精确门**各通过一次。实际24原始采集+1官方ZIP=25服务命令50raw，root verifier调用另存。13源码/5fixture绑定实际ea2a；后续文档HEAD不能冒称另跑此产品CI。
+
+主规范已同步，当前source/code不再修改。任务3.2已勾；还须文档提交推送后实核clean main/远端/14辅助checkout并关闭3.3。下一固定Object参数包装分析持久在 `openspec/evidence/java-syntax-2026-10-18/cf11-object-argument-analysis-root-v1`，34成员，包含root架构约束、JADX六源码及Luna原/更正版本；未新建下一OpenSpec、未实施或编译新控制。Generic可选清理缺证不得降级既有typed能力、Integer拆箱错误反例已撤回、控制v1误用不同入参/receiver cast由v2纠正，下一root仍须实际JDK验证。
+
+预关闭实际审计：strict375/0，apply6/7 ready，所有当前本片及下一静态分析23归档/1954成员已按相邻SHA和内置manifest逐字复开（`all-archives-root-review-v1.json`）。此报告不预先包含尚未产生的clean-main/最终关闭收据；先文档checkpoint推送实核后再关闭最后任务。
