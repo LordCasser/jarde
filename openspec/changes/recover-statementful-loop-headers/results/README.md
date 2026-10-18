@@ -23,3 +23,12 @@
 `final-gates-root-v1`：44成员/380889B/SHA `f52deedb3068c8c7766ba8434d60ac8252e3932d2d22e1ef4f2eb64739eb095c`，18命令+clean，785通过出现/0失败/6忽略，含八P5 104/0/5，旧预算不改。追加字段两个明确负例后，仅重跑受影响fmt/指纹/CI Clippy/MSRV/Java/Reader/CLI，`final-gates-root-v2`23成员/374644B/SHA `379b5b5b726719e750a44c08f35d5a00fb723180f4a310174f3bfbf77ce4f0af`实际678/0/1；491 Java lib、181 Reader以及指纹再生/检查，CLI字节仍完全同128方法配置和120次源码矩阵。最终独立fixture增量20class/68Code/1308BCI/4handler/119targets/2jsr，Reader1300/5745/630/4040/14通过，标准指纹2387旧项不变加40到2427。
 
 两fresh workspace seed及产品自身CI仍待实际执行；父5/7、child4/5。后续验收不得把v1/v2通过出现相加当作不同测试数量。总三方矩阵60完整源码格/120次重编（118成功，2 JADX outer javac8框架major55边界）、236 rebuilt VM/2280case同原；Jarde1536case、JADX744case，各原JVM192case另计。字段负例只引用child，不重复计入主语义矩阵。
+
+
+完整workspace首次失败已确认：`workspace-legacy-expectation-failure-root-v1` 81成员/966025B/SHA `64a55f234447f876d4a29f82cf1baa76f3f02f9bc790446b47dd831ca2b9b199`。34完整批后，第35批command36发现旧LeadingTick fallback预期与新Structured恢复冲突，38cmd/76raw，finally exact clean/target absent，不能算完整seed通过。`cancelled-candidate-ci-root-v1` 8成员/124007B/SHA `1b2ab30dd0503b2eb10064897eb0d06e61ff0ae3781d1ad0ad6a46ca4366ddfb` 记录1bc产品CI39095771161真实cancelled（supply-chain/MSRV成功，stable/fuzz取消），不当作CI通过。
+
+`legacy-leading-tick-final-matrix-root-v1`：139成员/694761B/SHA `5c18dba3c83d5eaaf8939ac17bccf22d81eafd8bc6e64ce255b37d7c769d23f2`。完整原冻结ForConditionRefusals源/字节不改，双javac输入、四Jarde和两JADX完整源码格、12原样重编全部成功，24双VM/288case同原oracle（Jarde192/JADX96）；另四原VM48case。5方法×4配置全Structured/全物理BCI/UTF8及default-all恒同，原冻结javac23全Code一致。原有限case -1/0/1/4，每次leading→assigned→leading，返回/counter/limitCalls逐字相同；wrong-CodeSource控制实际拒绝。root独立review v2误把内部内容标识当SHA256而失败，v3修为完整method owner一致，外部文件SHA256照常核验，实际接受后才更新旧测试。
+
+`legacy-final-gates-root-v1`：15成员/344789B/SHA `a950c8aeaad7604b9af98d810ce20fdc56ccb6a858463fbdeb8e70d9293b02de`。仅旧test后半改为Structured while/no for/效果顺序和全物理来源，AssignedCallBound断言原样保留；fixture README注明历史。fmt、12 p3_for_latch、5标准指纹检查通过（1标准ignored），CLI与所有已接受矩阵0bb字节恒同。新build source_before==after，包含改后的test/README；exact clean/target absent。17通过出现，不与其他广门相加当不同测试数。须以此最新build绑定后续产品和两fresh native源码，不能用旧build的旧test闭包替代。
+
+当前四组完整三方矩阵合计66源码格/132次原样重编，其中130成功、两次旧JADX outer javac8 major55边界无runtime；260 rebuilt VM/2568case同原（Jarde1728/JADX840）。各原JVM240case另计。两fresh native和新产品自身CI仍待接受，tasks维持parent5/7 child4/5。
