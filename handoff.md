@@ -1,3 +1,19 @@
+## 2026-10-18 最新交付：typed foreach 7/7、bulk 4/4，自身CI已完整接受
+
+此节优先，下面运行态均是历史。finThrow5/5、nestedFin16/16、父finally7/7早已交付，勿重做；持续goal active，继续按JADX71单元/612测试账本推进，不因叶子完成关闭全局目标。
+
+最终实际产品 **e69a3494c8fcd0ff4783be1e9ff71499a730adde**（typed b78b34ed6加独立bulk guard入口修复）已推。自身[CI39112513084](https://github.com/LordCasser/jarde/actions/runs/39112513084)已root实际独立接受：4jobs/52全部API步骤成功，双seed各385目标/3759通过/0失败/98旧忽略，54精确关键门各一次。官方ZIP全部52独立step成员齐全、零aggregate重建；21原始采集+1ZIP共22命令44raw，12源码/3fixture绑定e69。文档关闭提交只是产品后继，不冒称另跑产品CI。
+
+两fresh native v2实际终态并独立接受：各385目标/101批/3759-0-98、9精确门各一次；完整3857具名(name,status)逐target相等，来源各5143/构建3190并集5150逐Git blob/bytes/mode绑定e69。collector legacy每轮94批顺序错配原样保留，以真实Cargo串行Running/executable绑定harness；Luna最初cross-stream疑点已按本机Cargo文档撤回，原审与更正都归档。没有待续Cargo进程，target absent。
+
+最终CLI `/private/tmp/jarde-typed-foreach-bulk-interval-broad-root-v4-20261018/candidate-cli`，63405424B/SHA256 **85ca6e7d36c0edeb72f7f6a3c33c405f203028fb21d128522f0b0a3a92e1cf78**。广门822/0/6、fmt/CI Clippy/MSRV1.88、Reader1301/5751/630/4050/14、fingerprint2429均接受。实际20同argv API只去usage键后其余全部JSON/完整Java/raw map逐字相同；明确复用原始final36rebuilt JVM/288case及控制Jarde48JVM/912case，85ca没有重跑这些JDK矩阵。原JADX8类型不匹配整类编译失败和2outer框架javac8边界保留。
+
+typed `recover-typed-list-foreach-elements`7/7、独立 `align-bulk-class-task-execution-interval`4/4。最终严格验证373/0，apply两项均all_done，实际收据见bulk results/delivery-checks-root-v1。两change及下一静态分析共26归档2423成员已root逐字复开（bulk results/all-archives-root-review-v3.json），完整自身CI包140成员/c8edfd95…；所有旧失败/runner契约失败/被替代CI动作保持真实。预交付文档81fb88bc2已实核实际远端==本地干净main、仅本地main分支、14辅助checkout detached-clean-ancestor、5150来源与CLI不变。最后交付文档push后需以外置 `/private/tmp/jarde-typed-foreach-final-clean-main-root-v1-20261018/execution.json` 的真实HEAD/终态为准；接续先重核Git状态。
+
+下一固定项：**原名foreach元素绑定提升**，仅有分析，无新Spec/实现。持久入口 `openspec/evidence/java-syntax-2026-10-18/cf11-foreach-original-bindings-analysis-root-v1`（9成员/41e84a06…）：外层blank s1声明和首Assign同BCI25，须结合节点形态/唯一性/完整scope；ForEach锚点13/42不是next17/47。现有slot/SSA/opaque AST能复用，缺的是全部local-reference到词法范围的窄关系。参考JADX usedOnlyInLoop/assignOnlyInLoop/CodeVar原变量，不照搬其IR/flags或宽类型推断；wrapped路径静态差异不是已确认新bug。后续OpenSpec需明确演进“保留body binding”契约，仅完整证书通过者允许折叠，initialized/循环前后可见/冲突/缺证及Stop保持可靠typed表示。先root定Spec再派Luna私有实现/对照，root架构审查；不加全局solver/pass。
+
+仍保留synthetic头名与body copy，冗余iterator/Object包装、既有AST计费预扫另列；不能声称整条上游黄金或CF11/71/612完成。root负责共享写/Git/Rust/JDK/CLI/网络，Luna私有或只读；本地工具串行，Rust期间不改源或网络，默认stack/至少5GiB/target1GiB每秒guard/exactclean。
+
 ## 2026-10-18 最新：双轮native与5150来源绑定已接受，等e69自身CI
 
 此节优先。最终产品e69a3494c8fcd0ff4783be1e9ff71499a730adde仍已推main。两fresh native v2都实际终态exit0：每轮385目标/101批/3759通过/0失败/98旧忽略，9精确门各一次；root已实际运行v3独立checker重建metadata/串行Running/harness，追加全部3857具名(name,status)逐target相等。collector legacy每轮94批顺序错配保留，不拿它当真。来源每轮5143/构建3190并集5150按Git blob/bytes/mode绑定e69，85ca CLI不变、target absent；没有Cargo进程待续。

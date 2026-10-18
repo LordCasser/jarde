@@ -1,5 +1,7 @@
 # Bulk执行区间独立修复证据
 
+最新交付：本片4/4、typed7/7，最终e69产品自身CI39112513084已root完整接受4jobs/52steps/双seed54门；两fresh native各385目标3759/0/98及5150来源Git绑定均接受。以下进行中描述是各阶段历史；最终证据见末节。
+
 本片与typed foreach规格/实现分开。实际失败是b78候选第一fresh seed第三测试batch/command4的bulk_recovery_lifecycle重叠门：gate和worker的两个实际重叠断言通过，公开峰值却1。root核全源pins不变/真实raw及exactclean；不是Java输出差异，也不是成功完整seed。
 
 - native-failure-root-v1：19成员，SHA256 ada99433db8ca7370b9adfaa03b0c7900ac206e4e5fa13e01cbf9267fa4f0b66；完整失败收据/raw/metadata及root复核、Luna最小patch。
@@ -16,3 +18,9 @@ v4真实定向部分已通过：单独4个bulk目标4+7+3+2=16测试，4次精�
 本片3/4、typed5/7，未验两fresh native/最终提交自身CI。prepared implementation-acceptance-tools-root-v1为20成员/6a449ec758872a123e8d23b7ecfff03c322458bd8f8863be9c4c6959268527e7，包含实际Luna最小patch、ownCI v3（12源码/3fixture/54门）、native wrapper v3（9门/385目标）及精确base checker、产品Git binder；工具准备不是实际native/CI验收。原名fold仅静态备忘，独立未实施。
 
 最终e69两fresh native已root独立接受：每轮385目标/101批/3759通过/0失败/98忽略，9精确关键门每轮各一次；额外全部3857具名(name,status)逐target相等。来源各5143/构建3190并集5150按Git blob/bytes/mode绑定e69，CLI85ca不变、target absent。workspace-seed1-root-v2（213成员/255c6b24…）、workspace-seed2-root-v2（212/7f1dfbee…）、workspace-acceptance-root-v2（22/23731b67…）含实际收据及checker/binder/具名review；不是仅工具准备。superseded-ci-root-v1（6/6dcaf040…）保留取消旧候选的原始动作，不算最终自身CI成功。bulk3/4、typed6/7，余实际e69自身CI/strict/干净main闭合。
+
+## 最终交付验收完成
+
+实际e69自身CI4jobs/52steps全成功，双seed各385目标/3759通过/0失败/98既有忽略，54精确门各一次；官方ZIP52step成员齐全/零aggregate重建。own-product-ci-root-v1为140成员/c8edfd95…，21采集+1ZIP命令44raw、12源码/3fixture完整Git绑定产品。预交付文档81fb88bc2已实核实际远端==本地干净main、仅main分支、14辅助checkout detached-clean-ancestor、5150来源和85ca CLI不变、target absent。
+
+root已逐字复开两change及下一静态分析共26归档/2423成员，all-archives-root-review-v3.json记录全部pins。最终文档push后的真实HEAD/干净main收据外置 `/private/tmp/jarde-typed-foreach-final-clean-main-root-v1-20261018/execution.json`；文档head不冒称跑过e69自身CI。task2.2关闭，typed7/7、本片4/4；不把局部质量提升计为整个CF11或71/612完成。所有旧真实失败/工具契约失败/过期CI均原样保留。
