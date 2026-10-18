@@ -163,6 +163,8 @@ fn assert_target_body(body: &RecoveryReport) {
     );
     assert!(body.text.contains(" : l2)"), "{}", body.text);
     assert!(body.text.contains("java.lang.String s1;"), "{}", body.text);
+    assert!(!body.text.contains("Iterator local3;"), "{}", body.text);
+    assert!(!body.text.contains("Iterator local5;"), "{}", body.text);
     assert_eq!(body.text.matches("for (").count(), 2, "{}", body.text);
     assert!(
         !body.text.contains("local3 = l1.iterator()"),
@@ -198,6 +200,21 @@ fn assert_target_body(body: &RecoveryReport) {
             .contains("s2 = (java.lang.String) iteratorElement"),
         "{}",
         body.text
+    );
+    let inner_start = body.text.match_indices("for (").nth(1).unwrap().0;
+    let inner_end = inner_start
+        + body.text[inner_start..]
+            .find(')')
+            .expect("the inner foreach header closes")
+        + 1;
+    let inner_header = &body.text[inner_start..inner_end];
+    assert!(
+        body.source_map.of_bci(33).iter().any(|segment| {
+            body.text
+                .get(segment.start()..segment.end())
+                .is_some_and(|text| text.contains(inner_header))
+        }),
+        "the inner foreach retains the physical iterator-store anchor: {inner_header}",
     );
     assert!(body.text.contains("if (s1.equals("), "{}", body.text);
     assert!(body.text.contains("l2.add("), "{}", body.text);

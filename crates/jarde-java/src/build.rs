@@ -85,7 +85,7 @@ use crate::region::{
     LoopForm, Region, SwitchGroup,
 };
 use crate::reuse;
-use crate::source_map::{Origin, OriginSet};
+use crate::source_map::{Origin, OriginSet, Provenance};
 use crate::stop::{StopReason, charge, poll};
 
 /// How deep a value expression may nest before the builder refuses it.
@@ -8711,6 +8711,404 @@ fn short_circuit_test_sources(
     result
 }
 
+/// Removes only one exactly planned, actually visible ancestor iterator declaration per
+/// successfully published foreach. Every refusal is local to this optional cleanup.
+fn prune_proved_iterator_ancestor_declarations(
+    statements: &mut Vec<Stmt>,
+    statement_count: &mut usize,
+    consumers: &[(LocalVariable, u32)],
+    declarations: &Declarations,
+    names: &NameTable,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    for (consumer_index, &(variable, test_bci)) in consumers.iter().enumerate() {
+        poll(budget, Some(test_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(test_bci),
+        )?;
+        let mut occurrences = 0usize;
+        for (other_index, &(other_variable, other_test)) in consumers.iter().enumerate() {
+            poll(budget, Some(test_bci))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(test_bci),
+            )?;
+            if consumer_index != other_index
+                && (variable == other_variable || test_bci == other_test)
+            {
+                occurrences += 1;
+            }
+        }
+        if occurrences != 0 {
+            continue;
+        }
+        let Some(DeclarationPlacement::Elevated { owner }) = declarations.placements.get(&variable)
+        else {
+            continue;
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(owner.len()).unwrap_or(u64::MAX),
+            Some(test_bci),
+        )?;
+        let Some(owner_declarations) = declarations.at_region.get(owner) else {
+            continue;
+        };
+        let mut planned = None;
+        let mut planned_count = 0usize;
+        for declaration in owner_declarations {
+            poll(budget, Some(declaration.at))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(declaration.at),
+            )?;
+            if declaration.variable == variable {
+                planned_count += 1;
+                planned = Some((declaration.at, &declaration.ty));
+            }
+        }
+        if planned_count != 1 {
+            continue;
+        }
+        let Some((anchor, ty)) = planned else {
+            continue;
+        };
+        let Type::Reference(iterator_type) = ty else {
+            continue;
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(iterator_type.len()).unwrap_or(u64::MAX),
+            Some(anchor),
+        )?;
+        if iterator_type != "java.util.Iterator" && iterator_type != "Iterator" {
+            continue;
+        }
+        let Some(name) = names.text(variable) else {
+            continue;
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(name.len()).unwrap_or(u64::MAX),
+            Some(anchor),
+        )?;
+
+        let mut loop_count = 0usize;
+        let mut declaration_count = 0usize;
+        let mut declaration_anchor_nodes = 0usize;
+        let mut loop_anchor_nodes = 0usize;
+        let mut declaration_is_visible = false;
+        let mut loop_origin_has_accesses = false;
+        fn inspect(
+            body: &[Stmt],
+            inherited_visible: bool,
+            test_bci: u32,
+            anchor: u32,
+            iterator_type: &str,
+            name: &str,
+            budget: &mut Budget,
+            loop_count: &mut usize,
+            declaration_count: &mut usize,
+            declaration_anchor_nodes: &mut usize,
+            loop_anchor_nodes: &mut usize,
+            visible_loop: &mut bool,
+            loop_origin_has_accesses: &mut bool,
+            allow_declaration: bool,
+        ) -> Result<(), StopReason> {
+            let mut visible = inherited_visible;
+            for statement in body {
+                let bci = statement.origin.primary().bci();
+                poll(budget, Some(bci))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                if bci == anchor {
+                    *declaration_anchor_nodes += 1;
+                }
+                let primary_is_own_direct = statement.origin.primary().provenance()
+                    == Provenance::Direct
+                    && statement.origin.primary().method().is_none();
+                let matching_declaration = if bci == anchor && primary_is_own_direct {
+                    if let StmtKind::Declare {
+                        ty: Type::Reference(declared_type),
+                        name: declared_name,
+                        value: None,
+                        ..
+                    } = &statement.kind
+                    {
+                        charge(
+                            budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(declared_type.len().saturating_add(declared_name.len()))
+                                .unwrap_or(u64::MAX),
+                            Some(anchor),
+                        )?;
+                        declared_type == iterator_type && declared_name == name
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                };
+                if matching_declaration {
+                    *declaration_count += 1;
+                    if allow_declaration {
+                        visible = true;
+                    }
+                }
+                if bci == test_bci {
+                    *loop_anchor_nodes += 1;
+                }
+                if matches!(&statement.kind, StmtKind::ForEach { .. }) && bci == test_bci {
+                    *loop_count += 1;
+                    if visible
+                        && statement.origin.primary().provenance() == Provenance::Direct
+                        && statement.origin.primary().method().is_none()
+                    {
+                        charge(
+                            budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(statement.origin.derived().len().saturating_add(1))
+                                .unwrap_or(u64::MAX),
+                            Some(test_bci),
+                        )?;
+                        *visible_loop = true;
+                        *loop_origin_has_accesses =
+                            statement.origin.derived().iter().any(|origin| {
+                                origin.bci() == anchor
+                                    && origin.provenance() == Provenance::Derived
+                                    && origin.method().is_none()
+                            });
+                    }
+                }
+                macro_rules! visit {
+                    ($children:expr, $allow:expr) => {
+                        inspect(
+                            $children,
+                            visible,
+                            test_bci,
+                            anchor,
+                            iterator_type,
+                            name,
+                            budget,
+                            loop_count,
+                            declaration_count,
+                            declaration_anchor_nodes,
+                            loop_anchor_nodes,
+                            visible_loop,
+                            loop_origin_has_accesses,
+                            $allow,
+                        )?
+                    };
+                }
+                match &statement.kind {
+                    StmtKind::If {
+                        then_body,
+                        else_body,
+                        ..
+                    } => {
+                        visit!(then_body, true);
+                        visit!(else_body, true);
+                    }
+                    StmtKind::While { body, .. }
+                    | StmtKind::DoWhile { body, .. }
+                    | StmtKind::ForEach { body, .. }
+                    | StmtKind::Synchronized { body, .. } => visit!(body, true),
+                    StmtKind::For {
+                        init, update, body, ..
+                    } => {
+                        visit!(std::slice::from_ref(init.as_ref()), false);
+                        visit!(std::slice::from_ref(update.as_ref()), false);
+                        visit!(body, true);
+                    }
+                    StmtKind::Switch { arms, .. } => {
+                        for arm in arms {
+                            poll(budget, Some(bci))?;
+                            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                            visit!(&arm.body, true);
+                        }
+                    }
+                    StmtKind::Try {
+                        body,
+                        catches,
+                        finally_body,
+                        ..
+                    } => {
+                        visit!(body, true);
+                        for catch in catches {
+                            poll(budget, Some(bci))?;
+                            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                            visit!(&catch.body, true);
+                        }
+                        if let Some(finally_body) = finally_body {
+                            visit!(finally_body, true);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            Ok(())
+        }
+        inspect(
+            statements,
+            false,
+            test_bci,
+            anchor,
+            iterator_type,
+            name,
+            budget,
+            &mut loop_count,
+            &mut declaration_count,
+            &mut declaration_anchor_nodes,
+            &mut loop_anchor_nodes,
+            &mut declaration_is_visible,
+            &mut loop_origin_has_accesses,
+            true,
+        )?;
+        if loop_count != 1
+            || declaration_count != 1
+            || declaration_anchor_nodes != 1
+            || loop_anchor_nodes != 1
+            || !declaration_is_visible
+            || !loop_origin_has_accesses
+            || *statement_count == 0
+        {
+            continue;
+        }
+        fn remove_one(
+            body: &mut Vec<Stmt>,
+            anchor: u32,
+            iterator_type: &str,
+            name: &str,
+            budget: &mut Budget,
+        ) -> Result<bool, StopReason> {
+            let mut index = 0usize;
+            while index < body.len() {
+                let bci = body[index].origin.primary().bci();
+                poll(budget, Some(bci))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                let primary_is_own_direct = body[index].origin.primary().provenance()
+                    == Provenance::Direct
+                    && body[index].origin.primary().method().is_none();
+                let matches_declaration = if bci == anchor && primary_is_own_direct {
+                    if let StmtKind::Declare {
+                        ty: Type::Reference(declared_type),
+                        name: declared_name,
+                        value: None,
+                        ..
+                    } = &body[index].kind
+                    {
+                        charge(
+                            budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(declared_type.len().saturating_add(declared_name.len()))
+                                .unwrap_or(u64::MAX),
+                            Some(anchor),
+                        )?;
+                        declared_type == iterator_type && declared_name == name
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                };
+                if matches_declaration {
+                    let shifted = body.len().saturating_sub(index + 1);
+                    charge(
+                        budget,
+                        CountedBudgetDimension::IrItems,
+                        u64::try_from(shifted).unwrap_or(u64::MAX),
+                        Some(anchor),
+                    )?;
+                    poll(budget, Some(anchor))?;
+                    body.remove(index);
+                    return Ok(true);
+                }
+                let found = match &mut body[index].kind {
+                    StmtKind::If {
+                        then_body,
+                        else_body,
+                        ..
+                    } => {
+                        remove_one(then_body, anchor, iterator_type, name, budget)?
+                            || remove_one(else_body, anchor, iterator_type, name, budget)?
+                    }
+                    StmtKind::While { body, .. }
+                    | StmtKind::DoWhile { body, .. }
+                    | StmtKind::ForEach { body, .. }
+                    | StmtKind::Synchronized { body, .. } => {
+                        remove_one(body, anchor, iterator_type, name, budget)?
+                    }
+                    StmtKind::For { body, .. } => {
+                        remove_one(body, anchor, iterator_type, name, budget)?
+                    }
+                    StmtKind::Switch { arms, .. } => {
+                        let mut removed = false;
+                        for arm in arms {
+                            poll(budget, Some(bci))?;
+                            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(bci))?;
+                            if remove_one(&mut arm.body, anchor, iterator_type, name, budget)? {
+                                removed = true;
+                                break;
+                            }
+                        }
+                        removed
+                    }
+                    StmtKind::Try {
+                        body,
+                        catches,
+                        finally_body,
+                        ..
+                    } => {
+                        let mut removed = remove_one(body, anchor, iterator_type, name, budget)?;
+                        if !removed {
+                            for catch in catches {
+                                poll(budget, Some(bci))?;
+                                charge(
+                                    budget,
+                                    CountedBudgetDimension::AnalysisSteps,
+                                    1,
+                                    Some(bci),
+                                )?;
+                                if remove_one(&mut catch.body, anchor, iterator_type, name, budget)?
+                                {
+                                    removed = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if !removed {
+                            if let Some(finally_body) = finally_body {
+                                removed =
+                                    remove_one(finally_body, anchor, iterator_type, name, budget)?;
+                            }
+                        }
+                        removed
+                    }
+                    _ => false,
+                };
+                if found {
+                    return Ok(true);
+                }
+                index += 1;
+            }
+            Ok(false)
+        }
+        if remove_one(statements, anchor, iterator_type, name, budget)? {
+            *statement_count -= 1;
+        }
+    }
+    Ok(())
+}
+
 /// Builds the statements of one method from its regions.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn build(
@@ -8905,6 +9303,7 @@ pub(crate) fn build(
         chained_firsts: BTreeMap::new(),
         undeclared: BTreeSet::new(),
         stmts: Vec::new(),
+        iterator_declaration_consumers: Vec::new(),
         statements: 0,
         ragged: false,
         lambdas: Vec::new(),
@@ -9251,6 +9650,14 @@ pub(crate) fn build(
         inputs.prologues,
         inputs.parameters,
         inputs.has_receiver,
+        builder.budget,
+    )?;
+    prune_proved_iterator_ancestor_declarations(
+        &mut builder.stmts,
+        &mut builder.statements,
+        &builder.iterator_declaration_consumers,
+        &builder.declarations,
+        builder.names,
         builder.budget,
     )?;
     Ok(Program {
@@ -10102,6 +10509,9 @@ struct Builder<'a> {
     /// wrote no statement has no entry, and its second store is then refused on its own copy rather
     /// than reading a local nothing declared.
     chained_firsts: BTreeMap<u32, (LocalVariable, String)>,
+    /// Successful iterator foreach owners that may consume one Elevated ancestor declaration.
+    /// Duplicates are retained so final validation can refuse ambiguous relations.
+    iterator_declaration_consumers: Vec<(LocalVariable, u32)>,
     /// The names of the locals whose declaration this build **refused** (P3 2b.2).
     ///
     /// A local's declaration is the statement its first write carries, or the one hoisted into the
@@ -10305,6 +10715,7 @@ struct NestedPairBraces {
 #[cfg_attr(test, derive(Debug))]
 struct FinallyCheckpoint {
     stmts: Vec<Stmt>,
+    iterator_declaration_consumers_len: usize,
     declared: BTreeSet<LocalVariable>,
     chained_firsts: BTreeMap<u32, (LocalVariable, String)>,
     undeclared: BTreeSet<String>,
@@ -13240,6 +13651,89 @@ impl PostfixUpdates {
 /// The consumer of one proved snapshot: where the old value is read, in the block that holds it.
 struct SnapshotConsumer {
     bci: u32,
+}
+
+/// Confirms that the exact physical LocalVariable has only the foreach init and iterator reads.
+/// This optional gate runs before publishing the loop; later cleanup relies on its exact relation.
+fn iterator_variable_accesses_closed(
+    code: &MethodCodeFacts,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    variable: LocalVariable,
+    expected: [u32; 3],
+    budget: &mut Budget,
+    at: u32,
+) -> Result<bool, StopReason> {
+    if code.stopped_at.is_some() {
+        return Ok(false);
+    }
+    let operands = code.operands();
+    if operands.len() != code.instructions.len() {
+        return Ok(false);
+    }
+    let mut accesses = [0u32; 3];
+    let mut store_count = 0usize;
+    let mut load_count = 0usize;
+    for (instruction, operand) in code.instructions.iter().zip(operands) {
+        let bci = instruction.bci;
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        let opcode = operand.effective_opcode;
+        let local_opcode = matches!(opcode, 0x15..=0x2d | 0x36..=0x4e | 0x84 | 0xa9);
+        let Some(local) = operand.local else {
+            if local_opcode {
+                return Ok(false);
+            }
+            continue;
+        };
+        let slot = local.index;
+        if slot != variable.slot() {
+            continue;
+        }
+        let Some(at_variable) = reuse.variable_at(slot, bci) else {
+            return Ok(false);
+        };
+        if at_variable != variable {
+            continue;
+        }
+        let Some(operation) = operations.get(bci) else {
+            return Ok(false);
+        };
+        match (opcode, operation) {
+            (
+                0x15..=0x2d,
+                Operation::Load {
+                    slot: operation_slot,
+                },
+            ) if *operation_slot == slot => {
+                load_count += 1;
+                if load_count <= 2 {
+                    accesses[load_count] = bci;
+                }
+            }
+            (
+                0x36..=0x4e,
+                Operation::Store {
+                    slot: operation_slot,
+                },
+            ) if *operation_slot == slot => {
+                store_count += 1;
+                accesses[0] = bci;
+            }
+            (
+                0x84,
+                Operation::Increment {
+                    slot: operation_slot,
+                    ..
+                },
+            ) if *operation_slot == slot => return Ok(false),
+            _ => return Ok(false),
+        }
+    }
+    if store_count != 1 || load_count != 2 || accesses != expected {
+        return Ok(false);
+    }
+    Ok(true)
 }
 
 /// Finds a removable current-list declaration, or verifies the complete visible owner for an
@@ -17479,6 +17973,7 @@ impl Builder<'_> {
     fn finally_checkpoint(&self) -> FinallyCheckpoint {
         FinallyCheckpoint {
             stmts: self.stmts.clone(),
+            iterator_declaration_consumers_len: self.iterator_declaration_consumers.len(),
             declared: self.declared.clone(),
             chained_firsts: self.chained_firsts.clone(),
             undeclared: self.undeclared.clone(),
@@ -17508,6 +18003,8 @@ impl Builder<'_> {
 
     fn restore_finally(&mut self, checkpoint: FinallyCheckpoint) {
         self.stmts = checkpoint.stmts;
+        self.iterator_declaration_consumers
+            .truncate(checkpoint.iterator_declaration_consumers_len);
         self.declared = checkpoint.declared;
         self.chained_firsts = checkpoint.chained_firsts;
         self.undeclared = checkpoint.undeclared;
@@ -20826,6 +21323,7 @@ impl Builder<'_> {
         } else {
             None
         };
+        let mut iterator_prune = None;
         let (kind, origin) = if let Some((kind, origin, removed_element, declarations)) = projected
         {
             for index in declarations.iter().rev().copied() {
@@ -20842,13 +21340,14 @@ impl Builder<'_> {
                 self.synthetic_names.insert(name.clone());
             }
             (kind, origin)
-        } else if let Some((kind, origin, mut remove, name)) = iterable_projected {
+        } else if let Some((kind, origin, mut remove, name, prune_variable)) = iterable_projected {
             remove.sort_unstable_by(|left, right| right.cmp(left));
             for index in remove {
                 self.stmts.remove(index);
                 self.statements = self.statements.saturating_sub(1);
             }
             self.synthetic_names.insert(name);
+            iterator_prune = prune_variable;
             (kind, origin)
         } else {
             (
@@ -20863,7 +21362,24 @@ impl Builder<'_> {
         let origin = gateway_origins.iter().fold(origin, |origin, bci| {
             origin.plus_derived(Origin::derived(*bci))
         });
-        self.push(Stmt::new(kind, origin))
+        self.push(Stmt::new(kind, origin))?;
+        if let Some(variable) = iterator_prune
+            && self.stmts.last().is_some_and(|statement| {
+                statement.origin.primary().bci() == first_test_bci
+                    && matches!(statement.kind, StmtKind::ForEach { .. })
+            })
+        {
+            poll(self.budget, Some(first_test_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(first_test_bci),
+            )?;
+            self.iterator_declaration_consumers
+                .push((variable, first_test_bci));
+        }
+        Ok(())
     }
 
     fn guard_region(
@@ -23220,7 +23736,16 @@ impl Builder<'_> {
         kind: &StmtKind,
         regions: &[Region],
         loop_region: &Region,
-    ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
+    ) -> Result<
+        Option<(
+            StmtKind,
+            OriginSet,
+            Vec<usize>,
+            String,
+            Option<LocalVariable>,
+        )>,
+        StopReason,
+    > {
         let StmtKind::While { cond, body, .. } = kind else {
             return Ok(None);
         };
@@ -23786,6 +24311,32 @@ impl Builder<'_> {
                 .fold(OriginSet::new(Origin::direct(test_bci)), |origin, bci| {
                     origin.plus_derived(Origin::derived(bci))
                 });
+            let elevated_ancestor = declaration_index.is_none()
+                && ancestor_owner
+                && matches!(
+                    self.declarations.placements.get(&iterator_variable),
+                    Some(DeclarationPlacement::Elevated { owner }) if owner.len() < path.len()
+                );
+            let prune_variable = if elevated_ancestor {
+                match iterator_variable_accesses_closed(
+                    self.code,
+                    self.operations,
+                    self.reuse,
+                    iterator_variable,
+                    [init_store_bci, test_load_bci, next_load_bci],
+                    self.budget,
+                    test_bci,
+                ) {
+                    Ok(true) => Some(iterator_variable),
+                    Ok(false) => None,
+                    Err(stop) => {
+                        proof_stop = Some(stop);
+                        return None;
+                    }
+                }
+            } else {
+                None
+            };
             Some((
                 label.clone(),
                 iterable.clone(),
@@ -23796,12 +24347,14 @@ impl Builder<'_> {
                     .into_iter()
                     .chain(std::iter::once(init_index))
                     .collect(),
+                prune_variable,
             ))
         })();
         if let Some(stop) = proof_stop {
             return Err(stop);
         }
-        let Some((label, iterable, mut body, next_bci, origin, remove)) = candidate else {
+        let Some((label, iterable, mut body, next_bci, origin, remove, prune_variable)) = candidate
+        else {
             return Ok(None);
         };
         let mut base = format!("iteratorElement{next_bci}");
@@ -23853,6 +24406,7 @@ impl Builder<'_> {
             origin,
             remove,
             name,
+            prune_variable,
         )))
     }
 
@@ -38163,6 +38717,653 @@ mod tests {
         )
     }
 
+    fn iterator_foreach_ast(test_bci: u32, declaration_bci: u32) -> Stmt {
+        let origin =
+            OriginSet::new(Origin::direct(test_bci)).plus_derived(Origin::derived(declaration_bci));
+        Stmt::new(
+            StmtKind::ForEach {
+                label: None,
+                ty: Type::Reference("java.lang.Object".to_owned()),
+                name: "iteratorElement".to_owned(),
+                iterable: Expr::direct(ExprKind::Local("items".to_owned()), 1),
+                body: Vec::new(),
+            },
+            origin,
+        )
+    }
+
+    #[test]
+    fn ancestor_iterator_cleanup_requires_unique_direct_visible_iterator_row() {
+        use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits};
+
+        let mut context = iterator_test_context(
+            HOISTED_ITERATOR_CLASS,
+            "test",
+            HOISTED_ITERATOR_DESCRIPTOR,
+            8,
+        );
+        let variable = context.reuse.variable_at(5, 33).unwrap();
+        let declaration = iterator_blank_declaration("local5", 33);
+        let loop_stmt = iterator_foreach_ast(42, 33);
+        let consumers = [(variable, 42)];
+
+        let mut statements = vec![declaration.clone(), loop_stmt.clone()];
+        let mut count = statements.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut statements,
+            &mut count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("the exact visible iterator declaration is removable");
+        assert_eq!(count, 1);
+        assert_eq!(statements, vec![loop_stmt.clone()]);
+
+        // Empty switch arms and catch clauses are real containers the final inspection and
+        // removal walk through. One extra container consumes an additional analysis step in both
+        // passes; a budget cut at the no-empty baseline must stop before removing the declaration.
+        let target_switch_arm = SwitchArm {
+            keys: vec![1],
+            labels: None,
+            default: false,
+            fall_through: false,
+            body: vec![declaration.clone(), loop_stmt.clone()],
+        };
+        let make_switch = |arms| {
+            Stmt::new(
+                StmtKind::Switch {
+                    value: Expr::direct(ExprKind::Integer(0), 30),
+                    arms,
+                },
+                OriginSet::new(Origin::direct(30)),
+            )
+        };
+        let mut switch_baseline = vec![make_switch(vec![target_switch_arm.clone()])];
+        let mut switch_baseline_count = 3;
+        let mut switch_baseline_budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut switch_baseline,
+            &mut switch_baseline_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut switch_baseline_budget,
+        )
+        .expect("the no-empty-arm AST removes its exact declaration");
+        assert_eq!(switch_baseline_count, 2);
+        let switch_step_limit = switch_baseline_budget.usage().analysis_steps;
+        let empty_switch_arm = SwitchArm {
+            keys: vec![0],
+            labels: None,
+            default: false,
+            fall_through: false,
+            body: Vec::new(),
+        };
+        let mut switch_with_empty = vec![make_switch(vec![empty_switch_arm, target_switch_arm])];
+        let switch_before_stop = switch_with_empty.clone();
+        let mut switch_count = 3;
+        let mut switch_limits = child_array_test_budget().limits().clone();
+        switch_limits.analysis_steps = switch_step_limit;
+        let mut switch_budget = Budget::new(switch_limits);
+        assert!(matches!(
+            prune_proved_iterator_ancestor_declarations(
+                &mut switch_with_empty,
+                &mut switch_count,
+                &consumers,
+                &context.declarations,
+                &context.names,
+                &mut switch_budget,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        assert_eq!(switch_count, 3);
+        assert_eq!(switch_with_empty, switch_before_stop);
+
+        let target_catch = crate::ast::CatchClause {
+            ty: "java.lang.Exception".to_owned(),
+            name: "error".to_owned(),
+            body: vec![declaration.clone(), loop_stmt.clone()],
+        };
+        let make_try = |catches| {
+            Stmt::new(
+                StmtKind::Try {
+                    resources: Vec::new(),
+                    catches,
+                    body: Vec::new(),
+                    finally_body: None,
+                },
+                OriginSet::new(Origin::direct(30)),
+            )
+        };
+        let mut catch_baseline = vec![make_try(vec![target_catch.clone()])];
+        let mut catch_baseline_count = 3;
+        let mut catch_baseline_budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut catch_baseline,
+            &mut catch_baseline_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut catch_baseline_budget,
+        )
+        .expect("the no-empty-catch AST removes its exact declaration");
+        assert_eq!(catch_baseline_count, 2);
+        let catch_step_limit = catch_baseline_budget.usage().analysis_steps;
+        let empty_catch = crate::ast::CatchClause {
+            ty: "java.lang.RuntimeException".to_owned(),
+            name: "ignored".to_owned(),
+            body: Vec::new(),
+        };
+        let mut try_with_empty = vec![make_try(vec![empty_catch, target_catch])];
+        let try_before_stop = try_with_empty.clone();
+        let mut try_count = 3;
+        let mut try_limits = child_array_test_budget().limits().clone();
+        try_limits.analysis_steps = catch_step_limit;
+        let mut try_budget = Budget::new(try_limits);
+        assert!(matches!(
+            prune_proved_iterator_ancestor_declarations(
+                &mut try_with_empty,
+                &mut try_count,
+                &consumers,
+                &context.declarations,
+                &context.names,
+                &mut try_budget,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        assert_eq!(try_count, 3);
+        assert_eq!(try_with_empty, try_before_stop);
+
+        let mut repeated_variable = vec![declaration.clone(), loop_stmt.clone()];
+        let mut repeated_count = repeated_variable.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut repeated_variable,
+            &mut repeated_count,
+            &[(variable, 42), (variable, 43)],
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("ambiguous consumer plan is optional proof failure");
+        assert_eq!(repeated_count, 2);
+        assert_eq!(
+            repeated_variable,
+            vec![declaration.clone(), loop_stmt.clone()]
+        );
+
+        let mut same_test_other_variable = vec![declaration.clone(), loop_stmt.clone()];
+        let mut same_test_count = same_test_other_variable.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut same_test_other_variable,
+            &mut same_test_count,
+            &[(variable, 42), (LocalVariable::whole(0), 42)],
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("one test cannot be claimed by different local variables");
+        assert_eq!(same_test_count, 2);
+        assert_eq!(
+            same_test_other_variable,
+            vec![declaration.clone(), loop_stmt.clone()]
+        );
+
+        let mut unrelated_relation = vec![declaration.clone(), loop_stmt.clone()];
+        let mut unrelated_count = unrelated_relation.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut unrelated_relation,
+            &mut unrelated_count,
+            &[(variable, 42), (LocalVariable::whole(0), 99)],
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("an unrelated missing relation does not block a unique proven consumer");
+        assert_eq!(unrelated_count, 1);
+        assert_eq!(unrelated_relation, vec![loop_stmt.clone()]);
+
+        let mut derived_declaration = declaration.clone();
+        derived_declaration.origin = OriginSet::new(Origin::derived(33));
+        let mut derived_statements = vec![derived_declaration.clone(), loop_stmt.clone()];
+        let mut derived_count = derived_statements.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut derived_statements,
+            &mut derived_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("a derived-only declaration anchor is not removable");
+        assert_eq!(derived_count, 2);
+        assert_eq!(
+            derived_statements,
+            vec![derived_declaration, loop_stmt.clone()]
+        );
+
+        // Optional cleanup must require the exact empty declaration and the same real ancestor
+        // scope; these are internal AST metamorphisms, not additional JVM fixtures.
+        let mut initialized = declaration.clone();
+        if let StmtKind::Declare { value, .. } = &mut initialized.kind {
+            *value = Some(Expr::direct(ExprKind::Null, 33));
+        }
+        let mut initialized_tree = vec![initialized.clone(), loop_stmt.clone()];
+        let mut initialized_count = initialized_tree.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut initialized_tree,
+            &mut initialized_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("initialized declaration is an optional proof refusal");
+        assert_eq!(initialized_count, 2);
+        assert_eq!(initialized_tree, vec![initialized, loop_stmt.clone()]);
+
+        let duplicate_same_anchor = Stmt::new(
+            StmtKind::Assign {
+                name: "local5".to_owned(),
+                value: Expr::direct(ExprKind::Integer(1), 33),
+            },
+            OriginSet::new(Origin::direct(33)),
+        );
+        let mut duplicate_tree = vec![
+            declaration.clone(),
+            duplicate_same_anchor.clone(),
+            loop_stmt.clone(),
+        ];
+        let mut duplicate_count = duplicate_tree.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut duplicate_tree,
+            &mut duplicate_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("same-anchor non-declaration is an optional proof refusal");
+        assert_eq!(duplicate_count, 3);
+        assert_eq!(
+            duplicate_tree,
+            vec![
+                declaration.clone(),
+                duplicate_same_anchor,
+                loop_stmt.clone()
+            ]
+        );
+
+        let sibling_scope = Stmt::new(
+            StmtKind::If {
+                cond: Expr::direct(ExprKind::Boolean(true), 30),
+                then_body: vec![declaration.clone()],
+                else_body: vec![loop_stmt.clone()],
+            },
+            OriginSet::new(Origin::direct(30)),
+        );
+        let mut sibling_tree = vec![sibling_scope.clone()];
+        let mut sibling_count = sibling_tree.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut sibling_tree,
+            &mut sibling_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("a sibling declaration cannot authorize the loop");
+        assert_eq!(sibling_count, 1);
+        assert_eq!(sibling_tree, vec![sibling_scope]);
+
+        let header_only = Stmt::new(
+            StmtKind::For {
+                label: None,
+                init: Box::new(declaration.clone()),
+                cond: Expr::direct(ExprKind::Boolean(true), 31),
+                update: Box::new(Stmt::new(
+                    StmtKind::Assign {
+                        name: "counter".to_owned(),
+                        value: Expr::direct(ExprKind::Integer(1), 32),
+                    },
+                    OriginSet::new(Origin::direct(32)),
+                )),
+                body: vec![loop_stmt.clone()],
+            },
+            OriginSet::new(Origin::direct(31)),
+        );
+        let mut header_tree = vec![header_only.clone()];
+        let mut header_count = header_tree.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut header_tree,
+            &mut header_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("a for-init declaration is not visible to the nested body proof");
+        assert_eq!(header_count, 1);
+        assert_eq!(header_tree, vec![header_only]);
+
+        let mut foreign_anchor = loop_stmt.clone();
+        let method = context
+            .analysis
+            .ir()
+            .declaration()
+            .unwrap()
+            .identity()
+            .clone();
+        foreign_anchor.origin =
+            OriginSet::new(Origin::direct(42)).plus_derived(Origin::derived(33).in_method(&method));
+        let mut foreign_statements = vec![declaration.clone(), foreign_anchor];
+        let mut foreign_count = foreign_statements.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut foreign_statements,
+            &mut foreign_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("a foreign origin cannot authorize local declaration removal");
+        assert_eq!(foreign_count, 2);
+
+        let original_type = {
+            let owner_rows = context.declarations.at_region.get_mut(&vec![1]).unwrap();
+            let owner_row = owner_rows
+                .iter_mut()
+                .find(|row| row.variable == variable)
+                .unwrap();
+            std::mem::replace(
+                &mut owner_row.ty,
+                Type::Reference("java.lang.String".to_owned()),
+            )
+        };
+        let mut wrong_type = vec![declaration.clone(), loop_stmt.clone()];
+        let mut wrong_count = wrong_type.len();
+        let mut budget = child_array_test_budget();
+        prune_proved_iterator_ancestor_declarations(
+            &mut wrong_type,
+            &mut wrong_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut budget,
+        )
+        .expect("a non-Iterator declaration plan is optional proof failure");
+        assert_eq!(wrong_count, 2);
+        assert_eq!(wrong_type, vec![declaration.clone(), loop_stmt.clone()]);
+        context
+            .declarations
+            .at_region
+            .get_mut(&vec![1])
+            .unwrap()
+            .iter_mut()
+            .find(|row| row.variable == variable)
+            .unwrap()
+            .ty = original_type;
+
+        let mut stopped_statements = vec![declaration, loop_stmt];
+        let stopped_before = stopped_statements.clone();
+        let mut stopped_count = stopped_statements.len();
+        let mut stopped_budget = Budget::new(Limits {
+            ir_items: 0,
+            analysis_steps: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            prune_proved_iterator_ancestor_declarations(
+                &mut stopped_statements,
+                &mut stopped_count,
+                &consumers,
+                &context.declarations,
+                &context.names,
+                &mut stopped_budget,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                at: Some(33),
+                ..
+            })
+        ));
+        assert_eq!(stopped_count, 2);
+        assert_eq!(stopped_statements, stopped_before);
+
+        let mut deadline_tree = vec![
+            iterator_blank_declaration("local5", 33),
+            iterator_foreach_ast(42, 33),
+        ];
+        let deadline_before = deadline_tree.clone();
+        let mut deadline_count = deadline_tree.len();
+        let mut limits = child_array_test_budget().limits().clone();
+        limits.elapsed_millis = 0;
+        let mut deadline_budget = Budget::new(limits);
+        assert!(matches!(
+            prune_proved_iterator_ancestor_declarations(
+                &mut deadline_tree,
+                &mut deadline_count,
+                &consumers,
+                &context.declarations,
+                &context.names,
+                &mut deadline_budget,
+            ),
+            Err(StopReason::Interrupted {
+                code: crate::stop::BUDGET_INTERRUPTED_CODE,
+                at: Some(42),
+            })
+        ));
+        assert_eq!(deadline_count, 2);
+        assert_eq!(deadline_tree, deadline_before);
+
+        // Cancel on the final charged operation (the pre-remove shift charge). The following
+        // poll must stop before Vec::remove publishes any mutation.
+        use jarde_reader::ledger::{
+            LedgerEntryTiming, LedgerObserver, LedgerSite, OperationLedger, UsageOwner,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Debug)]
+        struct CancelOnCharge {
+            token: jarde_reader::budget::CancellationToken,
+            charges: AtomicUsize,
+            cancel_at: usize,
+        }
+        impl LedgerObserver for CancelOnCharge {
+            fn entry(&self, site: LedgerSite, _: Option<LedgerEntryTiming>) {
+                if matches!(site, LedgerSite::Charge(_))
+                    && self.charges.fetch_add(1, Ordering::SeqCst) + 1 == self.cancel_at
+                {
+                    self.token.cancel();
+                }
+            }
+            fn refusal(&self, _: LedgerSite, _: Option<jarde_reader::budget::BudgetDimension>) {}
+        }
+        let mut measure_tree = vec![
+            iterator_blank_declaration("local5", 33),
+            iterator_foreach_ast(42, 33),
+        ];
+        let mut measure_count = measure_tree.len();
+        let mut measured = child_array_test_budget();
+        let observer = Arc::new(CancelOnCharge {
+            token: jarde_reader::budget::CancellationToken::new(),
+            charges: AtomicUsize::new(0),
+            cancel_at: usize::MAX,
+        });
+        measured.with_ledger(
+            OperationLedger::new(&measured).with_observer(observer.clone()),
+            UsageOwner::Methods,
+        );
+        prune_proved_iterator_ancestor_declarations(
+            &mut measure_tree,
+            &mut measure_count,
+            &consumers,
+            &context.declarations,
+            &context.names,
+            &mut measured,
+        )
+        .expect("measure completed removal");
+        let charges = observer.charges.load(Ordering::SeqCst);
+        assert!(charges > 1);
+        let token = jarde_reader::budget::CancellationToken::new();
+        let cancel_observer = Arc::new(CancelOnCharge {
+            token: token.clone(),
+            charges: AtomicUsize::new(0),
+            cancel_at: charges,
+        });
+        let mut cancel_tree = vec![
+            iterator_blank_declaration("local5", 33),
+            iterator_foreach_ast(42, 33),
+        ];
+        let cancel_before = cancel_tree.clone();
+        let mut cancel_count = cancel_tree.len();
+        let mut cancel_budget =
+            Budget::with_cancellation_token(child_array_test_budget().limits().clone(), token);
+        cancel_budget.with_ledger(
+            OperationLedger::new(&cancel_budget).with_observer(cancel_observer),
+            UsageOwner::Methods,
+        );
+        assert!(matches!(
+            prune_proved_iterator_ancestor_declarations(
+                &mut cancel_tree,
+                &mut cancel_count,
+                &consumers,
+                &context.declarations,
+                &context.names,
+                &mut cancel_budget,
+            ),
+            Err(StopReason::Cancelled { at: Some(33) })
+        ));
+        assert_eq!(cancel_count, 2);
+        assert_eq!(cancel_tree, cancel_before);
+    }
+
+    #[test]
+    fn ancestor_iterator_cleanup_closes_the_complete_physical_local_variable() {
+        use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits};
+
+        let context = iterator_test_context(
+            HOISTED_ITERATOR_CLASS,
+            "test",
+            HOISTED_ITERATOR_DESCRIPTOR,
+            8,
+        );
+        let ir = context.analysis.ir();
+        let code = ir.code().expect("fixture method code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let variable = context
+            .reuse
+            .variable_at(5, 33)
+            .expect("iterator local identity");
+        assert_eq!(context.reuse.variable_at(5, 35), Some(variable));
+        assert_eq!(context.reuse.variable_at(5, 45), Some(variable));
+
+        let mut budget = child_array_test_budget();
+        assert!(
+            iterator_variable_accesses_closed(
+                code,
+                &operations,
+                &context.reuse,
+                variable,
+                [33, 35, 45],
+                &mut budget,
+                42,
+            )
+            .expect("complete physical access scan")
+        );
+
+        let mut wrong_anchors = child_array_test_budget();
+        assert!(
+            !iterator_variable_accesses_closed(
+                code,
+                &operations,
+                &context.reuse,
+                variable,
+                [33, 45, 35],
+                &mut wrong_anchors,
+                42,
+            )
+            .expect("mismatched accesses are optional proof failure")
+        );
+
+        // Removing one decoded instruction leaves the reader-owned operand stream out of lockstep.
+        // Operations is rebuilt through its public construction path; the gate must refuse it.
+        let mut incomplete_code = code.clone();
+        incomplete_code
+            .instructions
+            .retain(|instruction| instruction.bci != 35);
+        let incomplete_operations = Operations::of(&incomplete_code, ir.constant_pool());
+        let mut missing_operation_budget = child_array_test_budget();
+        assert!(
+            !iterator_variable_accesses_closed(
+                code,
+                &incomplete_operations,
+                &context.reuse,
+                variable,
+                [33, 35, 45],
+                &mut missing_operation_budget,
+                42,
+            )
+            .expect("a missing decoded operation is optional proof failure")
+        );
+
+        let mut incomplete_budget = child_array_test_budget();
+        assert!(
+            !iterator_variable_accesses_closed(
+                &incomplete_code,
+                &incomplete_operations,
+                &context.reuse,
+                variable,
+                [33, 35, 45],
+                &mut incomplete_budget,
+                42,
+            )
+            .expect("misaligned physical facts are optional proof failure")
+        );
+
+        let mut stopped = Budget::new(Limits {
+            analysis_steps: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            iterator_variable_accesses_closed(
+                code,
+                &operations,
+                &context.reuse,
+                variable,
+                [33, 35, 45],
+                &mut stopped,
+                42,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                at: Some(42),
+                ..
+            })
+        ));
+    }
+
     #[test]
     fn iterator_declaration_gate_uses_real_local_owner_and_refuses_incomplete_facts() {
         let mut context = iterator_test_context(
@@ -38993,6 +40194,111 @@ mod tests {
             "[iterator-mixed-refusal] source={source:?} phi={mixed_phi:?} uses={:?}",
             mixed_value.uses()
         );
+        let context = iterator_test_context(
+            HOISTED_ITERATOR_PHI_CONTROLS_CLASS,
+            "mixedIterator",
+            "(Ljava/util/List;Ljava/util/List;Z)I",
+            8,
+        );
+        let ir = context.analysis.ir();
+        let code = ir.code().expect("mixed control method code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let (slot, initial_store, _) = iterator_source_store(&context.analysis);
+        let variable = context
+            .reuse
+            .variable_at(slot, initial_store)
+            .expect("the first iterator store has a physical LocalVariable");
+        let mut stores = 0usize;
+        for (bci, operation) in operations.iter() {
+            if let Operation::Store {
+                slot: operation_slot,
+            } = operation
+            {
+                if *operation_slot == slot
+                    && context.reuse.variable_at(slot, *bci) == Some(variable)
+                {
+                    stores += 1;
+                }
+            }
+        }
+        assert_eq!(
+            stores, 2,
+            "both branch writes share the actual local identity"
+        );
+        let mixed_loads = iterator_receiver_load_pair(&context.analysis, &["hasNext", "next"]);
+        assert_ne!(mixed_loads[0], mixed_loads[1]);
+        let mut physical_budget = child_array_test_budget();
+        assert!(
+            !iterator_variable_accesses_closed(
+                code,
+                &operations,
+                &context.reuse,
+                variable,
+                [initial_store, mixed_loads[0], mixed_loads[1]],
+                &mut physical_budget,
+                initial_store,
+            )
+            .expect("the extra same-variable write is an optional refusal")
+        );
+
+        // This legal for-loop local has exactly one store and two physical reads before iinc.
+        // Matching all three expected BCIs ensures the refusal comes from `iinc` itself.
+        let counted = iterator_test_context(
+            include_bytes!(
+                "../../../tests/fixtures/java8/cf11-for-condition/ForConditionReads.class"
+            ),
+            "sumWithArrayLength",
+            "([I)I",
+            8,
+        );
+        let counted_ir = counted.analysis.ir();
+        let counted_code = counted_ir.code().expect("for-condition fixture code");
+        let counted_operations = Operations::of(counted_code, counted_ir.constant_pool());
+        let (increment_bci, increment_slot) = counted_operations
+            .iter()
+            .find_map(|(bci, operation)| match operation {
+                Operation::Increment { slot, .. } => Some((*bci, *slot)),
+                _ => None,
+            })
+            .expect("sumWithArrayLength has the loop-counter iinc");
+        let counted_variable = counted
+            .reuse
+            .variable_at(increment_slot, increment_bci)
+            .expect("the loop counter increment has a LocalVariable identity");
+        let mut stores = Vec::new();
+        let mut loads = Vec::new();
+        for (bci, operation) in counted_operations.iter() {
+            let same_variable =
+                counted.reuse.variable_at(increment_slot, *bci) == Some(counted_variable);
+            if !same_variable {
+                continue;
+            }
+            match operation {
+                Operation::Store { slot } if *slot == increment_slot => stores.push(*bci),
+                Operation::Load { slot } if *slot == increment_slot => loads.push(*bci),
+                _ => {}
+            }
+        }
+        assert_eq!(
+            stores.len(),
+            1,
+            "the loop counter has one physical init store"
+        );
+        assert_eq!(loads.len(), 2, "the loop counter has two physical reads");
+        let mut counted_budget = child_array_test_budget();
+        assert!(
+            !iterator_variable_accesses_closed(
+                counted_code,
+                &counted_operations,
+                &counted.reuse,
+                counted_variable,
+                [stores[0], loads[0], loads[1]],
+                &mut counted_budget,
+                increment_bci,
+            )
+            .expect("the exact three access anchors plus iinc refuse cleanup")
+        );
+
         let allowed = iterator_receiver_load_pair(&analysis, &["hasNext", "next"]);
         assert_ne!(
             allowed[0], allowed[1],
@@ -42402,6 +43708,7 @@ mod tests {
             chained_firsts: BTreeMap::new(),
             undeclared: BTreeSet::new(),
             stmts: Vec::new(),
+            iterator_declaration_consumers: Vec::new(),
             statements: 0,
             ragged: false,
             lambdas: Vec::new(),
@@ -42691,6 +43998,15 @@ mod tests {
                     .map(LocalVariable::whole)
                     .find(|variable| builder.names.text(*variable).is_some())
                     .expect("the handler's captured slot has a rendered local name");
+                // The consumer relation is append-only speculative state: a child rollback
+                // restores the prior prefix without cloning the whole relation vector.
+                builder.iterator_declaration_consumers.push((variable, 777));
+                let checkpoint = builder.finally_checkpoint();
+                builder
+                    .iterator_declaration_consumers
+                    .extend([(variable, 778), (variable, 779)]);
+                builder.restore_finally(checkpoint);
+                assert_eq!(builder.iterator_declaration_consumers, vec![(variable, 777)]);
                 let anchor = match region {
                     Region::Guard { plan, .. } => plan.body().0,
                     _ => unreachable!(),
