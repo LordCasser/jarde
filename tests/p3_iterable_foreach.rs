@@ -195,14 +195,28 @@ fn subtype_owners_project_and_extra_next_or_iterator_escape_refuse() {
         transfer.contains("for (java.lang.Object iteratorElement"),
         "{transfer}"
     );
-    for name in ["listOwner", "collectionOwner"] {
-        let text = &member(&report, name).text;
-        assert!(
-            text.contains("for (java.lang.Object iteratorElement"),
-            "{name}:\n{text}"
-        );
-        assert!(text.contains("(java.lang.String)"), "{name}:\n{text}");
-    }
+    let list_owner = &member(&report, "listOwner").text;
+    assert!(
+        list_owner.contains("int listOwner(java.util.List<java.lang.String> "),
+        "{list_owner}"
+    );
+    assert!(
+        list_owner.contains("for (java.lang.String "),
+        "{list_owner}"
+    );
+    assert!(!list_owner.contains("(java.lang.String)"), "{list_owner}");
+    assert!(!list_owner.contains(".iterator()"), "{list_owner}");
+    assert!(!list_owner.contains(".next()"), "{list_owner}");
+
+    let collection_owner = &member(&report, "collectionOwner").text;
+    assert!(
+        collection_owner.contains("for (java.lang.Object iteratorElement"),
+        "{collection_owner}"
+    );
+    assert!(
+        collection_owner.contains("(java.lang.String)"),
+        "{collection_owner}"
+    );
     for name in ["twoNext", "iteratorEscapes"] {
         let text = &member(&report, name).text;
         assert!(text.contains("while ("), "{name}:\n{text}");
@@ -220,10 +234,14 @@ fn subtype_owners_project_and_extra_next_or_iterator_escape_refuse() {
         &recovered,
         &["IterableBoundary.java", "IterableBoundaryRunner.java"],
     );
-    assert_eq!(
-        run(&root, "IterableBoundaryRunner"),
-        run(&recovered, "IterableBoundaryRunner")
-    );
+    let original_output = run(&root, "IterableBoundaryRunner");
+    for expected in ["list=3", "listEmpty=0", "listNull=NullPointerException"] {
+        assert!(
+            original_output.lines().any(|line| line == expected),
+            "{original_output}"
+        );
+    }
+    assert_eq!(original_output, run(&recovered, "IterableBoundaryRunner"));
     fs::remove_dir_all(root).unwrap();
 }
 

@@ -7,6 +7,13 @@ final class IterableBoundaryRunner {
         IterableBoundary.supplied = Arrays.asList("a", "bc");
         System.out.println("captured=" + IterableBoundary.capturedOnce()
                 + ",calls=" + IterableBoundary.calls);
+        System.out.println("list=" + IterableBoundary.listOwner(Arrays.asList("a", "bc")));
+        System.out.println("listEmpty=" + IterableBoundary.listOwner(Arrays.<String>asList()));
+        try {
+            IterableBoundary.listOwner(Arrays.asList((String) null));
+        } catch (RuntimeException e) {
+            System.out.println("listNull=" + e.getClass().getSimpleName());
+        }
         System.out.println("skip=" + IterableBoundary.skipEmpty(Arrays.asList("", "ab")));
         IterableBoundary.calls = 0;
         IterableBoundary.supplied = Arrays.asList();

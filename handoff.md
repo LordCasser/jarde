@@ -1,3 +1,11 @@
+## 2026-10-19 当前检查点：indexed List 5/6，修正旧 Iterable 预期
+
+本节优先。finThrow5/5、nestedFin16/16已交付勿重做。当前产品b7d53e50的第一次fresh seed1实际在batch40失败：listOwner(List<String>)已合法恢复String foreach，旧测试要求Object。root审查Luna测试补丁，只更新该正向预期；Collection/extra next/escape拒绝不变，新增非空/空/null元素原始及恢复整类执行对照。实际Iterable5/0、语料再生成1及校验5/0/1、CI Clippy/最终CLI构建通过，target absent。失败native和未接受b7 CI快照保留，不能当完整通过。
+
+最终构建 `/private/tmp/jarde-indexed-list-signatures-listowner-final-build-root-v1-20261019/execution.json`，CLI90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c/63809216B，与既有完整64VM832case矩阵CLI逐字相同。仅test/driver/manifest变化，生产实现不变。归档/详情见当前change/results/README.md。下一产品提交后需其自身官方全部CI日志/两seed和新fresh完整workspace验收，再关闭3.2；不得重用b7验收。
+
+root独占共享/Git/网络/工具链；Luna仅私有。Cargo期间禁止source/Git mutation/network/manualJDK或CLI。5GiB/target1GiB/defaultstack/每秒guard/exactclean。新fresh目录v2，seed5350648285461741569。新CI/native准备v5审查后用，原v4 gate重复有误不得执行。持续goal active，71/612和CF11整项计数不增加。
+
 ## 2026-10-19 当前推进：NL2 indexed List 声明，5/6，完整对照接受
 
 本节优先。finThrow5/5、nestedFin16/16及前片已交付，不重做。当前新片 `recover-proved-indexed-list-parameter-signatures` 5/6：完整实际基线、Luna私有实现与root架构审查、focused/适用广门和最终完整源码对照已接受；产品提交、自身CI及fresh workspace尚待。旧main3f888afb1，当前全部新代码/fixture/OpenSpec/evidence未提交。

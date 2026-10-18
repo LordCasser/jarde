@@ -5378,8 +5378,8 @@
       "path": "tests/fixtures/p3-iterable-foreach/IterableBoundary.java"
     },
     {
-      "blake3": "8bba17a08a9b74c8e6cce4a9d9b333dcb2430b4d65e4c238e646ca5d0e50b6a9",
-      "bytes": 2145,
+      "blake3": "474c410682f15b47b4c2dc9af9871a6ba75e6321473ad48685fcfb7a4670fa3a",
+      "bytes": 2542,
       "path": "tests/fixtures/p3-iterable-foreach/IterableBoundaryRunner.java"
     },
     {

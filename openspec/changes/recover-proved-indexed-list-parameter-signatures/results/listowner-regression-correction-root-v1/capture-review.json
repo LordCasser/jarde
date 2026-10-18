@@ -1,0 +1,6 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "archive_sha256": "81c2db9d0327963f635d107da403b0e9bc2009c80133e7da708d85b9a4e6adc8",
+  "members": 121,
+  "scope": "Preserves actual failed native batch40, unaccepted b7 CI snapshot, rejected hardcoded-param patch, reviewed correction, intended corpus regeneration, actual5/0 Iterable and final CI Clippy/build. CLI excluded but actual pins/equality retained."
+}
