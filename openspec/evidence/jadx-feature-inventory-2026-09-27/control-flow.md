@@ -2,7 +2,7 @@
 
 ## 2026-10-19 CF-07 条件赋值扩大转换，最终对照已接受
 
-固定TestLoopConditionInvoke已用现有widens修复char→int条件赋值拒绝，无新恢复机制；16 API全部结构化，完整Jarde32次编译/64VM/320case与原始一致。主规范已同步，fresh及本产品自身CI待验；不增加CF-07或71/612整项计数。详见[本片验收](../../changes/recover-proved-assignment-condition-widening/results/README.md)。下一固定TestComplexWhileLoop仅静态/collector准备，未确认缺陷。
+固定TestLoopConditionInvoke已用现有widens修复char→int条件赋值拒绝，无新恢复机制；16 API全部结构化，完整Jarde32次编译/64VM/320case与原始一致。主规范已同步，产品ef4已推，fresh386目标/3780-0-98与自身CI39161113865全部4jobs/52步骤/双seed/79精确门已接受；不增加CF-07或71/612整项计数。详见[本片验收](../../changes/recover-proved-assignment-condition-widening/results/README.md)。其余四固定Java原始类已[完整对照接受](../java-syntax-2026-10-19/cf07-fixed-original-loops-root-v1/README.md)：Jarde64编译/128VM/768观察全同原始，无新机制。Condition5 Smali test1与外层JUnit文本断言未执行。下一CF08先按[输入范围审计](../java-syntax-2026-10-19/cf08-scope-audit-root-v1/README.md)补NotIndexed完整原始类证据。
 
 ## 2026-10-18 CF-11 祖先 Iterator 声明清理产品验收
 

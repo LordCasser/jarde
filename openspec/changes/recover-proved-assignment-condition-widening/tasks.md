@@ -11,4 +11,4 @@
 ## 3. Complete comparison and delivery
 
 - [x] 3.1 root用最终CLI完成固定完整上游及六场景动态控制的源码/JADX/Jarde两编译器/双VM对照，验证完整类/真实方法库存、值65535、非零位置恢复、调用次数/事件和自然越界，default/all/essential及raw来源一致；编译失败不运行、不裁剪源码或借原target冒充生成类。
-- [ ] 3.2 root完成fresh workspace、产品提交推送与其自身CI全部jobs/官方step/两seed及新增精确门，绑定源/CLI/Git；同步主规范、固定账本与handoff，strict/apply通过，target清空且main干净/远端一致后关闭本叶子，持续goal保持active。
+- [x] 3.2 root完成fresh workspace、产品提交推送与其自身CI全部jobs/官方step/两seed及新增精确门，绑定源/CLI/Git；同步主规范、固定账本与handoff，strict/apply通过，target清空且main干净/远端一致后关闭本叶子，持续goal保持active。
