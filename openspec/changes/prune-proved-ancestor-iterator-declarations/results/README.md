@@ -46,3 +46,9 @@ root实际 `pre-meter-final-bind-root` 核上述完整采集8+12 API与已接受
 主规范已同步，当前source/code不再修改。任务3.2已勾；还须文档提交推送后实核clean main/远端/14辅助checkout并关闭3.3。下一固定Object参数包装分析持久在 `openspec/evidence/java-syntax-2026-10-18/cf11-object-argument-analysis-root-v1`，34成员，包含root架构约束、JADX六源码及Luna原/更正版本；未新建下一OpenSpec、未实施或编译新控制。Generic可选清理缺证不得降级既有typed能力、Integer拆箱错误反例已撤回、控制v1误用不同入参/receiver cast由v2纠正，下一root仍须实际JDK验证。
 
 预关闭实际审计：strict375/0，apply6/7 ready，所有当前本片及下一静态分析23归档/1954成员已按相邻SHA和内置manifest逐字复开（`all-archives-root-review-v1.json`）。此报告不预先包含尚未产生的clean-main/最终关闭收据；先文档checkpoint推送实核后再关闭最后任务。
+
+## 关闭完成（7/7）
+
+文档检查点1665f548fd6c16c1346173ffe5f7cb2e13418048已推送并实际接受clean main/远端同HEAD/仅main分支、14辅助checkout detached-clean-ancestor/无target、全部5154来源与最终CLI恒同，见 `clean-main-checkpoint-root-v1`。据此勾最后任务，当前工作仅为关闭文档的后继提交与最后终态复核；产品CI仍只绑定ea2a。最终strict/apply all_done和全归档复核见下方对应收据/索引，最后文档推送后的真实HEAD以外置 `/private/tmp/jarde-ancestor-iterator-final-clean-main-root-v1-20261018/execution.json` 为准，不在文档里预造本提交自己的hash。全局goal保持active，下一固定包装仍仅分析。
+
+最终关闭root实际：strict375/0、apply7/7 all_done（`delivery-checks-root-v2`）；本片与下一静态分析共25归档/2039成员全部逐字复开，最终索引 `all-archives-root-review-v2.json`。当前归档包含真实clean-main检查点及其checker，最终关闭文档push后的终态另存外置receipt。

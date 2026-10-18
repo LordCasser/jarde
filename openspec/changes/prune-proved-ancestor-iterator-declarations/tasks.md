@@ -12,4 +12,4 @@
 
 - [x] 3.1 用最终 CLI 完整三方重编译原始类与控制家族，双编译器/双 VM 对照行为并拒绝错误来源；按实际删除行和坐标移位审查 raw 方法/map、类投影、物理 BCI、quality/fallback 精确差分，保留 JADX 已知整类边界。
 - [x] 3.2 guarded 广门、fmt、CI Clippy、MSRV、Reader/fingerprint 及两 fresh native 全部通过；root 独立核完整具名结果、精确关键门和产品来源绑定，完成后 exact clean。
-- [ ] 3.3 提交推送实际产品并接受其自身 CI 的完整官方步骤和关键门；同步主规范、strict 验证、归档证据及更新固定账本/handoff，提交推送文档后实核干净 main、远端一致和辅助 checkout 无占用。
+- [x] 3.3 提交推送实际产品并接受其自身 CI 的完整官方步骤和关键门；同步主规范、strict 验证、归档证据及更新固定账本/handoff，提交推送文档后实核干净 main、远端一致和辅助 checkout 无占用。
