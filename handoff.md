@@ -1,3 +1,15 @@
+## 2026-10-19 当前推进：NL2 indexed List 声明，5/6，完整对照接受
+
+本节优先。finThrow5/5、nestedFin16/16及前片已交付，不重做。当前新片 `recover-proved-indexed-list-parameter-signatures` 5/6：完整实际基线、Luna私有实现与root架构审查、focused/适用广门和最终完整源码对照已接受；产品提交、自身CI及fresh workspace尚待。旧main3f888afb1，当前全部新代码/fixture/OpenSpec/evidence未提交。
+
+最终CLI `/private/tmp/jarde-indexed-list-signatures-broad-root-v2-20261019/candidate-cli`，63809216B/SHA90b30ad1132bdc904c20f1b4624347b84d37637c78f1f3e291ce2f0dea91f64c。focused40/0/1，广门578/0、fmt/CI Clippy/MSRV1.88通过，3198来源恒同，target absent。旧清理器不支持multi-target的真实harness失败保留，之后仅续跑未执行目标，不重跑已过门。
+
+完整最终采集184命令/368raw，32Jarde整类编译/64VM832case全同原；完整上游/控制原始各4VM40/64case一致。JADX no-debug双VM各4case重复get事件、2旧框架major55及4非法String→Integer编译失败保留，失败不运行。40 positive方法cells只改ListString头与确切成功marker，16 negative cells仅确切拒绝说明改变，其余代码/raw outcome/map逐字保留。原始Java/class/driver/JDK/oracle已独立重绑。结果入口本change/results/README.md，五归档共1378成员root全部逐字复开。
+
+复用CompleteBody census、精确primitive/Signature/descriptor、唯一get→c0/同SSA/AST Cast(Call)，保留真实cast。Luna v3修旧Stack0 receiver假设（size实际Stack1），root补计费/poll；不新增IR/pass/solver/重复CP事实。两个既有预算债务及显式void-throw quote单列，不混入；nested segment.last丢outer假审查已撤回。主规范一requirement/五scenario已同步，18/18通过；CF11及71/612仍不增整项完成数。
+
+接续：先核Git与target/进程。root独占共享/Git/网络/工具链，Luna私有。产品提交推送后可让远端CI与本地fresh seed1并行，但本地Cargo期间禁止source/Gitmutation/network/manualJDK或CLI。fresh runner为现有workspace_runner.py，seed5350648285461741569；准备好的native/CI/binder在 `/private/tmp/jarde-indexed-list-signatures-final-acceptance-prep-luna-v3-20261019`，保留全部旧门+七新门、14source/9fixture、官方ZIP每step独立日志。默认stack、5GiB、target1GiB每秒guard/exactclean。最后root验收native/自身CI与Git源码/CLI绑定、strict/apply/账本及干净远端main后再勾3.2。持续goal active。
+
 ## 2026-10-18 最新交付：Object 参数包装 6/6，自身 CI 完整接受
 
 本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片均已交付，勿重做。当前 `remove-proved-list-object-argument-wrappers` 6/6；持续 goal active，CF11整体及71单元/612测试不因本片增加完成数。

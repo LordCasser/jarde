@@ -2013,6 +2013,21 @@
       "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.java"
     },
     {
+      "blake3": "870d82c5a6c72b80f86cc6fb47282cb8682a4c10b547f0e1f2119ac034ced397",
+      "bytes": 2275,
+      "path": "tests/fixtures/java8/indexed-list-parameters/NestedLoops2GenericControls.java"
+    },
+    {
+      "blake3": "aa8cdb01998a02958e1c327cf119016a2ce8d7da9ec8e09cc2201bf55aa03406",
+      "bytes": 2970,
+      "path": "tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class"
+    },
+    {
+      "blake3": "e470269572c1a0df302c95293954ebd91e0ff61fd292f3cb1f3025b8468f46d4",
+      "bytes": 1891,
+      "path": "tests/fixtures/java8/indexed-list-parameters/no-debug/NestedLoops2GenericControls.class"
+    },
+    {
       "blake3": "5d875147f8ec5ca004d8c35e2571c06c907b01f41225bb8be35871d891566d74",
       "bytes": 1716,
       "path": "tests/fixtures/java8/loop-body-catch-patrol/javac8/DF.class"

@@ -2250,6 +2250,521 @@ pub fn class_source_invoke_ast_sites(
     Ok(Some(result))
 }
 
+/// Proves that exact retained calls are direct AST children of their physical casts.
+/// Relations must be sorted by both call and cast BCI and are checked in one iterative traversal.
+#[doc(hidden)]
+pub fn class_source_exact_cast_call_children(
+    ast: &ClassSourceMethodAst,
+    relations: &[(&ClassSourceInvokeKey, u32, &crate::ast::Type)],
+    budget: &mut Budget,
+) -> Result<Option<Vec<bool>>, crate::stop::StopReason> {
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+    enum Node<'a> {
+        Stmt(&'a Stmt),
+        Expr(&'a Expr),
+    }
+    fn push<'a>(
+        stack: &mut Vec<Node<'a>>,
+        node: Node<'a>,
+        budget: &mut Budget,
+        bci: u32,
+    ) -> Result<(), crate::stop::StopReason> {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(bci),
+        )?;
+        stack.push(node);
+        Ok(())
+    }
+    let source = &ast.projection;
+    if !source.complete_code
+        || source.instruction_bcis.len() != source.instruction_count
+        || source.instruction_opcodes.len() != source.instruction_count
+    {
+        return Ok(None);
+    }
+    crate::stop::poll(budget, None)?;
+    charge_class_source_metadata(
+        budget,
+        relations.len(),
+        relations.first().map(|(key, _, _)| key.call_bci),
+    )?;
+    let identity_lookup_work = relations.len().saturating_mul(
+        log2_upper_bound(source.call_targets.len())
+            .saturating_add(log2_upper_bound(source.instruction_opcodes.len()))
+            .saturating_add(log2_upper_bound(source.instruction_bcis.len()))
+            .saturating_add(3),
+    );
+    let work = relations.iter().fold(
+        source
+            .program
+            .stmts
+            .len()
+            .saturating_add(identity_lookup_work),
+        |n, (call, _, ty)| {
+            n.saturating_add(call.target.owner().len())
+                .saturating_add(call.target.name().len())
+                .saturating_add(call.target.descriptor().len())
+                .saturating_add(ty.spell().len())
+                .saturating_add(1)
+        },
+    );
+    charge_class_source_metadata(
+        budget,
+        work,
+        relations.first().map(|(key, _, _)| key.call_bci),
+    )?;
+    let identity_bytes = class_source_method_identity_work(&source.member, budget)?;
+    if relations
+        .windows(2)
+        .any(|pair| pair[0].0.call_bci >= pair[1].0.call_bci || pair[0].1 >= pair[1].1)
+    {
+        return Ok(None);
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(relations.len().saturating_mul(3)).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut counts = vec![0usize; relations.len()];
+    let mut cast_anchor_counts = vec![0usize; relations.len()];
+    let mut call_anchor_counts = vec![0usize; relations.len()];
+    let mut stack = Vec::new();
+    for stmt in source.program.stmts.iter().rev() {
+        push(
+            &mut stack,
+            Node::Stmt(stmt),
+            budget,
+            stmt.origin.primary().bci(),
+        )?;
+    }
+    while let Some(node) = stack.pop() {
+        let bci = match node {
+            Node::Stmt(s) => s.origin.primary().bci(),
+            Node::Expr(e) => e.origin.primary().bci(),
+        };
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        match node {
+            Node::Expr(expr) => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(log2_upper_bound(relations.len()).saturating_add(1))
+                        .unwrap_or(u64::MAX),
+                    Some(bci),
+                )?;
+                if let ExprKind::Call { .. } = &expr.kind {
+                    if let Ok(index) = relations
+                        .binary_search_by_key(&expr.origin.primary().bci(), |(call, _, _)| {
+                            call.call_bci
+                        })
+                    {
+                        call_anchor_counts[index] = call_anchor_counts[index].saturating_add(1);
+                    }
+                }
+                if let ExprKind::Cast { ty, value } = &expr.kind {
+                    if let Ok(index) = relations
+                        .binary_search_by_key(&expr.origin.primary().bci(), |(_, cast_bci, _)| {
+                            *cast_bci
+                        })
+                    {
+                        let (call, cast_bci, expected) = relations[index];
+                        cast_anchor_counts[index] = cast_anchor_counts[index].saturating_add(1);
+                        if expr.origin.primary().bci() == cast_bci {
+                            charge_class_source_metadata(
+                                budget,
+                                identity_bytes
+                                    .saturating_mul(expr.origin.derived().len().saturating_add(1)),
+                                Some(cast_bci),
+                            )?;
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(
+                                    log2_upper_bound(source.instruction_opcodes.len())
+                                        .saturating_add(log2_upper_bound(
+                                            source.instruction_bcis.len(),
+                                        ))
+                                        .saturating_add(2),
+                                )
+                                .unwrap_or(u64::MAX),
+                                Some(cast_bci),
+                            )?;
+                            let opcode_index = source
+                                .instruction_opcodes
+                                .binary_search_by_key(&cast_bci, |(at, _)| *at)
+                                .ok();
+                            let bci_index = source.instruction_bcis.binary_search(&cast_bci).ok();
+                            charge_class_source_metadata(budget, ty.spell().len(), Some(cast_bci))?;
+                            if bci_index.is_some()
+                                && expr.origin.primary().provenance()
+                                    == crate::source_map::Provenance::Direct
+                                && expr
+                                    .origin
+                                    .primary()
+                                    .method()
+                                    .is_none_or(|m| m == &source.member)
+                                && expr
+                                    .origin
+                                    .derived()
+                                    .iter()
+                                    .all(|o| o.method().is_none_or(|m| m == &source.member))
+                                && ty == expected
+                                && opcode_index.is_some_and(|index| {
+                                    source.instruction_opcodes[index].1 == 0xc0
+                                        && (index == 0
+                                            || source.instruction_opcodes[index - 1].0 != cast_bci)
+                                        && source
+                                            .instruction_opcodes
+                                            .get(index + 1)
+                                            .is_none_or(|row| row.0 != cast_bci)
+                                })
+                            {
+                                if let ExprKind::Call { name, args, .. } = &value.kind {
+                                    if value.origin.primary().bci() == call.call_bci {
+                                        charge_class_source_metadata(
+                                            budget,
+                                            identity_bytes.saturating_mul(
+                                                value.origin.derived().len().saturating_add(1),
+                                            ),
+                                            Some(call.call_bci),
+                                        )?;
+                                        crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, u64::try_from(log2_upper_bound(source.call_targets.len()).saturating_add(1)).unwrap_or(u64::MAX), Some(call.call_bci))?;
+                                        let call_index = source
+                                            .call_targets
+                                            .partition_point(|row| row.0 < call.call_bci);
+                                        let call_target = source.call_targets.get(call_index);
+                                        charge_class_source_metadata(
+                                            budget,
+                                            name.len(),
+                                            Some(call.call_bci),
+                                        )?;
+                                        let target_matches =
+                                            if let Some((at, opcode, target)) = call_target {
+                                                charge_class_source_metadata(
+                                                    budget,
+                                                    target
+                                                        .owner()
+                                                        .len()
+                                                        .saturating_add(target.name().len())
+                                                        .saturating_add(target.descriptor().len()),
+                                                    Some(call.call_bci),
+                                                )?;
+                                                *at == call.call_bci
+                                                    && *opcode == call.opcode
+                                                    && *target == call.target
+                                                    && source
+                                                        .call_targets
+                                                        .get(call_index + 1)
+                                                        .is_none_or(|row| row.0 != call.call_bci)
+                                            } else {
+                                                false
+                                            };
+                                        if value
+                                            .origin
+                                            .primary()
+                                            .method()
+                                            .is_none_or(|m| m == &source.member)
+                                            && value.origin.derived().iter().all(|o| {
+                                                o.method().is_none_or(|m| m == &source.member)
+                                            })
+                                            && name == call.target.name()
+                                            && descriptor_parameter_count(call.target.descriptor())
+                                                == Some(args.len())
+                                            && target_matches
+                                        {
+                                            counts[index] = counts[index].saturating_add(1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                macro_rules! pe {
+                    ($v:expr) => {
+                        push(&mut stack, Node::Expr($v), budget, bci)?
+                    };
+                }
+                match &expr.kind {
+                    ExprKind::LocalAssign { value, .. }
+                    | ExprKind::InstanceOf { value, .. }
+                    | ExprKind::Lambda { body: value, .. }
+                    | ExprKind::MethodReference {
+                        qualifier: value, ..
+                    }
+                    | ExprKind::Field {
+                        receiver: value, ..
+                    }
+                    | ExprKind::ArrayLength { array: value }
+                    | ExprKind::PostfixUpdate { target: value, .. }
+                    | ExprKind::PrefixUpdate { target: value, .. }
+                    | ExprKind::Not { value }
+                    | ExprKind::Neg { value }
+                    | ExprKind::Cast { value, .. } => pe!(value),
+                    ExprKind::ArrayAssign { target, value, .. } => {
+                        pe!(value);
+                        pe!(target);
+                    }
+                    ExprKind::Call { receiver, args, .. } => {
+                        for v in args.iter().rev() {
+                            pe!(v);
+                        }
+                        if let Some(v) = receiver {
+                            pe!(v);
+                        }
+                    }
+                    ExprKind::New {
+                        qualifier, args, ..
+                    } => {
+                        for v in args.iter().rev() {
+                            pe!(v);
+                        }
+                        if let Some(v) = qualifier {
+                            pe!(v);
+                        }
+                    }
+                    ExprKind::Index { array, index }
+                    | ExprKind::Binary {
+                        left: array,
+                        right: index,
+                        ..
+                    } => {
+                        pe!(index);
+                        pe!(array);
+                    }
+                    ExprKind::NewArray {
+                        lengths,
+                        initializers,
+                        ..
+                    } => {
+                        for v in initializers.iter().flatten().rev() {
+                            pe!(v);
+                        }
+                        for v in lengths.iter().rev() {
+                            pe!(v);
+                        }
+                    }
+                    ExprKind::Conditional {
+                        test,
+                        when_true,
+                        when_false,
+                    } => {
+                        pe!(when_false);
+                        pe!(when_true);
+                        pe!(test);
+                    }
+                    ExprKind::Concat { parts } => {
+                        for p in parts.iter().rev() {
+                            pe!(&p.value);
+                        }
+                    }
+                    ExprKind::Local(_)
+                    | ExprKind::Integer(_)
+                    | ExprKind::IntegerConstantName { .. }
+                    | ExprKind::Boolean(_)
+                    | ExprKind::Long(_)
+                    | ExprKind::Float(_)
+                    | ExprKind::Double(_)
+                    | ExprKind::Str(_)
+                    | ExprKind::Null
+                    | ExprKind::ClassLiteral { .. }
+                    | ExprKind::Path(_)
+                    | ExprKind::QualifiedThis { .. }
+                    | ExprKind::Super { .. } => {}
+                }
+            }
+            Node::Stmt(stmt) => {
+                macro_rules! ps {
+                    ($v:expr) => {
+                        push(&mut stack, Node::Stmt($v), budget, bci)?
+                    };
+                }
+                macro_rules! px {
+                    ($v:expr) => {
+                        push(&mut stack, Node::Expr($v), budget, bci)?
+                    };
+                }
+                match &stmt.kind {
+                    StmtKind::Declare { value: Some(v), .. }
+                    | StmtKind::Assign { value: v, .. }
+                    | StmtKind::Expr(v)
+                    | StmtKind::Throw { value: v } => px!(v),
+                    StmtKind::FieldAssign {
+                        receiver, value, ..
+                    } => {
+                        px!(value);
+                        if let Some(v) = receiver {
+                            px!(v);
+                        }
+                    }
+                    StmtKind::IndexAssign {
+                        array,
+                        index,
+                        value,
+                        ..
+                    } => {
+                        px!(value);
+                        px!(index);
+                        px!(array);
+                    }
+                    StmtKind::ConstructorCall { args, .. } => {
+                        for v in args.iter().rev() {
+                            px!(v);
+                        }
+                    }
+                    StmtKind::Return { value: Some(v) } => px!(v),
+                    StmtKind::Assert { cond, message } => {
+                        if let Some(v) = message {
+                            px!(v);
+                        }
+                        px!(cond);
+                    }
+                    StmtKind::If {
+                        cond,
+                        then_body,
+                        else_body,
+                    } => {
+                        for s in else_body.iter().rev() {
+                            ps!(s);
+                        }
+                        for s in then_body.iter().rev() {
+                            ps!(s);
+                        }
+                        px!(cond);
+                    }
+                    StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                        for s in body.iter().rev() {
+                            ps!(s);
+                        }
+                        px!(cond);
+                    }
+                    StmtKind::For {
+                        init,
+                        cond,
+                        update,
+                        body,
+                        ..
+                    } => {
+                        for s in body.iter().rev() {
+                            ps!(s);
+                        }
+                        ps!(update);
+                        px!(cond);
+                        ps!(init);
+                    }
+                    StmtKind::ForEach { iterable, body, .. } => {
+                        for s in body.iter().rev() {
+                            ps!(s);
+                        }
+                        px!(iterable);
+                    }
+                    StmtKind::Switch { value, arms } => {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(bci),
+                        )?;
+                        for arm in arms.iter().rev() {
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                1,
+                                Some(bci),
+                            )?;
+                            for s in arm.body.iter().rev() {
+                                ps!(s);
+                            }
+                        }
+                        px!(value);
+                    }
+                    StmtKind::Try {
+                        resources,
+                        catches,
+                        body,
+                        finally_body,
+                    } => {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(bci),
+                        )?;
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(bci),
+                        )?;
+                        if let Some(v) = finally_body {
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                1,
+                                Some(bci),
+                            )?;
+                            for s in v.iter().rev() {
+                                ps!(s);
+                            }
+                        }
+                        for catch in catches.iter().rev() {
+                            crate::stop::charge(
+                                budget,
+                                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                                1,
+                                Some(bci),
+                            )?;
+                            for s in catch.body.iter().rev() {
+                                ps!(s);
+                            }
+                        }
+                        for s in body.iter().rev() {
+                            ps!(s);
+                        }
+                        for r in resources.iter().rev() {
+                            px!(&r.value);
+                        }
+                    }
+                    StmtKind::Synchronized { lock, body } => {
+                        for s in body.iter().rev() {
+                            ps!(s);
+                        }
+                        px!(lock);
+                    }
+                    StmtKind::Declare { value: None, .. }
+                    | StmtKind::Return { value: None }
+                    | StmtKind::Break { .. }
+                    | StmtKind::Continue { .. }
+                    | StmtKind::Fallback { .. } => {}
+                }
+            }
+        }
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(relations.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    Ok(Some(
+        counts
+            .into_iter()
+            .zip(cast_anchor_counts)
+            .zip(call_anchor_counts)
+            .map(|((matches, casts), calls)| matches == 1 && casts == 1 && calls == 1)
+            .collect(),
+    ))
+}
+
 /// Lists every direct AST consumer of a selected call result. Callers join the returned positions
 /// with their same-run SSA use census; this function never infers a generic source type from that
 /// census or from `Expr::presented`.
@@ -8545,7 +9060,9 @@ pub enum GenericReturnValue {
     /// remains typed from its physical descriptor while the declaration may name a subtype
     /// variable with the same proved erasure. Slots in this list are physical parameter starts
     /// that neither the SSA instruction reads nor the effects census says the body reads.
-    VoidBody {
+    CompleteBody {
+        /// Exact physical result type; `None` means void.
+        result_type: Option<crate::ast::Type>,
         unread_parameter_slots: Vec<u16>,
         /// Every physical instruction BCI at which an unchanged parameter local is read.
         /// Class-source must account for each occurrence, including duplicate reads.
@@ -10972,6 +11489,79 @@ fn generic_void_unread_parameter_slots(
     )
 }
 
+/// Returns the value occupying an instance invocation's receiver operand, using the descriptor to
+/// close the consumed operands. Stack depths are relative to the bottom of the live operand stack,
+/// so the receiver need not be `Stack(0)` when an unrelated value remains below the call operands.
+fn generic_void_invoke_receiver_value(
+    opcode: u8,
+    target: &crate::facts::CallTarget,
+    reads: &[(Slot, jarde_jvm::method_ir::ValueId)],
+    budget: &mut Budget,
+    bci: u32,
+) -> Result<Option<jarde_jvm::method_ir::ValueId>, crate::stop::StopReason> {
+    crate::stop::poll(budget, Some(bci))?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(reads.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(u64::try_from(target.descriptor().len()).unwrap_or(u64::MAX))
+            .saturating_add(1),
+        Some(bci),
+    )?;
+    if !class_source_invoke_opcode_matches_target(opcode, target) || opcode == 0xb8 {
+        return Ok(None);
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(target.descriptor().len()).unwrap_or(u64::MAX),
+        Some(bci),
+    )?;
+    let Ok(descriptor) = descriptor_facts(target.descriptor().as_bytes(), DescriptorKind::Method)
+    else {
+        return Ok(None);
+    };
+    if reads.len() != descriptor.parameters().len().saturating_add(1) {
+        return Ok(None);
+    }
+
+    let mut receiver = None;
+    let mut minimum_depth = None;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(reads.len()).unwrap_or(u64::MAX),
+        Some(bci),
+    )?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            reads
+                .len()
+                .saturating_mul(log2_upper_bound(reads.len()).saturating_add(1)),
+        )
+        .unwrap_or(u64::MAX),
+        Some(bci),
+    )?;
+    let mut depths = std::collections::BTreeSet::new();
+    for (slot, value) in reads {
+        crate::stop::poll(budget, Some(bci))?;
+        let Slot::Stack(depth) = slot else {
+            return Ok(None);
+        };
+        if !depths.insert(*depth) {
+            return Ok(None);
+        }
+        if minimum_depth.is_none_or(|previous| *depth < previous) {
+            minimum_depth = Some(*depth);
+            receiver = Some(*value);
+        }
+    }
+    Ok(receiver)
+}
+
 fn generic_void_unread_parameter_slots_with_scope(
     code: &jarde_reader::classfile::MethodCodeFacts,
     ssa: &SsaTable,
@@ -11324,17 +11914,23 @@ fn generic_void_unread_parameter_slots_with_scope(
             let Some(call_bci) = use_bci else {
                 continue;
             };
-            let Some((Operation::Invoke(_), call_instruction)) = operations
-                .get(call_bci)
-                .zip(instructions_by_bci.get(&call_bci).copied())
+            let Some(Operation::Invoke(target)) = operations.get(call_bci) else {
+                continue;
+            };
+            let Some(call_instruction) = instructions_by_bci.get(&call_bci).copied() else {
+                continue;
+            };
+            let Some(receiver) = generic_void_invoke_receiver_value(
+                call_instruction.opcode(),
+                target,
+                call_instruction.reads(),
+                budget,
+                call_bci,
+            )?
             else {
                 continue;
             };
-            if call_instruction
-                .reads()
-                .iter()
-                .any(|(read_slot, value)| *read_slot == Slot::Stack(0) && *value == *loaded_value)
-            {
+            if receiver == *loaded_value {
                 parameter_receiver_calls.push(GenericVoidParameterReceiverCall {
                     parameter_slot: *slot,
                     load_bci: raw.bci,
@@ -11460,14 +12056,69 @@ fn generic_return_candidate(
             value: GenericReturnValue::EmptyVoid,
         }));
     }
-    // This candidate records a complete structured void body and unchanged parameter locals.
-    // Its unread-slot list is a separate physical fact: declaration projection may use it for a
-    // parameter whose Signature is parameterized by a class variable, while read parameters still
-    // need the existing narrower source-assignability proof.
-    if matches!(
-        program.stmts.last().map(|statement| &statement.kind),
-        Some(StmtKind::Return { value: None })
-    ) && !program.stmts.is_empty()
+    // This candidate records a complete structured void or primitive body and unchanged parameter
+    // locals. It reuses the existing whole-Code census; the physical descriptor and actual return
+    // opcode determine the result category.
+    let descriptor_bytes = request.facts.method().descriptor().as_bytes();
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(descriptor_bytes.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let physical_result = build::return_type(request.facts.method().descriptor());
+    let expected_return_opcode = match physical_result.as_ref() {
+        None => Some(0xb1),
+        Some(Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int) => Some(0xac),
+        Some(Type::Long) => Some(0xad),
+        Some(Type::Float) => Some(0xae),
+        Some(Type::Double) => Some(0xaf),
+        Some(Type::Reference(_)) => None,
+    };
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(parameter_types.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut list_descriptor_formal = false;
+    for ty in parameter_types.values() {
+        crate::stop::poll(budget, None)?;
+        if matches!(ty, Type::Reference(name) if name == "java.util.List") {
+            list_descriptor_formal = true;
+            break;
+        }
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let mut return_opcodes_match = expected_return_opcode.is_some();
+    for instruction in &code.instructions {
+        crate::stop::poll(budget, Some(instruction.bci))?;
+        if matches!(instruction.opcode, 0xac..=0xb1)
+            && Some(instruction.opcode) != expected_return_opcode
+        {
+            return_opcodes_match = false;
+        }
+    }
+    let return_shape_matches = program.stmts.last().is_some_and(|statement| {
+        matches!(
+            (&statement.kind, expected_return_opcode),
+            (StmtKind::Return { value: None }, Some(0xb1))
+                | (StmtKind::Return { value: Some(_), .. }, Some(0xac..=0xaf))
+        )
+    }) && return_opcodes_match
+        && expected_return_opcode.is_some_and(|opcode| {
+            code.instructions
+                .last()
+                .is_some_and(|instruction| instruction.opcode == opcode)
+        });
+    if return_shape_matches
+        && (physical_result.is_none() || list_descriptor_formal)
+        && !program.stmts.is_empty()
         && code.stopped_at.is_none()
         && (try_scope.is_some()
             || (code.exception_handler_count == 0 && code.exception_handlers.is_empty()))
@@ -11515,7 +12166,8 @@ fn generic_return_candidate(
         }
         return Ok(Some(GenericReturnCandidate {
             parameters,
-            value: GenericReturnValue::VoidBody {
+            value: GenericReturnValue::CompleteBody {
+                result_type: physical_result.clone(),
                 unread_parameter_slots,
                 parameter_read_bcis,
                 parameter_receiver_calls,
@@ -15989,6 +16641,9 @@ mod generic_void_parameter_census_tests {
     const RESOURCE_GUARD: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
     );
+    const INDEXED_LIST_CONTROLS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/java8/indexed-list-parameters/debug/NestedLoops2GenericControls.class"
+    );
 
     fn limits() -> Limits {
         Limits {
@@ -16575,6 +17230,66 @@ mod generic_void_parameter_census_tests {
     }
 
     #[test]
+    fn invoke_receiver_census_uses_consumed_stack_depth_not_stack_zero() {
+        let (analysis, _) = analyzed(
+            INDEXED_LIST_CONTROLS,
+            "voidGetCastString",
+            "(Ljava/util/List;)V",
+            1,
+        );
+        let ir = analysis.ir();
+        let code = ir.code().expect("fixture method has Code");
+        let ssa = ir.ssa().expect("fixture method has SSA");
+        let operations = Operations::of(code, ir.constant_pool());
+
+        let mut saw_nonzero_size_receiver = false;
+        let mut saw_distinct_get_argument = false;
+        for block in ssa.blocks() {
+            for instruction in block.instructions() {
+                let Some(Operation::Invoke(target)) = operations.get(instruction.bci()) else {
+                    continue;
+                };
+                if target.name() != "size" && target.name() != "get" {
+                    continue;
+                }
+                let receiver = generic_void_invoke_receiver_value(
+                    instruction.opcode(),
+                    target,
+                    instruction.reads(),
+                    &mut Budget::new(limits()),
+                    instruction.bci(),
+                )
+                .expect("complete invoke operands do not stop")
+                .expect("instance call has a closed receiver operand");
+                if target.name() == "size" {
+                    assert!(
+                        instruction
+                            .reads()
+                            .iter()
+                            .any(|(slot, value)| *slot == Slot::Stack(1) && *value == receiver)
+                    );
+                    saw_nonzero_size_receiver = true;
+                } else {
+                    let argument = instruction.reads().iter().find_map(|(slot, value)| {
+                        (matches!(slot, Slot::Stack(_)) && *value != receiver).then_some(*value)
+                    });
+                    assert!(argument.is_some(), "get has a distinct argument operand");
+                    assert_ne!(receiver, argument.expect("checked above"));
+                    saw_distinct_get_argument = true;
+                }
+            }
+        }
+        assert!(
+            saw_nonzero_size_receiver,
+            "size receiver is retained above i"
+        );
+        assert!(
+            saw_distinct_get_argument,
+            "an invoke argument is not accepted as its receiver"
+        );
+    }
+
+    #[test]
     fn ordinary_try_list_scope_is_reached_by_the_real_method_recovery() {
         // These are physical Java 8 classfile methods. Their only route through the handler-bearing
         // generic void gate is ordinary_try_list_scope followed by the full physical census.
@@ -16625,7 +17340,7 @@ mod generic_void_parameter_census_tests {
                 false,
             );
             let Some(GenericReturnCandidate {
-                value: GenericReturnValue::VoidBody { .. },
+                value: GenericReturnValue::CompleteBody { .. },
                 ..
             }) = recovered.generic_return
             else {
@@ -19529,6 +20244,373 @@ fn diagnostic(code: &str, severity: DiagnosticSeverity, message: &str) -> Diagno
         severity,
         message: message.to_string(),
         provenance: None,
+    }
+}
+
+#[cfg(test)]
+mod exact_cast_call_batch_tests {
+    use super::*;
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind, Type};
+    use jarde_reader::budget::{Budget, CancellationToken, Limits};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalVariant, SnapshotId,
+    };
+    use std::collections::BTreeMap;
+
+    fn ast(count: usize) -> (ClassSourceMethodAst, Vec<ClassSourceInvokeKey>) {
+        let member = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId("get-cast-batch".into()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest("get-cast-batch".into()),
+                    length: 1,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"body".to_vec()),
+            descriptor: JvmBytes(b"(Ljava/util/List;)V".to_vec()),
+        };
+        let mut keys = Vec::new();
+        let mut statements = Vec::new();
+        let mut instruction_bcis = Vec::new();
+        let mut instruction_opcodes = Vec::new();
+        let mut call_targets = Vec::new();
+        for i in 0..count {
+            let call_bci = (i * 3 + 1) as u32;
+            let cast_bci = call_bci + 1;
+            let target = crate::facts::CallTarget::new(
+                crate::facts::InvokeKind::Interface,
+                "java/util/List",
+                "get",
+                "(I)Ljava/lang/Object;",
+                true,
+            );
+            keys.push(ClassSourceInvokeKey {
+                call_bci,
+                opcode: 0xb9,
+                target: target.clone(),
+            });
+            call_targets.push((call_bci, 0xb9, target));
+            instruction_bcis.extend([call_bci, cast_bci]);
+            instruction_opcodes.extend([(call_bci, 0xb9), (cast_bci, 0xc0)]);
+            let call = Expr::direct(
+                ExprKind::Call {
+                    receiver: Some(Box::new(Expr::direct(
+                        ExprKind::Local("values".into()),
+                        call_bci,
+                    ))),
+                    name: "get".into(),
+                    args: vec![Expr::direct(ExprKind::Integer(i as i64), call_bci)],
+                },
+                call_bci,
+            );
+            let cast = Expr::new(
+                ExprKind::Cast {
+                    ty: Type::Reference("java.lang.String".into()),
+                    value: Box::new(call),
+                },
+                OriginSet::new(crate::source_map::Origin::direct(cast_bci)),
+            );
+            statements.push(Stmt::new(
+                StmtKind::Expr(cast),
+                OriginSet::new(crate::source_map::Origin::direct(cast_bci)),
+            ));
+        }
+        let program = build::Program {
+            stmts: statements,
+            field_increments: BTreeMap::new(),
+            statements: count,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        let source = ClassSourceMethodAstSource {
+            program,
+            member,
+            current_class: None,
+            nested_class_members: Vec::new(),
+            parameter_names: vec![Some("values".into())],
+            parameter_slots: vec![0],
+            complete_code: true,
+            has_exception_handlers: false,
+            instruction_count: instruction_bcis.len(),
+            instruction_bcis,
+            instruction_opcodes,
+            call_targets,
+            anonymous_constructor_initializer_bci: None,
+            generic_call_init: None,
+            instance_field_write_evidence: None,
+        };
+        (
+            ClassSourceMethodAst {
+                projection: std::sync::Arc::new(source),
+            },
+            keys,
+        )
+    }
+
+    fn relations<'a>(
+        keys: &'a [ClassSourceInvokeKey],
+        ty: &'a Type,
+    ) -> Vec<(&'a ClassSourceInvokeKey, u32, &'a Type)> {
+        keys.iter().map(|key| (key, key.call_bci + 1, ty)).collect()
+    }
+
+    fn budget() -> Budget {
+        Budget::new(Limits {
+            ir_items: 10_000,
+            analysis_steps: 100_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    #[test]
+    fn iterative_batch_proves_multiple_get_cast_children_and_rejects_mutations() {
+        let (ast, keys) = ast(2);
+        let element = Type::Reference("java.lang.String".into());
+        let expected = relations(&keys, &element);
+        assert_eq!(
+            class_source_exact_cast_call_children(&ast, &expected, &mut budget()).unwrap(),
+            Some(vec![true, true])
+        );
+
+        let mut duplicate = (*ast.projection).clone();
+        let first = duplicate.program.stmts[0].clone();
+        duplicate.program.stmts.push(first);
+        let duplicate = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(duplicate),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&duplicate, &expected, &mut budget()).unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut duplicate_call = (*ast.projection).clone();
+        let StmtKind::Expr(Expr {
+            kind: ExprKind::Cast { value, .. },
+            ..
+        }) = &duplicate_call.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        let call_copy = value.as_ref().clone();
+        duplicate_call.program.stmts.push(Stmt::new(
+            StmtKind::Expr(call_copy),
+            OriginSet::new(crate::source_map::Origin::direct(keys[0].call_bci)),
+        ));
+        let duplicate_call = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(duplicate_call),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&duplicate_call, &expected, &mut budget())
+                .unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut missing_cast = (*ast.projection).clone();
+        missing_cast.program.stmts.remove(0);
+        let missing_cast = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(missing_cast),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&missing_cast, &expected, &mut budget()).unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut missing_call = (*ast.projection).clone();
+        let StmtKind::Expr(Expr {
+            kind: ExprKind::Cast { value, .. },
+            ..
+        }) = &mut missing_call.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        **value = Expr::direct(ExprKind::Local("notCall".into()), keys[0].call_bci);
+        let missing_call = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(missing_call),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&missing_call, &expected, &mut budget()).unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut wrong_target = keys[0].clone();
+        wrong_target.target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Interface,
+            "java/util/List",
+            "remove",
+            "(I)Ljava/lang/Object;",
+            true,
+        );
+        let wrong_target_relations = vec![
+            (&wrong_target, keys[0].call_bci + 1, &element),
+            (&keys[1], keys[1].call_bci + 1, &element),
+        ];
+        assert_eq!(
+            class_source_exact_cast_call_children(&ast, &wrong_target_relations, &mut budget())
+                .unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut wrong_provenance = (*ast.projection).clone();
+        let StmtKind::Expr(Expr { origin, .. }) = &mut wrong_provenance.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        *origin = OriginSet::new(crate::source_map::Origin::derived(keys[0].call_bci + 1));
+        let wrong_provenance = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(wrong_provenance),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&wrong_provenance, &expected, &mut budget())
+                .unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut wrong_opcode = (*ast.projection).clone();
+        wrong_opcode.instruction_opcodes[1].1 = 0x19;
+        let wrong_opcode = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(wrong_opcode),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&wrong_opcode, &expected, &mut budget()).unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut wrong_type = (*ast.projection).clone();
+        let StmtKind::Expr(Expr {
+            kind: ExprKind::Cast { ty, .. },
+            ..
+        }) = &mut wrong_type.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        *ty = Type::Reference("java.lang.Integer".into());
+        let wrong_type = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(wrong_type),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&wrong_type, &expected, &mut budget()).unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut foreign = (*ast.projection).clone();
+        let other = PhysicalMethodId {
+            name: JvmBytes(b"other".to_vec()),
+            ..foreign.member.clone()
+        };
+        foreign.program.stmts[0].origin = OriginSet::new(
+            crate::source_map::Origin::direct(keys[0].call_bci + 1).in_method(&other),
+        );
+        let StmtKind::Expr(Expr { origin, .. }) = &mut foreign.program.stmts[0].kind else {
+            panic!()
+        };
+        *origin = OriginSet::new(
+            crate::source_map::Origin::direct(keys[0].call_bci + 1).in_method(&other),
+        );
+        let foreign = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(foreign),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&foreign, &expected, &mut budget()).unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut foreign_derived = (*ast.projection).clone();
+        let other = PhysicalMethodId {
+            name: JvmBytes(b"other".to_vec()),
+            ..foreign_derived.member.clone()
+        };
+        let StmtKind::Expr(Expr {
+            kind: ExprKind::Cast { value, .. },
+            ..
+        }) = &mut foreign_derived.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        let Expr {
+            kind: ExprKind::Call { .. },
+            origin,
+            ..
+        } = value.as_mut()
+        else {
+            panic!()
+        };
+        *origin = OriginSet::derived_from(
+            crate::source_map::Origin::direct(keys[0].call_bci),
+            crate::source_map::Origin::derived(keys[0].call_bci).in_method(&other),
+        );
+        let foreign_derived = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(foreign_derived),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&foreign_derived, &expected, &mut budget())
+                .unwrap(),
+            Some(vec![false, true])
+        );
+
+        let mut cast_foreign_derived = (*ast.projection).clone();
+        let other = PhysicalMethodId {
+            name: JvmBytes(b"other".to_vec()),
+            ..cast_foreign_derived.member.clone()
+        };
+        let StmtKind::Expr(Expr { origin, .. }) = &mut cast_foreign_derived.program.stmts[0].kind
+        else {
+            panic!()
+        };
+        *origin = OriginSet::derived_from(
+            crate::source_map::Origin::direct(keys[0].call_bci + 1),
+            crate::source_map::Origin::derived(keys[0].call_bci + 1).in_method(&other),
+        );
+        let cast_foreign_derived = ClassSourceMethodAst {
+            projection: std::sync::Arc::new(cast_foreign_derived),
+        };
+        assert_eq!(
+            class_source_exact_cast_call_children(&cast_foreign_derived, &expected, &mut budget())
+                .unwrap(),
+            Some(vec![false, true])
+        );
+    }
+
+    #[test]
+    fn iterative_batch_propagates_budget_and_cancellation_stops() {
+        let (ast, keys) = ast(1);
+        let element = Type::Reference("java.lang.String".into());
+        let expected = relations(&keys, &element);
+        let mut exhausted = Budget::new(Limits {
+            ir_items: 0,
+            analysis_steps: 100_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            class_source_exact_cast_call_children(&ast, &expected, &mut exhausted),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(
+            Limits {
+                ir_items: 1000,
+                analysis_steps: 1000,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            token,
+        );
+        assert!(matches!(
+            class_source_exact_cast_call_children(&ast, &expected, &mut cancelled),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
     }
 }
 

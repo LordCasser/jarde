@@ -5406,6 +5406,39 @@ pub(crate) enum SignatureProjection {
     DeferredSameClass,
 }
 
+fn ordinary_primitive_result_matches(
+    physical: &jarde_java::ast::Type,
+    parsed: Option<&SignatureType>,
+    signature_spelling: Option<&str>,
+    descriptor_spelling: Option<&str>,
+) -> bool {
+    let exact_base = matches!(
+        (physical, parsed),
+        (
+            jarde_java::ast::Type::Boolean,
+            Some(SignatureType::Base(b'Z'))
+        ) | (jarde_java::ast::Type::Byte, Some(SignatureType::Base(b'B')))
+            | (jarde_java::ast::Type::Char, Some(SignatureType::Base(b'C')))
+            | (
+                jarde_java::ast::Type::Short,
+                Some(SignatureType::Base(b'S'))
+            )
+            | (jarde_java::ast::Type::Int, Some(SignatureType::Base(b'I')))
+            | (jarde_java::ast::Type::Long, Some(SignatureType::Base(b'J')))
+            | (
+                jarde_java::ast::Type::Float,
+                Some(SignatureType::Base(b'F'))
+            )
+            | (
+                jarde_java::ast::Type::Double,
+                Some(SignatureType::Base(b'D'))
+            )
+    );
+    exact_base
+        && signature_spelling == Some(physical.spell())
+        && descriptor_spelling == Some(physical.spell())
+}
+
 /// Decide one generic method-header projection from this member's own Signature, an already
 /// published class-variable scope, and a typed return candidate from the same recovery run.
 /// Syntax/erasure failures are refusals; budget and cancellation remain operation stops.
@@ -5633,7 +5666,7 @@ pub(crate) fn project_method_signature_with_state(
             && attributes.throws_raw.is_empty()
             && matches!(candidate, Some(GenericReturnCandidate {
                 parameters,
-                value: GenericReturnValue::VoidBody { .. },
+                value: GenericReturnValue::CompleteBody { result_type: None, .. },
             }) if !parameters.is_empty());
         let body_ordinary_parameterized_null_return = matches!(
             record.outcome,
@@ -5873,9 +5906,9 @@ pub(crate) fn project_method_signature_with_state(
                     "same-run direct Code/SSA/Program and LambdaMetafactory target proof"
                 } else if matches!(
                     candidate.map(|candidate| &candidate.value),
-                    Some(GenericReturnValue::VoidBody { .. })
+                    Some(GenericReturnValue::CompleteBody { .. })
                 ) {
-                    "same-run AST/Code/SSA complete void body proof"
+                    "same-run AST/Code/SSA complete body proof"
                 } else {
                     "same-run AST/SSA parameter-return proof"
                 },
@@ -7421,7 +7454,7 @@ fn ordinary_parameterized_declaration(
                     ));
                 }
             }
-            let void_body_parameters_proved = if let GenericReturnValue::VoidBody {
+            let complete_body_parameters_proved = if let GenericReturnValue::CompleteBody {
                 unread_parameter_slots,
                 ..
             } = &candidate.value
@@ -7561,14 +7594,30 @@ fn ordinary_parameterized_declaration(
                 // proved the variable's erasure is that parameter, so every read stays assignable to
                 // the context that accepted the erased reference. The same-run candidate refused any
                 // reassignment of the parameter locals, which is the write side this proof refuses.
-                GenericReturnValue::VoidBody { .. }
-                    if parsed.result.is_none()
-                        && parsed.throws.is_empty()
-                        && void_body_parameters_proved =>
+                GenericReturnValue::CompleteBody {
+                    result_type: None, ..
+                } if parsed.result.is_none()
+                    && parsed.throws.is_empty()
+                    && complete_body_parameters_proved =>
                 {
                     Some(Vec::new())
                 }
-                GenericReturnValue::VoidBody { .. } => None,
+                GenericReturnValue::CompleteBody {
+                    result_type: Some(result_type),
+                    ..
+                } if parsed.throws.is_empty()
+                    && ordinary_primitive_result_matches(
+                        result_type,
+                        parsed.result.as_ref(),
+                        result.as_deref(),
+                        signature.returns.as_deref(),
+                    )
+                    && complete_body_parameters_proved
+                    && !proved_list_parameters.is_empty() =>
+                {
+                    Some(Vec::new())
+                }
+                GenericReturnValue::CompleteBody { .. } => None,
                 GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
                 GenericReturnValue::NullLiteral => None,
                 GenericReturnValue::Parameter(slot) => signature
@@ -8266,7 +8315,7 @@ fn generic_void_body_declaration(
         || !attributes.throws_raw.is_empty()
         || !matches!(candidate, Some(GenericReturnCandidate {
             parameters,
-            value: GenericReturnValue::VoidBody { .. },
+            value: GenericReturnValue::CompleteBody { result_type: None, .. },
         }) if parameters.len() == 2)
     {
         return Err(refused(
@@ -8670,7 +8719,13 @@ fn generic_method_declaration(
     let candidate = candidate
         .ok_or_else(|| refused("the recovered AST/SSA body is not a direct parameter return"))?;
     let item = &record.item;
-    let void_body = matches!(&candidate.value, GenericReturnValue::VoidBody { .. });
+    let void_body = matches!(
+        &candidate.value,
+        GenericReturnValue::CompleteBody {
+            result_type: None,
+            ..
+        }
+    );
     let null_instance_return = matches!(candidate.value, GenericReturnValue::NullLiteral);
     let is_static = item.access_flags & ACC_STATIC != 0;
     if projection.declaration.is_none()
@@ -8832,7 +8887,7 @@ fn generic_method_declaration(
     }
     let return_proved = match candidate.value {
         GenericReturnValue::EmptyVoid => false,
-        GenericReturnValue::VoidBody { .. } => void_body && parsed.result.is_none(),
+        GenericReturnValue::CompleteBody { .. } => void_body && parsed.result.is_none(),
         GenericReturnValue::NullLiteral => null_instance_return && parsed.parameters.is_empty(),
         GenericReturnValue::Parameter(slot) => result_slots.contains(&slot),
         GenericReturnValue::Conditional {
@@ -15008,7 +15063,8 @@ mod tests {
         };
         let candidate = GenericReturnCandidate {
             parameters: vec![(1, "arg1".to_owned()), (2, "arg2".to_owned())],
-            value: GenericReturnValue::VoidBody {
+            value: GenericReturnValue::CompleteBody {
+                result_type: None,
                 unread_parameter_slots: vec![],
                 parameter_read_bcis: vec![],
                 parameter_receiver_calls: vec![],
@@ -17038,6 +17094,42 @@ mod tests {
             .expect("array binder proof is bounded")
             .is_some()
         );
+    }
+
+    #[test]
+    fn complete_body_primitive_result_requires_exact_signature_and_descriptor_type() {
+        use jarde_java::ast::Type;
+        let parsed = SignatureType::Base(b'Z');
+        assert!(ordinary_primitive_result_matches(
+            &Type::Boolean,
+            Some(&parsed),
+            Some("boolean"),
+            Some("boolean")
+        ));
+        assert!(!ordinary_primitive_result_matches(
+            &Type::Int,
+            Some(&parsed),
+            Some("int"),
+            Some("int")
+        ));
+        assert!(!ordinary_primitive_result_matches(
+            &Type::Boolean,
+            Some(&parsed),
+            Some("boolean"),
+            Some("int")
+        ));
+        assert!(!ordinary_primitive_result_matches(
+            &Type::Boolean,
+            Some(&SignatureType::Base(b'I')),
+            Some("boolean"),
+            Some("boolean")
+        ));
+        assert!(!ordinary_primitive_result_matches(
+            &Type::Boolean,
+            None,
+            Some("boolean"),
+            Some("boolean")
+        ));
     }
 }
 
