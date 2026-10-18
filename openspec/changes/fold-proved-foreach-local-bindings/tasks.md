@@ -11,5 +11,5 @@
 ## 3. Root acceptance and delivery
 
 - [x] 3.1 root以最终CLI完成固定原始完整类及独立控制家族的原/JADX/Jarde完整源码、两真实编译器/双VM对照；逐格核返回/异常/状态/事件、wrong CodeSource、class/method/field/access/Code、每方法raw map/UTF8/全部物理BCI及投影范围，不手修/裁源，完整保留JADX和工具真实失败。
-- [ ] 3.2 root运行fmt、CI同款Clippy、MSRV1.88、相邻Java/Reader/指纹/P5及两fresh native，动态核目标库存/全部具名结果与本片关键门；最终构建/测试来源绑定实际Git产品、默认stack/5GiB/target1GiB每秒守卫/exactclean均有收据，不为绿改旧计量表或资源阈值。
+- [x] 3.2 root运行fmt、CI同款Clippy、MSRV1.88、相邻Java/Reader/指纹/P5及两fresh native，动态核目标库存/全部具名结果与本片关键门；最终构建/测试来源绑定实际Git产品、默认stack/5GiB/target1GiB每秒守卫/exactclean均有收据，不为绿改旧计量表或资源阈值。
 - [ ] 3.3 root提交推送实际产品并独立接受自身CI全部job/step及双seed，严格验证OpenSpec、逐字复开归档、更新账本/handoff并核实际远端==本地干净main、辅助checkout无分支占用和target absent；文档head不冒称另跑产品CI，原名头之外的黄金差距及CF11/71/612计数如实保留。

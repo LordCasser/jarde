@@ -1,3 +1,11 @@
+# Current root checkpoint: 6/7, own product CI pending
+
+Product `0a7e3c98f63b128a13a658a475b9e69a9e60d048` is pushed. Both fresh native runs finished with 385 targets / 101 batches / 3766 pass / 0 failed / 98 old ignored. Root actually ran the two-seed validator with 16 exact gates per seed, full named/status supplement (3864 outcomes per seed, all equal per target), and unchanged product binder. Native sources 5147 each / build sources 3194 / union 5154 match actual product Git blobs, byte counts and executable modes. Final c688 CLI is unchanged; default stack, resource guards and exact final clean all pass, target absent.
+
+The first actual native acceptance failed only because the frozen prior checker classified every target other than jarde_java as integration test. New facade gate correctly belongs to root lib jarde. v3 derives a copy changing only that kind discriminator to exactly jarde_java/jarde=lib; every uniqueness, raw Cargo Running/harness, metadata, source, named count, guard and clean check is preserved. v1 failure and v2 successful three-command closure are archived separately. The earlier Luna seed1 audit stayed pending while seed2 target existed; no premature independent acceptance is claimed from it.
+
+Own CI run 39120933555 is still pending complete acceptance: supply chain / fuzz / MSRV successful, stable second seed still in progress at the last captured status. Only its exact product run, complete official steps/logs and all 61 exact gates will close task 3.3. The current docs checkpoint is a product descendant, not another claimed product CI. Fixed CF11/71/612 counts do not change.
+
 # Root baseline and current status
 
 `baseline-root-v2/capture.tar.gz` freezes the actual re-read of final 85ca CLI, all 5,150 product source/fixture bytes and executable modes, 20 API cells / 40 raw streams, 3,301 source and 1,518 protected pins, plus complete old Java, every projected method and raw reports/maps. Root compared all JSON recursively excluding only exact `usage` keys. All six previous acceptance check files match their pins and embedded JSON. Existing original/generated/control receipt pins and preserved JADX failures remain unchanged.
