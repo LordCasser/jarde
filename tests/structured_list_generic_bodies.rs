@@ -1000,10 +1000,8 @@ fn inner_list_option_actual_uses_the_receiver_element_type() {
         integer_method.text
     );
     assert!(
-        integer_method
-            .text
-            .contains("selected.remove((java.lang.Object) option)"),
-        "remove(Object) overload wrapper was removed: {}",
+        integer_method.text.contains("selected.remove(option)"),
+        "proved reference argument still carries a redundant Object wrapper: {}",
         integer_method.text
     );
     assert!(
@@ -1091,6 +1089,18 @@ fn fixed_nested_string_body_projects_source_and_preserves_physical_origins() {
         default_method.text
     );
     assert!(
+        default_method.text.contains("s1.equals(s2)"),
+        "proved String equals argument should not retain the Object wrapper: {}",
+        default_method.text
+    );
+    assert!(
+        !default_method
+            .text
+            .contains("s1.equals((java.lang.Object) s2)"),
+        "the synthetic equals wrapper remains: {}",
+        default_method.text
+    );
+    assert!(
         default_method.text.contains("l2.add(s1)"),
         "{}",
         default_method.text
@@ -1101,10 +1111,8 @@ fn fixed_nested_string_body_projects_source_and_preserves_physical_origins() {
         default_method.text
     );
     assert!(
-        default_method
-            .text
-            .contains("l1.remove((java.lang.Object) s2)"),
-        "remove(Object) must retain the object-overload wrapper: {}",
+        default_method.text.contains("l1.remove(s2)"),
+        "proved String reference should omit the redundant Object wrapper: {}",
         default_method.text
     );
     assert!(
@@ -1172,10 +1180,8 @@ fn differently_named_string_and_integer_classes_follow_their_list_element_type()
         string_method.text
     );
     assert!(
-        string_method
-            .text
-            .contains("chosen.remove((java.lang.Object) option)"),
-        "remove(Object) is not confused with remove(int): {}",
+        string_method.text.contains("chosen.remove(option)"),
+        "proved reference argument still carries a redundant Object wrapper: {}",
         string_method.text
     );
     for projected in [&string.text, &string_method.text] {
@@ -1237,10 +1243,8 @@ fn differently_named_string_and_integer_classes_follow_their_list_element_type()
         integer_method.text
     );
     assert!(
-        integer_method
-            .text
-            .contains("selected.remove((java.lang.Object) option)"),
-        "remove(Object) is not confused with remove(int): {}",
+        integer_method.text.contains("selected.remove(option)"),
+        "proved reference argument still carries a redundant Object wrapper: {}",
         integer_method.text
     );
     for projected in [&integer.text, &integer_method.text] {
@@ -1302,10 +1306,8 @@ fn exact_list_null_add_removes_only_the_synthetic_object_wrapper() {
         string_method.text
     );
     assert!(
-        string_method
-            .text
-            .contains("selected.remove((java.lang.Object) option)"),
-        "remove(Object) overload wrapper was removed: {}",
+        string_method.text.contains("selected.remove(option)"),
+        "proved reference argument still carries a redundant Object wrapper: {}",
         string_method.text
     );
     assert_utf8_source_map(string_raw);
@@ -1332,10 +1334,8 @@ fn exact_list_null_add_removes_only_the_synthetic_object_wrapper() {
         integer_method.text
     );
     assert!(
-        integer_method
-            .text
-            .contains("selected.remove((java.lang.Object) option)"),
-        "remove(Object) overload wrapper was removed: {}",
+        integer_method.text.contains("selected.remove(option)"),
+        "proved reference argument still carries a redundant Object wrapper: {}",
         integer_method.text
     );
     assert_utf8_source_map(integer_raw);
@@ -1810,18 +1810,16 @@ fn original_nested_loops_folds_both_proven_local_bindings_without_changing_raw_s
             "the fully consumed ancestor iterator declaration is removed: {projected}"
         );
         assert!(
-            projected.contains(&format!(
-                "{outer_name}.equals((java.lang.Object) {inner_name})"
-            )),
-            "the Object argument wrapper remains: {projected}"
+            projected.contains(&format!("{outer_name}.equals({inner_name})")),
+            "the proved String equals argument omits its Object wrapper: {projected}"
         );
         assert!(
             projected.contains(&format!("{second}.add({outer_name});")),
             "the original List insertion body remains: {projected}"
         );
         assert!(
-            projected.contains(&format!("{first}.remove((java.lang.Object) {inner_name});")),
-            "the remove(Object) wrapper remains: {projected}"
+            projected.contains(&format!("{first}.remove({inner_name});")),
+            "the proved reference remove argument omits its Object wrapper: {projected}"
         );
         assert!(
             projected.contains(&format!("if ({second}.size() > 0) {{"))

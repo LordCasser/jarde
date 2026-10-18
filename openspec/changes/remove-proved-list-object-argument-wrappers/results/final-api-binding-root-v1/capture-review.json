@@ -1,0 +1,12 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 58,
+  "uncompressed_bytes": 2537629,
+  "archive_bytes": 404327,
+  "archive_sha256": "ac72eb560c14dce7505536214437f34b0c818e15563038e3fbcd1cbec62d75a6",
+  "source_directories": [
+    "jarde-object-argument-final-api-root-v1-20261018",
+    "jarde-object-argument-final-api-prep-root-v1-20261018"
+  ],
+  "excluded": []
+}

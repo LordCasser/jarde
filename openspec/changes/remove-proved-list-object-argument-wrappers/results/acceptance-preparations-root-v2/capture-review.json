@@ -1,0 +1,14 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 28,
+  "uncompressed_bytes": 266767,
+  "archive_bytes": 67596,
+  "archive_sha256": "f58fd57edcdc86fed2b15a39a83ad9b3dab1258c495c4a53cc56b67387b9e289",
+  "source_directories": [
+    "jarde-current-change-one-seed-acceptance-prep-luna-v1-20261018",
+    "jarde-current-change-one-seed-acceptance-prep-luna-v2-20261018",
+    "jarde-current-change-own-ci-prep-luna-v1-20261018",
+    "jarde-current-change-own-ci-prep-luna-v2-20261018"
+  ],
+  "excluded": []
+}

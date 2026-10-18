@@ -1,0 +1,9 @@
+{
+  "status": "root_reopened_all_members_byte_equal",
+  "sha256": "146ddbaab1c1d6bf45b5a6b2d98e9a4e82eb6b64ac694970afc6c6dbcc0fc805",
+  "bytes": 344154,
+  "members": 12,
+  "excluded": [
+    "candidate-cli"
+  ]
+}

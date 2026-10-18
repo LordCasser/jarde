@@ -1,0 +1,13 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 38,
+  "uncompressed_bytes": 1746465,
+  "archive_bytes": 378711,
+  "archive_sha256": "11d36e28d18af583bc9a41552ceae4d4a4c40844bb9cb9aa9877102cb70ce799",
+  "source_directories": [
+    "jarde-object-argument-broad-root-v2-20261018"
+  ],
+  "excluded": [
+    "/private/tmp/jarde-object-argument-broad-root-v2-20261018/candidate-cli"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 3,
+  "uncompressed_bytes": 2156955,
+  "archive_bytes": 380721,
+  "archive_sha256": "5c4479c874c4d6d6a9bb5e4b16ebd8bc3fb011aa3a61fe542d36350151ec244a",
+  "source_directories": [
+    "jarde-object-argument-implementation-luna-v3-20261018"
+  ],
+  "excluded": []
+}

@@ -1,0 +1,14 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 23,
+  "uncompressed_bytes": 1907809,
+  "archive_bytes": 375022,
+  "archive_sha256": "41a2f57f2ae5092728e29bea0d52263d4ed611054d8a17fac927aee5976de391",
+  "source_directories": [
+    "jarde-cf11-sequential-frozen-audit-luna-v1-20261018",
+    "jarde-cf11-sequential-architecture-luna-v1-20261018",
+    "jarde-cf11-sequential-current-api-prep-root-v2-20261018",
+    "jarde-cf11-sequential-current-api-root-v2-20261018"
+  ],
+  "excluded": []
+}

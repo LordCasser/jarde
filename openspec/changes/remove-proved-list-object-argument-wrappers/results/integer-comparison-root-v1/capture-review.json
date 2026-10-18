@@ -1,0 +1,14 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 153,
+  "uncompressed_bytes": 4406885,
+  "archive_bytes": 690185,
+  "archive_sha256": "9acc7b22454dcbf0b38e6b5598fff5e8a2fd424be4d81bd2030e491890929f72",
+  "source_directories": [
+    "jarde-object-argument-integer-positive-root-v1-20261018",
+    "jarde-object-argument-integer-review-root-v1-20261018",
+    "jarde-object-argument-integer-positive-prep-luna-v1-20261018",
+    "jarde-object-argument-integer-positive-prep-luna-v2-20261018"
+  ],
+  "excluded": []
+}

@@ -1,0 +1,15 @@
+{
+  "status": "all_members_reopened_and_bytes_identical",
+  "members": 267,
+  "uncompressed_bytes": 12557826,
+  "archive_bytes": 1767514,
+  "archive_sha256": "b5774c0c6173b866105d7b54d550d75c8d62165c486e798985b3d9ea71c6cc4f",
+  "source_directories": [
+    "jarde-object-argument-original-final-root-v1-20261018",
+    "jarde-object-argument-original-review-root-v1-20261018",
+    "jarde-object-argument-generated-final-root-v1-20261018",
+    "jarde-object-argument-generated-review-root-v2-20261018",
+    "jarde-object-argument-final-positive-prep-root-v1-20261018"
+  ],
+  "excluded": []
+}
