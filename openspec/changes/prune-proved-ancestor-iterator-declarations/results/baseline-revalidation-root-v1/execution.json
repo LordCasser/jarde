@@ -1,0 +1,73 @@
+{
+  "status": "accepted_revalidated_existing_baseline",
+  "at": "2026-10-18T11:55:13.839409+00:00",
+  "head": "b45167b72486e22f942985340792dd730b308c56",
+  "source_binding": {
+    "path": "/private/tmp/jarde-foreach-fold-workspace-acceptance-root-v2-20261018/product-source-binding.json",
+    "bytes": 1571064,
+    "sha256": "6a79508584b542d2e2fe6aeb1ac4a172175ea186cf00f98c0048db28fb614d90"
+  },
+  "checked_source_count": 5154,
+  "cli": {
+    "path": "/private/tmp/jarde-foreach-fold-broad-root-v1-20261018/candidate-cli",
+    "bytes": 63586736,
+    "sha256": "c688920cac70ee9e46681672ebaaba5df2948c5ef5b5f262d006548ca1f83ebe"
+  },
+  "original_receipt": {
+    "path": "/private/tmp/jarde-foreach-fold-original-root-v1-20261018/execution.json",
+    "bytes": 6332267,
+    "sha256": "1fbc03d82b6255275d31e0ce75624ef896a73491a50e09670927062e4318a953"
+  },
+  "observations": [
+    {
+      "profile": "debug",
+      "report": {
+        "path": "/private/tmp/jarde-foreach-fold-original-root-v1-20261018/jarde/debug/child/default/report.json",
+        "bytes": 54764,
+        "sha256": "64b53c27b08dc2b6d742d9c5720c7920f1ad79380db20e761c534f019b546fbd"
+      },
+      "raw_sha256": "d8aa5b671e4083b8784a761a1ea08b775866c770183c404a35e391672b34d173",
+      "projected_sha256": "849cb43ada0c4f2837487389badfea9247f632ef1aa1aca2d46b966c8cde6a51",
+      "source_map_sha256": "f5d7a40e3330e76e93444af0c9bf4561b976e737fdef042e3039f75102087950",
+      "raw_blank_count": 1,
+      "projected_blank_count": 1
+    },
+    {
+      "profile": "no-debug",
+      "report": {
+        "path": "/private/tmp/jarde-foreach-fold-original-root-v1-20261018/jarde/no-debug/child/default/report.json",
+        "bytes": 54800,
+        "sha256": "991532cfc98de8d94652fd61669e4249bb30876db215d815e0e4b69b85c01cba"
+      },
+      "raw_sha256": "3605647c70369f6daedf886bc364281204428fbc743a5df8e2d2e58b5453137c",
+      "projected_sha256": "b85fdd8d34d4e22fe7a9bb1245c001d1be2b7c66fe301c686ae6b1a5c2e64dfd",
+      "source_map_sha256": "6211267ea8d93a60d20a4b4a4fb825379366eb0b0b040a92d38335074db80f2f",
+      "raw_blank_count": 1,
+      "projected_blank_count": 1
+    }
+  ],
+  "new_toolchain_runs": 0,
+  "reused_execution": "previous accepted product original/generated/control Java matrices; no new JVM claimed",
+  "spec": {
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/design.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prune-proved-ancestor-iterator-declarations/design.md",
+      "bytes": 6850,
+      "sha256": "dc9a4238abbaaca14d76a88e76b01fd8f113ccc9d1bcd6a9d89e4c33e799df25"
+    },
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/proposal.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prune-proved-ancestor-iterator-declarations/proposal.md",
+      "bytes": 2279,
+      "sha256": "986e04195bd42ae0e6f6d96b5f0884b2773bbe420ab4116f2a4131980d3b37c9"
+    },
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/specs/java8-recovery/spec.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prune-proved-ancestor-iterator-declarations/specs/java8-recovery/spec.md",
+      "bytes": 2867,
+      "sha256": "70bfbc3b9a8a3c00db23883877e2b05883af5eb7b408c30360cce3a55ddc0c0e"
+    },
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/tasks.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/prune-proved-ancestor-iterator-declarations/tasks.md",
+      "bytes": 1758,
+      "sha256": "cc768c8b11dc8c0495f129f53630aed27888ba57cc88b519084ced07686dd483"
+    }
+  }
+}

@@ -1806,8 +1806,8 @@ fn original_nested_loops_folds_both_proven_local_bindings_without_changing_raw_s
             "both old synthetic element names are gone from the projection: {projected}"
         );
         assert!(
-            projected.contains("java.util.Iterator local5;"),
-            "the unrelated iterator local remains: {projected}"
+            !projected.contains("java.util.Iterator local5;"),
+            "the fully consumed ancestor iterator declaration is removed: {projected}"
         );
         assert!(
             projected.contains(&format!(
@@ -1830,6 +1830,13 @@ fn original_nested_loops_folds_both_proven_local_bindings_without_changing_raw_s
         );
 
         let raw = raw_body(d);
+        assert!(
+            !raw.text
+                .lines()
+                .any(|line| line.trim() == "java.util.Iterator local5;"),
+            "the raw body also has no exact blank ancestor iterator declaration: {}",
+            raw.text
+        );
         assert!(
             raw.text.contains("for (java.lang.Object iteratorElement17"),
             "{}",

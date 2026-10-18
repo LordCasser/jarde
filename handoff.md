@@ -1,3 +1,31 @@
+## 2026-10-18 当前推进：祖先 Iterator 空声明，5/7，产品待提交
+
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7及前片foreach原名绑定7/7已交付，勿重做；当前 `prune-proved-ancestor-iterator-declarations` 5/7，持续goal active。生产/永久回归/完整对照已接受，实际产品提交、自身CI和两fresh native尚待。
+
+最终v8仅补新增AST遍历的空switch arm/catch容器逐项计费，root接受并重跑最终broad-v3：810通过/0失败/6旧忽略、fmt/CI Clippy/MSRV1.88、Java502/Reader181/公开/P5通过。CLI `/private/tmp/jarde-ancestor-iterator-broad-root-v3-20261018/candidate-cli`，63623984B/SHA26eb321d0810a54328f7880483c6c5a5c2033c2ad747f7b177a51e723e96af52，3194构建来源不变、target absent。
+
+最终21命令20API重放已root独立接受，完整非usage JSON/whole/projected/raw/map等先前60e1 CLI相同，同时直接对c688基线精确核只删受证空声明及必要坐标/摘要/计数。physical class字节绑定刚实际完成的完整Java矩阵：原4VM32case，生成20编译18成功/2旧JADX框架JDK8边界、36VM288case/18wrong-root；19case控制8原VM152case，24Jarde整类旧拒绝编译失败/零JardeVM，JADX8编译/16VM304case均仅catch控制不匹配，12wrong-root。最终26eb只重跑API，未冒称重跑JDK；依赖相同完整生成Java字节复用实际运行，所有失败边界保留。主规范已同步并18/18 strict通过，全库strict375/0；任务3.3尚待最后交付验证。
+
+下一步先提交推送本产品并取自身CI run id，再使用既有workspace_runner串行fresh seeds5350648285461741569/1570；root独占共享/Git/工具链/网络，Cargo期间禁源码/Gitmutation/JDK/CLI/network、5GiB/target1GiB/defaultstack/exactclean。然后18 native门/63CI门完整具名验收、5154来源绑定、全部归档复开/固定账本/handoff/clean main。下一固定TestNestedLoops equals/remove Object包装已在最终真实26eb API确认仍在，仅分析无新Spec/实现；add(E)无包装，不重做。CF11/71/612计数不增加。
+
+## 2026-10-18 当前推进：祖先 Iterator 空声明，4/7，最终 Java 验收中
+
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7和foreach原名绑定7/7已交付，勿重做。main已交付HEAD仍b45167b72，新change `prune-proved-ancestor-iterator-declarations` 及三产品文件未提交；持续goal active。
+
+最终广门v2实际810通过/0失败/6既有忽略，fmt/CI Clippy/MSRV1.88/Java502/Reader181/公开与P5门通过，root独立复核3194构建来源未变及CLI SHA。最终CLI `/private/tmp/jarde-ancestor-iterator-broad-root-v2-20261018/candidate-cli`，63623984B/SHA60e1b07691100a238c7462a400b381a2be923b366278349f1562f69d3d890ba5；target absent。v1旧测试要求保留空声明的真实失败另存，仅按新规格改该断言再全跑。永久边界已过，任务2.2勾选。
+
+20同argv API精确差分已root接受：仅删除受证空行及相应map坐标、binding字节/FNV摘要和produced计数，其余全部非usage JSON相同。最终原始20命令/4VM32case/8API已独立接受；完整生成75命令/20编译18成功/2旧JADX outer框架JDK8边界、36VM288case/18wrong-root亦已独立接受。最终19case控制正在 `/private/tmp/jarde-ancestor-iterator-controls-final-root-v1-20261018` 采集，exec session27192；仍待独立审查和最终20API输入字节绑定，不把旧整类拒绝或JADX catch错误算runtime通过。两fresh native、产品提交/自身CI、主规范/strict及干净main尚未完成。root独占共享/Git/工具链/网络，本地工具串行；Cargo期间不写源/跑网络/JDK/CLI，5GiB/target1GiB/defaultstack/exactclean。
+
+## 2026-10-18 当前推进：祖先 Iterator 空声明，3/7，未交付
+
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7及foreach原名绑定7/7已交付，勿重做。当前main已交付HEAD仍b45167b72；新change `prune-proved-ancestor-iterator-declarations` 与两产品文件未提交，持续goal active。
+
+root已完成全变量物理访问/成功消费者/最终真实AST设计，Luna私有实现并root修正，既有checkpoint以append长度截断恢复。guarded focused v3实际5测试/fmt/CLI通过，CLI在 `/private/tmp/jarde-ancestor-iterator-focused-root-v3-20261018/candidate-cli`、SHA60e1b07691100a238c7462a400b381a2be923b366278349f1562f69d3d890ba5；target absent，无待续Cargo。v1真实编译失败/v2测试错误均归档，勿当通过。
+
+任务1.1/1.2/2.1完成，2.2仍待Luna v6边界测试及root运行。19case控制原始四编译配置8VM152case共同oracle；24 Jarde整类compile失败为旧refusal，零Jarde VM，不算运行通过。安装版JADX1.5.6的catch控制有错误重试，早版16VM真实timeout，有限128事件版16VM完整304case均有同一catch用例不匹配；独立债务，不扩本片。protectedPositive12API可foreach，其它protected拒绝不计clean门覆盖。原collector大小写parser错误已从raw独立纠正，收据未改。
+
+20同argv API已实际采集，候选原始raw/map精确差分checker还需验证目标text_bytes/FNV128和produced诊断的确定计数变化，不能称已接受最终差分。完整最终JDK/JADX/Jarde对照、广门、两fresh native、自身CI/主spec/strict/干净main均未完成。结果入口新change/results/README.md。root独占共享/Git/工具链/网络，Luna仅私有；本地工具串行、Cargo时禁源码/Gitmutation/JDK/CLI/network、5GiB/target1GiB/defaultstack/exactclean。下一步先核实际进程状态，再审Luna v6 test-only patch，不重复新建工作树或重做已交付语法。
+
 ## 2026-10-18 最新交付：foreach 原名绑定 7/7，自身CI完整接受
 
 本节优先。finThrow5/5、nestedFin16/16、父finally7/7、typed7/7/bulk4/4早已交付，勿重做；本片 `fold-proved-foreach-local-bindings` 现7/7。持续goal active，按固定JADX71单元/612测试推进；CF11整体及71/612计数不增。

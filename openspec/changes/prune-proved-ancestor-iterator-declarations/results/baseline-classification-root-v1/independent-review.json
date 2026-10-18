@@ -1,0 +1,3589 @@
+{
+  "schema": "cf11-iterator-ancestor-controls-independent-audit-v1",
+  "execution_receipt": {
+    "path": "/private/tmp/jarde-ancestor-iterator-controls-baseline-root-v2-20261018/execution.json",
+    "bytes": 8866431,
+    "sha256": "6c264446a1ac9e83aa6446fca8e8a4f27f06c48f08958250fe70df483ee129ac",
+    "captured_status": "captured-pending-review"
+  },
+  "audit_status": "integrity-consistent",
+  "product_acceptance": "not-assessed-by-this-audit",
+  "note": "receipt capture status is not product acceptance",
+  "command_count": 89,
+  "command_labels": {
+    "compile-driver": [
+      1
+    ],
+    "compile-jadx-javac23-debug-source-javac23-g": [
+      78
+    ],
+    "compile-jadx-javac23-debug-source-javac8-g": [
+      74
+    ],
+    "compile-jadx-javac23-no-debug-source-javac23-g:none": [
+      86
+    ],
+    "compile-jadx-javac23-no-debug-source-javac8-g:none": [
+      82
+    ],
+    "compile-jadx-javac8-debug-source-javac23-g": [
+      62
+    ],
+    "compile-jadx-javac8-debug-source-javac8-g": [
+      58
+    ],
+    "compile-jadx-javac8-no-debug-source-javac23-g:none": [
+      70
+    ],
+    "compile-jadx-javac8-no-debug-source-javac8-g:none": [
+      66
+    ],
+    "compile-jarde-javac23-debug-all-javac23-g": [
+      49
+    ],
+    "compile-jarde-javac23-debug-all-javac8-g": [
+      48
+    ],
+    "compile-jarde-javac23-debug-default-javac23-g": [
+      47
+    ],
+    "compile-jarde-javac23-debug-default-javac8-g": [
+      46
+    ],
+    "compile-jarde-javac23-debug-source_map-javac23-g": [
+      51
+    ],
+    "compile-jarde-javac23-debug-source_map-javac8-g": [
+      50
+    ],
+    "compile-jarde-javac23-no-debug-all-javac23-g:none": [
+      55
+    ],
+    "compile-jarde-javac23-no-debug-all-javac8-g:none": [
+      54
+    ],
+    "compile-jarde-javac23-no-debug-default-javac23-g:none": [
+      53
+    ],
+    "compile-jarde-javac23-no-debug-default-javac8-g:none": [
+      52
+    ],
+    "compile-jarde-javac23-no-debug-source_map-javac23-g:none": [
+      57
+    ],
+    "compile-jarde-javac23-no-debug-source_map-javac8-g:none": [
+      56
+    ],
+    "compile-jarde-javac8-debug-all-javac23-g": [
+      37
+    ],
+    "compile-jarde-javac8-debug-all-javac8-g": [
+      36
+    ],
+    "compile-jarde-javac8-debug-default-javac23-g": [
+      35
+    ],
+    "compile-jarde-javac8-debug-default-javac8-g": [
+      34
+    ],
+    "compile-jarde-javac8-debug-source_map-javac23-g": [
+      39
+    ],
+    "compile-jarde-javac8-debug-source_map-javac8-g": [
+      38
+    ],
+    "compile-jarde-javac8-no-debug-all-javac23-g:none": [
+      43
+    ],
+    "compile-jarde-javac8-no-debug-all-javac8-g:none": [
+      42
+    ],
+    "compile-jarde-javac8-no-debug-default-javac23-g:none": [
+      41
+    ],
+    "compile-jarde-javac8-no-debug-default-javac8-g:none": [
+      40
+    ],
+    "compile-jarde-javac8-no-debug-source_map-javac23-g:none": [
+      45
+    ],
+    "compile-jarde-javac8-no-debug-source_map-javac8-g:none": [
+      44
+    ],
+    "compile-original-javac23-debug": [
+      10
+    ],
+    "compile-original-javac23-no-debug": [
+      14
+    ],
+    "compile-original-javac8-debug": [
+      2
+    ],
+    "compile-original-javac8-no-debug": [
+      6
+    ],
+    "generated-jadx-javac23-debug-source-javac23-g-javac23": [
+      80
+    ],
+    "generated-jadx-javac23-debug-source-javac23-g-javac8": [
+      79
+    ],
+    "generated-jadx-javac23-debug-source-javac8-g-javac23": [
+      76
+    ],
+    "generated-jadx-javac23-debug-source-javac8-g-javac8": [
+      75
+    ],
+    "generated-jadx-javac23-no-debug-source-javac23-g:none-javac23": [
+      88
+    ],
+    "generated-jadx-javac23-no-debug-source-javac23-g:none-javac8": [
+      87
+    ],
+    "generated-jadx-javac23-no-debug-source-javac8-g:none-javac23": [
+      84
+    ],
+    "generated-jadx-javac23-no-debug-source-javac8-g:none-javac8": [
+      83
+    ],
+    "generated-jadx-javac8-debug-source-javac23-g-javac23": [
+      64
+    ],
+    "generated-jadx-javac8-debug-source-javac23-g-javac8": [
+      63
+    ],
+    "generated-jadx-javac8-debug-source-javac8-g-javac23": [
+      60
+    ],
+    "generated-jadx-javac8-debug-source-javac8-g-javac8": [
+      59
+    ],
+    "generated-jadx-javac8-no-debug-source-javac23-g:none-javac23": [
+      72
+    ],
+    "generated-jadx-javac8-no-debug-source-javac23-g:none-javac8": [
+      71
+    ],
+    "generated-jadx-javac8-no-debug-source-javac8-g:none-javac23": [
+      68
+    ],
+    "generated-jadx-javac8-no-debug-source-javac8-g:none-javac8": [
+      67
+    ],
+    "generated-wrong-root-jadx-javac23-debug-source-javac23-g": [
+      81
+    ],
+    "generated-wrong-root-jadx-javac23-debug-source-javac8-g": [
+      77
+    ],
+    "generated-wrong-root-jadx-javac23-no-debug-source-javac23-g:none": [
+      89
+    ],
+    "generated-wrong-root-jadx-javac23-no-debug-source-javac8-g:none": [
+      85
+    ],
+    "generated-wrong-root-jadx-javac8-debug-source-javac23-g": [
+      65
+    ],
+    "generated-wrong-root-jadx-javac8-debug-source-javac8-g": [
+      61
+    ],
+    "generated-wrong-root-jadx-javac8-no-debug-source-javac23-g:none": [
+      73
+    ],
+    "generated-wrong-root-jadx-javac8-no-debug-source-javac8-g:none": [
+      69
+    ],
+    "jadx-javac23-debug": [
+      29
+    ],
+    "jadx-javac23-no-debug": [
+      33
+    ],
+    "jadx-javac8-debug": [
+      21
+    ],
+    "jadx-javac8-no-debug": [
+      25
+    ],
+    "jarde-javac23-debug-all": [
+      27
+    ],
+    "jarde-javac23-debug-default": [
+      26
+    ],
+    "jarde-javac23-debug-source_map": [
+      28
+    ],
+    "jarde-javac23-no-debug-all": [
+      31
+    ],
+    "jarde-javac23-no-debug-default": [
+      30
+    ],
+    "jarde-javac23-no-debug-source_map": [
+      32
+    ],
+    "jarde-javac8-debug-all": [
+      19
+    ],
+    "jarde-javac8-debug-default": [
+      18
+    ],
+    "jarde-javac8-debug-source_map": [
+      20
+    ],
+    "jarde-javac8-no-debug-all": [
+      23
+    ],
+    "jarde-javac8-no-debug-default": [
+      22
+    ],
+    "jarde-javac8-no-debug-source_map": [
+      24
+    ],
+    "original-javac23-debug-javac23": [
+      12
+    ],
+    "original-javac23-debug-javac8": [
+      11
+    ],
+    "original-javac23-no-debug-javac23": [
+      16
+    ],
+    "original-javac23-no-debug-javac8": [
+      15
+    ],
+    "original-javac8-debug-javac23": [
+      4
+    ],
+    "original-javac8-debug-javac8": [
+      3
+    ],
+    "original-javac8-no-debug-javac23": [
+      8
+    ],
+    "original-javac8-no-debug-javac8": [
+      7
+    ],
+    "original-wrong-root-javac23-debug": [
+      13
+    ],
+    "original-wrong-root-javac23-no-debug": [
+      17
+    ],
+    "original-wrong-root-javac8-debug": [
+      5
+    ],
+    "original-wrong-root-javac8-no-debug": [
+      9
+    ]
+  },
+  "matrix_counts": {
+    "original_profiles": 4,
+    "original_vm_runs": 8,
+    "api_cells": 12,
+    "jadx_cells": 4,
+    "generated_compiles": 32,
+    "successful_generated_compiles": 8,
+    "generated_vm_runs": 16,
+    "generated_wrong_root_runs": 8
+  },
+  "compile_results": [
+    {
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1,
+      "inventory_matches_original": null
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "inventory_matches_original": true
+    }
+  ],
+  "generated_runtime_results": [
+    {
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    },
+    {
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "exit_code": 0,
+      "matches_original_from_stdout": false
+    }
+  ],
+  "raw_method_classifications": [
+    {
+      "profile": "javac8-debug",
+      "evidence": "default",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String outerValue;",
+            "java.util.Iterator inner;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String item;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "all",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String outerValue;",
+            "java.util.Iterator inner;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String item;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "source_map",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String outerValue;",
+            "java.util.Iterator inner;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String item;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "default",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String local2;",
+            "java.util.Iterator local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "all",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String local2;",
+            "java.util.Iterator local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "source_map",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String local2;",
+            "java.util.Iterator local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "default",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String outerValue;",
+            "java.util.Iterator inner;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String item;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "all",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String outerValue;",
+            "java.util.Iterator inner;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String item;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "source_map",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String outerValue;",
+            "java.util.Iterator inner;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String item;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "default",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String local2;",
+            "java.util.Iterator local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "all",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String local2;",
+            "java.util.Iterator local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "source_map",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "ancestor",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "sameList",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 2,
+          "blank_local_declarations": [
+            "java.lang.String local2;",
+            "java.util.Iterator local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedPositive",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 1,
+          "blank_local_declarations": [],
+          "quality": "structured"
+        },
+        {
+          "name": "protectedBeforeRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterRead",
+          "descriptor": "(Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedAfterWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "protectedCatchReadWrite",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        },
+        {
+          "name": "reusedSlots",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [
+            "java.util.Iterator local2;",
+            "java.lang.String local3;"
+          ],
+          "quality": "structured"
+        },
+        {
+          "name": "siblingNames",
+          "descriptor": "(Ljava/util/List;Ljava/util/List;Z)I",
+          "foreach_headers": 0,
+          "blank_local_declarations": [],
+          "quality": "fallback"
+        }
+      ]
+    }
+  ],
+  "protected_method_foreach_coverage": [
+    {
+      "profile": "javac8-debug",
+      "evidence": "default",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "default",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "default",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "default",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "default",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "all",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "all",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "all",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "all",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "all",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "source_map",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "source_map",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-debug",
+      "evidence": "source_map",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "default",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "default",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "default",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "default",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "default",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "all",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "all",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "all",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "all",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "all",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "source_map",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "source_map",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac8-no-debug",
+      "evidence": "source_map",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "default",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "default",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "default",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "default",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "default",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "all",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "all",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "all",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "all",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "all",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "source_map",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "source_map",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-debug",
+      "evidence": "source_map",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "default",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "default",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "default",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "default",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "default",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "all",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "all",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "all",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "all",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "all",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "source_map",
+      "method": "protectedPositive",
+      "foreach_headers": 1,
+      "quality": "structured",
+      "blank_local_declarations": [],
+      "observed_foreach": true,
+      "counts_as_clean_foreach_coverage": true
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "source_map",
+      "method": "protectedBeforeRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterRead",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "source_map",
+      "method": "protectedAfterWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    },
+    {
+      "profile": "javac23-no-debug",
+      "evidence": "source_map",
+      "method": "protectedCatchReadWrite",
+      "foreach_headers": 0,
+      "quality": "fallback",
+      "blank_local_declarations": [],
+      "observed_foreach": false,
+      "counts_as_clean_foreach_coverage": false
+    }
+  ],
+  "computed_failed_cells": [
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "default",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "default",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "all",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "all",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "source_map",
+        "javac8"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "source_map",
+        "javac23"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original_from_raw": false
+    }
+  ],
+  "collector_failed_cells": [
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "default",
+        "javac8",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "default",
+        "javac23",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "all",
+        "javac8",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "all",
+        "javac23",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "source_map",
+        "javac8",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-debug",
+        "source_map",
+        "javac23",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "default",
+        "javac8",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "default",
+        "javac23",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "all",
+        "javac8",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "all",
+        "javac23",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "source_map",
+        "javac8",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac8-no-debug",
+        "source_map",
+        "javac23",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "default",
+        "javac8",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "default",
+        "javac23",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "all",
+        "javac8",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "all",
+        "javac23",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "source_map",
+        "javac8",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-debug",
+        "source_map",
+        "javac23",
+        "-g"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "default",
+        "javac8",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "default",
+        "javac23",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "all",
+        "javac8",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "all",
+        "javac23",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "source_map",
+        "javac8",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "compile",
+      "selector": [
+        "jarde",
+        "javac23-no-debug",
+        "source_map",
+        "javac23",
+        "-g:none"
+      ],
+      "exit_code": 1
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23",
+        "javac8"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "runtime",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23",
+        "javac23"
+      ],
+      "exit_code": 0,
+      "matches_original": false
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac8-debug",
+      "vm": "javac8",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac8-debug",
+      "vm": "javac23",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac8-no-debug",
+      "vm": "javac8",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac8-no-debug",
+      "vm": "javac23",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac23-debug",
+      "vm": "javac8",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac23-debug",
+      "vm": "javac23",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac23-no-debug",
+      "vm": "javac8",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    },
+    {
+      "kind": "original-runtime",
+      "profile": "javac23-no-debug",
+      "vm": "javac23",
+      "exit_code": 0,
+      "parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")"
+    }
+  ],
+  "collector_failure_list_matches_recomputed": null,
+  "collector_failure_list_note": "The collector regex rejects the uppercase N in protected-hasNext-throws; raw stdout was independently reparsed. The original failure list is preserved but not treated as oracle.",
+  "known_parser_corrections": [
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac8-debug",
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac8-debug",
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac8-no-debug",
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac8-no-debug",
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac23-debug",
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac23-debug",
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac23-no-debug",
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "original-runtime-row-parser",
+      "profile": "javac23-no-debug",
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac8-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac8"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac8",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    },
+    {
+      "kind": "generated-runtime-row-parser",
+      "selector": [
+        "jadx",
+        "javac23-no-debug",
+        "source",
+        "javac23"
+      ],
+      "vm": "javac23",
+      "collector_parse_error": "ValueError(\"malformed driver case row: 'CASE name=protected-hasNext-throws method=protectedPositive exception=none returned=MTAx observed=101 trace=aXRlcmF0b3IsaGFzTmV4dDowLG5leHQ6MCxoYXNOZXh0OjE='\")",
+      "raw_rows_reconstructed": 19
+    }
+  ],
+  "integrity_errors": [],
+  "source_unchanged_finally": true,
+  "post_capture_source_drift": [
+    "crates/jarde-java/src/build.rs",
+    "tests/p3_hoisted_iterator_foreach.rs"
+  ],
+  "external_inputs_unchanged_finally": true,
+  "generated_outputs_unchanged_finally": true,
+  "target_absent_after_clean": true
+}

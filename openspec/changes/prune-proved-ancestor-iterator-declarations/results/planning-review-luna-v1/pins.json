@@ -1,0 +1,27 @@
+{
+  "review_scope": "read-only; no shared writes or toolchain execution",
+  "workspace_head": "b45167b72486e22f942985340792dd730b308c56",
+  "workspace_status_at_review": "only the new OpenSpec directory was untracked",
+  "files": {
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/proposal.md": "986e04195bd42ae0e6f6d96b5f0884b2773bbe420ab4116f2a4131980d3b37c9",
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/design.md": "dc9a4238abbaaca14d76a88e76b01fd8f113ccc9d1bcd6a9d89e4c33e799df25",
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/tasks.md": "cc768c8b11dc8c0495f129f53630aed27888ba57cc88b519084ced07686dd483",
+    "openspec/changes/prune-proved-ancestor-iterator-declarations/specs/java8-recovery/spec.md": "70bfbc3b9a8a3c00db23883877e2b05883af5eb7b408c30360cce3a55ddc0c0e",
+    "crates/jarde-java/src/build.rs": "e3f201df7bd01b9b0691d5f7229cbfd5efd82ce5b70fdd39f0f003170fe51b39",
+    "crates/jarde-java/src/reuse.rs": "2c0422f720bfaf45e12d10d2327b4cded12d3db3f86cd63cd744dfdbbc88ac08",
+    "crates/jarde-java/src/names.rs": "60d29e36a57b3f3d94d76d759006afcd88ec5172082269776ea4276cb3beed20",
+    "crates/jarde-java/src/decode.rs": "d4164badbc241d8911730eff30b0e55b4b0061bf6dd3b1e2282b57834374160f",
+    "crates/jarde-java/src/facts.rs": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef",
+    "/private/tmp/jarde-foreach-fold-original-root-v1-20261018/execution.json": "1fbc03d82b6255275d31e0ce75624ef896a73491a50e09670927062e4318a953",
+    "/private/tmp/jarde-foreach-fold-original-root-v1-20261018/debug/classes/jadx/tests/integration/loops/TestNestedLoops$TestCls.class": "4741538cc0ef1ba378cca4fccc8505007956a6b14520a1808c3874d7ea167e2c"
+  },
+  "baseline_observation": {
+    "target_method": "jadx.tests.integration.loops.TestNestedLoops$TestCls.test",
+    "profiles": ["debug", "no-debug"],
+    "code_length": 119,
+    "relevant_local_slot": 5,
+    "physical_accesses": ["astore 5 @ 33", "aload 5 @ 35", "aload 5 @ 45"],
+    "other_slot_5_accesses": 0,
+    "method_code_identical_across_profiles": true
+  }
+}

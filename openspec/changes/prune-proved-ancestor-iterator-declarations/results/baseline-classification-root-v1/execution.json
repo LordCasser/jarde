@@ -1,0 +1,156 @@
+{
+  "status": "accepted_baseline_classification_with_existing_boundaries",
+  "receipt": {
+    "path": "/private/tmp/jarde-ancestor-iterator-controls-baseline-root-v2-20261018/execution.json",
+    "sha256": "6c264446a1ac9e83aa6446fca8e8a4f27f06c48f08958250fe70df483ee129ac"
+  },
+  "independent_review": {
+    "path": "/private/tmp/jarde-ancestor-iterator-controls-review-root-v1-20261018/review.json",
+    "sha256": "150c4d20c74fe6acc446517c5714e684ff40b6947dec17183773848d05413b0a"
+  },
+  "original_vm_runs": 8,
+  "original_cases": 152,
+  "common_original_oracle": true,
+  "api_cells": 12,
+  "generated_jarde_compiles": 24,
+  "jarde_compiles_succeeded": 0,
+  "jarde_runtime_claims": 0,
+  "jadx_compiles_succeeded": 8,
+  "jadx_vm_runs": 16,
+  "jadx_runtime_cases": 304,
+  "wrong_root_rejections": 12,
+  "jadx_differences": [
+    {
+      "profile": "javac8-debug",
+      "compiler": "javac8",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-debug",
+      "compiler": "javac8",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-debug",
+      "compiler": "javac23",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-debug",
+      "compiler": "javac23",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "compiler": "javac8",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "compiler": "javac8",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "compiler": "javac23",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac8-no-debug",
+      "compiler": "javac23",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "compiler": "javac8",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "compiler": "javac8",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "compiler": "javac23",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-debug",
+      "compiler": "javac23",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "compiler": "javac8",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "compiler": "javac8",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "compiler": "javac23",
+      "vm": "javac8",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    },
+    {
+      "profile": "javac23-no-debug",
+      "compiler": "javac23",
+      "vm": "javac23",
+      "different_cases": [
+        "protected-catch-read-write"
+      ]
+    }
+  ],
+  "coverage": "ancestor and sameList structured; sameList retains one exact ancestor blank; protectedPositive structured foreach with no blank; protectedAfterWrite and remaining protected controls did not reach foreach and do not cover cleanup gate",
+  "collector_correction": "Original and generated stdout reparsed independently; old camelcase parser rows/flags preserved, not trusted",
+  "debt_scope": "Whole-class Jarde compilation failures from existing refusal controls and installed JADX1.5.6 catch retry mismatch are outside this declaration cleanup. Do not count these as runtime passes.",
+  "new_candidate_acceptance": false
+}
