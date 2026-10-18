@@ -1,0 +1,1455 @@
+{
+  "external_binary_policy": "JDKs, CLI binaries, and dependency installations are not copied; their pins remain in execution receipts and collector/auditor history.",
+  "history_roots": [
+    "jarde-testnotindexedloop-baseline-prep-luna-v1-20261019",
+    "jarde-testnotindexedloop-baseline-prep-luna-v2-20261019",
+    "jarde-testnotindexedloop-generated-prep-luna-v1-20261019",
+    "jarde-testnotindexedloop-baseline-audit-luna-v1-20261019",
+    "jarde-testnotindexedloop-baseline-audit-luna-v2-20261019",
+    "jarde-testnotindexedloop-baseline-audit-luna-v3-20261019",
+    "jarde-testnotindexedloop-generated-audit-luna-v1-20261019",
+    "jarde-testnotindexedloop-generated-audit-luna-v2-20261019",
+    "jarde-testnotindexedloop-generated-audit-luna-v3-20261019",
+    "jarde-testnotindexedloop-generated-audit-luna-v4-20261019",
+    "jarde-notindexedloop-equals-audit-luna-v1-20261019",
+    "jarde-notindexedloop-equals-audit-luna-v2-20261019"
+  ],
+  "member_count": 283,
+  "members": [
+    {
+      "bytes": 3560,
+      "path": "archive-preparation/README.md",
+      "sha256": "873aeff8ceaccbf4bcc9bb4d1a66f17135685b05eb671faa400b9e3746d804a1"
+    },
+    {
+      "bytes": 23074,
+      "path": "archive-preparation/cf07-template.diff",
+      "sha256": "24708b1b7e2a0e081f38f96abf4411b835189d2f4b2daed977922572908c500f"
+    },
+    {
+      "bytes": 10458,
+      "path": "archive-preparation/pack.py",
+      "sha256": "458ed3dab8a71d5566899055d27966030d47a3b8a3ed839664638f312b806ace"
+    },
+    {
+      "bytes": 67313,
+      "path": "archive-preparation/pins.json",
+      "sha256": "2a82e5e2ecb08dccc88188703a8078ab9717b9f37832cd2a50574bfe61ee0cf4"
+    },
+    {
+      "bytes": 6164,
+      "path": "private-tmp/jarde-notindexedloop-equals-audit-luna-v1-20261019/README.md",
+      "sha256": "182ba5079817105533fb9828e03610d14226f35678b39414c7c70e62e29b1f0c"
+    },
+    {
+      "bytes": 3979,
+      "path": "private-tmp/jarde-notindexedloop-equals-audit-luna-v1-20261019/pins.json",
+      "sha256": "bccff9bed00d928921b7d7983beb9c8668e63f947ae20f3b3b70da2e84a8c694"
+    },
+    {
+      "bytes": 6301,
+      "path": "private-tmp/jarde-notindexedloop-equals-audit-luna-v2-20261019/README.md",
+      "sha256": "2616cc7729ce1528c87b905bea763171c33d315303ed464545c3b621a83ef247"
+    },
+    {
+      "bytes": 4476,
+      "path": "private-tmp/jarde-notindexedloop-equals-audit-luna-v2-20261019/pins.json",
+      "sha256": "6171e32df3da40f8e8edc7d26571de1abafaff5a16a66dd2ceb7a2bda850508e"
+    },
+    {
+      "bytes": 2973,
+      "path": "private-tmp/jarde-notindexedloop-equals-audit-luna-v2-20261019/v1-to-v2-pins.diff",
+      "sha256": "427ab227fd6089dfcf049398141f1e16cc946467a5ce748dd9c5da6a02b7d599"
+    },
+    {
+      "bytes": 6037,
+      "path": "private-tmp/jarde-notindexedloop-equals-audit-luna-v2-20261019/v1-to-v2-readme.diff",
+      "sha256": "5584ee54110cabb6ccf1f1b95e59be3494947fcd63c706efe3a8ed64385b04b2"
+    },
+    {
+      "bytes": 24898,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v1-20261019/audit.py",
+      "sha256": "492aa0e21509c8166ac838467b0959ea3a03887d039f70388c54f6de53a3e386"
+    },
+    {
+      "bytes": 308,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v1-20261019/review/README.md",
+      "sha256": "cf1c3706b1cd7c82621b3feb95ebf1c364a3483ac9616e6bdab4aa8b1bfa492d"
+    },
+    {
+      "bytes": 1321,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v1-20261019/review/review.json",
+      "sha256": "e013aa905956ec30c3ad004fe049d0d08432f0cdd4a09145e9bd404248635c0f"
+    },
+    {
+      "bytes": 1321,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v2-20261019/README.md",
+      "sha256": "e1706c9f803f24302b6b4d4b2883bab53b3cb8906d22832a550f100830405866"
+    },
+    {
+      "bytes": 27218,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v2-20261019/audit.py",
+      "sha256": "deb9382d7486dd667106ef45c31dae4f953a455d2c03953f746ebdff4108a75c"
+    },
+    {
+      "bytes": 1598,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v2-20261019/pins.json",
+      "sha256": "a5861eb9b13ebcb8e036a79c8444c099d300195b66586625f16d43e5d56a6acc"
+    },
+    {
+      "bytes": 308,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v2-20261019/review/README.md",
+      "sha256": "cf1c3706b1cd7c82621b3feb95ebf1c364a3483ac9616e6bdab4aa8b1bfa492d"
+    },
+    {
+      "bytes": 1321,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v2-20261019/review/review.json",
+      "sha256": "e013aa905956ec30c3ad004fe049d0d08432f0cdd4a09145e9bd404248635c0f"
+    },
+    {
+      "bytes": 1703,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v3-20261019/README.md",
+      "sha256": "e3dbb21dc4dec9520f67ed8fba633173b423e1685abad2c5493dfba1ecdfbea1"
+    },
+    {
+      "bytes": 29248,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v3-20261019/audit.py",
+      "sha256": "6ecc0a54838c39381d82ae91ea353b31d561afff21feabf0c58918fba2e7aa2c"
+    },
+    {
+      "bytes": 1329,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v3-20261019/pins.json",
+      "sha256": "12201e25b8e912cb471ea161f18af1a51f82eb9e14ad235ce1e2c1b1b438e30a"
+    },
+    {
+      "bytes": 308,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v3-20261019/review/README.md",
+      "sha256": "cf1c3706b1cd7c82621b3feb95ebf1c364a3483ac9616e6bdab4aa8b1bfa492d"
+    },
+    {
+      "bytes": 1352,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v3-20261019/review/review.json",
+      "sha256": "2cd19d76c9ab14323fa61b83dfe41db1cdf9216d7ce86249e8f3ad90581e9e17"
+    },
+    {
+      "bytes": 8419,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-luna-v3-20261019/v2-to-v3.diff",
+      "sha256": "e7f2b8fe70d3d798062d6ccedefbf2b7399e95aab8724e922b35b907d4a00bcf"
+    },
+    {
+      "bytes": 308,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-root-v1-20261019/README.md",
+      "sha256": "cf1c3706b1cd7c82621b3feb95ebf1c364a3483ac9616e6bdab4aa8b1bfa492d"
+    },
+    {
+      "bytes": 1352,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-audit-root-v1-20261019/review.json",
+      "sha256": "2cd19d76c9ab14323fa61b83dfe41db1cdf9216d7ce86249e8f3ad90581e9e17"
+    },
+    {
+      "bytes": 1981,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/README.md",
+      "sha256": "a5089e35cca0179626e7468677136feb04aef8968b4245008b13de61f804cb02"
+    },
+    {
+      "bytes": 1483,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/case-plan.json",
+      "sha256": "d96ea335d169a78fcb3458a117d6d6d440e14139f66dda6b1089f8b580e6ca7a"
+    },
+    {
+      "bytes": 38003,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/collect_baseline.py",
+      "sha256": "4d57d86422967b9488ce663dc2d35c052fe9b5476ee8d4acb7442dd6e4b89454"
+    },
+    {
+      "bytes": 13708,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/collector-adaptation.diff",
+      "sha256": "cd2542ed0e96f2eb3e4cf7ef28724f25cd18772b8b229805cd5fad6fd98d8b30"
+    },
+    {
+      "bytes": 5426,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/driver/TestComplexWhileLoopDriver.java",
+      "sha256": "57e8b55c175bc077e85ffcf9a16c053985ecbc310eadc023dd0467da2f2932c5"
+    },
+    {
+      "bytes": 6310,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/driver/TestNotIndexedLoopDriver.java",
+      "sha256": "b6374372030f5346bfa0a6d3a57c1f43899807555e8c23de70fb7c1897404e20"
+    },
+    {
+      "bytes": 4572,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/pins.json",
+      "sha256": "17e0ce9522375c2a2a28e39899479923f05bdbcd3d3ce124254a0532a20daed8"
+    },
+    {
+      "bytes": 419,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/runtime-bound-cwd.py",
+      "sha256": "f28a3970f2e94b28e1d20950633c46b46eab1cf5c357da8d6c8723f1f317bcb4"
+    },
+    {
+      "bytes": 748,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v1-20261019/source/jadx/tests/integration/loops/TestComplexWhileLoop.java",
+      "sha256": "f4ce9f6e1e8b0a5cd974d75fc68bff60651c5712e0bec81f51a45f20acfa4c22"
+    },
+    {
+      "bytes": 2313,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/README.md",
+      "sha256": "5b7d8caa590ad70329fcf5e63285974f2342690c420d9ab30860879a4ed306c0"
+    },
+    {
+      "bytes": 2759,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/case-plan.json",
+      "sha256": "f0a1b1e9b5e0cbd61ba9f60c30535c89b825c80947b6fb00290e3916ba8ebaf2"
+    },
+    {
+      "bytes": 38773,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/collect_baseline.py",
+      "sha256": "290fd978ca3e2472c7a3247ad6e571735005475f989b962186bb24eb156b4c43"
+    },
+    {
+      "bytes": 12828,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/collector-adaptation.diff",
+      "sha256": "cc0b74942f7b459dcbcdf16a0671a3b1f31a0484aba110fe63a9c3ad2a9a132f"
+    },
+    {
+      "bytes": 4920,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/driver/TestNotIndexedLoopDriver.java",
+      "sha256": "cfc8e72732496a15b814196b6a81d0ad79767afb7dc14549f34c44b943f5df25"
+    },
+    {
+      "bytes": 3059,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/pins.json",
+      "sha256": "afb39488c603e8ac562bc17897bed48d536685169fb0304356bc9c8295eef14b"
+    },
+    {
+      "bytes": 389,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/runtime-bound-cwd.py",
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46"
+    },
+    {
+      "bytes": 1491,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-prep-luna-v2-20261019/source/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "dc08e939d5d5ab12c2f4a89e11b266a7e9592ca6289e700241a5eca2f29980b5"
+    },
+    {
+      "bytes": 38773,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/collector.py",
+      "sha256": "290fd978ca3e2472c7a3247ad6e571735005475f989b962186bb24eb156b4c43"
+    },
+    {
+      "bytes": 3677,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/debug-full-classes.jar",
+      "sha256": "f1cfc05a65a5cf01b50521fb9ebd0c2123957faa64fd5fb8583d74478e593e01"
+    },
+    {
+      "bytes": 1791,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "046c9426fd964d967fe0be579985b248e0d210e6890caf3454abfd1daa16b90c"
+    },
+    {
+      "bytes": 1484,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestNotIndexedLoop.class",
+      "sha256": "3b5b716164400ef25537178917d5ddfe5295868c8574dff2a95371726b6a2bae"
+    },
+    {
+      "bytes": 7841,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/driver-classes/TestNotIndexedLoopDriver.class",
+      "sha256": "43be4d9c915f7331bcf8f9b452c08a889dbe70a35a91763767c1a1de106f73d2"
+    },
+    {
+      "bytes": 4920,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/driver-source/TestNotIndexedLoopDriver.java",
+      "sha256": "cfc8e72732496a15b814196b6a81d0ad79767afb7dc14549f34c44b943f5df25"
+    },
+    {
+      "bytes": 7820827,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/execution.json",
+      "sha256": "56276e1841a38d4929826cfb52440ef8ef88d07efae07149a06a6626ae10c967"
+    },
+    {
+      "bytes": 2034,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "43bacf70bf658cd03843ab72c52d87febb1c61884063a579834c19b1ab8a9941"
+    },
+    {
+      "bytes": 2048,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "b3536e14fc76a2a0650f20a23416957068af955d52ab18219aeedd7c6d00928a"
+    },
+    {
+      "bytes": 136083,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/bundle-child/all/report.json",
+      "sha256": "413dbeb101798d9d9a12b3171f40804e3f5b3970ad905b5d60a5e4607d728d75"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 133898,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/bundle-child/default/report.json",
+      "sha256": "6a415bcebf2e07140a19fa71f545a3f0be9a4ee7b423a8f89f0965255760906e"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 90729,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/child/all/report.json",
+      "sha256": "c06c1bf679f110c5e2601c474d338ace60d4589c2280ff2f72b61dd7a2855651"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/child/all/whole-source.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 88549,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/child/default/report.json",
+      "sha256": "0e41cb9bd5e206b4754b232f083b8f7e773290d9b651110b136de8741a3cd96d"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/debug/child/default/whole-source.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 136230,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json",
+      "sha256": "7d8d79e8c53e8a3b5e8f4b3828878baedf0a60d23cf701c9ec9e5eece1d76834"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 134048,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json",
+      "sha256": "595d62970054183f6c167d62f316326e2009b58a24b25fab432f6cee37de3ac3"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 90873,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/child/all/report.json",
+      "sha256": "ad5d1ef84ee775dcdcf0825a8e05a72404e2f3a8dfee99152db2b632d56b9c58"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/child/all/whole-source.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 88688,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/child/default/report.json",
+      "sha256": "54704dae85e0a959f5e56d4ddfa1643dbf2fe9023423f1241562921a6b5b2d38"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/jarde/no-debug/child/default/whole-source.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 2950,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/no-debug-full-classes.jar",
+      "sha256": "82441687f784271cfffbd8ee4e88822efdef08cf4e4573c78c344db7932f77a3"
+    },
+    {
+      "bytes": 1335,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "8246df952ee177d7ef06664a2b1d52caa7f50016a98b556b88d525e839b85c1b"
+    },
+    {
+      "bytes": 1213,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestNotIndexedLoop.class",
+      "sha256": "4d57471f2eaba8f2f78f99e7304bec41b5f2b37b1ccd84ecaf4af652f8aa6bfb"
+    },
+    {
+      "bytes": 496,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "sha256": "4abf8fc5a4cac88deb5682dda1339baf3f57f338de39423c65b135a23718e9c9"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 88549,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "sha256": "0e41cb9bd5e206b4754b232f083b8f7e773290d9b651110b136de8741a3cd96d"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 90729,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "sha256": "c06c1bf679f110c5e2601c474d338ace60d4589c2280ff2f72b61dd7a2855651"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 133898,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "sha256": "6a415bcebf2e07140a19fa71f545a3f0be9a4ee7b423a8f89f0965255760906e"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 136083,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "sha256": "413dbeb101798d9d9a12b3171f40804e3f5b3970ad905b5d60a5e4607d728d75"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 88688,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "sha256": "54704dae85e0a959f5e56d4ddfa1643dbf2fe9023423f1241562921a6b5b2d38"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 90873,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "sha256": "ad5d1ef84ee775dcdcf0825a8e05a72404e2f3a8dfee99152db2b632d56b9c58"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 134048,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "sha256": "595d62970054183f6c167d62f316326e2009b58a24b25fab432f6cee37de3ac3"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 136230,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "sha256": "7d8d79e8c53e8a3b5e8f4b3828878baedf0a60d23cf701c9ec9e5eece1d76834"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 148,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 148,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1493,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "sha256": "b39d41670d1725a87d3c9632dac400815d1f23d455b1342986dc5a53b7926f88"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1501,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "sha256": "37006d7849c56dd19be20574757850fbab3851f253ae03714c32d56defaae024"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1477,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "sha256": "0be6907e6aa5cb5bc5020ac55f2687f73f4fc78a27c41223ad4b3f9051e8695c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1497,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "sha256": "e26b042315ebb47b477ee79bdf85e18587ed4ee1aa8a0ecafe38c85af73b4fee"
+    },
+    {
+      "bytes": 320,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "sha256": "cfe945eca273ad24bfcbeeaf45a9106534e0e4a20d173030e88466d540fdf8f2"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 576,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/root-review.json",
+      "sha256": "2e5027c6da90862b5d729792ede81370fa7a5a0023d0518f5864b375c6f2b20e"
+    },
+    {
+      "bytes": 389,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/runtime-bound-cwd.py",
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46"
+    },
+    {
+      "bytes": 1491,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "dc08e939d5d5ab12c2f4a89e11b266a7e9592ca6289e700241a5eca2f29980b5"
+    },
+    {
+      "bytes": 1864,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-wrapper-root-v1-20261019/execution.json",
+      "sha256": "543e034c05b7af469b686df54ae8aa0d0949c7f5a1c006299d8726cfb052bbce"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-wrapper-root-v1-20261019/stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 100,
+      "path": "private-tmp/jarde-testnotindexedloop-baseline-wrapper-root-v1-20261019/stdout.raw",
+      "sha256": "ace523d692bdb35776151d5151e9b95219eff482b519d30d3d00b8ab97291c24"
+    },
+    {
+      "bytes": 550,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v1-20261019/review/README.md",
+      "sha256": "bc183cd27bb3aa8e66c20ec9771c98f7c2d0da07cf11882f4df68b364fbd71f9"
+    },
+    {
+      "bytes": 908,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v1-20261019/review/review.json",
+      "sha256": "ac5e8dce217af5e78a8f4d0044fd61ed990aad9cbe415d0514166633aeba2ead"
+    },
+    {
+      "bytes": 34067,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v1-20261019/review_generated.py",
+      "sha256": "1de5dc4a37b3d64a0eccfd2492c000b078d4dde738f12724ecc9c8f354ae6cae"
+    },
+    {
+      "bytes": 550,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v2-20261019/review/README.md",
+      "sha256": "bc183cd27bb3aa8e66c20ec9771c98f7c2d0da07cf11882f4df68b364fbd71f9"
+    },
+    {
+      "bytes": 908,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v2-20261019/review/review.json",
+      "sha256": "ac5e8dce217af5e78a8f4d0044fd61ed990aad9cbe415d0514166633aeba2ead"
+    },
+    {
+      "bytes": 34070,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v2-20261019/review_generated.py",
+      "sha256": "444e4c723fb86a28fb208ca2dd32d609f20534c459c020c267a9dc403ff710e9"
+    },
+    {
+      "bytes": 1884,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v3-20261019/README.md",
+      "sha256": "22338a6c603a38f1393c7ff85fb75c6cb43235b54ec31a5ea3d1f3864f921465"
+    },
+    {
+      "bytes": 550,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v3-20261019/review/README.md",
+      "sha256": "bc183cd27bb3aa8e66c20ec9771c98f7c2d0da07cf11882f4df68b364fbd71f9"
+    },
+    {
+      "bytes": 1074,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v3-20261019/review/review.json",
+      "sha256": "46f7d76fc21739af8f3a658797b00721d004e2f13c5c67ff89f625eae54ca917"
+    },
+    {
+      "bytes": 34409,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v3-20261019/review_generated.py",
+      "sha256": "700df6de320d3b84e7566c66f4e364dce17c6a13e541f13e02f9b9f54d79b618"
+    },
+    {
+      "bytes": 2268,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/ADAPTATION.md",
+      "sha256": "4c4c9c7452af19284416f2c3e97f50fb8ca863d315a7c5544e5674502612ca7a"
+    },
+    {
+      "bytes": 1884,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/README.md",
+      "sha256": "22338a6c603a38f1393c7ff85fb75c6cb43235b54ec31a5ea3d1f3864f921465"
+    },
+    {
+      "bytes": 1140,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/expected-shape.json",
+      "sha256": "93e3b10e9ea443b3fcb9bd45a25c1db98370bd3096b29f52f837cadc687ddd58"
+    },
+    {
+      "bytes": 2331,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/family-contract.diff",
+      "sha256": "eec820d8c427e413f4dc44c66003b4225c069004b15b21a4a283ae796cae2f1e"
+    },
+    {
+      "bytes": 4485,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/pins.json",
+      "sha256": "ca2741d729a9f7bfe0fa7369874f8b7641a8ffede95e41427ac4b2976296863f"
+    },
+    {
+      "bytes": 550,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/review/README.md",
+      "sha256": "bc183cd27bb3aa8e66c20ec9771c98f7c2d0da07cf11882f4df68b364fbd71f9"
+    },
+    {
+      "bytes": 1074,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/review/review.json",
+      "sha256": "46f7d76fc21739af8f3a658797b00721d004e2f13c5c67ff89f625eae54ca917"
+    },
+    {
+      "bytes": 37173,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/review_generated.py",
+      "sha256": "948b8b4ddae4f9525d8abed5f3e256296274b1d24990776a34ec4547e0e098ce"
+    },
+    {
+      "bytes": 6451,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-luna-v4-20261019/v3-to-v4.diff",
+      "sha256": "b20d2926624f9dc8cff9e908d19f1591d114246eda762dbe3a3bc692d56f953b"
+    },
+    {
+      "bytes": 550,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-root-v1-20261019/README.md",
+      "sha256": "bc183cd27bb3aa8e66c20ec9771c98f7c2d0da07cf11882f4df68b364fbd71f9"
+    },
+    {
+      "bytes": 1074,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-audit-root-v1-20261019/review.json",
+      "sha256": "46f7d76fc21739af8f3a658797b00721d004e2f13c5c67ff89f625eae54ca917"
+    },
+    {
+      "bytes": 3250,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/README.md",
+      "sha256": "0034960c6d1cc2d031feff509e3c7beb035a341866dca380a40d843d180e2a56"
+    },
+    {
+      "bytes": 41571,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/collect_generated_matrix.py",
+      "sha256": "dda5996c5493ef7e4c42e0b4da80dbb028d065dffbd6f7fa4cfde838628c4828"
+    },
+    {
+      "bytes": 11710,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/collector-adaptation.diff",
+      "sha256": "08a90bbb4558ca9297733012e11740a484f3e58439bd5919ae2b923e6640960b"
+    },
+    {
+      "bytes": 4920,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/driver/TestNotIndexedLoopDriver.java",
+      "sha256": "cfc8e72732496a15b814196b6a81d0ad79767afb7dc14549f34c44b943f5df25"
+    },
+    {
+      "bytes": 488,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/invocation-template.json",
+      "sha256": "729ea23b0bafb750b807b2df5302094eba25998528462ff865d5a7c7759c5266"
+    },
+    {
+      "bytes": 2416,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/pins.json",
+      "sha256": "f8edf015969077632c28693404b157d6ca1e9ac3940db4880645d18f4faa0774"
+    },
+    {
+      "bytes": 2659,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-prep-luna-v1-20261019/plan.json",
+      "sha256": "65a0c75320f53f87595532fb4bd6d963f613c882f9b966698b340ad776eac032"
+    },
+    {
+      "bytes": 41571,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/collector.py",
+      "sha256": "dda5996c5493ef7e4c42e0b4da80dbb028d065dffbd6f7fa4cfde838628c4828"
+    },
+    {
+      "bytes": 1715,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/debug-bundle-child-all/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "8b5e88c2e5fed6fee452d8cd1de4bfd72452df6b4fa1560a032e672635be51c0"
+    },
+    {
+      "bytes": 1715,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/debug-bundle-child-default/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "8b5e88c2e5fed6fee452d8cd1de4bfd72452df6b4fa1560a032e672635be51c0"
+    },
+    {
+      "bytes": 1762,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "cbaec16125ca0e4779b1e2781e40cb3931a9b36c424855d1fb8216117d616027"
+    },
+    {
+      "bytes": 1460,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop.class",
+      "sha256": "7fb704b481ebafed7ccbaac7179e87ccfef2ec1095229d1e7c414eb9bac0c485"
+    },
+    {
+      "bytes": 1715,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/debug-child-all/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "8b5e88c2e5fed6fee452d8cd1de4bfd72452df6b4fa1560a032e672635be51c0"
+    },
+    {
+      "bytes": 1715,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/debug-child-default/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "8b5e88c2e5fed6fee452d8cd1de4bfd72452df6b4fa1560a032e672635be51c0"
+    },
+    {
+      "bytes": 1247,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/no-debug-bundle-child-all/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "dd5ca895f761ed31c466a5b15a18bdf8abf9def63abf5621cad67f9420b1110e"
+    },
+    {
+      "bytes": 1247,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/no-debug-bundle-child-default/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "dd5ca895f761ed31c466a5b15a18bdf8abf9def63abf5621cad67f9420b1110e"
+    },
+    {
+      "bytes": 1322,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "5fe6d0bd6f48d6eeab6fe6a661e07d3a5e8586d89c91dae5cd0833ccccd5ad41"
+    },
+    {
+      "bytes": 1213,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop.class",
+      "sha256": "4d57471f2eaba8f2f78f99e7304bec41b5f2b37b1ccd84ecaf4af652f8aa6bfb"
+    },
+    {
+      "bytes": 1247,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/no-debug-child-all/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "dd5ca895f761ed31c466a5b15a18bdf8abf9def63abf5621cad67f9420b1110e"
+    },
+    {
+      "bytes": 1247,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/compiled/no-debug-child-default/javac23/classes/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.class",
+      "sha256": "dd5ca895f761ed31c466a5b15a18bdf8abf9def63abf5621cad67f9420b1110e"
+    },
+    {
+      "bytes": 7841,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/driver-classes/TestNotIndexedLoopDriver.class",
+      "sha256": "43be4d9c915f7331bcf8f9b452c08a889dbe70a35a91763767c1a1de106f73d2"
+    },
+    {
+      "bytes": 4920,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/driver-source/TestNotIndexedLoopDriver.java",
+      "sha256": "cfc8e72732496a15b814196b6a81d0ad79767afb7dc14549f34c44b943f5df25"
+    },
+    {
+      "bytes": 4856614,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/execution.json",
+      "sha256": "8e57bf803579a692df08388e168f336fa44cb072620fbc81f1daa517e2253b4c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/10.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1513,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/10.stdout.raw",
+      "sha256": "c7c9b10088b32aa6997d8edc9dec647f2ececb004de88f5e4a0de349f9f5feb5"
+    },
+    {
+      "bytes": 349,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/11.stderr.raw",
+      "sha256": "94e35ad7e961d386776ee19a837c64b71394ff4b68d7fb80b68f64aadb74641b"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/11.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 656,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/12.stderr.raw",
+      "sha256": "601ec4ce85f397be031537ca6a8602e73c6b545455bc5d3ff17c612d84f8da0c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/12.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/13.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/13.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/14.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1505,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/14.stdout.raw",
+      "sha256": "9e0c3db3621d4f59c35dfb1f98ad2509c2737dc86ffcca9279bff99dbd273dbd"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/15.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1513,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/15.stdout.raw",
+      "sha256": "c7c9b10088b32aa6997d8edc9dec647f2ececb004de88f5e4a0de349f9f5feb5"
+    },
+    {
+      "bytes": 360,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/16.stderr.raw",
+      "sha256": "70779eb1ec0461e46b1fbfb3d87b64aca6ceee5d7d56180766394456dcbc68a4"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/16.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 652,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/17.stderr.raw",
+      "sha256": "7f8aea10b4a7ba030db1e9b8c0d3b6b234e2d3ed75cb1720a9b5866e56e75c21"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/17.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/18.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/18.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/19.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1505,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/19.stdout.raw",
+      "sha256": "9e0c3db3621d4f59c35dfb1f98ad2509c2737dc86ffcca9279bff99dbd273dbd"
+    },
+    {
+      "bytes": 649,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/2.stderr.raw",
+      "sha256": "429ba009b6dbfd61d92d0c53231e65942ae39e558eade884a3a5f22eab29f949"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/20.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1513,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/20.stdout.raw",
+      "sha256": "c7c9b10088b32aa6997d8edc9dec647f2ececb004de88f5e4a0de349f9f5feb5"
+    },
+    {
+      "bytes": 356,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/21.stderr.raw",
+      "sha256": "2399d8125b4023c210da69b5905074a96cdd2dac8797cbf55179432097804e86"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/21.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 652,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/22.stderr.raw",
+      "sha256": "3b564564f4f568652eee64bc8f0a4cf9e8f05157da947f8afabe1be80dc08629"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/22.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/23.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/23.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/24.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1477,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/24.stdout.raw",
+      "sha256": "0be6907e6aa5cb5bc5020ac55f2687f73f4fc78a27c41223ad4b3f9051e8695c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/25.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1497,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/25.stdout.raw",
+      "sha256": "e26b042315ebb47b477ee79bdf85e18587ed4ee1aa8a0ecafe38c85af73b4fee"
+    },
+    {
+      "bytes": 356,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/26.stderr.raw",
+      "sha256": "01f26893439d6ced1c307d48744c7e9a69e3d9902ae16cdbc30b3680ad1dc322"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/26.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 648,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/27.stderr.raw",
+      "sha256": "d432a21cc58f28188f08e75d9641a99f63310ad1e41ae9a1c82a96cd6e67d166"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/27.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/28.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/28.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/29.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1477,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/29.stdout.raw",
+      "sha256": "0be6907e6aa5cb5bc5020ac55f2687f73f4fc78a27c41223ad4b3f9051e8695c"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/3.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/30.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1497,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/30.stdout.raw",
+      "sha256": "e26b042315ebb47b477ee79bdf85e18587ed4ee1aa8a0ecafe38c85af73b4fee"
+    },
+    {
+      "bytes": 352,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/31.stderr.raw",
+      "sha256": "f19af019cc1f81307250e5279d68c230969497cb34877019369e75864b774eb7"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/31.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 659,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/32.stderr.raw",
+      "sha256": "bf5cf3acd95f07e3758cfdf4c005a734e2c2fc4d4d75b77186b17184ddb448cf"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/32.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/33.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/33.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/34.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1477,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/34.stdout.raw",
+      "sha256": "0be6907e6aa5cb5bc5020ac55f2687f73f4fc78a27c41223ad4b3f9051e8695c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/35.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1497,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/35.stdout.raw",
+      "sha256": "e26b042315ebb47b477ee79bdf85e18587ed4ee1aa8a0ecafe38c85af73b4fee"
+    },
+    {
+      "bytes": 363,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/36.stderr.raw",
+      "sha256": "081c1e26d7f58441457ef31601f42e8a5200fb9ffe18842a01c20c2046a9dc7f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/36.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 655,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/37.stderr.raw",
+      "sha256": "b9b92719bd8dc128f3bd018787fe936d93bd74874662e24173b4287c04341218"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/37.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/38.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/38.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/39.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1477,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/39.stdout.raw",
+      "sha256": "0be6907e6aa5cb5bc5020ac55f2687f73f4fc78a27c41223ad4b3f9051e8695c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/4.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1505,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/4.stdout.raw",
+      "sha256": "9e0c3db3621d4f59c35dfb1f98ad2509c2737dc86ffcca9279bff99dbd273dbd"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/40.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1497,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/40.stdout.raw",
+      "sha256": "e26b042315ebb47b477ee79bdf85e18587ed4ee1aa8a0ecafe38c85af73b4fee"
+    },
+    {
+      "bytes": 359,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/41.stderr.raw",
+      "sha256": "52752f78d8cdd791a509e3806bc15c66986752a5a3e16d6e58a67dbc5d9c7bc6"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/41.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 511,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/42.stderr.raw",
+      "sha256": "6883c4a54768745191cd139fb401f5706fc660475e9f8db041224c884058703b"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/42.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/43.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/43.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/44.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1493,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/44.stdout.raw",
+      "sha256": "8df822738a7bb4320eeaacf86be3a1e7e93e7576364f2616bb3ee44e73090065"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/45.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1501,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/45.stdout.raw",
+      "sha256": "81920faba34609a290a5f5b164eebac2a5d8b85c40a42192b0c359e084fe65ac"
+    },
+    {
+      "bytes": 346,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/46.stderr.raw",
+      "sha256": "6759e867671fd2c41697c41f06925c35618fe7da73a6a6609d1bca6cb4617323"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/46.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 514,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/47.stderr.raw",
+      "sha256": "49d438804c838b7063081961aa27046b97c16a06a71033870bf2fc7158500092"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/47.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/48.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/48.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/49.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1477,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/49.stdout.raw",
+      "sha256": "0be6907e6aa5cb5bc5020ac55f2687f73f4fc78a27c41223ad4b3f9051e8695c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/5.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1513,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/5.stdout.raw",
+      "sha256": "c7c9b10088b32aa6997d8edc9dec647f2ececb004de88f5e4a0de349f9f5feb5"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/50.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1497,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/50.stdout.raw",
+      "sha256": "e26b042315ebb47b477ee79bdf85e18587ed4ee1aa8a0ecafe38c85af73b4fee"
+    },
+    {
+      "bytes": 349,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/51.stderr.raw",
+      "sha256": "294ba0e6798c95507170eb622d9d6045d2b77e0ee5ee19c60646edb03a85232a"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/51.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 353,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/6.stderr.raw",
+      "sha256": "7fca9612306100db81375080a0d3b434242eb3063dcd6084dbd347eef6029052"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/6.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 645,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/7.stderr.raw",
+      "sha256": "daec13f401dc2346ee9b460efaba6ecf86b9d1668441e8794e10c4e9fe7417ea"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/7.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/8.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/8.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/9.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1505,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/raw/9.stdout.raw",
+      "sha256": "9e0c3db3621d4f59c35dfb1f98ad2509c2737dc86ffcca9279bff99dbd273dbd"
+    },
+    {
+      "bytes": 1737,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/root-review.json",
+      "sha256": "e72eec65fa4ec7a8c53d077110b1cd5d73f912c140c5a1a678f660ff273ce8f6"
+    },
+    {
+      "bytes": 389,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/runtime-bound-cwd.py",
+      "sha256": "bc917ec08e07ed462c18958f9a0d3b064b7d5bba3adc5fa41d9db49ff6c3de46"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/debug-bundle-child-all/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/debug-bundle-child-default/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 2034,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/debug-bundle/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "43bacf70bf658cd03843ab72c52d87febb1c61884063a579834c19b1ab8a9941"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/debug-child-all/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 2880,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/debug-child-default/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "456e2ed1eeb48bb64da50c544b8f97b9af377716f20a104df0ff82b799678858"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/no-debug-bundle-child-all/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/no-debug-bundle-child-default/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 2048,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/no-debug-bundle/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "b3536e14fc76a2a0650f20a23416957068af955d52ab18219aeedd7c6d00928a"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/no-debug-child-all/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 2930,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-root-v1-20261019/sources/no-debug-child-default/jadx/tests/integration/loops/TestNotIndexedLoop$TestCls.java",
+      "sha256": "c2a76cceb03c8772f804bc024d2aab6934d71fc6ccceca02beafe19dc498305c"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-wrapper-root-v1-20261019/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1352,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-wrapper-root-v1-20261019/1.stdout.raw",
+      "sha256": "2cd19d76c9ab14323fa61b83dfe41db1cdf9216d7ce86249e8f3ad90581e9e17"
+    },
+    {
+      "bytes": 0,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-wrapper-root-v1-20261019/2.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 129,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-wrapper-root-v1-20261019/2.stdout.raw",
+      "sha256": "d903ab74eab07e8b7890b39f446758345a2380ee3c4408d1b1c57c4d3146f53f"
+    },
+    {
+      "bytes": 2618,
+      "path": "private-tmp/jarde-testnotindexedloop-generated-wrapper-root-v1-20261019/execution.json",
+      "sha256": "1eb2919ef044b1ea2ef46156c52881e417f721be077de8daf127d8bbb673b9c5"
+    },
+    {
+      "bytes": 11357,
+      "path": "upstream/jadx/LICENSE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "bytes": 10658,
+      "path": "upstream/jadx/NOTICE",
+      "sha256": "3f34304fa0b9da79fae989cca556d22bd3d08786d6ba171f529a00bfc880e365"
+    },
+    {
+      "bytes": 1491,
+      "path": "upstream/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+      "sha256": "dc08e939d5d5ab12c2f4a89e11b266a7e9592ca6289e700241a5eca2f29980b5"
+    }
+  ],
+  "result_roots": [
+    "jarde-testnotindexedloop-baseline-root-v1-20261019",
+    "jarde-testnotindexedloop-generated-root-v1-20261019"
+  ],
+  "root_audit_roots": [
+    "jarde-testnotindexedloop-baseline-audit-root-v1-20261019",
+    "jarde-testnotindexedloop-generated-audit-root-v1-20261019"
+  ],
+  "schema": "test-not-indexed-loop-durable-evidence-archive-v1",
+  "scope": "NotIndexedLoop source/API and generated-source evidence only. No production source, OpenSpec change, check() invocation, or JUnit execution is claimed.",
+  "status": "root-accepted-inputs-verified-at-pack-time",
+  "upstream_snapshot_members": [
+    "upstream/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestNotIndexedLoop.java",
+    "upstream/jadx/LICENSE",
+    "upstream/jadx/NOTICE"
+  ],
+  "wrapper_roots": [
+    "jarde-testnotindexedloop-baseline-wrapper-root-v1-20261019",
+    "jarde-testnotindexedloop-generated-wrapper-root-v1-20261019"
+  ]
+}

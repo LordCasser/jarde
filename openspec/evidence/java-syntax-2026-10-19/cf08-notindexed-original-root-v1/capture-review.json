@@ -1,0 +1,8 @@
+{
+  "status": "root_reopened_all_archive_members_and_live_sources",
+  "archive_sha256": "c1c77c4a6613af2ba121529ab7c6bc8224a458a958ae1402839c09808dcc64a4",
+  "payload_members": 283,
+  "regular_members_including_inventory": 284,
+  "inventory_sha256": "48fd4a6b1ce08bf7bb4d4901945b903e133f0804d97bbb4e53eca406a5cb34ad",
+  "limitations": "Preparer README calls ten source cells twenty source cells; authoritative counts are 10 source cells and 20 compiler attempts. No JUnit/check invocation."
+}
