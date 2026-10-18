@@ -1903,6 +1903,71 @@
       "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
     },
     {
+      "blake3": "fb6b1d1171f32787eec2b6999838747a9e80c7fa581baf0f614484c2a875eae0",
+      "bytes": 11357,
+      "path": "tests/fixtures/java8/assignment-condition-widening/JADX-LICENSE"
+    },
+    {
+      "blake3": "d006ec493b8b2457b733149b1779dd1db3bd8314f80e52377749304dafa869b2",
+      "bytes": 10658,
+      "path": "tests/fixtures/java8/assignment-condition-widening/JADX-NOTICE"
+    },
+    {
+      "blake3": "4ae165344979bbb097dac6428246bb46d77becd9b6b1c148a439f1abf7f0fd61",
+      "bytes": 4381,
+      "path": "tests/fixtures/java8/assignment-condition-widening/driver/LoopConditionInvokeControlDriver.java"
+    },
+    {
+      "blake3": "fb2e27e46e4187fa4edad2f83562ede1dc5b5b4a169207812c2f4d3262dee246",
+      "bytes": 3821,
+      "path": "tests/fixtures/java8/assignment-condition-widening/driver/TestLoopConditionInvokeDriver.java"
+    },
+    {
+      "blake3": "40e81ac8ae00b05aa58e97c5b672f7b7f9853d172d8a06afe77298c24b9863d8",
+      "bytes": 9584,
+      "path": "tests/fixtures/java8/assignment-condition-widening/freeze-and-census.json"
+    },
+    {
+      "blake3": "305959e44d6870ed23937d863f94a214805711c069354ac466ac9ea5e5bf8210",
+      "bytes": 1132,
+      "path": "tests/fixtures/java8/assignment-condition-widening/javac23-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "blake3": "d9801634d3ef4c8b3aaeac75c7087d30620d84bebda90b7e6c081308acb4e4b5",
+      "bytes": 658,
+      "path": "tests/fixtures/java8/assignment-condition-widening/javac23-no-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "blake3": "8f0e076a7ae0b3f1ea155d048f937bb35fd0329d914ad86ae96320501e0c3e1c",
+      "bytes": 1132,
+      "path": "tests/fixtures/java8/assignment-condition-widening/javac8-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "blake3": "7d8b7e6f61e910564373969ecfe5e65640fb7d3117c1206c608bb8de16bdd393",
+      "bytes": 658,
+      "path": "tests/fixtures/java8/assignment-condition-widening/javac8-no-debug/LoopConditionInvokeControl.class"
+    },
+    {
+      "blake3": "151375281f687d0b114bb16bd427f8851254cc9d126e80b7f71d51685e9d0d0a",
+      "bytes": 1026,
+      "path": "tests/fixtures/java8/assignment-condition-widening/source/LoopConditionInvokeControl.java"
+    },
+    {
+      "blake3": "b6e0d6b0fefa72cc2738579f3bd4fa3be824d6c059a0ba5ae541216640da755c",
+      "bytes": 898,
+      "path": "tests/fixtures/java8/assignment-condition-widening/source/TestLoopConditionInvoke.java"
+    },
+    {
+      "blake3": "2222027daf709970a2581251f81d49c41e2d10537401a5bdd5757d7a8a588953",
+      "bytes": 836,
+      "path": "tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class"
+    },
+    {
+      "blake3": "967e2069af3ed10c07d428938bd134eb9f3e298ccff71f520c7715330e7eb82d",
+      "bytes": 506,
+      "path": "tests/fixtures/java8/assignment-condition-widening/upstream-no-debug/TestLoopConditionInvoke$TestCls.class"
+    },
+    {
       "blake3": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
       "bytes": 2092,
       "path": "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class"

@@ -1,0 +1,2085 @@
+{
+  "status": "root_reopened_all_members_equal_live_originals",
+  "archive_sha256": "d5653a082bbda9e65c91b7a16b23e644e49806c22de48da3c7d7e7eec94bf05a",
+  "archive_bytes": 5604002,
+  "member_count": 345,
+  "members": [
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/README.md",
+      "bytes": 3418,
+      "sha256": "5d9555b4e2da7beb05272263a98adfcf3edd75bc2a35f6bfe62d360476316c0b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/SHA256SUMS",
+      "bytes": 569,
+      "sha256": "f447abdafc65ebe1feca79534973582fdf73d22f02006293e20d50bd67e80884"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/collect_baseline.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/collect_baseline.py",
+      "bytes": 37105,
+      "sha256": "4b4760c50e581b9285d5c0cc95779ab532e1b135332ae70f063c7ed054dfdb39"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/collector-adaptation.diff",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/collector-adaptation.diff",
+      "bytes": 22686,
+      "sha256": "c7ab1fc152b098b2833e0750512430b0ddb22e7583751ea736e9590b28a8ae95"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/driver/TestLoopConditionInvokeDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/driver/TestLoopConditionInvokeDriver.java",
+      "bytes": 3821,
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/pins.json",
+      "bytes": 7075,
+      "sha256": "3f587f3284fc418fc87e520e11de6cb7e869c37eddd2c8508c576b2cfdc47a85"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/root-static-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/root-static-review.json",
+      "bytes": 1383,
+      "sha256": "94b2fdf93e9a7d885303f54793fd428e9facaf2b746117c176234ee41d38c590"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/source/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-prep-luna-v2-20261019/source/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 898,
+      "sha256": "b21edd0b3316fbaeb89b6e19026e9b6721fe2decbc8e30059c8b6ed21eea4756"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/collector.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/collector.py",
+      "bytes": 37105,
+      "sha256": "4b4760c50e581b9285d5c0cc95779ab532e1b135332ae70f063c7ed054dfdb39"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "bytes": 836,
+      "sha256": "8c754864e90ec03497f6f269bcf7c8887296eb3a8f332e2949bcc910770b05c7"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "bytes": 1325,
+      "sha256": "8942fb1ec28cb59facee5e8cfb20255040ef221edbc75b7011485487dc5bebc7"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/debug-full-classes.jar",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/debug-full-classes.jar",
+      "bytes": 2583,
+      "sha256": "b7ade7e9c6c4746eda0dff714cf460372efd0a555230fd2b9efd2f9379cb520b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver$Case.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver$Case.class",
+      "bytes": 597,
+      "sha256": "a0b29f886c2e930105bba0143596796ef01cc89ef7767a3556d54d8560d70482"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver.class",
+      "bytes": 5952,
+      "sha256": "0de8b8624663bd7c1e467716cae1eea49905da731b6851b583f3b9d0501ca9cf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/driver-source/TestLoopConditionInvokeDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/driver-source/TestLoopConditionInvokeDriver.java",
+      "bytes": 3821,
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/execution.json",
+      "bytes": 4999280,
+      "sha256": "7725015c3643581cb4c35d5f334c016f6f035540634e8c58183be3c7a177b3b4"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jadx/debug/default/sources/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 1296,
+      "sha256": "6a6590c0818c1a435b476ec2147d6ecb401c9ec51de4b7a4ae4e68bdabdd5758"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jadx/no-debug/default/sources/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 1282,
+      "sha256": "5120fdf17c37744e66e976eb04bc4cd2d8f4e3964e121453d4266bc7ef4271c6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/all/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/all/report.json",
+      "bytes": 45962,
+      "sha256": "0b9d87d1d8845757f177b693ccf129a3d6586aa02b08290ca4f152b80a665836"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/all/whole-source.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/default/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/default/report.json",
+      "bytes": 43472,
+      "sha256": "c430cd9c7dbb42e9e3d7fafd7a665e281c566ebc103b936398077463dce4636b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/bundle-child/default/whole-source.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/all/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/all/report.json",
+      "bytes": 34946,
+      "sha256": "335aaad761a79c3a556edb5e2a9a84c388b347c5b00c694be6096dbe9cd07d93"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/all/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/all/whole-source.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/default/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/default/report.json",
+      "bytes": 32463,
+      "sha256": "9b8d0f678ed83a51218a260b60091ae4aff4297b290c77255ec3bcc379dc34a9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/default/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/debug/child/default/whole-source.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/report.json",
+      "bytes": 45949,
+      "sha256": "b826f3079f9e17880677a20cb3bc0b9056684624cf2bfa43892af354430bc2b2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/all/whole-source.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/report.json",
+      "bytes": 43459,
+      "sha256": "7a9b86a43205212e17e6082e1fd1cceeea3bcd738121f5ca48ef746087eb8968"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/bundle-child/default/whole-source.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/all/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/all/report.json",
+      "bytes": 34931,
+      "sha256": "959da46607b1f0bd7ec0fac56dc29a9473814d17c53cb82ed0a6edb71bfd2dd6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/all/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/all/whole-source.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/default/report.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/default/report.json",
+      "bytes": 32441,
+      "sha256": "e4c4556eee73b42a5a15bcefc2d882f103dcc9af6efe52d2045c8e7d94ab3d24"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/default/whole-source.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde/no-debug/child/default/whole-source.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "bytes": 265,
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "bytes": 506,
+      "sha256": "2e450dce9240fdfaad0ba0cc9edce0e575c7d42cdbc8d8c8b6e8e1aa5ba3353a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/no-debug/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "bytes": 1078,
+      "sha256": "08ece25eeb6d3840017f5a1ebf4cbd79fc243e1ed365e23b11555918ee6201db"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/no-debug-full-classes.jar",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/no-debug-full-classes.jar",
+      "bytes": 2006,
+      "sha256": "f2bb3d024cacfa188ce953e3ee5995390ec6209f1bf01551832abfbd7b140600"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 504,
+      "sha256": "b9d1a43a65d25e70b145274bbb7e58ec83e395b345f70c2111b57012be3d1aab"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 32463,
+      "sha256": "9b8d0f678ed83a51218a260b60091ae4aff4297b290c77255ec3bcc379dc34a9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 34946,
+      "sha256": "335aaad761a79c3a556edb5e2a9a84c388b347c5b00c694be6096dbe9cd07d93"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 43472,
+      "sha256": "c430cd9c7dbb42e9e3d7fafd7a665e281c566ebc103b936398077463dce4636b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 45962,
+      "sha256": "0b9d87d1d8845757f177b693ccf129a3d6586aa02b08290ca4f152b80a665836"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 32441,
+      "sha256": "e4c4556eee73b42a5a15bcefc2d882f103dcc9af6efe52d2045c8e7d94ab3d24"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 34931,
+      "sha256": "959da46607b1f0bd7ec0fac56dc29a9473814d17c53cb82ed0a6edb71bfd2dd6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 43459,
+      "sha256": "7a9b86a43205212e17e6082e1fd1cceeea3bcd738121f5ca48ef746087eb8968"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 45949,
+      "sha256": "b826f3079f9e17880677a20cb3bc0b9056684624cf2bfa43892af354430bc2b2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 336,
+      "sha256": "5f3a66c3579723072c6646125aa2c603e4c7f401f3c422de906434755866710b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/root-review-v1-error.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/root-review-v1-error.json",
+      "bytes": 398,
+      "sha256": "ee0b3e207af7565b4580011082df03452835c82b8f8a5d09577392e5e7576f62"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/root-review-v2-error.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/root-review-v2-error.json",
+      "bytes": 300,
+      "sha256": "85acafee7480a69d73c100265eec8cd6ce3e44c1706dea57881fb27a4e8c8751"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/root-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/root-review.json",
+      "bytes": 844,
+      "sha256": "6ab3e6e571eacc3d356c278c12089897519fa3c3167e6e3928abc50094171169"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-baseline-root-v1-20261019/source/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 898,
+      "sha256": "b21edd0b3316fbaeb89b6e19026e9b6721fe2decbc8e30059c8b6ed21eea4756"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/README.md",
+      "bytes": 3772,
+      "sha256": "3c17cff577b3dcd1d7bcfe6d2ab0f6a04603fdddb974f05adb4a5d5a7a9f228b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/SHA256SUMS",
+      "bytes": 577,
+      "sha256": "93b49cb2e88ffd8d4ebdfcd2c83f28619d93b88f2a2da561860b354f3fc78b4c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/collect_generated_matrix.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/collect_generated_matrix.py",
+      "bytes": 39805,
+      "sha256": "1a1b14124232a40ff527159e602a96c01b36e8d3a03a675c23b0f6d8c72b6cd5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/collector-adaptation.diff",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/collector-adaptation.diff",
+      "bytes": 1413,
+      "sha256": "81996c28ec9826fe538f1cfdb078eb4659bce49c52a75dea3983f8e8de362ce2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/driver/TestLoopConditionInvokeDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/driver/TestLoopConditionInvokeDriver.java",
+      "bytes": 3821,
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/pins.json",
+      "bytes": 10930,
+      "sha256": "ceeedf4a06ee3299b5447f97c1b8c7a7ee8afffe3d68406cbc72a096c3fab71a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/root-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/root-review.json",
+      "bytes": 322,
+      "sha256": "883befcdb5b4903c376d5e27434592815deb5251c743da384f56b3b6875eaf57"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/source/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-prep-luna-v5-20261019/source/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 898,
+      "sha256": "b21edd0b3316fbaeb89b6e19026e9b6721fe2decbc8e30059c8b6ed21eea4756"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-first-preflight-error-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-first-preflight-error-root-v1-20261019/execution.json",
+      "bytes": 810,
+      "sha256": "eedfbf1b60932c35633128f995a4e1ab4e07179ba2df4b7d3edb4afce2efeef2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/collector.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/collector.py",
+      "bytes": 39805,
+      "sha256": "1a1b14124232a40ff527159e602a96c01b36e8d3a03a675c23b0f6d8c72b6cd5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "bytes": 850,
+      "sha256": "accdfc9e798b5dde3d041ddd2b3c6b4ebc8cf0d78278bcccc0395807a541f9fe"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "bytes": 1297,
+      "sha256": "5c5709a4bbebf327d290794811e72fbab8984fdc7bd263dc297cd0e62a0a2574"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.class",
+      "bytes": 516,
+      "sha256": "88c2d415113b1b568d4ebf388af704d617931a90d3eef70059bee0665c87c2e5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/compiled/no-debug-bundle/javac23/classes/jadx/tests/integration/loops/TestLoopConditionInvoke.class",
+      "bytes": 1078,
+      "sha256": "08ece25eeb6d3840017f5a1ebf4cbd79fc243e1ed365e23b11555918ee6201db"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver$Case.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver$Case.class",
+      "bytes": 597,
+      "sha256": "a0b29f886c2e930105bba0143596796ef01cc89ef7767a3556d54d8560d70482"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/driver-classes/TestLoopConditionInvokeDriver.class",
+      "bytes": 5952,
+      "sha256": "0de8b8624663bd7c1e467716cae1eea49905da731b6851b583f3b9d0501ca9cf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/driver-source/TestLoopConditionInvokeDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/driver-source/TestLoopConditionInvokeDriver.java",
+      "bytes": 3821,
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/execution.json",
+      "bytes": 4501630,
+      "sha256": "b30c92057b7a366bfbd8e1bcbfb647a611efb7211c0f71068c014e730416b11d"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "bytes": 265,
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 220,
+      "sha256": "015f11674fb74bc89e4a8f39a91bc83fe6973df90da2fefe38c90dccf5062121"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 463,
+      "sha256": "08dd643a7d6ea56ea57932190f3df16db2f61acdea62922efaa5583735d2e04c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 216,
+      "sha256": "bb29f7717066c2d86c8252d5791ced2110f71cf0c118a425d4a5d18cbe4551ff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 459,
+      "sha256": "ab3d7ccb599d90830bc759724bc857681e9d5b7ffb9788d3c3321236e311d728"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 227,
+      "sha256": "23137599f36f4d1529a9d31ebaae0369992f2698686ce256b3b0f8b9da4cc87b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 470,
+      "sha256": "59afaf09bf7d0cd2ccf97ae9ff92c793d58e4637540d69a652957e8f96675cd8"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 223,
+      "sha256": "b319c5d779c5944f6e393ff9ac804a2fbf1d40a45d35b60a220356d8ba76b27c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 466,
+      "sha256": "4cd1df494674525b0b3172b7333627f063229748d4d533863038bbc941247f6e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 519,
+      "sha256": "d4efa85afea73a38efe953eefa235fb1280b54c9413e7ccca30255ba78331666"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 217,
+      "sha256": "8957f526754f1611b8cbadd6ab03f22df93e303c9ec346db62ca1ef27b6b8508"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/21.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/21.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/21.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/22.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/22.stderr.raw",
+      "bytes": 362,
+      "sha256": "f44205e439b018868f4eee29389ad0436e24b321293c5f7c86029190d6a24668"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/22.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/23.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/23.stderr.raw",
+      "bytes": 522,
+      "sha256": "1e961e407f3625c2944d3c4206256dcff0ab2819823c31ddca58d883a672ee8a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/23.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/23.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/24.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/24.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/24.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/25.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/25.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/25.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/26.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/26.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/26.stdout.raw",
+      "bytes": 420,
+      "sha256": "72ebbff9604eb7957da619dcfce4796f0fa2cf1fb221b41248e2b3b084179292"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/27.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/27.stderr.raw",
+      "bytes": 365,
+      "sha256": "9bff8902e4a15a3725e42a04a85becfbebeadca6accc63b3452b7c4a93ca62b5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/27.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/27.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 460,
+      "sha256": "b4cceff85e05610f3aa1c84a0a3894b1feec29efae2f70886c62b5e0e196b974"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 213,
+      "sha256": "3183ea5a355244de58c10407db4b07a8a67a584f531620907a418efc9107c405"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 456,
+      "sha256": "1028eef17b6e0047a61d699f03e07f3e975fbb0c67eebb05b1c765429103d898"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 224,
+      "sha256": "aafcc1e4c29610e7b8d5274e0b461c7fd805954fbaf6c6c5a27ee2ff02b515f1"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 467,
+      "sha256": "8a39e4fe9a052c23e4fffa086b53901e6d673a3f851da25fa067fd2bef9ee36e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 220,
+      "sha256": "3da1c03b683b828b7d589896768bdeacc9507af86143fbc4eda756358a8144ec"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 463,
+      "sha256": "cf6714f1d741ce9d847b1c90fca43a5612854b6282124b8f1a214feb9a175c6d"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/root-review-v1-error.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/root-review-v1-error.json",
+      "bytes": 314,
+      "sha256": "7856771c4b2eee272908a5a695b02cd956ff11b31ceca50dd6b7addb9ed45595"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/root-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/root-review.json",
+      "bytes": 980,
+      "sha256": "7b332383d63334cfa5fe215f10684dd519fb61a35a4002aaa34f5ac6cef4a4d1"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-bundle/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-bundle/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 1296,
+      "sha256": "6a6590c0818c1a435b476ec2147d6ecb401c9ec51de4b7a4ae4e68bdabdd5758"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-bundle-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-bundle-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-bundle-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-bundle-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/debug-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1757,
+      "sha256": "175488b4863892464f7a1611602afa6b15810caadb21096d4e3689c7fd5847e6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-bundle/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-bundle/jadx/tests/integration/loops/TestLoopConditionInvoke.java",
+      "bytes": 1282,
+      "sha256": "5120fdf17c37744e66e976eb04bc4cd2d8f4e3964e121453d4266bc7ef4271c6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-bundle-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-bundle-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-bundle-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-bundle-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-child-all/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-generated-root-v1-20261019/sources/no-debug-child-default/jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls.java",
+      "bytes": 1753,
+      "sha256": "f0c2fbc595a4ef8ce28098058ebc87cf7e16d15098b4da3a73db0a4e311a7aca"
+    },
+    {
+      "member": "evidence/jarde-local-assignment-diagnostic-luna-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-local-assignment-diagnostic-luna-v1-20261019/README.md",
+      "bytes": 1270,
+      "sha256": "12d62813197a7bb572908aa00b2c76b196a41abce3c7988fbd1284605959c7a4"
+    },
+    {
+      "member": "evidence/jarde-local-assignment-diagnostic-luna-v1-20261019/changes.patch",
+      "source": "/private/tmp/jarde-local-assignment-diagnostic-luna-v1-20261019/changes.patch",
+      "bytes": 1521,
+      "sha256": "0d66070322024bf64234dcafe2a556f1ff5fdfc27b44198a0c9f397fcf3f8c76"
+    },
+    {
+      "member": "evidence/jarde-local-assignment-diagnostic-luna-v1-20261019/crates/jarde-java/src/build.rs",
+      "source": "/private/tmp/jarde-local-assignment-diagnostic-luna-v1-20261019/crates/jarde-java/src/build.rs",
+      "bytes": 2025233,
+      "sha256": "e43c8dc5847e246a9284eea60d6752d3f6258208c16d732641a0f46458021b11"
+    },
+    {
+      "member": "evidence/jarde-local-assignment-diagnostic-luna-v2-20261019/README.md",
+      "source": "/private/tmp/jarde-local-assignment-diagnostic-luna-v2-20261019/README.md",
+      "bytes": 1160,
+      "sha256": "9320bd0dc4af0dff6409c40ca8ebdc36143a913d674503227043a06a212760fb"
+    },
+    {
+      "member": "evidence/jarde-local-assignment-diagnostic-luna-v2-20261019/changes.patch",
+      "source": "/private/tmp/jarde-local-assignment-diagnostic-luna-v2-20261019/changes.patch",
+      "bytes": 2406,
+      "sha256": "5c84536e82089ff2f31ac4a1092b81a638df9bf348527cfb4cd545dcda378b86"
+    },
+    {
+      "member": "evidence/jarde-local-assignment-diagnostic-luna-v2-20261019/crates/jarde-java/src/build.rs",
+      "source": "/private/tmp/jarde-local-assignment-diagnostic-luna-v2-20261019/crates/jarde-java/src/build.rs",
+      "bytes": 2025743,
+      "sha256": "7fc796dc0078dcf30b60b3e5bf731579dec3d1e10c285de5ff9624778fc02f1e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-prep-root-v1-20261019/commands.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-prep-root-v1-20261019/commands.json",
+      "bytes": 110,
+      "sha256": "82914b2ef53c177a11464f708440d5a331427a001b95ae7861b9be4d4c3a8423"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-prep-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-prep-root-v1-20261019/execution.json",
+      "bytes": 908,
+      "sha256": "e1960de8a3d88c3a2297689f9d804dec76d6f930233fe1d3462696d9db109fde"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-prep-root-v1-20261019/original-build.rs",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-prep-root-v1-20261019/original-build.rs",
+      "bytes": 2024019,
+      "sha256": "d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-prep-root-v2-20261019/commands.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-prep-root-v2-20261019/commands.json",
+      "bytes": 110,
+      "sha256": "82914b2ef53c177a11464f708440d5a331427a001b95ae7861b9be4d4c3a8423"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-prep-root-v2-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-prep-root-v2-20261019/execution.json",
+      "bytes": 902,
+      "sha256": "8fb0d8779bb9c60317d1623a684d999531a8cbe99ec4f62980749096096851e1"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-prep-root-v2-20261019/original-build.rs",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-prep-root-v2-20261019/original-build.rs",
+      "bytes": 2024019,
+      "sha256": "d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/execution.json",
+      "bytes": 1558834,
+      "sha256": "40621f3e1ffa50d398a4c510b9dc424191c81c8ae5b1797b1ce65661ed59a1fb"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 2053,
+      "sha256": "d9c47f147d838634646064f63743c38df4a62e12d3995ea399286f496fc0b895"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "7a70fcfdc0fad2e1c4048448d3cf1d25ae86e500a3a8e08a7d4085efd7bdff70"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/execution.json",
+      "bytes": 1558833,
+      "sha256": "90d82b89c9fd893591c441fbc74b851db84d10c6e8e366ff5f99ae713bf1bdcc"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/1.stderr.raw",
+      "bytes": 2053,
+      "sha256": "362647da64e9a4d9018621fd7c1ef47696df9765bfd72a7e48acaf8e201c14ee"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/2.stderr.raw",
+      "bytes": 39,
+      "sha256": "7a70fcfdc0fad2e1c4048448d3cf1d25ae86e500a3a8e08a7d4085efd7bdff70"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-build-root-v2-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/1.stderr.raw",
+      "bytes": 6158,
+      "sha256": "2eade397f5d618a8791b77fc909c6cfae34881f6dcefb262d084a438deead247"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/1.stdout.raw",
+      "bytes": 34951,
+      "sha256": "107a91d947eb31ac67dde706c5caddbec758ab4acb99ac5277d803e857e55692"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/2.stderr.raw",
+      "bytes": 6160,
+      "sha256": "dbde9dadf71ba931610ef6134bffc7cd522d6f871cae8de1ce7f310719531a02"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/2.stdout.raw",
+      "bytes": 34931,
+      "sha256": "5358c4beafd0abfc45568190312f50d6d84503034585de240290ed17f9f8be07"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/execution.json",
+      "bytes": 2090954,
+      "sha256": "526c083e7cd1604196599bdba4522a94336bf6396fd94f89ab636cc4db1df372"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/root-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v1-20261019/root-review.json",
+      "bytes": 596,
+      "sha256": "5d0f2814dd2ed84650058554b1f37d80a21aeace8ad7ab4b5bd5d9e88bf26b1c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/1.stderr.raw",
+      "bytes": 6548,
+      "sha256": "9293e54f7656a66cd889b434892f0d28f0a9c5b8c72aa329006fb4bed0125265"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/1.stdout.raw",
+      "bytes": 34951,
+      "sha256": "44d71594db20269c8f59adf4d569538763319b6d7048f878c8ece79aa95f39d7"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/2.stderr.raw",
+      "bytes": 6550,
+      "sha256": "6053f623ec6b47c214a90c553fbf090a96764332db5968e06a4232cd8a45682a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/2.stdout.raw",
+      "bytes": 34931,
+      "sha256": "245f74f55b66e7606ba5c0901411c2b2552361624cb3f31c5f308072f688e375"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/execution.json",
+      "bytes": 2091014,
+      "sha256": "2ac27a71d8570c45c323e50fe748729f428c1c34ae1c641cf50ae5396d016b29"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/root-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-diagnostic-api-root-v2-20261019/root-review.json",
+      "bytes": 713,
+      "sha256": "8386eeaca75bfeb79215effda75dc09ee517482cd4d9c10579ede312ee98b54a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v1-20261019/README.md",
+      "bytes": 9183,
+      "sha256": "f826afe466e29b4d23a3032135fa655649feece998c90c452aa5edca86cd5ed9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v1-20261019/source-pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v1-20261019/source-pins.json",
+      "bytes": 2585,
+      "sha256": "be7f56432f3b970ebbda9acfe71c6e9d3c8d57dca7b8a30bdbe806c0a143a2a5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v2-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v2-20261019/README.md",
+      "bytes": 6335,
+      "sha256": "88e577b34bc4370a227467446936313e49d387fe73e629c54cfd2b796f68ae1a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v2-20261019/artifact-pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v2-20261019/artifact-pins.json",
+      "bytes": 698,
+      "sha256": "887855089aae7c476e60ef42b12e492ba6e4d4bebb881964ae0d7fb1d7bcf9a9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v2-20261019/baseline-evidence.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v2-20261019/baseline-evidence.json",
+      "bytes": 18091,
+      "sha256": "ce25f3c09231545f68b079f84e32b76970eb13f70be53fe9b4918c8d964a57cf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v2-20261019/source-pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v2-20261019/source-pins.json",
+      "bytes": 9049,
+      "sha256": "7313f3ac336b62ff34278a45997800520078cfddd0e3f1f0ac2dee12c1566a2b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v3-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v3-20261019/README.md",
+      "bytes": 4580,
+      "sha256": "95d693dc6a24a6a15c2a131ffc646ccf59fbe898d6c5a4dea496a08b7e5cf658"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-architecture-luna-v3-20261019/source-pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-architecture-luna-v3-20261019/source-pins.json",
+      "bytes": 905,
+      "sha256": "f16452f00c11e82f96726ce3da13de787cbd96d981e4dc4e10fea8d3a5f24acf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-root-architecture-review-v1-20261019/review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-root-architecture-review-v1-20261019/review.json",
+      "bytes": 1798,
+      "sha256": "8debd2807b4609f6d24836e88748bd3dac6344bc4fc008c552686fb6dbf67ef9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/README.md",
+      "bytes": 1384,
+      "sha256": "7ddf93772e0b02e0de24d39e77fc0a091ff59d2b9945408129f7010d03bc06a6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/design.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/design.md",
+      "bytes": 3637,
+      "sha256": "fbbd570d8aa481f0fe412964a2aa6a2c9fc8aab4d80b0486e26b49bb0a6dfa81"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/proposal.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/proposal.md",
+      "bytes": 1303,
+      "sha256": "b37e98655d8662549030b39ff6c5b988257f7b673fcd6e745bf8f57fa811ffa5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/source-pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/source-pins.json",
+      "bytes": 4806,
+      "sha256": "702be0ad58dca9f1e246adaee58177217eba9ffcf3be7a8210cea8ca9208ad04"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/tests.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-design-prep-luna-v1-20261019/tests.md",
+      "bytes": 5130,
+      "sha256": "44e9ffa873f8878a6cb5b0390b0ce9dde57d576431fcad96148235cfd5b7ff07"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/README.md",
+      "bytes": 3452,
+      "sha256": "0865dda7397e8e13cd16d9648014b6bd7b8a17ac8485b425d0c5c615de884b01"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/SHA256SUMS",
+      "bytes": 637,
+      "sha256": "7666d52f1fca9a463375d796781f4772a4e1a4a69f41fd61a02fdd8924e9d18c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/controls-sources.patch",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/controls-sources.patch",
+      "bytes": 6548,
+      "sha256": "5cdb3137d85476180672f10a39de18da1bc76baf9a0196ecc2cc9059ae1794dd"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/controls.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/controls.json",
+      "bytes": 5812,
+      "sha256": "6377a09d1f4393cd091efaeea34a8ebbef33ab3f7c9dc6f3752ff0b8df162705"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "bytes": 4423,
+      "sha256": "0d4c0f14db715126ac593b65f541f8c728f41e96f4f631dcacc210ab72f92cc9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/pins.json",
+      "bytes": 1094,
+      "sha256": "fdfec02dad88c68b92de21e4dcccd310994d59b2379feb015e459317c1e4ce59"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/source/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/source/controls/LoopConditionInvokeControl.java",
+      "bytes": 1802,
+      "sha256": "eebb3cfb5b289194cea8744811ee4f2d9d5d6f320091d2f8f28bcde7c02b3e06"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v1-20261019/verify_control_stdout.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v1-20261019/verify_control_stdout.py",
+      "bytes": 1014,
+      "sha256": "7be29df327b59b8dd3d0de4040795623e64005716fa2dc7f9d7f51d4e5c18b46"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/README.md",
+      "bytes": 3198,
+      "sha256": "52ee61c5d9548eca63dd631ec5e095d61cab9791d6370301eb5d30785e752def"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/SHA256SUMS",
+      "bytes": 642,
+      "sha256": "3e45736dc235db49ed77c7c12ead867e227270717fdb6185e7f532d0db6afff6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/controls-sources-v1-v2.diff",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/controls-sources-v1-v2.diff",
+      "bytes": 6171,
+      "sha256": "60d5ee5ee8434d220ff6cd8effa57c16a19e63c94bc226e90f9c8723ca36cb68"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/controls-sources.patch",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/controls-sources.patch",
+      "bytes": 6548,
+      "sha256": "5cdb3137d85476180672f10a39de18da1bc76baf9a0196ecc2cc9059ae1794dd"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/controls.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/controls.json",
+      "bytes": 6505,
+      "sha256": "c0280ff11eff365fb7b53caa85dfb450f37b15ebf2c009ecd6fde18730f2c8bf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "bytes": 4381,
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/pins.json",
+      "bytes": 2127,
+      "sha256": "80a4cb1e7433a58898b7da0ff581a7fc14c2a36002e2b832cca19ff9e5e089d9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/source/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/source/controls/LoopConditionInvokeControl.java",
+      "bytes": 1026,
+      "sha256": "9bb63f647c8a5bd519a8b9f99bb75db42a62637012034e055446faa6be6d362e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-luna-v2-20261019/verify_control_stdout.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-luna-v2-20261019/verify_control_stdout.py",
+      "bytes": 985,
+      "sha256": "ab8aadb0f8320a9fa2b1f567babf235f8962c2080bae2b036eea2726dcb4a392"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/README.md",
+      "bytes": 2298,
+      "sha256": "73cda09ec044de823ecebfd9eb2ebe5f0c49b5febb3ac490e07dd90109a05c3d"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/SHA256SUMS",
+      "bytes": 737,
+      "sha256": "0a57f32722ffa380900f0105e832fddf9bef9542e8524d6199b551e494b15466"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/collect_controls_baseline.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/collect_controls_baseline.py",
+      "bytes": 23917,
+      "sha256": "45268b2a424a5b2380f86d8e662f3165a34f88632df53a8b91bc5be4df6229c8"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/controls-sources-v1-v2.diff",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/controls-sources-v1-v2.diff",
+      "bytes": 6171,
+      "sha256": "60d5ee5ee8434d220ff6cd8effa57c16a19e63c94bc226e90f9c8723ca36cb68"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/controls.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/controls.json",
+      "bytes": 6505,
+      "sha256": "c0280ff11eff365fb7b53caa85dfb450f37b15ebf2c009ecd6fde18730f2c8bf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "bytes": 4381,
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/pins.json",
+      "bytes": 6203,
+      "sha256": "f4f0108a71cfd7e115a4228771fbe45a374f37da883c174dfbb17f99e053f102"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/source/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/source/controls/LoopConditionInvokeControl.java",
+      "bytes": 1026,
+      "sha256": "9bb63f647c8a5bd519a8b9f99bb75db42a62637012034e055446faa6be6d362e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/verify_control_stdout.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-luna-v1-20261019/verify_control_stdout.py",
+      "bytes": 985,
+      "sha256": "ab8aadb0f8320a9fa2b1f567babf235f8962c2080bae2b036eea2726dcb4a392"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/README.md",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/README.md",
+      "bytes": 2298,
+      "sha256": "73cda09ec044de823ecebfd9eb2ebe5f0c49b5febb3ac490e07dd90109a05c3d"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/SHA256SUMS",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/SHA256SUMS",
+      "bytes": 737,
+      "sha256": "0a57f32722ffa380900f0105e832fddf9bef9542e8524d6199b551e494b15466"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/collect_controls_baseline.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/collect_controls_baseline.py",
+      "bytes": 23976,
+      "sha256": "698c9aee12c1cc0db964b8a3712c7e6ace2a49fdb295cbaf8ecc5abbbf5cb990"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/controls-sources-v1-v2.diff",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/controls-sources-v1-v2.diff",
+      "bytes": 6171,
+      "sha256": "60d5ee5ee8434d220ff6cd8effa57c16a19e63c94bc226e90f9c8723ca36cb68"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/controls.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/controls.json",
+      "bytes": 6505,
+      "sha256": "c0280ff11eff365fb7b53caa85dfb450f37b15ebf2c009ecd6fde18730f2c8bf"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "bytes": 4381,
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/pins.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/pins.json",
+      "bytes": 6203,
+      "sha256": "f4f0108a71cfd7e115a4228771fbe45a374f37da883c174dfbb17f99e053f102"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/root-copy-pin-correction.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/root-copy-pin-correction.json",
+      "bytes": 1838,
+      "sha256": "3c8555a15ae0a268f0b30e96ea169f34a9396b2dcae575b4012e39b499283745"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/source/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/source/controls/LoopConditionInvokeControl.java",
+      "bytes": 1026,
+      "sha256": "9bb63f647c8a5bd519a8b9f99bb75db42a62637012034e055446faa6be6d362e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/verify_control_stdout.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-prep-root-v2-20261019/verify_control_stdout.py",
+      "bytes": 985,
+      "sha256": "ab8aadb0f8320a9fa2b1f567babf235f8962c2080bae2b036eea2726dcb4a392"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac23-debug.jar",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac23-debug.jar",
+      "bytes": 1312,
+      "sha256": "62a94390e083ecfc0d4edffb08fc6d76f2b02f6bc2dc876436554278527305e9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac23-no-debug.jar",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac23-no-debug.jar",
+      "bytes": 838,
+      "sha256": "3994e45787147d08f00b7fe6a0f9dabb37e94f6de0ab77aaea14d077e7bd5f9e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac8-debug.jar",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac8-debug.jar",
+      "bytes": 1312,
+      "sha256": "7f596162f533274434d78e7cec5142dcbecc58d84ff240bf0f3bf20f48980b5e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac8-no-debug.jar",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/bundles/javac8-no-debug.jar",
+      "bytes": 838,
+      "sha256": "5938ac16f4b7a661f6f60edd43eefe1939f72e3b88ae6e8a5ad4cdd936a072ae"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/collector.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/collector.py",
+      "bytes": 23976,
+      "sha256": "698c9aee12c1cc0db964b8a3712c7e6ace2a49fdb295cbaf8ecc5abbbf5cb990"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "bytes": 4381,
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/driver-classes/LoopConditionInvokeControlDriver$Case.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/driver-classes/LoopConditionInvokeControlDriver$Case.class",
+      "bytes": 662,
+      "sha256": "0f749950741ff68f6cf3d3f02ca30c64d6396d6a64ba487fbe80c5f233699ada"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/driver-classes/LoopConditionInvokeControlDriver.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/driver-classes/LoopConditionInvokeControlDriver.class",
+      "bytes": 6160,
+      "sha256": "2bdaca5ed46ae466db2c0e1742d2e772bebd44442e8f56574db0b8a3fe48c2c2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/execution.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/execution.json",
+      "bytes": 4136940,
+      "sha256": "dc4d8322f24eb7a3f536c4da6d61a2c4f9e95aca92a1551d7a6a17e66eeeec0b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jadx/debug/sources/sources/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jadx/debug/sources/sources/controls/LoopConditionInvokeControl.java",
+      "bytes": 1127,
+      "sha256": "5616d65c75aa81e8111bb00a400833fe678b3dd60b02fc334b9828749fc5663b"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jadx/no-debug/sources/sources/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jadx/no-debug/sources/sources/controls/LoopConditionInvokeControl.java",
+      "bytes": 1073,
+      "sha256": "7decf61a9e3a0c6032796b93b591abbff6cf30a1bc3ab2259161371e69c4b565"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/all/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/all/class-source.json",
+      "bytes": 75974,
+      "sha256": "ae7c307305db4b87a60593fd28b8f3cc6083923da5fe2949d4eed2af8bd05247"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/all/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/all/whole-class.java",
+      "bytes": 2741,
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/default/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/default/class-source.json",
+      "bytes": 70462,
+      "sha256": "e9c943413203681d75e8555ef7528490a7d799e5fba0de2f43711f017d95f9ec"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/default/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-debug/default/whole-class.java",
+      "bytes": 2741,
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/all/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/all/class-source.json",
+      "bytes": 75786,
+      "sha256": "40ee9f145ffa7227d30c90e40800534e2bad980fad3627cb900f1edd56e68fe9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/all/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/all/whole-class.java",
+      "bytes": 2724,
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/default/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/default/class-source.json",
+      "bytes": 70274,
+      "sha256": "10f8f2377d59caab9116e7146e1ea246b7bd0620bbd0b4bc571d93f10f79a722"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/default/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac23-no-debug/default/whole-class.java",
+      "bytes": 2724,
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/all/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/all/class-source.json",
+      "bytes": 75974,
+      "sha256": "e110d0f974ab0c3eba93a9d7c1f0268204f27bc37e1d9b2787cec307f4ae1d8a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/all/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/all/whole-class.java",
+      "bytes": 2741,
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/default/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/default/class-source.json",
+      "bytes": 70471,
+      "sha256": "45f15a66f436c4c901495f01f5c54ec234cd1b1e29ff6dda6e8ac51ddc8a7f9e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/default/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-debug/default/whole-class.java",
+      "bytes": 2741,
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/all/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/all/class-source.json",
+      "bytes": 75786,
+      "sha256": "75799aecd7e0235bb16abcef6b6153388674e29d1405fe3dcfe855084b0c5f73"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/all/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/all/whole-class.java",
+      "bytes": 2724,
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/default/class-source.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/default/class-source.json",
+      "bytes": 70274,
+      "sha256": "98dfa93cca651384d32bddbbc90c36f51630f0c2f0e3ff696b1bce3bc1bb42f2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/default/whole-class.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde/javac8-no-debug/default/whole-class.java",
+      "bytes": 2724,
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "bytes": 265,
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac23-debug/classes/controls/LoopConditionInvokeControl.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac23-debug/classes/controls/LoopConditionInvokeControl.class",
+      "bytes": 1132,
+      "sha256": "a2c37132b527b9d10c5f0f9817eb8bb954fc98e157444627beb7f5fcf8114ac6"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac23-no-debug/classes/controls/LoopConditionInvokeControl.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac23-no-debug/classes/controls/LoopConditionInvokeControl.class",
+      "bytes": 658,
+      "sha256": "f5e135df7c8413b120b6e6e1beae7bdd13a547d6d5a5a5f79339437248c282f1"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac8-debug/classes/controls/LoopConditionInvokeControl.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac8-debug/classes/controls/LoopConditionInvokeControl.class",
+      "bytes": 1132,
+      "sha256": "99ed3bc44d585f744e38f331605c7f789da01d017803d843820b0901cbeaf93f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac8-no-debug/classes/controls/LoopConditionInvokeControl.class",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/original/javac8-no-debug/classes/controls/LoopConditionInvokeControl.class",
+      "bytes": 658,
+      "sha256": "28d04e2d4bf58faaf4d45f58b0939e7d32603e0ecdd889dfd9d0ce455c41971f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/10.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/11.stderr.raw",
+      "bytes": 379,
+      "sha256": "71ce260530667e1ae9f929d3193bc6f015ae4d068d176aeafffc2d1314718385"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/12.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/13.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/14.stderr.raw",
+      "bytes": 377,
+      "sha256": "305595cc20a72d1f34c8099cb612509efcb1b1758c0d28820b78f22576e8fe84"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/15.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/16.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/17.stderr.raw",
+      "bytes": 380,
+      "sha256": "1ed73a474ca4036b64a5294edc2992ac3e9c83a42188520939a6cc43d4c0e96d"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/18.stdout.raw",
+      "bytes": 70471,
+      "sha256": "45f15a66f436c4c901495f01f5c54ec234cd1b1e29ff6dda6e8ac51ddc8a7f9e"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/19.stdout.raw",
+      "bytes": 75974,
+      "sha256": "e110d0f974ab0c3eba93a9d7c1f0268204f27bc37e1d9b2787cec307f4ae1d8a"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/20.stdout.raw",
+      "bytes": 70274,
+      "sha256": "98dfa93cca651384d32bddbbc90c36f51630f0c2f0e3ff696b1bce3bc1bb42f2"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/21.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/21.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/21.stdout.raw",
+      "bytes": 75786,
+      "sha256": "75799aecd7e0235bb16abcef6b6153388674e29d1405fe3dcfe855084b0c5f73"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/22.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/22.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/22.stdout.raw",
+      "bytes": 70462,
+      "sha256": "e9c943413203681d75e8555ef7528490a7d799e5fba0de2f43711f017d95f9ec"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/23.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/23.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/23.stdout.raw",
+      "bytes": 75974,
+      "sha256": "ae7c307305db4b87a60593fd28b8f3cc6083923da5fe2949d4eed2af8bd05247"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/24.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/24.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/24.stdout.raw",
+      "bytes": 70274,
+      "sha256": "10f8f2377d59caab9116e7146e1ea246b7bd0620bbd0b4bc571d93f10f79a722"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/25.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/25.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/25.stdout.raw",
+      "bytes": 75786,
+      "sha256": "40ee9f145ffa7227d30c90e40800534e2bad980fad3627cb900f1edd56e68fe9"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/26.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/26.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/26.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/27.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/27.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/27.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/28.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/28.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/28.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/4.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/5.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/6.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/7.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/8.stderr.raw",
+      "bytes": 376,
+      "sha256": "3ac1525781da91eaf28c75d78259530c16c065485b57ab8644ccaba5a54e407d"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/raw/9.stdout.raw",
+      "bytes": 749,
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/root-review.json",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/root-review.json",
+      "bytes": 838,
+      "sha256": "6b0c6fe9a96a6722ad95e447b0acb2f538ccec619999d45684a1de94b06f6a89"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/source/controls/LoopConditionInvokeControl.java",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019/source/controls/LoopConditionInvokeControl.java",
+      "bytes": 1026,
+      "sha256": "9bb63f647c8a5bd519a8b9f99bb75db42a62637012034e055446faa6be6d362e"
+    },
+    {
+      "member": "evidence/jarde-seq2-baseline-prep-root-v4-20261018/classfile_helpers.py",
+      "source": "/private/tmp/jarde-seq2-baseline-prep-root-v4-20261018/classfile_helpers.py",
+      "bytes": 54227,
+      "sha256": "c9f064d714decd49f028e403709307106547aa2acc7462ed703aeaaf158766cd"
+    },
+    {
+      "member": "evidence/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "source": "/private/tmp/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "bytes": 265,
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019.stdout.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019.stdout.raw",
+      "bytes": 133,
+      "sha256": "711319577e1a0788fa70f205403790b13182452b648a123ffc076f3d61351bf7"
+    },
+    {
+      "member": "evidence/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019.stderr.raw",
+      "source": "/private/tmp/jarde-loop-condition-invoke-controls-baseline-root-v1-20261019.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Actual complete primary and original control baselines, diagnosis and static preparations; control generated-source compilation not yet run; no feature implementation accepted",
+  "exclusions": [
+    "candidate-cli",
+    "__pycache__",
+    ".pyc"
+  ],
+  "time": "2026-10-18T19:13:58.930598+00:00"
+}

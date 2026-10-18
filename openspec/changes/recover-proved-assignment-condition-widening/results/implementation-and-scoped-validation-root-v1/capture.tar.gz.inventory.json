@@ -1,0 +1,1317 @@
+{
+  "excluded_components": [
+    ".cache",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "__pycache__",
+    "candidate-cli",
+    "node_modules",
+    "target"
+  ],
+  "member_count": 254,
+  "members": [
+    {
+      "bytes": 2560,
+      "path": "jarde-assignment-condition-widening-broad-prep-root-v1-20261019/commands.json",
+      "sha256": "ed0721f893b3af220667f330422850aa363aad98ba81543e074f2fa8fdf97734"
+    },
+    {
+      "bytes": 311,
+      "path": "jarde-assignment-condition-widening-broad-resume-prep-root-v1-20261019/commands.json",
+      "sha256": "3fd377a74aa5291b1370998466015f663e2ce3a47ab4da75aa2d70b3872f1f85"
+    },
+    {
+      "bytes": 1568059,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/execution.json",
+      "sha256": "ea498630c67e17e672bc5789d3322ca44245f6cbc29106b85c1c4993b12737a1"
+    },
+    {
+      "bytes": 2795,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/raw/1.stderr.raw",
+      "sha256": "aa37b30018e5c92394c45e5f8d8423f6d148b0a8362e91a097ed721b49caf4aa"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2053,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/raw/2.stderr.raw",
+      "sha256": "1cee8d2b82d3df1527b5da14d1c9af73e6f2d01884bbf1672bd49e62ed64d987"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/raw/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 40,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/raw/3.stderr.raw",
+      "sha256": "7f632c6d7035ea6a711df0dc066227e502e32f2e59873c931d7ccbd3bbe11b27"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/raw/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1566,
+      "path": "jarde-assignment-condition-widening-broad-resume-root-v1-20261019/root-review.json",
+      "sha256": "bb3917eb3236f9c593b315be2a71459ff9f8fd2ea5be1e15b8980f4481a48b6d"
+    },
+    {
+      "bytes": 1655340,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/execution.json",
+      "sha256": "2735b88ea74de5071247357202d8022186926ec7ffaf0966eb7b6d48d91efea7"
+    },
+    {
+      "bytes": 1459,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/1.stderr.raw",
+      "sha256": "c0bd115986eecfe4e56b36d314749ba8bc6c490f1146853d8b1af3723f419e78"
+    },
+    {
+      "bytes": 49496,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/1.stdout.raw",
+      "sha256": "3f3d29c892ee190f79d0d8f2ba749676fc01ae7df0d1ecedb26ceb278ae635c3"
+    },
+    {
+      "bytes": 40,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/10.stderr.raw",
+      "sha256": "184c1706a8a2279668ddcfd12c5e2c831266901e146ab9954d62155baad613e3"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/10.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1539,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/2.stderr.raw",
+      "sha256": "8118fb2bbedd19a85a34a82df64e3b8b0a6f142c9483ceed027f0b2121cda071"
+    },
+    {
+      "bytes": 634,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/2.stdout.raw",
+      "sha256": "5a03376dc8165283fb9e389ab844fe31b253ad16180405470f8413e6cb947870"
+    },
+    {
+      "bytes": 251,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/3.stderr.raw",
+      "sha256": "0cef624121eb1450e9a1de208edc61fb86625ccf40925244da8567e8979ca90e"
+    },
+    {
+      "bytes": 500,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/3.stdout.raw",
+      "sha256": "e4abae0ceb5ba4937801e9c1ca8eca58946830c9ab70dccd8b0bcec98b5eacf0"
+    },
+    {
+      "bytes": 217,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/4.stderr.raw",
+      "sha256": "f8a12edce306a571d8220bfd57eea151c28ae92d79a4a5ffa19567ad4ad8e558"
+    },
+    {
+      "bytes": 1046,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/4.stdout.raw",
+      "sha256": "6997e7cb888facd279001656b5a99642e1b1d9e1d25f4f8955346cbcfe0ccc60"
+    },
+    {
+      "bytes": 239,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/5.stderr.raw",
+      "sha256": "7f1231f2458b4fb4b30ae949314ab5dda3d34ab61c9a72abdad22041616b8f26"
+    },
+    {
+      "bytes": 582,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/5.stdout.raw",
+      "sha256": "ce3234c9524ae5565b5185c96072459e35e92c62700f5e850a52f0213b1173a2"
+    },
+    {
+      "bytes": 251,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/6.stderr.raw",
+      "sha256": "39883c7ad1ce7ca0cba5ce1385ad2239726dfd479a51f06ae74e9f7360d302bc"
+    },
+    {
+      "bytes": 271,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/6.stdout.raw",
+      "sha256": "0f06c9454c423307e1ca3b21bbb3570b49fe12fe1635477bb73f0b342d132142"
+    },
+    {
+      "bytes": 273,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/7.stderr.raw",
+      "sha256": "7957fb1c1bd080f9193f4438405e3a60eb022a4b4f67590510b1603a392b253c"
+    },
+    {
+      "bytes": 916,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/7.stdout.raw",
+      "sha256": "978af95f71d35f128984b7330870df1b27def9e907bccafc0fa60e58389ad3c6"
+    },
+    {
+      "bytes": 2585,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/8.stderr.raw",
+      "sha256": "0fbae662f88e9c58d56599abe5fb33732b6d9c13c958df5e1480db362079afd9"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/8.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 107,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/9.stderr.raw",
+      "sha256": "feed1ec375a6f712471b3f280a6034d6fd1e7b429bfe4838364992ea9dbc41dc"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-broad-root-v1-20261019/raw/9.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1580,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/README.md",
+      "sha256": "af62bf7217f60938cc8f412a39f521a9de49f3afaa45dd6d1ffd00b4787a3227"
+    },
+    {
+      "bytes": 2851,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/acceptance-argv.json",
+      "sha256": "734882480a62cb2b6a017c5752a207524b76110bd023fa960df488cb401371ab"
+    },
+    {
+      "bytes": 4105,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/bind_product_one.py",
+      "sha256": "59ef3f1b42e713ca334e8ae9dc1e87ccdf4aef829e3a2c0a041d722463bbdcc0"
+    },
+    {
+      "bytes": 2919,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/collect-official-logs.py",
+      "sha256": "bac090012d44c220d24cef2aa350aed966deeb532d0b8e3ab167b32704347142"
+    },
+    {
+      "bytes": 12520,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/collect-own-ci.py",
+      "sha256": "caa35ffd66bb87d0a90da87e1350077de801ca3d318f722bf5fe56ee8e1e1cbe"
+    },
+    {
+      "bytes": 4811,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/collect-own-ci.py.diff",
+      "sha256": "bcf686887e9649ebd7c06cec79379adc7c4cc9b658150d44db9d7220382ab66a"
+    },
+    {
+      "bytes": 3152,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/inheritance-comparison.json",
+      "sha256": "2440c501cf99d943168d6835b228f1bbc8f22639bfca416e80582fb402c27df0"
+    },
+    {
+      "bytes": 1745,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/pins.json",
+      "sha256": "d16a5db175f7407876053793105b46a0b26bc0ac66a58c26e62f2fa8d722389b"
+    },
+    {
+      "bytes": 5430,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/verify-native.py",
+      "sha256": "b1af89f736aba503b5c2763df38345a654f94a0f34adfcb5b18caa9ddaec6d02"
+    },
+    {
+      "bytes": 1459,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/verify-native.py.diff",
+      "sha256": "f83e3fb62445cb066ae7b9e57a5607461e148223881d42802df6e4890ba2706d"
+    },
+    {
+      "bytes": 46162,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/verify-own-ci.py",
+      "sha256": "2dc933b3b2aa530eed7057509b5bebc07799908d3b4a46c84f1fdab2a99ae824"
+    },
+    {
+      "bytes": 8330,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/verify-own-ci.py.diff",
+      "sha256": "1a13db79a6b15b8622247cb6de2c3c2f1945f543b53ff67483bf87a47d9048f7"
+    },
+    {
+      "bytes": 30181,
+      "path": "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019/verify_workspace.py",
+      "sha256": "8321198c09133aad60d8591b1d3e8f4c849420c4b3a37c1bc4c4aa12129d9830"
+    },
+    {
+      "bytes": 7772,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/bound-manifest.json",
+      "sha256": "07d1e1c9f6d231844aa43178303c64ecf524b3f7a5881f03cb361ec612d4e38b"
+    },
+    {
+      "bytes": 23976,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_baseline/collect_controls_baseline.py",
+      "sha256": "af719522a85548068168f71549122eae463c7a86b4cf51294b01a83fb2eabe25"
+    },
+    {
+      "bytes": 6505,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_baseline/controls.json",
+      "sha256": "c0280ff11eff365fb7b53caa85dfb450f37b15ebf2c009ecd6fde18730f2c8bf"
+    },
+    {
+      "bytes": 4381,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_baseline/driver/LoopConditionInvokeControlDriver.java",
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "bytes": 1026,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_baseline/source/controls/LoopConditionInvokeControl.java",
+      "sha256": "9bb63f647c8a5bd519a8b9f99bb75db42a62637012034e055446faa6be6d362e"
+    },
+    {
+      "bytes": 4381,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_generated/LoopConditionInvokeControlDriver.java",
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "bytes": 36886,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_generated/collect_controls_generated.py",
+      "sha256": "f188e330c40c39814f8fafb710d10d0b0de4dad9484f34afa132f4a4500427d7"
+    },
+    {
+      "bytes": 6505,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/controls_generated/controls.json",
+      "sha256": "c0280ff11eff365fb7b53caa85dfb450f37b15ebf2c009ecd6fde18730f2c8bf"
+    },
+    {
+      "bytes": 37104,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/primary_baseline/collect_baseline.py",
+      "sha256": "74f30a7b9d66812544d1092ec59ac6026326ad6a78ea7bef875725395c97b556"
+    },
+    {
+      "bytes": 3821,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/primary_baseline/driver/TestLoopConditionInvokeDriver.java",
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f"
+    },
+    {
+      "bytes": 39805,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/primary_generated/collect_generated_matrix.py",
+      "sha256": "7143b858c043e8ee8b42e1852e755d85b6c9c67c1db1d36e4d31d3c1b43cfa03"
+    },
+    {
+      "bytes": 3821,
+      "path": "jarde-assignment-condition-widening-final-collectors-root-v1-20261019/primary_generated/driver/TestLoopConditionInvokeDriver.java",
+      "sha256": "3e75df6a662f0b04ff6a8c55a40491c72f4bba3013b85ca6b7c268a00b82722f"
+    },
+    {
+      "bytes": 3626,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v1-20261019/README.md",
+      "sha256": "7e6cc7071dcf990f31c81a9f15aaa92cbf77c59cfc2eeadab2ff6ad2b852b068"
+    },
+    {
+      "bytes": 9194,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v1-20261019/bind_final_collectors.py",
+      "sha256": "e4016a4243072cfb7fa66104244ae0be09f81635b84fa5f252d9ec5fe0bd6bd5"
+    },
+    {
+      "bytes": 2505,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v1-20261019/pins.json",
+      "sha256": "7370d932c913be5c747eec42b91feb8952a92df6eba216b0fa9b36aba4f1510d"
+    },
+    {
+      "bytes": 20892,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v1-20261019/review_final_api.py",
+      "sha256": "ef689a45b5412a97b618e04e894f1080b55da4c25ce8366c3dda41646b376b61"
+    },
+    {
+      "bytes": 2905,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v2-20261019/README.md",
+      "sha256": "2a916f395615ce462db269ac4749b415727716a905ea3404aab1da32ca04b968"
+    },
+    {
+      "bytes": 9194,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v2-20261019/bind_final_collectors.py",
+      "sha256": "e4016a4243072cfb7fa66104244ae0be09f81635b84fa5f252d9ec5fe0bd6bd5"
+    },
+    {
+      "bytes": 2877,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v2-20261019/pins.json",
+      "sha256": "f493a92085dca5be0a091ff6a3d1acb81cbdabe738c4006a54cb21bccb46c4b9"
+    },
+    {
+      "bytes": 49430,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v2-20261019/review_final_api.py",
+      "sha256": "39b5e16a5c1db7de92d87b10e3d2058401f2bc265577ff2aed265258fd40aecd"
+    },
+    {
+      "bytes": 34367,
+      "path": "jarde-assignment-condition-widening-final-compare-prep-luna-v2-20261019/reviewer-v1-to-v2.diff",
+      "sha256": "555f4ee2902b3487b77f6b18eb34c951bb1b12d5b203aa0ef66f7bfb8f668bf2"
+    },
+    {
+      "bytes": 1133,
+      "path": "jarde-assignment-condition-widening-focused-prep-root-v1-20261019/commands.json",
+      "sha256": "de69102620454396d0a4d08dd11860babe824f860a9b20936605cdf7f8b7d8b6"
+    },
+    {
+      "bytes": 771,
+      "path": "jarde-assignment-condition-widening-focused-prep-root-v2-20261019/commands.json",
+      "sha256": "4ca6520d488d5b61e3f5e43218fb7ef090e5f052cfe9abcdc47323010f6da266"
+    },
+    {
+      "bytes": 1571177,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/execution.json",
+      "sha256": "da10443283e40ef98856ceac19b7abc4dd3e04f8a05cf518e69700b4ad9082c9"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2405,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/2.stderr.raw",
+      "sha256": "97d39939f8db81405b1901242d3b0ae02f30f5d20342f46832cc2ac44cb4efb0"
+    },
+    {
+      "bytes": 154,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/2.stdout.raw",
+      "sha256": "9df5374debf2847528cdfdf4d29bf952cbc30be5c64d063f54a88a3cf5e601ba"
+    },
+    {
+      "bytes": 235,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/3.stderr.raw",
+      "sha256": "2676e495111041ebc870232833e25c0378808c22bd764d4d10604e9c0746d5e5"
+    },
+    {
+      "bytes": 565,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/3.stdout.raw",
+      "sha256": "fd1681fc1b00272b2f130a42cb9a04344b50364353b05a708342ae6a6a2c3be7"
+    },
+    {
+      "bytes": 2384,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/4.stderr.raw",
+      "sha256": "67440bf453187ac63c8ba634d0e6fb9036682093358e17683fbb535ac0d1769e"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/4.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 39,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/5.stderr.raw",
+      "sha256": "036ade1e68d8f9997d2938da7a67f7f4923c5e34035541e5d473ed57e1127929"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v1-20261019/raw/5.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1567816,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/execution.json",
+      "sha256": "eff54c052d394f960ed6864a322b6d34edf3360bcf06517c16b24a44e3884647"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1515,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/raw/2.stderr.raw",
+      "sha256": "706a1e994bd94c1526192d5d6dac2d92b59cae0ae662ea5dcb8fef3ca2c309d5"
+    },
+    {
+      "bytes": 713,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/raw/2.stdout.raw",
+      "sha256": "a4c8c8a1f10ee11e1ef76f1483443727b91c665d36faaf9ae99c253671058a71"
+    },
+    {
+      "bytes": 39,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/raw/3.stderr.raw",
+      "sha256": "9f0788ca5c21c90b4c9d32bf29100599765cca480113a1fa9e60157dcb576c97"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v2-20261019/raw/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1569412,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/execution.json",
+      "sha256": "cc3300ef2d000143679ae0253ad2dc3e04d278c43dbb8f54fc87b4e3586c9ce8"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1459,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/2.stderr.raw",
+      "sha256": "f95f56afb76bb54360858d54d04779e1a5ca1a6c007bacbe3e296dc9ad34dbeb"
+    },
+    {
+      "bytes": 207,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/2.stdout.raw",
+      "sha256": "ce011af46201fee036e5efa701c62536e26f0eeff41baf11d098e6da4071131c"
+    },
+    {
+      "bytes": 1623,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/3.stderr.raw",
+      "sha256": "1ba50b372f157889608366d9b53b25c50681bee366ca41334e1287a692d29949"
+    },
+    {
+      "bytes": 2375,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/3.stdout.raw",
+      "sha256": "e280385a961711f012176ff86af973148979b4ef39773774488efec0cabcdfd2"
+    },
+    {
+      "bytes": 39,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/4.stderr.raw",
+      "sha256": "b5329f88f2d121f1cb01a81fc4330c85a4dfdddd07740e2d6c9c6e92eede2348"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-focused-root-v3-20261019/raw/4.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2247,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/README.md",
+      "sha256": "1bc575b232b2c3da9e8f51abc0c3963800bb8f1cff90f1f3e3491b52d630e13e"
+    },
+    {
+      "bytes": 2024019,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/base-build.rs",
+      "sha256": "d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9"
+    },
+    {
+      "bytes": 11855,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/changes.patch",
+      "sha256": "12c805f0d19a14c1d4b3ee674cbd5bc02d553e852511e50fc928b308e3523251"
+    },
+    {
+      "bytes": 2034525,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/repo/crates/jarde-java/src/build.rs",
+      "sha256": "f0a3cde662e3c74c0e50ec401e20553d55b138cd08db60edbbb44986576cc285"
+    },
+    {
+      "bytes": 836,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/repo/tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class",
+      "sha256": "8c754864e90ec03497f6f269bcf7c8887296eb3a8f332e2949bcc910770b05c7"
+    },
+    {
+      "bytes": 836,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/repo/tests/fixtures/p3-assignment-condition/TestLoopConditionInvoke$TestCls.class",
+      "sha256": "8c754864e90ec03497f6f269bcf7c8887296eb3a8f332e2949bcc910770b05c7"
+    },
+    {
+      "bytes": 1347,
+      "path": "jarde-assignment-condition-widening-luna-v1-20261019/source-pins.json",
+      "sha256": "1f049ad8fc61c2201dfc870512913af40dce0901589bb9b56e1fa17e09b6b3df"
+    },
+    {
+      "bytes": 448,
+      "path": "jarde-assignment-condition-widening-luna-v2-20261019/README.md",
+      "sha256": "96360e5602d6b074cdbd35e3fed259869b6f8976c6b4bfe9882a9b896d78a6f9"
+    },
+    {
+      "bytes": 2034848,
+      "path": "jarde-assignment-condition-widening-luna-v2-20261019/base-build.rs",
+      "sha256": "62c466d2c04c1696e0a1ac0ff6a11793c9cfd14fa9bb6812ff3eb81e98808ef0"
+    },
+    {
+      "bytes": 1861,
+      "path": "jarde-assignment-condition-widening-luna-v2-20261019/changes.patch",
+      "sha256": "b4bca9155ae5af7e2d333e6413dbddea27995c3b441b1a091b0498e8fdf24beb"
+    },
+    {
+      "bytes": 2035555,
+      "path": "jarde-assignment-condition-widening-luna-v2-20261019/result-build.rs",
+      "sha256": "3b6abde26be752afbd24a994e59abcccc5ea8cbe3795be1a662a9b56f6b84e6d"
+    },
+    {
+      "bytes": 362,
+      "path": "jarde-assignment-condition-widening-luna-v2-20261019/source-pins.json",
+      "sha256": "383ee0088508c56d74a9fac8a7bc5fbb06ec3e6b71b189328060cebee64cff2d"
+    },
+    {
+      "bytes": 385,
+      "path": "jarde-assignment-condition-widening-luna-v3-20261019/README.md",
+      "sha256": "017d0fe096323b6d9cd22e54f9c68c7b709616fe0559a021567c46e261a5c3c7"
+    },
+    {
+      "bytes": 2035555,
+      "path": "jarde-assignment-condition-widening-luna-v3-20261019/base-build.rs",
+      "sha256": "3b6abde26be752afbd24a994e59abcccc5ea8cbe3795be1a662a9b56f6b84e6d"
+    },
+    {
+      "bytes": 2024,
+      "path": "jarde-assignment-condition-widening-luna-v3-20261019/changes.patch",
+      "sha256": "e8411487b294ea142e62a40e6ce612bded4a730a50f43a01a48fa0651da09ab9"
+    },
+    {
+      "bytes": 2035611,
+      "path": "jarde-assignment-condition-widening-luna-v3-20261019/result-build.rs",
+      "sha256": "27896bb4bee05208360b02c6bfc21703ec1a683f8ee52eea5ec7b36242343757"
+    },
+    {
+      "bytes": 362,
+      "path": "jarde-assignment-condition-widening-luna-v3-20261019/source-pins.json",
+      "sha256": "a153cf44c15c700f7e375ebfbc087f68d494b37adc1175a59ec4fb3fecb4bc96"
+    },
+    {
+      "bytes": 791,
+      "path": "jarde-assignment-condition-widening-luna-v4-20261019/README.md",
+      "sha256": "b7c8cde27712e9799a17f9c09c871036798c514f1d37a087d6ea4d467533382d"
+    },
+    {
+      "bytes": 2035555,
+      "path": "jarde-assignment-condition-widening-luna-v4-20261019/base-build.rs",
+      "sha256": "3b6abde26be752afbd24a994e59abcccc5ea8cbe3795be1a662a9b56f6b84e6d"
+    },
+    {
+      "bytes": 2412,
+      "path": "jarde-assignment-condition-widening-luna-v4-20261019/changes.patch",
+      "sha256": "f101a843aa8228123264d0b5be74930ccf69a28946de3fd33b1e22fed4734242"
+    },
+    {
+      "bytes": 2035611,
+      "path": "jarde-assignment-condition-widening-luna-v4-20261019/result-build.rs",
+      "sha256": "33c13d6c367aa3a9427e5559abcabd0e660cf3ad89b9377707ae78adc3afc7c1"
+    },
+    {
+      "bytes": 362,
+      "path": "jarde-assignment-condition-widening-luna-v4-20261019/source-pins.json",
+      "sha256": "a933d0d5637ec7b78ea9e3349061fc4c0726c0d42f1764107add922ab3b694b7"
+    },
+    {
+      "bytes": 546,
+      "path": "jarde-assignment-condition-widening-public-prep-root-v1-20261019/commands.json",
+      "sha256": "37ce7c317eb20f1c530ebe3e0ef17d41eaeae7c95ab19c52c806633c8febaf3e"
+    },
+    {
+      "bytes": 1567691,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/execution.json",
+      "sha256": "71314b1f7f1926676f26c06fd6dd8fc4c96c6554c7fa3eb5ca8cc26409d40d28"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4752,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/raw/2.stderr.raw",
+      "sha256": "e9be953db00cd4449a6f4ec7758fdcd569d8f75f73830bd35b6756581ec89653"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/raw/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 39,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/raw/3.stderr.raw",
+      "sha256": "a296695b2a47894ea5970460d52f01f761b2de2bd6ab54bfcd437dcdcd2f2a72"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v1-20261019/raw/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1571211,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/execution.json",
+      "sha256": "c91be4f7cb0ca31ed5e2cd0cfb23449700703366ee89829c56fe3733dac85723"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2427,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/2.stderr.raw",
+      "sha256": "dd645aad2da6bf4092efb34e93f030f4e2edb9e7a34e9aa4f16288d8fc5389cc"
+    },
+    {
+      "bytes": 263,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/2.stdout.raw",
+      "sha256": "1ad08c98a652062646424f58737b8bd786f363dc69951171e2dcf2271ac59946"
+    },
+    {
+      "bytes": 243,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/3.stderr.raw",
+      "sha256": "1befd31c417eb0f694c6288bfc92b57a3153e7a8b2b0e5cc19cdd4f3bb854e61"
+    },
+    {
+      "bytes": 211,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/3.stdout.raw",
+      "sha256": "9d4c36be0492511b99d31c1199c075001d54b31715715b6046ba2902654c7745"
+    },
+    {
+      "bytes": 1215,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/4.stderr.raw",
+      "sha256": "d470502be00a871df4209aa1ec3b07e7c6dd328a35038cfb0cdd3222e070e85c"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/4.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 39,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/5.stderr.raw",
+      "sha256": "e3bc729ae54c3deac220490169433ffb4aae9f3b14c8fc46ffa5747d5afef544"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/raw/5.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1237,
+      "path": "jarde-assignment-condition-widening-public-root-v2-20261019/root-review.json",
+      "sha256": "fc52c8a13736272151faa15f0568c64d25d80c3699848f64a7c3d2a212adaed7"
+    },
+    {
+      "bytes": 1242,
+      "path": "jarde-assignment-condition-widening-second-archive-prep-luna-v1-20261019/README.md",
+      "sha256": "53afeeb537a9a693ec0b1b7ba80a56412dbe3296223df7599526802cf70de67c"
+    },
+    {
+      "bytes": 7394,
+      "path": "jarde-assignment-condition-widening-second-archive-prep-luna-v1-20261019/pack-evidence.py",
+      "sha256": "cca421124988474bfce898ed2884ae41c8f48166385a756a5e64830e74d2f4e1"
+    },
+    {
+      "bytes": 463,
+      "path": "jarde-assignment-condition-widening-second-archive-prep-luna-v1-20261019/pins.json",
+      "sha256": "9a28082e465ec51a8f64a14b2b5b9f49ea38509cf6532f6ae59686c37de89d64"
+    },
+    {
+      "bytes": 57622,
+      "path": "jarde-assignment-condition-widening-second-archive-prep-luna-v1-20261019/scope-manifest.json",
+      "sha256": "dd22441de7e173226f51a7870a58f1c6c719f516ccc7f477798b6da7a44ffccb"
+    },
+    {
+      "bytes": 1591,
+      "path": "jarde-assignment-condition-widening-tests-luna-v1-20261019/README.md",
+      "sha256": "326e89d663dfcc996449a4b07e4086af0a17f02517a7bd43e5fb0bf18e3d0a89"
+    },
+    {
+      "bytes": 9223,
+      "path": "jarde-assignment-condition-widening-tests-luna-v1-20261019/p3_assignment_condition_widening.rs",
+      "sha256": "84879a8a4361e624c4aae30182cd5e222627c1323ae138c20815e0f1e0c988e0"
+    },
+    {
+      "bytes": 15105,
+      "path": "jarde-assignment-condition-widening-tests-luna-v1-20261019/pins.json",
+      "sha256": "f21e595f3a06959b9a887d9ac4e922ecb8bdf025980ab93d45033e91d96b8ecd"
+    },
+    {
+      "bytes": 9485,
+      "path": "jarde-assignment-condition-widening-tests-luna-v1-20261019/test.patch",
+      "sha256": "b2d09f22ba43559466e6685f5cc8b6550169d4239776f939cd46c19874bf0b2c"
+    },
+    {
+      "bytes": 1873,
+      "path": "jarde-assignment-condition-widening-tests-luna-v2-20261019/README.md",
+      "sha256": "f228554550c19c61c10aff426cd9d0894eb67926f829cb5b83e54b021a1d2ddb"
+    },
+    {
+      "bytes": 12060,
+      "path": "jarde-assignment-condition-widening-tests-luna-v2-20261019/p3_assignment_condition_widening.rs",
+      "sha256": "025881ebd79c2e8abf4461166ee6785daf7c9c5055e9dae3859385ab717c4d1d"
+    },
+    {
+      "bytes": 15645,
+      "path": "jarde-assignment-condition-widening-tests-luna-v2-20261019/pins.json",
+      "sha256": "fa98e4bf8fa44f4530029a54208095d4a24291fb4b1bb4de2651d958f78f8367"
+    },
+    {
+      "bytes": 12375,
+      "path": "jarde-assignment-condition-widening-tests-luna-v2-20261019/test.patch",
+      "sha256": "3ef53ce0148b0af01e21796e6155a884066b76d3981f0a0f9ee2919b3473a6ca"
+    },
+    {
+      "bytes": 12592,
+      "path": "jarde-assignment-condition-widening-tests-luna-v2-20261019/v2-delta.diff",
+      "sha256": "da5d24b6206941c1ba548780963ddc6ab88f3c17f68e443c9dbc0c9afa05f9aa"
+    },
+    {
+      "bytes": 1819,
+      "path": "jarde-assignment-condition-widening-tests-luna-v3-20261019/README.md",
+      "sha256": "f417a339a245afa27dc5420aebdb2c7a52bf0fbf7d4cb1652be3e5b532f5f795"
+    },
+    {
+      "bytes": 11964,
+      "path": "jarde-assignment-condition-widening-tests-luna-v3-20261019/p3_assignment_condition_widening.rs",
+      "sha256": "81e2752c3dc883cfd1ac666b04ecd36c233c1e7c8c043211c722068f755e503b"
+    },
+    {
+      "bytes": 15645,
+      "path": "jarde-assignment-condition-widening-tests-luna-v3-20261019/pins.json",
+      "sha256": "fa98e4bf8fa44f4530029a54208095d4a24291fb4b1bb4de2651d958f78f8367"
+    },
+    {
+      "bytes": 12278,
+      "path": "jarde-assignment-condition-widening-tests-luna-v3-20261019/test.patch",
+      "sha256": "3a894ed8c6ea879c22626684ec33c639b1054076239319884580124576e16aae"
+    },
+    {
+      "bytes": 1314,
+      "path": "jarde-assignment-condition-widening-tests-luna-v3-20261019/v3-delta.diff",
+      "sha256": "0504216c4fa4b964fa3d7514ac0bd126c9340894fd24a276e72444dc96247b7e"
+    },
+    {
+      "bytes": 787,
+      "path": "jarde-assignment-condition-widening-tests-luna-v4-20261019/README.md",
+      "sha256": "6a44bb6c7e7f544734911eac1de43c83c4202887f9a8af4886091f6bb861df6e"
+    },
+    {
+      "bytes": 13871,
+      "path": "jarde-assignment-condition-widening-tests-luna-v4-20261019/current-source.rs",
+      "sha256": "6e9bbcee2038eda991f39d8662572349987820e0f156f8892f710ff058d3175b"
+    },
+    {
+      "bytes": 743,
+      "path": "jarde-assignment-condition-widening-tests-luna-v4-20261019/fix.patch",
+      "sha256": "578b7de82041787dc59ee301aef11ed8b0c95d681df816fff3ab7bb1b3791d28"
+    },
+    {
+      "bytes": 478,
+      "path": "jarde-assignment-condition-widening-tests-luna-v4-20261019/pins.json",
+      "sha256": "811c29d600f476d905b3b66e4bf2a999cdf68022367e0488c5e31ca8cacbb97a"
+    },
+    {
+      "bytes": 841,
+      "path": "jarde-assignment-condition-widening-tests-luna-v5-20261019/README.md",
+      "sha256": "62c22b7268d1bd988d4061f681e8832bb6711976156f7f0c55b9d4455f8da730"
+    },
+    {
+      "bytes": 14166,
+      "path": "jarde-assignment-condition-widening-tests-luna-v5-20261019/current-source.rs",
+      "sha256": "73d3166c5f836e23837a1567d52928fe68d30268d41c7f98b4be227f07296f46"
+    },
+    {
+      "bytes": 936,
+      "path": "jarde-assignment-condition-widening-tests-luna-v5-20261019/fix.patch",
+      "sha256": "7ee1e57acff79ab992699ec1b3520e490e8b4a9d9fcd0f250593e024df8a0c7f"
+    },
+    {
+      "bytes": 500,
+      "path": "jarde-assignment-condition-widening-tests-luna-v5-20261019/pins.json",
+      "sha256": "70307009c02f33fb97c1f1698c9c356fa6701aecf340af351137841df4a6deed"
+    },
+    {
+      "bytes": 495,
+      "path": "jarde-loop-condition-invoke-controls-generated-first-wrapper-error-root-v1-20261019/execution.json",
+      "sha256": "9b9ce515126330e843e948c73c1dbd392d98099df7a52affc707e661ef16526a"
+    },
+    {
+      "bytes": 728,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v1-20261019.stderr.raw",
+      "sha256": "500e005381cc520286758789d3aec24b231915fee6984c4b81df691afb04350b"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v1-20261019.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4381,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v1-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "bytes": 265,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v1-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "bytes": 36858,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/collector.py",
+      "sha256": "6484910c28551264f67d369c9690a62457dab7f47262e08761d9aebf91e4f313"
+    },
+    {
+      "bytes": 1150,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/compiled/jadx-debug-full-tree/javac23/classes/controls/LoopConditionInvokeControl.class",
+      "sha256": "f0035400cc5314fda0ae890a90be3377d36591fa61e857ad8e75ea32b7b7acb3"
+    },
+    {
+      "bytes": 1153,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/compiled/jadx-debug-full-tree/javac8/classes/controls/LoopConditionInvokeControl.class",
+      "sha256": "c414ed12064cba847a5db30fba9a64276489e8e37012eb76288b55b1145c876a"
+    },
+    {
+      "bytes": 668,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/compiled/jadx-no-debug-full-tree/javac23/classes/controls/LoopConditionInvokeControl.class",
+      "sha256": "695cd7ab248ef50a65eba3552fc19c608ed303fce20f45927264d159110e2574"
+    },
+    {
+      "bytes": 671,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/compiled/jadx-no-debug-full-tree/javac8/classes/controls/LoopConditionInvokeControl.class",
+      "sha256": "d4468177c8465b88f589d0b1492423261cfa2f05acd1bf3e11c2c8d0477b4d7b"
+    },
+    {
+      "bytes": 662,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/driver-classes/LoopConditionInvokeControlDriver$Case.class",
+      "sha256": "0f749950741ff68f6cf3d3f02ca30c64d6396d6a64ba487fbe80c5f233699ada"
+    },
+    {
+      "bytes": 6160,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/driver-classes/LoopConditionInvokeControlDriver.class",
+      "sha256": "2bdaca5ed46ae466db2c0e1742d2e772bebd44442e8f56574db0b8a3fe48c2c2"
+    },
+    {
+      "bytes": 4381,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/driver/LoopConditionInvokeControlDriver.java",
+      "sha256": "a92a766e4189d22b0d68b9210477cdb503bcf59cd45860b5f46fb7ef3c823cd6"
+    },
+    {
+      "bytes": 3557753,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/execution.json",
+      "sha256": "7c2c79812372902243dee48770109bdd7808fdf95d4ac167d3af6ae01f05fdce"
+    },
+    {
+      "bytes": 265,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/jarde-nestedloops3-runtime-bound-root-v1-20261018.py",
+      "sha256": "73d1bedf469b7bb87d6fc860b12660fd6f4834d022f72c88b6c093e98ce312ca"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/1.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/1.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 209,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/10.stderr.raw",
+      "sha256": "6e24f4a56b6a7cb4ea50367a63fa5fa42f1a43601e72af800f3a0ae63f603f21"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/10.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 452,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/11.stderr.raw",
+      "sha256": "9098627e1a9108e350191a5f1d8a9a431992d0cdecb76d8694e02059384f6d3d"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/11.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 205,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/12.stderr.raw",
+      "sha256": "814125be5240218f40b1244713b7e011cd98c28ddc25639722d46f12dd6e35c7"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/12.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 448,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/13.stderr.raw",
+      "sha256": "6b6221824f8f0cbd6404f63536c3662bb5637c68146a85809ecca3eb6cd613bb"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/13.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 212,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/14.stderr.raw",
+      "sha256": "c4ca76cdb2a56cc88d120a5217ac9e93fed738ea2a9a6d486d25e32f137fc7ed"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/14.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 455,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/15.stderr.raw",
+      "sha256": "4a93665fcc40593fc2b509302ba8d2fd5b603bcaf8af51452f4d62becbf05a2b"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/15.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 208,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/16.stderr.raw",
+      "sha256": "e15756a969d626918546c0f369c177f61ce08955b81d5c3326e9fbce83e87dd7"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/16.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 451,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/17.stderr.raw",
+      "sha256": "75062d54113201060af912f727ab9c03508adebcb21e001e3aae61841d8772cb"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/17.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/18.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/18.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/19.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/19.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 208,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/2.stderr.raw",
+      "sha256": "809f320d312378d563e391daffb26e74d6c2868cc88504465fb812eeb5cfe675"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/2.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/20.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/20.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 393,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/21.stderr.raw",
+      "sha256": "6f4ee97c4182582e3cd943a825d0e566579e457441f95e9faf6cd6997284fbc8"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/21.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/22.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/22.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/23.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/23.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/24.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/24.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 394,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/25.stderr.raw",
+      "sha256": "57b1b4398aa56a8f1b41738736c7f3e0bf5e995dafe08f159188e500cbf2eafa"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/25.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/26.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/26.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/27.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/27.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/28.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/28.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 396,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/29.stderr.raw",
+      "sha256": "5ee769cc233f85b4f98ac4e0c30ab423fec5a9ab40a749d82d2510b9dac127de"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/29.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 451,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/3.stderr.raw",
+      "sha256": "3126b741d0228237746866474418fbee80dac35a3ef31446eb0f9c16ec4d6a74"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/3.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/30.stderr.raw",
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/30.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/31.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/31.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/32.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 749,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/32.stdout.raw",
+      "sha256": "d4a6e2f9b75f4e15257e03a93378e337ce33338d297cdae4dde1efdf851f4fff"
+    },
+    {
+      "bytes": 397,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/33.stderr.raw",
+      "sha256": "b1a7bf5e7376d71973c75fbfa176e4a8e3d1d1074f8907af55555879c12029a4"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/33.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 204,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/4.stderr.raw",
+      "sha256": "f632bb77895374a7d44a8243f8e4b087ffa2fcfaace63f68fb300d6db6545c76"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/4.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 447,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/5.stderr.raw",
+      "sha256": "862ecdd076810734f5710c3faee8f694036166d95a3d9344576ebdd3d17e4a75"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/5.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 211,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/6.stderr.raw",
+      "sha256": "0cc9ce638ecf7d46c11e794f86747b2b0edb43d6f1be10b75d555f03e88b9ecf"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/6.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 454,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/7.stderr.raw",
+      "sha256": "19f7233f756c28de8d069083a6ff3a134610b46471bec936874c82da8d586204"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/7.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 207,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/8.stderr.raw",
+      "sha256": "90757a45e9ddf559cbfaf1b23c12ad2d6de177823a97543bfaa2c73fa2f74b98"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/8.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 450,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/9.stderr.raw",
+      "sha256": "733811afcc38af894b960a5e569d7c3bca1c23676afcdc5ab085b4a078c14901"
+    },
+    {
+      "bytes": 0,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/raw/9.stdout.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 779,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/root-review.json",
+      "sha256": "74c4cf6a54153824bea9c3276d0fbba754a3ac1b9de6a89603a95adbd3378dde"
+    },
+    {
+      "bytes": 1127,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/jadx-debug-full-tree/sources/controls/LoopConditionInvokeControl.java",
+      "sha256": "5616d65c75aa81e8111bb00a400833fe678b3dd60b02fc334b9828749fc5663b"
+    },
+    {
+      "bytes": 1073,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/jadx-no-debug-full-tree/sources/controls/LoopConditionInvokeControl.java",
+      "sha256": "7decf61a9e3a0c6032796b93b591abbff6cf30a1bc3ab2259161371e69c4b565"
+    },
+    {
+      "bytes": 2741,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac23-debug-all/controls/LoopConditionInvokeControl.java",
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "bytes": 2741,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac23-debug-default/controls/LoopConditionInvokeControl.java",
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "bytes": 2724,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac23-no-debug-all/controls/LoopConditionInvokeControl.java",
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "bytes": 2724,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac23-no-debug-default/controls/LoopConditionInvokeControl.java",
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "bytes": 2741,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac8-debug-all/controls/LoopConditionInvokeControl.java",
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "bytes": 2741,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac8-debug-default/controls/LoopConditionInvokeControl.java",
+      "sha256": "b9b1fd3b315aee3000bbd620282790a22815af8c8e5db5a107258e5c2cbd987c"
+    },
+    {
+      "bytes": 2724,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac8-no-debug-all/controls/LoopConditionInvokeControl.java",
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    },
+    {
+      "bytes": 2724,
+      "path": "jarde-loop-condition-invoke-controls-generated-root-v2-20261019/source-copies/javac8-no-debug-default/controls/LoopConditionInvokeControl.java",
+      "sha256": "f71aa479e08d061ccc1daa4c125ade6d02a111bfc1b8278b4fae6082a6d76e92"
+    }
+  ],
+  "schema": "assignment-condition-second-persistent-archive-v1",
+  "selected_roots": [
+    "jarde-loop-condition-invoke-controls-generated-root-v2-20261019",
+    "jarde-loop-condition-invoke-controls-generated-first-wrapper-error-root-v1-20261019",
+    "jarde-loop-condition-invoke-controls-generated-root-v1-20261019",
+    "jarde-assignment-condition-widening-luna-v1-20261019",
+    "jarde-assignment-condition-widening-luna-v2-20261019",
+    "jarde-assignment-condition-widening-luna-v3-20261019",
+    "jarde-assignment-condition-widening-luna-v4-20261019",
+    "jarde-assignment-condition-widening-tests-luna-v1-20261019",
+    "jarde-assignment-condition-widening-tests-luna-v2-20261019",
+    "jarde-assignment-condition-widening-tests-luna-v3-20261019",
+    "jarde-assignment-condition-widening-tests-luna-v4-20261019",
+    "jarde-assignment-condition-widening-tests-luna-v5-20261019",
+    "jarde-assignment-condition-widening-focused-root-v1-20261019",
+    "jarde-assignment-condition-widening-focused-root-v2-20261019",
+    "jarde-assignment-condition-widening-focused-root-v3-20261019",
+    "jarde-assignment-condition-widening-public-root-v1-20261019",
+    "jarde-assignment-condition-widening-public-root-v2-20261019",
+    "jarde-assignment-condition-widening-broad-root-v1-20261019",
+    "jarde-assignment-condition-widening-broad-resume-root-v1-20261019",
+    "jarde-assignment-condition-widening-focused-prep-root-v1-20261019",
+    "jarde-assignment-condition-widening-focused-prep-root-v2-20261019",
+    "jarde-assignment-condition-widening-public-prep-root-v1-20261019",
+    "jarde-assignment-condition-widening-broad-prep-root-v1-20261019",
+    "jarde-assignment-condition-widening-broad-resume-prep-root-v1-20261019",
+    "jarde-assignment-condition-widening-final-compare-prep-luna-v1-20261019",
+    "jarde-assignment-condition-widening-final-compare-prep-luna-v2-20261019",
+    "jarde-assignment-condition-widening-final-acceptance-prep-luna-v1-20261019",
+    "jarde-assignment-condition-widening-final-collectors-root-v1-20261019"
+  ],
+  "status": "prepared_inputs_verified_at_pack_time"
+}

@@ -1,0 +1,63 @@
+{
+  "changeName": "recover-proved-assignment-condition-widening",
+  "changeDir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening/proposal.md"
+    ],
+    "specs": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening/design.md"
+    ],
+    "tasks": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-assignment-condition-widening/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 6,
+    "complete": 5,
+    "remaining": 1
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 root接受完整固定上游原始/JADX/Jarde基线及独立六场景控制的原始双编译器/双VM、CodeSource负控制、全部物理方法/BCI/raw map；分列常零helper与动态控制、真实整类编译失败和旧JDK框架边界，保存实际来源及原始流。",
+      "done": true
+    },
+    {
+      "id": "2",
+      "description": "1.2 root完成本Spec/设计的对抗审查及strict校验，按本change实际派Luna私有实现，保存范围/派发收据；确认只复用既有widens和赋值消费者，不新增机制。",
+      "done": true
+    },
+    {
+      "id": "3",
+      "description": "2.1 root先实际接受完整控制生成源码的JADX/Jarde基线，再审查集成Luna最小类型门补丁；通过真实Builder消费者及公开完整上游/控制测试验证扩大转换、原exact路径、unknown/boolean/引用/窄化/错复制用途拒绝、一次求值和来源闭合；冻结真实fixture并独立核算reader库存和指纹。",
+      "done": true
+    },
+    {
+      "id": "4",
+      "description": "2.2 root运行相关局部复制/条件/循环/短路/类型转换和预算/取消/期限回归、fmt/CI Clippy/MSRV适用广门，全过且源不变，构建最终CLI并exactclean；不把已有通过的片段拼为fresh workspace。",
+      "done": true
+    },
+    {
+      "id": "5",
+      "description": "3.1 root用最终CLI完成固定完整上游及六场景动态控制的源码/JADX/Jarde两编译器/双VM对照，验证完整类/真实方法库存、值65535、非零位置恢复、调用次数/事件和自然越界，default/all/essential及raw来源一致；编译失败不运行、不裁剪源码或借原target冒充生成类。",
+      "done": true
+    },
+    {
+      "id": "6",
+      "description": "3.2 root完成fresh workspace、产品提交推送与其自身CI全部jobs/官方step/两seed及新增精确门，绑定源/CLI/Git；同步主规范、固定账本与handoff，strict/apply通过，target清空且main干净/远端一致后关闭本叶子，持续goal保持active。",
+      "done": false
+    }
+  ],
+  "state": "ready",
+  "instruction": "Read context files, work through pending tasks, mark complete as you go.\nPause if you hit blockers or need clarification.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/Users/lordcasser/workspace/projects/jarde",
+    "source": "nearest"
+  }
+}

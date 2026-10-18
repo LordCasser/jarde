@@ -1,0 +1,18 @@
+{
+  "status": "root_synced_and_validated",
+  "change": "recover-proved-assignment-condition-widening",
+  "planning_root": "/Users/lordcasser/workspace/projects/jarde",
+  "delta": "openspec/changes/recover-proved-assignment-condition-widening/specs/java8-recovery/spec.md",
+  "main_spec": "openspec/specs/java8-recovery/spec.md",
+  "spec_instruction_rules": [
+    "Use observable SHALL/MUST requirements and testable WHEN/THEN scenarios.",
+    "Keep dependencies and implementation choices in design, not behavioral specs."
+  ],
+  "added_requirements": 1,
+  "added_scenarios": 5,
+  "strict_passed": 378,
+  "strict_failed": 0,
+  "main_specs_passed": 18,
+  "apply_complete": 5,
+  "apply_total": 6
+}

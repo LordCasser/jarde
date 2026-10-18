@@ -12315,7 +12315,9 @@ mod tests {
             // Indexed List parameter controls add the frozen debug and no-debug classes. Each
             // class has ten Code bodies, eighteen branch targets, no handler and no jsr; together
             // they add two classes, twenty bodies and thirty-six branch targets.
-            (1305, 5775, 630, 4102, 14),
+            // Assignment-condition widening adds six frozen classes: thirty Code bodies,
+            // twelve direct branch targets, no handlers or subroutines (independent byte census).
+            (1311, 5805, 630, 4114, 14),
             "fixture population changed: re-measure these counts"
         );
     }

@@ -1,0 +1,33 @@
+{
+  "time": "2026-10-18T19:14:37.717897+00:00",
+  "status": "actual_luna_private_implementation_dispatched_not_integrated",
+  "change": "recover-proved-assignment-condition-widening",
+  "baseline_product": "5bd65ef2f36999c3d0a3b4477a412a0ef532c956",
+  "documentation_head": "c0abb3adce3cf9b49d0e9548350e23a9a765a7af",
+  "source_sha256": "d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9",
+  "dispatch": [
+    {
+      "agent": "/root/typed_foreach_impl",
+      "model": "gpt-6-luna",
+      "scope": "private exact type gate using existing widens and real Builder consumer tests; no shared edits or Cargo/JDK/CLI/network/Git"
+    },
+    {
+      "agent": "/root/nl_baseline_audit",
+      "model": "gpt-6-luna",
+      "scope": "private public regression tests only; actual six fixture inputs and evidence/stop checks; no build.rs/shared edits/toolchains/Git"
+    },
+    {
+      "agent": "/root/typed_foreach_api_tests",
+      "model": "gpt-6-luna",
+      "scope": "private complete controls generated-source collector preparation; root executes and accepts"
+    }
+  ],
+  "root_scope": [
+    "shared sources",
+    "Git/network",
+    "serialized toolchains",
+    "architecture/adversarial review",
+    "actual complete baseline and final Java/JADX/Jarde acceptance"
+  ],
+  "integration_gate": "actual whole generated control baseline accepted before any candidate production integration; task2.1 not complete yet"
+}

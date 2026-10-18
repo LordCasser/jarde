@@ -28747,7 +28747,9 @@ impl Builder<'_> {
                     .into());
                 }
                 let rhs = source(self, at)?;
-                if rhs.presented.as_ref() != Some(&assignment.ty) {
+                if !rhs.presented.as_ref().is_some_and(|presented| {
+                    presented == &assignment.ty || widens(presented, &assignment.ty)
+                }) {
                     return Err(format!(
                         "the local assignment at BCI {} has Java type `{}`, but its right-hand value has no matching declared type",
                         assignment.shape.store,
@@ -43221,6 +43223,9 @@ mod tests {
     const COMPOUND_STATEMENT_CONDITIONS_FIXTURE: &[u8] = include_bytes!(
         "../../../openspec/changes/recover-proved-compound-statement-conditions/results/complete-runtime-baseline-root-v1/observed/original-bytecode/CompoundStatementConditions.class"
     );
+    const PROVED_ASSIGNMENT_CONDITION_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/java8/assignment-condition-widening/upstream-debug/TestLoopConditionInvoke$TestCls.class"
+    );
     /// Runs the real JVM IR and region producers, then asks only this proof about their output.
     fn fixture_conditional_attempt(
         class: &[u8],
@@ -47421,6 +47426,258 @@ mod tests {
                 &mut budget,
             )
             .expect("effect-separated reference store is refused")
+        );
+    }
+
+    #[test]
+    fn proved_loop_assignment_consumes_real_char_and_only_known_widenings() {
+        let descriptor = "(C)Z";
+        let (_, _, _, _, _, _, _, _, _) = fixture_value_attempts_with_tree_observing(
+            PROVED_ASSIGNMENT_CONDITION_FIXTURE,
+            "test",
+            descriptor,
+            None,
+            None,
+            |recovered,
+             canonical,
+             ssa,
+             operations,
+             code,
+             pool,
+             bootstrap,
+             direct_super_class,
+             direct_interfaces,
+             class_methods,
+             chains,
+             _| {
+                let method =
+                    crate::facts::MethodFacts::new("test", descriptor, 2).with_access_flags(0x0001);
+                let parameter_types = method.parameter_types();
+                let fields = field::Plan::empty();
+                let field_copies = FieldCopies::default();
+                let array_context = crate::init::ArrayCompositionContext {
+                    chains,
+                    reserved: chains.owned(),
+                    member_targets: &[],
+                    method: &method,
+                    code,
+                };
+                let mut setup = compound_test_budget(1 << 25);
+                let mut arrays = ArrayInitializers::prove_with_composition(
+                    ssa,
+                    operations,
+                    &fields,
+                    Some(&array_context),
+                    &mut setup,
+                )
+                .expect("fixture array plan completes");
+                let sites = crate::init::sites_after_array_composition(
+                    ssa,
+                    operations,
+                    chains,
+                    chains.owned(),
+                    &fields,
+                    &mut arrays,
+                    &[],
+                    &method,
+                    code,
+                    &mut setup,
+                )
+                .expect("fixture construction sites complete");
+                let resources = resource_slots(&recovered.regions);
+                let reuse = crate::reuse::plan(
+                    ssa,
+                    canonical,
+                    operations,
+                    &recovered.regions,
+                    code.max_locals,
+                    2,
+                    &[],
+                    &resources,
+                    &mut setup,
+                )
+                .expect("fixture reuse plan completes");
+                let names = NameTable::build(2, code.max_locals, reuse.evidence());
+                let prologues = crate::init::Prologues::none();
+                let enums = crate::enumswitch::Plan::empty();
+                let mut budget = compound_test_budget(1 << 25);
+                let mut builder = compound_test_builder(
+                    canonical,
+                    ssa,
+                    code,
+                    operations,
+                    pool,
+                    bootstrap,
+                    direct_super_class,
+                    direct_interfaces,
+                    class_methods,
+                    chains,
+                    &recovered.regions,
+                    &names,
+                    &reuse,
+                    &parameter_types,
+                    &sites,
+                    &fields,
+                    &field_copies,
+                    &prologues,
+                    &enums,
+                    2,
+                    Some(Type::Boolean),
+                    Some("jadx/tests/integration/loops/TestLoopConditionInvoke$TestCls"),
+                    &mut setup,
+                    &mut budget,
+                );
+                builder.has_receiver = true;
+
+                let assignment = builder
+                    .local_assignments
+                    .get(&9)
+                    .cloned()
+                    .expect("frozen class proves the dup@9 loop assignment");
+                assert_eq!(assignment.shape.store, 10);
+                assert_eq!(assignment.shape.test, 11);
+                assert_eq!(assignment.ty, Type::Int);
+                let source_value = assignment.shape.source;
+                let source = builder
+                    .render_value(source_value, assignment.shape.test, 1)
+                    .unwrap_or_else(|failure| match failure {
+                        ValueRenderFailure::Refusal(reason) => {
+                            panic!("the real source call was refused by Builder::render_value: {reason}")
+                        }
+                        ValueRenderFailure::Stop(stop) => {
+                            panic!("Builder::render_value stopped for the real source call: {stop:?}")
+                        }
+                    });
+                assert_eq!(source.presented, Some(Type::Char));
+                assert!(
+                    matches!(&source.kind, ExprKind::Call { .. }),
+                    "{:?}",
+                    source.kind
+                );
+
+                // This is the actual frozen class and actual render_value path: next() presents
+                // char, while the proved local's declaration is int.
+                let rendered = builder
+                    .duplicate_expression(
+                        assignment.shape.duplicate,
+                        assignment.shape.tested,
+                        assignment.shape.test,
+                        0,
+                    )
+                    .unwrap_or_else(|failure| match failure {
+                        ValueRenderFailure::Refusal(reason) => {
+                            panic!("char widening was refused at the proven assignment site: {reason}")
+                        }
+                        ValueRenderFailure::Stop(stop) => {
+                            panic!("duplicate_expression stopped at the proven assignment site: {stop:?}")
+                        }
+                    });
+                let ExprKind::LocalAssign { ty, value, .. } = &rendered.kind else {
+                    panic!(
+                        "the original expression presentation remains an assignment: {rendered:?}"
+                    );
+                };
+                assert_eq!(*ty, Type::Int);
+                assert_eq!(value.presented, Some(Type::Char));
+                assert!(matches!(&value.kind, ExprKind::Call { .. }));
+                assert_eq!(
+                    value.origin, source.origin,
+                    "the source call stays anchored once"
+                );
+                assert_eq!(
+                    rendered.origin,
+                    OriginSet::new(Origin::direct(assignment.shape.store))
+                        .plus_derived(Origin::derived(assignment.shape.duplicate)),
+                    "the target store stays primary and the copy stays derived"
+                );
+
+                // These are consumer facts injected after the real call has been rendered, through
+                // the existing Builder cache seam. They test the existing Java widening relation;
+                // they do not claim extra valid bytecode fixtures or derive type from I-stack shape.
+                for presented in [Type::Byte, Type::Short, Type::Char, Type::Int] {
+                    let mut observed = source.clone();
+                    observed.presented = Some(presented.clone());
+                    builder.conditional_values.insert(source_value, observed);
+                    let accepted = builder
+                        .duplicate_expression(
+                            assignment.shape.duplicate,
+                            assignment.shape.tested,
+                            assignment.shape.test,
+                            0,
+                        )
+                        .unwrap_or_else(|failure| match failure {
+                            ValueRenderFailure::Refusal(reason) => {
+                                panic!("{presented:?} → int was refused: {reason}");
+                            }
+                            ValueRenderFailure::Stop(stop) => {
+                                panic!("{presented:?} → int stopped: {stop:?}");
+                            }
+                        });
+                    let ExprKind::LocalAssign { ty, value, .. } = accepted.kind else {
+                        panic!("consumer must retain LocalAssign for {presented:?}");
+                    };
+                    assert_eq!(ty, Type::Int);
+                    assert_eq!(value.presented, Some(presented));
+                    assert!(matches!(value.kind, ExprKind::Call { .. }));
+                }
+
+                for (presented, target) in [
+                    (None, Type::Int),
+                    (Some(Type::Boolean), Type::Int),
+                    (
+                        Some(Type::Reference("java.lang.String".to_owned())),
+                        Type::Int,
+                    ),
+                    (Some(Type::Char), Type::Byte),
+                    (
+                        Some(Type::Char),
+                        Type::Reference("java.lang.String".to_owned()),
+                    ),
+                ] {
+                    let mut observed = source.clone();
+                    observed.presented = presented;
+                    builder.conditional_values.insert(source_value, observed);
+                    builder.local_assignments.get_mut(&9).unwrap().ty = target;
+                    let failure = builder
+                        .duplicate_expression(
+                            assignment.shape.duplicate,
+                            assignment.shape.tested,
+                            assignment.shape.test,
+                            0,
+                        )
+                        .expect_err("unknown, incompatible and narrowing cases remain refused");
+                    let reason = match failure {
+                        ValueRenderFailure::Refusal(reason) => reason,
+                        ValueRenderFailure::Stop(stop) => {
+                            panic!("type mismatch became a Stop: {stop:?}");
+                        }
+                    };
+                    assert!(reason.contains("no matching declared type"), "{reason}");
+                    builder.local_assignments.get_mut(&9).unwrap().ty = Type::Int;
+                }
+
+                builder
+                    .conditional_values
+                    .insert(source_value, source.clone());
+                let wrong_test = builder
+                    .duplicate_expression(
+                        assignment.shape.duplicate,
+                        assignment.shape.tested,
+                        assignment.shape.test + 1,
+                        0,
+                    )
+                    .expect_err("the test BCI is part of the existing proof");
+                assert!(matches!(wrong_test, ValueRenderFailure::Refusal(_)));
+                let wrong_value = builder
+                    .duplicate_expression(
+                        assignment.shape.duplicate,
+                        assignment.shape.stored,
+                        assignment.shape.test,
+                        0,
+                    )
+                    .expect_err("the tested SSA value is part of the existing proof");
+                assert!(matches!(wrong_value, ValueRenderFailure::Refusal(_)));
+            },
         );
     }
 }

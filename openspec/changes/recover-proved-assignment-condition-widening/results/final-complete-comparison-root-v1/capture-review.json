@@ -1,0 +1,11 @@
+{
+  "status": "root_reopened_all_final_comparison_archive_members_against_live_bytes",
+  "evidence_members": 637,
+  "total_members": 638,
+  "archive_sha256": "54084723e48166ce218fe1817752329d70955a7663fc2571f7f7167ad6b46fdf",
+  "accepted_commands": 204,
+  "jarde_compiles": 32,
+  "jarde_vms": 64,
+  "jarde_cases": 320,
+  "all_unique_pins_reopened": 4756
+}

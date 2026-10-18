@@ -1,0 +1,48 @@
+{
+  "status": "root_static_integration_accepted_pending_first_focused_execution",
+  "time": "2026-10-18T19:25:37.818655+00:00",
+  "base_build_sha256": "d22ee8f1c40d0a98a174e759904a6a97313b85728bb3056d4aeba18ca8704df9",
+  "luna_build_before_format_sha256": "f0a3cde662e3c74c0e50ec401e20553d55b138cd08db60edbbb44986576cc285",
+  "integrated_after_format": {
+    "crates/jarde-java/src/build.rs": {
+      "bytes": 2034848,
+      "sha256": "62c466d2c04c1696e0a1ac0ff6a11793c9cfd14fa9bb6812ff3eb81e98808ef0"
+    },
+    "crates/jarde-reader/src/classfile.rs": {
+      "bytes": 538090,
+      "sha256": "438df73d8932c0f43d9784ae62fd1edb0cc48007ac21f07c74f3e72ea0fe5f99"
+    },
+    "tests/p3_assignment_condition_widening.rs": {
+      "bytes": 13867,
+      "sha256": "0d2ef4f983f30b7e8b0ff9d8d1c9f1af2649874eb9c158322b87f2f26dba6def"
+    }
+  },
+  "baseline_gate": {
+    "controls_generated_root_review": "/private/tmp/jarde-loop-condition-invoke-controls-generated-root-v2-20261019/root-review.json",
+    "actual_commands": 33,
+    "whole_compiles": 20,
+    "jarde_failures_no_return": 16,
+    "jarde_vm_runs": 0,
+    "jadx_successes": 4,
+    "jadx_vm_runs": 8,
+    "jadx_case_observations": 48
+  },
+  "architecture": "Only original exact type gate extends known types through existing widens; no mechanism or inference change",
+  "test_seam_limitation": "compound_test_builder plans declarations with has_receiver false, then restores actual instance has_receiver before render; this skips unrelated this-alias optimization. Asserted local proof/Char source and public full-pipeline six-profile tests must execute before acceptance.",
+  "review_fixes": [
+    "public test v2 false default/essential empty map assertion rejected; v3 restores equality across all selectors",
+    "additive public patch default strip put file at repository root; moved exact bytes into tests before first compile and formatted",
+    "reader test tuple independently measured six-class delta 6/30/0/12/0; no production reader change"
+  ],
+  "executed_so_far": [
+    "actual complete primary baseline",
+    "actual complete original control baseline",
+    "actual complete generated control baseline",
+    "cargo fmt --all"
+  ],
+  "not_executed": [
+    "candidate Rust tests",
+    "candidate final Java matrix",
+    "candidate product CI"
+  ]
+}
