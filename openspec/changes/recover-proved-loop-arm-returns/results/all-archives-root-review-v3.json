@@ -1,0 +1,528 @@
+{
+  "audit_one_source": {
+    "bytes": 7042,
+    "path": "/private/tmp/jarde-prefixed-retry-all-archives-luna-v1-20261018/audit_archives.py",
+    "sha256": "238a90dc4cd1b903753f1b9dc033150ae219bf25b6333ae3e3faa4a56beb4c84"
+  },
+  "audit_script": {
+    "bytes": 7000,
+    "path": "/private/tmp/jarde-loop-arm-all-archives-prep-luna-v3-20261018/audit_archives.py",
+    "sha256": "600c2ce9c487b2ee0a9e3a0a87631eda074ed2f0858b6c4a6eaac99295a616b7"
+  },
+  "cf11_evidence_separate": {
+    "aggregate_archive_count": 2,
+    "aggregate_error_count": 0,
+    "aggregate_verified_count": 2,
+    "root_count": 2,
+    "roots": {
+      "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-matrix-root-v1": {
+        "archive_count_discovered": 1,
+        "archive_count_verified": 1,
+        "archives": [
+          {
+            "archive": {
+              "bytes": 508673,
+              "capture_review_members_reopened": 110,
+              "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-matrix-root-v1/capture-review.json",
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-matrix-root-v1/capture.tar.gz",
+              "sha256": "f333e28f5b378e7e5f0a75e578102c0281bc3a4fe985d518981d9574ebcac44a"
+            },
+            "checks": {
+              "archive_review_pin": "passed",
+              "manifest_set_exact": "passed",
+              "member_bytes_and_sha256": "passed",
+              "regular_members_only": "passed",
+              "safe_canonical_paths": "passed",
+              "unique_paths": "passed"
+            },
+            "manifest_entry_count": 109,
+            "manifest_sha256": "b1fe7ceed71eefc02b8b8813cb4679d2d50890560ce294297ae0164a1d1cf243",
+            "name": "cf11-sequential-loops-baseline-matrix-root-v1",
+            "tar_member_count": 110
+          }
+        ],
+        "error_count": 0,
+        "errors": [],
+        "root": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-matrix-root-v1"
+      },
+      "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-root-v1": {
+        "archive_count_discovered": 1,
+        "archive_count_verified": 1,
+        "archives": [
+          {
+            "archive": {
+              "bytes": 499149,
+              "capture_review_members_reopened": 84,
+              "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-root-v1/capture-review.json",
+              "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-root-v1/capture.tar.gz",
+              "sha256": "4324f7aaf89c49d6075cb2587b3c266d7d261521eb87e4922ec34e2477cd0857"
+            },
+            "checks": {
+              "archive_review_pin": "passed",
+              "manifest_set_exact": "passed",
+              "member_bytes_and_sha256": "passed",
+              "regular_members_only": "passed",
+              "safe_canonical_paths": "passed",
+              "unique_paths": "passed"
+            },
+            "manifest_entry_count": 83,
+            "manifest_sha256": "13b9920bc0194f17e506e5ab4be842a2c4c90b45010862d4fc60e59dc2e1f685",
+            "name": "cf11-sequential-loops-baseline-root-v1",
+            "tar_member_count": 84
+          }
+        ],
+        "error_count": 0,
+        "errors": [],
+        "root": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-root-v1"
+      }
+    }
+  },
+  "input_stability": {
+    "archive_and_review_pins_unchanged": true,
+    "archive_sets_unchanged": true,
+    "audit_source_unchanged": true
+  },
+  "limitations": [
+    "Audit reopens members directly from tar streams; no archive is extracted to disk.",
+    "The count includes only archives present at this run; future own-product-ci or closing-strict archives require rerunning this script.",
+    "CF11 evidence is audited and counted separately from this OpenSpec leaf."
+  ],
+  "loop_arm_results": {
+    "archive_count_discovered": 20,
+    "archive_count_verified": 20,
+    "archives": [
+      {
+        "archive": {
+          "bytes": 8899,
+          "capture_review_members_reopened": 9,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/closing-strict-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/closing-strict-root-v1/capture.tar.gz",
+          "sha256": "ffa4729207b8dd6c9225831997af65c5cd08a7e23726b9b8aeb1b1ed6133f573"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 8,
+        "manifest_sha256": "374c0c1ab8c96d954826972d7bf4d445c61183080a313be2ce7742e6e7a1f07b",
+        "name": "closing-strict-root-v1",
+        "tar_member_count": 9
+      },
+      {
+        "archive": {
+          "bytes": 2477269,
+          "capture_review_members_reopened": 73,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/earlier-trials-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/earlier-trials-root-v1/capture.tar.gz",
+          "sha256": "6f9554c6be8dd5306f690105272cae53cbaaf567a5f8d478ea6614340572bf18"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 72,
+        "manifest_sha256": "8503885f174b3a5ba16415f3fc67ede2c2c976f2c01bf10171b1abc147359058",
+        "name": "earlier-trials-root-v1",
+        "tar_member_count": 73
+      },
+      {
+        "archive": {
+          "bytes": 389171,
+          "capture_review_members_reopened": 28,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/exception-boundary-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/exception-boundary-root-v1/capture.tar.gz",
+          "sha256": "d50e6def0bf4deed6e5234316ed648a9d827b41e00f11a0b5450983ec59b16d8"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 27,
+        "manifest_sha256": "651ccdc1de292a185ac3f3abe06f856b1abeaf707a0de9f7486b592b72083f92",
+        "name": "exception-boundary-root-v1",
+        "tar_member_count": 28
+      },
+      {
+        "archive": {
+          "bytes": 1459764,
+          "capture_review_members_reopened": 118,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/final-api-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/final-api-root-v1/capture.tar.gz",
+          "sha256": "d861cb368125f8c3525697e957b4983eb23c314ba95a60ad75bd865388556cf1"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 117,
+        "manifest_sha256": "f09026ae7be40be7b866e6fe0806871f2c3e730abe1b2467b755421c023e31bc",
+        "name": "final-api-root-v1",
+        "tar_member_count": 118
+      },
+      {
+        "archive": {
+          "bytes": 1662688,
+          "capture_review_members_reopened": 668,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/final-matrix-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/final-matrix-root-v1/capture.tar.gz",
+          "sha256": "706378f758c8a7f82cc4e2bd6c2bf8d0dadbb34317d11cf994bb861699c54093"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 667,
+        "manifest_sha256": "5b71a398bf79f713c1cb91adcdef1be1ea28ff0b694029ec520cc14eda504168",
+        "name": "final-matrix-root-v1",
+        "tar_member_count": 668
+      },
+      {
+        "archive": {
+          "bytes": 1257613,
+          "capture_review_members_reopened": 43,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/first-refusal-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/first-refusal-root-v1/capture.tar.gz",
+          "sha256": "564087ec09f53b39ded089fec47ff83c8a1c3cecc1ff46e0a9ba80fd199075b3"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 42,
+        "manifest_sha256": "ffc8fed3aa942ab07a35d20da562ac15666c4ec77da21d7ec35b4bbbaa24225a",
+        "name": "first-refusal-root-v1",
+        "tar_member_count": 43
+      },
+      {
+        "archive": {
+          "bytes": 702748,
+          "capture_review_members_reopened": 22,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/focused-root-v8/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/focused-root-v8/capture.tar.gz",
+          "sha256": "ecd7a21db0c0fe8deb0ba26ed3dfc11e24ac21fe49c2643ebcb060f8d0d39b3f"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 21,
+        "manifest_sha256": "77d8a23d718b806911261444b42724ca3faeebfee1f6d9bca7e0970cf02586bb",
+        "name": "focused-root-v8",
+        "tar_member_count": 22
+      },
+      {
+        "archive": {
+          "bytes": 347384,
+          "capture_review_members_reopened": 12,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-environment-root-v2/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-environment-root-v2/capture.tar.gz",
+          "sha256": "693e33151bc4183a189d00c0dc9cf3281e19f649e324509e3a2722a9477710eb"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 11,
+        "manifest_sha256": "3953b5a2865307f17fe6e5fb3f6614a576956f1efc100ed2188707cb93133736",
+        "name": "gates-environment-root-v2",
+        "tar_member_count": 12
+      },
+      {
+        "archive": {
+          "bytes": 469236,
+          "capture_review_members_reopened": 14,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-failed-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-failed-root-v1/capture.tar.gz",
+          "sha256": "709f64b3daab12e14b4941743a51a33663eebabcb5c933d379a037635a9c92d0"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 13,
+        "manifest_sha256": "1f1cb0c23de67f0798c120a145a22688f4e693d234306e5fa7695645db33080b",
+        "name": "gates-failed-root-v1",
+        "tar_member_count": 14
+      },
+      {
+        "archive": {
+          "bytes": 342614,
+          "capture_review_members_reopened": 25,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-final-root-v4/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-final-root-v4/capture.tar.gz",
+          "sha256": "60b2212cfa2276b5d126f39c9cc0a996602dc8a427f7b2083d48a08fdc44c398"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 24,
+        "manifest_sha256": "ab67f9f7f23e885a05e1490ff60ce58e5fcd7e12d1361fd408b4e71c09bf2095",
+        "name": "gates-final-root-v4",
+        "tar_member_count": 25
+      },
+      {
+        "archive": {
+          "bytes": 351680,
+          "capture_review_members_reopened": 22,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-partial-root-v3/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/gates-partial-root-v3/capture.tar.gz",
+          "sha256": "7d0ba3ba8ff79520a3cfd941716a66d9805255ddad95d307371fdc989987f394"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 21,
+        "manifest_sha256": "8c7b4d709b142acc9116efaa30ab9c849eaf792d52f311043c1b6f034bbff1e6",
+        "name": "gates-partial-root-v3",
+        "tar_member_count": 22
+      },
+      {
+        "archive": {
+          "bytes": 490333,
+          "capture_review_members_reopened": 112,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-matrix-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-matrix-root-v1/capture.tar.gz",
+          "sha256": "7ed8bfb27eb2bfe77342d30f8ed1bb4e172575df49ad7a79040794ef6c79a3e8"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 111,
+        "manifest_sha256": "4b8bfa0eb7c7297613508535e9e2e0458a44fcfbc12e5337ea6ad03cbb395df8",
+        "name": "original-baseline-matrix-root-v1",
+        "tar_member_count": 112
+      },
+      {
+        "archive": {
+          "bytes": 868355,
+          "capture_review_members_reopened": 129,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-root-v3/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/original-baseline-root-v3/capture.tar.gz",
+          "sha256": "7700e8fbb3f27bccfaf8be73cd6e03f33c753487059369a7ce36f0044f376a4c"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 128,
+        "manifest_sha256": "b95799304ed8925c6c5eb81d716547daa54c853bbc58968e4ab8b45e8facbacf",
+        "name": "original-baseline-root-v3",
+        "tar_member_count": 129
+      },
+      {
+        "archive": {
+          "bytes": 2449434,
+          "capture_review_members_reopened": 118,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/own-product-ci-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/own-product-ci-root-v1/capture.tar.gz",
+          "sha256": "283d6562b32c93d4d5282ddaca4d7d067d3031f25be96edbb7326ebf0e989627"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 117,
+        "manifest_sha256": "ce1129f64c498a35be480f84faf84005efbaff9a84a07130c12f1553d2fd1e96",
+        "name": "own-product-ci-root-v1",
+        "tar_member_count": 118
+      },
+      {
+        "archive": {
+          "bytes": 342050,
+          "capture_review_members_reopened": 10,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/public-red-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/public-red-root-v1/capture.tar.gz",
+          "sha256": "7dc33dddc9a585c43d640537281eb99d878e038ffe63f71985678cbf5f417e04"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 9,
+        "manifest_sha256": "401655df3a526294f4414aa8da8d2fd10630507d6b6ad08b3b625d53edf046a5",
+        "name": "public-red-root-v1",
+        "tar_member_count": 10
+      },
+      {
+        "archive": {
+          "bytes": 9127,
+          "capture_review_members_reopened": 9,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/strict-product-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/strict-product-root-v1/capture.tar.gz",
+          "sha256": "d5945a666c282da7637c61257fd73fb3a25a5d16ebe7ecaf94ea69c46c4ab27e"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 8,
+        "manifest_sha256": "365c30b0e24bb24fef7260097962fa2781c4d7dbbd58f96845224b0c68ab83b0",
+        "name": "strict-product-root-v1",
+        "tar_member_count": 9
+      },
+      {
+        "archive": {
+          "bytes": 443432,
+          "capture_review_members_reopened": 243,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/supplemental-baseline-matrix-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/supplemental-baseline-matrix-root-v1/capture.tar.gz",
+          "sha256": "6ce402a3015418a90001c5df3b321ca555717f45c121303978d37a0f2c8a61da"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 242,
+        "manifest_sha256": "8eedb01655ca482fb0bafac99c12f13fd95ed1326eb570060ed65a03c13ef81b",
+        "name": "supplemental-baseline-matrix-root-v1",
+        "tar_member_count": 243
+      },
+      {
+        "archive": {
+          "bytes": 690878,
+          "capture_review_members_reopened": 202,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/supplemental-baseline-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/supplemental-baseline-root-v1/capture.tar.gz",
+          "sha256": "aa84d7e5100473888edfa4ac34e45da823e78d48b2ca2be29c8b2eb976b5cc9e"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 201,
+        "manifest_sha256": "bb50bcdf2b7d6ec942fb75ee74b1682e5ad3735dd8609cacdc0d146fd9b4bcc6",
+        "name": "supplemental-baseline-root-v1",
+        "tar_member_count": 202
+      },
+      {
+        "archive": {
+          "bytes": 3666,
+          "capture_review_members_reopened": 3,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/supplemental-map-scope-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/supplemental-map-scope-root-v1/capture.tar.gz",
+          "sha256": "82a64a7d73c1a3b00608eeb7638578b74423a98b6fd001ec3831298db3d9ebe2"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 2,
+        "manifest_sha256": "475807e854c6e374564a18a553972f3576bc887844479ddd1747eadd22d0bcf7",
+        "name": "supplemental-map-scope-root-v1",
+        "tar_member_count": 3
+      },
+      {
+        "archive": {
+          "bytes": 3455476,
+          "capture_review_members_reopened": 429,
+          "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/workspace-acceptance-root-v1/capture-review.json",
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results/workspace-acceptance-root-v1/capture.tar.gz",
+          "sha256": "3a08f7f9449d9b0ed89c55a535a40dca2616c48d379a9107ec7ffa685921f9f2"
+        },
+        "checks": {
+          "archive_review_pin": "passed",
+          "manifest_set_exact": "passed",
+          "member_bytes_and_sha256": "passed",
+          "regular_members_only": "passed",
+          "safe_canonical_paths": "passed",
+          "unique_paths": "passed"
+        },
+        "manifest_entry_count": 428,
+        "manifest_sha256": "efb02de47c731a211a1740bcc5462545be08e122ccac5d83390b786b111f524d",
+        "name": "workspace-acceptance-root-v1",
+        "tar_member_count": 429
+      }
+    ],
+    "error_count": 0,
+    "errors": [],
+    "root": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-loop-arm-returns/results",
+    "total_tar_members": 2289,
+    "total_payload_members": 2269
+  },
+  "schema": "loop-arm-all-archives-readonly-audit-v3",
+  "status": "passed",
+  "full_member_report": {
+    "path": "/private/tmp/jarde-loop-arm-all-archives-review-root-v3-20261018.json",
+    "bytes": 506092,
+    "sha256": "7a23b83c871bb377a01956d69f1a8d574575623e4e10509a5f6286eb6a339d9d"
+  }
+}

@@ -2,23 +2,31 @@
 
 持续目标 active，在当前聊天继续。按本地 JADX **71 语法单元 / 612 测试文件**账本先完成大颗粒 MVP，再探索双方未覆盖的形态。局部通过不增加整体单元完成数。
 
-## 2026-10-18 当前：TestNestedLoops5 最小实现已通过定向验收（5/8）
+先按下方第一节接续；后续章节是已完成产品的历史检查点，其中的“下一项”和提交号不代表当前状态。
 
-`recover-proved-loop-arm-returns`，main基点9b1a9e87e，仍在当前聊天推进。finThrow5/5、nestedFin16/16等旧产品已交付，不重复实现。当前工作区未提交；完整对照、广门、两fresh seed和产品自身CI尚未关闭，不能称交付。
+## 2026-10-18 当前：TestNestedLoops5 已完成产品验收（8/8）
 
-原始NL5两profile完整outer+child三方法、A/B双javac/debug-none完整类的旧Jarde/JADX基线均已root独立接受。原始28命令/56raw及旧矩阵42命令/84raw；补充65命令/130raw及旧矩阵97命令/194raw。旧Jarde原始8个javac23及A/B32编译均缺return；JADX原始4个javac23和A/B16编译成功，隔离运行同各自真实原oracle。NL5 check依赖major55框架，Java8边界单列。五基线归档729成员的baseline-archive-review-root.json保持冻结，供最终API引用。
+`recover-proved-loop-arm-returns` 产品 **e70b350ee33307294a3d383ffdea5874caf9f5b8** 已推送main，8/8关闭。自身[CI39087192303](https://github.com/LordCasser/jarde/actions/runs/39087192303)已root独立接受：4jobs/52步骤全成功、两seed各384目标/3736通过/0失败/98忽略，20重点门每seed各一次。53采集命令106raw及官方逐步骤ZIP命令2raw保留，gh UNKNOWN STEP显示限制未隐藏。后续文档关闭HEAD不冒称自身跑过该产品CI。
 
-root已集成并审查Luna最小候选：只改loop_arm_join_source，精确natural∪同Frame已证明return叶、原canonical唯一入口/普通出口、准确ForHeader和物理gateway、原Stop传播。implicit_tail_latch_origin保持755fd原样。完整实际region树确认原child16尾If/gateway34、A child30与B child31尾Straight/gateway96，十输入均有ForHeader，因此已删除CompoundIf扩展，不需要新机制。
+finThrow5/5、nestedFin16/16、父finally7/7以及后续exception-only、直接数组构造、switch和NL3均已交付，勿重复实现。原finThrow/nestedFin同一最终CLI完整对照576 rebuilt case与各自历史CI见下方finally节。持续目标active；本项不增加CF11或71/612整体完成数。
 
-`/private/tmp/jarde-loop-arm-focused-root-v8-20261018`实际fmt、479 Java库（含7新Reader内部门）、3公开、4旧循环臂控制、181 Reader全通过，共667通过出现/0失败；root-review.json已独立复核raw/3134来源/CLI/default stack/exact clean。CLI63070624B/SHA09dda40069dc362bc59f141a7d82c8cdcaee8b64072d304ec1ba848bdc14da25，仅候选。公开门核完整方法、BLAKE3身份、全物理BCI/UTF8、SourceMap-only/all文本map及late-budget无source/map。内部变形是明确同BCI proof-context，不冒称有效完整JVM/全SSA；真实jsr clone作异域context，异常边界用新合法catch-return类并以预算确认到达canonical扫描。
+NL5生产只改loop_arm_join_source，复用同Frame/normal join已证明return叶、ForHeader/latch及canonical边闭合，精确natural∪returns所有权与物理gateway，Stop照常传播。implicit_tail_latch_origin保持旧产品逐字原样。实际原tail If/gateway34与A/B tail Straight/gateway96均有ForHeader，因此删除无证据需要的CompoundIf扩展；无新公共IR、pass或solver。
 
-共享夹具22class/6Java/3manifest/3README，独立物理增量38Code/2handlers/74targets/0jsr，Reader实测1280/5677/626/3921/12。标准指纹已经原入口再生：旧2356逐项不变，仅新增本项31，总2387，其他字段不变。v8后仅内部Frame初始化风格修正；最新来源需由后续广门重新绑定。
+最终CLI `/private/tmp/jarde-loop-arm-gates-root-v4-20261018/candidate-cli`，63070624B/SHA256 **09dda40069dc362bc59f141a7d82c8cdcaee8b64072d304ec1ba848bdc14da25**。定向667通过出现/0失败；本地fmt/CI同款Clippy/MSRV1.88/reader/指纹/P5接受，旧2356指纹不变新增31，总2387。有效fixture22class、独立38Code/2handler/74targets/0jsr，Reader census1280/5677/626/3921/12一致。Reader变形和外来clone测试的proof-context限制明示，不冒称完整合法JVM恢复。
 
-广门v1因新测试5处field_reassign_with_default失败，raw和exact clean保留于results/gates-failed-root-v1。v2通过CI原样Clippy后，Homebrew cargo不支持+1.88.0入口，尚未编译MSRV项目；源码不变/target清空。v3绝对rustup入口的MSRV1.88及479库已通过，P5第五目标因未开all-features为0tests被runner正确拒绝；v4启用all-features八P5实际104/0/5，CLI build成功且与v8逐字同，root重核全部当前3134来源、raw/守卫/exact clean后接受组合本地门（results/gates-final-root-v4）。当前11归档879成员复开审计见all-archives-root-review-v1.json，后续新增包不含于此。
+最终24API/48raw核56方法配置、24目标Structured/32非目标投影不变、全BCI/UTF8及12组default/all，Rust公开门核BLAKE3。完整生成Java矩阵277命令/554raw、36源格72重编：Jarde40及JADX20成功，12原始javac8框架major55边界；144运行中132匹配原oracle、372case，另12check8框架边界，无其他差异。60错误CodeSource拒绝；成功产物全部类树、方法/字段/access/Code独立重解析，未手修生成Java。
 
-最终API私有prep冻结v5：`/private/tmp/jarde-loop-arm-api-capture-prep-luna-v5-20261018`，24请求/56方法配置，root已读collector/reviewer/helper并纠正归档关闭生命周期；尚未执行。最终36源格/72重编collector冻结v2：`/private/tmp/jarde-testnestedloops5-final-rebuild-prep-luna-v2-20261018`，root已全面审读，Luna另准备独立reviewer，尚未执行。workspace checker prep v1保留旧19关键门并新增本项10，总29；root已读diff与原逻辑。root独占共享编辑/Git/Cargo/JDK/JADX/CLI/网络，Luna仅私有/只读，不改冻结目录。
+原matrix collector全部命令完成后oracle Path误作pin导致终态failed，原execution.json冻结。root另建绑定原失败SHA的finalized收据，复核全部未到达末尾不变量后，由独立reviewer v5接受实际矩阵；future collector v4未执行。早期Clippy、Homebrew MSRV入口、P5零测试、helper路径/JDK别名和草稿错误按各自真实范围保留。
 
-下一固定TestSequentialLoops仅基线已接受：`/private/tmp/jarde-testsequentialloops-baseline-run-root-v1-20261018`及独立review-root-v1，24命令/48raw、四VM六有限case同原oracle、major55/CodeSource负控；旧八target fallback、map7/25，ctor3/3。重编matrix prep尚未完全审读/执行，不先新增机制或记完成。持续71/612和CF11整体计数不变。
+两个fresh native seed已root执行完整checker接受：每轮384目标/101批/3736通过/0失败/98忽略，29关键门每seed各一次，416raw与逐target库存一致。构建3134与native5087来源的5094并集按Git blob/字节/mode绑定产品，CLI不变。继承collector把artifact顺序误作运行顺序的表保留，root按stderr Running重建；独立债务未混入产品。默认stack/5GiB余量/target1GiB/每秒守卫/finally exact clean通过，target absent。
+
+证据索引 `openspec/changes/recover-proved-loop-arm-returns/results/README.md`；20归档2289成员已root逐字复开，compact报告all-archives-root-review-v3.json。原五基线729成员audit冻结不变。关闭后实际OpenSpec1.11.0 apply all_done/8-of-8、strict369/0。文档推送后的实际HEAD==origin/main==远端、clean、仅main、14辅助checkout detached/clean/ancestor、target absent与5094来源仍同的终态收据在 `/private/tmp/jarde-loop-arm-final-head-root-v1-20261018/execution.json`，接续核该收据与真实Git状态。
+
+下一固定 **TestSequentialLoops（Seq1）**：已root独立接受原始debug/none完整基线24命令48raw、四VM六有限case同原oracle、major55/CodeSource边界；旧完整源码矩阵38命令76raw、12源格/24编译：Jarde16均缺return，JADX6编译成功并双VM12运行72case同原，另2完整outer javac8框架major55失败无runtime。额外物理checker核成功产物完整方法/字段/access/Code/精确类树。诊断为中文，早期root手动英文断言失败无语义收据；后续独立真实补核单列JSON，不修改冻结包。
+
+当前e70 CLI已实际重放相同八API并由root独立reviewer接受：8格完整JSON递归只去usage/elapsed_millis后与旧版相等，16新raw/16旧raw、原argv仅换CLI、输入/来源/CLI/guard均核。**缺口仍存在，未实施Seq1修复**；不冒称重跑历史JDK矩阵。三独立CF11包225成员已逐字复开，索引 `openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-archive-review-root-v1.json`。
+
+下一步先实际Reader/SSA/Frame首拒诊断：旧首拒header2 Store5没有dup，第二header23 Store27前有dup26；静态memo `/private/tmp/jarde-testsequentialloops-next-direction-root-v2-20261018`。优先核现Endless/allow_own_loop_entry能否保持循环头赋值、body-first条件与精确break/return，不放宽StatementFree，不先新增AST/solver。JADX已冻结输出两个while(true)，本地makeEndlessLoop单exit/break和RegionStack算法已读；源码分析不冒称binary动态trace。Atlas Focus ticket未完成不引用其事实。真实SSA与完整owner闭合明确后再建OpenSpec并派Luna，root完成对抗审查及完整新旧JADX/源码验收。root独占共享编辑/Git/Cargo/JDK/JADX/CLI/网络，Luna仅私有准备/只读，不改冻结版本目录。
 
 ## 2026-10-18 当前：TestNestedLoops3 已完成产品验收（7/7）
 

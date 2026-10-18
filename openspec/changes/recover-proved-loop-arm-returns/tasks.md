@@ -11,6 +11,6 @@
 
 ## 3. 完整验收与交付
 
-- [ ] 3.1 冻结最终CLI，root逐格接受原始与A/B完整类全部身份/BCI/UTF8/default-all和非目标投影；原样双编译器重编、双VM隔离driver按实际原oracle核返回/效果次数/累计状态，check框架边界单列，生成Java不修补不删方法。
-- [ ] 3.2 通过fmt、CI同款Clippy、MSRV1.88、reader、标准指纹与P5及两个fresh workspace seed；root核动态target/真实具名门、完整来源、默认栈/5GiB余量/target1GiB/实时守卫/finally exact clean。
-- [ ] 3.3 更新证据/handoff/实际任务状态，提交推送产品并独立接受自身CI；归档逐字重开，核实际HEAD/远端/clean主线与target absent，不增加CF-11或71/612总体完成数。
+- [x] 3.1 冻结最终CLI，root逐格接受原始与A/B完整类全部身份/BCI/UTF8/default-all和非目标投影；原样双编译器重编、双VM隔离driver按实际原oracle核返回/效果次数/累计状态，check框架边界单列，生成Java不修补不删方法。
+- [x] 3.2 通过fmt、CI同款Clippy、MSRV1.88、reader、标准指纹与P5及两个fresh workspace seed；root核动态target/真实具名门、完整来源、默认栈/5GiB余量/target1GiB/实时守卫/finally exact clean。
+- [x] 3.3 更新证据/handoff/实际任务状态，提交推送产品并独立接受自身CI；归档逐字重开，核实际HEAD/远端/clean主线与target absent，不增加CF-11或71/612总体完成数。

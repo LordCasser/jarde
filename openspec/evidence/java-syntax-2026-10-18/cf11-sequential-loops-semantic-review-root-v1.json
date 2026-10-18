@@ -1,0 +1,13 @@
+{
+  "status": "accepted historical baseline semantics",
+  "jarde_compile_missing_return": 16,
+  "jadx_major55_boundary_no_runtime": 2,
+  "jadx_compile_success": 6,
+  "jadx_runtime_matches_original": 12,
+  "rebuilt_case_appearances": 72,
+  "execution_sha256": "bd739ba31ed899b4134ef512158afcf705b1ea687fa5298cd70ff66e00f57a56",
+  "notes": [
+    "Earlier root manual diagnostic assertion expected English; actual javac8 diagnostics are Chinese. That assertion produced no semantic receipt; original captures and successful independent reviews remain unchanged.",
+    "No new compilation or runtime is claimed by this read-only review."
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "status": "passed",
+  "scope": "Seq1 historical baseline, historical full-source matrix, and current e70 eight-cell API replay. Separate from NL5 leaf.",
+  "archive_count": 3,
+  "tar_members": 225,
+  "archives": [
+    {
+      "archive": {
+        "bytes": 508673,
+        "capture_review_members_reopened": 110,
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-matrix-root-v1/capture-review.json",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-matrix-root-v1/capture.tar.gz",
+        "sha256": "f333e28f5b378e7e5f0a75e578102c0281bc3a4fe985d518981d9574ebcac44a"
+      },
+      "checks": {
+        "archive_review_pin": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed",
+        "regular_members_only": "passed",
+        "safe_canonical_paths": "passed",
+        "unique_paths": "passed"
+      },
+      "manifest_entry_count": 109,
+      "manifest_sha256": "b1fe7ceed71eefc02b8b8813cb4679d2d50890560ce294297ae0164a1d1cf243",
+      "name": "cf11-sequential-loops-baseline-matrix-root-v1",
+      "tar_member_count": 110
+    },
+    {
+      "archive": {
+        "bytes": 499149,
+        "capture_review_members_reopened": 84,
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-root-v1/capture-review.json",
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-baseline-root-v1/capture.tar.gz",
+        "sha256": "4324f7aaf89c49d6075cb2587b3c266d7d261521eb87e4922ec34e2477cd0857"
+      },
+      "checks": {
+        "archive_review_pin": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed",
+        "regular_members_only": "passed",
+        "safe_canonical_paths": "passed",
+        "unique_paths": "passed"
+      },
+      "manifest_entry_count": 83,
+      "manifest_sha256": "13b9920bc0194f17e506e5ab4be842a2c4c90b45010862d4fc60e59dc2e1f685",
+      "name": "cf11-sequential-loops-baseline-root-v1",
+      "tar_member_count": 84
+    },
+    {
+      "name": "cf11-sequential-loops-current-api-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-current-api-root-v1/capture.tar.gz",
+        "bytes": 216846,
+        "sha256": "1447a08481b4605d70bcea80b4b8837a212ef240de7d7a09f6e9a8933c51f77e",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops-current-api-root-v1/capture-review.json",
+        "capture_review_members_reopened": 31
+      },
+      "tar_member_count": 31,
+      "manifest_entry_count": 30,
+      "manifest_sha256": "dcaf820ec5e656b917125da889fc3b2789846a54fbdd8f13aad7b9ab333244f4",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ],
+  "audit_helper_sha256": "238a90dc4cd1b903753f1b9dc033150ae219bf25b6333ae3e3faa4a56beb4c84"
+}
