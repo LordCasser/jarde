@@ -1,0 +1,90 @@
+{
+  "status": "passed",
+  "archives": [
+    {
+      "name": "original-baseline-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/original-baseline-root-v1/capture.tar.gz",
+        "bytes": 957314,
+        "sha256": "823669b76a4ad3f63e42ae0d063a1c697ef88e970be860e8278ac063b5931a11",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/original-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 77
+      },
+      "tar_member_count": 77,
+      "manifest_entry_count": 76,
+      "manifest_sha256": "3eaf2d204175a82ce81f917805045bc0272b4a9a1a6a3d5416ee5718c20c8152",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "generated-baseline-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/generated-baseline-root-v1/capture.tar.gz",
+        "bytes": 806867,
+        "sha256": "49c44b3fcf63375e0beec9f9f9e8c243b78dbbece2c84dae66256027990de446",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/generated-baseline-root-v1/capture-review.json",
+        "capture_review_members_reopened": 190
+      },
+      "tar_member_count": 190,
+      "manifest_entry_count": 189,
+      "manifest_sha256": "1ea3ee1b3999f30cbd8e0838a13a7381b949609f9426d3ec8ae8dba08e998c8a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "baseline-tools-root-v1",
+      "archive": {
+        "path": "openspec/changes/recover-typed-list-foreach-elements/results/baseline-tools-root-v1/capture.tar.gz",
+        "bytes": 102122,
+        "sha256": "6846f5860127f492a3da24ebfa6c777a55f7a3acb2a22205d81325bbbb576fa7",
+        "capture_review_path": "openspec/changes/recover-typed-list-foreach-elements/results/baseline-tools-root-v1/capture-review.json",
+        "capture_review_members_reopened": 40
+      },
+      "tar_member_count": 40,
+      "manifest_entry_count": 39,
+      "manifest_sha256": "957401828f36c12c0cf28acc2d55fca695135fe7c35146155f0b985aa760b718",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ],
+  "member_count": 307,
+  "separate_seq2_map_supplement": {
+    "name": "cf11-sequential-loops2-raw-method-map-review-root-v2",
+    "archive": {
+      "path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-raw-method-map-review-root-v2/capture.tar.gz",
+      "bytes": 9292,
+      "sha256": "09528fc51d0514ec0686dcfde72a23d05b9316f26252919bc22bc95d04df2ab6",
+      "capture_review_path": "openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-raw-method-map-review-root-v2/capture-review.json",
+      "capture_review_members_reopened": 5
+    },
+    "tar_member_count": 5,
+    "manifest_entry_count": 4,
+    "manifest_sha256": "f083282055eec00e0d87fb2f4bd4f30cd4d858eb341ac28ee6e619e746b06fc2",
+    "checks": {
+      "archive_review_pin": "passed",
+      "unique_paths": "passed",
+      "safe_canonical_paths": "passed",
+      "regular_members_only": "passed",
+      "manifest_set_exact": "passed",
+      "member_bytes_and_sha256": "passed"
+    }
+  }
+}

@@ -4,6 +4,18 @@
 
 先按下方第一节接续；后续章节是已完成产品的历史检查点，其中的“下一项”和提交号不代表当前状态。
 
+## 2026-10-18 当前：原始 TestNestedLoops 基线接受，typed List foreach 实施中
+
+finThrow5/5、nestedFin16/16及父finally7/7已交付，勿重做。持续goal active；当前固定差距是原始TestNestedLoops的两个Object foreach头，既有List<String>形参与循环语义已经正确。JADX实际两String头可作算法参考；不新增循环识别、全局pass或作用域solver。
+
+新OpenSpec `openspec/changes/recover-typed-list-foreach-elements/` 已strict通过，**1/7**：完整原始基线20命令40raw、4原JVM/32case、8API、2JADX输出，以及生成矩阵75命令150raw/20编译18成功/36JVM288case同原、18wrong CodeSource拒绝均root独立接受。Jarde16编译/32JVM256case，JADX2编译/4JVM32case；另外2JADX javac8完整outer框架major55失败无runtime。三包307成员已逐字复开，入口为change `results/README.md`。基底仍产品ee013/aabf CLI，无共享Rust修改或新产品CI。
+
+Luna `/root/typed_foreach_impl` 正在私有目录 `/private/tmp/jarde-typed-list-foreach-impl-luna-v1-20261018/` 实现任务2.1；root须审patch再应用。设计：复用现有完整泛型事务和同次opaque AST，精确Signature E/物理checkcast/首绑定闭合，只改synthetic头Object→E并解开首句RHS cast，保留原Assign/Declare、名字、外层声明和位置；cast来源并入头，raw RecoveryReport.text/map不改。类型不匹配只拒绝typed候选，不降级原泛型声明。typed-only编辑必须独立触发事务，末尾重验具体AST/站点，所有新扫描先计费/poll。原名头折叠、冗余iterator和Object包装是独立债务，整上游黄金与CF11未完成。
+
+独立19case Java控制已冻结在 `/private/tmp/jarde-typed-foreach-controls-prep-luna-v1-20261018/`，目前未执行；Luna准备collector，root审后采原始和未修对照，涵盖String/Integer空/null/错误元素、原绑定最后值与iterator/hasNext/next异常。目标全static，不冒称运行构造器。root独占共享源码/Git/Cargo/JDK/JADX/CLI/网络；agents只读/私有准备。当前target不存在，遵守5GiB/target1GiB/default stack及结束清理。
+
+Seq2另补强raw方法source_map范围：旧checker用了whole长度，新的root-v2已实际对同一冻结receipt重核8API/24方法及两个真实checker负控；源码/原8次和生成72次JVM未重跑。补证在 `openspec/evidence/java-syntax-2026-10-18/cf11-sequential-loops2-raw-method-map-review-root-v2/`，不改历史raw、语义结论或运行计数。
+
 ## 2026-10-18 当前：Seq2 完整对照接受，下一固定项 TestNestedLoops
 
 持续goal active。finThrow5/5、nestedFin16/16、父finally7/7及后续Seq1/NL3/NL5已交付，勿重做。Seq2当前输入由既有产品 **ee013adb35711366d0aff2f774ee633b34c06082** 覆盖，无新增Rust/机制/OpenSpec实现任务；本次只更新证据与账本，不冒称新增产品CI或整个CF11/71/612完成。

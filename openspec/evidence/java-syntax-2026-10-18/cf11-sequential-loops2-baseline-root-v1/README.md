@@ -11,3 +11,5 @@ JADX1.5.6 两份实际完整 bundle 输出保留。它使用临时旧值和 `whi
 receipt `execution.json` SHA256 `9811af1be7efd2d5f4ce38d7ed7ae1ce426ca5f30de9b6cac8b4344553211a37`。root 阅读并实际执行独立 checker 后接受；脚本、报告及物理 parser 在 archive extra 内。3298来源包含原构建3187文件，后者无缺失/变化，另111项是已有 exception-only 证据/工具目录；不能把两种 closure 计数不同当代码漂移。CLI/依赖/JDK/来源前后不变，5GiB/target1GiB/default stack 守卫接受，target不存在。
 
 归档91成员，SHA256 `b7473a49fcc3aae45fb83e23b80b5a43297f5d426a87608b7c072fac32e45774`。本片不增加 CF11/71/612 完成数。
+
+后续[raw方法范围补核](../cf11-sequential-loops2-raw-method-map-review-root-v2/README.md)修正旧checker使用whole文本边界的工具范围问题：相同8请求24方法按各自RecoveryReport.text真实接受，另两span变形负控真实拒绝；旧报告和所有源码/JVM记录不改、不重复计运行。
