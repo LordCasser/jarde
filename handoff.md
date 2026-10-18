@@ -1,16 +1,16 @@
-## 2026-10-18 当前：foreach 原名绑定提升 5/7，完整对照接受，准备产品提交
+## 2026-10-18 当前：foreach 原名绑定 6/7，双native已接受，等待自身CI
 
-本节优先；finThrow5/5、nestedFin16/16、父finally7/7、typed7/7/bulk4/4已交付，勿重做。持续goal active，71单元/612测试及CF11整体计数不增。planning a31f32e35已推；新生产修改尚未提交，不丢弃。
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7、typed7/7/bulk4/4已交付，勿重做；持续goal active，CF11/71/612整体计数不增。产品0a7e3c98f63b128a13a658a475b9e69a9e60d048已推main，生产源码冻结，无待续Cargo/target。
 
-`fold-proved-foreach-local-bindings`现5/7。复用typed事务/物理slot与canonical SSA/opaque AST窄证明；唯一首绑定与所有读写/真实词法可见性闭合才提升原名、删除首copy及无用空声明；缺证保留typed。SsaUse None按定义为phi操作数，只排除无BCI结构边，全部Some/物理/AST读取严格闭合，真实Phi读取仍拒绝。完整原始debug头s1/s2、none头local4/local6，初始化/前后观察控制保持原表示；不用类名白名单，不加IR/solver/pass。
+`fold-proved-foreach-local-bindings`已6/7。最终CLI c688920cac70ee9e46681672ebaaba5df2948c5ef5b5f262d006548ca1f83ebe，63586736B，/private/tmp/jarde-foreach-fold-broad-root-v1-20261018/candidate-cli。广门808/0/6旧忽略；fmt/CI Clippy/MSRV通过，Reader1303/5755/630/4066/14、fingerprint2432（旧2429条不变）。复用typed事务/slot/canonical SSA/真实词法可见性窄证明才提升已有名字；缺证保留typed，None SSA use仅为phi结构边，真实Phi读取仍拒绝，无新IR/solver/pass。
 
-最终CLI `/private/tmp/jarde-foreach-fold-broad-root-v1-20261018/candidate-cli`，63586736B/SHA c688920cac70ee9e46681672ebaaba5df2948c5ef5b5f262d006548ca1f83ebe。广门实际808/0/6oldignored，18命令36raw；fmt/CI Clippy/MSRV1.88、Java500/Reader181/公开19等通过，3194构建来源不变，exactclean/target absent。Reader1303/5755/630/4066/14、fingerprint2432，全部旧2429记录不变。focused1..5真实失败、v6旧死helper Clippy失败与数据旧金值失败均保留，不冒称whole-product通过。
+本CLI完整Java实际重跑并独立接受：原始4VM32case、生成20编译18成功/2JADX外框架边界，36VM288case/18wrong-root；19case控制24Jarde编译/48VM912case与原一致/24wrong-root，8JADX String→Integer整类编译失败保留。20API精确差分仅允许受证头/copy/空声明变化，raw text/map/quality/fallback不变。
 
-本CLI完整三方Java已实际重跑并独立接受：原始20命令/8API/4原VM32case；生成20编译18成功2JADX outer框架边界，36VM288case、18wrongroot通过。19case控制137命令/8原VM152行/12API；24 Jarde编译及48VM912case同原，24wrongroot通过，8 JADX String→Integer整类编译失败原样保留。v4精确差分核20API只改受证头/copy/空声明，其它projected/raw text/map/quality/fallback不变。两套真实JDK、driver-only classpath、parentless目标及实际CodeSource都核实。
+两fresh native实际各385目标/101批/3766-0-98、16精确门各一次；全部3864具名(name,status)逐target相等。root实际三命令独立接受在 /private/tmp/jarde-foreach-fold-workspace-acceptance-root-v2-20261018：5147 native来源/3194构建并集5154逐Git blob/bytes/mode绑定0a7e，CLI不变、默认stack/5GiB/1GiB每秒guard/finally exactclean。第一验收v1因旧checker只认jarde_java为lib而拒绝jarde lib；派生v3仅一行kind分类修正，原失败完整保留，不改生产/测试/阈值。
 
-证据在本change results：baseline/focused1..6/census/dataset/broad/original/generated/controls/projection-delta/preparation。checker-only错误和私有草稿都留存；main九场景MODIFIED规范已逐字同步，尚不能宣称整片交付。下一步提交推送实际产品→其自身CI，同时本地串行两fresh native（5350648285461741569/1570）；使用v2 own-CI prep61精确门/native16门，实际库存/具名结果动态derive，Git blob/bytes/mode绑定产品。工具准备 `/private/tmp/jarde-foreach-local-bindings-own-ci-prep-luna-v2-20261018`。native后才网络收完整CI/官方ZIP并独立接受，再strict/全归档复开/ledger/干净main交付。
+自身CI39120933555仍待完整接受；最近3job成功，stable第二seed运行中。须 exact产品run全部job/step/官方ZIP+v2 CI verifier61门后才勾3.3；不能凭当前绿点关闭。此轮native checker用v3，CI verifier仍v2不变；私有工具 /private/tmp/jarde-foreach-local-bindings-own-ci-prep-luna-v2-20261018 /v3。root负责共享/Git/所有工具链网络，本地串行；Cargo已结束，可以网络取CI。当前文档检查点需提交推送并用 /private/tmp/jarde-foreach-fold-check-clean-main-root-v2-20261018.py 审实际HEAD，14辅助checkout应detached/clean/main祖先/无target。CI接受后strict/全归档复开/ledger/handoff/最终clean后才7/7，文档head不冒称另跑产品CI。
 
-root独占共享写/Git/Cargo/JDK/CLI/网络，Luna私有或只读；本地工具串行，Cargo期间不改源/Gitmutation/网络，默认stack/至少5GiB/target1GiB每秒守卫/finally exactclean。14辅助checkout保持detached-clean-main祖先、无新worktree。其它Iterator空声明、equals/remove Object包装及既有AST预扫债务独立；projected add(E) wrapper本来已去除，不新造问题。
+下一固定分析已持久：openspec/evidence/java-syntax-2026-10-18/cf11-foreach-iterator-declaration-analysis-root-v1（11成员/62b4fdf…）。Iterator local5祖先空声明真实残留，JADX DONT_GENERATE/变量收集与本Builder Vec/回滚路径已核；需要窄跨列表关联，不加通用死变量pass。仅分析、无Spec/实现；字面黄金需区分全限定类型及none确定性名字；equals/remove Object转型留待独立重载证明，add(E)包装早已去除。
 
 ## 2026-10-18 最新交付：typed foreach 7/7、bulk 4/4，自身CI已完整接受
 

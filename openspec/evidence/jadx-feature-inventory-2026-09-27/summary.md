@@ -460,3 +460,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-13 循环/字段交付闭合：产品7e93自身CI已接受，已推送检查点6bfc44833真实clean-main审计通过（4854来源恒同、only main、14aux detached/clean/ancestor/no-target），父8/8、子6/6。见[检查点](../../changes/recover-ordered-field-concat-operands/results/clean-main-checkpoint-root-v1/README.md)。关闭文档提交之后仍由root外置审计实际最终HEAD；整CF11/CF18/71/612计数不增。
 
 2026-10-18 foreach原名绑定提升当前5/7：最终c688 CLI广门808/0/6oldignore、3194构建来源恒同、fmt/CI Clippy/MSRV通过。实际完整原始双JDK对照20编译18成功/2JADX框架边界、36VM288case；19case控制24Jarde编译/48VM912case与原一致、8JADX String→Integer编译失败保留。精确20API差分只允许受证头/copy/空声明，raw text/map/quality/fallback不变。复用窄slot/SSA/词法证明，无新IR/solver/pass；main九场景契约已同步。两fresh native、实际产品自身CI/源Git绑定/clean-main待，整CF11/71/612不增计数，见本片results与handoff。
+
+2026-10-18 foreach原名绑定产品0a7e已推，当前6/7：两fresh native各385targets/3766-0-98、16精确门及全部3864具名逐target等价独立接受，5147native/3194build并集5154来源绑定实际产品Git blob/bytes/mode，c688 CLI不变、target absent。旧checker对jarde lib种类误判的真实失败及只改该分支的派生v3保留。自身CI39120933555 stable第二seed仍运行、其它3job成功，不提前关闭。下一Iterator祖先空声明分析已固定11成员62b4fdf…，没有新Spec/实现，整CF11/71/612不增。
