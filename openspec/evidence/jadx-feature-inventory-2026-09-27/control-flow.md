@@ -1,5 +1,11 @@
 # JADX control-flow syntax inventory
 
+## 2026-10-19 当前：双入口循环6/6，原始Raung来源片1/6
+
+双入口窄片 [验收入口](../../changes/recover-proved-entry-split-int-loops/results/README.md) 产品3fa及最终CLI24格精确重绑、148命令完整矩阵、fresh387目标/3791-0-98与自身CI39173630344全部4jobs/52官方步骤均接受；双seed各90精确门、全部3889具名结果一致，主spec同步及strict380通过。16整类编译/32VM/1728观察精确复用边界、全部负向/JADX/历史失败及源码/产品绑定如实保留。CF07/CF11/finThrow/nestedFin周边回归无损。
+
+固定 [TestLoopRestore2真实Raung基线](../java-syntax-2026-10-19/cf08-looprestore2-original-root-v1/README.md) 20实际命令已独立接受并归档：Jarde整类8编译成功，JADX整类两编译均unreachable while失败，没有目标方法运行。四map漏唯一BCI8入口goto（9/10，已有anchor均有效）。[独立来源修正](../../changes/preserve-proved-if-loop-entry-origins/tasks.md) strict/apply1/6，Luna私有候选待root审；父If派生origin、不改Java/区域owner/loop gateway的latch证书。**CF08保持partial，71/612整项计数不增；Smali/DEX未由JVM构造例替代。**
+
 ## 2026-10-19 CF-08：原始Endless接受，双入口恢复新片1/6
 
 [Endless完整验收](../java-syntax-2026-10-19/cf08-endless-original-root-v1/README.md)已接受：95实际命令（原始20/生成24/补跑51）、Jarde16完整编译/32构造VM，三个循环Code等原；JADX2编译/4构造VM及2框架失败如实保留。无限方法未执行，纯this恒等条件静态解释单列。NotIndexed前项不重做。

@@ -1,3 +1,17 @@
+## 2026-10-19 当前主线：双入口循环6/6验收；下一来源片1/6私有候选待root审
+
+本节优先，下方为历史检查点。finThrow5/5、nestedFin16/16及此前循环片已交付，不重做；持续goal active。产品 `3fa7745b0a42b447bf1931bfe052191f24389b29` 已推main；最终CLI `/private/tmp/jarde-entry-split-clippy-final-build-root-v1-20261019/candidate-cli`，63938736B/SHA f7ea5a20173b671f94b46fe4304618cd5fcce0b3e0b327eb8c3e891fb92618ba。
+
+`recover-proved-entry-split-int-loops` 6/6，主规范窄例外同步，18主spec/全部strict380通过。完整矩阵148命令接受、最终CLI24API除usage外全JSON/源码/身份/maps精确重绑，复用16整类编译/32VM/1728观察，不冒称重跑；全部32负向/JADX失败及历史失败保留。最终native387目标/101批/3791-0-98、45精确门及九项CF07/CF11/finThrow/nestedFin回归各一次；峰值847301292B/精确clean/target absent。5187 build/native来源并集逐Git blob/bytes/mode绑定3fa。
+
+自身CI39173630344已root完整接受4jobs/52独立官方ZIP步骤，无aggregate重建；双seed各387目标/3791-0-98，90精确门各一次，全部3889具名结果一致。含Clippy、MSRV1.88、专项JDK/供应链/fuzz。入口 `openspec/changes/recover-proved-entry-split-int-loops/results/README.md`；矩阵412 payload SHA70f7fa…，最终native/CI689 payload SHA799d6f…均逐字复开。后续纯文档提交不冒称另跑产品CI。最终文档提交后的实际HEAD/远端/clean-main与14aux detached-clean-main祖先状态，以外置 `/private/tmp/jarde-entry-split-final-clean-main-root-v1-20261019/execution.json` 为准；接续先核真实Git。
+
+下一固定CF08 `TestLoopRestore2` 原始Raung真实class148B/45.3/唯一24B Code，SHA4fd1503499a049efa8e736a98de4339b6504973f80208987ed0774073df9c447。已root实际接受装配4/对照16命令，Jarde四APIstructured整类8编译成功、JADX整类两编译unreachable while失败，目标方法未调用。四map有效但只9/10，缺BCI8 goto11。持久入口 `openspec/evidence/java-syntax-2026-10-19/cf08-looprestore2-original-root-v1/README.md`，144 payload归档SHA3eea2de4a59149f9bd99d5c762bc04b690cd22ff2845d909a0617a813ba7f3a7。
+
+已立 `preserve-proved-if-loop-entry-origins` strict/apply ready1/6。父If继承受证前导goto派生origin，保持Java文本/物理owner，不改Loop.gateway_origins的latch证书。Luna候选均仅私有、未集成/编译/验收：生产/unit `/private/tmp/jarde-proved-if-loop-entry-origins-impl-luna-v1-20261019`（root须特别审其额外CompoundIf范围是否应删）；fixture/公开API tests `/private/tmp/jarde-if-loop-entry-tests-prep-luna-v1-20261019`（原件+goto_w及effectprefix两控制，预计Reader增3class/3Code/12targets，须root实际核）；最终4API重绑prep `/private/tmp/jarde-looprestore2-origin-rebind-prep-luna-v2-20261019`，未执行/未提供下一CLI哈希。新map只多parentIf唯一derived8，去该项后整map与旧基线同；Java全文同则绑定复用8完整编译，不重复目标运行。下一步root读审真实patch/metadata与周边代码、解决范围/库存措辞后集成并串行受守卫验证，不把私有draft勾完成。
+
+CF08/71/612整项保持partial；原Smali/DEX TestMultiEntryLoop2仍不由JVM构造例替代。root独占共享/Git/网络/工具链；Luna只读共享+私有tmp、所有Python-B。无本地Cargo/JDK/CLI待续，target absent；Cargo5GiB/target1GiB/defaultstack/每秒guard/finally clean，期间不共享写/Gitmutation/网络/manualJDK或CLI，不建新工作树。
+
 ## 2026-10-19 当前推进：CF08 双入口循环 4/6，完整对照待独立终审
 
 本节优先，下方历史不重做。finThrow5/5、nestedFin16/16已交付，持续goal active。main起点1a0dacdbc89da8855a9de4e42e1128e68d9ee7ce；本轮生产/六fixture/测试/证据尚未提交。当前冻结候选CLI `/private/tmp/jarde-entry-split-focused-root-v4-20261019/candidate-cli`，63955664B/SHA eb11645e741d944a349080fbd12f18e2e5c70bdc5809f4bdb51a6e3cdec6fb50，生产实现后未再改变。

@@ -10,5 +10,5 @@
 
 ## 3. Root acceptance and delivery
 
-- [ ] 3.1 root用同一最终CLI完整重编/隔离对照原始、JADX、Jarde固定及控制类；两编译器/双JVM核零/一/多轮、skip双值及int环绕，失败不运行，raw/source/class/身份/SourceMap/default-all闭合；适用CF07/CF11及finThrow/nestedFin拒绝与输出回归无损，保留原失败与harness修正。
-- [ ] 3.2 root完成fmt/适用Clippy/MSRV/focused及fresh完整workspace、精确产品提交推送和自身CI；遵守5GiB/target1GiB/defaultstack/每秒guard/最终清理，完整审核具名结果与产品源码/CLI绑定。同步主规范、strict与归档逐字复开、账本/handoff/干净main后关闭；CF08/71/612整项仍不自动增加。
+- [x] 3.1 root完成原始/JADX/Jarde固定及控制类完整重编和隔离对照；CI等价lint修正后的最终CLI另实际执行24格API重绑定，仅剔除usage后完整JSON/源码/身份/映射相同，因此精确复用已接受的16成功编译/32VM/1728观察，不冒称重跑；两编译器/双JVM核零/一/多轮、skip双值及int环绕，失败不运行，raw/source/class/身份/SourceMap/default-all闭合；适用CF07/CF11及finThrow/nestedFin拒绝与输出回归无损，保留原失败与harness修正。
+- [x] 3.2 root完成fmt/适用Clippy/MSRV/focused及fresh完整workspace、精确产品提交推送和自身CI；遵守5GiB/target1GiB/defaultstack/每秒guard/最终清理，完整审核具名结果与产品源码/CLI绑定。同步主规范、strict与归档逐字复开、账本/handoff/干净main后关闭；CF08/71/612整项仍不自动增加。
