@@ -12312,7 +12312,10 @@ mod tests {
             // Original nested foreach child debug/none add two exact runtime-baseline copies,
             // four Code bodies and sixteen direct targets; no handlers or jsr.
             // The complete Reader sweep and independent raw-Code decode measured this delta.
-            (1303, 5755, 630, 4066, 14),
+            // Indexed List parameter controls add the frozen debug and no-debug classes. Each
+            // class has ten Code bodies, eighteen branch targets, no handler and no jsr; together
+            // they add two classes, twenty bodies and thirty-six branch targets.
+            (1305, 5775, 630, 4102, 14),
             "fixture population changed: re-measure these counts"
         );
     }
