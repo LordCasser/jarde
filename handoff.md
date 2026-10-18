@@ -1,16 +1,20 @@
-## 2026-10-18 当前：foreach 原名绑定 6/7，双native已接受，等待自身CI
+## 2026-10-18 最新交付：foreach 原名绑定 7/7，自身CI完整接受
 
-本节优先。finThrow5/5、nestedFin16/16、父finally7/7、typed7/7/bulk4/4已交付，勿重做；持续goal active，CF11/71/612整体计数不增。产品0a7e3c98f63b128a13a658a475b9e69a9e60d048已推main，生产源码冻结，无待续Cargo/target。
+本节优先。finThrow5/5、nestedFin16/16、父finally7/7、typed7/7/bulk4/4早已交付，勿重做；本片 `fold-proved-foreach-local-bindings` 现7/7。持续goal active，按固定JADX71单元/612测试推进；CF11整体及71/612计数不增。
 
-`fold-proved-foreach-local-bindings`已6/7。最终CLI c688920cac70ee9e46681672ebaaba5df2948c5ef5b5f262d006548ca1f83ebe，63586736B，/private/tmp/jarde-foreach-fold-broad-root-v1-20261018/candidate-cli。广门808/0/6旧忽略；fmt/CI Clippy/MSRV通过，Reader1303/5755/630/4066/14、fingerprint2432（旧2429条不变）。复用typed事务/slot/canonical SSA/真实词法可见性窄证明才提升已有名字；缺证保留typed，None SSA use仅为phi结构边，真实Phi读取仍拒绝，无新IR/solver/pass。
+实际产品 **0a7e3c98f63b128a13a658a475b9e69a9e60d048** 已推。自身CI **39120933555** 已root独立接受4jobs/52全部step成功，官方ZIP全部52独立step成员齐全、零aggregate重建；双seed各385目标/3766通过/0失败/98旧忽略、61精确门各一次。25原始采集命令50raw、13源码/5fixture绑定0a7e；verifier调用另存。文档后继不冒称另跑产品CI。 最终strict374/0、apply all_done；本片及下一静态分析22归档1832成员已root逐字复开，见results/all-archives-root-review-v4.json。持久自身CI包75成员/915e61b6…，本片results索引汇总全部证据与真实旧失败。
 
-本CLI完整Java实际重跑并独立接受：原始4VM32case、生成20编译18成功/2JADX外框架边界，36VM288case/18wrong-root；19case控制24Jarde编译/48VM912case与原一致/24wrong-root，8JADX String→Integer整类编译失败保留。20API精确差分仅允许受证头/copy/空声明变化，raw text/map/quality/fallback不变。
+最终CLI `/private/tmp/jarde-foreach-fold-broad-root-v1-20261018/candidate-cli`，63586736B/SHA **c688920cac70ee9e46681672ebaaba5df2948c5ef5b5f262d006548ca1f83ebe**。广门808/0/6旧忽略；fmt/CI Clippy/MSRV1.88通过。Reader1303/5755/630/4066/14、fingerprint2432，全部旧2429条目不变。复用typed事务/slot/canonical SSA/真实词法范围窄证明，闭合才提升已有名、移除首copy/无用空声明，缺证保留typed，无新IR/solver/pass。实际SSA None use是phi结构边，全部Some/物理/AST读取仍一一闭合，真实Phi读取仍拒绝。
 
-两fresh native实际各385目标/101批/3766-0-98、16精确门各一次；全部3864具名(name,status)逐target相等。root实际三命令独立接受在 /private/tmp/jarde-foreach-fold-workspace-acceptance-root-v2-20261018：5147 native来源/3194构建并集5154逐Git blob/bytes/mode绑定0a7e，CLI不变、默认stack/5GiB/1GiB每秒guard/finally exactclean。第一验收v1因旧checker只认jarde_java为lib而拒绝jarde lib；派生v3仅一行kind分类修正，原失败完整保留，不改生产/测试/阈值。
+完整三方Java本CLI已实际重跑：原4VM32case；生成20编译18成功/2JADX outer框架边界、36VM288case/18wrong-root；19case控制24Jarde编译/48VM912case同原/24wrong-root，8JADX String→Integer整类编译失败保留。精确20API差分仅受证头/copy/空声明变化，其他projected/raw text/map/quality/fallback不变。没有手修/裁源或用旧JVM收据冒充新跑。
 
-自身CI39120933555仍待完整接受；最近3job成功，stable第二seed运行中。须 exact产品run全部job/step/官方ZIP+v2 CI verifier61门后才勾3.3；不能凭当前绿点关闭。此轮native checker用v3，CI verifier仍v2不变；私有工具 /private/tmp/jarde-foreach-local-bindings-own-ci-prep-luna-v2-20261018 /v3。root负责共享/Git/所有工具链网络，本地串行；Cargo已结束，可以网络取CI。当前文档检查点需提交推送并用 /private/tmp/jarde-foreach-fold-check-clean-main-root-v2-20261018.py 审实际HEAD，14辅助checkout应detached/clean/main祖先/无target。CI接受后strict/全归档复开/ledger/handoff/最终clean后才7/7，文档head不冒称另跑产品CI。
+两fresh native实际各385targets/101批/3766-0-98、16门各一次，全部3864具名(name,status)逐target相等；5147 native/3194 build并集5154逐Git blob/bytes/mode绑定0a7e。actual三命令接受 `/private/tmp/jarde-foreach-fold-workspace-acceptance-root-v2-20261018`；默认stack/5GiB/target1GiB每秒guard/exactclean，target absent无待续Cargo。原v1验收旧checker把root jarde lib误当test的失败保留；v3只改kind这一行，保留全部判据。CI verifier仍v2，不能混淆各版本。
 
-下一固定分析已持久：openspec/evidence/java-syntax-2026-10-18/cf11-foreach-iterator-declaration-analysis-root-v1（11成员/62b4fdf…）。Iterator local5祖先空声明真实残留，JADX DONT_GENERATE/变量收集与本Builder Vec/回滚路径已核；需要窄跨列表关联，不加通用死变量pass。仅分析、无Spec/实现；字面黄金需区分全限定类型及none确定性名字；equals/remove Object转型留待独立重载证明，add(E)包装早已去除。
+检查点 **716fefc658958bfc93a4092186913ee3306b8b1f** 已实际实核远端==本地干净main、仅main分支、14辅助checkout detached-clean-main祖先/无target，全5154来源及CLI恒同。最终关闭文档push后，以外置 `/private/tmp/jarde-foreach-fold-final-clean-main-root-v1-20261018/execution.json` 的实际HEAD/终态为准；接续先重核Git，不把文档head当产品CI的head。
+
+下一固定项：**Iterator祖先空声明清理**，只有分析，无新Spec/实现。持久 `openspec/evidence/java-syntax-2026-10-18/cf11-foreach-iterator-declaration-analysis-root-v1`（11成员/62b4fdf…）保留root/Luna更正及JADX五源码。local5空声明来自astore@33，祖先Vec在调用栈、当前Builder无待删状态；优先复用已有foreach/slot/SSA/owner证书，必要仅补窄跨列表关联并纳入checkpoint/唯一实际foreach/预算与原子提交，不建通用死变量pass。方法/SSA上下文已有，不重复建模。字面黄金须区分全限定类型和none确定性名字，不能称五个containsOne全过；equals/remove Object转型留待独立重载证明，add(E)包装早已移除。
+
+root负责架构/共享写/Git/工具链/网络和完整验收，Luna私有或只读；本地工具串行，Cargo时不改源或网络。所有历史失败、未执行准备、被替代判据和已交付项保留，下一次不重复做finThrow/nestedFin或制造新add(E)问题。
 
 ## 2026-10-18 最新交付：typed foreach 7/7、bulk 4/4，自身CI已完整接受
 

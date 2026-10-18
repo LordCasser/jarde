@@ -1,3 +1,13 @@
+# Final root acceptance: 7/7
+
+Final strict validation is 374/0 and apply state is all_done / 7 of 7. `delivery-checks-root-v1` preserves those actual outputs, verbatim nine-scenario main-spec synchronization and the earlier clean checkpoint. `all-archives-root-review-v4.json` independently reopens all 22 current leaf/next-analysis archives, 1832 members, with exact manifest sets and hashes; all prior failures remain unchanged.
+
+Exact product `0a7e3c98f63b128a13a658a475b9e69a9e60d048` own [CI 39120933555](https://github.com/LordCasser/jarde/actions/runs/39120933555) is independently accepted: 4 jobs / all 52 successful API steps; official ZIP has all 52 individual step members, zero aggregate reconstruction. Both fixed seeds have 385 targets / 3766 pass / 0 fail / 98 old ignored and 61 exact gates each. Collector has 24 commands / 48 streams / 13 source pins / 5 fixture pins; official ZIP adds 1 command / 2 streams, with independent verifier invocation separately captured. `own-product-ci-root-v1` reopens 75 members, archive SHA256 `915e61b6f6a710bece117e8659af0a40b8460e361ee01441404ef111d92478d8`. All source pins equal exact product Git bytes, not a later documentation head.
+
+Clean checkpoint `716fefc658958bfc93a4092186913ee3306b8b1f` was actually accepted before final closure documentation: real remote==local clean main, only main branch, 14 detached/clean/ancestor auxiliary checkouts without build residue, target absent, all 5154 source bytes/modes and c688 CLI unchanged. Final closure docs are a descendant; after pushing them root reruns the external clean checker at `/private/tmp/jarde-foreach-fold-final-clean-main-root-v1-20261018/execution.json`, whose actual HEAD/result is authoritative. No CI rerun is claimed for documentation. Whole goal remains active, CF11/71/612 counts unchanged.
+
+Earlier checkpoint sections below retain their observed pending states and failures. They are superseded by this final acceptance.
+
 # Current root checkpoint: 6/7, own product CI pending
 
 Product `0a7e3c98f63b128a13a658a475b9e69a9e60d048` is pushed. Both fresh native runs finished with 385 targets / 101 batches / 3766 pass / 0 failed / 98 old ignored. Root actually ran the two-seed validator with 16 exact gates per seed, full named/status supplement (3864 outcomes per seed, all equal per target), and unchanged product binder. Native sources 5147 each / build sources 3194 / union 5154 match actual product Git blobs, byte counts and executable modes. Final c688 CLI is unchanged; default stack, resource guards and exact final clean all pass, target absent.
