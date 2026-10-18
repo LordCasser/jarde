@@ -12309,7 +12309,10 @@ mod tests {
             // Typed List foreach adds one complete javac8 class, six Code bodies and
             // ten direct branch targets; independent raw-Code parsing counts 97 instructions,
             // no handlers and no jsr. The fixture is byte-identical to the runtime baseline.
-            (1301, 5751, 630, 4050, 14),
+            // Original nested foreach child debug/none add two exact runtime-baseline copies,
+            // four Code bodies and sixteen direct targets; no handlers or jsr.
+            // The complete Reader sweep and independent raw-Code decode measured this delta.
+            (1303, 5755, 630, 4066, 14),
             "fixture population changed: re-measure these counts"
         );
     }

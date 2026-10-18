@@ -1,0 +1,21 @@
+{
+  "name": "focused-root-v6",
+  "archive": {
+    "path": "openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v6/capture.tar.gz",
+    "bytes": 347450,
+    "sha256": "d5bb416017200cf971d95eb9fee53fdacbe2a00587496ad82e4ad007c8256509",
+    "capture_review_path": "openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v6/capture-review.json",
+    "capture_review_members_reopened": 14
+  },
+  "tar_member_count": 14,
+  "manifest_entry_count": 13,
+  "manifest_sha256": "9a2e8e2a6b233a5b70d925755d977574f8fcf27e2d5c82fcba814a2ea935d29f",
+  "checks": {
+    "archive_review_pin": "passed",
+    "unique_paths": "passed",
+    "safe_canonical_paths": "passed",
+    "regular_members_only": "passed",
+    "manifest_set_exact": "passed",
+    "member_bytes_and_sha256": "passed"
+  }
+}

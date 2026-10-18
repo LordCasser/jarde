@@ -29,6 +29,11 @@ const ORDINARY_TRY_ADMISSION: &[u8] = include_bytes!(
 const TYPED_LIST_FOREACH: &[u8] =
     include_bytes!("fixtures/typed-list-foreach/TypedListForEachCases.class");
 
+const NESTED_LOOPS_DEBUG: &[u8] =
+    include_bytes!("fixtures/foreach-local-bindings/debug/TestNestedLoops$TestCls.class");
+const NESTED_LOOPS_NONE: &[u8] =
+    include_bytes!("fixtures/foreach-local-bindings/none/TestNestedLoops$TestCls.class");
+
 fn request(snapshot: &ArtifactSnapshot, name: &str) -> ClassSourceRequest {
     ClassSourceRequest {
         class: ClassRef::Name {
@@ -170,37 +175,47 @@ fn assert_bcis_are_mapped(report: &RecoveryReport, bcis: &[u32]) {
     }
 }
 
-fn assert_typed_foreach_copies(
+fn assert_folded_typed_foreach(
     projected: &str,
     element_type: &str,
-    outer_target: &str,
-    inner_target: &str,
+    outer_name: &str,
+    outer_source: &str,
+    inner_name: &str,
+    inner_source: &str,
 ) {
-    let prefix = format!("for ({element_type} ");
-    let headers = projected
-        .lines()
-        .filter_map(|line| {
-            let header = line.trim().strip_prefix(&prefix)?;
-            let (name, _) = header.split_once(" : ")?;
-            Some(name.to_owned())
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(
-        headers.len(),
-        2,
-        "both nested foreach headers use {element_type}: {projected}"
+    for header in [
+        format!("for ({element_type} {outer_name} : {outer_source}) {{"),
+        format!("for ({element_type} {inner_name} : {inner_source}) {{"),
+    ] {
+        assert!(
+            projected.lines().any(|line| line.trim() == header),
+            "folded foreach header {header:?} is retained: {projected}"
+        );
+    }
+    assert!(
+        !projected.contains(&format!("{outer_name} = {outer_name};")),
+        "outer synthetic-element copy is folded: {projected}"
     );
     assert!(
-        projected.contains(&format!("{outer_target} = {};", headers[0])),
-        "the original outer assignment remains as a typed synthetic-element copy: {projected}"
+        !projected.contains(&format!("{element_type} {inner_name} = {inner_name};")),
+        "inner synthetic-element copy is folded: {projected}"
     );
     assert!(
-        projected.contains(&format!("{element_type} {inner_target} = {};", headers[1])),
-        "the original inner declaration remains as a typed synthetic-element copy: {projected}"
+        !projected.contains("iteratorElement"),
+        "both synthetic names and their body copies are folded: {projected}"
     );
+    for removed in [
+        format!("{element_type} {outer_name};"),
+        format!("{element_type} {inner_name};"),
+    ] {
+        assert!(
+            !projected.lines().any(|line| line.trim() == removed),
+            "uninitialized binding declaration is folded: {projected}"
+        );
+    }
     assert!(
         !projected.contains(&format!("({element_type})")),
-        "the physical element cast was removed from projected body: {projected}"
+        "physical element casts are absent from projected body: {projected}"
     );
 }
 
@@ -1054,10 +1069,14 @@ fn fixed_nested_string_body_projects_source_and_preserves_physical_origins() {
     assert_eq!(default_raw.source_map, all_raw.source_map);
     assert_eq!(default_raw.source_map, no_rule_details_raw.source_map);
 
-    assert_typed_foreach_copies(&default.text, "java.lang.String", "s1", "s2");
-    assert_typed_foreach_copies(&default_method.text, "java.lang.String", "s1", "s2");
-    assert_typed_foreach_copies(&all_method.text, "java.lang.String", "s1", "s2");
-    assert_typed_foreach_copies(&no_rule_details_method.text, "java.lang.String", "s1", "s2");
+    for projected in [
+        &default.text,
+        &default_method.text,
+        &all_method.text,
+        &no_rule_details_method.text,
+    ] {
+        assert_folded_typed_foreach(projected, "java.lang.String", "s1", "l1", "s2", "l2");
+    }
 
     let declaration =
         "test(java.util.List<java.lang.String> l1, java.util.List<java.lang.String> l2)";
@@ -1159,13 +1178,16 @@ fn differently_named_string_and_integer_classes_follow_their_list_element_type()
         "remove(Object) is not confused with remove(int): {}",
         string_method.text
     );
-    assert_typed_foreach_copies(&string.text, "java.lang.String", "candidate", "option");
-    assert_typed_foreach_copies(
-        &string_method.text,
-        "java.lang.String",
-        "candidate",
-        "option",
-    );
+    for projected in [&string.text, &string_method.text] {
+        assert_folded_typed_foreach(
+            projected,
+            "java.lang.String",
+            "candidate",
+            "chosen",
+            "option",
+            "offered",
+        );
+    }
     assert_utf8_source_map(string_raw);
     let string_class = class_facts(DISTINCT_STRING, &mut task_budget(&[]).unwrap()).unwrap();
     assert_all_instruction_bcis_are_mapped(DISTINCT_STRING, &string_class, string_method);
@@ -1221,8 +1243,16 @@ fn differently_named_string_and_integer_classes_follow_their_list_element_type()
         "remove(Object) is not confused with remove(int): {}",
         integer_method.text
     );
-    assert_typed_foreach_copies(&integer.text, "java.lang.Integer", "value", "option");
-    assert_typed_foreach_copies(&integer_method.text, "java.lang.Integer", "value", "option");
+    for projected in [&integer.text, &integer_method.text] {
+        assert_folded_typed_foreach(
+            projected,
+            "java.lang.Integer",
+            "value",
+            "selected",
+            "option",
+            "available",
+        );
+    }
     assert_utf8_source_map(integer_raw);
     let integer_class = class_facts(DISTINCT_INTEGER, &mut task_budget(&[]).unwrap()).unwrap();
     assert_all_instruction_bcis_are_mapped(DISTINCT_INTEGER, &integer_class, integer_method);
@@ -1685,6 +1715,159 @@ fn raw_alias_escape_reference_lifetimes_match_default_all_and_source_origins() {
 }
 
 #[test]
+fn original_nested_loops_folds_both_proven_local_bindings_without_changing_raw_sources() {
+    let class_name = "jadx/tests/integration/loops/TestNestedLoops$TestCls";
+    for (bytes, outer_name, inner_name, first, second) in [
+        (NESTED_LOOPS_DEBUG, "s1", "s2", "l1", "l2"),
+        (NESTED_LOOPS_NONE, "local4", "local6", "arg1", "arg2"),
+    ] {
+        let default = performed(bytes, class_name);
+        let all = match report_with(
+            bytes,
+            class_name,
+            Some(&RecoveryEvidenceRequest::all()),
+            &mut task_budget(&[]).unwrap(),
+        ) {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("all-evidence original nested-loop class completes: {other:?}"),
+        };
+        let no_rule_details_request = RecoveryEvidenceRequest::essential()
+            .with_kind(RecoveryEvidenceKind::SourceMap)
+            .with_kind(RecoveryEvidenceKind::RegionDetails)
+            .with_kind(RecoveryEvidenceKind::NameDetails);
+        let no_rule_details = match report_with(
+            bytes,
+            class_name,
+            Some(&no_rule_details_request),
+            &mut task_budget(&[]).unwrap(),
+        ) {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("no-RuleDetails original nested-loop class completes: {other:?}"),
+        };
+        assert_eq!(default.text, all.text);
+        assert_eq!(default.text, no_rule_details.text);
+
+        let facts = class_facts(bytes, &mut task_budget(&[]).unwrap()).unwrap();
+        for name in [b"<init>".as_slice(), b"test"] {
+            let d = method(&default, name);
+            let a = method(&all, name);
+            let n = method(&no_rule_details, name);
+            assert_eq!(d.item.identity, a.item.identity);
+            assert_eq!(d.item.identity, n.item.identity);
+            assert_eq!(d.text, a.text, "{}", d.text);
+            assert_eq!(d.text, n.text, "{}", d.text);
+            let raw = raw_body(d);
+            let raw_all = raw_body(a);
+            let raw_plain = raw_body(n);
+            assert_eq!(raw.text, raw_all.text, "{}", d.text);
+            assert_eq!(raw.text, raw_plain.text, "{}", d.text);
+            assert_eq!(raw.source_map, raw_all.source_map);
+            assert_eq!(raw.source_map, raw_plain.source_map);
+            assert_eq!(raw.representation, Representation::Java, "{}", raw.text);
+            assert_eq!(raw.quality, Quality::Structured, "{}", raw.text);
+            assert_eq!(
+                raw_all.evidence.state(RecoveryEvidenceKind::RuleDetails),
+                EvidenceState::Complete
+            );
+            assert_eq!(
+                raw_plain.evidence.state(RecoveryEvidenceKind::RuleDetails),
+                EvidenceState::NotRequested
+            );
+            assert_utf8_source_map(raw);
+            assert_raw_map_method_identity(raw, d);
+            assert_all_instruction_bcis_are_mapped(bytes, &facts, d);
+        }
+
+        let d = method(&default, b"test");
+        let projected = &d.text;
+        assert!(
+            projected.contains("test(java.util.List<java.lang.String>"),
+            "the List<String> source signature remains: {projected}"
+        );
+        for (name, values) in [(outer_name, first), (inner_name, second)] {
+            let header = format!("for (java.lang.String {name} : {values}) {{");
+            assert!(
+                projected.lines().any(|line| line.trim() == header),
+                "expected existing local in header `{header}`: {projected}"
+            );
+        }
+        for removed in [
+            format!("java.lang.String {outer_name};"),
+            format!("{outer_name} = iteratorElement17;"),
+            format!("java.lang.String {inner_name} = iteratorElement47;"),
+        ] {
+            assert!(
+                !projected.lines().any(|line| line.trim() == removed),
+                "binding copy/declaration should be folded: {removed}: {projected}"
+            );
+        }
+        assert!(
+            !projected.contains("iteratorElement"),
+            "both old synthetic element names are gone from the projection: {projected}"
+        );
+        assert!(
+            projected.contains("java.util.Iterator local5;"),
+            "the unrelated iterator local remains: {projected}"
+        );
+        assert!(
+            projected.contains(&format!(
+                "{outer_name}.equals((java.lang.Object) {inner_name})"
+            )),
+            "the Object argument wrapper remains: {projected}"
+        );
+        assert!(
+            projected.contains(&format!("{second}.add({outer_name});")),
+            "the original List insertion body remains: {projected}"
+        );
+        assert!(
+            projected.contains(&format!("{first}.remove((java.lang.Object) {inner_name});")),
+            "the remove(Object) wrapper remains: {projected}"
+        );
+        assert!(
+            projected.contains(&format!("if ({second}.size() > 0) {{"))
+                && projected.contains(&format!("{first}.clear();")),
+            "the statements after both loops remain: {projected}"
+        );
+
+        let raw = raw_body(d);
+        assert!(
+            raw.text.contains("for (java.lang.Object iteratorElement17"),
+            "{}",
+            raw.text
+        );
+        assert!(
+            raw.text.contains("for (java.lang.Object iteratorElement47"),
+            "{}",
+            raw.text
+        );
+        assert!(
+            raw.text.contains("(java.lang.String) iteratorElement17"),
+            "{}",
+            raw.text
+        );
+        assert!(
+            raw.text.contains("(java.lang.String) iteratorElement47"),
+            "{}",
+            raw.text
+        );
+        assert!(
+            raw.text
+                .contains(&format!("{second}.add((java.lang.Object) {outer_name})")),
+            "{}",
+            raw.text
+        );
+
+        let constructor = method(&default, b"<init>");
+        assert!(
+            constructor.text.contains("super();"),
+            "{}",
+            constructor.text
+        );
+        assert!(constructor.text.contains("return;"), "{}", constructor.text);
+    }
+}
+
+#[test]
 fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
     let class_name = "typedforeach/TypedListForEachCases";
     let default = performed(TYPED_LIST_FOREACH, class_name);
@@ -1697,8 +1880,10 @@ fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
         OperationOutcome::Performed(report) => report,
         other => panic!("all-evidence typed foreach class completes: {other:?}"),
     };
-    let essential_with_map =
-        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap);
+    let essential_with_map = RecoveryEvidenceRequest::essential()
+        .with_kind(RecoveryEvidenceKind::SourceMap)
+        .with_kind(RecoveryEvidenceKind::RegionDetails)
+        .with_kind(RecoveryEvidenceKind::NameDetails);
     let essential = match report_with(
         TYPED_LIST_FOREACH,
         class_name,
@@ -1733,6 +1918,12 @@ fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
         assert_eq!(raw.quality, Quality::Structured, "{}", d.text);
         assert_eq!(raw.source_map, raw_all.source_map);
         assert_eq!(raw.source_map, raw_essential.source_map);
+        assert_eq!(
+            raw_essential
+                .evidence
+                .state(RecoveryEvidenceKind::RuleDetails),
+            EvidenceState::NotRequested
+        );
         assert_utf8_source_map(raw);
         assert_raw_map_method_identity(raw, d);
         assert_all_instruction_bcis_are_mapped(TYPED_LIST_FOREACH, &facts, d);
@@ -1823,23 +2014,18 @@ fn typed_list_foreach_element_heads_preserve_bindings_and_raw_origins() {
         1,
         "{declared}"
     );
-    let declared_head = declared
-        .lines()
-        .find(|line| line.trim_start().starts_with("for (java.lang.String "))
-        .unwrap()
-        .trim_start()
-        .split(" : ")
-        .next()
-        .unwrap()
-        .strip_prefix("for (java.lang.String ")
-        .unwrap();
     assert!(
-        declared.contains(&format!("java.lang.String value = {declared_head};")),
-        "{declared}"
+        declared.contains("for (java.lang.String value : values) {"),
+        "the existing local name is promoted to the typed header: {declared}"
+    );
+    assert!(
+        !declared.contains("java.lang.String value ="),
+        "the first body copy is folded into the header: {declared}"
     );
     assert!(
         declared.contains("typedforeach.TypedListForEachCases.seen = value;"),
-        "{declared}"
+        "{}",
+        declared
     );
     assert!(
         !declared.contains(".add(") && !declared.contains("remove("),
@@ -2054,4 +2240,213 @@ fn typed_foreach_late_deadline_keeps_raw_artifact_without_partial_projection() {
     assert_eq!(stopped_raw.text, complete_raw.text);
     assert_eq!(stopped_raw.source_map, complete_raw.source_map);
     assert_utf8_source_map(stopped_raw);
+}
+
+fn observed_nested_loops_report(
+    cancellation: CancellationToken,
+    observer: Arc<EntryObserver>,
+) -> Result<OperationOutcome<ClassSourceReport>> {
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(
+            ArtifactInput::bytes(NESTED_LOOPS_DEBUG.to_vec()),
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap();
+    let request = request(
+        &snapshot,
+        "jadx/tests/integration/loops/TestNestedLoops$TestCls",
+    );
+    let mut budget = Budget::with_cancellation_token(task_limits(&[]).unwrap(), cancellation);
+    let ledger = OperationLedger::new(&budget).with_observer(observer);
+    budget.with_ledger(ledger, UsageOwner::Methods);
+    engine.class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
+}
+
+fn nested_loops_both_heads_are_folded(report: &ClassSourceReport) -> bool {
+    let method = report
+        .methods
+        .iter()
+        .find(|member| member.item.name.raw().0 == b"test");
+    method.is_some_and(|member| {
+        member.text.contains("for (java.lang.String s1 : l1)")
+            && member.text.contains("for (java.lang.String s2 : l2)")
+    })
+}
+
+fn assert_nested_loops_no_partial_fold(stopped: &ClassSourceReport, complete_raw: &RecoveryReport) {
+    let method = method(stopped, b"test");
+    assert!(
+        !method.text.contains("for (java.lang.String "),
+        "neither staged typed head nor optional fold may publish: {}",
+        method.text
+    );
+    assert!(
+        !method.text.contains("for (java.lang.String s1 : l1)"),
+        "outer fold was not published partially: {}",
+        method.text
+    );
+    assert!(
+        !method.text.contains("for (java.lang.String s2 : l2)"),
+        "inner fold was not published partially: {}",
+        method.text
+    );
+    let generic_declaration =
+        "test(java.util.List<java.lang.String> l1, java.util.List<java.lang.String> l2)";
+    assert!(
+        !stopped.text.contains(generic_declaration),
+        "{}",
+        stopped.text
+    );
+    assert!(
+        !method.text.contains(generic_declaration),
+        "{}",
+        method.text
+    );
+    let raw = raw_body(method);
+    assert_eq!(raw.text, complete_raw.text);
+    assert_eq!(raw.source_map, complete_raw.source_map);
+    assert_utf8_source_map(raw);
+}
+
+#[test]
+fn nested_foreach_late_cancel_budget_and_deadline_keep_raw_source_atomically() {
+    let complete_token = CancellationToken::new();
+    let complete_observer = Arc::new(EntryObserver::new(None, complete_token.clone()));
+    let complete = match observed_nested_loops_report(complete_token, complete_observer.clone()) {
+        Ok(OperationOutcome::Performed(report)) => report,
+        other => panic!("observed nested-loop run must complete: {other:?}"),
+    };
+    assert!(matches!(
+        &complete.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert!(
+        nested_loops_both_heads_are_folded(&complete),
+        "{}",
+        complete.text
+    );
+    let complete_raw = raw_body(method(&complete, b"test"));
+
+    // Find the first observer boundary that has committed both nested folded headers.
+    let mut cancel_lower = 0;
+    let mut upper = complete_observer.count();
+    assert!(upper > 1, "the target has observable ledger boundaries");
+    while cancel_lower + 1 < upper {
+        let boundary = cancel_lower + (upper - cancel_lower) / 2;
+        let token = CancellationToken::new();
+        let observer = Arc::new(EntryObserver::new(Some(boundary), token.clone()));
+        let committed = match observed_nested_loops_report(token, observer) {
+            Ok(OperationOutcome::Performed(report)) => nested_loops_both_heads_are_folded(&report),
+            Ok(OperationOutcome::Incomplete(_)) | Err(Error::Cancelled { .. }) => false,
+            Ok(OperationOutcome::Ambiguous(_)) => panic!("frozen class must bind uniquely"),
+            Err(error) => panic!("unexpected cancellation-boundary failure: {error:?}"),
+        };
+        if committed {
+            upper = boundary;
+        } else {
+            cancel_lower = boundary;
+        }
+    }
+    let cancel_token = CancellationToken::new();
+    let cancel_observer = Arc::new(EntryObserver::new(Some(cancel_lower), cancel_token.clone()));
+    let cancelled = match observed_nested_loops_report(cancel_token, cancel_observer) {
+        Ok(OperationOutcome::Performed(report)) => report,
+        other => panic!("late cancellation must retain the class report: {other:?}"),
+    };
+    assert!(matches!(
+        &cancelled.execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+    assert_nested_loops_no_partial_fold(&cancelled, &complete_raw);
+
+    // Find the corresponding first successful AnalysisSteps boundary, then stop one step before it.
+    let mut budget_lower = 0;
+    let mut upper = complete.usage.analysis_steps;
+    while budget_lower + 1 < upper {
+        let boundary = budget_lower + (upper - budget_lower) / 2;
+        let mut limits = task_limits(&[]).unwrap();
+        limits.analysis_steps = boundary;
+        let committed = match report_with(
+            NESTED_LOOPS_DEBUG,
+            "jadx/tests/integration/loops/TestNestedLoops$TestCls",
+            None,
+            &mut Budget::new(limits),
+        ) {
+            OperationOutcome::Performed(report) => nested_loops_both_heads_are_folded(&report),
+            _ => false,
+        };
+        if committed {
+            upper = boundary;
+        } else {
+            budget_lower = boundary;
+        }
+    }
+    let mut limits = task_limits(&[]).unwrap();
+    limits.analysis_steps = budget_lower;
+    let budget_stopped = match report_with(
+        NESTED_LOOPS_DEBUG,
+        "jadx/tests/integration/loops/TestNestedLoops$TestCls",
+        None,
+        &mut Budget::new(limits),
+    ) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("late analysis-budget stop must retain the class report: {other:?}"),
+    };
+    assert!(matches!(
+        &budget_stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::AnalysisSteps,
+            },
+            ..
+        }
+    ));
+    assert_nested_loops_no_partial_fold(&budget_stopped, &complete_raw);
+
+    // Delay at the immediately preceding ledger boundary so the deadline expires before commit.
+    assert!(
+        cancel_lower > 0,
+        "the first fold commit has a preceding ledger boundary"
+    );
+    let deadline_observer = Arc::new(DeadlineObserver {
+        entries: AtomicUsize::new(0),
+        delay_at: cancel_lower,
+        delayed: std::sync::atomic::AtomicBool::new(false),
+    });
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(
+            ArtifactInput::bytes(NESTED_LOOPS_DEBUG.to_vec()),
+            &mut task_budget(&[]).unwrap(),
+        )
+        .unwrap();
+    let request = request(
+        &snapshot,
+        "jadx/tests/integration/loops/TestNestedLoops$TestCls",
+    );
+    let mut limits = task_limits(&[]).unwrap();
+    limits.elapsed_millis = 1_000;
+    let mut budget = Budget::new(limits);
+    let ledger = OperationLedger::new(&budget).with_observer(deadline_observer.clone());
+    budget.with_ledger(ledger, UsageOwner::Methods);
+    let deadline_stopped =
+        match engine.class_source(std::slice::from_ref(&snapshot), &request, &mut budget) {
+            Ok(OperationOutcome::Performed(report)) => report,
+            other => panic!("late deadline must retain the class report: {other:?}"),
+        };
+    assert!(
+        deadline_observer.delayed.load(Ordering::SeqCst),
+        "deadline delay was reached"
+    );
+    assert!(matches!(
+        &deadline_stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::ElapsedMillis,
+            },
+            ..
+        }
+    ));
+    assert_nested_loops_no_partial_fold(&deadline_stopped, &complete_raw);
 }

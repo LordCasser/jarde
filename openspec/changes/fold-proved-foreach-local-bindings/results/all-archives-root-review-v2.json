@@ -1,0 +1,322 @@
+{
+  "status": "passed",
+  "archives": 15,
+  "members": 1182,
+  "entries": [
+    {
+      "name": "baseline-root-v2",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/baseline-root-v2/capture.tar.gz",
+        "bytes": 301574,
+        "sha256": "152de0d3d41b9de1dce8903c12593b0995f9517a15ae7b09aa40a38122b26a8d",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/baseline-root-v2/capture-review.json",
+        "capture_review_members_reopened": 222
+      },
+      "tar_member_count": 222,
+      "manifest_entry_count": 221,
+      "manifest_sha256": "c69bd5d7687c79c53fd35fb7880bbb5328ed094c6fcad9343f41b1babd225463",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "broad-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/broad-root-v1/capture.tar.gz",
+        "bytes": 380477,
+        "sha256": "abe508c42fc063ca3ef4783d1f30505e07ee140a07d773975d92a4f28c8d28ae",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/broad-root-v1/capture-review.json",
+        "capture_review_members_reopened": 41
+      },
+      "tar_member_count": 41,
+      "manifest_entry_count": 40,
+      "manifest_sha256": "cca46a66a5912b2130ff3f5ace1b53e4d737fcaa4927e745218151d74e3936eb",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "controls-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/controls-root-v1/capture.tar.gz",
+        "bytes": 796450,
+        "sha256": "acbb36a3836bf92dfced5bef28dede6a97767ab3153503528f45766f2a9e43fc",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/controls-root-v1/capture-review.json",
+        "capture_review_members_reopened": 379
+      },
+      "tar_member_count": 379,
+      "manifest_entry_count": 378,
+      "manifest_sha256": "feba7e2a5c6a80f0f0e8a99ebb0e5de0585f283768a404e64f8f662af4b29b53",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "dataset-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/dataset-root-v1/capture.tar.gz",
+        "bytes": 479793,
+        "sha256": "32c97ad59b6b1079442c879e446fd15ee1d2217a7d5616cced3dbb8b5de3ce5c",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/dataset-root-v1/capture-review.json",
+        "capture_review_members_reopened": 13
+      },
+      "tar_member_count": 13,
+      "manifest_entry_count": 12,
+      "manifest_sha256": "e4111a71533a4d9b9fefd006989743bf760918e21d09f7c21f90f6c82766074a",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v1/capture.tar.gz",
+        "bytes": 342562,
+        "sha256": "1845afde517bb04ca0aac5f4bbf2366fcf5a4ece6fbf2816d42f33a5971b1f2f",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v1/capture-review.json",
+        "capture_review_members_reopened": 6
+      },
+      "tar_member_count": 6,
+      "manifest_entry_count": 5,
+      "manifest_sha256": "b0bcb92f7ff111651e27151adfc31139639042396b86aa751146bcdb5ca11873",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-root-v2",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v2/capture.tar.gz",
+        "bytes": 342404,
+        "sha256": "043636f734c75dd66a6a6147247558baa4eda665d42ce9b81b99d8f405bd0c1b",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v2/capture-review.json",
+        "capture_review_members_reopened": 6
+      },
+      "tar_member_count": 6,
+      "manifest_entry_count": 5,
+      "manifest_sha256": "86c1b2d620f35a53fa1bbc1cd893a5769f681606a8367a3e2e17deec8d323de0",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-root-v3",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v3/capture.tar.gz",
+        "bytes": 343569,
+        "sha256": "70df0c0327d6883ca31b208cfa661992b4b5d24f839feafb73e9e02dcd0bd3b0",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v3/capture-review.json",
+        "capture_review_members_reopened": 8
+      },
+      "tar_member_count": 8,
+      "manifest_entry_count": 7,
+      "manifest_sha256": "8e72239e101e5c7e2c909cb52dfd722cd4e5c6eb4a11a05fcedfc94476be451d",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-root-v4",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v4/capture.tar.gz",
+        "bytes": 343442,
+        "sha256": "0bca907be47c1f21c3aa6795c02b325dd3e95b01e1d754eb3fd79435f134d017",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v4/capture-review.json",
+        "capture_review_members_reopened": 8
+      },
+      "tar_member_count": 8,
+      "manifest_entry_count": 7,
+      "manifest_sha256": "9a314dc55c75b07bc5283657798aeda3ea093db697ebd223a8ea939d76100b25",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-root-v5",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v5/capture.tar.gz",
+        "bytes": 345914,
+        "sha256": "a061baa378259dc2a7c2a089f73c415dafd5ac8d18c64086a7cc8c16189e4df6",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v5/capture-review.json",
+        "capture_review_members_reopened": 8
+      },
+      "tar_member_count": 8,
+      "manifest_entry_count": 7,
+      "manifest_sha256": "93cec961621fb61a1ef735136d26a708fe1b667d94196b9012a378bf749d7df2",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "focused-root-v6",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v6/capture.tar.gz",
+        "bytes": 347450,
+        "sha256": "d5bb416017200cf971d95eb9fee53fdacbe2a00587496ad82e4ad007c8256509",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/focused-root-v6/capture-review.json",
+        "capture_review_members_reopened": 14
+      },
+      "tar_member_count": 14,
+      "manifest_entry_count": 13,
+      "manifest_sha256": "9a2e8e2a6b233a5b70d925755d977574f8fcf27e2d5c82fcba814a2ea935d29f",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "generated-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/generated-root-v1/capture.tar.gz",
+        "bytes": 808078,
+        "sha256": "5bf4321a31cbc7ca38323b60b858709f107bf70b8197bacdf89a4ad97ef1b3e3",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/generated-root-v1/capture-review.json",
+        "capture_review_members_reopened": 190
+      },
+      "tar_member_count": 190,
+      "manifest_entry_count": 189,
+      "manifest_sha256": "0d0c04f4fa1c224f2bd9653271bf4cef153bb13376aef4f7b7dc944952a9ad2e",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "original-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/original-root-v1/capture.tar.gz",
+        "bytes": 946699,
+        "sha256": "99fe29d85a78e8f62faaa6aee5df8b09056c360df6741318155ff8bb50436c03",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/original-root-v1/capture-review.json",
+        "capture_review_members_reopened": 76
+      },
+      "tar_member_count": 76,
+      "manifest_entry_count": 75,
+      "manifest_sha256": "f2abdd8e73ac3e873e155723f265fc623f528d38f28e5f3af72909f6489dc733",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "preparation-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/preparation-root-v1/capture.tar.gz",
+        "bytes": 4411775,
+        "sha256": "474c8cd20b321fe19cc480a8de1b01e99775618d6c554bce3ff09147f320d5b7",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/preparation-root-v1/capture-review.json",
+        "capture_review_members_reopened": 200
+      },
+      "tar_member_count": 200,
+      "manifest_entry_count": 199,
+      "manifest_sha256": "c866b8f16fd0d51427c393b8e68078ab2fc5c213be9d763d345d952a629c7629",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "projection-delta-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/projection-delta-root-v1/capture.tar.gz",
+        "bytes": 5370,
+        "sha256": "e148ff9d5aac067c5b42a7af53e5d06fe4de6b77191ec40d0fac658ab1ad183e",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/projection-delta-root-v1/capture-review.json",
+        "capture_review_members_reopened": 3
+      },
+      "tar_member_count": 3,
+      "manifest_entry_count": 2,
+      "manifest_sha256": "552c3b48215214ccac20a8e53303eb432dd32fdff77b690ab7cb4e94c075cfc9",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    },
+    {
+      "name": "reader-census-root-v1",
+      "archive": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/reader-census-root-v1/capture.tar.gz",
+        "bytes": 344526,
+        "sha256": "50eb12cf276f2459ed117c081e85723d7887717d1ce9078d8f5416ac1050ae17",
+        "capture_review_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/fold-proved-foreach-local-bindings/results/reader-census-root-v1/capture-review.json",
+        "capture_review_members_reopened": 8
+      },
+      "tar_member_count": 8,
+      "manifest_entry_count": 7,
+      "manifest_sha256": "1c2615662f045ecfdb1f1e12fe4dffccf44f9060f32e5d322023c60dc5072775",
+      "checks": {
+        "archive_review_pin": "passed",
+        "unique_paths": "passed",
+        "safe_canonical_paths": "passed",
+        "regular_members_only": "passed",
+        "manifest_set_exact": "passed",
+        "member_bytes_and_sha256": "passed"
+      }
+    }
+  ]
+}
