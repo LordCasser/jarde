@@ -69,3 +69,9 @@ Jarde 现有相关回归：`CARGO_TARGET_DIR=/tmp/jarde-cf11-target CARGO_INCREM
 上表是10月12日历史结果。固定原始 `TestSequentialLoops2` 已按[完整基线](../../java-syntax-2026-10-18/cf11-sequential-loops2-baseline-root-v1/README.md)和[完整生成源矩阵](../../java-syntax-2026-10-18/cf11-sequential-loops2-generated-matrix-root-v2/README.md)由root独立接受：当前 ee013 产品8请求均3方法Structured/无fallback/全BCI，Jarde16完整编译、64运行512case同原；JADX2完整编译/8运行64case同原，另2个javac8外层框架major55边界无runtime。default原短表与configured128控制分开，未手修源码。此输入现有路径已覆盖，无需新机制；不增加CF11/71/612整体完成数。
 
 下一固定 `TestNestedLoops` 已有历史行为窄片，仍需按当前真实输出核typed foreach/泛型呈现。当前源码和永久测试已支持iterator声明/初始化分离，旧BCI13/42拒绝不代表当前首拒。先采完整原始外层/child输入及当前API/Builder证据，再决定OpenSpec；不重做已交付的NL3/NL5/Seq1或凭空探索新机制。
+
+## 2026-10-18 原始 TestNestedLoops 当前基线与下一质量片
+
+完整原始outer+child已root实际编译和接受，见[typed foreach基线](../../../changes/recover-typed-list-foreach-elements/results/README.md)。原始20命令/4JVM32case；生成75命令、20编译18成功、36JVM288case同原、18wrong CodeSource拒绝。8API两个方法均Structured，已有List<String>形参和两层Object foreach；不是旧BCI13/42的CFG拒绝。JADX两份实际源码均String头。历史表中TestNestedLoops“加法/减法”断言描述不准确：当前原始黄金检查两个typed String foreach以及equals/add/remove等文本，不含运行check。
+
+新OpenSpec `recover-typed-list-foreach-elements` 1/7，Luna私有实现中，尚无产品变更。复用泛型事务/同次AST，仅将受证元素cast吸收入typed头并保留原body绑定；原名头折叠和其它Object包装仍独立，不能据此宣称整条黄金、CF11或71/612完成。原始、生成源码与raw方法map各自核验，不把投影后文本视为map坐标。
